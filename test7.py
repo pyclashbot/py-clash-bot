@@ -675,10 +675,10 @@ def open_activity_log(duration):
 def check_if_windows_exist():
     if gw.getWindowsWithTitle('MEmu') == []:
         print("MEmu window not found")
-        exit()
+        return False
     if gw.getWindowsWithTitle('Multiple Instance Manager') == []:
         print("MMIM window not found")
-        exit()
+        return False
     return True
 
 
@@ -849,7 +849,8 @@ def main_loop():
     loop_count = 0
     # default_board_state = [1]*8
 
-    check_if_windows_exist()
+    if not check_if_windows_exist():
+        return
     win = gw.getWindowsWithTitle('MEmu')[0]
     win2 = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
 
