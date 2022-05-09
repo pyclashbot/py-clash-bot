@@ -813,55 +813,55 @@ while True:
      iar = refresh_screen()
      plt.imshow(iar)
      
-     plt.show()
+     #plt.show()
     
      
-     # orientate_memu_multi()
-     # time.sleep(1)
-     # orientate_window(win)
-     # restart_client()
-     # if check_if_on_clash_main_menu() == 1:
-     #      print(calculate_time(start_time),"We're on the main menu")
-     #      time.sleep(1)
-     #      print(calculate_time(start_time),"Handling chests")
-     #      time.sleep(1)                                                        
-     #      open_chests()
-     #      time.sleep(3)
-     #      print (calculate_time(start_time),"Checking if can request")
-     #      time.sleep(1)
-     #      if check_if_can_request() == 1:
-     #           print(calculate_time(start_time),"Can request. Requesting giant")
-     #           time.sleep(1)
-     #           request_from_clash_main_menu()
-     #      else:
-     #           print(calculate_time(start_time),"Request is unavailable")
-     #      print(calculate_time(start_time),"Checking if can donate")
-     #      time.sleep(1)
-     #      getto_donate_page()
-     #      click_donates()
-     # else:
-     #      print(calculate_time(start_time),"not on clash main menu")
-     # print(calculate_time(start_time),"Handled chests and requests. Gonna start a battle")
-     # time.sleep(1)
-     # start_2v2()
-     # fights = fights + 1
-     # wait_for_battle_start()
-     # fightloops = 0
-     # default_board_state = capture_board_state()
-     # while check_if_exit_battle_button_exists() == 0:
-     #      fightloops = fightloops + 1
-     #      print(calculate_time(start_time),"fightloop: ",fightloops)
-     #      fight_in_2v2()
-     #      if fightloops > 100:
-     #           break
-     # leave_end_battle_window()
-     # time.sleep(5)
-     # if check_if_past_game_is_win() == 1:
-     #      print(calculate_time(start_time),"Last game was a win")
-     #      wins=wins+1
-     # else:
-     #      print(calculate_time(start_time),"Last gane was a loss")
-     #      losses=losses+1
+     orientate_memu_multi()
+     time.sleep(1)
+     orientate_window(win)
+     restart_client()
+     if check_if_on_clash_main_menu() == 1:
+          print(calculate_time(start_time),"We're on the main menu")
+          time.sleep(1)
+          print(calculate_time(start_time),"Handling chests")
+          time.sleep(1)                                                        
+          open_chests()
+          time.sleep(3)
+          print (calculate_time(start_time),"Checking if can request")
+          time.sleep(1)
+          if check_if_can_request() == 1:
+               print(calculate_time(start_time),"Can request. Requesting giant")
+               time.sleep(1)
+               request_from_clash_main_menu()
+          else:
+               print(calculate_time(start_time),"Request is unavailable")
+          print(calculate_time(start_time),"Checking if can donate")
+          time.sleep(1)
+          getto_donate_page()
+          click_donates()
+     else:
+          print(calculate_time(start_time),"not on clash main menu")
+     print(calculate_time(start_time),"Handled chests and requests. Gonna start a battle")
+     time.sleep(1)
+     start_2v2()
+     fights = fights + 1
+     wait_for_battle_start()
+     fightloops = 0
+     default_board_state = capture_board_state()
+     while check_if_exit_battle_button_exists() == 0:
+          fightloops = fightloops + 1
+          print(calculate_time(start_time),"fightloop: ",fightloops)
+          fight_in_2v2()
+          if fightloops > 100:
+               break
+     leave_end_battle_window()
+     time.sleep(5)
+     if check_if_past_game_is_win() == 1:
+          print(calculate_time(start_time),"Last game was a win")
+          wins=wins+1
+     else:
+          print(calculate_time(start_time),"Last gane was a loss")
+          losses=losses+1
           
 
 
