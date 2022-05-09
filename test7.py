@@ -1,5 +1,12 @@
 import random
 import time
+
+import keyboard
+import matplotlib.pyplot as plt
+import numpy as np
+import pyautogui
+import pygetwindow as gw
+
 # from ast import Str
 # from cgi import test
 # from multiprocessing.connection import wait
@@ -7,11 +14,6 @@ import time
 # from tabnanny import check
 # from tracemalloc import start
 
-import keyboard
-import matplotlib.pyplot as plt
-import numpy as np
-import pyautogui
-import pygetwindow as gw
 # import PySimpleGUI as sg
 # from matplotlib.font_manager import ttfFontProperty
 # from PIL import Image
@@ -382,19 +384,19 @@ def random_card_coord_picker():
     n = random.randint(1, 4)
     coords = [1] * 2
     if n == 1:
-        #print(calculate_time(start_time),"randomly selected card 1")
+        # print(calculate_time(start_time),"randomly selected card 1")
         coords[0] = 146
         coords[1] = 588
     if n == 2:
-        #print(calculate_time(start_time),"randomly selected card 2")
+        # print(calculate_time(start_time),"randomly selected card 2")
         coords[0] = 206
         coords[1] = 590
     if n == 3:
-        #print(calculate_time(start_time),"randomly selected card 3")
+        # print(calculate_time(start_time),"randomly selected card 3")
         coords[0] = 278
         coords[1] = 590
     if n == 4:
-        #print(calculate_time(start_time),"randomly selected card 4")
+        # print(calculate_time(start_time),"randomly selected card 4")
         coords[0] = 343
         coords[1] = 588
     check_quit_key_press()
@@ -425,7 +427,10 @@ def check_if_in_battle():
 
 def leave_end_battle_window(start_time):
     check_quit_key_press()
-    print(calculate_time(start_time), "battle is over. return to clash main menu")
+    print(
+        calculate_time(start_time),
+        "battle is over. return to clash main menu"
+    )
     pyautogui.moveTo(x=81, y=630, duration=duration)
     pyautogui.click()
     time.sleep(5)
@@ -474,7 +479,10 @@ def check_if_exit_battle_button_exists():
 
 
 def find_donates(start_time):
-    print(calculate_time(start_time), "searching screen for green donate buttons")
+    print(
+        calculate_time(start_time),
+        "searching screen for green donate buttons"
+    )
     iar = refresh_screen()
     check_quit_key_press()
     sentinel = [1] * 3
