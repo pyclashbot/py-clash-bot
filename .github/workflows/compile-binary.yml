@@ -37,4 +37,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            clash-bot.exe
+            dist/clash-bot.exe
