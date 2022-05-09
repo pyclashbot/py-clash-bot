@@ -835,9 +835,8 @@ def set_default_board_state():
     pix8[0] = 181
     pix8[1] = 173
     pix8[2] = 157
-    while n4 < 8:
-
-        n4 = n4+1
+    # while n4 < 8:
+    #   n4 = n4+1
 
 
 def main_loop():
@@ -848,7 +847,7 @@ def main_loop():
     duration = 0.5
     fight_duration = 0.2
     loop_count = 0
-    default_board_state = [1]*8
+    # default_board_state = [1]*8
 
     check_if_windows_exist()
     win = gw.getWindowsWithTitle('MEmu')[0]
