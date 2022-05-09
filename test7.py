@@ -21,15 +21,6 @@ import pygetwindow as gw
 # from pynput import keyboard
 # from pynput.keyboard import Key, Listener
 
-# vars
-fights = 0
-wins = 0
-losses = 0
-duration = 0.5
-fightduration = 0.2
-loop_count = 0
-default_board_state = [1]*8
-
 
 def refresh_screen(win):
     check_quit_key_press()
@@ -57,16 +48,16 @@ def orientate_window(win):
     win.resizeTo(460, 680)
 
 
-def orientate_memu_multi():
+def orientate_memu_multi(win):
 
-    win2 = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
+    #win2 = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
     check_quit_key_press()
-    win2.minimize()
-    win2.restore()
-    win2.moveTo(0, 0)
+    win.minimize()
+    win.restore()
+    win.moveTo(0, 0)
 
 
-def open_clash(start_time):
+def open_clash(start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "opening clash")
     pyautogui.moveTo(x=60, y=336, duration=duration)
@@ -142,7 +133,7 @@ def check_if_has_chests():
     return has_chests
 
 
-def open_chests(start_time):
+def open_chests(start_time, duration):
     check_quit_key_press()
     n = check_if_has_chests()
     if n[0] == 1:
@@ -233,7 +224,7 @@ def check_if_can_request():
     return 1
 
 
-def request_from_clash_main_menu(start_time):
+def request_from_clash_main_menu(start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "Moving to clan chat page")
     pyautogui.moveTo(x=317, y=627, duration=duration)
@@ -290,7 +281,7 @@ def check_if_on_clan_chat_page():
     return 1
 
 
-def return_to_clash_main_menu(start_time):
+def return_to_clash_main_menu(start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "Returning to clash main menu")
     pyautogui.moveTo(x=180, y=625, duration=duration)
@@ -298,7 +289,7 @@ def return_to_clash_main_menu(start_time):
     check_quit_key_press()
 
 
-def start_2v2(start_time):
+def start_2v2(start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "Navigating to 2v2 match")
     pyautogui.moveTo(x=280, y=440, duration=duration)
@@ -311,7 +302,7 @@ def start_2v2(start_time):
     check_quit_key_press()
 
 
-def start_1v1_ranked(start_time):
+def start_1v1_ranked(start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "Navigating to 1v1 ranked match")
     pyautogui.moveTo(x=140, y=440, duration=duration)
@@ -337,15 +328,15 @@ def wait_for_battle_start(start_time):
     check_quit_key_press()
 
 
-def fight_in_2v2():
+def fight_in_2v2(fight_duration):
     check_quit_key_press()
     time.sleep(3)
     card_pick = random_card_coord_picker()
     card_placement = random_placement_coord_maker()
-    pyautogui.moveTo(x=card_pick[0], y=card_pick[1], duration=fightduration)
+    pyautogui.moveTo(x=card_pick[0], y=card_pick[1], duration=fight_duration)
     pyautogui.click()
     pyautogui.moveTo(
-        x=card_placement[0], y=card_placement[1], duration=fightduration)
+        x=card_placement[0], y=card_placement[1], duration=fight_duration)
     pyautogui.click()
     check_quit_key_press()
 
@@ -425,7 +416,7 @@ def check_if_in_battle():
     return 1
 
 
-def leave_end_battle_window(start_time):
+def leave_end_battle_window(start_time, duration):
     check_quit_key_press()
     print(
         calculate_time(start_time),
@@ -437,7 +428,7 @@ def leave_end_battle_window(start_time):
     check_quit_key_press()
 
 
-def calculate_time(start_time):
+def calculate_time(start_time, wins, losses):
     check_quit_key_press()
     output_time = time.time()-start_time
     output_time = int(output_time)
@@ -452,7 +443,7 @@ def calculate_time(start_time):
     return output_string
 
 
-def refresh_clan_tab():
+def refresh_clan_tab(duration):
     check_quit_key_press()
     pyautogui.moveTo(x=300, y=630, duration=duration)
     pyautogui.click()
@@ -517,7 +508,7 @@ def find_donates(start_time):
     check_quit_key_press()
 
 
-def click_donates(start_time):
+def click_donates(start_time, duration):
     print(calculate_time(start_time),
           "clicking the donate buttons if there are any available")
     check_quit_key_press()
@@ -552,7 +543,7 @@ def click_donates(start_time):
     return_to_clash_main_menu()
 
 
-def getto_donate_page(start_time):
+def getto_donate_page(start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "Moving to clan chat page")
     pyautogui.moveTo(x=317, y=627, duration=duration)
@@ -593,7 +584,7 @@ def check_quit_key_press(start_time):
         quit()
 
 
-def restart_client(win, start_time):
+def restart_client(win, start_time, duration):
     check_quit_key_press()
     print(calculate_time(start_time), "closing client")
     pyautogui.moveTo(x=540, y=140, duration=duration)
@@ -622,7 +613,7 @@ def restart_client(win, start_time):
     open_clash()
 
 
-def wait_for_clash_main_menu(start_time):
+def wait_for_clash_main_menu(start_time, duration):
     n = 0
     while check_if_on_clash_main_menu() == 0:
 
@@ -648,7 +639,7 @@ def convert_int_to_time(seconds):
     return "%d:%02d:%02d" % (hour, minutes, seconds)
 
 
-def check_if_past_game_is_win():
+def check_if_past_game_is_win(duration):
     check_quit_key_press()
     open_activity_log()
     iar = refresh_screen()
@@ -669,7 +660,7 @@ def check_if_past_game_is_win():
     return 0
 
 
-def open_activity_log():
+def open_activity_log(duration):
     check_quit_key_press()
     pyautogui.moveTo(x=360, y=99, duration=duration)
     pyautogui.click()
@@ -850,6 +841,15 @@ def set_default_board_state():
 
 
 def main_loop():
+    # vars
+    fights = 0
+    wins = 0
+    losses = 0
+    duration = 0.5
+    fight_duration = 0.2
+    loop_count = 0
+    default_board_state = [1]*8
+
     check_if_windows_exist()
     win = gw.getWindowsWithTitle('MEmu')[0]
     win2 = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
@@ -864,16 +864,16 @@ def main_loop():
 
         # plt.show()
 
-        orientate_memu_multi()
+        orientate_memu_multi(win2)
         time.sleep(1)
         orientate_window(win)
-        restart_client(win, start_time)
+        restart_client(win, start_time, duration)
         if check_if_on_clash_main_menu() == 1:
             print(calculate_time(start_time), "We're on the main menu")
             time.sleep(1)
             print(calculate_time(start_time), "Handling chests")
             time.sleep(1)
-            open_chests(start_time)
+            open_chests(start_time, duration)
             time.sleep(3)
             print(calculate_time(start_time), "Checking if can request")
             time.sleep(1)
@@ -881,19 +881,19 @@ def main_loop():
                 print(calculate_time(start_time),
                       "Can request. Requesting giant")
                 time.sleep(1)
-                request_from_clash_main_menu(start_time)
+                request_from_clash_main_menu(start_time, duration)
             else:
                 print(calculate_time(start_time), "Request is unavailable")
             print(calculate_time(start_time), "Checking if can donate")
             time.sleep(1)
-            getto_donate_page(start_time)
-            click_donates(start_time)
+            getto_donate_page(start_time, duration)
+            click_donates(start_time, duration)
         else:
             print(calculate_time(start_time), "not on clash main menu")
         print(calculate_time(start_time),
               "Handled chests and requests. Gonna start a battle")
         time.sleep(1)
-        start_2v2(start_time)
+        start_2v2(start_time, duration)
         fights = fights + 1
         wait_for_battle_start(start_time)
         fightloops = 0
@@ -901,12 +901,12 @@ def main_loop():
         while check_if_exit_battle_button_exists() == 0:
             fightloops = fightloops + 1
             print(calculate_time(start_time), "fightloop: ", fightloops)
-            fight_in_2v2()
+            fight_in_2v2(fight_duration)
             if fightloops > 100:
                 break
-        leave_end_battle_window(start_time)
+        leave_end_battle_window(start_time, duration)
         time.sleep(5)
-        if check_if_past_game_is_win() == 1:
+        if check_if_past_game_is_win(duration) == 1:
             print(calculate_time(start_time), "Last game was a win")
             wins = wins+1
         else:
