@@ -40,8 +40,6 @@ def orientate_window(win):
 
 
 def orientate_memu_multi(win):
-
-    # win2 = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
     check_quit_key_press()
     win.minimize()
     win.restore()
@@ -804,50 +802,50 @@ def main_loop():
 
     if not check_if_windows_exist():
         return
-    win = gw.getWindowsWithTitle('MEmu')[0]
-    win2 = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
+    window_memu = gw.getWindowsWithTitle('MEmu')[0]
+    window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
     while True:
         time.sleep(2)
         logger.log(f"loop count: {loop_count}")
         loop_count += 1
-        iar = refresh_screen(win)
+        iar = refresh_screen(window_memu)
         plt.imshow(iar)
 
         # plt.show()
 
-        orientate_memu_multi(win2)
+        orientate_memu_multi(window_mimm)
         time.sleep(1)
-        orientate_window(win)
-        restart_client(win,  duration)
-        if check_if_on_clash_main_menu(win):
+        orientate_window(window_memu)
+        restart_client(window_memu,  duration)
+        if check_if_on_clash_main_menu(window_memu):
             logger.log("We're on the main menu")
             time.sleep(1)
             logger.log("Handling chests")
             time.sleep(1)
-            open_chests(win, duration)
+            open_chests(window_memu, duration)
             time.sleep(3)
             logger.log("Checking if can request")
             time.sleep(1)
-            if check_if_can_request(win):
+            if check_if_can_request(window_memu):
                 logger.log("Can request. Requesting giant")
                 time.sleep(1)
-                request_from_clash_main_menu(win, duration)
+                request_from_clash_main_menu(window_memu, duration)
             else:
                 logger.log("Request is unavailable")
             logger.log("Checking if can donate")
             time.sleep(1)
-            getto_donate_page(win, duration)
-            click_donates(win, duration)
+            getto_donate_page(window_memu, duration)
+            click_donates(window_memu, duration)
         else:
             logger.log("not on clash main menu")
         logger.log("Handled chests and requests. Gonna start a battle")
         time.sleep(1)
         start_2v2(duration)
         fights = fights + 1
-        wait_for_battle_start(win)
+        wait_for_battle_start(window_memu)
         fightloops = 0
         # default_board_state = capture_board_state()
-        while not check_if_exit_battle_button_exists(win):
+        while not check_if_exit_battle_button_exists(window_memu):
             fightloops = fightloops + 1
             logger.log(f"fightloop: {fightloops}")
             fight_in_2v2(fight_duration)
@@ -855,7 +853,7 @@ def main_loop():
                 break
         leave_end_battle_window(duration)
         time.sleep(5)
-        if check_if_past_game_is_win(duration, win):
+        if check_if_past_game_is_win(duration, window_memu):
             logger.log("Last game was a win")
             wins = wins+1
         else:
