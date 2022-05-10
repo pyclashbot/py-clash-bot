@@ -9,20 +9,6 @@ import pygetwindow as gw
 
 from utils import Logger
 
-# from ast import Str
-# from cgi import test
-# from multiprocessing.connection import wait
-# from re import T
-# from tabnanny import check
-# from tracemalloc import start
-
-# import PySimpleGUI as sg
-# from matplotlib.font_manager import ttfFontProperty
-# from PIL import Image
-# from pkg_resources import compatible_platforms
-# from pynput import keyboard
-# from pynput.keyboard import Key, Listener
-
 
 logger = Logger()
 
