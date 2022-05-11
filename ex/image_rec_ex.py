@@ -1,6 +1,6 @@
 from PIL import Image
 from pyautogui import screenshot
-from test7 import image_rec
+from test7 import compare_images
 
 
 # Use pyautogui to screnshot
@@ -16,4 +16,4 @@ tp = Image.open("play.png")
 tp.show()
 
 # run image rec and print output
-print(image_rec(ss, tp))
+print(compare_images(ss, tp))
