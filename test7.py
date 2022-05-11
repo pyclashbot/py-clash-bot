@@ -790,32 +790,25 @@ def set_default_board_state():
     #   n4 = n4+1
 
 
-def image_rec(image_path, template_path):
+def image_rec(image, template, threshold=0.8):
     """detects pixel location of a template in an image
     Args:
-        image_path (str): path to image file
-        template_path (str): path to template file
+        image (Image): image to find template within
+        template (Image): template image to match to
+        threshold (float, optional): matching threshold. defaults to 0.8
     Returns:
-        tuple[(int,int)]: a tuple of pixel location (x,y)
+        tuple[(int,int)] or None: a tuple of pixel location (x,y)
     """
+    # Convert image to np.array
+    image = np.array(image)
+    template = np.array(template)
 
-    # NOTE @matthewmiglio this function can use images from file or from
-    #    memory, change how cv2 imports with imread
-
-    # Read the main image
-    img_rgb = cv2.imread(image_path)
-
-    # Convert it to grayscale
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-
-    # Read the template
-    template = cv2.imread(template_path, 0)
+    # Convert image colors
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    template_gray = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
 
     # Perform match operations.
-    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-
-    # Specify a threshold
-    threshold = 0.8
+    res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
 
     # Store the coordinates of matched area in a numpy array
     loc = np.where(res >= threshold)  # type: ignore
