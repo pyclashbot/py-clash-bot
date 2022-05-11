@@ -1,6 +1,6 @@
 import random
 import time
-
+from PIL import Image
 import cv2
 import keyboard
 import matplotlib.pyplot as plt
@@ -11,11 +11,13 @@ import pygetwindow as gw
 from utils import Logger
 
 logger = Logger()
+window_memu = gw.getWindowsWithTitle('MEmu')[0]
+window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
 
 
-def refresh_screen(win):
+def refresh_screen():
     check_quit_key_press()
-    orientate_window(win)
+    orientate_window()
     screenshot = pyautogui.screenshot()
     check_quit_key_press()
     iar = np.array(screenshot)
@@ -28,34 +30,33 @@ def show_image(iar):
     plt.show()
 
 
-def orientate_window(win):
-
-    win = gw.getWindowsWithTitle('MEmu')[0]
-    '''move to topleft function'''
+def orientate_window():
+    window_memu = gw.getWindowsWithTitle('MEmu')[0]
     check_quit_key_press()
-    win.minimize()
-    win.restore()
-    win.moveTo(0, 0)
-    win.resizeTo(460, 680)
+    window_memu.minimize()
+    window_memu.restore()
+    time.sleep(2)
+    window_memu.moveTo(0, 0)
+    window_memu.resizeTo(460, 680)
 
 
-def orientate_memu_multi(win):
+def orientate_memu_multi():
     check_quit_key_press()
-    win.minimize()
-    win.restore()
-    win.moveTo(0, 0)
+    window_mimm.minimize()
+    window_mimm.restore()
+    window_mimm.moveTo(0, 0)
 
 
-def open_clash(win, duration):
+def open_clash(duration):
     check_quit_key_press()
     logger.log("opening clash")
     pyautogui.moveTo(x=60, y=336, duration=duration)
     pyautogui.click()
-    wait_for_clash_main_menu(win, duration)
+    wait_for_clash_main_menu(duration)
 
 
-def check_if_on_memu_main(win):
-    iar = refresh_screen(win)
+def check_if_on_memu_main():
+    iar = refresh_screen()
     check_quit_key_press()
 
     pix2 = iar[71][142]
@@ -73,7 +74,7 @@ def check_if_on_memu_main(win):
     return True
 
 
-def compare_pixels(pix1, pix2):
+def compare_pixels(pix1, pix2): 
     check_quit_key_press()
     diff_r = abs(pix1[0] - pix2[0])
     diff_g = abs(pix1[1] - pix2[1])
@@ -82,56 +83,46 @@ def compare_pixels(pix1, pix2):
         return "same"
     else:
         return "diff"
-    check_quit_key_press()
 
 
-def check_if_has_chests(win):
-    has_chests = [1] * 4
-    check_quit_key_press()
-    iar = refresh_screen(win)
-    slot1_pix = iar[573][102]
-    slot2_pix = iar[569][160]
-    slot3_pix = iar[562][273]
-    slot4_pix = iar[570][343]
+def check_if_has_chests():
+    has_chests = [0] * 4
+    iar = refresh_screen()
+    chest1_pix = iar[572][88]
+    chest2_pix = iar[572][150]
+    chest3_pix = iar[572][269]
+    chest4_pix = iar[572][321]
     sentinel = [1] * 3
-    sentinel[0] = 25
-    sentinel[1] = 98
-    sentinel[2] = 127
-
-    if compare_pixels(slot1_pix, sentinel) == "diff":
-        has_chests[0] = 1
-    else:
-        has_chests[0] = 0
-
-    if compare_pixels(slot2_pix, sentinel) == "diff":
-        has_chests[1] = 1
-    else:
-        has_chests[1] = 0
-
-    if compare_pixels(slot3_pix, sentinel) == "diff":
-        has_chests[2] = 1
-    else:
-        has_chests[2] = 0
-
-    if compare_pixels(slot4_pix, sentinel) == "diff":
-        has_chests[3] = 1
-    else:
-        has_chests[3] = 0
-
+    sentinel[0] = 35
+    sentinel[1] = 124
+    sentinel[2] = 172
+    
+    if compare_pixels(chest1_pix,sentinel) == "diff":
+        has_chests[0]=1
+    if compare_pixels(chest2_pix,sentinel) == "diff":
+        has_chests[1]=1
+    if compare_pixels(chest3_pix,sentinel) == "diff":
+        has_chests[2]=1
+    if compare_pixels(chest4_pix,sentinel) == "diff":
+        has_chests[3]=1
+    
+    
     check_quit_key_press()
     return has_chests
 
 
-def open_chests(win, duration):
+def open_chests(duration):
     check_quit_key_press()
-    n = check_if_has_chests(win)
+    n = check_if_has_chests()
     if n[0] == 1:
         logger.log("Chest detected in slot 1")
         pyautogui.moveTo(x=78, y=554, duration=duration)
         pyautogui.click()
         check_quit_key_press()
         time.sleep(1)
-        pyautogui.moveTo(x=208, y=455, duration=duration)
+        pyautogui.moveTo(x=210, y=455, duration=duration)
+        pyautogui.click()
+        time.sleep(1)
         pyautogui.click()
         time.sleep(1)
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
@@ -142,7 +133,9 @@ def open_chests(win, duration):
         check_quit_key_press()
         pyautogui.click()
         time.sleep(1)
-        pyautogui.moveTo(x=208, y=455, duration=duration)
+        pyautogui.moveTo(x=210, y=455, duration=duration)
+        time.sleep(1)
+        pyautogui.click()
         pyautogui.click()
         time.sleep(1)
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
@@ -153,7 +146,9 @@ def open_chests(win, duration):
         pyautogui.moveTo(x=263, y=541, duration=duration)
         pyautogui.click()
         time.sleep(1)
-        pyautogui.moveTo(x=208, y=455, duration=duration)
+        pyautogui.moveTo(x=210, y=455, duration=duration)
+        time.sleep(1)
+        pyautogui.click()
         pyautogui.click()
         time.sleep(1)
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
@@ -164,36 +159,25 @@ def open_chests(win, duration):
         check_quit_key_press()
         pyautogui.click()
         time.sleep(1)
-        pyautogui.moveTo(x=208, y=455, duration=duration)
+        pyautogui.moveTo(x=210, y=455, duration=duration)
+        time.sleep(1)
+        pyautogui.click()
         pyautogui.click()
         time.sleep(1)
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
         check_quit_key_press()
 
 
-def check_if_on_clash_main_menu(win):
-    check_quit_key_press()
-    iar = refresh_screen(win)
-    pix1 = iar[94][385]
-    pix2 = iar[95][403]
-    pix3 = iar[106][396]
-    sentinel = [1] * 3
-    sentinel[0] = 9
-    sentinel[1] = 52
-    sentinel[2] = 73
-
-    if compare_pixels(pix1, sentinel) == "diff":
+def check_if_on_clash_main_menu():
+    reference_image = Image.open("reference_images\clash_main.png")
+    current_image = refresh_screen()
+    if compare_images(current_image,reference_image) == None:
         return False
-    if compare_pixels(pix2, sentinel) == "diff":
-        return False
-    if compare_pixels(pix3, sentinel) == "diff":
-        return False
-    check_quit_key_press()
     return True
-
-
-def check_if_can_request(win):
-    iar = refresh_screen(win)
+    
+    
+def check_if_can_request():
+    iar = refresh_screen()
     pix1 = iar[612][326]
     pix2 = iar[606][334]
     pix3 = iar[608][326]
@@ -213,12 +197,12 @@ def check_if_can_request(win):
     return True
 
 
-def request_from_clash_main_menu(win, duration):
+def request_from_clash_main_menu(duration):
     check_quit_key_press()
     logger.log("Moving to clan chat page")
     pyautogui.moveTo(x=317, y=627, duration=duration)
     pyautogui.click()
-    while not check_if_on_clan_chat_page(win):
+    while not check_if_on_clan_chat_page():
         pyautogui.moveTo(x=317, y=627, duration=duration)
         pyautogui.click()
         time.sleep(2)
@@ -249,9 +233,9 @@ def request_from_clash_main_menu(win, duration):
     return_to_clash_main_menu(duration)
 
 
-def check_if_on_clan_chat_page(win):
+def check_if_on_clan_chat_page():
     check_quit_key_press()
-    iar = refresh_screen(win)
+    iar = refresh_screen()
     pix1 = iar[573][109]
     pix2 = iar[573][116]
     pix3 = iar[573][121]
@@ -291,29 +275,29 @@ def start_2v2(duration):
     check_quit_key_press()
 
 
-def start_1v1_ranked(win, duration):
+def start_1v1_ranked(duration):
     check_quit_key_press()
     logger.log("Navigating to 1v1 ranked match")
     pyautogui.moveTo(x=140, y=440, duration=duration)
     pyautogui.click()
-    wait_for_battle_start(win)
+    wait_for_battle_start()
     check_quit_key_press()
 
 
-def wait_for_battle_start(win):
+def wait_for_battle_start():
     logger.log("Waiting for battle start")
     n = 1
     n1 = 0
     check_quit_key_press()
     while n == 1:
         n1 = n1 + 1
-        if check_if_in_battle(win):
+        if check_if_in_battle():
             n = 0
         time.sleep(1)
         if n1 > 90:
             logger.log("Waited longer than 90 sec for a fight")
             break
-        refresh_screen(win)
+        refresh_screen()
     check_quit_key_press()
 
 
@@ -384,9 +368,9 @@ def random_card_coord_picker():
     return coords
 
 
-def check_if_in_battle(win):
+def check_if_in_battle():
     check_quit_key_press()
-    iar = refresh_screen(win)
+    iar = refresh_screen()
     pix1 = iar[551][56]
     pix2 = iar[549][78]
     pix3 = iar[567][73]
@@ -423,9 +407,9 @@ def refresh_clan_tab(duration):
     check_quit_key_press()
 
 
-def check_if_exit_battle_button_exists(win):
+def check_if_exit_battle_button_exists():
     check_quit_key_press()
-    iar = refresh_screen(win)
+    iar = refresh_screen()
     pix1 = iar[634][52]
     pix3 = iar[640][107]
     sentinel = [1] * 3
@@ -440,9 +424,9 @@ def check_if_exit_battle_button_exists(win):
     return True
 
 
-def find_donates(win):
+def find_donates():
     logger.log("searching screen for green donate buttons")
-    iar = refresh_screen(win)
+    iar = refresh_screen()
     check_quit_key_press()
     sentinel = [1] * 3
     sentinel[0] = 106
@@ -476,19 +460,19 @@ def find_donates(win):
     return [385, 507]
 
 
-def click_donates(win, duration):
+def click_donates(duration):
     logger.log("clicking the donate buttons if there are any available")
     check_quit_key_press()
     n = 0
     while n < 3:
-        coords = find_donates(win)
+        coords = find_donates()
         pyautogui.moveTo(x=coords[0], y=coords[1], duration=duration)
         pyautogui.click(x=coords[0], y=coords[1],
                         clicks=5, interval=0.2, button='left')
         pyautogui.moveTo(x=385, y=507, duration=duration)
         pyautogui.click(x=385, y=507, clicks=1, interval=0.2, button='left')
 
-        if check_if_more_donates(win):
+        if check_if_more_donates():
             pyautogui.moveTo(x=50, y=170, duration=duration)
             pyautogui.click()
 
@@ -505,21 +489,21 @@ def click_donates(win, duration):
     return_to_clash_main_menu(duration)
 
 
-def getto_donate_page(win, duration):
+def getto_donate_page(duration):
     check_quit_key_press()
     logger.log("Moving to clan chat page")
     pyautogui.moveTo(x=317, y=627, duration=duration)
     pyautogui.click()
-    while not check_if_on_clan_chat_page(win):
+    while not check_if_on_clan_chat_page():
         pyautogui.moveTo(x=317, y=627, duration=duration)
         pyautogui.click()
         time.sleep(2)
     check_quit_key_press()
 
 
-def check_if_more_donates(win):
+def check_if_more_donates():
     check_quit_key_press()
-    iar = refresh_screen(win)
+    iar = refresh_screen()
     pix1 = iar[186][34]
     pix2 = iar[177][32]
     pix3 = iar[163][61]
@@ -545,7 +529,7 @@ def check_quit_key_press():
         quit()
 
 
-def restart_client(win,  duration):
+def restart_client(duration):
     check_quit_key_press()
     logger.log("closing client")
     pyautogui.moveTo(x=540, y=140, duration=duration)
@@ -557,7 +541,7 @@ def restart_client(win,  duration):
     pyautogui.click()
     time.sleep(5)
     check_quit_key_press()
-    orientate_window(win)
+    orientate_window()
     time.sleep(5)
     check_quit_key_press()
     logger.log("skipping ads")
@@ -571,12 +555,12 @@ def restart_client(win,  duration):
     pyautogui.click()
     time.sleep(3)
     check_quit_key_press()
-    open_clash(win, duration)
+    open_clash(duration)
 
 
-def wait_for_clash_main_menu(win, duration):
+def wait_for_clash_main_menu(duration):
     n = 0
-    while not check_if_on_clash_main_menu(win):
+    while not check_if_on_clash_main_menu():
 
         check_quit_key_press()
         time.sleep(3)
@@ -590,10 +574,10 @@ def wait_for_clash_main_menu(win, duration):
         pyautogui.click()
 
 
-def check_if_past_game_is_win(duration, win):
+def check_if_past_game_is_win(duration):
     check_quit_key_press()
     open_activity_log(duration)
-    iar = refresh_screen(win)
+    iar = refresh_screen()
 
     n = 40
     while n < 130:
@@ -633,7 +617,7 @@ def check_if_windows_exist():
     return True
 
 
-def image_rec(image, template, threshold=0.8):
+def compare_images(image, template, threshold=0.8):
     """detects pixel location of a template in an image
     Args:
         image (Image): image to find template within
@@ -662,6 +646,8 @@ def image_rec(image, template, threshold=0.8):
     return (loc[0][0], loc[1][0])
 
 
+
+
 def main_loop():
     # vars
     fights = 0
@@ -670,54 +656,52 @@ def main_loop():
     duration = 0.5
     fight_duration = 0.2
     loop_count = 0
-    # default_board_state = [1]*8
 
     if not check_if_windows_exist():
         return
-    window_memu = gw.getWindowsWithTitle('MEmu')[0]
-    window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
+    
     while True:
         time.sleep(2)
         logger.log(f"loop count: {loop_count}")
         loop_count += 1
-        iar = refresh_screen(window_memu)
+        iar = refresh_screen()
         plt.imshow(iar)
 
-        # plt.show()
-
-        orientate_memu_multi(window_mimm)
+        #plt.show()
+ 
+        
+        orientate_memu_multi()
         time.sleep(1)
-        orientate_window(window_memu)
-        restart_client(window_memu,  duration)
-        if check_if_on_clash_main_menu(window_memu):
+        restart_client(duration)
+        orientate_window()
+        if check_if_on_clash_main_menu():
             logger.log("We're on the main menu")
             time.sleep(1)
             logger.log("Handling chests")
             time.sleep(1)
-            open_chests(window_memu, duration)
+            open_chests(duration)
             time.sleep(3)
             logger.log("Checking if can request")
             time.sleep(1)
-            if check_if_can_request(window_memu):
+            if check_if_can_request():
                 logger.log("Can request. Requesting giant")
                 time.sleep(1)
-                request_from_clash_main_menu(window_memu, duration)
+                request_from_clash_main_menu(duration)
             else:
                 logger.log("Request is unavailable")
             logger.log("Checking if can donate")
             time.sleep(1)
-            getto_donate_page(window_memu, duration)
-            click_donates(window_memu, duration)
+            getto_donate_page(duration)
+            click_donates(duration)
         else:
             logger.log("not on clash main menu")
         logger.log("Handled chests and requests. Gonna start a battle")
         time.sleep(1)
         start_2v2(duration)
         fights = fights + 1
-        wait_for_battle_start(window_memu)
+        wait_for_battle_start()
         fightloops = 0
-        # default_board_state = capture_board_state()
-        while not check_if_exit_battle_button_exists(window_memu):
+        while not check_if_exit_battle_button_exists():
             fightloops = fightloops + 1
             logger.log(f"fightloop: {fightloops}")
             fight_in_2v2(fight_duration)
@@ -725,7 +709,7 @@ def main_loop():
                 break
         leave_end_battle_window(duration)
         time.sleep(5)
-        if check_if_past_game_is_win(duration, window_memu):
+        if check_if_past_game_is_win(duration):
             logger.log("Last game was a win")
             wins = wins+1
         else:
