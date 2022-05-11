@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyautogui
 import pygetwindow as gw
+from os.path import join
 
 from utils import Logger
 
@@ -74,7 +75,7 @@ def check_if_on_memu_main():
     return True
 
 
-def compare_pixels(pix1, pix2): 
+def compare_pixels(pix1, pix2):
     check_quit_key_press()
     diff_r = abs(pix1[0] - pix2[0])
     diff_g = abs(pix1[1] - pix2[1])
@@ -96,17 +97,16 @@ def check_if_has_chests():
     sentinel[0] = 35
     sentinel[1] = 124
     sentinel[2] = 172
-    
-    if compare_pixels(chest1_pix,sentinel) == "diff":
-        has_chests[0]=1
-    if compare_pixels(chest2_pix,sentinel) == "diff":
-        has_chests[1]=1
-    if compare_pixels(chest3_pix,sentinel) == "diff":
-        has_chests[2]=1
-    if compare_pixels(chest4_pix,sentinel) == "diff":
-        has_chests[3]=1
-    
-    
+
+    if compare_pixels(chest1_pix, sentinel) == "diff":
+        has_chests[0] = 1
+    if compare_pixels(chest2_pix, sentinel) == "diff":
+        has_chests[1] = 1
+    if compare_pixels(chest3_pix, sentinel) == "diff":
+        has_chests[2] = 1
+    if compare_pixels(chest4_pix, sentinel) == "diff":
+        has_chests[3] = 1
+
     check_quit_key_press()
     return has_chests
 
@@ -169,13 +169,13 @@ def open_chests(duration):
 
 
 def check_if_on_clash_main_menu():
-    reference_image = Image.open("reference_images\clash_main.png")
+    reference_image = Image.open(join("reference_images", "clash_main.png"))
     current_image = refresh_screen()
-    if compare_images(current_image,reference_image) == None:
+    if compare_images(current_image, reference_image) == None:
         return False
     return True
-    
-    
+
+
 def check_if_can_request():
     iar = refresh_screen()
     pix1 = iar[612][326]
@@ -646,8 +646,6 @@ def compare_images(image, template, threshold=0.8):
     return (loc[0][0], loc[1][0])
 
 
-
-
 def main_loop():
     # vars
     fights = 0
@@ -659,7 +657,7 @@ def main_loop():
 
     if not check_if_windows_exist():
         return
-    
+
     while True:
         time.sleep(2)
         logger.log(f"loop count: {loop_count}")
@@ -667,9 +665,8 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        #plt.show()
- 
-        
+        # plt.show()
+
         orientate_memu_multi()
         time.sleep(1)
         restart_client(duration)
