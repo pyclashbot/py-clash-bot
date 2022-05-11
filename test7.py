@@ -1,6 +1,7 @@
 import random
 import time
 
+import cv2
 import keyboard
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,7 +9,6 @@ import pyautogui
 import pygetwindow as gw
 
 from utils import Logger
-
 
 logger = Logger()
 
@@ -788,6 +788,42 @@ def set_default_board_state():
     pix8[2] = 157
     # while n4 < 8:
     #   n4 = n4+1
+
+
+def image_rec(image_path, template_path):
+    """detects pixel location of a template in an image
+    Args:
+        image_path (str): path to image file
+        template_path (str): path to template file
+    Returns:
+        tuple[(int,int)]: a tuple of pixel location (x,y)
+    """
+
+    # NOTE @matthewmiglio this function can use images from file or from
+    #    memory, change how cv2 imports with imread
+
+    # Read the main image
+    img_rgb = cv2.imread(image_path)
+
+    # Convert it to grayscale
+    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+
+    # Read the template
+    template = cv2.imread(template_path, 0)
+
+    # Perform match operations.
+    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+
+    # Specify a threshold
+    threshold = 0.8
+
+    # Store the coordinates of matched area in a numpy array
+    loc = np.where(res >= threshold)  # type: ignore
+
+    if len(loc[0]) != 1:
+        return None
+
+    return (loc[0][0], loc[1][0])
 
 
 def main_loop():
