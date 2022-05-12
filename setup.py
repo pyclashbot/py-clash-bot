@@ -3,8 +3,6 @@ import os
 from cx_Freeze import setup, Executable
 
 
-
-
 # get github workflow env vars
 try:
     version = os.environ['GIT_TAG_NAME']
@@ -12,7 +10,7 @@ except KeyError:
     print('Defaulting to v0.0.0')
     version = 'v0.0.0'
 
-product_name = f'py-clash-bot {version}'
+product_name = 'py-clash-bot'
 
 bdist_msi_options = {
     'upgrade_code': '{494bebef-6fc5-42e5-98c8-d0b2e339750e}',
@@ -37,7 +35,7 @@ if sys.platform == 'win32':
 exe = Executable(
     script='test7.py',
     base=base,
-    shortcut_name=product_name,
+    shortcut_name=f"{product_name} {version}",
     shortcut_dir="DesktopFolder",
 )
 
