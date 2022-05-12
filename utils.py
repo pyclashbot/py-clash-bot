@@ -6,6 +6,7 @@ class Logger:
         self.start_time = time.time()
         self.wins = 0
         self.losses = 0
+        self.fights = 0
 
     def make_timestamp(self):
         output_time = time.time()-self.start_time
@@ -35,3 +36,6 @@ class Logger:
 
     def add_loss(self):
         self.losses += 1
+
+    def add_fight(self):
+        self.fights += 1
