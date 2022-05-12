@@ -1,13 +1,14 @@
 import random
 import time
-from PIL import Image
+from os.path import join
+
 import cv2
 import keyboard
 import matplotlib.pyplot as plt
 import numpy as np
 import pyautogui
 import pygetwindow as gw
-from os.path import join
+from PIL import Image
 
 from pyclashbot.utils import Logger
 
