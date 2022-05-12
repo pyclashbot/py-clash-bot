@@ -12,8 +12,12 @@ from os.path import join
 from utils import Logger
 
 logger = Logger()
-window_memu = gw.getWindowsWithTitle('MEmu')[0]
-window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
+
+try:
+    window_memu = gw.getWindowsWithTitle('MEmu')[0]
+    window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
+except IndexError:
+    logger.log("MEmu or Multiple Instance Manager not detected!")
 
 
 def refresh_screen():
@@ -658,8 +662,6 @@ def compare_images(image, template, threshold=0.8):
 def main_loop():
     # vars
     fights = 0
-    wins = 0
-    losses = 0
     duration = 0.5
     fight_duration = 0.2
     loop_count = 0
@@ -706,7 +708,7 @@ def main_loop():
         # logger.log("Handled chests and requests. Gonna start a battle")
         # time.sleep(1)
         # start_2v2(duration)
-        # fights = fights + 1
+        # logger.add_fight()
         # wait_for_battle_start()
         # fightloops = 0
         # while not check_if_exit_battle_button_exists():
@@ -719,10 +721,10 @@ def main_loop():
         # time.sleep(5)
         # if check_if_past_game_is_win(duration):
         #     logger.log("Last game was a win")
-        #     wins = wins+1
+        #     logger.add_win()
         # else:
         #     logger.log("Last gane was a loss")
-        #     losses = losses+1
+        #     logger.add_loss()
 
 
 if __name__ == "__main__":
