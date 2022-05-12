@@ -4,8 +4,17 @@ from cx_Freeze import setup, Executable
 
 
 product_name = 'py-clash-bot'
-version = os.environ['RELEASE_VERSION']
 
+# get github workflow env vars
+try:
+    env =   {}
+    for line in os.getenv('GITHUB_ENV'):
+        (key, value) = line.split('=')
+        env[int(key)] = value
+    version = env['RELEASE_VERSION']
+except TypeError:
+    print("Not in github env, defaulting version to 0.0.0")
+    version = 'v0.0.0'
 
 bdist_msi_options = {
     'upgrade_code': '{494bebef-6fc5-42e5-98c8-d0b2e339750e}',
