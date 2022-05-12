@@ -8,7 +8,7 @@ product_name = 'py-clash-bot'
 # get github workflow env vars
 try:
     env =   {}
-    for line in os.getenv('GITHUB_ENV'):
+    for line in os.getenv('CI'):
         (key, value) = line.split('=')
         env[int(key)] = value
     version = env['RELEASE_VERSION']
