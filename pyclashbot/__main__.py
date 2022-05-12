@@ -56,15 +56,13 @@ def orientate_memu_multi():
 def open_clash(duration):
     check_quit_key_press()
     logger.log("opening clash")
-    
-    reference_image = Image.open(join("pyclashbot","reference_images", "clash_logo.png"))
+    reference_image = Image.open(
+        join("pyclashbot", "reference_images", "clash_logo.png"))
     current_image = refresh_screen()
     coords = compare_images(current_image, reference_image, 0.97)
-    
-
     pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
     pyautogui.click()
-    #return coords
+    # return coords
     wait_for_clash_main_menu(duration)
 
 
@@ -100,7 +98,7 @@ def compare_pixels(pix1, pix2, tol):
 
 def check_if_has_chests():
     has_chests = [0] * 4
-    
+
     iar = refresh_screen()
     chest1_pix = iar[572][93]
     chest2_pix = iar[566][158]
@@ -111,15 +109,15 @@ def check_if_has_chests():
     sentinel[0] = 34
     sentinel[1] = 122
     sentinel[2] = 173
-    
-    if compare_pixels(chest1_pix,sentinel,40) == "diff":
-        has_chests[0]=1
-    if compare_pixels(chest2_pix,sentinel,40) == "diff":
-        has_chests[1]=1
-    if compare_pixels(chest3_pix,sentinel,40) == "diff":
-        has_chests[2]=1
-    if compare_pixels(chest4_pix,sentinel,40) == "diff":
-        has_chests[3]=1
+
+    if compare_pixels(chest1_pix, sentinel, 40) == "diff":
+        has_chests[0] = 1
+    if compare_pixels(chest2_pix, sentinel, 40) == "diff":
+        has_chests[1] = 1
+    if compare_pixels(chest3_pix, sentinel, 40) == "diff":
+        has_chests[2] = 1
+    if compare_pixels(chest4_pix, sentinel, 40) == "diff":
+        has_chests[3] = 1
 
     check_quit_key_press()
     return has_chests
@@ -183,7 +181,8 @@ def open_chests(duration):
 
 
 def check_if_on_clash_main_menu():
-    reference_image = Image.open(join("pyclashbot","reference_images", "clash_main.png"))
+    reference_image = Image.open(
+        join("pyclashbot", "reference_images", "clash_main.png"))
     current_image = refresh_screen()
 
     # reference_image.show()
@@ -309,7 +308,7 @@ def wait_for_battle_start():
     n1 = 0
     check_quit_key_press()
     while n == 1:
-        n1 = n1 + 1
+        n1 += 1
         if check_if_in_battle():
             n = 0
         time.sleep(1)
@@ -445,21 +444,22 @@ def check_if_exit_battle_button_exists():
 
 def find_donates():
     logger.log("searching screen for green donate buttons")
-    
-    reference_image = Image.open(join("pyclashbot","reference_images", "donate_button.png"))
-    reference_image2 = Image.open(join("pyclashbot","reference_images", "donate_button2.png"))
+
+    reference_image = Image.open(
+        join("pyclashbot", "reference_images", "donate_button.png"))
+    reference_image2 = Image.open(
+        join("pyclashbot", "reference_images", "donate_button2.png"))
     current_image = refresh_screen()
 
     coords = compare_images(current_image, reference_image, 0.96)
     coords2 = compare_images(current_image, reference_image2, 0.96)
     if (coords is None) and (coords2 is None):
         print("No donate buttons found on this page.")
-        return [500,50]
+        return [500, 50]
     if coords is not None:
         return coords
     if coords2 is not None:
         return coords2
-    
 
 
 def click_donates(duration):
@@ -468,20 +468,19 @@ def click_donates(duration):
     n = 0
     while n < 3:
         coords = find_donates()
-        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-        pyautogui.click(x=coords[1], y=coords[0],
-                        clicks=5, interval=0.2, button='left')
+        if coords is not None:
+            pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+            pyautogui.click(x=coords[1], y=coords[0],
+                            clicks=5, interval=0.2, button='left')
 
+            if check_if_more_donates():
+                pyautogui.moveTo(x=50, y=170, duration=duration)
+                pyautogui.click()
 
-        if check_if_more_donates():
-            pyautogui.moveTo(x=50, y=170, duration=duration)
-            pyautogui.click()
-
-        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-        pyautogui.click(x=coords[1], y=coords[0],
-                        clicks=5, interval=0.2, button='left')
-
-        n = n+1
+            pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+            pyautogui.click(x=coords[1], y=coords[0],
+                            clicks=5, interval=0.2, button='left')
+        n += 1
     pyautogui.moveTo(x=393, y=525, duration=duration)
     pyautogui.click()
     check_quit_key_press()
@@ -570,7 +569,7 @@ def wait_for_clash_main_menu(duration):
             break
         pyautogui.moveTo(x=50, y=190, duration=duration)
         pyautogui.moveTo(x=10, y=170, duration=duration)
-        
+
 
 def check_if_past_game_is_win(duration):
     check_quit_key_press()
@@ -665,8 +664,7 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        #plt.show()
-
+        # plt.show()
 
         # orientate_memu_multi()
         # time.sleep(1)
@@ -700,7 +698,7 @@ def main_loop():
         # wait_for_battle_start()
         # fightloops = 0
         # while not check_if_exit_battle_button_exists():
-        #     fightloops = fightloops + 1
+        #     fightloops += 1
         #     logger.log(f"fightloop: {fightloops}")
         #     fight_in_2v2(fight_duration)
         #     if fightloops > 100:
