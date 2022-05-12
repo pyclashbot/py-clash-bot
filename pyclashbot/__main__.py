@@ -56,8 +56,15 @@ def orientate_memu_multi():
 def open_clash(duration):
     check_quit_key_press()
     logger.log("opening clash")
-    pyautogui.moveTo(x=60, y=336, duration=duration)
+    
+    reference_image = Image.open(join("pyclashbot","reference_images", "clash_logo.png"))
+    current_image = refresh_screen()
+    coords = compare_images(current_image, reference_image, 0.97)
+    
+
+    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
     pyautogui.click()
+    #return coords
     wait_for_clash_main_menu(duration)
 
 
@@ -93,25 +100,31 @@ def compare_pixels(pix1, pix2):
 
 def check_if_has_chests():
     has_chests = [0] * 4
-    iar = refresh_screen()
-    chest1_pix = iar[572][88]
-    chest2_pix = iar[572][150]
-    chest3_pix = iar[572][269]
-    chest4_pix = iar[572][321]
-    sentinel = [1] * 3
-    sentinel[0] = 35
-    sentinel[1] = 124
-    sentinel[2] = 172
+    chest1_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
+    chest2_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
+    chest3_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
+    chest4_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
+    
+    chest1_screenshot_image = 
+    chest2_screenshot_image = 
+    chest3_screenshot_image = 
+    chest4_screenshot_image = 
+    
+    
+    current_image = refresh_screen()
 
-    if compare_pixels(chest1_pix, sentinel) == "diff":
+    if compare_images(current_image, reference_image, 0.95) is not None:
         has_chests[0] = 1
-    if compare_pixels(chest2_pix, sentinel) == "diff":
+    if compare_images(current_image, reference_image, 0.95) is not None:
         has_chests[1] = 1
-    if compare_pixels(chest3_pix, sentinel) == "diff":
+    if compare_images(current_image, reference_image, 0.95) is not None:
         has_chests[2] = 1
-    if compare_pixels(chest4_pix, sentinel) == "diff":
-        has_chests[3] = 1
-
+    if compare_images(current_image, reference_image, 0.95) is not None:
+        has_chests[30] = 1
+    
+        
+    
+    
     check_quit_key_press()
     return has_chests
 
@@ -174,14 +187,14 @@ def open_chests(duration):
 
 
 def check_if_on_clash_main_menu():
-    reference_image = Image.open(join("reference_images", "clash_main.png"))
+    reference_image = Image.open(join("pyclashbot","reference_images", "clash_main.png"))
     current_image = refresh_screen()
 
-    reference_image.show()
-    plt.imshow(current_image)
-    plt.show()
+    # reference_image.show()
+    # plt.imshow(current_image)
+    # plt.show()
 
-    if compare_images(current_image, reference_image, 0.6) is None:
+    if compare_images(current_image, reference_image, 0.9) is None:
         return False
     return True
 
@@ -581,8 +594,7 @@ def wait_for_clash_main_menu(duration):
             break
         pyautogui.moveTo(x=50, y=190, duration=duration)
         pyautogui.moveTo(x=10, y=170, duration=duration)
-        pyautogui.click()
-
+        
 
 def check_if_past_game_is_win(duration):
     check_quit_key_press()
@@ -677,9 +689,7 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        # plt.show()
-
-        print(check_if_on_clash_main_menu())
+        plt.show()
 
         # orientate_memu_multi()
         # time.sleep(1)
