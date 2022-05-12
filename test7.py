@@ -171,7 +171,14 @@ def open_chests(duration):
 def check_if_on_clash_main_menu():
     reference_image = Image.open("reference_images\clash_main.png")
     current_image = refresh_screen()
-    if compare_images(current_image,reference_image) == None:
+    
+    reference_image.show()
+    plt.imshow(current_image)
+    plt.show()
+    
+    
+    
+    if compare_images(current_image,reference_image,0.6) is None:
         return False
     return True
     
@@ -626,6 +633,10 @@ def compare_images(image, template, threshold=0.8):
     Returns:
         tuple[(int,int)] or None: a tuple of pixel location (x,y)
     """
+
+    #show template
+    #template.show()
+    
     # Convert image to np.array
     image = np.array(image)
     template = np.array(template)
@@ -640,11 +651,12 @@ def compare_images(image, template, threshold=0.8):
     # Store the coordinates of matched area in a numpy array
     loc = np.where(res >= threshold)  # type: ignore
 
+    
+    
     if len(loc[0]) != 1:
         return None
 
     return (loc[0][0], loc[1][0])
-
 
 
 
@@ -661,7 +673,7 @@ def main_loop():
         return
     
     while True:
-        time.sleep(2)
+        time.sleep(1)
         logger.log(f"loop count: {loop_count}")
         loop_count += 1
         iar = refresh_screen()
@@ -669,52 +681,53 @@ def main_loop():
 
         #plt.show()
  
+        print(check_if_on_clash_main_menu())
         
-        orientate_memu_multi()
-        time.sleep(1)
-        restart_client(duration)
-        orientate_window()
-        if check_if_on_clash_main_menu():
-            logger.log("We're on the main menu")
-            time.sleep(1)
-            logger.log("Handling chests")
-            time.sleep(1)
-            open_chests(duration)
-            time.sleep(3)
-            logger.log("Checking if can request")
-            time.sleep(1)
-            if check_if_can_request():
-                logger.log("Can request. Requesting giant")
-                time.sleep(1)
-                request_from_clash_main_menu(duration)
-            else:
-                logger.log("Request is unavailable")
-            logger.log("Checking if can donate")
-            time.sleep(1)
-            getto_donate_page(duration)
-            click_donates(duration)
-        else:
-            logger.log("not on clash main menu")
-        logger.log("Handled chests and requests. Gonna start a battle")
-        time.sleep(1)
-        start_2v2(duration)
-        fights = fights + 1
-        wait_for_battle_start()
-        fightloops = 0
-        while not check_if_exit_battle_button_exists():
-            fightloops = fightloops + 1
-            logger.log(f"fightloop: {fightloops}")
-            fight_in_2v2(fight_duration)
-            if fightloops > 100:
-                break
-        leave_end_battle_window(duration)
-        time.sleep(5)
-        if check_if_past_game_is_win(duration):
-            logger.log("Last game was a win")
-            wins = wins+1
-        else:
-            logger.log("Last gane was a loss")
-            losses = losses+1
+        # orientate_memu_multi()
+        # time.sleep(1)
+        # restart_client(duration)
+        # orientate_window()
+        # if check_if_on_clash_main_menu():
+        #     logger.log("We're on the main menu")
+        #     time.sleep(1)
+        #     logger.log("Handling chests")
+        #     time.sleep(1)
+        #     open_chests(duration)
+        #     time.sleep(3)
+        #     logger.log("Checking if can request")
+        #     time.sleep(1)
+        #     if check_if_can_request():
+        #         logger.log("Can request. Requesting giant")
+        #         time.sleep(1)
+        #         request_from_clash_main_menu(duration)
+        #     else:
+        #         logger.log("Request is unavailable")
+        #     logger.log("Checking if can donate")
+        #     time.sleep(1)
+        #     getto_donate_page(duration)
+        #     click_donates(duration)
+        # else:
+        #     logger.log("not on clash main menu")
+        # logger.log("Handled chests and requests. Gonna start a battle")
+        # time.sleep(1)
+        # start_2v2(duration)
+        # fights = fights + 1
+        # wait_for_battle_start()
+        # fightloops = 0
+        # while not check_if_exit_battle_button_exists():
+        #     fightloops = fightloops + 1
+        #     logger.log(f"fightloop: {fightloops}")
+        #     fight_in_2v2(fight_duration)
+        #     if fightloops > 100:
+        #         break
+        # leave_end_battle_window(duration)
+        # time.sleep(5)
+        # if check_if_past_game_is_win(duration):
+        #     logger.log("Last game was a win")
+        #     wins = wins+1
+        # else:
+        #     logger.log("Last gane was a loss")
+        #     losses = losses+1
 
 
 if __name__ == "__main__":
