@@ -729,6 +729,3 @@ def main_loop():
 
 if __name__ == "__main__":
     main_loop()
-    logger.log("Press Ctrl-C to end the program")
-    while True:
-        pass

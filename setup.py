@@ -1,51 +1,30 @@
-import sys
-import os
-from cx_Freeze import setup, Executable
+from setuptools import setup
 
-
-# get github workflow env vars
-try:
-    version = os.environ['GIT_TAG_NAME']
-except KeyError:
-    print('Defaulting to v0.0.0')
-    version = 'v0.0.0'
-
-product_name = 'py-clash-bot'
-
-bdist_msi_options = {
-    'upgrade_code': '{494bebef-6fc5-42e5-98c8-d0b2e339750e}',
-    'add_to_path': False,
-    'initial_target_dir': f'[ProgramFilesFolder]\\{product_name}',
-}
-
-dependencies = ['random', 'time', 'PIL', 'cv2', 'keyboard',
-                'matplotlib', 'numpy', 'pyautogui', 'pygetwindow', 'os', 'utils']
-
-build_exe_options = {
-    'includes': dependencies,
-    'include_files': ['reference_images/'],
-}
-
-
-# GUI applications require a different base on Windows
-base = None
-if sys.platform == 'win32':
-    base = 'Win32GUI'
-
-exe = Executable(
-    script='test7.py',
-    base=base,
-    shortcut_name=f"{product_name} {version}",
-    shortcut_dir="DesktopFolder",
-)
+with open("README.md", "r", encoding="utf-8") as f:
+    LONG_DESCRIPTION = f.read()
 
 setup(
-    name=product_name,
-    version=version.replace('v', ''),
-    description='blah',
-    executables=[exe],
-    options={
-        'bdist_msi': bdist_msi_options,
-        'build_exe': build_exe_options
-    }
+    name='py-clash-bot',
+    version='0.0.4',
+    description='Automated Clash Royale',
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
+    license='MIT',
+    keywords='clash royale bot',
+    author='Matthew Miglio, Martin Miglio',
+    url='https://github.com/matthewmiglio/py-clash-bot',
+    download_url='https://github.com/matthewmiglio/py-clash-bot/releases',
+    install_requires=['pillow', 'opencv-python', 'keyboard',
+                      'matplotlib', 'numpy', 'pyautogui', 'pygetwindow'],
+    packages=['pyclashbot'],
+    python_requires='>=3',
+    zip_safe=False,
+    entry_points={
+        'console_scripts': [
+            'pyclashbot = pyclashbot.__main__:main_loop',
+        ],
+    },
+    classifiers=[
+        'Programming Language :: Python :: 3.10',
+    ],
 )
