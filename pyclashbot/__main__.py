@@ -9,7 +9,7 @@ import pyautogui
 import pygetwindow as gw
 from os.path import join
 
-from utils import Logger
+from pyclashbot.utils import Logger
 
 logger = Logger()
 
