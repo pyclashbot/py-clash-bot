@@ -445,38 +445,21 @@ def check_if_exit_battle_button_exists():
 
 def find_donates():
     logger.log("searching screen for green donate buttons")
-    iar = refresh_screen()
-    check_quit_key_press()
-    sentinel = [1] * 3
-    sentinel[0] = 106
-    sentinel[1] = 235
-    sentinel[2] = 118
+    
+    reference_image = Image.open(join("pyclashbot","reference_images", "donate_button.png"))
+    reference_image2 = Image.open(join("pyclashbot","reference_images", "donate_button2.png"))
+    current_image = refresh_screen()
 
-    n = 110
-    coords = [1]*2
-    while n < 510:
-        if compare_pixels(iar[n][286], sentinel, 10) == "same":
-            coords[0] = 286
-            coords[1] = n
-            logger.log("found a donate button")
-            return coords
-        n = n+1
-    while n < 510:
-        if compare_pixels(iar[n][343], sentinel, 10) == "same":
-            coords[0] = 286
-            coords[1] = n
-            logger.log("found a donate button")
-            return coords
-    while n < 510:
-        if compare_pixels(iar[n][284], sentinel, 10) == "same":
-            coords[0] = 286
-            coords[1] = n
-            logger.log("found a donate button")
-            return coords
-        n = n+1
-    logger.log("Searched entire boundary without finding donate button")
-    check_quit_key_press()
-    return [385, 507]
+    coords = compare_images(current_image, reference_image, 0.96)
+    coords2 = compare_images(current_image, reference_image2, 0.96)
+    if (coords is None) and (coords2 is None):
+        print("No donate buttons found on this page.")
+        return [500,50]
+    if coords is not None:
+        return coords
+    if coords2 is not None:
+        return coords2
+    
 
 
 def click_donates(duration):
@@ -485,21 +468,18 @@ def click_donates(duration):
     n = 0
     while n < 3:
         coords = find_donates()
-        pyautogui.moveTo(x=coords[0], y=coords[1], duration=duration)
-        pyautogui.click(x=coords[0], y=coords[1],
+        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+        pyautogui.click(x=coords[1], y=coords[0],
                         clicks=5, interval=0.2, button='left')
-        pyautogui.moveTo(x=385, y=507, duration=duration)
-        pyautogui.click(x=385, y=507, clicks=1, interval=0.2, button='left')
+
 
         if check_if_more_donates():
             pyautogui.moveTo(x=50, y=170, duration=duration)
             pyautogui.click()
 
-        pyautogui.moveTo(x=coords[0], y=coords[1], duration=duration)
-        pyautogui.click(x=coords[0], y=coords[1],
+        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+        pyautogui.click(x=coords[1], y=coords[0],
                         clicks=5, interval=0.2, button='left')
-        pyautogui.moveTo(x=385, y=507, duration=duration)
-        pyautogui.click(x=385, y=507, clicks=1, interval=0.2, button='left')
 
         n = n+1
     pyautogui.moveTo(x=393, y=525, duration=duration)
@@ -686,6 +666,7 @@ def main_loop():
         plt.imshow(iar)
 
         #plt.show()
+
 
         # orientate_memu_multi()
         # time.sleep(1)
