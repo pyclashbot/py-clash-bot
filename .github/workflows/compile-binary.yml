@@ -17,7 +17,7 @@ jobs:
         include:
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: python setup.py bdist_msi
+            CMD_BUILD: python setup_msi.py bdist_msi
             OUT_FILE_NAME: py-clash-bot.msi
     steps:
       - uses: actions/checkout@v1
