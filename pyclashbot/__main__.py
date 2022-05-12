@@ -80,19 +80,19 @@ def check_if_on_memu_main():
     sentinel[1] = 18
     sentinel[2] = 35
     check_quit_key_press()
-    if compare_pixels(pix2, sentinel) == "diff":
+    if compare_pixels(pix2, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix3, sentinel) == "diff":
+    if compare_pixels(pix3, sentinel, 10) == "diff":
         return False
     return True
 
 
-def compare_pixels(pix1, pix2):
+def compare_pixels(pix1, pix2, tol):
     check_quit_key_press()
     diff_r = abs(pix1[0] - pix2[0])
     diff_g = abs(pix1[1] - pix2[1])
     diff_b = abs(pix1[2] - pix2[2])
-    if (diff_r < 10) and (diff_g < 10) and (diff_b < 10):
+    if (diff_r < tol) and (diff_g < tol) and (diff_b < tol):
         return "same"
     else:
         return "diff"
@@ -100,31 +100,27 @@ def compare_pixels(pix1, pix2):
 
 def check_if_has_chests():
     has_chests = [0] * 4
-    chest1_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
-    chest2_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
-    chest3_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
-    chest4_reference_image = Image.open(join("pyclashbot","reference_images", "empty_chest_1.png"))
     
-    chest1_screenshot_image = 
-    chest2_screenshot_image = 
-    chest3_screenshot_image = 
-    chest4_screenshot_image = 
-    
-    
-    current_image = refresh_screen()
+    iar = refresh_screen()
+    chest1_pix = iar[572][93]
+    chest2_pix = iar[566][158]
+    chest3_pix = iar[572][277]
+    chest4_pix = iar[574][326]
 
-    if compare_images(current_image, reference_image, 0.95) is not None:
-        has_chests[0] = 1
-    if compare_images(current_image, reference_image, 0.95) is not None:
-        has_chests[1] = 1
-    if compare_images(current_image, reference_image, 0.95) is not None:
-        has_chests[2] = 1
-    if compare_images(current_image, reference_image, 0.95) is not None:
-        has_chests[30] = 1
+    sentinel = [1] * 3
+    sentinel[0] = 34
+    sentinel[1] = 122
+    sentinel[2] = 173
     
-        
-    
-    
+    if compare_pixels(chest1_pix,sentinel,40) == "diff":
+        has_chests[0]=1
+    if compare_pixels(chest2_pix,sentinel,40) == "diff":
+        has_chests[1]=1
+    if compare_pixels(chest3_pix,sentinel,40) == "diff":
+        has_chests[2]=1
+    if compare_pixels(chest4_pix,sentinel,40) == "diff":
+        has_chests[3]=1
+
     check_quit_key_press()
     return has_chests
 
@@ -210,11 +206,11 @@ def check_if_can_request():
     sentinel[2] = 71
     check_quit_key_press()
 
-    if compare_pixels(pix1, sentinel) == "diff":
+    if compare_pixels(pix1, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix2, sentinel) == "diff":
+    if compare_pixels(pix2, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix3, sentinel) == "diff":
+    if compare_pixels(pix3, sentinel, 10) == "diff":
         return False
     check_quit_key_press()
     return True
@@ -267,11 +263,11 @@ def check_if_on_clan_chat_page():
     sentinel[1] = 188
     sentinel[2] = 42
 
-    if compare_pixels(pix1, sentinel) == "diff":
+    if compare_pixels(pix1, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix2, sentinel) == "diff":
+    if compare_pixels(pix2, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix3, sentinel) == "diff":
+    if compare_pixels(pix3, sentinel, 10) == "diff":
         return False
     check_quit_key_press()
     return True
@@ -402,11 +398,11 @@ def check_if_in_battle():
     sentinel[1] = 255
     sentinel[2] = 255
 
-    if compare_pixels(pix1, sentinel) == "diff":
+    if compare_pixels(pix1, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix2, sentinel) == "diff":
+    if compare_pixels(pix2, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix3, sentinel) == "diff":
+    if compare_pixels(pix3, sentinel, 10) == "diff":
         return False
     check_quit_key_press()
     return True
@@ -439,9 +435,9 @@ def check_if_exit_battle_button_exists():
     sentinel[0] = 76
     sentinel[1] = 174
     sentinel[2] = 255
-    if compare_pixels(pix1, sentinel) == "diff":
+    if compare_pixels(pix1, sentinel, 10) == "diff":
         return False
-    if compare_pixels(pix3, sentinel) == "diff":
+    if compare_pixels(pix3, sentinel, 10) == "diff":
         return False
     check_quit_key_press()
     return True
@@ -459,20 +455,20 @@ def find_donates():
     n = 110
     coords = [1]*2
     while n < 510:
-        if compare_pixels(iar[n][286], sentinel) == "same":
+        if compare_pixels(iar[n][286], sentinel, 10) == "same":
             coords[0] = 286
             coords[1] = n
             logger.log("found a donate button")
             return coords
         n = n+1
     while n < 510:
-        if compare_pixels(iar[n][343], sentinel) == "same":
+        if compare_pixels(iar[n][343], sentinel, 10) == "same":
             coords[0] = 286
             coords[1] = n
             logger.log("found a donate button")
             return coords
     while n < 510:
-        if compare_pixels(iar[n][284], sentinel) == "same":
+        if compare_pixels(iar[n][284], sentinel, 10) == "same":
             coords[0] = 286
             coords[1] = n
             logger.log("found a donate button")
@@ -536,11 +532,11 @@ def check_if_more_donates():
     sentinel[2] = 244
 
     more_donates_exists = True
-    if compare_pixels(pix1, sentinel) == "diff":
+    if compare_pixels(pix1, sentinel, 10) == "diff":
         more_donates_exists = False
-    if compare_pixels(pix2, sentinel) == "diff":
+    if compare_pixels(pix2, sentinel, 10) == "diff":
         more_donates_exists = False
-    if compare_pixels(pix3, sentinel) == "diff":
+    if compare_pixels(pix3, sentinel, 10) == "diff":
         more_donates_exists = False
     check_quit_key_press()
     return more_donates_exists
@@ -608,7 +604,7 @@ def check_if_past_game_is_win(duration):
         sentinel[0] = 102
         sentinel[1] = 204
         sentinel[2] = 255
-        if compare_pixels(pix, sentinel) == "same":
+        if compare_pixels(pix, sentinel, 10) == "same":
             return True
         n = n+1
     time.sleep(1)
@@ -689,7 +685,7 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        plt.show()
+        #plt.show()
 
         # orientate_memu_multi()
         # time.sleep(1)
