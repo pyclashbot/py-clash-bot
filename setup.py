@@ -7,7 +7,7 @@ from cx_Freeze import setup, Executable
 
 # get github workflow env vars
 try:
-    version = os.environ['RELEASE_VERSION']
+    version = os.environ['GIT_TAG_NAME']
 except KeyError:
     print('Defaulting to v0.0.0')
     version = 'v0.0.0'
