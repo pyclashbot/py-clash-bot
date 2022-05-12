@@ -17,11 +17,12 @@ jobs:
         include:
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: pyinstaller -F -w -n py-clash-bot main.py
-            OUT_FILE_NAME: clash-bot.exe
-            ASSET_MIME: application/vnd.microsoft.portable-executable
+            CMD_BUILD: python setup.py bdist_msi
+            OUT_FILE_NAME: py-clash-bot.msi
     steps:
       - uses: actions/checkout@v1
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
         with:
@@ -37,4 +38,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ./dist/py-clash-bot.exe
+            ./dist/py-clash-bot*.msi
