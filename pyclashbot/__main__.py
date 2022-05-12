@@ -60,8 +60,12 @@ def open_clash(duration):
         join("pyclashbot", "reference_images", "clash_logo.png"))
     current_image = refresh_screen()
     coords = compare_images(current_image, reference_image, 0.97)
-    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-    pyautogui.click()
+    if coords is not None:
+        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+        pyautogui.click()
+    else:
+        logger.log("Could not find Clash Royale app")
+        exit()
     # return coords
     wait_for_clash_main_menu(duration)
 
