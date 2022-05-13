@@ -1,4 +1,5 @@
 import unittest
+
 from PIL import Image
 from pyclashbot.__main__ import compare_images
 
@@ -19,3 +20,24 @@ class ImageRecTest(unittest.TestCase):
         tp = Image.open("tests/assets/fail_template.png")
         # run image rec and record if found
         self.assertTrue(compare_images(ss, tp) is None)
+
+    def test_thresholding(self):
+        # between test_image and pass_template, detection above 0.66
+        # between test_iamge and fail_template, no detection
+        # between clashss and clashtemp, detection about 0.96
+
+        ss_path = "tests/assets/clashss.png"
+        tp_path = "tests/assets/clashtemp.png"
+        ss = Image.open(ss_path)
+        tp = Image.open(tp_path)
+
+        granularity = 100
+
+        threshold = None
+
+        for i in range(granularity):
+            threshold = i / \
+                granularity if compare_images(
+                    ss, tp, i/granularity) is not None else None
+        print(f"Detected threshold for {tp_path} in {ss_path} @ {threshold}")
+        self.assertTrue(threshold is not None)
