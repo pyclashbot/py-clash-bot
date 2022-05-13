@@ -3,7 +3,7 @@ A Clash Royale automation bot written in Python.
 
 ## Usage
 
-### Executable
+### Windows Install
 [Download the latest release](https://github.com/matthewmiglio/py-clash-bot/releases).
 
 ### Run from source
