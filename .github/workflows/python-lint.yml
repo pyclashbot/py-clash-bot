@@ -1,4 +1,4 @@
-name: Python Test
+name: Python Lint
 
 on:
   push:
@@ -9,13 +9,11 @@ on:
 
 jobs:
   build:
-    # https://github.com/actions/setup-python
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10"]
-
+        os: [ubuntu-latest]
+        python-version: ["3.10"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -27,6 +25,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flake8 pep8-naming
           pip install -r requirements.txt
-      - name: Run unittest
+      - name: Lint with flake8
         run: |
-          python -m unittest discover "tests" -p '*_test.py'
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
