@@ -339,7 +339,7 @@ def fight_in_2v2(fight_duration):
     pyautogui.moveTo(x=card_pick[0], y=card_pick[1], duration=fight_duration)
     pyautogui.click()
     pyautogui.moveTo(
-        x=card_placement[0], y_coord, duration=fight_duration)
+        x=card_placement[0], y=y_coord, duration=fight_duration)
     pyautogui.click()
     check_quit_key_press()
 
