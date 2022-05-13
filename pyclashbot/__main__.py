@@ -54,6 +54,8 @@ def orientate_memu_multi():
 
 
 def open_clash(duration):
+    orientate_window()
+    time.sleep(1)
     check_quit_key_press()
     logger.log("opening clash")
     
@@ -549,17 +551,16 @@ def restart_client(duration):
     orientate_window()
     time.sleep(5)
     check_quit_key_press()
+    time.sleep(5)
     logger.log("skipping ads")
     pyautogui.moveTo(x=440, y=600, duration=duration)
+    time.sleep(1)
     pyautogui.click()
     time.sleep(1)
-    check_quit_key_press()
     pyautogui.click()
     time.sleep(1)
-    check_quit_key_press()
     pyautogui.click()
-    time.sleep(3)
-    check_quit_key_press()
+    time.sleep(1)
     open_clash(duration)
 
 
