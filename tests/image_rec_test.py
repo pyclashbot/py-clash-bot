@@ -1,7 +1,7 @@
 import unittest
 
 from PIL import Image
-from pyclashbot.__main__ import compare_images
+from pyclashbot.image_rec import compare_images
 
 
 class ImageRecTest(unittest.TestCase):
