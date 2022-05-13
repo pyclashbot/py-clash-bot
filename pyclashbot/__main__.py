@@ -37,6 +37,7 @@ def show_image(iar):
 
 
 def orientate_window():
+    logger.log("Orientating memu client")
     window_memu = gw.getWindowsWithTitle('MEmu')[0]
     check_quit_key_press()
     window_memu.minimize()
@@ -63,7 +64,9 @@ def open_clash(duration):
     current_image = refresh_screen()
     coords = compare_images(current_image, reference_image, 0.97)
     
-
+    if coords is None:
+        logger.log("Clash logo wasn't found")
+        return
     pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
     pyautogui.click()
     #return coords
@@ -548,7 +551,7 @@ def restart_client(duration):
     pyautogui.click()
     time.sleep(5)
     check_quit_key_press()
-    orientate_window()
+    #orientate_window()
     time.sleep(5)
     check_quit_key_press()
     time.sleep(5)
@@ -738,7 +741,6 @@ def main_loop():
         plt.imshow(iar)
 
         # plt.show()
-
         orientate_memu_multi()
         time.sleep(1)
         restart_client(duration)
