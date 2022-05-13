@@ -51,6 +51,8 @@ def orientate_memu_multi():
     check_quit_key_press()
     window_mimm.minimize()
     window_mimm.restore()
+    window_mimm.moveTo(200, 200)
+    time.sleep(1)
     window_mimm.moveTo(0, 0)
 
 
@@ -663,61 +665,73 @@ def compare_images(image, template, threshold=0.8):
 
 def look_for_enemy_troops():
     current_image = refresh_screen()
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "10_1.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "10_1.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_1.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_1.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_2.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_2.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_3.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_3.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_4.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_4.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_5.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_5.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_1.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_1.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_2.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_2.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_3.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_3.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_4.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_4.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_5.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_5.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_6.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_6.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_1.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_1.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_2.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_2.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_3.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_3.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_4.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_4.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_5.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_5.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_1.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_1.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_2.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_2.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_3.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_3.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_4.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_4.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_5.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_5.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_6.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_6.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_7.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_7.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_8.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_8.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_9.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_9.png")), 0.97)
-    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_10.png")), 0.97) is not None:
-        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_10.png")), 0.97)
-
+    i=[0,0]*59
+    
+    i[0] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_10.png")), 0.97)
+    i[1] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "1_1.png")), 0.97)
+    i[2] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "1_2.png")), 0.97)
+    i[3] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "1_3.png")), 0.97)
+    i[4] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "1_4.png")), 0.97)
+    i[5] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "2_1.png")), 0.97)
+    i[6] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "2_3.png")), 0.97)
+    i[7] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "2_2.png")), 0.97)
+    i[8] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "3_1.png")), 0.97)
+    i[9] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "3_2.png")), 0.97)
+    i[10] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "3_3.png")), 0.97)
+    i[11] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "3_4.png")), 0.97)
+    i[12] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "3_5.png")), 0.97)
+    i[13] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "5_1.png")), 0.97)
+    i[14] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "5_2.png")), 0.97)
+    i[15] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "5_3.png")), 0.97)
+    i[16] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "5_4.png")), 0.97)
+    i[17] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "6_1.png")), 0.97)
+    i[18] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "6_2.png")), 0.97)
+    i[19] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "6_3.png")), 0.97)
+    i[20] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "6_4.png")), 0.97)
+    i[21] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "7_1.png")), 0.97)
+    i[22] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "7_2.png")), 0.97)
+    i[23] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "7_3.png")), 0.97)
+    i[24] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "7_4.png")), 0.97)
+    i[25] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "7_5.png")), 0.97)
+    i[26] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "8_1.png")), 0.97)
+    i[27] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "8_2.png")), 0.97)
+    i[28] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "8_3.png")), 0.97)
+    i[29] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "8_4.png")), 0.97)
+    i[30] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "9_1.png")), 0.97)
+    i[31] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "9_2.png")), 0.97)
+    i[32] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "9_3.png")), 0.97)
+    i[33] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "9_4.png")), 0.97)
+    i[34] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "10_1.png")), 0.97)
+    i[35] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "10_2.png")), 0.97)
+    i[36] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "10_3.png")), 0.97)
+    i[37] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "10_4.png")), 0.97)
+    i[38] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_1.png")), 0.97)
+    i[39] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_2.png")), 0.97)
+    i[40] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_3.png")), 0.97)
+    i[41] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_4.png")), 0.97)
+    i[42] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "11_5.png")), 0.97)
+    i[43] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_1.png")), 0.97)
+    i[44] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_2.png")), 0.97)
+    i[45] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_3.png")), 0.97)
+    i[46] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_4.png")), 0.97)
+    i[47] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_5.png")), 0.97)
+    i[48] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "12_6.png")), 0.97)
+    i[49] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_2.png")), 0.97)
+    i[50] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "13_3.png")), 0.97)
+    i[51] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_2.png")), 0.97)
+    i[52] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_3.png")), 0.97)
+    i[53] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_4.png")), 0.97)
+    i[54] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_5.png")), 0.97)
+    i[55] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_6.png")), 0.97)
+    i[56] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_7.png")), 0.97)
+    i[57] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_8.png")), 0.97)
+    i[58] = compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "ENEMY_TROOP_IMAGES", "14_9.png")), 0.97)
+    
+    n = 0
+    while n < 59:
+        if i[n] is not None:
+            return i[n]
+        n=n+1
     return None
 
 
@@ -739,6 +753,9 @@ def main_loop():
         plt.imshow(iar)
 
         # plt.show()
+        
+
+        
         orientate_memu_multi()
         time.sleep(1)
         restart_client(duration)
