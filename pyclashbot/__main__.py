@@ -324,11 +324,18 @@ def fight_in_2v2(fight_duration):
     check_quit_key_press()
     time.sleep(3)
     card_pick = random_card_coord_picker()
-    card_placement = random_placement_coord_maker()
+    card_placement = look_for_enemy_troops()
+    if card_placement is None:
+        print("Found nothing giving random coord")
+        card_placement=random_placement_coord_maker()
+    else:
+        print("Placing card on where I found a troop")
+        y_coord = card_placement[1] - 30
+        
     pyautogui.moveTo(x=card_pick[0], y=card_pick[1], duration=fight_duration)
     pyautogui.click()
     pyautogui.moveTo(
-        x=card_placement[0], y=card_placement[1], duration=fight_duration)
+        x=card_placement[0], y=y_coord, duration=fight_duration)
     pyautogui.click()
     check_quit_key_press()
 
@@ -729,53 +736,53 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        print(look_for_enemy_troops())
+        # plt.show()
 
-        # orientate_memu_multi()
-        # time.sleep(1)
-        # restart_client(duration)
-        # orientate_window()
-        # if check_if_on_clash_main_menu():
-        #     logger.log("We're on the main menu")
-        #     time.sleep(1)
-        #     logger.log("Handling chests")
-        #     time.sleep(1)
-        #     open_chests(duration)
-        #     time.sleep(3)
-        #     logger.log("Checking if can request")
-        #     time.sleep(1)
-        #     if check_if_can_request():
-        #         logger.log("Can request. Requesting giant")
-        #         time.sleep(1)
-        #         request_from_clash_main_menu(duration)
-        #     else:
-        #         logger.log("Request is unavailable")
-        #     logger.log("Checking if can donate")
-        #     time.sleep(1)
-        #     getto_donate_page(duration)
-        #     click_donates(duration)
-        # else:
-        #     logger.log("not on clash main menu")
-        # logger.log("Handled chests and requests. Gonna start a battle")
-        # time.sleep(1)
-        # start_2v2(duration)
-        # logger.add_fight()
-        # wait_for_battle_start()
-        # fightloops = 0
-        # while not check_if_exit_battle_button_exists():
-        #     fightloops = fightloops + 1
-        #     logger.log(f"fightloop: {fightloops}")
-        #     fight_in_2v2(fight_duration)
-        #     if fightloops > 100:
-        #         break
-        # leave_end_battle_window(duration)
-        # time.sleep(5)
-        # if check_if_past_game_is_win(duration):
-        #     logger.log("Last game was a win")
-        #     logger.add_win()
-        # else:
-        #     logger.log("Last gane was a loss")
-        #     logger.add_loss()
+        orientate_memu_multi()
+        time.sleep(1)
+        restart_client(duration)
+        orientate_window()
+        if check_if_on_clash_main_menu():
+            logger.log("We're on the main menu")
+            time.sleep(1)
+            logger.log("Handling chests")
+            time.sleep(1)
+            open_chests(duration) 
+            time.sleep(3)
+            logger.log("Checking if can request")
+            time.sleep(1)
+            if check_if_can_request():
+                logger.log("Can request. Requesting giant")
+                time.sleep(1)
+                request_from_clash_main_menu(duration)
+            else:
+                logger.log("Request is unavailable")
+            logger.log("Checking if can donate")
+            time.sleep(1)
+            getto_donate_page(duration)
+            click_donates(duration)
+        else:
+            logger.log("not on clash main menu")
+        logger.log("Handled chests and requests. Gonna start a battle")
+        time.sleep(1)
+        start_2v2(duration)
+        logger.add_fight()
+        wait_for_battle_start()
+        fightloops = 0
+        while not check_if_exit_battle_button_exists():
+            fightloops = fightloops + 1
+            logger.log(f"fightloop: {fightloops}")
+            fight_in_2v2(fight_duration)
+            if fightloops > 100:
+                break
+        leave_end_battle_window(duration)
+        time.sleep(5)
+        if check_if_past_game_is_win(duration):
+            logger.log("Last game was a win")
+            logger.add_win()
+        else:
+            logger.log("Last gane was a loss")
+            logger.add_loss()
 
 
 if __name__ == "__main__":
