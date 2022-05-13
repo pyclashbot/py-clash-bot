@@ -190,17 +190,24 @@ def open_chests(duration):
 
 
 def check_if_on_clash_main_menu():
-    reference_image = Image.open(
-        join("pyclashbot", "reference_images", "clash_main.png"))
-    current_image = refresh_screen()
-
-    # reference_image.show()
-    # plt.imshow(current_image)
-    # plt.show()
-
-    if compare_images(current_image, reference_image, 0.9) is None:
-        return False
-    return True
+    current_image = pyautogui.screenshot()
+    i1 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","clash_main_menu","clash_main_1.png")), 0.99)
+    i2 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","clash_main_menu","clash_main_2.png")), 0.99)
+    i3 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","clash_main_menu","clash_main_3.png")), 0.99)
+    i4 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","clash_main_menu","clash_main_4.png")), 0.99)
+    i5 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","clash_main_menu","clash_main_5.png")), 0.99)
+    
+    if i1 is not None:
+        return True
+    if i2 is not None:
+        return True
+    if i3 is not None:
+        return True
+    if i4 is not None:
+        return True
+    if i5 is not None:
+        return True
+    return False
 
 
 def check_if_can_request():
@@ -236,28 +243,74 @@ def request_from_clash_main_menu(duration):
     logger.log("requesting giant")
     pyautogui.moveTo(x=86, y=564, duration=duration)
     pyautogui.click()
-    time.sleep(1)
-    check_quit_key_press()
-    pyautogui.scroll(-20, x=0, y=0)
-    time.sleep(3)
-    check_quit_key_press()
-    pyautogui.scroll(-20, x=0, y=0)
-    time.sleep(3)
-    pyautogui.scroll(-20, x=0, y=0)
-    check_quit_key_press()
-    time.sleep(3)
-    pyautogui.scroll(-20, x=0, y=0)
-    time.sleep(3)
-    pyautogui.scroll(-20, x=0, y=0)
-    time.sleep(3)
-    check_quit_key_press()
-    pyautogui.moveTo(x=340, y=250, duration=duration)
+    #scroll till find card
+    time.sleep(2)
+    while check_for_request_card() is None:
+        pyautogui.scroll(-90, x=0, y=0)
+        time.sleep(3)
+        check_quit_key_press()
+    #click card
+    coords = check_for_request_card()
+    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
     pyautogui.click()
-    pyautogui.moveTo(x=330, y=520, duration=duration)
+    time.sleep(2)
+    #click request
+    coords = look_for_request_button()
+    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
     pyautogui.click()
-    time.sleep(3)
-    check_quit_key_press()
-    return_to_clash_main_menu(duration)
+    time.sleep(2)
+    return_to_clash_main_menu()
+
+
+def check_for_request_card():
+    current_image = pyautogui.screenshot()
+    i1 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_1.png")), 0.99)
+    i2 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_2.png")), 0.99)
+    i3 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_3.png")), 0.99)
+    i4 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_4.png")), 0.99)
+    i5 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_5.png")), 0.99)
+    i6 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_6.png")), 0.99)
+    i7 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_7.png")), 0.99)
+    i8 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","giant_8.png")), 0.99)
+
+    if i1 is not None:
+        return i1
+    if i2 is not None:
+        return i2
+    if i3 is not None:
+        return i3
+    if i4 is not None:
+        return i4
+    if i5 is not None:
+        return i5
+    if i6 is not None:
+        return i6
+    if i7 is not None:
+        return i7
+    if i8 is not None:
+        return i8
+    return None
+    
+
+def look_for_request_button():
+    current_image = pyautogui.screenshot()
+    i1 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","req_logo_1.png")), 0.99)
+    i2 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","req_logo_2.png")), 0.99)
+    i3 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","req_logo_3.png")), 0.99)
+    i4 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","req_logo_4.png")), 0.99)
+    i5 = compare_images(current_image, Image.open(join("pyclashbot", "reference_images","request_page_card_logos","req_logo_5.png")), 0.99)
+    
+    if i1 is not None:
+        return i1
+    if i2 is not None:
+        return i2
+    if i3 is not None:
+        return i3
+    if i4 is not None:
+        return i4
+    if i5 is not None:
+        return i5
+    return None
 
 
 def check_if_on_clan_chat_page():
@@ -556,11 +609,12 @@ def restart_client(duration):
     pyautogui.click()
     time.sleep(5)
     check_quit_key_press()
-    # orientate_window()
     time.sleep(5)
     check_quit_key_press()
     time.sleep(5)
     logger.log("skipping ads")
+    orientate_window()
+    time.sleep(1)
     pyautogui.moveTo(x=440, y=600, duration=duration)
     time.sleep(1)
     pyautogui.click()
@@ -585,6 +639,7 @@ def wait_for_clash_main_menu(duration):
             break
         pyautogui.moveTo(x=50, y=190, duration=duration)
         pyautogui.moveTo(x=10, y=170, duration=duration)
+        pyautogui.click()
 
 
 def check_if_past_game_is_win(duration):
@@ -752,55 +807,55 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        # plt.show()
+        #plt.show()
         
-
+        print(check_if_on_clash_main_menu())
         
-        orientate_memu_multi()
-        time.sleep(1)
-        restart_client(duration)
-        orientate_window()
-        if check_if_on_clash_main_menu():
-            logger.log("We're on the main menu")
-            time.sleep(1)
-            logger.log("Handling chests")
-            time.sleep(1)
-            open_chests(duration)
-            time.sleep(3)
-            logger.log("Checking if can request")
-            time.sleep(1)
-            if check_if_can_request():
-                logger.log("Can request. Requesting giant")
-                time.sleep(1)
-                request_from_clash_main_menu(duration)
-            else:
-                logger.log("Request is unavailable")
-            logger.log("Checking if can donate")
-            time.sleep(1)
-            getto_donate_page(duration)
-            click_donates(duration)
-        else:
-            logger.log("not on clash main menu")
-        logger.log("Handled chests and requests. Gonna start a battle")
-        time.sleep(1)
-        start_2v2(duration)
-        logger.add_fight()
-        wait_for_battle_start()
-        fightloops = 0
-        while not check_if_exit_battle_button_exists():
-            fightloops = fightloops + 1
-            logger.log(f"fightloop: {fightloops}")
-            fight_in_2v2(fight_duration)
-            if fightloops > 100:
-                break
-        leave_end_battle_window(duration)
-        time.sleep(5)
-        if check_if_past_game_is_win(duration):
-            logger.log("Last game was a win")
-            logger.add_win()
-        else:
-            logger.log("Last gane was a loss")
-            logger.add_loss()
+        # orientate_memu_multi()
+        # time.sleep(1)
+        # restart_client(duration)
+        # orientate_window()
+        # if check_if_on_clash_main_menu():
+        #     logger.log("We're on the main menu")
+        #     time.sleep(1)
+        #     logger.log("Handling chests")
+        #     time.sleep(1)
+        #     open_chests(duration)
+        #     time.sleep(3)
+        #     logger.log("Checking if can request")
+        #     time.sleep(1)
+        #     if check_if_can_request():
+        #         logger.log("Can request. Requesting giant")
+        #         time.sleep(1)
+        #         request_from_clash_main_menu(duration)
+        #     else:
+        #         logger.log("Request is unavailable")
+        #     logger.log("Checking if can donate")
+        #     time.sleep(1)
+        #     getto_donate_page(duration)
+        #     click_donates(duration)
+        # else:
+        #     logger.log("not on clash main menu")
+        # logger.log("Handled chests and requests. Gonna start a battle")
+        # time.sleep(1)
+        # start_2v2(duration)
+        # logger.add_fight()
+        # wait_for_battle_start()
+        # fightloops = 0
+        # while not check_if_exit_battle_button_exists():
+        #     fightloops = fightloops + 1
+        #     logger.log(f"fightloop: {fightloops}")
+        #     fight_in_2v2(fight_duration)
+        #     if fightloops > 100:
+        #         break
+        # leave_end_battle_window(duration)
+        # time.sleep(5)
+        # if check_if_past_game_is_win(duration):
+        #     logger.log("Last game was a win")
+        #     logger.add_win()
+        # else:
+        #     logger.log("Last gane was a loss")
+        #     logger.add_loss()
 
 
 if __name__ == "__main__":
