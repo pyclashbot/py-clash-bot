@@ -10,7 +10,7 @@ import pyautogui
 import pygetwindow as gw
 from PIL import Image
 
-from pyclashbot.utils import Logger
+from pyclashbot.logger import Logger
 
 logger = Logger()
 
