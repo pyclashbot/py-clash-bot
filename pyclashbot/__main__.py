@@ -2,7 +2,6 @@ import random
 import time
 from os.path import join
 
-import cv2
 import keyboard
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,13 +10,14 @@ import pygetwindow as gw
 from PIL import Image
 
 from pyclashbot.logger import Logger
+from pyclashbot.image_rec import compare_images
 
 logger = Logger()
 
 try:
     window_memu = gw.getWindowsWithTitle('MEmu')[0]
     window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
-except IndexError:
+except (IndexError, KeyError):
     logger.log("MEmu or Multiple Instance Manager not detected!")
 
 
@@ -685,37 +685,7 @@ def check_if_windows_exist():
     return True
 
 
-def compare_images(image, template, threshold=0.8):
-    """detects pixel location of a template in an image
-    Args:
-        image (Image): image to find template within
-        template (Image): template image to match to
-        threshold (float, optional): matching threshold. defaults to 0.8
-    Returns:
-        tuple[(int,int)] or None: a tuple of pixel location (x,y)
-    """
 
-    # show template
-    # template.show()
-
-    # Convert image to np.array
-    image = np.array(image)
-    template = np.array(template)
-
-    # Convert image colors
-    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    template_gray = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
-
-    # Perform match operations.
-    res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-
-    # Store the coordinates of matched area in a numpy array
-    loc = np.where(res >= threshold)  # type: ignore
-
-    if len(loc[0]) != 1:
-        return None
-
-    return (loc[0][0], loc[1][0])
 
 
 def look_for_enemy_troops():
