@@ -14,11 +14,12 @@ from pyclashbot.logger import Logger
 
 logger = Logger()
 
-try:
-    window_memu = gw.getWindowsWithTitle('MEmu')[0]
-    window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
-except IndexError:
-    logger.log("MEmu or Multiple Instance Manager not detected!")
+if __name__ == "__main__":
+    try:
+        window_memu = gw.getWindowsWithTitle('MEmu')[0]
+        window_mimm = gw.getWindowsWithTitle('Multiple Instance Manager')[0]
+    except IndexError:
+        logger.log("MEmu or Multiple Instance Manager not detected!")
 
 
 def refresh_screen():
