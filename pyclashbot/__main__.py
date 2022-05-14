@@ -1842,6 +1842,7 @@ def check_deck():
     
     
     
+    
     time.sleep(2)
     pyautogui.moveTo(x=245, y=640, duration=1)
     pyautogui.click()
