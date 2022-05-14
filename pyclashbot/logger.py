@@ -61,7 +61,7 @@ class Logger:
         Args:
             message (str): message to add
         """
-        print(f"{self.make_timestamp()}{self.make_score_board()} : {message}")
+        print(f"{self.make_timestamp()} - {self.make_score_board()} : {message}")
 
     def add_win(self):
         """add win to log
