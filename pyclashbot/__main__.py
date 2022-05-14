@@ -259,7 +259,7 @@ def request_from_clash_main_menu(duration):
     pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
     pyautogui.click()
     time.sleep(2)
-    return_to_clash_main_menu()
+    return_to_clash_main_menu(duration)
 
 
 def check_for_request_card():
@@ -381,26 +381,21 @@ def wait_for_battle_start():
     check_quit_key_press()
 
 
-def fight_in_2v2(fight_duration):
+def fight_in_2v2():
     check_quit_key_press()
-    time.sleep(3)
-    card_pick = random_card_coord_picker()
-    card_placement = look_for_enemy_troops()
-    if card_placement is None:
-        print("Found nothing giving random coord")
-        card_placement = random_placement_coord_maker()
-        y_coord = card_placement[1]
+    card_coord = random_card_coord_picker()
+    placement_coord = look_for_enemy_troops()
+    if placement_coord is None:
+        print("picking random coord")
+        placement_coord = random_placement_coord_maker()
     else:
-        print("Placing card on where I found a troop")
-        y_coord = min(card_placement[1] - 30, 0)
-
-    pyautogui.moveTo(x=card_pick[0], y=card_pick[1], duration=fight_duration)
-    pyautogui.click()
-    pyautogui.moveTo(
-        x=card_placement[0], y=y_coord, duration=fight_duration)
-    pyautogui.click()
-    check_quit_key_press()
-
+        print("picking coord: ",placement_coord)
+        placement_coord[1] = placement_coord[1] + 30
+    #pick card
+    pyautogui.click(x=card_coord[0], y=card_coord[1], clicks=1, interval=0, button='left')
+    #place card
+    pyautogui.click(x=placement_coord[0], y=placement_coord[1], clicks=1, interval=0, button='left')
+    
 
 def random_placement_coord_maker():
     check_quit_key_press()
@@ -513,24 +508,21 @@ def check_if_exit_battle_button_exists():
 
 
 def find_donates():
-    logger.log("searching screen for green donate buttons")
-
-    reference_image = Image.open(
-        join("pyclashbot", "reference_images", "donate_button.png"))
-    reference_image2 = Image.open(
-        join("pyclashbot", "reference_images", "donate_button2.png"))
-    current_image = refresh_screen()
-
-    coords = compare_images(current_image, reference_image, 0.96)
-    coords2 = compare_images(current_image, reference_image2, 0.96)
-    if (coords is None) and (coords2 is None):
-        print("No donate buttons found on this page.")
-        return [500, 50]
-    if coords is not None:
-        return coords
-    if coords2 is not None:
-        return coords2
-
+    logger.log("searching screen for donate buttons")
+    current_image = pyautogui.screenshot()
+    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_1.png")), 0.97) is not None:
+        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_1.png")), 0.97)
+    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_2.png")), 0.97) is not None:
+        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_2.png")), 0.97)
+    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_3.png")), 0.97) is not None:
+        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_3.png")), 0.97)
+    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_4.png")), 0.97) is not None:
+        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_4.png")), 0.97)
+    if compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_5.png")), 0.97) is not None:
+        return compare_images(current_image, Image.open(join("pyclashbot", "reference_images", "donate", "donate_button_5.png")), 0.97)
+    print("Found none this go-around")
+    return [500, 50]
+ 
 
 def click_donates(duration):
     logger.log("clicking the donate buttons if there are any available")
@@ -546,6 +538,7 @@ def click_donates(duration):
             if check_if_more_donates():
                 pyautogui.moveTo(x=50, y=170, duration=duration)
                 pyautogui.click()
+                time.sleep(2)
 
             pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
             pyautogui.click(x=coords[1], y=coords[0],
@@ -685,9 +678,6 @@ def check_if_windows_exist():
     return True
 
 
-
-
-
 def look_for_enemy_troops():
     current_image = refresh_screen()
     i=[0,0]*59
@@ -755,9 +745,964 @@ def look_for_enemy_troops():
     n = 0
     while n < 59:
         if i[n] is not None:
-            return i[n]
+            return_coords = [i[n][1],i[n][0]]
+            return return_coords
         n=n+1
     return None
+
+
+def check_deck():
+    #get to deck tab
+    pyautogui.moveTo(x=115, y=634, duration=1)
+    pyautogui.click()
+    time.sleep(2)
+    pyautogui.moveTo(x=90, y=110, duration=1)
+    pyautogui.click()
+    time.sleep(2)
+    #screenshot deck region
+    deck_image = pyautogui.screenshot()
+    
+    #check for all cards
+    comparisons = ["empty"]*8
+    
+    #archer_queen
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archer_queen_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archer_queen_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archer_queen_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archer_queen_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archer_queen_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found archer queen in deck")
+            comparisons = add_card_to_deck(comparisons,"archer_queen")
+    #barb_barrel
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found barb_barrel in deck")
+            comparisons = add_card_to_deck(comparisons,"barb_barrel")
+    #goblin_gang
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found goblin_gang in deck")
+            comparisons = add_card_to_deck(comparisons,"goblin_gang")
+    #mother_witch
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mother_witch_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mother_witch_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mother_witch_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mother_witch_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mother_witch_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mother_witch in deck")
+            comparisons = add_card_to_deck(comparisons,"mother_witch")
+    #royal_ghost
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_ghost_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_ghost_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_ghost_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_ghost_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_ghost_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found royal_ghost in deck")
+            comparisons = add_card_to_deck(comparisons,"royal_ghost")
+    #tesla
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tesla_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tesla_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tesla_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tesla_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tesla_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found tesla in deck")
+            comparisons = add_card_to_deck(comparisons,"tesla")
+    #valk
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found valk in deck")
+            comparisons = add_card_to_deck(comparisons,"valk")
+    #battle_ram
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found battle_ram in deck")
+            comparisons = add_card_to_deck(comparisons,"battle_ram")
+    #e_wiz
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found e_wiz in deck")
+            comparisons = add_card_to_deck(comparisons,"e_wiz")
+    #fire_spirit
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found fire_spirit in deck")
+            comparisons = add_card_to_deck(comparisons,"fire_spirit")
+    #fireball
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found fireball in deck")
+            comparisons = add_card_to_deck(comparisons,"fireball")
+    #firecracker
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found firecracker in deck")
+            comparisons = add_card_to_deck(comparisons,"firecracker")
+    #hog
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found hog in deck")
+            comparisons = add_card_to_deck(comparisons,"hog")
+    #dark_knight
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found dark_knight in deck")
+            comparisons = add_card_to_deck(comparisons,"dark_knight")
+    #royal_recruits
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found royal_recruits in deck")
+            comparisons = add_card_to_deck(comparisons,"royal_recruits")
+    #witch
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found witch in deck")
+            comparisons = add_card_to_deck(comparisons,"witch")
+    #mega_knight
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_knight_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_knight_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_knight_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_knight_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mega_knight in deck")
+            comparisons = add_card_to_deck(comparisons,"mega_knight")
+    #mini_pekka
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_barrel_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mini_pekka_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mini_pekka_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mini_pekka_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mini_pekka_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mini_pekka in deck")
+            comparisons = add_card_to_deck(comparisons,"mini_pekka")
+    #mirror
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mirror in deck")
+            comparisons = add_card_to_deck(comparisons,"mirror")
+    #ram_rider
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found ram_rider in deck")
+            comparisons = add_card_to_deck(comparisons,"ram_rider")
+    #poison
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found poison in deck")
+            comparisons = add_card_to_deck(comparisons,"poison")
+    #pekka
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "pekka_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "pekka_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "pekka_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "pekka_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "pekka_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found pekka in deck")
+            comparisons = add_card_to_deck(comparisons,"pekka")
+    #night_witch
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "night_witch_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "night_witch_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "night_witch_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "night_witch_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found night_witch in deck")
+            comparisons = add_card_to_deck(comparisons,"night_witch")
+    
+    
+    
+    
+    #bandit
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bandit_1.png")), 0.90) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bandit_2.png")), 0.90) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bandit_3.png")), 0.90) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bandit_4.png")), 0.90) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bandit_5.png")), 0.90) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found bandit in deck")
+            comparisons = add_card_to_deck(comparisons,"bandit")
+    #musketeer
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "musketeer_5.png")), 0.97) is not None:
+            n = 1
+            
+            
+            
+        if n == 1:
+            logger.log("Found musketeer in deck")
+            comparisons = add_card_to_deck(comparisons,"musketeer")
+    
+    
+
+    time.sleep(2)
+    pyautogui.moveTo(x=245, y=640, duration=1)
+    pyautogui.click()
+    time.sleep(2)
+    
+    return comparisons
+    
+    
+def add_card_to_deck(deck_list,card):
+    if deck_list[0]=="empty":
+        deck_list[0]=card
+        return deck_list
+    if deck_list[1]=="empty":
+        deck_list[1]=card
+        return deck_list
+    if deck_list[2]=="empty":
+        deck_list[2]=card
+        return deck_list
+    if deck_list[3]=="empty":
+        deck_list[3]=card
+        return deck_list
+    if deck_list[4]=="empty":
+        deck_list[4]=card
+        return deck_list
+    if deck_list[5]=="empty":
+        deck_list[5]=card
+        return deck_list
+    if deck_list[6]=="empty":
+        deck_list[6]=card
+        return deck_list
+    if deck_list[7]=="empty":
+        deck_list[7]=card
+        return deck_list
+    return deck_list
+
+
+def check_for_card_in_hand(card):
+    hand_screenshot = pyautogui.screenshot()
+    if card == "mega_knight":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "mega_knight.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "firecracker":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "firecracker.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "hog":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "hog.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "mini_pekka":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "mini_pekka.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "fire_spirit":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "fire_spirit.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "ram_rider":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "ram_rider.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "valk":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "valk.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "musketeer":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "musketeer.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "archer_queen":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "archer_queen.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "goblin_gang":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "goblin_gang.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "battle_ram":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "battle_ram.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "e_wiz":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "e_wiz.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "dark_knight":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "dark_knight.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "bandit":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "bandit.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "royal_ghost":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "royal_ghost.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "pekka":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "pekka.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "poison":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "poison.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "fireball":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "fireball.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "barb_barrel":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "barb_barrel.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "tesla":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "tesla.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "royal_recruits":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "royal_recruits.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "witch":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "witch.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "mother_witch":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "mother_witch.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    if card == "night_witch":
+        coords_reverse= compare_images(hand_screenshot, Image.open(join("pyclashbot", "reference_images", "hand_cards", "night_witch.png")), 0.97)
+        if coords_reverse is not None:
+            return [coords_reverse[1],coords_reverse[0]]
+    
+      
+def fight_with_deck_list(deck_list):
+    
+    #if tesla in deck and in hand
+    if (deck_list[5]==1)and(check_for_card_in_hand("tesla") is not None):
+        logger.log("Decided to play tesla")
+        card_coords = check_for_card_in_hand("tesla")
+        placement_coords = [212,385]
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+     #if bandit in deck and bandit in hand
+    if (deck_list[8]==1)and(check_for_card_in_hand("bandit") is not None):
+        logger.log("Decided to play bandit")
+        card_coords = check_for_card_in_hand("bandit")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+45
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if dark_knight in deck and dark_knight in hand
+    if (deck_list[12]==1)and(check_for_card_in_hand("dark_knight") is not None):
+        logger.log("Decided to play dark_knight")
+        card_coords = check_for_card_in_hand("dark_knight")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if fire_spirit in deck and fire_spirit in hand
+    if (deck_list[16]==1)and(check_for_card_in_hand("fire_spirit") is not None):
+        logger.log("Decided to play fire_spirit")
+        card_coords = check_for_card_in_hand("fire_spirit")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+30
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if mega_knight in deck and mega_knight in hand
+    if (deck_list[30]==1)and(check_for_card_in_hand("mega_knight") is not None):
+        logger.log("Decided to play mega_knight")
+        card_coords = check_for_card_in_hand("mega_knight")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1] = placement_coords[1] + 30
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    #if mini_pekka in deck and mini_pekka in hand
+    
+    if (deck_list[31]==1)and(check_for_card_in_hand("mini_pekka") is not None):
+        logger.log("Decided to play mini_pekka")
+        card_coords = check_for_card_in_hand("mini_pekka")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if pekka in deck and pekka in hand
+    if (deck_list[34]==1)and(check_for_card_in_hand("pekka") is not None):
+        logger.log("Decided to play pekka")
+        card_coords = check_for_card_in_hand("pekka")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if royal_ghost in deck and royal_ghost in hand
+    if (deck_list[35]==1)and(check_for_card_in_hand("royal_ghost") is not None):
+        logger.log("Decided to play royal_ghost")
+        card_coords = check_for_card_in_hand("royal_ghost")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if royal_recruits in deck and in hand
+    if (deck_list[37]==1)and(check_for_card_in_hand("royal_recruits") is not None):
+        logger.log("Decided to play royal_recruits")
+        card_coords = check_for_card_in_hand("royal_recruits")
+        placement_coords = [215,390]
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if valk in deck and valk in hand
+    if (deck_list[41]==1)and(check_for_card_in_hand("valk") is not None):
+        logger.log("Decided to play valk")
+        card_coords = check_for_card_in_hand("valk")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if barb_barrel in deck and in hand
+    if (deck_list[44]==1)and(check_for_card_in_hand("barb_barrel") is not None)and(look_for_enemy_troops() is not None):
+        logger.log("Decided to play barb_barrel")
+        card_coords = check_for_card_in_hand("barb_barrel")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+30
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if e_wiz in deck and e_wiz in hand
+    if (deck_list[53]==1)and(check_for_card_in_hand("e_wiz") is not None):
+        logger.log("Decided to play e_wiz")
+        card_coords = check_for_card_in_hand("e_wiz")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+25
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if firecracker in deck and firecracker in hand
+    if (deck_list[55]==1)and(check_for_card_in_hand("firecracker") is not None):
+        logger.log("Decided to play firecracker")
+        card_coords = check_for_card_in_hand("firecracker")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+65
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+
+    #if goblin_gang in deck and goblin_gang in hand
+    if (deck_list[58]==1)and(check_for_card_in_hand("goblin_gang") is not None):
+        logger.log("Decided to play goblin_gang")
+        card_coords = check_for_card_in_hand("goblin_gang")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+35
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if mother_witch in deck and in hand
+    if (deck_list[63]==1)and(check_for_card_in_hand("mother_witch") is not None):
+        logger.log("Decided to play mother_witch")
+        card_coords = check_for_card_in_hand("mother_witch")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+65
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if musketeer in deck and musketeer in hand
+    if (deck_list[64]==1)and(check_for_card_in_hand("musketeer") is not None):
+        logger.log("Decided to play musketeer")
+        card_coords = check_for_card_in_hand("musketeer")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+65
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if night_witch in deck and in hand
+    if (deck_list[65]==1)and(check_for_card_in_hand("night_witch") is not None):
+        logger.log("Decided to play night_witch")
+        card_coords = check_for_card_in_hand("night_witch")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+65
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if witch in deck and in hand
+    if (deck_list[73]==1)and(check_for_card_in_hand("witch") is not None):
+        logger.log("Decided to play witch")
+        card_coords = check_for_card_in_hand("witch")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+65
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if fireball in deck and in hand
+    if (deck_list[80]==1)and(check_for_card_in_hand("fireball") is not None):
+        logger.log("Decided to play fireball")
+        card_coords = check_for_card_in_hand("fireball")
+        n99 = random.randint(1, 2)
+        if n99 == 1:
+            placement_coords = [97,203]
+        if n99 == 2:
+            placement_coords = [320,208]
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if poison in deck and in hand
+    if (deck_list[84]==1)and(check_for_card_in_hand("poison") is not None):
+        logger.log("Decided to play poison")
+        card_coords = check_for_card_in_hand("poison")
+        n99 = random.randint(1, 2)
+        if n99 == 1:
+            placement_coords = [97,203]
+        if n99 == 2:
+            placement_coords = [320,208]
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if battle_ram in deck and battle_ram in hand
+    if (deck_list[101]==1)and(check_for_card_in_hand("battle_ram") is not None):
+        logger.log("Decided to play archer_queen")
+        card_coords = check_for_card_in_hand("archer_queen")
+        placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+        
+    #if hog in deck and hog in hand
+    if (deck_list[102]==1)and(check_for_card_in_hand("hog") is not None):
+        logger.log("Decided to play hog")
+        card_coords = check_for_card_in_hand("hog")
+        placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    #if ram_rider in deck and ram_rider in hand
+    if (deck_list[103]==1)and(check_for_card_in_hand("ram_rider") is not None):
+        logger.log("Decided to play ram_rider")
+        card_coords = check_for_card_in_hand("ram_rider")
+        placement_coords = random_placement_coord_maker()
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+
+    #if archer_queen in deck and archer_queen in hand
+    if (deck_list[106]==1)and(check_for_card_in_hand("archer_queen") is not None):
+        logger.log("Decided to play archer_queen")
+        card_coords = check_for_card_in_hand("archer_queen")
+        placement_coords = look_for_enemy_troops()
+        if placement_coords is None:
+            placement_coords = random_placement_coord_maker()
+        else:
+            placement_coords[1]=placement_coords[1]+65
+        #click card
+        pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
+        pyautogui.click()
+        #click placement
+        pyautogui.moveTo(x=placement_coords[0], y=placement_coords[1], duration=0)
+        pyautogui.click()
+        return
+    
+    
+    logger.log("No moves found. Waiting")
+    time.sleep(3)
+    check_quit_key_press()
 
 
 def main_loop():
@@ -766,6 +1711,7 @@ def main_loop():
     duration = 0.5
     fight_duration = 0.2
     loop_count = 0
+    deck = [1]*150
 
     if not check_if_windows_exist():
         return
@@ -778,9 +1724,14 @@ def main_loop():
         plt.imshow(iar)
 
         #plt.show()
+
+
         
-        print(check_if_on_clash_main_menu())
+        print(check_deck())
+
         
+
+       
         # orientate_memu_multi()
         # time.sleep(1)
         # restart_client(duration)
@@ -806,7 +1757,12 @@ def main_loop():
         #     click_donates(duration)
         # else:
         #     logger.log("not on clash main menu")
-        # logger.log("Handled chests and requests. Gonna start a battle")
+        
+        # #check deck
+        # deck = check_deck()
+        # time.sleep(2)
+        
+        # logger.log("Handled chests, requests, and deck. Gonna start a battle")
         # time.sleep(1)
         # start_2v2(duration)
         # logger.add_fight()
@@ -815,7 +1771,7 @@ def main_loop():
         # while not check_if_exit_battle_button_exists():
         #     fightloops = fightloops + 1
         #     logger.log(f"fightloop: {fightloops}")
-        #     fight_in_2v2(fight_duration)
+        #     fight_with_deck_list(deck)
         #     if fightloops > 100:
         #         break
         # leave_end_battle_window(duration)
