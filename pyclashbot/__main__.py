@@ -1841,6 +1841,12 @@ def check_deck():
     
     
     
+    #freeze
+    #giant
+    #barbs
+    #balloon
+    #prince
+    
     
     
     time.sleep(2)
