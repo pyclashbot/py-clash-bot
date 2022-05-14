@@ -760,11 +760,53 @@ def check_deck():
     pyautogui.click()
     time.sleep(2)
     #screenshot deck region
-    deck_image = pyautogui.screenshot()
+    #deck_image = pyautogui.screenshot()
+    deck_image = pyautogui.screenshot(region=(24,203, 407, 324))
     
     #check for all cards
     comparisons = ["empty"]*8
     
+    
+    
+#twice checked
+    
+    
+#once checked
+    
+    
+    
+    #battle_ram
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found battle_ram in deck")
+            comparisons = add_card_to_deck(comparisons,"battle_ram")
+    #e_wiz
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found e_wiz in deck")
+            comparisons = add_card_to_deck(comparisons,"e_wiz")
     #archer_queen
     if 1 == 1:
         n = 0
@@ -797,22 +839,48 @@ def check_deck():
         if n == 1:
             logger.log("Found barb_barrel in deck")
             comparisons = add_card_to_deck(comparisons,"barb_barrel")
-    #goblin_gang
+    #fire_spirit
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found goblin_gang in deck")
-            comparisons = add_card_to_deck(comparisons,"goblin_gang")
+            logger.log("Found fire_spirit in deck")
+            comparisons = add_card_to_deck(comparisons,"fire_spirit")
+    #hog
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found hog in deck")
+            comparisons = add_card_to_deck(comparisons,"hog")
     #mother_witch
     if 1 == 1:
         n = 0
@@ -861,166 +929,6 @@ def check_deck():
         if n == 1:
             logger.log("Found tesla in deck")
             comparisons = add_card_to_deck(comparisons,"tesla")
-    #valk
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found valk in deck")
-            comparisons = add_card_to_deck(comparisons,"valk")
-    #battle_ram
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "battle_ram_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found battle_ram in deck")
-            comparisons = add_card_to_deck(comparisons,"battle_ram")
-    #e_wiz
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_wiz_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found e_wiz in deck")
-            comparisons = add_card_to_deck(comparisons,"e_wiz")
-    #fire_spirit
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fire_spirit_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found fire_spirit in deck")
-            comparisons = add_card_to_deck(comparisons,"fire_spirit")
-    #fireball
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found fireball in deck")
-            comparisons = add_card_to_deck(comparisons,"fireball")
-    #firecracker
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found firecracker in deck")
-            comparisons = add_card_to_deck(comparisons,"firecracker")
-    #hog
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hog_1.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found hog in deck")
-            comparisons = add_card_to_deck(comparisons,"hog")
-    #dark_knight
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found dark_knight in deck")
-            comparisons = add_card_to_deck(comparisons,"dark_knight")
-    #royal_recruits
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found royal_recruits in deck")
-            comparisons = add_card_to_deck(comparisons,"royal_recruits")
-    #witch
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found witch in deck")
-            comparisons = add_card_to_deck(comparisons,"witch")
     #mega_knight
     if 1 == 1:
         n = 0
@@ -1053,54 +961,38 @@ def check_deck():
         if n == 1:
             logger.log("Found mini_pekka in deck")
             comparisons = add_card_to_deck(comparisons,"mini_pekka")
-    #mirror
+    #goblin_gang
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_gang_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found mirror in deck")
-            comparisons = add_card_to_deck(comparisons,"mirror")
-    #ram_rider
+            logger.log("Found goblin_gang in deck")
+            comparisons = add_card_to_deck(comparisons,"goblin_gang")
+    #valk
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found ram_rider in deck")
-            comparisons = add_card_to_deck(comparisons,"ram_rider")
-    #poison
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "valk_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found poison in deck")
-            comparisons = add_card_to_deck(comparisons,"poison")
+            logger.log("Found valk in deck")
+            comparisons = add_card_to_deck(comparisons,"valk")
     #pekka
     if 1 == 1:
         n = 0
@@ -1131,6 +1023,96 @@ def check_deck():
         if n == 1:
             logger.log("Found night_witch in deck")
             comparisons = add_card_to_deck(comparisons,"night_witch")
+    #princess
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found princess in deck")
+            comparisons = add_card_to_deck(comparisons,"princess")
+    #miner
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found miner in deck")
+            comparisons = add_card_to_deck(comparisons,"miner")
+    #skeleton_barrel
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found skeleton_barrel in deck")
+            comparisons = add_card_to_deck(comparisons,"skeleton_barrel")
+    #ice_wizard
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found ice_wizard in deck")
+            comparisons = add_card_to_deck(comparisons,"ice_wizard")
+    #e_spirit
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found e_spirit in deck")
+            comparisons = add_card_to_deck(comparisons,"e_spirit")
     #musketeer
     if 1 == 1:
         n = 0
@@ -1205,73 +1187,159 @@ def check_deck():
             n = 1
         if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_spirit_5.png")), 0.97) is not None:
             n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_spirit_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_spirit_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_spirit_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_spirit_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_spirit_10.png")), 0.97) is not None:
+            n = 1
         if n == 1:
             logger.log("Found ice_spirit in deck")
             comparisons = add_card_to_deck(comparisons,"ice_spirit")
-    #ice_golem
+    #mega_minion
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found ice_golem in deck")
-            comparisons = add_card_to_deck(comparisons,"ice_golem")
-    #heal_spirit
+            logger.log("Found mega_minion in deck")
+            comparisons = add_card_to_deck(comparisons,"mega_minion")
+    #guards
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_9.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found heal_spirit in deck")
-            comparisons = add_card_to_deck(comparisons,"heal_spirit")
-    #e_spirit
+            logger.log("Found guards in deck")
+            comparisons = add_card_to_deck(comparisons,"guards")
+    #tombstone
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_spirit_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found e_spirit in deck")
-            comparisons = add_card_to_deck(comparisons,"e_spirit")
-    #bomber
+            logger.log("Found tombstone in deck")
+            comparisons = add_card_to_deck(comparisons,"tombstone")
+    #bats
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_11.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_12.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_13.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_14.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_15.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found bomber in deck")
-            comparisons = add_card_to_deck(comparisons,"bomber")
+            logger.log("Found bats in deck")
+            comparisons = add_card_to_deck(comparisons,"bats")
+    #archers
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found archers in deck")
+            comparisons = add_card_to_deck(comparisons,"archers")
+    #skeleton_army
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found skeleton_army in deck")
+            comparisons = add_card_to_deck(comparisons,"skeleton_army")
+    #arrows
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found arrows in deck")
+            comparisons = add_card_to_deck(comparisons,"arrows")  
     #spear_goblins
     if 1 == 1:
         n = 0
@@ -1330,62 +1398,6 @@ def check_deck():
         if n == 1:
             logger.log("Found goblins in deck")
             comparisons = add_card_to_deck(comparisons,"goblins")
-    #bats
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_5.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_6.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_7.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_8.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bats_9.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found bats in deck")
-            comparisons = add_card_to_deck(comparisons,"bats")
-    #archers
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "archers_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found archers in deck")
-            comparisons = add_card_to_deck(comparisons,"archers")
-    #rage
-    if 1 == 1:
-        n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_1.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_2.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_3.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_4.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_5.png")), 0.97) is not None:
-            n = 1
-        if n == 1:
-            logger.log("Found rage in deck")
-            comparisons = add_card_to_deck(comparisons,"rage")
     #minions
     if 1 == 1:
         n = 0
@@ -1447,25 +1459,115 @@ def check_deck():
             n = 1
         if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wall_breaker_5.png")), 0.97) is not None:
             n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wall_breaker_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wall_breaker_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wall_breaker_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wall_breaker_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wall_breaker_10.png")), 0.97) is not None:
+            n = 1
         if n == 1:
             logger.log("Found wall_breaker in deck")
             comparisons = add_card_to_deck(comparisons,"wall_breaker")
-    #knight
+    #ice_golem
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_golem_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found knight in deck")
-            comparisons = add_card_to_deck(comparisons,"knight")
+            logger.log("Found ice_golem in deck")
+            comparisons = add_card_to_deck(comparisons,"ice_golem")
+    #heal_spirit
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "heal_spirit_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found heal_spirit in deck")
+            comparisons = add_card_to_deck(comparisons,"heal_spirit")
+    #bomber
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomber_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found bomber in deck")
+            comparisons = add_card_to_deck(comparisons,"bomber")
+    #baby_dragon
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found baby_dragon in deck")
+            comparisons = add_card_to_deck(comparisons,"baby_dragon")
+    #mirror
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mirror_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mirror in deck")
+            comparisons = add_card_to_deck(comparisons,"mirror")
+    #ram_rider
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ram_rider_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found ram_rider in deck")
+            comparisons = add_card_to_deck(comparisons,"ram_rider")
     #log
     if 1 == 1:
         n = 0
@@ -1482,190 +1584,278 @@ def check_deck():
         if n == 1:
             logger.log("Found log in deck")
             comparisons = add_card_to_deck(comparisons,"log")
-    #fisherman
+    #earthquake
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found fisherman in deck")
-            comparisons = add_card_to_deck(comparisons,"fisherman")
-    #skeleton_army
+            logger.log("Found earthquake in deck")
+            comparisons = add_card_to_deck(comparisons,"earthquake")
+    #royal_delivery
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_army_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found skeleton_army in deck")
-            comparisons = add_card_to_deck(comparisons,"skeleton_army")
-    #princess
+            logger.log("Found royal_delivery in deck")
+            comparisons = add_card_to_deck(comparisons,"royal_delivery")
+    #poison
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "princess_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "poison_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found princess in deck")
-            comparisons = add_card_to_deck(comparisons,"princess")
-    #miner
+            logger.log("Found poison in deck")
+            comparisons = add_card_to_deck(comparisons,"poison")
+    #lumberjack
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "miner_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found miner in deck")
-            comparisons = add_card_to_deck(comparisons,"miner")
-    #skeleton_barrel
+            logger.log("Found lumberjack in deck")
+            comparisons = add_card_to_deck(comparisons,"lumberjack")
+    #freeze
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "freeze_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "freeze_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "freeze_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "freeze_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_barrel_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "freeze_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found skeleton_barrel in deck")
-            comparisons = add_card_to_deck(comparisons,"skeleton_barrel")
-    #ice_wizard
+            logger.log("Found freeze in deck")
+            comparisons = add_card_to_deck(comparisons,"freeze")
+    #giant
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "ice_wizard_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found ice_wizard in deck")
-            comparisons = add_card_to_deck(comparisons,"ice_wizard")
-    #mega_minion
+            logger.log("Found giant in deck")
+            comparisons = add_card_to_deck(comparisons,"giant")
+    #dark_knight
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mega_minion_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "dark_knight_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found mega_minion in deck")
-            comparisons = add_card_to_deck(comparisons,"mega_minion")
-    #guards
+            logger.log("Found dark_knight in deck")
+            comparisons = add_card_to_deck(comparisons,"dark_knight")
+    #royal_recruits
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_5.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_6.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_7.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_8.png")), 0.97) is not None:
-            n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "guards_9.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_recruits_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found guards in deck")
-            comparisons = add_card_to_deck(comparisons,"guards")
-    #tombstone
+            logger.log("Found royal_recruits in deck")
+            comparisons = add_card_to_deck(comparisons,"royal_recruits")
+    #witch
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "tombstone_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "witch_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found tombstone in deck")
-            comparisons = add_card_to_deck(comparisons,"tombstone")
-    #arrows
+            logger.log("Found witch in deck")
+            comparisons = add_card_to_deck(comparisons,"witch")
+    #furnace
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "furnace_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "furnace_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "furnace_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "furnace_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "arrows_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "furnace_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found arrows in deck")
-            comparisons = add_card_to_deck(comparisons,"arrows")
-    #elixer_golem
+            logger.log("Found furnace in deck")
+            comparisons = add_card_to_deck(comparisons,"furnace")
+    #cannon_cart
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "cannon_cart_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "cannon_cart_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "cannon_cart_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "cannon_cart_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "cannon_cart_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found elixer_golem in deck")
-            comparisons = add_card_to_deck(comparisons,"elixer_golem")
+            logger.log("Found cannon_cart in deck")
+            comparisons = add_card_to_deck(comparisons,"cannon_cart")
+    #knight
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "knight_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found knight in deck")
+            comparisons = add_card_to_deck(comparisons,"knight")
+    #fireball
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fireball_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found fireball in deck")
+            comparisons = add_card_to_deck(comparisons,"fireball")
+    #firecracker
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "firecracker_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found firecracker in deck")
+            comparisons = add_card_to_deck(comparisons,"firecracker")
+    #magic_archer
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "magic_archer_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "magic_archer_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "magic_archer_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "magic_archer_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "magic_archer_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found magic_archer in deck")
+            comparisons = add_card_to_deck(comparisons,"magic_archer")
+    #giant_skeleton
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_skeleton_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_skeleton_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_skeleton_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_skeleton_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "giant_skeleton_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found giant_skeleton in deck")
+            comparisons = add_card_to_deck(comparisons,"giant_skeleton")
+    #elixer_pump
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_pump_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_pump_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_pump_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_pump_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_pump_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found elixer_pump in deck")
+            comparisons = add_card_to_deck(comparisons,"elixer_pump")
     #dart_goblin
     if 1 == 1:
         n = 0
@@ -1710,6 +1900,38 @@ def check_deck():
         if n == 1:
             logger.log("Found cannon in deck")
             comparisons = add_card_to_deck(comparisons,"cannon")
+    #bowler
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bowler_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bowler_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bowler_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bowler_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bowler_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found bowler in deck")
+            comparisons = add_card_to_deck(comparisons,"bowler")
+    #hunter
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hunter_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hunter_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hunter_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hunter_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "hunter_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found hunter in deck")
+            comparisons = add_card_to_deck(comparisons,"hunter")
     #inferno_dragon
     if 1 == 1:
         n = 0
@@ -1726,6 +1948,226 @@ def check_deck():
         if n == 1:
             logger.log("Found inferno_dragon in deck")
             comparisons = add_card_to_deck(comparisons,"inferno_dragon")
+    #mortar
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mortar_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mortar_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mortar_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mortar_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mortar_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mortar in deck")
+            comparisons = add_card_to_deck(comparisons,"mortar")
+    #bomb_tower
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "bomb_tower_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found bomb_tower in deck")
+            comparisons = add_card_to_deck(comparisons,"bomb_tower")
+    #royal_giant
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_giant_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found royal_giant in deck")
+            comparisons = add_card_to_deck(comparisons,"royal_giant")
+    #barb_hut
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_hut_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_hut_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_hut_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_hut_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barb_hut_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found barb_hut in deck")
+            comparisons = add_card_to_deck(comparisons,"barb_hut")
+    #golem
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golem_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golem_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golem_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golem_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golem_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found golem in deck")
+            comparisons = add_card_to_deck(comparisons,"golem")
+    #sparky
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "sparky_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found sparky in deck")
+            comparisons = add_card_to_deck(comparisons,"sparky")
+    #royal_hogs
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_hogs_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_hogs_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_hogs_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_hogs_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_hogs_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found royal_hogs in deck")
+            comparisons = add_card_to_deck(comparisons,"royal_hogs")
+    #balloon
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_11.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_12.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_13.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_14.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "balloon_15.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found balloon in deck")
+            comparisons = add_card_to_deck(comparisons,"balloon")
+    #skeleton_king
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_king_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_king_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_king_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_king_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_king_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found skeleton_king in deck")
+            comparisons = add_card_to_deck(comparisons,"skeleton_king")
+    #rascals
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rascals_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found rascals in deck")
+            comparisons = add_card_to_deck(comparisons,"rascals")
     #tornado
     if 1 == 1:
         n = 0
@@ -1742,6 +2184,38 @@ def check_deck():
         if n == 1:
             logger.log("Found tornado in deck")
             comparisons = add_card_to_deck(comparisons,"tornado")
+    #barbs
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barbs_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barbs_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barbs_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barbs_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "barbs_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found barbs in deck")
+            comparisons = add_card_to_deck(comparisons,"barbs")
+    #minion_hoard
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "minion_hoard_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "minion_hoard_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "minion_hoard_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "minion_hoard_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "minion_hoard_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found minion_hoard in deck")
+            comparisons = add_card_to_deck(comparisons,"minion_hoard")
     #goblin_barrel
     if 1 == 1:
         n = 0
@@ -1774,80 +2248,616 @@ def check_deck():
         if n == 1:
             logger.log("Found clone in deck")
             comparisons = add_card_to_deck(comparisons,"clone")
-    #earthquake
+    #elixer_golem
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "earthquake_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elixer_golem_5.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found earthquake in deck")
-            comparisons = add_card_to_deck(comparisons,"earthquake")
-    #royal_delivery
+            logger.log("Found elixer_golem in deck")
+            comparisons = add_card_to_deck(comparisons,"elixer_golem")
+    #xbow
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "royal_delivery_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "xbow_10.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found royal_delivery in deck")
-            comparisons = add_card_to_deck(comparisons,"royal_delivery")
-    #baby_dragon
+            logger.log("Found xbow in deck")
+            comparisons = add_card_to_deck(comparisons,"xbow")
+    #rage
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_5.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "baby_dragon_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rage_11.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found baby_dragon in deck")
-            comparisons = add_card_to_deck(comparisons,"baby_dragon")
-    #lumberjack
+            logger.log("Found rage in deck")
+            comparisons = add_card_to_deck(comparisons,"rage")
+    #goblin_drill
     if 1 == 1:
         n = 0
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_1.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_1.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_2.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_2.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_3.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_3.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_4.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_4.png")), 0.97) is not None:
             n = 1
-        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lumberjack_5.png")), 0.97) is not None:
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_drill_7.png")), 0.97) is not None:
             n = 1
         if n == 1:
-            logger.log("Found lumberjack in deck")
-            comparisons = add_card_to_deck(comparisons,"lumberjack")
-    
-    
-    
-    #freeze
-    #giant
-    #barbs
-    #balloon
+            logger.log("Found goblin_drill in deck")
+            comparisons = add_card_to_deck(comparisons,"goblin_drill")
+    #executioner
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "executioner_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found executioner in deck")
+            comparisons = add_card_to_deck(comparisons,"executioner")
+    #lightning
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lightning_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lightning_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lightning_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lightning_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lightning_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found lightning in deck")
+            comparisons = add_card_to_deck(comparisons,"lightning")
+    #lavahound
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lavahound_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lavahound_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lavahound_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lavahound_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "lavahound_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found lavahound in deck")
+            comparisons = add_card_to_deck(comparisons,"lavahound")
+    #zappies
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "zappies_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found zappies in deck")
+            comparisons = add_card_to_deck(comparisons,"zappies")
+    #goblin_giant
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_giant_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found goblin_giant in deck")
+            comparisons = add_card_to_deck(comparisons,"goblin_giant")
     #prince
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "prince_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found prince in deck")
+            comparisons = add_card_to_deck(comparisons,"prince")
+    #skeleton_dragons
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_11.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_12.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_13.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_14.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "skeleton_dragons_15.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found skeleton_dragons in deck")
+            comparisons = add_card_to_deck(comparisons,"skeleton_dragons")
+    #wizard
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "wizard_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found wizard in deck")
+            comparisons = add_card_to_deck(comparisons,"wizard")
+    #healer
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_11.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_12.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_13.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_14.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "healer_15.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found healer in deck")
+            comparisons = add_card_to_deck(comparisons,"healer")
+    #graveyard
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_11.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_12.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_13.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_14.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "graveyard_15.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found graveyard in deck")
+            comparisons = add_card_to_deck(comparisons,"graveyard")
+    #rocket
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "rocket_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found rocket in deck")
+            comparisons = add_card_to_deck(comparisons,"rocket")
+    #e_giant
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_giant_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found e_giant in deck")
+            comparisons = add_card_to_deck(comparisons,"e_giant")
+    #e_dragon
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "e_dragon_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found e_dragon in deck")
+            comparisons = add_card_to_deck(comparisons,"e_dragon")
+    #flying_machine
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_10.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_11.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_12.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_13.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_14.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "flying_machine_15.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found flying_machine in deck")
+            comparisons = add_card_to_deck(comparisons,"flying_machine")
+    #elite_barbs
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elite_barbs_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elite_barbs_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elite_barbs_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elite_barbs_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "elite_barbs_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found elite_barbs in deck")
+            comparisons = add_card_to_deck(comparisons,"elite_barbs")
+    #golden_knight
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golden_knight_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golden_knight_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golden_knight_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golden_knight_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "golden_knight_5.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found golden_knight in deck")
+            comparisons = add_card_to_deck(comparisons,"golden_knight")
+    #goblin_hut
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "goblin_hut_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found goblin_hut in deck")
+            comparisons = add_card_to_deck(comparisons,"goblin_hut")
+    #inferno_tower
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "inferno_tower_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found inferno_tower in deck")
+            comparisons = add_card_to_deck(comparisons,"inferno_tower")
+    #fisherman
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "fisherman_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found fisherman in deck")
+            comparisons = add_card_to_deck(comparisons,"fisherman")
+    #mighty_miner
+    if 1 == 1:
+        n = 0
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_1.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_2.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_3.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_4.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_5.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_6.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_7.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_8.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_9.png")), 0.97) is not None:
+            n = 1
+        if compare_images(deck_image, Image.open(join("pyclashbot", "reference_images", "deck_cards", "mighty_miner_10.png")), 0.97) is not None:
+            n = 1
+        if n == 1:
+            logger.log("Found mighty_miner in deck")
+            comparisons = add_card_to_deck(comparisons,"mighty_miner")
     
-    
+
     
     time.sleep(2)
     pyautogui.moveTo(x=245, y=640, duration=1)
