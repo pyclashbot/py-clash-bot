@@ -830,14 +830,14 @@ def check_deck():
     deck_image = pyautogui.screenshot(region=(24, 203, 407, 324))
 
     # check for all cards
-    comparisons = ["empty"]*8
-    comparisons = find_all_cards(deck_image, comparisons)
+    current_deck = ["empty"]*8
+    current_deck = find_all_cards(deck_image, current_deck)
 
     time.sleep(2)
     pyautogui.moveTo(x=245, y=640, duration=1)
     pyautogui.click()
     time.sleep(2)
-    return comparisons
+    return current_deck
 
 
 def main_loop():
