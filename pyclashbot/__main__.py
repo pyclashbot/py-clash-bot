@@ -132,54 +132,66 @@ def open_chests(duration):
     n = check_if_has_chests()
     if n[0] == 1:
         logger.log("Chest detected in slot 1")
+        logger.log("clicking chest1")
         pyautogui.moveTo(x=78, y=554, duration=duration)
         pyautogui.click()
         check_quit_key_press()
-        time.sleep(1)
+        time.sleep(2)
+        logger.log("opening chest1")
         pyautogui.moveTo(x=210, y=455, duration=duration)
         pyautogui.click()
         time.sleep(1)
         pyautogui.click()
         time.sleep(1)
+        logger.log("skipping through chest1")
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
         check_quit_key_press()
     if n[1] == 1:
         logger.log("Chest detected in slot 2")
+        logger.log("clicking chest2")
         pyautogui.moveTo(x=162, y=549, duration=duration)
         check_quit_key_press()
         pyautogui.click()
-        time.sleep(1)
+        time.sleep(2)
+        logger.log("opening chest2")
         pyautogui.moveTo(x=210, y=455, duration=duration)
         time.sleep(1)
         pyautogui.click()
         pyautogui.click()
         time.sleep(1)
+        logger.log("skipping through chest2")
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
         check_quit_key_press()
     if n[2] == 1:
         logger.log("Chest detected in slot 3")
+        logger.log("clicking chest3")
         check_quit_key_press()
         pyautogui.moveTo(x=263, y=541, duration=duration)
         pyautogui.click()
-        time.sleep(1)
+        time.sleep(2)
+        logger.log("opening chest3")
         pyautogui.moveTo(x=210, y=455, duration=duration)
         time.sleep(1)
         pyautogui.click()
         pyautogui.click()
         time.sleep(1)
+        logger.log("skipping through chest3")
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
         check_quit_key_press()
     if n[3] == 1:
         logger.log("Chest detected in slot 4")
+        logger.log("clicking chest4")
         pyautogui.moveTo(x=349, y=551, duration=duration)
         check_quit_key_press()
         pyautogui.click()
-        time.sleep(1)
+        time.sleep(2)
+        logger.log("opening chest4")
         pyautogui.moveTo(x=210, y=455, duration=duration)
         time.sleep(1)
         pyautogui.click()
         pyautogui.click()
         time.sleep(1)
+        logger.log("skipping through chest4")
         pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
         check_quit_key_press()
 
@@ -805,12 +817,10 @@ def main_loop():
 
         # plt.show()
 
-        # check_for_card_in_hand(card)
-
-        # while 1 == 1:
-        #     placement_coords = look_for_enemy_troops()
-        #     fight_with_deck_list(deck, placement_coords)
-
+        print("test")
+        open_chests(duration)
+       
+       
         # orientate_memu_multi()
         # time.sleep(1)
         # restart_client(duration)
@@ -862,5 +872,7 @@ def main_loop():
         # else:
         #     logger.log("Last gane was a loss")
         #     logger.add_loss()
+            
+            
 if __name__ == "__main__":
     main_loop()
