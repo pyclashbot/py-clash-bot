@@ -862,7 +862,7 @@ def main_loop():
         #plt.show()
 
 
-        print(check_if_has_chests())
+
        
 
         
