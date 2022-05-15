@@ -19,7 +19,7 @@ bdist_msi_options = {
 }
 
 dependencies = ['PIL', 'cv2', 'keyboard',
-                'matplotlib', 'numpy', 'pyautogui', 'pygetwindow']
+                'matplotlib', 'numpy', 'pyautogui', 'pygetwindow', 'joblib']
 
 build_exe_options = {
     'includes': dependencies,
