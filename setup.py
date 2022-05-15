@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
@@ -16,7 +16,7 @@ setup(
     download_url='https://github.com/matthewmiglio/py-clash-bot/releases',
     install_requires=['pillow', 'opencv-python', 'keyboard',
                       'matplotlib', 'numpy', 'pyautogui', 'pygetwindow', 'joblib'],
-    packages=['pyclashbot'],
+    packages=find_packages(),
     python_requires='>=3',
     zip_safe=False,
     entry_points={
