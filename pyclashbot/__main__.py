@@ -101,27 +101,73 @@ def check_if_on_memu_main():
 def check_if_has_chests():
     has_chests = [0] * 4
 
-    iar = refresh_screen()
-    chest1_pix = iar[572][93]
-    chest2_pix = iar[566][158]
-    chest3_pix = iar[572][277]
-    chest4_pix = iar[574][326]
-
-    sentinel = [1] * 3
-    sentinel[0] = 34
-    sentinel[1] = 122
-    sentinel[2] = 173
-
-    if not pixel_is_equal(chest1_pix, sentinel, 40):
-        has_chests[0] = 1
-    if not pixel_is_equal(chest2_pix, sentinel, 40):
-        has_chests[1] = 1
-    if not pixel_is_equal(chest3_pix, sentinel, 40):
-        has_chests[2] = 1
-    if not pixel_is_equal(chest4_pix, sentinel, 40):
-        has_chests[3] = 1
-
-    check_quit_key_press()
+    
+    
+    chest_slot_1_image = pyautogui.screenshot(region=(47,493, 65, 75))
+    chest_slot_2_image = pyautogui.screenshot(region=(134,493, 65, 75))
+    chest_slot_3_image = pyautogui.screenshot(region=(220,493, 65, 75))
+    chest_slot_4_image = pyautogui.screenshot(region=(311,493, 65, 75))
+    reference_folder = "chest_images"
+    references = [
+        "golden_chest_1.png",
+        "golden_chest_2.png",
+        "golden_chest_3.png",
+        "golden_chest_4.png",
+        "golden_chest_5.png",
+        "gold_chest_1.png",
+        "gold_chest_2.png",
+        "gold_chest_3.png",
+        "gold_chest_4.png",
+        "gold_chest_5.png",
+        "gold_chest_6.png",
+        "silver_chest_1.png",
+        "silver_chest_2.png",
+        "silver_chest_3.png",
+        "silver_chest_4.png",
+        "silver_chest_5.png",
+    ]
+    location_slot_1 = find_references(
+        screenshot=chest_slot_1_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    location_slot_2 = find_references(
+        screenshot=chest_slot_2_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    location_slot_3 = find_references(
+        screenshot=chest_slot_3_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    location_slot_4 = find_references(
+        screenshot=chest_slot_4_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    for location in location_slot_1:
+        if location is not None:
+            has_chests[0]=1
+    for location in location_slot_2:
+        if location is not None:
+            has_chests[1]=1
+    for location in location_slot_3:
+        if location is not None:
+            has_chests[2]=1
+    for location in location_slot_4:
+        if location is not None:
+            has_chests[3]=1
+    return has_chests
+    
+    
+    
+    
+    
     return has_chests
 
 
@@ -813,12 +859,15 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        # plt.show()
+        #plt.show()
 
-        print("test")
-        open_chests(duration)
+
+        print(check_if_has_chests())
        
-       
+
+        
+        
+        
         # orientate_memu_multi()
         # time.sleep(1)
         # restart_client(duration)
