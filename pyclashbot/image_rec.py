@@ -1,8 +1,11 @@
+import multiprocessing
+from os.path import join
+from typing import Union
+
 import cv2
 import numpy as np
-from typing import Union
+from joblib import Parallel, delayed
 from PIL import Image
-from os.path import join
 
 
 def find_references(screenshot: Union[np.ndarray, Image.Image], folder: str, names: list[str], tolerance=0.97):
@@ -17,7 +20,9 @@ def find_references(screenshot: Union[np.ndarray, Image.Image], folder: str, nam
     Returns:
         list[Union[tuple[int,int],None]: coordinate locations
     """
-    return [find_reference(screenshot, folder, name, tolerance) for name in names]
+    num_cores = multiprocessing.cpu_count()
+    return Parallel(n_jobs=num_cores, prefer="threads")(
+        delayed(find_reference)(screenshot, folder, name, tolerance) for name in names)
 
 
 def find_reference(screenshot: Union[np.ndarray, Image.Image], folder: str, name: str, tolerance=0.97):
