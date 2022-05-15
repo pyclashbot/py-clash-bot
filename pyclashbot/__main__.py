@@ -249,14 +249,16 @@ def request_from_clash_main_menu(duration):
         check_quit_key_press()
     # click card
     coords = check_for_request_card()
-    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-    pyautogui.click()
-    time.sleep(2)
+    if coords is not None:
+        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+        pyautogui.click()
+        time.sleep(2)
     # click request
     coords = look_for_request_button()
-    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-    pyautogui.click()
-    time.sleep(2)
+    if coords is not None:
+        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
+        pyautogui.click()
+        time.sleep(2)
     return_to_clash_main_menu(duration)
 
 
