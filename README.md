@@ -1,15 +1,23 @@
 # py-clash-bot
 A Clash Royale automation bot written in Python.
 
-## Usage
-
-### Windows Install
+## Install 
+Choose one of the install methods below
+#### a. Windows Install
 [Download the latest release](https://github.com/matthewmiglio/py-clash-bot/releases).
 
-### Run from source
+#### b. Install from source
 ```
-git clone https://github.com/matthewmiglio/py-clash-bot.git
 cd py-clash-bot
-pip install -r requirements.txt
-python main.py
+pip install git+https://github.com/matthewmiglio/py-clash-bot.git
 ```
+
+## Configure MEmu
+Using the Multiple Instance Manager, set the display settings of your instance to match the following
+![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/readme/memu_display_settings.jpg?raw=true)
+
+## Run py-clash-bot
+#### a. Installed on Windows
+Run the desktop shortcut the installer created.
+#### b. Installed from source
+Enter `py-clash-bot` in the command line.

@@ -1,5 +1,5 @@
 import time
-from image_rec import find_references
+from pyclashbot.image_rec import find_references
 import pyautogui
 import random
 
