@@ -15,7 +15,7 @@ setup(
     url='https://github.com/matthewmiglio/py-clash-bot',
     download_url='https://github.com/matthewmiglio/py-clash-bot/releases',
     install_requires=['pillow', 'opencv-python', 'keyboard',
-                      'matplotlib', 'numpy', 'pyautogui', 'pygetwindow'],
+                      'matplotlib', 'numpy', 'pyautogui', 'pygetwindow', 'joblib'],
     packages=['pyclashbot'],
     python_requires='>=3',
     zip_safe=False,
