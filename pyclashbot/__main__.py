@@ -1,7 +1,5 @@
 import random
 import time
-from os.path import join
-from typing import Union
 
 import keyboard
 import matplotlib.pyplot as plt
