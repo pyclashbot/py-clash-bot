@@ -8,7 +8,6 @@ Choose one of the install methods below
 
 #### b. Install from source
 ```
-cd py-clash-bot
 pip install git+https://github.com/matthewmiglio/py-clash-bot.git
 ```
 
