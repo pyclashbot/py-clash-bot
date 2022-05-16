@@ -98,146 +98,73 @@ def check_if_on_memu_main():
     return True
 
 
-def check_if_has_chests():
-    has_chests = [0] * 4
-
-    
-    
-    chest_slot_1_image = pyautogui.screenshot(region=(47,493, 65, 75))
-    chest_slot_2_image = pyautogui.screenshot(region=(134,493, 65, 75))
-    chest_slot_3_image = pyautogui.screenshot(region=(220,493, 65, 75))
-    chest_slot_4_image = pyautogui.screenshot(region=(311,493, 65, 75))
-    reference_folder = "chest_images"
+def check_if_unlock_chest_button_exists():
+    current_image = pyautogui.screenshot()
+    reference_folder = "unlock_chest_button"
     references = [
-        "golden_chest_1.png",
-        "golden_chest_2.png",
-        "golden_chest_3.png",
-        "golden_chest_4.png",
-        "golden_chest_5.png",
-        "gold_chest_1.png",
-        "gold_chest_2.png",
-        "gold_chest_3.png",
-        "gold_chest_4.png",
-        "gold_chest_5.png",
-        "gold_chest_6.png",
-        "silver_chest_1.png",
-        "silver_chest_2.png",
-        "silver_chest_3.png",
-        "silver_chest_4.png",
-        "silver_chest_5.png",
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png"
     ]
-    location_slot_1 = find_references(
-        screenshot=chest_slot_1_image,
+
+    locations = find_references(
+        screenshot=current_image,
         folder=reference_folder,
         names=references,
         tolerance=0.97
     )
-    location_slot_2 = find_references(
-        screenshot=chest_slot_2_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97
-    )
-    location_slot_3 = find_references(
-        screenshot=chest_slot_3_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97
-    )
-    location_slot_4 = find_references(
-        screenshot=chest_slot_4_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97
-    )
-    for location in location_slot_1:
+
+    for location in locations:
         if location is not None:
-            has_chests[0]=1
-    for location in location_slot_2:
-        if location is not None:
-            has_chests[1]=1
-    for location in location_slot_3:
-        if location is not None:
-            has_chests[2]=1
-    for location in location_slot_4:
-        if location is not None:
-            has_chests[3]=1
-    return has_chests
-    
-    
-    
-    
-    
-    return has_chests
+              # found a location
+            pyautogui.click(x=210, y=455)
+            return True
+    return False
 
 
-def open_chests(duration):
+def open_chests():
     check_quit_key_press()
-    n = check_if_has_chests()
-    if n[0] == 1:
-        logger.log("Chest detected in slot 1")
-        logger.log("clicking chest1")
-        pyautogui.moveTo(x=78, y=554, duration=duration)
-        pyautogui.click()
-        check_quit_key_press()
-        time.sleep(2)
-        logger.log("opening chest1")
-        pyautogui.moveTo(x=210, y=455, duration=duration)
-        pyautogui.click()
-        time.sleep(1)
-        pyautogui.click()
-        time.sleep(1)
-        logger.log("skipping through chest1")
-        pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
-        check_quit_key_press()
-    if n[1] == 1:
-        logger.log("Chest detected in slot 2")
-        logger.log("clicking chest2")
-        pyautogui.moveTo(x=162, y=549, duration=duration)
-        check_quit_key_press()
-        pyautogui.click()
-        time.sleep(2)
-        logger.log("opening chest2")
-        pyautogui.moveTo(x=210, y=455, duration=duration)
-        time.sleep(1)
-        pyautogui.click()
-        pyautogui.click()
-        time.sleep(1)
-        logger.log("skipping through chest2")
-        pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
-        check_quit_key_press()
-    if n[2] == 1:
-        logger.log("Chest detected in slot 3")
-        logger.log("clicking chest3")
-        check_quit_key_press()
-        pyautogui.moveTo(x=263, y=541, duration=duration)
-        pyautogui.click()
-        time.sleep(2)
-        logger.log("opening chest3")
-        pyautogui.moveTo(x=210, y=455, duration=duration)
-        time.sleep(1)
-        pyautogui.click()
-        pyautogui.click()
-        time.sleep(1)
-        logger.log("skipping through chest3")
-        pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
-        check_quit_key_press()
-    if n[3] == 1:
-        logger.log("Chest detected in slot 4")
-        logger.log("clicking chest4")
-        pyautogui.moveTo(x=349, y=551, duration=duration)
-        check_quit_key_press()
-        pyautogui.click()
-        time.sleep(2)
-        logger.log("opening chest4")
-        pyautogui.moveTo(x=210, y=455, duration=duration)
-        time.sleep(1)
-        pyautogui.click()
-        pyautogui.click()
-        time.sleep(1)
-        logger.log("skipping through chest4")
-        pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
-        check_quit_key_press()
+
+
+    logger.log("clicking chest1")
+    pyautogui.click(x=78, y=554)
+    time.sleep(1)
+    logger.log("opening chest1")
+    time.sleep(1)
+    check_if_unlock_chest_button_exists()
+    logger.log("skipping through")
+    pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
+    time.sleep(1)
+    logger.log("clicking chest2")
+    pyautogui.click(x=162, y=549)
+    time.sleep(1)
+    logger.log("opening chest2")
+    check_if_unlock_chest_button_exists()
+    time.sleep(1)
+    logger.log("skipping through chest2")
+    pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
+    time.sleep(1)
+    logger.log("clicking chest3")
+    pyautogui.click(x=263, y=541)
+    time.sleep(1)
+    logger.log("opening chest3")
+    check_if_unlock_chest_button_exists()
+    time.sleep(1)
+    logger.log("skipping through chest3")
+    pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
+    check_quit_key_press()
+    time.sleep(1)
+    logger.log("clicking chest4")
+    pyautogui.click(x=349, y=551)
+    time.sleep(1)
+    logger.log("opening chest4")
+    check_if_unlock_chest_button_exists()
+    time.sleep(1)
+    logger.log("skipping through chest4")
+    pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
 
 
 def check_if_on_clash_main_menu():
@@ -506,6 +433,7 @@ def random_card_coord_picker():
 
 
 def check_if_in_battle():
+    n=0
     check_quit_key_press()
     iar = refresh_screen()
     pix1 = iar[551][56]
@@ -545,20 +473,28 @@ def refresh_clan_tab(duration):
 
 
 def check_if_exit_battle_button_exists():
-    check_quit_key_press()
-    iar = refresh_screen()
-    pix1 = iar[634][52]
-    pix3 = iar[640][107]
-    sentinel = [1] * 3
-    sentinel[0] = 76
-    sentinel[1] = 174
-    sentinel[2] = 255
-    if not pixel_is_equal(pix1, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        return False
-    check_quit_key_press()
-    return True
+    current_image = pyautogui.screenshot()
+    reference_folder = "exit_battle"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png"
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.99
+    )
+
+    for location in locations:
+        if location is not None:
+            return True  # found a location
+    return False
 
 
 def find_donates():
@@ -846,74 +782,73 @@ def main_loop():
     duration = 0.5
     fight_duration = 0.2
     loop_count = 0
-    deck = ["witch", "fire_spirit", "mother_witch", "hog",
-            "valk", "firecracker", "bandit", "musketeer"]
+
 
     if not check_if_windows_exist():
         return
 
     while True:
         time.sleep(1)
-        logger.log(f"loop count: {loop_count}")
+        logger.log(f"loop count: {loop_count}") 
         loop_count += 1
         iar = refresh_screen()
         plt.imshow(iar)
 
         #plt.show()
 
+
+
         
 
-        # orientate_memu_multi()
-        # time.sleep(1)
-        # restart_client(duration)
-        # orientate_window()
-        # if check_if_on_clash_main_menu():
-        #     logger.log("We're on the main menu")
-        #     time.sleep(1)
-        #     logger.log("Handling chests")
-        #     time.sleep(1)
-        #     open_chests(duration)
-        #     time.sleep(3)
-        #     logger.log("Checking if can request")
-        #     time.sleep(1)
-        #     if check_if_can_request():
-        #         logger.log("Can request. Requesting giant")
-        #         time.sleep(1)
-        #         request_from_clash_main_menu(duration)
-        #     else:
-        #         logger.log("Request is unavailable")
-        #     logger.log("Checking if can donate")
-        #     time.sleep(1)
-        #     getto_donate_page(duration)
-        #     click_donates(duration)
-        # else:
-        #     logger.log("not on clash main menu")
+        orientate_memu_multi()
+        time.sleep(1)
+        restart_client(duration)
+        orientate_window()
+        
+        if check_if_on_clash_main_menu():
+            logger.log("We're on the main menu")
+            time.sleep(1)
+            logger.log("Handling chests")
+            time.sleep(1)
+            open_chests()
+            time.sleep(3)
+            logger.log("Checking if can request")
+            time.sleep(1)
+            if check_if_can_request():
+                logger.log("Can request. Requesting giant")
+                time.sleep(1)
+                request_from_clash_main_menu(duration)
+            else:
+                logger.log("Request is unavailable")
+            logger.log("Checking if can donate")
+            time.sleep(1)
+            getto_donate_page(duration)
+            click_donates(duration)
+        else:
+            logger.log("not on clash main menu")
 
-        # #check deck
-        # deck = check_deck()
-        # time.sleep(2)
-
-
-        # logger.log("Handled chests, requests, and deck. Gonna start a battle")
-        # time.sleep(1)
-        # start_2v2(duration)
-        # logger.add_fight()
-        # wait_for_battle_start()
-        # fightloops = 0
-        # while not check_if_exit_battle_button_exists():
-        #     fightloops = fightloops + 1
-        #     logger.log(f"fightloop: {fightloops}")
-        #     fight_with_deck_list(deck)
-        #     if fightloops > 100:
-        #         break
-        # leave_end_battle_window(duration)
-        # time.sleep(5)
-        # if check_if_past_game_is_win(duration):
-        #     logger.log("Last game was a win")
-        #     logger.add_win()
-        # else:
-        #     logger.log("Last gane was a loss")
-        #     logger.add_loss()
+        logger.log("Handled chests, requests, and deck. Gonna start a battle")
+        time.sleep(1)
+        start_2v2(duration)
+        logger.add_fight()
+        wait_for_battle_start()
+        fightloops = 0
+        while not check_if_exit_battle_button_exists():
+            fightloops = fightloops + 1
+            logger.log(f"fightloop: {fightloops}")
+            enemy_positions = look_for_enemy_troops()
+            fight_with_deck_list(enemy_positions)
+            if fightloops > 100:
+                break
+        leave_end_battle_window(duration)
+        time.sleep(5)
+        
+        if check_if_past_game_is_win(duration):
+            logger.log("Last game was a win")
+            logger.add_win()
+        else:
+            logger.log("Last gane was a loss")
+            logger.add_loss()
             
             
 if __name__ == "__main__":
