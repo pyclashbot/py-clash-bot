@@ -38,416 +38,1624 @@ def random_placement_coord_maker():
 
 # region fight
 
+def card_place_turret(card_loc):
+    
+    #choose placement
+    n = random.randint(1, 4)
+    if n == 1:
+        placement_loc = [208,401]
+    if n == 2:
+        placement_loc = [208,372]
+    if n == 3:
+        placement_loc = [211,393]
+    if n == 4:
+        placement_loc = [203,380]
+    #click on card
+    pyautogui.click(x=card_loc[0],y=card_loc[1])
+    time.sleep(0.5)
+    #click placement
+    pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+    
 
-def fight_with_deck_list(deck_list, enemy_troop_position):
+def card_place_spawners(card_loc):
+    n = random.randint(1, 6)
+    if n==1:
+        placement_loc = [86,485]
+    if n==2:
+        placement_loc = [139,488]
+    if n==3:
+        placement_loc = [174,436]
+    if n==4:
+        placement_loc = [265,442]
+    if n==5:
+        placement_loc = [281,492]
+    if n==6:
+        placement_loc = [341,495]
+    pyautogui.click(x=card_loc[0],y=card_loc[1])
+    time.sleep(0.25)
+    pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+    
+
+def card_place_hogs(card_loc):
+    if card_loc is None:
+        return
+    n = random.randint(1, 4)
+    if n==1:
+        placement_loc = [84,340]
+    if n==2:
+        placement_loc = [125,340]
+    if n==3:
+        placement_loc = [298,340]
+    if n==4:
+        placement_loc = [347,340]
+    pyautogui.click(x=card_loc[0],y=card_loc[1])
+    time.sleep(0.25)
+    pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+
+
+def fight_with_deck_list(enemy_troop_position):
     placement_coords = enemy_troop_position
-    # turrets
-    # if tesla in deck and in hand
-    if (check_if_card_in_deck(deck_list, "tesla")) and (check_for_card_in_hand("tesla") is not None):
-        print("Decided to play tesla")
-        card_coords = check_for_card_in_hand("tesla")
-        placement_coords = [212, 385]
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+   
+# #turrets
+#     bomb_tower
+    if (check_for_card_in_hand("bomb_tower") is not None):
+        print("bomb_tower in decklist and hand.")
+        card_loc = check_for_card_in_hand("bomb_tower")
+        if card_loc is None:
+            return
+        
+        if card_loc is not None:
+            print("Playing bomb_tower")
+            card_place_turret(card_loc)
         return
-# melee tanks
-     # if bandit in deck and bandit in hand
-    if (check_if_card_in_deck(deck_list, "bandit")) and (check_for_card_in_hand("bandit") is not None):
-        print("Decided to play bandit")
-        card_coords = check_for_card_in_hand("bandit")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     cannon
+    if (check_for_card_in_hand("cannon") is not None):
+        print("cannon in decklist and hand.")
+        card_loc = check_for_card_in_hand("cannon")
+        if card_loc is None:
+            return
+        
+        if card_loc is not None:
+            print("Playing cannon")
+            card_place_turret(card_loc)
+        return
+#     goblin_cage
+    if (check_for_card_in_hand("goblin_cage") is not None):
+        print("goblin_cage in decklist and hand.")
+        card_loc = check_for_card_in_hand("goblin_cage")
+        if card_loc is None:
+            return
+        
+        if card_loc is not None:
+            print("Playing goblin_cage")
+            card_place_turret(card_loc)
+        return
+#     inferno_tower
+    if (check_for_card_in_hand("inferno_tower") is not None):
+        print("inferno_tower in decklist and hand.")
+        card_loc = check_for_card_in_hand("inferno_tower")
+        if card_loc is None:
+            return
+        
+        if card_loc is not None:
+            print("Playing inferno_tower")
+            card_place_turret(card_loc)
+        return
+#     tesla
+    if (check_for_card_in_hand("tesla") is not None):
+        print("tesla in decklist and hand.")
+        card_loc = check_for_card_in_hand("tesla")
+        if card_loc is not None:
+            print("Playing tesla")
+            card_place_turret(card_loc)
+        return
+# #goblin_barrels
+#     goblin_drill
+    if (check_for_card_in_hand("goblin_drill") is not None):
+        print("found goblin_drill in decklist and hand")
+        n = random.randint(1, 6)
+        if n ==1:
+            placement_loc = [96,195]
+        if n ==2:
+            placement_loc = [144,193]
+        if n ==3:
+            placement_loc = [125,170]
+        if n ==4:
+            placement_loc = [297,220]
+        if n ==5:
+            placement_loc = [319,196]
+        if n ==6:
+            placement_loc = [297,165]
+        #click card
+        card_loc = check_for_card_in_hand("goblin_drill")
+        if card_loc is None:
+            return
+        
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.5)
+        #click placement
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     miner
+    if (check_for_card_in_hand("miner") is not None):
+        print("found miner in decklist and hand")
+        n = random.randint(1, 6)
+        if n ==1:
+            placement_loc = [96,195]
+        if n ==2:
+            placement_loc = [144,193]
+        if n ==3:
+            placement_loc = [125,170]
+        if n ==4:
+            placement_loc = [297,220]
+        if n ==5:
+            placement_loc = [319,196]
+        if n ==6:
+            placement_loc = [297,165]
+        #click card
+        card_loc = check_for_card_in_hand("miner")
+        if card_loc is None:
+            return
+        
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.5)
+        #click placement
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     goblin_barrel
+    if (check_for_card_in_hand("goblin_barrel") is not None):
+        print("found goblin_barrel in decklist and hand")
+        n = random.randint(1, 6)
+        if n ==1:
+            placement_loc = [120,200]
+        if n ==2:
+            placement_loc = [120,200]
+        if n ==3:
+            placement_loc = [297,200]
+        if n ==4:
+            placement_loc = [297,200]
+        if n ==5:
+            placement_loc = [353,158]
+        if n ==6:
+            placement_loc = [71,166]
+        #click card
+        card_loc = check_for_card_in_hand("goblin_barrel")
+        if card_loc is None:
+            return
+        
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.5)
+        #click placement
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+# #melee_tanks
+#     barb_barrel
+    if (check_for_card_in_hand("barb_barrel") is not None):
+        print("playing barb_barrel")
+        card_loc = check_for_card_in_hand("barb_barrel")
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+45
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        if card_loc is None:
+            return
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if dark_knight in deck and dark_knight in hand
-    if (check_if_card_in_deck(deck_list, "dark_knight")) and (check_for_card_in_hand("dark_knight") is not None):
-        print("Decided to play dark_knight")
-        card_coords = check_for_card_in_hand("dark_knight")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if fire_spirit in deck and fire_spirit in hand
-    if (check_if_card_in_deck(deck_list, "fire_spirit")) and (check_for_card_in_hand("fire_spirit") is not None):
-        print("Decided to play fire_spirit")
-        card_coords = check_for_card_in_hand("fire_spirit")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     bandit
+    if (check_for_card_in_hand("bandit") is not None):
+        print("playing bandit")
+        card_loc = check_for_card_in_hand("bandit")
+        if card_loc is None:
+            return
+        
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+30
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if mega_knight in deck and mega_knight in hand
-    if (check_if_card_in_deck(deck_list, "mega_knight")) and (check_for_card_in_hand("mega_knight") is not None):
-        print("Decided to play mega_knight")
-        card_coords = check_for_card_in_hand("mega_knight")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return    
+#     barbs
+    if (check_for_card_in_hand("barbs") is not None):
+        print("playing barbs")
+        card_loc = check_for_card_in_hand("barbs")
+        placement_loc = enemy_troop_position
+        if card_loc is None:
+            return
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1] + 30
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if mini_pekka in deck and mini_pekka in hand
-    if (check_if_card_in_deck(deck_list, "mini_pekka")) and (check_for_card_in_hand("mini_pekka") is not None):
-        print("Decided to play mini_pekka")
-        card_coords = check_for_card_in_hand("mini_pekka")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if pekka in deck and pekka in hand
-    if (check_if_card_in_deck(deck_list, "pekka")) and (check_for_card_in_hand("pekka") is not None):
-        print("Decided to play pekka")
-        card_coords = check_for_card_in_hand("pekka")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if royal_ghost in deck and royal_ghost in hand
-    if (check_if_card_in_deck(deck_list, "royal_ghost")) and (check_for_card_in_hand("royal_ghost") is not None):
-        print("Decided to play royal_ghost")
-        card_coords = check_for_card_in_hand("royal_ghost")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if royal_recruits in deck and in hand
-    if (check_if_card_in_deck(deck_list, "royal_recruits")) and (check_for_card_in_hand("royal_recruits") is not None):
-        print("Decided to play royal_recruits")
-        card_coords = check_for_card_in_hand("royal_recruits")
-        placement_coords = [215, 390]
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if valk in deck and valk in hand
-    if (check_if_card_in_deck(deck_list, "valk")) and (check_for_card_in_hand("valk") is not None):
-        print("Decided to play valk")
-        card_coords = check_for_card_in_hand("valk")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
-        return
-    # if barb_barrel in deck and in hand
-    if (check_if_card_in_deck(deck_list, "barb_barrel")) and (check_for_card_in_hand("barb_barrel") is not None) and (placement_coords is not None):
-        print("Decided to play barb_barrel")
-        card_coords = check_for_card_in_hand("barb_barrel")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     bats
+    if (check_for_card_in_hand("bats") is not None):
+        print("playing bats")
+        card_loc = check_for_card_in_hand("bats")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+30
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-# ranged
-    # if e_wiz in deck and e_wiz in hand
-    if (check_if_card_in_deck(deck_list, "e_wiz")) and (check_for_card_in_hand("e_wiz") is not None):
-        print("Decided to play e_wiz")
-        card_coords = check_for_card_in_hand("e_wiz")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     dark_knight
+    if (check_for_card_in_hand("dark_knight") is not None):
+        print("playing dark_knight")
+        card_loc = check_for_card_in_hand("dark_knight")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+25
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if firecracker in deck and firecracker in hand
-    if (check_if_card_in_deck(deck_list, "firecracker")) and (check_for_card_in_hand("firecracker") is not None):
-        print("Decided to play firecracker")
-        card_coords = check_for_card_in_hand("firecracker")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     e_giant
+    if (check_for_card_in_hand("e_giant") is not None):
+        print("playing e_giant")
+        card_loc = check_for_card_in_hand("e_giant")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+65
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if goblin_gang in deck and goblin_gang in hand
-    if (check_if_card_in_deck(deck_list, "goblin_gang")) and (check_for_card_in_hand("goblin_gang") is not None):
-        print("Decided to play goblin_gang")
-        card_coords = check_for_card_in_hand("goblin_gang")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     e_spirit
+    if (check_for_card_in_hand("e_spirit") is not None):
+        print("playing e_spirit")
+        card_loc = check_for_card_in_hand("e_spirit")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+35
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if mother_witch in deck and in hand
-    if (check_if_card_in_deck(deck_list, "mother_witch")) and (check_for_card_in_hand("mother_witch") is not None):
-        print("Decided to play mother_witch")
-        card_coords = check_for_card_in_hand("mother_witch")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     elite_barbs
+    if (check_for_card_in_hand("elite_barbs") is not None):
+        print("playing elite_barbs")
+        card_loc = check_for_card_in_hand("elite_barbs")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+65
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if musketeer in deck and musketeer in hand
-    if (check_if_card_in_deck(deck_list, "musketeer")) and (check_for_card_in_hand("musketeer") is not None):
-        print("Decided to play musketeer")
-        card_coords = check_for_card_in_hand("musketeer")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     fisherman
+    if (check_for_card_in_hand("fisherman") is not None):
+        print("playing fisherman")
+        card_loc = check_for_card_in_hand("fisherman")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+65
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if night_witch in deck and in hand
-    if (check_if_card_in_deck(deck_list, "night_witch")) and (check_for_card_in_hand("night_witch") is not None):
-        print("Decided to play night_witch")
-        card_coords = check_for_card_in_hand("night_witch")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     giant
+    if (check_for_card_in_hand("giant") is not None):
+        print("playing giant")
+        card_loc = check_for_card_in_hand("giant")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+65
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if witch in deck and in hand
-    if (check_if_card_in_deck(deck_list, "witch")) and (check_for_card_in_hand("witch") is not None):
-        print("Decided to play witch")
-        card_coords = check_for_card_in_hand("witch")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     giant_skeleton
+    if (check_for_card_in_hand("giant_skeleton") is not None):
+        print("playing giant_skeleton")
+        card_loc = check_for_card_in_hand("giant_skeleton")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+65
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if archer_queen in deck and archer_queen in hand
-    if (check_if_card_in_deck(deck_list, "archer_queen")) and (check_for_card_in_hand("archer_queen") is not None):
-        print("Decided to play archer_queen")
-        card_coords = check_for_card_in_hand("archer_queen")
-
-        if placement_coords is None:
-            placement_coords = random_placement_coord_maker()
+#     goblin_giant
+    if (check_for_card_in_hand("goblin_giant") is not None):
+        print("playing goblin_giant")
+        card_loc = check_for_card_in_hand("goblin_giant")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
         else:
-            placement_coords[1] = placement_coords[1]+65
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-# spells
-    # if fireball in deck and in hand
-    if (check_if_card_in_deck(deck_list, "fireball")) and (check_for_card_in_hand("fireball") is not None):
-        print("Decided to play fireball")
-        card_coords = check_for_card_in_hand("fireball")
-        n99 = random.randint(1, 2)
-        if n99 == 1:
-            placement_coords = [97, 203]
-        if n99 == 2:
-            placement_coords = [320, 208]
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+#     goblins
+    if (check_for_card_in_hand("goblins") is not None):
+        print("playing goblins")
+        card_loc = check_for_card_in_hand("goblins")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if poison in deck and in hand
-    if (check_if_card_in_deck(deck_list, "poison")) and (check_for_card_in_hand("poison") is not None):
-        print("Decided to play poison")
-        card_coords = check_for_card_in_hand("poison")
-        n99 = random.randint(1, 2)
-        if n99 == 1:
-            placement_coords = [97, 203]
-        if n99 == 2:
-            placement_coords = [320, 208]
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+#     golden_knight
+    if (check_for_card_in_hand("golden_knight") is not None):
+        print("playing golden_knight")
+        card_loc = check_for_card_in_hand("golden_knight")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-# hogs
-    # if battle_ram in deck and battle_ram in hand
-    if (check_if_card_in_deck(deck_list, "battle_ram")) and (check_for_card_in_hand("battle_ram") is not None):
-        print("Decided to play archer_queen")
-        card_coords = check_for_card_in_hand("archer_queen")
-        placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+#     guards
+    if (check_for_card_in_hand("guards") is not None):
+        print("playing guards")
+        card_loc = check_for_card_in_hand("guards")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if hog in deck and hog in hand
-    if (check_if_card_in_deck(deck_list, "hog")) and (check_for_card_in_hand("hog") is not None):
-        print("Decided to play hog")
-        card_coords = check_for_card_in_hand("hog")
-        placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+#     heal_spirit
+    if (check_for_card_in_hand("heal_spirit") is not None):
+        print("playing heal_spirit")
+        card_loc = check_for_card_in_hand("heal_spirit")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
-    # if ram_rider in deck and ram_rider in hand
-    if (check_if_card_in_deck(deck_list, "ram_rider")) and (check_for_card_in_hand("ram_rider") is not None):
-        print("Decided to play ram_rider")
-        card_coords = check_for_card_in_hand("ram_rider")
-        placement_coords = random_placement_coord_maker()
-        # click card
-        if card_coords is not None:
-            pyautogui.moveTo(x=card_coords[0], y=card_coords[1], duration=0)
-        pyautogui.click()
-        # click placement
-        pyautogui.moveTo(
-            x=placement_coords[0], y=placement_coords[1], duration=0)
-        pyautogui.click()
+#     healer
+    if (check_for_card_in_hand("healer") is not None):
+        print("playing healer")
+        card_loc = check_for_card_in_hand("healer")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
         return
+#     ice_golem
+    if (check_for_card_in_hand("ice_golem") is not None):
+        print("playing ice_golem")
+        card_loc = check_for_card_in_hand("ice_golem")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     ice_spirit
+    if (check_for_card_in_hand("ice_spirit") is not None):   
+        print("playing ice_spirit")
+        card_loc = check_for_card_in_hand("ice_spirit")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     knight
+    if (check_for_card_in_hand("knight") is not None):
+        print("playing knight")
+        card_loc = check_for_card_in_hand("knight")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     lumberjack
+    if (check_for_card_in_hand("lumberjack") is not None):
+        print("playing lumberjack")
+        card_loc = check_for_card_in_hand("lumberjack")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     mega_knight
+    if (check_for_card_in_hand("mega_knight") is not None):
+        print("playing mega_knight")
+        card_loc = check_for_card_in_hand("mega_knight")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     mega_minion
+    if (check_for_card_in_hand("mega_minion") is not None):
+        print("playing mega_minion")
+        card_loc = check_for_card_in_hand("mega_minion")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     mighty_miner
+    if (check_for_card_in_hand("mighty_miner") is not None):
+        print("playing mighty_miner")
+        card_loc = check_for_card_in_hand("mighty_miner")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     mini_pekka
+    if (check_for_card_in_hand("mini_pekka") is not None):
+        print("playing mini_pekka")
+        card_loc = check_for_card_in_hand("mini_pekka")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     minion_hoard
+    if (check_for_card_in_hand("minion_hoard") is not None):
+        print("playing minion_hoard")
+        card_loc = check_for_card_in_hand("minion_hoard")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     minions
+    if (check_for_card_in_hand("minions") is not None):
+        print("playing minions")
+        card_loc = check_for_card_in_hand("minions")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     pekka
+    if (check_for_card_in_hand("pekka") is not None):
+        print("playing pekka")
+        card_loc = check_for_card_in_hand("pekka")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     prince
+    if (check_for_card_in_hand("prince") is not None):
+        print("playing prince")
+        card_loc = check_for_card_in_hand("prince")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     royal_ghost
+    if (check_for_card_in_hand("royal_ghost") is not None):
+        print("playing royal_ghost")
+        card_loc = check_for_card_in_hand("royal_ghost")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     skeleton_army
+    if (check_for_card_in_hand("skeleton_army") is not None):
+        print("playing skeleton_army")
+        card_loc = check_for_card_in_hand("skeleton_army")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     skeleton_barrel
+    if (check_for_card_in_hand("skeleton_barrel") is not None):
+        print("playing skeleton_barrel")
+        card_loc = check_for_card_in_hand("skeleton_barrel")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     skeleton_dragons
+    if (check_for_card_in_hand("skeleton_dragons") is not None):
+        print("playing skeleton_dragons")
+        card_loc = check_for_card_in_hand("skeleton_dragons")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     skeleton_king
+    if (check_for_card_in_hand("skeleton_king") is not None):
+        print("playing skeleton_king")
+        card_loc = check_for_card_in_hand("skeleton_king")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     skeletons
+    if (check_for_card_in_hand("skeletons") is not None):
+        print("playing skeletons")
+        card_loc = check_for_card_in_hand("skeletons")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     valk
+    if (check_for_card_in_hand("valk") is not None):
+        print("playing valk")
+        card_loc = check_for_card_in_hand("valk")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 25
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+# #ranged
+#     archer_queen
+    if (check_for_card_in_hand("archer_queen") is not None):
+        print("playing archer_queen")
+        card_loc = check_for_card_in_hand("archer_queen")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 107
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     archers
+    if (check_for_card_in_hand("archers") is not None):
+        print("playing archers")
+        card_loc = check_for_card_in_hand("archers")
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 165
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     baby_dragon
+    if (check_for_card_in_hand("baby_dragon") is not None):
+        print("playing baby_dragon")
+        card_loc = check_for_card_in_hand("baby_dragon")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 145
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     bomber
+    if (check_for_card_in_hand("bomber") is not None):
+        print("playing bomber")
+        card_loc = check_for_card_in_hand("bomber")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 165
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     bowler
+    if (check_for_card_in_hand("bowler") is not None):
+        print("playing bowler")
+        card_loc = check_for_card_in_hand("bowler")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     cannon_cart
+    if (check_for_card_in_hand("cannon_cart") is not None):
+        print("playing cannon_cart")
+        card_loc = check_for_card_in_hand("cannon_cart")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     dart_goblin
+    if (check_for_card_in_hand("dart_goblin") is not None):
+        print("playing dart_goblin")
+        card_loc = check_for_card_in_hand("dart_goblin")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     e_dragon
+    if (check_for_card_in_hand("e_dragon") is not None):
+        print("playing e_dragon")
+        card_loc = check_for_card_in_hand("e_dragon")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     e_wiz
+    if (check_for_card_in_hand("e_wiz") is not None):
+        print("playing e_wiz")
+        card_loc = check_for_card_in_hand("e_wiz")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     elixer_golem
+    if (check_for_card_in_hand("elixer_golem") is not None):
+        print("playing elixer_golem")
+        card_loc = check_for_card_in_hand("elixer_golem")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     executioner
+    if (check_for_card_in_hand("executioner") is not None):
+        print("playing executioner")
+        card_loc = check_for_card_in_hand("executioner")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     fire_spirit
+    if (check_for_card_in_hand("fire_spirit") is not None):
+        print("playing fire_spirit")
+        card_loc = check_for_card_in_hand("fire_spirit")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     firecracker
+    if (check_for_card_in_hand("firecracker") is not None):
+        print("playing firecracker")
+        card_loc = check_for_card_in_hand("firecracker")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     flying_machine
+    if (check_for_card_in_hand("flying_machine") is not None):
+        print("playing flying_machine")
+        card_loc = check_for_card_in_hand("flying_machine")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     hunter
+    if (check_for_card_in_hand("hunter") is not None):
+        print("playing hunter")
+        card_loc = check_for_card_in_hand("hunter")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     ice_wizard
+    if (check_for_card_in_hand("ice_wizard") is not None):
+        print("playing ice_wizard")
+        card_loc = check_for_card_in_hand("ice_wizard")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     inferno_dragon
+    if (check_for_card_in_hand("inferno_dragon") is not None):
+        print("playing inferno_dragon")
+        card_loc = check_for_card_in_hand("inferno_dragon")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     magic_archer
+    if (check_for_card_in_hand("magic_archer") is not None):
+        print("playing magic_archer")
+        card_loc = check_for_card_in_hand("magic_archer")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     mother_witch
+    if (check_for_card_in_hand("mother_witch") is not None):
+        print("playing mother_witch")
+        card_loc = check_for_card_in_hand("mother_witch")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     musketeer
+    if (check_for_card_in_hand("musketeer") is not None):
+        print("playing musketeer")
+        card_loc = check_for_card_in_hand("musketeer")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     night_witch
+    if (check_for_card_in_hand("night_witch") is not None):
+        print("playing night_witch")
+        card_loc = check_for_card_in_hand("night_witch")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     sparky
+    if (check_for_card_in_hand("sparky") is not None):
+        print("playing sparky")
+        card_loc = check_for_card_in_hand("sparky")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     spear_goblins
+    if (check_for_card_in_hand("spear_goblins") is not None):
+        print("playing spear_goblins")
+        card_loc = check_for_card_in_hand("spear_goblins")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     witch
+    if (check_for_card_in_hand("witch") is not None):
+        print("playing witch")
+        card_loc = check_for_card_in_hand("witch")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     wizard
+    if (check_for_card_in_hand("wizard") is not None):
+        print("playing wizard")
+        card_loc = check_for_card_in_hand("wizard")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     three_musketeers
+    if (check_for_card_in_hand("three_musketeers") is not None):
+        print("playing three_musketeers")
+        card_loc = check_for_card_in_hand("three_musketeers")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     goblin_gang
+    if (check_for_card_in_hand("goblin_gang") is not None):
+        print("playing goblin_gang")
+        card_loc = check_for_card_in_hand("goblin_gang")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     rascals
+    if (check_for_card_in_hand("rascals") is not None):
+        print("playing rascals")
+        card_loc = check_for_card_in_hand("rascals")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     zappies
+    if (check_for_card_in_hand("zappies") is not None):
+        print("playing zappies")
+        card_loc = check_for_card_in_hand("zappies")
+        if card_loc is None:
+            return
+        placement_loc = enemy_troop_position
+        if placement_loc is None:
+            placement_loc = random_placement_coord_maker()
+        else:
+            placement_loc[1] = placement_loc[1] + 105
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+# #spawners
+#     barb_hut
+    if (check_for_card_in_hand("barb_hut") is not None):
+        print("playing barb_hut")
+        card_loc = check_for_card_in_hand("barb_hut")
+        if card_loc is None:
+            return
+        card_place_spawners(card_loc)
+#     elixer_pump
+    if (check_for_card_in_hand("elixer_pump") is not None):
+        print("playing elixer_pump")
+        card_loc = check_for_card_in_hand("elixer_pump")
+        if card_loc is None:
+            return
+        card_place_spawners(card_loc)
+#     furnace
+    if (check_for_card_in_hand("furnace") is not None):
+        print("playing furnace")
+        card_loc = check_for_card_in_hand("furnace")
+        if card_loc is None:
+            return
+        card_place_spawners(card_loc)
+#     goblin_hut
+    if (check_for_card_in_hand("goblin_hut") is not None):
+        print("playing goblin_hut")
+        card_loc = check_for_card_in_hand("goblin_hut")
+        if card_loc is None:
+            return
+        card_place_spawners(card_loc)
+#     tombstone
+    if (check_for_card_in_hand("tombstone") is not None):
+        print("playing tombstone")
+        card_loc = check_for_card_in_hand("tombstone")
+        if card_loc is None:
+            return
+        card_place_spawners(card_loc)
+# #hogs
+#     balloon
+    if (check_for_card_in_hand("balloon") is not None):
+        print("playing balloon")
+        card_loc = check_for_card_in_hand("balloon")
+        if card_loc is None:
+            return
+        card_place_hogs(card_loc)
+#     battle_ram
+    if (check_for_card_in_hand("battle_ram") is not None):
+        print("playing battle_ram")
+        card_loc = check_for_card_in_hand("battle_ram")
+        if card_loc is None:
+            return
+        card_place_hogs(card_loc)
+#     hog
+    if (check_for_card_in_hand("hog") is not None):
+        print("playing hog")
+        card_loc = check_for_card_in_hand("hog")
+        if card_loc is None:
+            return
+        card_place_hogs(card_loc)
+#     royal_hogs
+    if (check_for_card_in_hand("royal_hogs") is not None):
+        print("playing royal_hogs")
+        card_loc = check_for_card_in_hand("royal_hogs")
+        if card_loc is None:
+            return
+        card_place_hogs(card_loc)
+#     ram_rider
+    if (check_for_card_in_hand("ram_rider") is not None):
+        print("playing ram_rider")
+        card_loc = check_for_card_in_hand("ram_rider")
+        if card_loc is None:
+            return
+        card_place_hogs(card_loc)
+# #spells
+#     arrows
+    card_loc_arrows = check_for_card_in_hand("arrows")
+    if (card_loc_arrows is not None):
+        print("playing arrows")
+        #click card
+        pyautogui.click(x=card_loc_arrows[0],y=card_loc_arrows[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=123,y=252)
+        if n==2:
+            pyautogui.click(x=295,y=245)
+#     clone
+    #we not gonna play clone
+#     fireball
+    if (check_for_card_in_hand("fireball") is not None):
+        print("playing fireball")
+        card_loc = check_for_card_in_hand("fireball")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+#     freeze
+    if (check_for_card_in_hand("freeze") is not None):
+        card_loc = check_for_card_in_hand("freeze")
+        if card_loc is None:
+            return
+        if enemy_troop_position is not None:
+            placement_loc = enemy_troop_position
+        else:
+            print("couldnt find freeze target so wont play")
+            placement_loc = card_loc
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.26)
+        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        return
+#     log
+    if (check_for_card_in_hand("log") is not None):
+        print("playing log")
+        card_loc = check_for_card_in_hand("log")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+        return
+#     poison
+    if (check_for_card_in_hand("poison") is not None):
+        print("playing poison")
+        card_loc = check_for_card_in_hand("poison")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=123,y=252)
+        if n==2:
+            pyautogui.click(x=295,y=245)
+        return
+#     rage
+    if (check_for_card_in_hand("rage") is not None):
+        print("playing rage")
+        card_loc = check_for_card_in_hand("rage")
+        if card_loc is None:
+            return
+        card_place_spawners(card_loc)
+        return
+#     rocket
+    if (check_for_card_in_hand("rocket") is not None):
+        print("playing rocket")
+        card_loc = check_for_card_in_hand("rocket")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+        return
+#     zap     
+    if (check_for_card_in_hand("zap") is not None):
+        print("playing zap")
+        card_loc = check_for_card_in_hand("zap")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+        return
+#     snowball
+    if (check_for_card_in_hand("snowball") is not None):
+        print("playing snowball")
+        card_loc = check_for_card_in_hand("snowball")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+        return
+#     tornado
+    if (check_for_card_in_hand("tornado") is not None):
+        print("playing tornado")
+        card_loc = check_for_card_in_hand("tornado")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=123,y=252)
+        if n==2:
+            pyautogui.click(x=295,y=245)
+        return
+#     earthquake
+    if (check_for_card_in_hand("earthquake") is not None):
+        print("playing earthquake")
+        card_loc = check_for_card_in_hand("earthquake")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=123,y=252)
+        if n==2:
+            pyautogui.click(x=295,y=245)
+        return
+#     graveyard
+    if (check_for_card_in_hand("graveyard") is not None):
+        print("playing graveyard")
+        card_loc = check_for_card_in_hand("graveyard")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+        return
+#     lightning
+    if (check_for_card_in_hand("lightning") is not None):
+        print("playing lightning")
+        card_loc = check_for_card_in_hand("lightning")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=123,y=252)
+        if n==2:
+            pyautogui.click(x=295,y=245)
+        return
+#     royal_delivery
+    if (check_for_card_in_hand("royal_delivery") is not None):
+        print("playing royal_delivery")
+        card_loc = check_for_card_in_hand("royal_delivery")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=122,y=220)
+        if n==2:
+            pyautogui.click(x=298,y=227)
+        return
+
+# #etc
+#     mortar
+    if (check_for_card_in_hand("mortar") is not None):
+        print("playing mortar")
+        card_loc = check_for_card_in_hand("mortar")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 4)
+        if n==1:
+            pyautogui.click(x=114,y=346)
+        if n==2:
+            pyautogui.click(x=176,y=336)
+        if n==3:
+            pyautogui.click(x=298,y=336)
+        if n==4:
+            pyautogui.click(x=246,y=339)
+        return
+#     princess
+    if (check_for_card_in_hand("princess") is not None):
+        print("playing princess")
+        card_loc = check_for_card_in_hand("princess")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 4)
+        if n==1:
+            pyautogui.click(x=114,y=346)
+        if n==2:
+            pyautogui.click(x=176,y=336)
+        if n==3:
+            pyautogui.click(x=298,y=336)
+        if n==4:
+            pyautogui.click(x=246,y=339)
+        return
+#     wall_breaker
+    if (check_for_card_in_hand("wall_breaker") is not None):
+        print("playing wall_breaker")
+        card_loc = check_for_card_in_hand("wall_breaker")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=212,y=333)
+        if n==2:
+            pyautogui.click(x=205,y=502)
+        return
+#     lavahound
+    if (check_for_card_in_hand("lavahound") is not None):
+        print("playing lavahound")
+        card_loc = check_for_card_in_hand("lavahound")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 4)
+        if n==1:
+            pyautogui.click(x=78,y=502)
+        if n==2:
+            pyautogui.click(x=189,y=502)
+        if n==3:
+            pyautogui.click(x=236,y=507)
+        if n==4:
+            pyautogui.click(x=355,y=497)
+        return
+#     golem
+    if (check_for_card_in_hand("golem") is not None):
+        print("playing golem")
+        card_loc = check_for_card_in_hand("golem")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 4)
+        if n==1:
+            pyautogui.click(x=78,y=502)
+        if n==2:
+            pyautogui.click(x=189,y=502)
+        if n==3:
+            pyautogui.click(x=236,y=507)
+        if n==4:
+            pyautogui.click(x=355,y=497)
+        return
+#     xbow
+    if (check_for_card_in_hand("xbow") is not None):
+        print("playing xbow")
+        card_loc = check_for_card_in_hand("xbow")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 4)
+        if n==1:
+            pyautogui.click(x=114,y=346)
+        if n==2:
+            pyautogui.click(x=176,y=336)
+        if n==3:
+            pyautogui.click(x=298,y=336)
+        if n==4:
+            pyautogui.click(x=246,y=339)
+        return
+#     royal_guards
+    if (check_for_card_in_hand("royal_guards") is not None):
+        print("playing royal_guards")
+        card_loc = check_for_card_in_hand("royal_guards")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 2)
+        if n==1:
+            pyautogui.click(x=212,y=333)
+        if n==2:
+            pyautogui.click(x=205,y=502)
+        return
+#     mirror
+    #not gonna play mirror
+#     royal_giant
+    if (check_for_card_in_hand("royal_giant") is not None):
+        print("playing royal_giant")
+        card_loc = check_for_card_in_hand("royal_giant")
+        if card_loc is None:
+            return
+        #click card
+        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        time.sleep(0.25)
+        #click placement
+        n = random.randint(1, 4)
+        if n==1:
+            pyautogui.click(x=114,y=346)
+        if n==2:
+            pyautogui.click(x=176,y=336)
+        if n==3:
+            pyautogui.click(x=298,y=336)
+        if n==4:
+            pyautogui.click(x=246,y=339)
+        return
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     print("No moves found. Waiting")
     time.sleep(3)
@@ -3157,7 +4365,79 @@ def find_all_cards(deck_screenshot, current_deck):
 
 def check_if_card_in_deck(deck_list, card):
     return card in deck_list
+
 # region hand card checks
+
+
+def check_hand_for_rogal_hogs(hand_screenshot):
+    references = [
+        "rogal_hogs.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found rogal_hogs in hand")
+            return location
+    return None
+
+
+
+
+def check_hand_for_mother_witch(hand_screenshot):
+    references = [
+        "mother_witch.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found mother_witch in hand")
+            return location
+    return None
+
+
+def check_hand_for_e_dragon(hand_screenshot):
+    references = [
+        "e_dragon.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found e_dragon in hand")
+            return location
+    return None
+
+
+def check_hand_for_skeletons(hand_screenshot):
+    references = [
+        "skeletons.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found skeletons in hand")
+            return location
+    return None
+
 
 
 def check_hand_for_ice_spirit(hand_screenshot):
@@ -3210,6 +4490,22 @@ def check_hand_for_e_spirit(hand_screenshot):
             return location
     return None
 
+def check_hand_for_e_giant(hand_screenshot):
+    references = [
+        "e_giant.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found e_giant in hand")
+            return location
+    return None
+
 
 def check_hand_for_mirror(hand_screenshot):
     references = [
@@ -3244,6 +4540,21 @@ def check_hand_for_heal_spirit(hand_screenshot):
             return location
     return None
 
+def check_hand_for_healer(hand_screenshot):
+    references = [
+        "healer.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found healer in hand")
+            return location
+    return None
 
 def check_hand_for_goblins(hand_screenshot):
     references = [
@@ -3482,6 +4793,22 @@ def check_hand_for_minions(hand_screenshot):
             return location
     return None
 
+def check_hand_for_minion_hoard(hand_screenshot):
+    references = [
+        "minion_hoard.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found minion_hoard in hand")
+            return location
+    return None
+
 
 def check_hand_for_skeleton_army(hand_screenshot):
     references = [
@@ -3547,6 +4874,22 @@ def check_hand_for_princess(hand_screenshot):
     for location in locations:
         if location is not None:
             print("Found princess in hand")
+            return location
+    return None
+
+def check_hand_for_prince(hand_screenshot):
+    references = [
+        "prince.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found prince in hand")
             return location
     return None
 
@@ -4115,6 +5458,10 @@ def check_hand_for_skeleton_king(hand_screenshot):
 def check_hand_for_golden_knight(hand_screenshot):
     references = [
         "golden_knight.png",
+        "golden_knight_1.png",
+        "golden_knight_2.png",
+        "golden_knight_3.png",
+        "golden_knight_4.png",
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -4217,6 +5564,13 @@ def check_hand_for_goblin_cage(hand_screenshot):
 def check_hand_for_goblin_drill(hand_screenshot):
     references = [
         "goblin_drill.png",
+        "goblin_drill_1.png",
+        "goblin_drill_2.png",
+        "goblin_drill_3.png",
+        "goblin_drill_4.png",
+        "goblin_drill_5.png",
+        "goblin_drill_6.png",
+        "goblin_drill_7.png",
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -4251,6 +5605,14 @@ def check_hand_for_fireball(hand_screenshot):
 def check_hand_for_freeze(hand_screenshot):
     references = [
         "freeze.png",
+        "freeze_1.png",
+        "freeze_2.png",
+        "freeze_3.png",
+        "freeze_4.png",
+        "freeze_5.png",
+        "freeze_6.png",
+        
+        
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -4438,6 +5800,10 @@ def check_hand_for_royal_hogs(hand_screenshot):
 def check_hand_for_archer_queen(hand_screenshot):
     references = [
         "archer_queen.png",
+        "archer_queen_1.png",
+        "archer_queen_2.png",
+        "archer_queen_3.png",
+        "archer_queen_4.png",   
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -4676,6 +6042,10 @@ def check_hand_for_lavahound(hand_screenshot):
 def check_hand_for_royal_guards(hand_screenshot):
     references = [
         "royal_guards.png",
+        "royal_guards_1.png",
+        "royal_guards_2.png",
+        "royal_guards_3.png",
+        "royal_guards_4.png",
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -4757,6 +6127,108 @@ def check_hand_for_three_musketeers(hand_screenshot):
             return location
     return None
 
+
+def check_hand_for_skeleton_dragons(hand_screenshot):
+    references = [
+        "skeleton_dragons.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found skeleton_dragons in hand")
+            return location
+    return None
+
+def check_hand_for_flying_machine(hand_screenshot):
+    references = [
+        "flying_machine.png",
+        "flying_machine_1.png",
+        "flying_machine_2.png",
+        "flying_machine_3.png",
+        "flying_machine_4.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found flying_machine in hand")
+            return location
+    return None
+
+
+def check_hand_for_night_witch(hand_screenshot):
+    references = [
+        "night_witch.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found night_witch in hand")
+            return location
+    return None
+
+
+def check_hand_for_witch(hand_screenshot):
+    references = [
+        "witch.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found witch in hand")
+            return location
+    return None
+
+def check_hand_for_wizard(hand_screenshot):
+    references = [
+        "wizard.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found wizard in hand")
+            return location
+    return None
+
+def check_hand_for_rocket(hand_screenshot):
+    references = [
+        "rocket.png",
+    ]
+    locations = find_references(
+        screenshot=hand_screenshot,
+        folder='hand_cards',
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("Found rocket in hand")
+            return location
+    return None
 
 # endregion
 
