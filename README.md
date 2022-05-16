@@ -13,8 +13,12 @@ pip install git+https://github.com/matthewmiglio/py-clash-bot.git
 ```
 
 ## Configure MEmu
-Using the Multiple Instance Manager, set the display settings of your instance to match the following
+Using the Multiple Instance Manager, set the instance and display settings of your instance to match the following
+
+![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/readme/memu_instance_settings.jpg?raw=true)
+
 ![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/readme/memu_display_settings.jpg?raw=true)
+
 
 ## Run py-clash-bot
 #### a. Installed on Windows
