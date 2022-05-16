@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name='py-clash-bot',
-    version='0.0.4',
+    version='0.2.0',
     description='Automated Clash Royale',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
