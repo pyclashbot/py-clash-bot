@@ -23,7 +23,7 @@ dependencies = ['PIL', 'cv2', 'keyboard',
 
 build_exe_options = {
     'includes': dependencies,
-    'include_files': ['pyclashbot/reference_images/'],
+    'include_files': ['pyclashbot/reference_images/','README.md'],
 }
 
 
