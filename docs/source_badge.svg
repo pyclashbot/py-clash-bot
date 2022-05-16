@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="142" height="20" xmlns="http://www.w3.org/2000/svg">
+<svg width="94" height="20" xmlns="http://www.w3.org/2000/svg">
   <title>View Source</title>
   <defs>
     <linearGradient id="workflow-fill" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -13,10 +13,10 @@
     </g>
     <g font-family="'DejaVu Sans',Verdana,Geneva,sans-serif" font-size="11" transform="matrix(1, 0, 0, 1, -0.212403, 0)">
       <path id="workflow-bg" d="M0,3 C0,1.3431 1.3552,0 3.02702703,0 L92,0 L92,20 L3.02702703,20 C1.3552,20 0,18.6569 0,17 L0,3 Z" fill="url(#workflow-fill)" fill-rule="nonzero"/>
-      <text fill="#010101" fill-opacity=".3" style="white-space: pre;">
+      <text fill="#010101" fill-opacity=".3" >
         <tspan x="22.1981982" y="15" aria-hidden="true">View Source</tspan>
       </text>
-      <text fill="#FFFFFF" style="white-space: pre;">
+      <text fill="#FFFFFF" >
         <tspan x="22.1981982" y="14">View Source</tspan>
       </text>
     </g>
