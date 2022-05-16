@@ -861,10 +861,7 @@ def main_loop():
 
         #plt.show()
 
-        print(check_for_card_in_hand("barb_hut"))
-        print(check_for_card_in_hand("goblin_drill"))
-        print(check_for_card_in_hand("three_musketeers"))
-
+        
 
         # orientate_memu_multi()
         # time.sleep(1)
