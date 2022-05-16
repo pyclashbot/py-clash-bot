@@ -455,31 +455,38 @@ def fight_with_deck_list(deck_list, enemy_troop_position):
 
 
 def add_card_to_deck(deck_list, card):
-    if deck_list[0] == "empty":
-        deck_list[0] = card
-        return deck_list
-    if deck_list[1] == "empty":
-        deck_list[1] = card
-        return deck_list
-    if deck_list[2] == "empty":
-        deck_list[2] = card
-        return deck_list
-    if deck_list[3] == "empty":
-        deck_list[3] = card
-        return deck_list
-    if deck_list[4] == "empty":
-        deck_list[4] = card
-        return deck_list
-    if deck_list[5] == "empty":
-        deck_list[5] = card
-        return deck_list
-    if deck_list[6] == "empty":
-        deck_list[6] = card
-        return deck_list
-    if deck_list[7] == "empty":
-        deck_list[7] = card
-        return deck_list
+    for deck_pos in deck_list:
+        if deck_pos in ["empty"]:
+            deck_pos = card
+            return deck_list
     return deck_list
+    # region oldcode
+    # if deck_list[0] == "empty":
+    #     deck_list[0] = card
+    #     return deck_list
+    # if deck_list[1] == "empty":
+    #     deck_list[1] = card
+    #     return deck_list
+    # if deck_list[2] == "empty":
+    #     deck_list[2] = card
+    #     return deck_list
+    # if deck_list[3] == "empty":
+    #     deck_list[3] = card
+    #     return deck_list
+    # if deck_list[4] == "empty":
+    #     deck_list[4] = card
+    #     return deck_list
+    # if deck_list[5] == "empty":
+    #     deck_list[5] = card
+    #     return deck_list
+    # if deck_list[6] == "empty":
+    #     deck_list[6] = card
+    #     return deck_list
+    # if deck_list[7] == "empty":
+    #     deck_list[7] = card
+    #     return deck_list
+    # return deck_list
+    # endregion
 
 # region deck card checks
 
