@@ -18,18 +18,26 @@ bdist_msi_options = {
     'initial_target_dir': f'[ProgramFilesFolder]\\{product_name}',
 }
 
-dependencies = ['PIL', 'cv2', 'keyboard',
-                'matplotlib', 'numpy', 'pyautogui', 'pygetwindow', 'joblib']
+dependencies = [
+    'PIL',
+    'cv2',
+    'keyboard',
+    'matplotlib',
+    'numpy',
+    'pyautogui',
+    'pygetwindow',
+    'joblib'
+]
 
 build_exe_options = {
     'includes': dependencies,
-    'include_files': ['pyclashbot/reference_images/','README.md'],
+    'include_files': ['pyclashbot/reference_images/', 'README.md'],
 }
 
 
 # GUI applications require a different base on Windows
 base = None
-#if sys.platform == 'win32':
+# if sys.platform == 'win32':
 #    base = 'Win32GUI'
 
 exe = Executable(
