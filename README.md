@@ -12,13 +12,16 @@ cd py-clash-bot
 pip install git+https://github.com/matthewmiglio/py-clash-bot.git
 ```
 
-## Configure MEmu
+## MEmu Dependency
+To emulate the game, [Download and install MEmu](https://www.memuplay.com/).
+#### Configure MEmu
 Using the Multiple Instance Manager, set the instance and display settings of your instance to match the following
 
 ![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/readme/memu_instance_settings.jpg?raw=true)
 
 ![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/readme/memu_display_settings.jpg?raw=true)
 
+Then start the emulator and install Clash Royale with the Google Play Store.
 
 ## Run py-clash-bot
 #### a. Installed on Windows
