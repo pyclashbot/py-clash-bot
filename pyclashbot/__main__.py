@@ -56,7 +56,7 @@ def orientate_memu_multi():
     window_mimm.moveTo(0, 0)
 
 
-def open_clash(duration):
+def open_clash():
     orientate_window()
     time.sleep(1)
     check_quit_key_press()
@@ -72,11 +72,10 @@ def open_clash(duration):
     if coords is None:
         logger.log("Clash logo wasn't found")
         return
-    pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=coords[1], y=coords[0])
     # return coords
 
-    wait_for_clash_main_menu(duration)
+    wait_for_clash_main_menu()
 
 
 def check_if_on_memu_main():
@@ -131,38 +130,37 @@ def open_chests():
     logger.log("clicking chest1")
     pyautogui.click(x=78, y=554)
     time.sleep(1)
-    logger.log("opening chest1")
     time.sleep(1)
+    check_quit_key_press()
     check_if_unlock_chest_button_exists()
-    logger.log("skipping through")
     pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
     time.sleep(1)
     logger.log("clicking chest2")
     pyautogui.click(x=162, y=549)
     time.sleep(1)
-    logger.log("opening chest2")
+    check_quit_key_press()
     check_if_unlock_chest_button_exists()
     time.sleep(1)
-    logger.log("skipping through chest2")
     pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
     time.sleep(1)
+    check_quit_key_press()
     logger.log("clicking chest3")
     pyautogui.click(x=263, y=541)
     time.sleep(1)
-    logger.log("opening chest3")
+    check_quit_key_press()
     check_if_unlock_chest_button_exists()
     time.sleep(1)
-    logger.log("skipping through chest3")
+    check_quit_key_press()
     pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
     check_quit_key_press()
     time.sleep(1)
     logger.log("clicking chest4")
     pyautogui.click(x=349, y=551)
     time.sleep(1)
-    logger.log("opening chest4")
+    check_quit_key_press()
     check_if_unlock_chest_button_exists()
     time.sleep(1)
-    logger.log("skipping through chest4")
+    check_quit_key_press()
     pyautogui.click(x=20, y=556, clicks=20, interval=0.2, button='left')
 
 
@@ -211,37 +209,34 @@ def check_if_can_request():
     return True
 
 
-def request_from_clash_main_menu(duration):
+def request_from_clash_main_menu():
     check_quit_key_press()
     logger.log("Moving to clan chat page")
-    pyautogui.moveTo(x=317, y=627, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=317, y=627)
+    time.sleep(1)
     while not check_if_on_clan_chat_page():
-        pyautogui.moveTo(x=317, y=627, duration=duration)
-        pyautogui.click()
+        pyautogui.click(x=317, y=627)
         time.sleep(2)
     logger.log("requesting giant")
-    pyautogui.moveTo(x=86, y=564, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=86, y=564)
     # scroll till find card
     time.sleep(2)
     while check_for_request_card() is None:
-        pyautogui.scroll(-90, x=0, y=0)
+        pyautogui.moveTo(x=30,y=350)
+        pyautogui.dragTo(x=30,y=400, button='left',duration=2)
         time.sleep(3)
         check_quit_key_press()
     # click card
     coords = check_for_request_card()
     if coords is not None:
-        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-        pyautogui.click()
+        pyautogui.click(x=coords[1], y=coords[0])
         time.sleep(2)
     # click request
     coords = look_for_request_button()
     if coords is not None:
-        pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-        pyautogui.click()
+        pyautogui.click(x=coords[1], y=coords[0])
         time.sleep(2)
-    return_to_clash_main_menu(duration)
+    return_to_clash_main_menu()
 
 
 def check_for_request_card():
@@ -313,32 +308,29 @@ def check_if_on_clan_chat_page():
     return False
 
 
-def return_to_clash_main_menu(duration):
+def return_to_clash_main_menu():
     check_quit_key_press()
     logger.log("Returning to clash main menu")
-    pyautogui.moveTo(x=180, y=625, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=180, y=625)
+    time.sleep(1)
     check_quit_key_press()
 
 
-def start_2v2(duration):
+def start_2v2():
     check_quit_key_press()
     logger.log("Navigating to 2v2 match")
-    pyautogui.moveTo(x=280, y=440, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=280, y=440)
     time.sleep(2)
     pyautogui.scroll(-10, x=0, y=0)
     time.sleep(3)
-    pyautogui.moveTo(x=300, y=300, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=300, y=300)
     check_quit_key_press()
 
 
-def start_1v1_ranked(duration):
+def start_1v1_ranked():
     check_quit_key_press()
     logger.log("Navigating to 1v1 ranked match")
-    pyautogui.moveTo(x=140, y=440, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=140, y=440)
     wait_for_battle_start()
     check_quit_key_press()
 
@@ -454,20 +446,18 @@ def check_if_in_battle():
     return True
 
 
-def leave_end_battle_window(duration):
+def leave_end_battle_window():
     check_quit_key_press()
     logger.log("battle is over. return to clash main menu")
-    pyautogui.moveTo(x=81, y=630, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=81, y=630)
     time.sleep(5)
     check_quit_key_press()
 
 
-def refresh_clan_tab(duration):
+def refresh_clan_tab():
     check_quit_key_press()
-    pyautogui.moveTo(x=300, y=630, duration=duration)
-    pyautogui.click()
-    return_to_clash_main_menu(duration)
+    pyautogui.click(x=300, y=630)
+    return_to_clash_main_menu()
     time.sleep(3)
     check_quit_key_press()
 
@@ -498,6 +488,7 @@ def check_if_exit_battle_button_exists():
 
 
 def check_if_in_a_clan_from_main():
+    logger.log("Checking if you're in a clan")
     pyautogui.click(x=315,y=630,clicks=3,interval=1)
     time.sleep(2)
     current_image = pyautogui.screenshot()
@@ -524,8 +515,11 @@ def check_if_in_a_clan_from_main():
     time.sleep(1)
     for location in locations:
         if location is not None:
+            logger.log("seems you're not in a clan")
             return False  # found a location
+    logger.log("seems you're in a clan")
     return True
+
 
 def find_donates():
     logger.log("searching screen for donate buttons")
@@ -551,64 +545,85 @@ def find_donates():
     return [500, 50]
 
 
-def click_donates(duration):
-    logger.log("clicking the donate buttons if there are any available")
-    check_quit_key_press()
+def click_donates():
     n = 0
     while n < 3:
-        coords = find_donates()
-        if coords is not None:
-            pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-            pyautogui.click(x=coords[1], y=coords[0],
-                            clicks=5, interval=0.2, button='left')
+        logger.log("clicking the donate buttons if any exist")
+        donate_button_loc = find_donates()
+        if donate_button_loc is not None:
+            pyautogui.click(x=donate_button_loc[1],y=donate_button_loc[0],clicks=3,interval=0.25)
+            time.sleep(1)
+        logger.log("Scrolling to donate off-screen donate buttons if any exist")
+        pyautogui.moveTo(x=30,y=300)
+        pyautogui.dragTo(x=30,y=400, button='left',duration=2)
+        more_donates_button_loc = check_if_more_donates()
+        if more_donates_button_loc is not None:
+            pyautogui.click(x=more_donates_button_loc[1],y=more_donates_button_loc[0])
+            time.sleep(1)
+        n=n+1
+    down_arrow_loc = check_if_clan_chat_down_arrow_exists()
+    if down_arrow_loc is not None:
+        pyautogui.click(x=down_arrow_loc[1],y=down_arrow_loc[0])
+    time.sleep(1)
+    return_to_clash_main_menu()
 
-            if check_if_more_donates():
-                pyautogui.moveTo(x=50, y=170, duration=duration)
-                pyautogui.click()
-                time.sleep(2)
 
-            pyautogui.moveTo(x=coords[1], y=coords[0], duration=duration)
-            pyautogui.click(x=coords[1], y=coords[0],
-                            clicks=5, interval=0.2, button='left')
-        n += 1
-    pyautogui.moveTo(x=393, y=525, duration=duration)
-    pyautogui.click()
-    check_quit_key_press()
-    return_to_clash_main_menu(duration)
+def check_if_clan_chat_down_arrow_exists():
+    current_image = pyautogui.screenshot()
+    reference_folder = "check_if_clan_chat_down_arrow_exists"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    time.sleep(1)
+    for location in locations:
+        if location is not None:
+            return location  # found a location
+    return None
 
 
-def getto_donate_page(duration):
+def getto_donate_page():
     check_quit_key_press()
     logger.log("Moving to clan chat page")
-    pyautogui.moveTo(x=317, y=627, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=317, y=627)
+    time.sleep(1)
     while not check_if_on_clan_chat_page():
-        pyautogui.moveTo(x=317, y=627, duration=duration)
-        pyautogui.click()
-        time.sleep(2)
+        time.sleep(1)
+        pyautogui.click(x=317, y=627)
+        time.sleep(1)
     check_quit_key_press()
 
 
 def check_if_more_donates():
-    check_quit_key_press()
-    iar = refresh_screen()
-    pix1 = iar[186][34]
-    pix2 = iar[177][32]
-    pix3 = iar[163][61]
-    sentinel = [1] * 3
-    sentinel[0] = 214
-    sentinel[1] = 234
-    sentinel[2] = 244
+    current_image = pyautogui.screenshot()
+    reference_folder = "more_donates_button"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+    ]
 
-    more_donates_exists = True
-    if not pixel_is_equal(pix1, sentinel, 10):
-        more_donates_exists = False
-    if not pixel_is_equal(pix2, sentinel, 10):
-        more_donates_exists = False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        more_donates_exists = False
-    check_quit_key_press()
-    return more_donates_exists
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    time.sleep(1)
+    for location in locations:
+        if location is not None:
+            return location  # found a location
+    return None
 
 
 def check_quit_key_press():
@@ -617,16 +632,15 @@ def check_quit_key_press():
         quit()
 
 
-def restart_client(duration):
+def restart_client():
     check_quit_key_press()
     logger.log("closing client")
-    pyautogui.moveTo(x=540, y=140, duration=duration)
-    pyautogui.click()
-    time.sleep(2)
+    time.sleep(1)
+    pyautogui.click(x=540, y=140)
+    time.sleep(1)
     check_quit_key_press()
     logger.log("opening client")
-    pyautogui.moveTo(x=540, y=140, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=540, y=140)
     time.sleep(5)
     check_quit_key_press()
     time.sleep(5)
@@ -635,18 +649,11 @@ def restart_client(duration):
     logger.log("skipping ads")
     orientate_window()
     time.sleep(1)
-    pyautogui.moveTo(x=440, y=600, duration=duration)
-    time.sleep(1)
-    pyautogui.click()
-    time.sleep(1)
-    pyautogui.click()
-    time.sleep(1)
-    pyautogui.click()
-    time.sleep(1)
-    open_clash(duration)
+    pyautogui.click(x=440, y=600,clicks=5,interval=1)
+    open_clash()
 
 
-def wait_for_clash_main_menu(duration):
+def wait_for_clash_main_menu():
     n = 0
     while not check_if_on_clash_main_menu():
 
@@ -657,14 +664,14 @@ def wait_for_clash_main_menu(duration):
         if n > 20:
             logger.log("Waiting longer than a minute for clash main menu")
             break
-        pyautogui.moveTo(x=50, y=190, duration=duration)
-        pyautogui.moveTo(x=10, y=170, duration=duration)
+        pyautogui.moveTo(x=50, y=190, duration=0.25)
+        pyautogui.moveTo(x=10, y=170, duration=0.25)
         pyautogui.click()
 
 
-def check_if_past_game_is_win(duration):
+def check_if_past_game_is_win():
     check_quit_key_press()
-    open_activity_log(duration)
+    open_activity_log()
     iar = refresh_screen()
 
     n = 40
@@ -678,19 +685,16 @@ def check_if_past_game_is_win(duration):
             return True
         n = n+1
     time.sleep(1)
-    pyautogui.moveTo(x=385, y=507, duration=duration)
-    pyautogui.click(x=385, y=507, clicks=1, interval=0.2, button='left')
+    pyautogui.click(x=385, y=507)
     return False
 
 
-def open_activity_log(duration):
+def open_activity_log():
     check_quit_key_press()
-    pyautogui.moveTo(x=360, y=99, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=360, y=99)
     time.sleep(1)
     check_quit_key_press()
-    pyautogui.moveTo(x=255, y=75, duration=duration)
-    pyautogui.click()
+    pyautogui.click(x=255, y=75)
     time.sleep(1)
     check_quit_key_press()
 
@@ -808,11 +812,8 @@ def check_deck():
 
 def main_loop():
     # vars
-    fights = 0
-    duration = 0.5
-    fight_duration = 0.2
     loop_count = 0
-    in_a_clan = 0
+
 
     if not check_if_windows_exist():
         return
@@ -826,61 +827,62 @@ def main_loop():
 
         #plt.show()
 
+        
 
         
-        orientate_memu_multi()
-        time.sleep(1)
-        restart_client(duration)
-        orientate_window()
+        # orientate_memu_multi()
+        # time.sleep(1)
+        # restart_client()
+        # orientate_window()
 
-        if check_if_on_clash_main_menu():
-            logger.log("We're on the main menu")
-            time.sleep(1)
-            logger.log("Handling chests")
-            time.sleep(1)
-            open_chests()
-            time.sleep(3)
-        else:
-            logger.log("not on clash main menu")
+        # if check_if_on_clash_main_menu():
+        #     logger.log("We're on the main menu")
+        #     time.sleep(1)
+        #     logger.log("Handling chests")
+        #     time.sleep(1)
+        #     open_chests()
+        #     time.sleep(3)
+        # else:
+        #     logger.log("not on clash main menu")
 
-        if check_if_in_a_clan_from_main():
-            logger.log("Checking if can request")
-            time.sleep(1)
-            if check_if_can_request():
-                logger.log("Can request. Requesting giant")
-                time.sleep(1)
-                request_from_clash_main_menu(duration)
-            else:
-                logger.log("Request is unavailable")
-            logger.log("Checking if can donate")
-            time.sleep(1)
-            getto_donate_page(duration)
-            click_donates(duration)
-        else:
-            logger.log("Not in a clan so not bothering with requesting+donating")
+        # if check_if_in_a_clan_from_main():
+        #     logger.log("Checking if can request")
+        #     time.sleep(1)
+        #     if check_if_can_request():
+        #         logger.log("Can request. Requesting giant")
+        #         time.sleep(1)
+        #         request_from_clash_main_menu()
+        #     else:
+        #         logger.log("Request is unavailable")
+        #     logger.log("Checking if can donate")
+        #     time.sleep(1)
+        #     getto_donate_page()
+        #     click_donates()
+        # else:
+        #     logger.log("Not in a clan so not bothering with requesting+donating")
 
-        logger.log("Handled chests, requests, and deck. Gonna start a battle")
-        time.sleep(1)
-        start_2v2(duration)
-        logger.add_fight()
-        wait_for_battle_start()
-        fightloops = 0
-        while not check_if_exit_battle_button_exists():
-            fightloops = fightloops + 1
-            logger.log(f"fightloop: {fightloops}")
-            enemy_positions = look_for_enemy_troops()
-            fight_with_deck_list(enemy_positions)
-            if fightloops > 100:
-                break
-        leave_end_battle_window(duration)
-        time.sleep(5)
+        # logger.log("Handled chests, requests, and deck. Gonna start a battle")
+        # time.sleep(1)
+        # start_2v2()
+        # logger.add_fight()
+        # wait_for_battle_start()
+        # fightloops = 0
+        # while not check_if_exit_battle_button_exists():
+        #     fightloops = fightloops + 1
+        #     logger.log(f"fightloop: {fightloops}")
+        #     enemy_positions = look_for_enemy_troops()
+        #     fight_with_deck_list(enemy_positions)
+        #     if fightloops > 100:
+        #         break
+        # leave_end_battle_window()
+        # time.sleep(5)
 
-        if check_if_past_game_is_win(duration):
-            logger.log("Last game was a win")
-            logger.add_win()
-        else:
-            logger.log("Last gane was a loss")
-            logger.add_loss()
+        # if check_if_past_game_is_win():
+        #     logger.log("Last game was a win")
+        #     logger.add_win()
+        # else:
+        #     logger.log("Last gane was a loss")
+        #     logger.add_loss()
 
 
 if __name__ == "__main__":
