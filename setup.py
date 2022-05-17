@@ -1,5 +1,6 @@
 import os
-from setuptools import setup, find_packages
+from glob import glob
+from setuptools import setup
 
 with open("README.md", "r", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
@@ -10,6 +11,11 @@ try:
 except KeyError:
     print('Defaulting to 0.0.0')
     version = '0.0.0'
+
+# get files to include in dist
+dist_files = glob("pyclashbot/reference_images/*/*.png")
+
+dist_files = [file.replace('pyclashbot/', '') for file in dist_files]
 
 setup(
     name='py-clash-bot',
@@ -34,6 +40,7 @@ setup(
     ],
     packages=['pyclashbot'],
     include_package_data=True,
+    package_data={'pyclashbot': dist_files},
     python_requires='>=3',
     zip_safe=False,
     entry_points={
