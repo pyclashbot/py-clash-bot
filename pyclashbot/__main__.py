@@ -292,24 +292,25 @@ def look_for_request_button():
 
 
 def check_if_on_clan_chat_page():
-    check_quit_key_press()
-    iar = refresh_screen()
-    pix1 = iar[573][109]
-    pix2 = iar[573][116]
-    pix3 = iar[573][121]
-    sentinel = [1] * 3
-    sentinel[0] = 255
-    sentinel[1] = 188
-    sentinel[2] = 42
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+    ]
 
-    if not pixel_is_equal(pix1, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix2, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        return False
-    check_quit_key_press()
-    return True
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="check_if_on_clan_chat_page",
+        names=references,
+        tolerance=0.97
+    )
+
+    for location in locations:
+        if location is not None:
+            return True
+    return False
 
 
 def return_to_clash_main_menu(duration):
@@ -792,8 +793,11 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        # plt.show()
+        #plt.show()
 
+
+
+        
         orientate_memu_multi()
         time.sleep(1)
         restart_client(duration)
