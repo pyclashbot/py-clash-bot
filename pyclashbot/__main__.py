@@ -345,9 +345,9 @@ def wait_for_battle_start():
         if check_if_in_battle():
             n = 0
         pyautogui.click(x=100,y=100)
-        time.sleep(1)
+        time.sleep(0.25)
         n1 += 1
-        if n1 > 30:
+        if n1 > 120:
             logger.log("Waited longer than 30 sec for a fight")
             return "quit"
         refresh_screen()
@@ -636,7 +636,7 @@ def check_if_more_donates():
         if location is not None:
             return location  # found a location
     return None
-
+    
 
 def check_quit_key_press():
     if keyboard.is_pressed("space"):
@@ -930,7 +930,7 @@ def main_loop():
         if state == "clash_main_post_fight":
             logger.log("STATE=clash_main_post_fight")
             time.sleep(10)
-            logger.log("Checking wim/loss of past game")
+            logger.log("Checking is past game was a win or loss")
             past_game=check_if_past_game_is_win()
                 
             if past_game is True:
