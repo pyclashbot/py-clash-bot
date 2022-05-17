@@ -344,6 +344,7 @@ def wait_for_battle_start():
         n1 += 1
         if check_if_in_battle():
             n = 0
+        pyautogui.click(x=100,y=100)
         time.sleep(1)
         if n1 > 90:
             logger.log("Waited longer than 90 sec for a fight")
@@ -830,59 +831,59 @@ def main_loop():
         
 
         
-        # orientate_memu_multi()
-        # time.sleep(1)
-        # restart_client()
-        # orientate_window()
+        orientate_memu_multi()
+        time.sleep(1)
+        restart_client()
+        orientate_window()
 
-        # if check_if_on_clash_main_menu():
-        #     logger.log("We're on the main menu")
-        #     time.sleep(1)
-        #     logger.log("Handling chests")
-        #     time.sleep(1)
-        #     open_chests()
-        #     time.sleep(3)
-        # else:
-        #     logger.log("not on clash main menu")
+        if check_if_on_clash_main_menu():
+            logger.log("We're on the main menu")
+            time.sleep(1)
+            logger.log("Handling chests")
+            time.sleep(1)
+            open_chests()
+            time.sleep(3)
+        else:
+            logger.log("not on clash main menu")
 
-        # if check_if_in_a_clan_from_main():
-        #     logger.log("Checking if can request")
-        #     time.sleep(1)
-        #     if check_if_can_request():
-        #         logger.log("Can request. Requesting giant")
-        #         time.sleep(1)
-        #         request_from_clash_main_menu()
-        #     else:
-        #         logger.log("Request is unavailable")
-        #     logger.log("Checking if can donate")
-        #     time.sleep(1)
-        #     getto_donate_page()
-        #     click_donates()
-        # else:
-        #     logger.log("Not in a clan so not bothering with requesting+donating")
+        if check_if_in_a_clan_from_main():
+            logger.log("Checking if can request")
+            time.sleep(1)
+            if check_if_can_request():
+                logger.log("Can request. Requesting giant")
+                time.sleep(1)
+                request_from_clash_main_menu()
+            else:
+                logger.log("Request is unavailable")
+            logger.log("Checking if can donate")
+            time.sleep(1)
+            getto_donate_page()
+            click_donates()
+        else:
+            logger.log("Not in a clan so not bothering with requesting+donating")
 
-        # logger.log("Handled chests, requests, and deck. Gonna start a battle")
-        # time.sleep(1)
-        # start_2v2()
-        # logger.add_fight()
-        # wait_for_battle_start()
-        # fightloops = 0
-        # while not check_if_exit_battle_button_exists():
-        #     fightloops = fightloops + 1
-        #     logger.log(f"fightloop: {fightloops}")
-        #     enemy_positions = look_for_enemy_troops()
-        #     fight_with_deck_list(enemy_positions)
-        #     if fightloops > 100:
-        #         break
-        # leave_end_battle_window()
-        # time.sleep(5)
+        logger.log("Handled chests, requests, and deck. Gonna start a battle")
+        time.sleep(1)
+        start_2v2()
+        logger.add_fight()
+        wait_for_battle_start()
+        fightloops = 0
+        while not check_if_exit_battle_button_exists():
+            fightloops = fightloops + 1
+            logger.log(f"fightloop: {fightloops}")
+            enemy_positions = look_for_enemy_troops()
+            fight_with_deck_list(enemy_positions)
+            if fightloops > 100:
+                break
+        leave_end_battle_window()
+        time.sleep(5)
 
-        # if check_if_past_game_is_win():
-        #     logger.log("Last game was a win")
-        #     logger.add_win()
-        # else:
-        #     logger.log("Last gane was a loss")
-        #     logger.add_loss()
+        if check_if_past_game_is_win():
+            logger.log("Last game was a win")
+            logger.add_win()
+        else:
+            logger.log("Last gane was a loss")
+            logger.add_loss()
 
 
 if __name__ == "__main__":
