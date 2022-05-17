@@ -25,6 +25,8 @@ setup(
         'joblib'
     ],
     packages=['pyclashbot'],
+    package_data={'': ['reference_images/*.png']},
+    include_package_data=True,
     python_requires='>=3',
     zip_safe=False,
     entry_points={
