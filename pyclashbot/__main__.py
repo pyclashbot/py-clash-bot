@@ -828,9 +828,6 @@ def main_loop():
 
         #plt.show()
 
-        
-
-        
         orientate_memu_multi()
         time.sleep(1)
         restart_client()
