@@ -1,11 +1,19 @@
+import os
 from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
+# get github workflow env vars
+try:
+    version = (os.environ['GIT_TAG_NAME']).replace('v', '')
+except KeyError:
+    print('Defaulting to 0.0.0')
+    version = '0.0.0'
+
 setup(
     name='py-clash-bot',
-    version='0.2.0',
+    version=version,
     description='Automated Clash Royale',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
@@ -24,7 +32,7 @@ setup(
         'pygetwindow',
         'joblib'
     ],
-    packages=['pyclashbot'],
+    packages=find_packages(),
     include_package_data=True,
     python_requires='>=3',
     zip_safe=False,
