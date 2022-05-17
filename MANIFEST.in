@@ -1,1 +1,2 @@
-graft reference_images *
+include README.md
+recursive-include reference_images *
