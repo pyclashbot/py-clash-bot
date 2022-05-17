@@ -1653,8 +1653,10 @@ def fight_with_deck_list(enemy_troop_position):
     
     
 
-    print("No moves found. Waiting")
-    time.sleep(3)
+    # print("No moves found. Waiting")
+    # time.sleep(3)
+    
+    
 # endregion
 
 
@@ -6041,7 +6043,6 @@ def check_hand_for_royal_guards(hand_screenshot):
         "royal_guards_1.png",
         "royal_guards_2.png",
         "royal_guards_3.png",
-        "royal_guards_4.png",
     ]
     locations = find_references(
         screenshot=hand_screenshot,
