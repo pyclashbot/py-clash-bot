@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyautogui
 import pygetwindow as gw
-from PIL import Image
 
+from pyclashbot.card import fight_with_deck_list, find_all_cards
+from pyclashbot.image_rec import (find_reference, find_references,
+                                  pixel_is_equal)
 from pyclashbot.logger import Logger
-from pyclashbot.image_rec import find_references, find_reference, compare_images, pixel_is_equal
-from pyclashbot.card import *
 
 logger = Logger()
 
@@ -119,7 +119,7 @@ def check_if_unlock_chest_button_exists():
 
     for location in locations:
         if location is not None:
-              # found a location
+            # found a location
             pyautogui.click(x=210, y=455)
             return True
     return False
@@ -127,7 +127,6 @@ def check_if_unlock_chest_button_exists():
 
 def open_chests():
     check_quit_key_press()
-
 
     logger.log("clicking chest1")
     pyautogui.click(x=78, y=554)
@@ -433,7 +432,7 @@ def random_card_coord_picker():
 
 
 def check_if_in_battle():
-    n=0
+    n = 0
     check_quit_key_press()
     iar = refresh_screen()
     pix1 = iar[551][56]
@@ -783,28 +782,23 @@ def main_loop():
     fight_duration = 0.2
     loop_count = 0
 
-
     if not check_if_windows_exist():
         return
 
     while True:
         time.sleep(1)
-        logger.log(f"loop count: {loop_count}") 
+        logger.log(f"loop count: {loop_count}")
         loop_count += 1
         iar = refresh_screen()
         plt.imshow(iar)
 
-        #plt.show()
-
-
-
-        
+        # plt.show()
 
         orientate_memu_multi()
         time.sleep(1)
         restart_client(duration)
         orientate_window()
-        
+
         if check_if_on_clash_main_menu():
             logger.log("We're on the main menu")
             time.sleep(1)
@@ -842,14 +836,14 @@ def main_loop():
                 break
         leave_end_battle_window(duration)
         time.sleep(5)
-        
+
         if check_if_past_game_is_win(duration):
             logger.log("Last game was a win")
             logger.add_win()
         else:
             logger.log("Last gane was a loss")
             logger.add_loss()
-            
-            
+
+
 if __name__ == "__main__":
     main_loop()
