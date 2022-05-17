@@ -1,1 +1,1 @@
-recursive-include reference_images *.png *.PNG
+recursive-include pyclashbot/reference_images *.png *.PNG
