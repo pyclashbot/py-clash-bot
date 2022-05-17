@@ -32,7 +32,7 @@ setup(
         'pygetwindow',
         'joblib'
     ],
-    packages=find_packages(),
+    packages=['pyclashbot'],
     include_package_data=True,
     python_requires='>=3',
     zip_safe=False,
