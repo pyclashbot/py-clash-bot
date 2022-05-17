@@ -292,24 +292,25 @@ def look_for_request_button():
 
 
 def check_if_on_clan_chat_page():
-    check_quit_key_press()
-    iar = refresh_screen()
-    pix1 = iar[573][109]
-    pix2 = iar[573][116]
-    pix3 = iar[573][121]
-    sentinel = [1] * 3
-    sentinel[0] = 255
-    sentinel[1] = 188
-    sentinel[2] = 42
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+    ]
 
-    if not pixel_is_equal(pix1, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix2, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        return False
-    check_quit_key_press()
-    return True
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="check_if_on_clan_chat_page",
+        names=references,
+        tolerance=0.97
+    )
+
+    for location in locations:
+        if location is not None:
+            return True
+    return False
 
 
 def return_to_clash_main_menu(duration):
@@ -495,6 +496,36 @@ def check_if_exit_battle_button_exists():
             return True  # found a location
     return False
 
+
+def check_if_in_a_clan_from_main():
+    pyautogui.click(x=315,y=630,clicks=3,interval=1)
+    time.sleep(2)
+    current_image = pyautogui.screenshot()
+    reference_folder = "not_in_a_clan"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    pyautogui.click(x=175,y=630)
+    time.sleep(1)
+    for location in locations:
+        if location is not None:
+            return False  # found a location
+    return True
 
 def find_donates():
     logger.log("searching screen for donate buttons")
@@ -781,6 +812,7 @@ def main_loop():
     duration = 0.5
     fight_duration = 0.2
     loop_count = 0
+    in_a_clan = 0
 
     if not check_if_windows_exist():
         return
@@ -792,8 +824,10 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
 
-        # plt.show()
+        #plt.show()
 
+
+        
         orientate_memu_multi()
         time.sleep(1)
         restart_client(duration)
@@ -806,6 +840,10 @@ def main_loop():
             time.sleep(1)
             open_chests()
             time.sleep(3)
+        else:
+            logger.log("not on clash main menu")
+
+        if check_if_in_a_clan_from_main():
             logger.log("Checking if can request")
             time.sleep(1)
             if check_if_can_request():
@@ -819,7 +857,7 @@ def main_loop():
             getto_donate_page(duration)
             click_donates(duration)
         else:
-            logger.log("not on clash main menu")
+            logger.log("Not in a clan so not bothering with requesting+donating")
 
         logger.log("Handled chests, requests, and deck. Gonna start a battle")
         time.sleep(1)
