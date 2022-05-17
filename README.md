@@ -10,10 +10,10 @@ Choose one of the install methods below
 
 [Download the latest release](https://github.com/matthewmiglio/py-clash-bot/releases).
 
-#### b. Install from source
+#### b. Install with pip
 
 Enter the following into the command line:
-```pip install git+https://github.com/matthewmiglio/py-clash-bot.git```
+```pip install py-clash-bot```
 
 ## MEmu Dependency
 
@@ -35,6 +35,6 @@ Then start the emulator and install Clash Royale with the Google Play Store.
 
 Run the desktop shortcut the installer created.
 
-#### b. Installed from source
+#### b. Installed with pip
 
-Enter `py-clash-bot` in the command line.
+Enter `pyclashbot` in the command line.
