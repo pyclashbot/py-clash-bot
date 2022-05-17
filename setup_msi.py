@@ -31,7 +31,7 @@ dependencies = [
 
 build_exe_options = {
     'includes': dependencies,
-    'include_files': ['pyclashbot/reference_images/', 'README.md'],
+    'include_files': ['reference_images/', 'README.md'],
 }
 
 
