@@ -1,5 +1,5 @@
 import multiprocessing
-from os.path import isdir, join
+from os.path import isdir, join, dirname
 from typing import Union
 
 import cv2
@@ -37,9 +37,8 @@ def find_reference(screenshot: Union[np.ndarray, Image.Image], folder: str, name
     Returns:
         Union[tuple[int,int], None]: coordinate location
     """
-    reference_folder = "reference_images"
-    if not isdir(reference_folder):
-        reference_folder = join("pyclashbot", "reference_images")
+    top_level = dirname(__file__)
+    reference_folder = join(top_level, "reference_images")
     return compare_images(screenshot, Image.open(join(reference_folder, folder, name)), tolerance)
 
 
