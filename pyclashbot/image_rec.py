@@ -38,13 +38,7 @@ def find_reference(screenshot: Union[np.ndarray, Image.Image], folder: str, name
     Returns:
         Union[tuple[int,int], None]: coordinate location
     """
-
-    if getattr(sys, "frozen", False):
-        # The application is frozen
-        reference_folder = "reference_images"
-    else:
-        # The application is not frozen
-        reference_folder = join("pyclashbot", "reference_images")
+    reference_folder = "reference_images"
     return compare_images(screenshot, Image.open(join(reference_folder, folder, name)), tolerance)
 
 
