@@ -561,28 +561,44 @@ def check_if_in_a_clan_from_main():
 
 
 def find_donates():
-    logger.log("searching screen for donate buttons")
     references = [
         "donate_button_1.png",
         "donate_button_2.png",
         "donate_button_3.png",
         "donate_button_4.png",
-        "donate_button_5.png"
+        "donate_button_5.png",
+        "donate_button_6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
+        "12.png",
+        "13.png",
+        "14.png",
+        "15.png",
+        "16.png",
+        "17.png",
+        "18.png",
+        "19.png",
+        "20.png", 
     ]
 
-    locations = find_references(
-        screenshot=pyautogui.screenshot(),
-        folder="donate",
-        names=references,
-        tolerance=0.97
-    )
-
-    for location in locations:
-        if location is not None:
-            return location
-    logger.log("Found none this go-around")
-    return [500, 50]
-
+    loops = 0
+    while loops<10:
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="donate",
+            names=references,
+            tolerance=0.99
+        )
+        for location in locations:
+            if location is not None:
+                return location
+        pyautogui.moveTo(x=100,y=350)
+        pyautogui.dragTo(x=100,y=400, button='left',duration=1)
+        time.sleep(0.25)
+    return None
 
 def click_donates():
 
@@ -890,6 +906,9 @@ def check_if_in_battle():
     return False
 
 
+
+    
+
 def main_loop():
     # vars
     loop_count = 0
@@ -907,6 +926,7 @@ def main_loop():
         #plt.show()
         
         
+
         
         
         orientate_memu_multi()
@@ -978,9 +998,12 @@ def main_loop():
             else:
                 logger.log("Past game was a Loss")
                 logger.add_loss()
+            logger.log("Should be on clash main")
             if check_if_on_clash_main_menu():
+                logger.log("On clash main")
                 state = "clash_main"
             else:
+                logger.log("Dont seem to be on clash main. Restarting")
                 state = "restart"
             
             
