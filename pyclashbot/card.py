@@ -118,7 +118,7 @@ def check_if_hero_ability_is_available():
     )
     for location in locations:
         if location is not None:
-            return locations
+            return True
     return False
 
 def fight_with_deck_list(enemy_troop_position):
@@ -126,11 +126,11 @@ def fight_with_deck_list(enemy_troop_position):
 #check for hero abilities
     ability_coords = check_if_hero_ability_is_available()
     if ability_coords:
-        pyautogui.click(x=ability_coords[1],y=ability_coords[0])
+        pyautogui.click(x=345,y=512)
 #expensive has prio
 #     elite_barbs
     if (check_for_card_in_hand("elite_barbs") is not None):
-        print("playing elite_barbs")
+        #print("playing elite_barbs")
         card_loc = check_for_card_in_hand("elite_barbs")
         if card_loc is None:
             return
@@ -145,7 +145,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     e_giant
     if (check_for_card_in_hand("e_giant") is not None):
-        print("playing e_giant")
+        #print("playing e_giant")
         card_loc = check_for_card_in_hand("e_giant")
         if card_loc is None:
             return
@@ -160,7 +160,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     giant_skeleton
     if (check_for_card_in_hand("giant_skeleton") is not None):
-        print("playing giant_skeleton")
+        #print("playing giant_skeleton")
         card_loc = check_for_card_in_hand("giant_skeleton")
         if card_loc is None:
             return
@@ -175,7 +175,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     goblin_giant
     if (check_for_card_in_hand("goblin_giant") is not None):
-        print("playing goblin_giant")
+        #print("playing goblin_giant")
         card_loc = check_for_card_in_hand("goblin_giant")
         if card_loc is None:
             return
@@ -190,7 +190,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     mega_knight
     if (check_for_card_in_hand("mega_knight") is not None):
-        print("playing mega_knight")
+        #print("playing mega_knight")
         card_loc = check_for_card_in_hand("mega_knight")
         if card_loc is None:
             return
@@ -205,7 +205,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     pekka
     if (check_for_card_in_hand("pekka") is not None):
-        print("playing pekka")
+        #print("playing pekka")
         card_loc = check_for_card_in_hand("pekka")
         if card_loc is None:
             return
@@ -220,7 +220,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     witch
     if (check_for_card_in_hand("witch") is not None):
-        print("playing witch")
+        #print("playing witch")
         card_loc = check_for_card_in_hand("witch")
         if card_loc is None:
             return
@@ -235,7 +235,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     wizard
     if (check_for_card_in_hand("wizard") is not None):
-        print("playing wizard")
+        #print("playing wizard")
         card_loc = check_for_card_in_hand("wizard")
         if card_loc is None:
             return
@@ -250,14 +250,14 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     barb_hut
     if (check_for_card_in_hand("barb_hut") is not None):
-        print("playing barb_hut")
+        #print("playing barb_hut")
         card_loc = check_for_card_in_hand("barb_hut")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     royal_guards
     if (check_for_card_in_hand("royal_guards") is not None):
-        print("playing royal_guards")
+        #print("playing royal_guards")
         card_loc = check_for_card_in_hand("royal_guards")
         if card_loc is None:
             return
@@ -273,7 +273,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     royal_giant
     if (check_for_card_in_hand("royal_giant") is not None):
-        print("playing royal_giant")
+        #print("playing royal_giant")
         card_loc = check_for_card_in_hand("royal_giant")
         if card_loc is None:
             return
@@ -294,60 +294,60 @@ def fight_with_deck_list(enemy_troop_position):
 # #turrets
 #     bomb_tower
     if (check_for_card_in_hand("bomb_tower") is not None):
-        print("bomb_tower in decklist and hand.")
+        #print("bomb_tower in decklist and hand.")
         card_loc = check_for_card_in_hand("bomb_tower")
         if card_loc is None:
             return
         
         if card_loc is not None:
-            print("Playing bomb_tower")
+            #print("Playing bomb_tower")
             card_place_turret(card_loc)
         return
 #     cannon
     if (check_for_card_in_hand("cannon") is not None):
-        print("cannon in decklist and hand.")
+        #print("cannon in decklist and hand.")
         card_loc = check_for_card_in_hand("cannon")
         if card_loc is None:
             return
         
         if card_loc is not None:
-            print("Playing cannon")
+            #print("Playing cannon")
             card_place_turret(card_loc)
         return
 #     goblin_cage
     if (check_for_card_in_hand("goblin_cage") is not None):
-        print("goblin_cage in decklist and hand.")
+        #print("goblin_cage in decklist and hand.")
         card_loc = check_for_card_in_hand("goblin_cage")
         if card_loc is None:
             return
         
         if card_loc is not None:
-            print("Playing goblin_cage")
+            #print("Playing goblin_cage")
             card_place_turret(card_loc)
         return
 #     inferno_tower
     if (check_for_card_in_hand("inferno_tower") is not None):
-        print("inferno_tower in decklist and hand.")
+        #print("inferno_tower in decklist and hand.")
         card_loc = check_for_card_in_hand("inferno_tower")
         if card_loc is None:
             return
         
         if card_loc is not None:
-            print("Playing inferno_tower")
+            #print("Playing inferno_tower")
             card_place_turret(card_loc)
         return
 #     tesla
     if (check_for_card_in_hand("tesla") is not None):
-        print("tesla in decklist and hand.")
+        #print("tesla in decklist and hand.")
         card_loc = check_for_card_in_hand("tesla")
         if card_loc is not None:
-            print("Playing tesla")
+            #print("Playing tesla")
             card_place_turret(card_loc)
         return
 # #goblin_barrels
 #     goblin_drill
     if (check_for_card_in_hand("goblin_drill") is not None):
-        print("found goblin_drill in decklist and hand")
+        #print("found goblin_drill in decklist and hand")
         n = random.randint(1, 6)
         if n ==1:
             placement_loc = [96,195]
@@ -373,7 +373,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     miner
     if (check_for_card_in_hand("miner") is not None):
-        print("found miner in decklist and hand")
+        #print("found miner in decklist and hand")
         n = random.randint(1, 6)
         if n ==1:
             placement_loc = [96,195]
@@ -399,7 +399,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     goblin_barrel
     if (check_for_card_in_hand("goblin_barrel") is not None):
-        print("found goblin_barrel in decklist and hand")
+        #print("found goblin_barrel in decklist and hand")
         n = random.randint(1, 6)
         if n ==1:
             placement_loc = [120,200]
@@ -426,7 +426,7 @@ def fight_with_deck_list(enemy_troop_position):
 # #melee_tanks
 #     barb_barrel
     if (check_for_card_in_hand("barb_barrel") is not None):
-        print("playing barb_barrel")
+        #print("playing barb_barrel")
         card_loc = check_for_card_in_hand("barb_barrel")
         placement_loc = enemy_troop_position
         if placement_loc is None:
@@ -441,7 +441,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     bandit
     if (check_for_card_in_hand("bandit") is not None):
-        print("playing bandit")
+        #print("playing bandit")
         card_loc = check_for_card_in_hand("bandit")
         if card_loc is None:
             return
@@ -457,7 +457,7 @@ def fight_with_deck_list(enemy_troop_position):
         return    
 #     barbs
     if (check_for_card_in_hand("barbs") is not None):
-        print("playing barbs")
+        #print("playing barbs")
         card_loc = check_for_card_in_hand("barbs")
         placement_loc = enemy_troop_position
         if card_loc is None:
@@ -472,7 +472,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     bats
     if (check_for_card_in_hand("bats") is not None):
-        print("playing bats")
+        #print("playing bats")
         card_loc = check_for_card_in_hand("bats")
         if card_loc is None:
             return
@@ -487,7 +487,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     dark_knight
     if (check_for_card_in_hand("dark_knight") is not None):
-        print("playing dark_knight")
+        #print("playing dark_knight")
         card_loc = check_for_card_in_hand("dark_knight")
         if card_loc is None:
             return
@@ -502,7 +502,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     e_spirit
     if (check_for_card_in_hand("e_spirit") is not None):
-        print("playing e_spirit")
+        #print("playing e_spirit")
         card_loc = check_for_card_in_hand("e_spirit")
         if card_loc is None:
             return
@@ -517,7 +517,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     fisherman
     if (check_for_card_in_hand("fisherman") is not None):
-        print("playing fisherman")
+        #print("playing fisherman")
         card_loc = check_for_card_in_hand("fisherman")
         if card_loc is None:
             return
@@ -532,7 +532,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     giant
     if (check_for_card_in_hand("giant") is not None):
-        print("playing giant")
+        #print("playing giant")
         card_loc = check_for_card_in_hand("giant")
         if card_loc is None:
             return
@@ -547,7 +547,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     goblins
     if (check_for_card_in_hand("goblins") is not None):
-        print("playing goblins")
+        #print("playing goblins")
         card_loc = check_for_card_in_hand("goblins")
         if card_loc is None:
             return
@@ -562,7 +562,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     golden_knight
     if (check_for_card_in_hand("golden_knight") is not None):
-        print("playing golden_knight")
+        #print("playing golden_knight")
         card_loc = check_for_card_in_hand("golden_knight")
         if card_loc is None:
             return
@@ -577,7 +577,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     guards
     if (check_for_card_in_hand("guards") is not None):
-        print("playing guards")
+        #print("playing guards")
         card_loc = check_for_card_in_hand("guards")
         if card_loc is None:
             return
@@ -592,7 +592,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     heal_spirit
     if (check_for_card_in_hand("heal_spirit") is not None):
-        print("playing heal_spirit")
+        #print("playing heal_spirit")
         card_loc = check_for_card_in_hand("heal_spirit")
         if card_loc is None:
             return
@@ -607,7 +607,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     healer
     if (check_for_card_in_hand("healer") is not None):
-        print("playing healer")
+        #print("playing healer")
         card_loc = check_for_card_in_hand("healer")
         if card_loc is None:
             return
@@ -622,7 +622,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     ice_golem
     if (check_for_card_in_hand("ice_golem") is not None):
-        print("playing ice_golem")
+        #print("playing ice_golem")
         card_loc = check_for_card_in_hand("ice_golem")
         if card_loc is None:
             return
@@ -637,7 +637,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     ice_spirit
     if (check_for_card_in_hand("ice_spirit") is not None):   
-        print("playing ice_spirit")
+        #print("playing ice_spirit")
         card_loc = check_for_card_in_hand("ice_spirit")
         if card_loc is None:
             return
@@ -652,7 +652,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     knight
     if (check_for_card_in_hand("knight") is not None):
-        print("playing knight")
+        #print("playing knight")
         card_loc = check_for_card_in_hand("knight")
         if card_loc is None:
             return
@@ -667,7 +667,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     lumberjack
     if (check_for_card_in_hand("lumberjack") is not None):
-        print("playing lumberjack")
+        #print("playing lumberjack")
         card_loc = check_for_card_in_hand("lumberjack")
         if card_loc is None:
             return
@@ -682,7 +682,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     mega_minion
     if (check_for_card_in_hand("mega_minion") is not None):
-        print("playing mega_minion")
+        #print("playing mega_minion")
         card_loc = check_for_card_in_hand("mega_minion")
         if card_loc is None:
             return
@@ -697,7 +697,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     mighty_miner
     if (check_for_card_in_hand("mighty_miner") is not None):
-        print("playing mighty_miner")
+        #print("playing mighty_miner")
         card_loc = check_for_card_in_hand("mighty_miner")
         if card_loc is None:
             return
@@ -712,7 +712,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     mini_pekka
     if (check_for_card_in_hand("mini_pekka") is not None):
-        print("playing mini_pekka")
+        #print("playing mini_pekka")
         card_loc = check_for_card_in_hand("mini_pekka")
         if card_loc is None:
             return
@@ -727,7 +727,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     minion_hoard
     if (check_for_card_in_hand("minion_hoard") is not None):
-        print("playing minion_hoard")
+        #print("playing minion_hoard")
         card_loc = check_for_card_in_hand("minion_hoard")
         if card_loc is None:
             return
@@ -742,7 +742,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     minions
     if (check_for_card_in_hand("minions") is not None):
-        print("playing minions")
+        #print("playing minions")
         card_loc = check_for_card_in_hand("minions")
         if card_loc is None:
             return
@@ -757,7 +757,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     prince
     if (check_for_card_in_hand("prince") is not None):
-        print("playing prince")
+        #print("playing prince")
         card_loc = check_for_card_in_hand("prince")
         if card_loc is None:
             return
@@ -772,7 +772,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     royal_ghost
     if (check_for_card_in_hand("royal_ghost") is not None):
-        print("playing royal_ghost")
+        #print("playing royal_ghost")
         card_loc = check_for_card_in_hand("royal_ghost")
         if card_loc is None:
             return
@@ -787,7 +787,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     skeleton_army
     if (check_for_card_in_hand("skeleton_army") is not None):
-        print("playing skeleton_army")
+        #print("playing skeleton_army")
         card_loc = check_for_card_in_hand("skeleton_army")
         if card_loc is None:
             return
@@ -802,7 +802,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     skeleton_barrel
     if (check_for_card_in_hand("skeleton_barrel") is not None):
-        print("playing skeleton_barrel")
+        #print("playing skeleton_barrel")
         card_loc = check_for_card_in_hand("skeleton_barrel")
         if card_loc is None:
             return
@@ -817,7 +817,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     skeleton_dragons
     if (check_for_card_in_hand("skeleton_dragons") is not None):
-        print("playing skeleton_dragons")
+        #print("playing skeleton_dragons")
         card_loc = check_for_card_in_hand("skeleton_dragons")
         if card_loc is None:
             return
@@ -832,7 +832,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     skeleton_king
     if (check_for_card_in_hand("skeleton_king") is not None):
-        print("playing skeleton_king")
+        #print("playing skeleton_king")
         card_loc = check_for_card_in_hand("skeleton_king")
         if card_loc is None:
             return
@@ -847,7 +847,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     skeletons
     if (check_for_card_in_hand("skeletons") is not None):
-        print("playing skeletons")
+        #print("playing skeletons")
         card_loc = check_for_card_in_hand("skeletons")
         if card_loc is None:
             return
@@ -862,7 +862,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     valk
     if (check_for_card_in_hand("valk") is not None):
-        print("playing valk")
+        #print("playing valk")
         card_loc = check_for_card_in_hand("valk")
         if card_loc is None:
             return
@@ -878,7 +878,7 @@ def fight_with_deck_list(enemy_troop_position):
 # #ranged
 #     archer_queen
     if (check_for_card_in_hand("archer_queen") is not None):
-        print("playing archer_queen")
+        #print("playing archer_queen")
         card_loc = check_for_card_in_hand("archer_queen")
         if card_loc is None:
             return
@@ -893,7 +893,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     archers
     if (check_for_card_in_hand("archers") is not None):
-        print("playing archers")
+        #print("playing archers")
         card_loc = check_for_card_in_hand("archers")
         placement_loc = enemy_troop_position
         if placement_loc is None:
@@ -906,7 +906,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     baby_dragon
     if (check_for_card_in_hand("baby_dragon") is not None):
-        print("playing baby_dragon")
+        #print("playing baby_dragon")
         card_loc = check_for_card_in_hand("baby_dragon")
         if card_loc is None:
             return
@@ -921,7 +921,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     bomber
     if (check_for_card_in_hand("bomber") is not None):
-        print("playing bomber")
+        #print("playing bomber")
         card_loc = check_for_card_in_hand("bomber")
         if card_loc is None:
             return
@@ -936,7 +936,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     bowler
     if (check_for_card_in_hand("bowler") is not None):
-        print("playing bowler")
+        #print("playing bowler")
         card_loc = check_for_card_in_hand("bowler")
         if card_loc is None:
             return
@@ -951,7 +951,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     cannon_cart
     if (check_for_card_in_hand("cannon_cart") is not None):
-        print("playing cannon_cart")
+        #print("playing cannon_cart")
         card_loc = check_for_card_in_hand("cannon_cart")
         if card_loc is None:
             return
@@ -966,7 +966,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     dart_goblin
     if (check_for_card_in_hand("dart_goblin") is not None):
-        print("playing dart_goblin")
+        #print("playing dart_goblin")
         card_loc = check_for_card_in_hand("dart_goblin")
         if card_loc is None:
             return
@@ -981,7 +981,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     e_dragon
     if (check_for_card_in_hand("e_dragon") is not None):
-        print("playing e_dragon")
+        #print("playing e_dragon")
         card_loc = check_for_card_in_hand("e_dragon")
         if card_loc is None:
             return
@@ -996,7 +996,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     e_wiz
     if (check_for_card_in_hand("e_wiz") is not None):
-        print("playing e_wiz")
+        #print("playing e_wiz")
         card_loc = check_for_card_in_hand("e_wiz")
         if card_loc is None:
             return
@@ -1011,7 +1011,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     elixer_golem
     if (check_for_card_in_hand("elixer_golem") is not None):
-        print("playing elixer_golem")
+        #print("playing elixer_golem")
         card_loc = check_for_card_in_hand("elixer_golem")
         if card_loc is None:
             return
@@ -1026,7 +1026,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     executioner
     if (check_for_card_in_hand("executioner") is not None):
-        print("playing executioner")
+        #print("playing executioner")
         card_loc = check_for_card_in_hand("executioner")
         if card_loc is None:
             return
@@ -1041,7 +1041,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     fire_spirit
     if (check_for_card_in_hand("fire_spirit") is not None):
-        print("playing fire_spirit")
+        #print("playing fire_spirit")
         card_loc = check_for_card_in_hand("fire_spirit")
         if card_loc is None:
             return
@@ -1056,7 +1056,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     firecracker
     if (check_for_card_in_hand("firecracker") is not None):
-        print("playing firecracker")
+        #print("playing firecracker")
         card_loc = check_for_card_in_hand("firecracker")
         if card_loc is None:
             return
@@ -1071,7 +1071,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     flying_machine
     if (check_for_card_in_hand("flying_machine") is not None):
-        print("playing flying_machine")
+        #print("playing flying_machine")
         card_loc = check_for_card_in_hand("flying_machine")
         if card_loc is None:
             return
@@ -1086,7 +1086,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     hunter
     if (check_for_card_in_hand("hunter") is not None):
-        print("playing hunter")
+        #print("playing hunter")
         card_loc = check_for_card_in_hand("hunter")
         if card_loc is None:
             return
@@ -1101,7 +1101,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     ice_wizard
     if (check_for_card_in_hand("ice_wizard") is not None):
-        print("playing ice_wizard")
+        #print("playing ice_wizard")
         card_loc = check_for_card_in_hand("ice_wizard")
         if card_loc is None:
             return
@@ -1116,7 +1116,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     inferno_dragon
     if (check_for_card_in_hand("inferno_dragon") is not None):
-        print("playing inferno_dragon")
+        #print("playing inferno_dragon")
         card_loc = check_for_card_in_hand("inferno_dragon")
         if card_loc is None:
             return
@@ -1131,7 +1131,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     magic_archer
     if (check_for_card_in_hand("magic_archer") is not None):
-        print("playing magic_archer")
+        #print("playing magic_archer")
         card_loc = check_for_card_in_hand("magic_archer")
         if card_loc is None:
             return
@@ -1146,7 +1146,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     mother_witch
     if (check_for_card_in_hand("mother_witch") is not None):
-        print("playing mother_witch")
+        #print("playing mother_witch")
         card_loc = check_for_card_in_hand("mother_witch")
         if card_loc is None:
             return
@@ -1161,7 +1161,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     musketeer
     if (check_for_card_in_hand("musketeer") is not None):
-        print("playing musketeer")
+        #print("playing musketeer")
         card_loc = check_for_card_in_hand("musketeer")
         if card_loc is None:
             return
@@ -1176,7 +1176,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     night_witch
     if (check_for_card_in_hand("night_witch") is not None):
-        print("playing night_witch")
+        #print("playing night_witch")
         card_loc = check_for_card_in_hand("night_witch")
         if card_loc is None:
             return
@@ -1191,7 +1191,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     sparky
     if (check_for_card_in_hand("sparky") is not None):
-        print("playing sparky")
+        #print("playing sparky")
         card_loc = check_for_card_in_hand("sparky")
         if card_loc is None:
             return
@@ -1206,7 +1206,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     spear_goblins
     if (check_for_card_in_hand("spear_goblins") is not None):
-        print("playing spear_goblins")
+        #print("playing spear_goblins")
         card_loc = check_for_card_in_hand("spear_goblins")
         if card_loc is None:
             return
@@ -1221,7 +1221,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     three_musketeers
     if (check_for_card_in_hand("three_musketeers") is not None):
-        print("playing three_musketeers")
+        #print("playing three_musketeers")
         card_loc = check_for_card_in_hand("three_musketeers")
         if card_loc is None:
             return
@@ -1236,7 +1236,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     goblin_gang
     if (check_for_card_in_hand("goblin_gang") is not None):
-        print("playing goblin_gang")
+        #print("playing goblin_gang")
         card_loc = check_for_card_in_hand("goblin_gang")
         if card_loc is None:
             return
@@ -1251,7 +1251,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     rascals
     if (check_for_card_in_hand("rascals") is not None):
-        print("playing rascals")
+        #print("playing rascals")
         card_loc = check_for_card_in_hand("rascals")
         if card_loc is None:
             return
@@ -1266,7 +1266,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     zappies
     if (check_for_card_in_hand("zappies") is not None):
-        print("playing zappies")
+        #print("playing zappies")
         card_loc = check_for_card_in_hand("zappies")
         if card_loc is None:
             return
@@ -1282,28 +1282,28 @@ def fight_with_deck_list(enemy_troop_position):
 # #spawners
 #     elixer_pump
     if (check_for_card_in_hand("elixer_pump") is not None):
-        print("playing elixer_pump")
+        #print("playing elixer_pump")
         card_loc = check_for_card_in_hand("elixer_pump")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     furnace
     if (check_for_card_in_hand("furnace") is not None):
-        print("playing furnace")
+        #print("playing furnace")
         card_loc = check_for_card_in_hand("furnace")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     goblin_hut
     if (check_for_card_in_hand("goblin_hut") is not None):
-        print("playing goblin_hut")
+        #print("playing goblin_hut")
         card_loc = check_for_card_in_hand("goblin_hut")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     tombstone
     if (check_for_card_in_hand("tombstone") is not None):
-        print("playing tombstone")
+        #print("playing tombstone")
         card_loc = check_for_card_in_hand("tombstone")
         if card_loc is None:
             return
@@ -1311,35 +1311,35 @@ def fight_with_deck_list(enemy_troop_position):
 # #hogs
 #     balloon
     if (check_for_card_in_hand("balloon") is not None):
-        print("playing balloon")
+        #print("playing balloon")
         card_loc = check_for_card_in_hand("balloon")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     battle_ram
     if (check_for_card_in_hand("battle_ram") is not None):
-        print("playing battle_ram")
+        #print("playing battle_ram")
         card_loc = check_for_card_in_hand("battle_ram")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     hog
     if (check_for_card_in_hand("hog") is not None):
-        print("playing hog")
+        #print("playing hog")
         card_loc = check_for_card_in_hand("hog")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     royal_hogs
     if (check_for_card_in_hand("royal_hogs") is not None):
-        print("playing royal_hogs")
+        #print("playing royal_hogs")
         card_loc = check_for_card_in_hand("royal_hogs")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     ram_rider
     if (check_for_card_in_hand("ram_rider") is not None):
-        print("playing ram_rider")
+        #print("playing ram_rider")
         card_loc = check_for_card_in_hand("ram_rider")
         if card_loc is None:
             return
@@ -1348,7 +1348,7 @@ def fight_with_deck_list(enemy_troop_position):
 #     arrows
     card_loc_arrows = check_for_card_in_hand("arrows")
     if (card_loc_arrows is not None):
-        print("playing arrows")
+        #print("playing arrows")
         #click card
         pyautogui.click(x=card_loc_arrows[0],y=card_loc_arrows[1])
         time.sleep(0.25)
@@ -1362,7 +1362,7 @@ def fight_with_deck_list(enemy_troop_position):
     #we not gonna play clone
 #     fireball
     if (check_for_card_in_hand("fireball") is not None):
-        print("playing fireball")
+        #print("playing fireball")
         card_loc = check_for_card_in_hand("fireball")
         if card_loc is None:
             return
@@ -1383,7 +1383,7 @@ def fight_with_deck_list(enemy_troop_position):
         if enemy_troop_position is not None:
             placement_loc = enemy_troop_position
         else:
-            print("couldnt find freeze target so wont play")
+            #print("couldnt find freeze target so wont play")
             placement_loc = card_loc
         pyautogui.click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.26)
@@ -1391,7 +1391,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     log
     if (check_for_card_in_hand("log") is not None):
-        print("playing log")
+        #print("playing log")
         card_loc = check_for_card_in_hand("log")
         if card_loc is None:
             return
@@ -1407,7 +1407,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     poison
     if (check_for_card_in_hand("poison") is not None):
-        print("playing poison")
+        #print("playing poison")
         card_loc = check_for_card_in_hand("poison")
         if card_loc is None:
             return
@@ -1423,7 +1423,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     rage
     if (check_for_card_in_hand("rage") is not None):
-        print("playing rage")
+        #print("playing rage")
         card_loc = check_for_card_in_hand("rage")
         if card_loc is None:
             return
@@ -1431,7 +1431,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     rocket
     if (check_for_card_in_hand("rocket") is not None):
-        print("playing rocket")
+        #print("playing rocket")
         card_loc = check_for_card_in_hand("rocket")
         if card_loc is None:
             return
@@ -1447,7 +1447,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     zap     
     if (check_for_card_in_hand("zap") is not None):
-        print("playing zap")
+        #print("playing zap")
         card_loc = check_for_card_in_hand("zap")
         if card_loc is None:
             return
@@ -1463,7 +1463,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     snowball
     if (check_for_card_in_hand("snowball") is not None):
-        print("playing snowball")
+        #print("playing snowball")
         card_loc = check_for_card_in_hand("snowball")
         if card_loc is None:
             return
@@ -1479,7 +1479,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     tornado
     if (check_for_card_in_hand("tornado") is not None):
-        print("playing tornado")
+        #print("playing tornado")
         card_loc = check_for_card_in_hand("tornado")
         if card_loc is None:
             return
@@ -1495,7 +1495,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     earthquake
     if (check_for_card_in_hand("earthquake") is not None):
-        print("playing earthquake")
+        #print("playing earthquake")
         card_loc = check_for_card_in_hand("earthquake")
         if card_loc is None:
             return
@@ -1511,7 +1511,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     graveyard
     if (check_for_card_in_hand("graveyard") is not None):
-        print("playing graveyard")
+        #print("playing graveyard")
         card_loc = check_for_card_in_hand("graveyard")
         if card_loc is None:
             return
@@ -1527,7 +1527,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     lightning
     if (check_for_card_in_hand("lightning") is not None):
-        print("playing lightning")
+        #print("playing lightning")
         card_loc = check_for_card_in_hand("lightning")
         if card_loc is None:
             return
@@ -1543,7 +1543,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     royal_delivery
     if (check_for_card_in_hand("royal_delivery") is not None):
-        print("playing royal_delivery")
+        #print("playing royal_delivery")
         card_loc = check_for_card_in_hand("royal_delivery")
         if card_loc is None:
             return
@@ -1561,7 +1561,7 @@ def fight_with_deck_list(enemy_troop_position):
 # #etc
 #     mortar
     if (check_for_card_in_hand("mortar") is not None):
-        print("playing mortar")
+        #print("playing mortar")
         card_loc = check_for_card_in_hand("mortar")
         if card_loc is None:
             return
@@ -1581,7 +1581,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     princess
     if (check_for_card_in_hand("princess") is not None):
-        print("playing princess")
+        #print("playing princess")
         card_loc = check_for_card_in_hand("princess")
         if card_loc is None:
             return
@@ -1601,7 +1601,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     wall_breaker
     if (check_for_card_in_hand("wall_breaker") is not None):
-        print("playing wall_breaker")
+        #print("playing wall_breaker")
         card_loc = check_for_card_in_hand("wall_breaker")
         if card_loc is None:
             return
@@ -1617,7 +1617,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     lavahound
     if (check_for_card_in_hand("lavahound") is not None):
-        print("playing lavahound")
+        #print("playing lavahound")
         card_loc = check_for_card_in_hand("lavahound")
         if card_loc is None:
             return
@@ -1637,7 +1637,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     golem
     if (check_for_card_in_hand("golem") is not None):
-        print("playing golem")
+        #print("playing golem")
         card_loc = check_for_card_in_hand("golem")
         if card_loc is None:
             return
@@ -1657,7 +1657,7 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     xbow
     if (check_for_card_in_hand("xbow") is not None):
-        print("playing xbow")
+        #print("playing xbow")
         card_loc = check_for_card_in_hand("xbow")
         if card_loc is None:
             return
@@ -1733,7 +1733,7 @@ def check_deck_for_zap(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found zap in deck")
+            #print("Found zap in deck")
             return location
     return None
 
@@ -1754,7 +1754,7 @@ def check_deck_for_witch(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found witch in deck")
+            #print("Found witch in deck")
             return location
     return None
 
@@ -1775,7 +1775,7 @@ def check_deck_for_golden_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found golden knight in deck")
+            #print("Found golden knight in deck")
             return location
     return None
 
@@ -1803,7 +1803,7 @@ def check_deck_for_royal_hogs(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found royal hogs in deck")
+            #print("Found royal hogs in deck")
             return location
     return None
 
@@ -1829,7 +1829,7 @@ def check_deck_for_royal_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found royal giant in deck")
+            #print("Found royal giant in deck")
             return location
     return None
 
@@ -1859,7 +1859,7 @@ def check_deck_for_cannon(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found cannon in deck")
+            #print("Found cannon in deck")
             return location
     return None
 
@@ -1887,7 +1887,7 @@ def check_deck_for_fireball(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found fireball in deck")
+            #print("Found fireball in deck")
             return location
     return None
 
@@ -1908,7 +1908,7 @@ def check_deck_for_earthquake(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found earthquake in deck")
+            #print("Found earthquake in deck")
             return location
     return None
 
@@ -1936,7 +1936,7 @@ def check_deck_for_log(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found log in deck")
+            #print("Found log in deck")
             return location
     return None
 
@@ -1964,7 +1964,7 @@ def check_deck_for_baby_dragon(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found baby dragon in deck")
+            #print("Found baby dragon in deck")
             return location
     return None
 
@@ -1991,7 +1991,7 @@ def check_deck_for_pekka(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found pekka in deck")
+            #print("Found pekka in deck")
             return location
     return None
 
@@ -2012,7 +2012,7 @@ def check_deck_for_mother_witch(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mother witch in deck")
+            #print("Found mother witch in deck")
             return location
     return None
 
@@ -2038,7 +2038,7 @@ def check_deck_for_goblin_hut(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin hut in deck")
+            #print("Found goblin hut in deck")
             return location
     return None
 
@@ -2064,7 +2064,7 @@ def check_deck_for_mighty_miner(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mighty miner in deck")
+            #print("Found mighty miner in deck")
             return location
     return None
 
@@ -2090,7 +2090,7 @@ def check_deck_for_fisherman(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found fisherman in deck")
+            #print("Found fisherman in deck")
             return location
     return None
 
@@ -2116,7 +2116,7 @@ def check_deck_for_inferno_tower(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found inferno tower in deck")
+            #print("Found inferno tower in deck")
             return location
     return None
 
@@ -2137,7 +2137,7 @@ def check_deck_for_archers(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found archers in deck")
+            #print("Found archers in deck")
             return location
     return None
 
@@ -2168,7 +2168,7 @@ def check_deck_for_bats(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found bats in deck")
+            #print("Found bats in deck")
             return location
     return None
 
@@ -2189,7 +2189,7 @@ def check_deck_for_tombstone(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found tombstone in deck")
+            #print("Found tombstone in deck")
             return location
     return None
 
@@ -2215,7 +2215,7 @@ def check_deck_for_e_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found e giant in deck")
+            #print("Found e giant in deck")
             return location
     return None
 
@@ -2246,7 +2246,7 @@ def check_deck_for_rocket(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found rocket in deck")
+            #print("Found rocket in deck")
             return location
     return None
 
@@ -2277,7 +2277,7 @@ def check_deck_for_graveyard(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found graveyard in deck")
+            #print("Found graveyard in deck")
             return location
     return None
 
@@ -2308,7 +2308,7 @@ def check_deck_for_healer(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found healer in deck")
+            #print("Found healer in deck")
             return location
     return None
 
@@ -2329,7 +2329,7 @@ def check_deck_for_barb_barrel(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found barb barrel in deck")
+            #print("Found barb barrel in deck")
             return location
     return None
 
@@ -2355,7 +2355,7 @@ def check_deck_for_archer_queen(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found archer queen in deck")
+            #print("Found archer queen in deck")
             return location
     return None
 
@@ -2376,7 +2376,7 @@ def check_deck_for_e_wiz(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found e wiz in deck")
+            #print("Found e wiz in deck")
             return location
     return None
 
@@ -2397,7 +2397,7 @@ def check_deck_for_battle_ram(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found battle ram in deck")
+            #print("Found battle ram in deck")
             return location
     return None
 
@@ -2418,7 +2418,7 @@ def check_deck_for_spear_goblins(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found spear goblins in deck")
+            #print("Found spear goblins in deck")
             return location
     return None
 
@@ -2439,7 +2439,7 @@ def check_deck_for_arrows(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found arrows in deck")
+            #print("Found arrows in deck")
             return location
     return None
 
@@ -2460,7 +2460,7 @@ def check_deck_for_skeleton_army(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton army in deck")
+            #print("Found skeleton army in deck")
             return location
     return None
 
@@ -2494,7 +2494,7 @@ def check_deck_for_wizard(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found wizard in deck")
+            #print("Found wizard in deck")
             return location
     return None
 
@@ -2525,7 +2525,7 @@ def check_deck_for_skeleton_dragons(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton dragons in deck")
+            #print("Found skeleton dragons in deck")
             return location
     return None
 
@@ -2551,7 +2551,7 @@ def check_deck_for_prince(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found prince in deck")
+            #print("Found prince in deck")
             return location
     return None
 
@@ -2583,7 +2583,7 @@ def check_deck_for_goblin_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin giant in deck")
+            #print("Found goblin giant in deck")
             return location
     return None
 
@@ -2609,7 +2609,7 @@ def check_deck_for_zappies(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found zappies in deck")
+            #print("Found zappies in deck")
             return location
     return None
 
@@ -2639,7 +2639,7 @@ def check_deck_for_lavahound(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found lavahound in deck")
+            #print("Found lavahound in deck")
             return location
     return None
 
@@ -2668,7 +2668,7 @@ def check_deck_for_lightning(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found lightning in deck")
+            #print("Found lightning in deck")
             return location
     return None
 
@@ -2694,7 +2694,7 @@ def check_deck_for_executioner(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found executioner in deck")
+            #print("Found executioner in deck")
             return location
     return None
 
@@ -2717,7 +2717,7 @@ def check_deck_for_goblin_drill(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin drill in deck")
+            #print("Found goblin drill in deck")
             return location
     return None
 
@@ -2743,7 +2743,7 @@ def check_deck_for_rage(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found rage in deck")
+            #print("Found rage in deck")
             return location
     return None
 
@@ -2771,7 +2771,7 @@ def check_deck_for_clone(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found clone in deck")
+            #print("Found clone in deck")
             return location
     return None
 
@@ -2792,7 +2792,7 @@ def check_deck_for_goblin_barrel(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin barrel in deck")
+            #print("Found goblin barrel in deck")
             return location
     return None
 
@@ -2822,7 +2822,7 @@ def check_deck_for_minion_hoard(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found minion hoard in deck")
+            #print("Found minion hoard in deck")
             return location
     return None
 
@@ -2853,7 +2853,7 @@ def check_deck_for_barbs(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found barbs in deck")
+            #print("Found barbs in deck")
             return location
     return None
 
@@ -2874,7 +2874,7 @@ def check_deck_for_tornado(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found tornado in deck")
+            #print("Found tornado in deck")
             return location
     return None
 
@@ -2904,7 +2904,7 @@ def check_deck_for_skeleton_barrel(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton barrel in deck")
+            #print("Found skeleton barrel in deck")
             return location
     return None
 
@@ -2925,7 +2925,7 @@ def check_deck_for_miner(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found miner in deck")
+            #print("Found miner in deck")
             return location
     return None
 
@@ -2956,7 +2956,7 @@ def check_deck_for_skeletons(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found skeletons in deck")
+            #print("Found skeletons in deck")
             return location
     return None
 
@@ -2992,7 +2992,7 @@ def check_deck_for_elite_barbs(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found elite barbs in deck")
+            #print("Found elite barbs in deck")
             return location
     return None
 
@@ -3023,7 +3023,7 @@ def check_deck_for_flying_machine(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found flying machine in deck")
+            #print("Found flying machine in deck")
             return location
     return None
 
@@ -3049,7 +3049,7 @@ def check_deck_for_e_dragon(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found e dragon in deck")
+            #print("Found e dragon in deck")
             return location
     return None
 
@@ -3075,7 +3075,7 @@ def check_deck_for_xbow(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found xbow in deck")
+            #print("Found xbow in deck")
             return location
     return None
 
@@ -3096,7 +3096,7 @@ def check_deck_for_elixer_golem(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found elixer golem in deck")
+            #print("Found elixer golem in deck")
             return location
     return None
 
@@ -3122,7 +3122,7 @@ def check_deck_for_rascals(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found rascals in deck")
+            #print("Found rascals in deck")
             return location
     return None
 
@@ -3152,7 +3152,7 @@ def check_deck_for_skeleton_king(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton king in deck")
+            #print("Found skeleton king in deck")
             return location
     return None
 
@@ -3183,7 +3183,7 @@ def check_deck_for_balloon(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found balloon in deck")
+            #print("Found balloon in deck")
             return location
     return None
 
@@ -3209,7 +3209,7 @@ def check_deck_for_sparky(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found sparky in deck")
+            #print("Found sparky in deck")
             return location
     return None
 
@@ -3230,7 +3230,7 @@ def check_deck_for_golem(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found golem in deck")
+            #print("Found golem in deck")
             return location
     return None
 
@@ -3251,7 +3251,7 @@ def check_deck_for_barb_hut(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found barb hut in deck")
+            #print("Found barb hut in deck")
             return location
     return None
 
@@ -3277,7 +3277,7 @@ def check_deck_for_bomb_tower(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found bomb tower in deck")
+            #print("Found bomb tower in deck")
             return location
     return None
 
@@ -3298,7 +3298,7 @@ def check_deck_for_mortar(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mortar in deck")
+            #print("Found mortar in deck")
             return location
     return None
 
@@ -3327,7 +3327,7 @@ def check_deck_for_inferno_dragon(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found inferno dragon in deck")
+            #print("Found inferno dragon in deck")
             return location
     return None
 
@@ -3348,7 +3348,7 @@ def check_deck_for_hunter(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found hunter in deck")
+            #print("Found hunter in deck")
             return location
     return None
 
@@ -3376,7 +3376,7 @@ def check_deck_for_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found giant in deck")
+            #print("Found giant in deck")
             return location
     return None
 
@@ -3397,7 +3397,7 @@ def check_deck_for_freeze(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found freeze in deck")
+            #print("Found freeze in deck")
             return location
     return None
 
@@ -3418,7 +3418,7 @@ def check_deck_for_lumberjack(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found lumberjack in deck")
+            #print("Found lumberjack in deck")
             return location
     return None
 
@@ -3439,7 +3439,7 @@ def check_deck_for_bowler(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found bowler in deck")
+            #print("Found bowler in deck")
             return location
     return None
 
@@ -3463,7 +3463,7 @@ def check_deck_for_dart_goblin(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found dart goblin in deck")
+            #print("Found dart goblin in deck")
             return location
     return None
 
@@ -3484,7 +3484,7 @@ def check_deck_for_mini_pekka(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mini pekka in deck")
+            #print("Found mini pekka in deck")
             return location
     return None
 
@@ -3513,7 +3513,7 @@ def check_deck_for_mega_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mega knight in deck")
+            #print("Found mega knight in deck")
             return location
     return None
 
@@ -3534,7 +3534,7 @@ def check_deck_for_elixer_pump(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found elixer pump in deck")
+            #print("Found elixer pump in deck")
             return location
     return None
 
@@ -3555,7 +3555,7 @@ def check_deck_for_giant_skeleton(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found giant skeleton in deck")
+            #print("Found giant skeleton in deck")
             return location
     return None
 
@@ -3576,7 +3576,7 @@ def check_deck_for_magic_archer(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found magic archer in deck")
+            #print("Found magic archer in deck")
             return location
     return None
 
@@ -3597,7 +3597,7 @@ def check_deck_for_firecracker(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found firecracker in deck")
+            #print("Found firecracker in deck")
             return location
     return None
 
@@ -3618,7 +3618,7 @@ def check_deck_for_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found knight in deck")
+            #print("Found knight in deck")
             return location
     return None
 
@@ -3639,7 +3639,7 @@ def check_deck_for_cannon_cart(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found cannon cart in deck")
+            #print("Found cannon cart in deck")
             return location
     return None
 
@@ -3665,7 +3665,7 @@ def check_deck_for_hog(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found hog in deck")
+            #print("Found hog in deck")
             return location
     return None
 
@@ -3686,7 +3686,7 @@ def check_deck_for_fire_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found fire spirit in deck")
+            #print("Found fire spirit in deck")
             return location
     return None
 
@@ -3712,7 +3712,7 @@ def check_deck_for_ice_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found ice spirit in deck")
+            #print("Found ice spirit in deck")
             return location
     return None
 
@@ -3741,7 +3741,7 @@ def check_deck_for_bandit(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found bandit in deck")
+            #print("Found bandit in deck")
             return location
     return None
 
@@ -3767,7 +3767,7 @@ def check_deck_for_musketeer(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found musketeer in deck")
+            #print("Found musketeer in deck")
             return location
     return None
 
@@ -3808,7 +3808,7 @@ def check_deck_for_furnace(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found furnace in deck")
+            #print("Found furnace in deck")
             return location
     return None
 
@@ -3836,7 +3836,7 @@ def check_deck_for_snowball(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found snowball in deck")
+            #print("Found snowball in deck")
             return location
     return None
 
@@ -3857,7 +3857,7 @@ def check_deck_for_royal_recruits(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found royal recruits in deck")
+            #print("Found royal recruits in deck")
             return location
     return None
 
@@ -3886,7 +3886,7 @@ def check_deck_for_dark_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found dark knight in deck")
+            #print("Found dark knight in deck")
             return location
     return None
 
@@ -3907,7 +3907,7 @@ def check_deck_for_valk(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found valk in deck")
+            #print("Found valk in deck")
             return location
     return None
 
@@ -3928,7 +3928,7 @@ def check_deck_for_goblin_gang(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin gang in deck")
+            #print("Found goblin gang in deck")
             return location
     return None
 
@@ -3949,7 +3949,7 @@ def check_deck_for_tesla(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found tesla in deck")
+            #print("Found tesla in deck")
             return location
     return None
 
@@ -3970,7 +3970,7 @@ def check_deck_for_royal_ghost(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found royal ghost in deck")
+            #print("Found royal ghost in deck")
             return location
     return None
 
@@ -3997,7 +3997,7 @@ def check_deck_for_bomber(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found bomber in deck")
+            #print("Found bomber in deck")
             return location
     return None
 
@@ -4018,7 +4018,7 @@ def check_deck_for_ram_rider(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found ram rider in deck")
+            #print("Found ram rider in deck")
             return location
     return None
 
@@ -4045,7 +4045,7 @@ def check_deck_for_mirror(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mirror in deck")
+            #print("Found mirror in deck")
             return location
     return None
 
@@ -4066,7 +4066,7 @@ def check_deck_for_poison(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found poison in deck")
+            #print("Found poison in deck")
             return location
     return None
 
@@ -4087,7 +4087,7 @@ def check_deck_for_royal_delivery(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found royal delivery in deck")
+            #print("Found royal delivery in deck")
             return location
     return None
 
@@ -4108,7 +4108,7 @@ def check_deck_for_heal_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found heal spirit in deck")
+            #print("Found heal spirit in deck")
             return location
     return None
 
@@ -4129,7 +4129,7 @@ def check_deck_for_ice_golem(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found ice golem in deck")
+            #print("Found ice golem in deck")
             return location
     return None
 
@@ -4155,7 +4155,7 @@ def check_deck_for_wall_breaker(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found wall breaker in deck")
+            #print("Found wall breaker in deck")
             return location
     return None
 
@@ -4180,7 +4180,7 @@ def check_deck_for_guards(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found guards in deck")
+            #print("Found guards in deck")
             return location
     return None
 
@@ -4201,7 +4201,7 @@ def check_deck_for_princess(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found princess in deck")
+            #print("Found princess in deck")
             return location
     return None
 
@@ -4221,7 +4221,7 @@ def check_deck_for_night_witch(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found night witch in deck")
+            #print("Found night witch in deck")
             return location
     return None
 
@@ -4247,7 +4247,7 @@ def check_deck_for_e_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found e spirit in deck")
+            #print("Found e spirit in deck")
             return location
     return None
 
@@ -4268,7 +4268,7 @@ def check_deck_for_ice_wizard(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found ice wizard in deck")
+            #print("Found ice wizard in deck")
             return location
     return None
 
@@ -4289,7 +4289,7 @@ def check_deck_for_minions(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found minions in deck")
+            #print("Found minions in deck")
             return location
     return None
 
@@ -4315,7 +4315,7 @@ def check_deck_for_goblins(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found goblins in deck")
+            #print("Found goblins in deck")
             return location
     return None
 
@@ -4336,7 +4336,7 @@ def check_deck_for_mega_minion(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found mega minion in deck")
+            #print("Found mega minion in deck")
             return location
     return None
 
@@ -4364,7 +4364,7 @@ def check_deck_for_three_musketeers(deck_image):
     )
     for location in locations:
         if location is not None:
-            print("Found three musketeers in deck")
+            #print("Found three musketeers in deck")
             return location
     return None
 
@@ -4399,7 +4399,7 @@ def check_hand_for_rogal_hogs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found rogal_hogs in hand")
+            #print("Found rogal_hogs in hand")
             return location
     return None
 
@@ -4418,7 +4418,7 @@ def check_hand_for_mother_witch(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mother_witch in hand")
+            #print("Found mother_witch in hand")
             return location
     return None
 
@@ -4435,7 +4435,7 @@ def check_hand_for_e_dragon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found e_dragon in hand")
+            #print("Found e_dragon in hand")
             return location
     return None
 
@@ -4452,7 +4452,7 @@ def check_hand_for_skeletons(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found skeletons in hand")
+            #print("Found skeletons in hand")
             return location
     return None
 
@@ -4470,7 +4470,7 @@ def check_hand_for_ice_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found ice spirit in hand")
+            #print("Found ice spirit in hand")
             return location
     return None
 
@@ -4487,7 +4487,7 @@ def check_hand_for_fire_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found fire spirit in hand")
+            #print("Found fire spirit in hand")
             return location
     return None
 
@@ -4504,7 +4504,7 @@ def check_hand_for_e_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found e spirit in hand")
+            #print("Found e spirit in hand")
             return location
     return None
 
@@ -4520,7 +4520,7 @@ def check_hand_for_e_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found e_giant in hand")
+            #print("Found e_giant in hand")
             return location
     return None
 
@@ -4537,7 +4537,7 @@ def check_hand_for_mirror(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mirror in hand")
+            #print("Found mirror in hand")
             return location
     return None
 
@@ -4554,7 +4554,7 @@ def check_hand_for_heal_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found heal spirit in hand")
+            #print("Found heal spirit in hand")
             return location
     return None
 
@@ -4570,7 +4570,7 @@ def check_hand_for_healer(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found healer in hand")
+            #print("Found healer in hand")
             return location
     return None
 
@@ -4586,7 +4586,7 @@ def check_hand_for_goblins(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblins in hand")
+            #print("Found goblins in hand")
             return location
     return None
 
@@ -4603,7 +4603,7 @@ def check_hand_for_bomber(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found bomber in hand")
+            #print("Found bomber in hand")
             return location
     return None
 
@@ -4620,7 +4620,7 @@ def check_hand_for_spear_goblins(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found spear goblins in hand")
+            #print("Found spear goblins in hand")
             return location
     return None
 
@@ -4637,7 +4637,7 @@ def check_hand_for_ice_golem(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found ice golem in hand")
+            #print("Found ice golem in hand")
             return location
     return None
 
@@ -4654,7 +4654,7 @@ def check_hand_for_bats(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found bats in hand")
+            #print("Found bats in hand")
             return location
     return None
 
@@ -4671,7 +4671,7 @@ def check_hand_for_wall_breaker(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found wall breaker in hand")
+            #print("Found wall breaker in hand")
             return location
     return None
 
@@ -4688,7 +4688,7 @@ def check_hand_for_rage(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found rage in hand")
+            #print("Found rage in hand")
             return location
     return None
 
@@ -4705,7 +4705,7 @@ def check_hand_for_zap(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found zap in hand")
+            #print("Found zap in hand")
             return location
     return None
 
@@ -4722,7 +4722,7 @@ def check_hand_for_log(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found log in hand")
+            #print("Found log in hand")
             return location
     return None
 
@@ -4739,7 +4739,7 @@ def check_hand_for_barb_barrel(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found barb barrel in hand")
+            #print("Found barb barrel in hand")
             return location
     return None
 
@@ -4756,7 +4756,7 @@ def check_hand_for_snowball(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found snowball in hand")
+            #print("Found snowball in hand")
             return location
     return None
 
@@ -4773,7 +4773,7 @@ def check_hand_for_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found knight in hand")
+            #print("Found knight in hand")
             return location
     return None
 
@@ -4790,7 +4790,7 @@ def check_hand_for_archers(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found archers in hand")
+            #print("Found archers in hand")
             return location
     return None
 
@@ -4807,7 +4807,7 @@ def check_hand_for_minions(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found minions in hand")
+            #print("Found minions in hand")
             return location
     return None
 
@@ -4823,7 +4823,7 @@ def check_hand_for_minion_hoard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found minion_hoard in hand")
+            #print("Found minion_hoard in hand")
             return location
     return None
 
@@ -4840,7 +4840,7 @@ def check_hand_for_skeleton_army(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton army in hand")
+            #print("Found skeleton army in hand")
             return location
     return None
 
@@ -4857,7 +4857,7 @@ def check_hand_for_ice_wizard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found ice wizard in hand")
+            #print("Found ice wizard in hand")
             return location
     return None
 
@@ -4874,7 +4874,7 @@ def check_hand_for_guards(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found guards in hand")
+            #print("Found guards in hand")
             return location
     return None
 
@@ -4891,7 +4891,7 @@ def check_hand_for_princess(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found princess in hand")
+            #print("Found princess in hand")
             return location
     return None
 
@@ -4907,7 +4907,7 @@ def check_hand_for_prince(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found prince in hand")
+            #print("Found prince in hand")
             return location
     return None
 
@@ -4924,7 +4924,7 @@ def check_hand_for_miner(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found miner in hand")
+            #print("Found miner in hand")
             return location
     return None
 
@@ -4941,7 +4941,7 @@ def check_hand_for_mega_minion(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mega minion in hand")
+            #print("Found mega minion in hand")
             return location
     return None
 
@@ -4958,7 +4958,7 @@ def check_hand_for_dart_goblin(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found dart goblin in hand")
+            #print("Found dart goblin in hand")
             return location
     return None
 
@@ -4975,7 +4975,7 @@ def check_hand_for_goblin_gang(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin gang in hand")
+            #print("Found goblin gang in hand")
             return location
     return None
 
@@ -4992,7 +4992,7 @@ def check_hand_for_bandit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found bandit in hand")
+            #print("Found bandit in hand")
             return location
     return None
 
@@ -5009,7 +5009,7 @@ def check_hand_for_royal_ghost(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found royal ghost in hand")
+            #print("Found royal ghost in hand")
             return location
     return None
 
@@ -5026,7 +5026,7 @@ def check_hand_for_skeleton_barrel(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton barrel in hand")
+            #print("Found skeleton barrel in hand")
             return location
     return None
 
@@ -5043,7 +5043,7 @@ def check_hand_for_fisherman(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found fisherman in hand")
+            #print("Found fisherman in hand")
             return location
     return None
 
@@ -5060,7 +5060,7 @@ def check_hand_for_firecracker(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found firecracker in hand")
+            #print("Found firecracker in hand")
             return location
     return None
 
@@ -5077,7 +5077,7 @@ def check_hand_for_elixer_golem(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found elixer golem in hand")
+            #print("Found elixer golem in hand")
             return location
     return None
 
@@ -5094,7 +5094,7 @@ def check_hand_for_cannon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found cannon in hand")
+            #print("Found cannon in hand")
             return location
     return None
 
@@ -5111,7 +5111,7 @@ def check_hand_for_tombstone(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found tombstone in hand")
+            #print("Found tombstone in hand")
             return location
     return None
 
@@ -5128,7 +5128,7 @@ def check_hand_for_arrows(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found arrows in hand")
+            #print("Found arrows in hand")
             return location
     return None
 
@@ -5145,7 +5145,7 @@ def check_hand_for_goblin_barrel(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin barrel in hand")
+            #print("Found goblin barrel in hand")
             return location
     return None
 
@@ -5162,7 +5162,7 @@ def check_hand_for_tornado(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found tornado in hand")
+            #print("Found tornado in hand")
             return location
     return None
 
@@ -5179,7 +5179,7 @@ def check_hand_for_clone(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found clone in hand")
+            #print("Found clone in hand")
             return location
     return None
 
@@ -5196,7 +5196,7 @@ def check_hand_for_earthquake(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found earthquake in hand")
+            #print("Found earthquake in hand")
             return location
     return None
 
@@ -5213,7 +5213,7 @@ def check_hand_for_royal_delivery(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found royal delivery in hand")
+            #print("Found royal delivery in hand")
             return location
     return None
 
@@ -5230,7 +5230,7 @@ def check_hand_for_valk(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found valk in hand")
+            #print("Found valk in hand")
             return location
     return None
 
@@ -5247,7 +5247,7 @@ def check_hand_for_musketeer(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found musketeer in hand")
+            #print("Found musketeer in hand")
             return location
     return None
 
@@ -5264,7 +5264,7 @@ def check_hand_for_baby_dragon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found baby dragon in hand")
+            #print("Found baby dragon in hand")
             return location
     return None
 
@@ -5281,7 +5281,7 @@ def check_hand_for_mini_pekka(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mini pekka in hand")
+            #print("Found mini pekka in hand")
             return location
     return None
 
@@ -5298,7 +5298,7 @@ def check_hand_for_hog(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found hog in hand")
+            #print("Found hog in hand")
             return location
     return None
 
@@ -5315,7 +5315,7 @@ def check_hand_for_dark_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found dark knight in hand")
+            #print("Found dark knight in hand")
             return location
     return None
 
@@ -5332,7 +5332,7 @@ def check_hand_for_lumberjack(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found lumberjack in hand")
+            #print("Found lumberjack in hand")
             return location
     return None
 
@@ -5349,7 +5349,7 @@ def check_hand_for_battle_ram(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found battle ram in hand")
+            #print("Found battle ram in hand")
             return location
     return None
 
@@ -5366,7 +5366,7 @@ def check_hand_for_inferno_dragon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found inferno dragon in hand")
+            #print("Found inferno dragon in hand")
             return location
     return None
 
@@ -5383,7 +5383,7 @@ def check_hand_for_e_wiz(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found e wiz in hand")
+            #print("Found e wiz in hand")
             return location
     return None
 
@@ -5400,7 +5400,7 @@ def check_hand_for_hunter(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found hunter in hand")
+            #print("Found hunter in hand")
             return location
     return None
 
@@ -5417,7 +5417,7 @@ def check_hand_for_zappies(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found zappies in hand")
+            #print("Found zappies in hand")
             return location
     return None
 
@@ -5434,7 +5434,7 @@ def check_hand_for_magic_archer(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found magic archer in hand")
+            #print("Found magic archer in hand")
             return location
     return None
 
@@ -5451,7 +5451,7 @@ def check_hand_for_mighty_miner(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mighty miner in hand")
+            #print("Found mighty miner in hand")
             return location
     return None
 
@@ -5468,7 +5468,7 @@ def check_hand_for_skeleton_king(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton king in hand")
+            #print("Found skeleton king in hand")
             return location
     return None
 
@@ -5489,7 +5489,7 @@ def check_hand_for_golden_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found golden knight in hand")
+            #print("Found golden knight in hand")
             return location
     return None
 
@@ -5506,7 +5506,7 @@ def check_hand_for_mortar(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mortar in hand")
+            #print("Found mortar in hand")
             return location
     return None
 
@@ -5523,7 +5523,7 @@ def check_hand_for_bomb_tower(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found bomb tower in hand")
+            #print("Found bomb tower in hand")
             return location
     return None
 
@@ -5540,7 +5540,7 @@ def check_hand_for_tesla(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found tesla in hand")
+            #print("Found tesla in hand")
             return location
     return None
 
@@ -5557,7 +5557,7 @@ def check_hand_for_furnace(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found furnace in hand")
+            #print("Found furnace in hand")
             return location
     return None
 
@@ -5574,7 +5574,7 @@ def check_hand_for_goblin_cage(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin cage in hand")
+            #print("Found goblin cage in hand")
             return location
     return None
 
@@ -5598,7 +5598,7 @@ def check_hand_for_goblin_drill(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin drill in hand")
+            #print("Found goblin drill in hand")
             return location
     return None
 
@@ -5615,7 +5615,7 @@ def check_hand_for_fireball(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found fireball in hand")
+            #print("Found fireball in hand")
             return location
     return None
 
@@ -5640,7 +5640,7 @@ def check_hand_for_freeze(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found freeze in hand")
+            #print("Found freeze in hand")
             return location
     return None
 
@@ -5657,7 +5657,7 @@ def check_hand_for_poison(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found poison in hand")
+            #print("Found poison in hand")
             return location
     return None
 
@@ -5674,7 +5674,7 @@ def check_hand_for_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found giant in hand")
+            #print("Found giant in hand")
             return location
     return None
 
@@ -5691,7 +5691,7 @@ def check_hand_for_balloon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found balloon in hand")
+            #print("Found balloon in hand")
             return location
     return None
 
@@ -5708,7 +5708,7 @@ def check_hand_for_barbs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found barbs in hand")
+            #print("Found barbs in hand")
             return location
     return None
 
@@ -5725,7 +5725,7 @@ def check_hand_for_bowler(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found bowler in hand")
+            #print("Found bowler in hand")
             return location
     return None
 
@@ -5742,7 +5742,7 @@ def check_hand_for_executioner(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found executioner in hand")
+            #print("Found executioner in hand")
             return location
     return None
 
@@ -5759,7 +5759,7 @@ def check_hand_for_ram_rider(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found ram rider in hand")
+            #print("Found ram rider in hand")
             return location
     return None
 
@@ -5776,7 +5776,7 @@ def check_hand_for_rascals(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found rascals in hand")
+            #print("Found rascals in hand")
             return location
     return None
 
@@ -5793,7 +5793,7 @@ def check_hand_for_cannon_cart(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found cannon cart in hand")
+            #print("Found cannon cart in hand")
             return location
     return None
 
@@ -5810,7 +5810,7 @@ def check_hand_for_royal_hogs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found royal hogs in hand")
+            #print("Found royal hogs in hand")
             return location
     return None
 
@@ -5831,7 +5831,7 @@ def check_hand_for_archer_queen(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found archer queen in hand")
+            #print("Found archer queen in hand")
             return location
     return None
 
@@ -5848,7 +5848,7 @@ def check_hand_for_goblin_hut(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin hut in hand")
+            #print("Found goblin hut in hand")
             return location
     return None
 
@@ -5865,7 +5865,7 @@ def check_hand_for_inferno_tower(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found inferno tower in hand")
+            #print("Found inferno tower in hand")
             return location
     return None
 
@@ -5882,7 +5882,7 @@ def check_hand_for_graveyard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found graveyard in hand")
+            #print("Found graveyard in hand")
             return location
     return None
 
@@ -5899,7 +5899,7 @@ def check_hand_for_giant_skeleton(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found giant skeleton in hand")
+            #print("Found giant skeleton in hand")
             return location
     return None
 
@@ -5916,7 +5916,7 @@ def check_hand_for_royal_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found royal giant in hand")
+            #print("Found royal giant in hand")
             return location
     return None
 
@@ -5933,7 +5933,7 @@ def check_hand_for_sparky(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found sparky in hand")
+            #print("Found sparky in hand")
             return location
     return None
 
@@ -5950,7 +5950,7 @@ def check_hand_for_elite_barbs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found elite barbs in hand")
+            #print("Found elite barbs in hand")
             return location
     return None
 
@@ -5967,7 +5967,7 @@ def check_hand_for_goblin_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found goblin giant in hand")
+            #print("Found goblin giant in hand")
             return location
     return None
 
@@ -5984,7 +5984,7 @@ def check_hand_for_elixer_pump(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found elixer pump in hand")
+            #print("Found elixer pump in hand")
             return location
     return None
 
@@ -6001,7 +6001,7 @@ def check_hand_for_xbow(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found xbow in hand")
+            #print("Found xbow in hand")
             return location
     return None
 
@@ -6018,7 +6018,7 @@ def check_hand_for_lightning(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found lightning in hand")
+            #print("Found lightning in hand")
             return location
     return None
 
@@ -6035,7 +6035,7 @@ def check_hand_for_pekka(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found pekka in hand")
+            #print("Found pekka in hand")
             return location
     return None
 
@@ -6052,7 +6052,7 @@ def check_hand_for_lavahound(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found lavahound in hand")
+            #print("Found lavahound in hand")
             return location
     return None
 
@@ -6072,7 +6072,7 @@ def check_hand_for_royal_guards(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found royal guards in hand")
+            #print("Found royal guards in hand")
             return location
     return None
 
@@ -6089,7 +6089,7 @@ def check_hand_for_mega_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found mega knight in hand")
+            #print("Found mega knight in hand")
             return location
     return None
 
@@ -6106,7 +6106,7 @@ def check_hand_for_barb_hut(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found barb hut in hand")
+            #print("Found barb hut in hand")
             return location
     return None
 
@@ -6123,7 +6123,7 @@ def check_hand_for_golem(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found golem in hand")
+            #print("Found golem in hand")
             return location
     return None
 
@@ -6140,7 +6140,7 @@ def check_hand_for_three_musketeers(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found three musketeers in hand")
+            #print("Found three musketeers in hand")
             return location
     return None
 
@@ -6157,7 +6157,7 @@ def check_hand_for_skeleton_dragons(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found skeleton_dragons in hand")
+            #print("Found skeleton_dragons in hand")
             return location
     return None
 
@@ -6177,7 +6177,7 @@ def check_hand_for_flying_machine(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found flying_machine in hand")
+            #print("Found flying_machine in hand")
             return location
     return None
 
@@ -6194,7 +6194,7 @@ def check_hand_for_night_witch(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found night_witch in hand")
+            #print("Found night_witch in hand")
             return location
     return None
 
@@ -6211,7 +6211,7 @@ def check_hand_for_witch(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found witch in hand")
+            #print("Found witch in hand")
             return location
     return None
 
@@ -6227,7 +6227,7 @@ def check_hand_for_wizard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found wizard in hand")
+            #print("Found wizard in hand")
             return location
     return None
 
@@ -6243,7 +6243,7 @@ def check_hand_for_rocket(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            print("Found rocket in hand")
+            #print("Found rocket in hand")
             return location
     return None
 
