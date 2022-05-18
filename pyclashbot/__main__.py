@@ -612,7 +612,7 @@ def find_donates():
     ]
 
     loops = 0
-    while loops<10:
+    while loops<3:
         locations = find_references(
             screenshot=refresh_screen(),
             folder="donate",
@@ -623,6 +623,7 @@ def find_donates():
             if location is not None:
                 return location
         scroll_down()
+        loops=loops+1
     return None
 
 def click_donates():
@@ -749,7 +750,7 @@ def restart_client():
     check_quit_key_press()
     logger.log("opening client")
     pyautogui.click(x=540, y=140)
-    time.sleep(1)
+    time.sleep(3)
     if wait_for_menu_main() == "quit":
         return "quit"
     logger.log("skipping ads")
@@ -819,7 +820,7 @@ def check_if_windows_exist():
 
 
 def look_for_enemy_troops():
-    current_image = refresh_screen()
+    current_image = pyautogui.screenshot(region=(78,141, 271, 356))
 
     references = [
         "14_10.png",
@@ -970,6 +971,7 @@ def switch_accounts_to(ssid):
     if ssid==2:
         logger.log("Clicking account 2")
         pyautogui.click(x=193,y=471)
+    time.sleep(3)
     if wait_for_clash_main_menu() == "quit":
         logger.log("Switching accounts failed. Restarting")
     check_quit_key_press()
@@ -1001,7 +1003,7 @@ def check_for_reward_limit():
 def main_loop():
     # vars
     loop_count = 0
-    ssid = 1
+    ssid = 2
     if not check_if_windows_exist():
         return
     state = "restart"
@@ -1014,10 +1016,10 @@ def main_loop():
         plt.imshow(iar)
         
         
-        #plt.show()
+        plt.show()
 
         
-        switch_accounts_to(ssid)
+
 
         
         # orientate_memu_multi()
@@ -1052,7 +1054,7 @@ def main_loop():
         #         click_donates()
         #     state = "start_a_fight"
         # if state == "start_a_fight":
-        #     logger.log("STATE=start_a_fight")
+        #     logger.log("STATE=start_a_fight")  
         #     if start_2v2() == "quit":
         #         state = "restart"
         #     else:
@@ -1065,8 +1067,14 @@ def main_loop():
         #     loops = 0
         #     while check_if_in_battle() is True:
         #         loops = loops+1
-        #         log = "Fightloop: "+str(loops)
-        #         logger.log(log)
+        #         enemy_troop_position = look_for_enemy_troops()
+        #         fight_with_deck_list(enemy_troop_position)
+        #         if loops > 50:
+        #             break
+        #     time.sleep(3)
+        #     loops = 0
+        #     while check_if_in_battle() is True:
+        #         loops = loops+1
         #         enemy_troop_position = look_for_enemy_troops()
         #         fight_with_deck_list(enemy_troop_position)
         #         if loops > 50:
@@ -1097,14 +1105,14 @@ def main_loop():
         #         logger.log("On clash main")
         #         state = "clash_main"
         #         #switching ssids to switch accounds
-        #         if ssid==1:
-        #             ssid=2
-        #         if ssid==2:
-        #             ssid=1
         #     else:
         #         logger.log("Dont seem to be on clash main. Restarting")
         #         state = "restart"
-            
+        #     if ssid == 1:
+        #         ssid =2
+        #     else:
+        #         ssid=1
+           
             
             
 
