@@ -318,6 +318,35 @@ def return_to_clash_main_menu():
     check_quit_key_press()
 
 
+def check_if_reached_reward_limit():
+    references = [
+        "reward_limit_1.png",
+        "reward_limit_2.png",
+        "reward_limit_3.png",
+        "reward_limit_4.png",
+    ]
+
+    locations = find_references(
+        screenshot=pyautogui.screenshot(),
+        folder="reward_limit",
+        names=references,
+        tolerance=0.97
+    )
+
+    for location in locations:
+        if location is not None:
+            # if reward limit is reached, click out of menu
+            ok_location = None
+            while ok_location is None:
+                ok_location = find_reference(
+                    pyautogui.screenshot(),
+                    folder="reward_limit",
+                    name="reward_limit_ok.png"
+                )
+            pyautogui.moveTo(x=ok_location[1], y=ok_location[0], duration=0.2)
+            pyautogui.click()
+
+
 def start_2v2():
     check_quit_key_press()
     logger.log("Navigating to 2v2 match")
@@ -326,6 +355,7 @@ def start_2v2():
     pyautogui.scroll(-10, x=0, y=0)
     time.sleep(3)
     pyautogui.click(x=300, y=300)
+    check_if_reached_reward_limit()
     check_quit_key_press()
 
 
@@ -345,7 +375,7 @@ def wait_for_battle_start():
     while n == 1:
         if check_if_in_battle():
             n = 0
-        pyautogui.click(x=100,y=100)
+        pyautogui.click(x=100, y=100)
         time.sleep(0.25)
         n1 += 1
         if n1 > 120:
@@ -493,7 +523,7 @@ def check_if_exit_battle_button_exists():
 
 def check_if_in_a_clan_from_main():
     logger.log("Checking if you're in a clan")
-    pyautogui.click(x=315,y=630,clicks=3,interval=1)
+    pyautogui.click(x=315, y=630, clicks=3, interval=1)
     time.sleep(2)
     current_image = pyautogui.screenshot()
     reference_folder = "not_in_a_clan"
@@ -515,7 +545,7 @@ def check_if_in_a_clan_from_main():
         names=references,
         tolerance=0.97
     )
-    pyautogui.click(x=175,y=630)
+    pyautogui.click(x=175, y=630)
     time.sleep(1)
     for location in locations:
         if location is not None:
@@ -556,24 +586,26 @@ def find_donates():
 
 def click_donates():
 
-
     logger.log("clicking the donate buttons if any exist")
     donate_button_loc = find_donates()
     if donate_button_loc is not None:
-        pyautogui.click(x=donate_button_loc[1],y=donate_button_loc[0],clicks=3,interval=0.25)
+        pyautogui.click(
+            x=donate_button_loc[1], y=donate_button_loc[0], clicks=3, interval=0.25)
         time.sleep(1)
     more_donates_button_loc = check_if_more_donates()
     if more_donates_button_loc is not None:
-        pyautogui.click(x=more_donates_button_loc[1],y=more_donates_button_loc[0])
+        pyautogui.click(
+            x=more_donates_button_loc[1], y=more_donates_button_loc[0])
         time.sleep(1)
     logger.log("clicking the donate buttons if any exist")
     donate_button_loc = find_donates()
     if donate_button_loc is not None:
-        pyautogui.click(x=donate_button_loc[1],y=donate_button_loc[0],clicks=3,interval=0.25)
+        pyautogui.click(
+            x=donate_button_loc[1], y=donate_button_loc[0], clicks=3, interval=0.25)
         time.sleep(1)
     down_arrow_loc = check_if_clan_chat_down_arrow_exists()
     if down_arrow_loc is not None:
-        pyautogui.click(x=down_arrow_loc[1],y=down_arrow_loc[0])
+        pyautogui.click(x=down_arrow_loc[1], y=down_arrow_loc[0])
     time.sleep(1)
     return_to_clash_main_menu()
 
@@ -637,7 +669,7 @@ def check_if_more_donates():
         if location is not None:
             return location  # found a location
     return None
-    
+
 
 def check_quit_key_press():
     if keyboard.is_pressed("space"):
@@ -660,7 +692,7 @@ def restart_client():
     logger.log("skipping ads")
     orientate_window()
     time.sleep(1)
-    pyautogui.click(x=440, y=600,clicks=5,interval=1)
+    pyautogui.click(x=440, y=600, clicks=5, interval=1)
     if open_clash() == "quit":
         return "quit"
 
@@ -831,7 +863,7 @@ def wait_for_menu_main():
         log = "Waiting for memu main:"+str(loops)
         logger.log(log)
         time.sleep(1)
-        if loops>20:
+        if loops > 20:
             logger.log("Waited too long for memu start")
             return "quit"
 
@@ -865,7 +897,7 @@ def main_loop():
         return
     state = "restart"
     while True:
-        
+
         time.sleep(1)
         logger.log(f"loop count: {loop_count}")
         loop_count += 1
@@ -880,7 +912,7 @@ def main_loop():
         orientate_memu_multi()
         time.sleep(1)
         orientate_window()
-        
+
         if state == "restart":
             logger.log("STATE=restart")
             logger.log("restart time loop")
@@ -894,7 +926,7 @@ def main_loop():
                     state = "restart"
         if state == "clash_main":
             logger.log("STATE=clash_main")
-            #open chests
+            # open chests
             time.sleep(1)
             open_chests()
             time.sleep(1)
@@ -903,7 +935,7 @@ def main_loop():
                 if check_if_can_request() is True:
                     logger.log("Requesting")
                     request_from_clash_main_menu()
-                #donate
+                # donate
                 getto_donate_page()
                 click_donates()
             state = "start_a_fight"
@@ -916,14 +948,14 @@ def main_loop():
                 state = "fighting"
         if state == "fighting":
             logger.log("STATE=fighting")
-            loops=0
+            loops = 0
             while check_if_in_battle() is True:
-                loops=loops+1
-                log="Fightloop: "+str(loops)
+                loops = loops+1
+                log = "Fightloop: "+str(loops)
                 logger.log(log)
                 enemy_troop_position = look_for_enemy_troops()
                 fight_with_deck_list(enemy_troop_position)
-                if loops>50:
+                if loops > 50:
                     break
             logger.log("Fight must be over")
             state = "end_of_fight"
