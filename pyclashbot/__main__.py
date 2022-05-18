@@ -1,5 +1,6 @@
 import random
 import time
+from inspect import getmembers, isfunction
 
 import keyboard
 import matplotlib.pyplot as plt
@@ -71,7 +72,7 @@ def open_clash():
 
     if coords is None:
         logger.log("Clash logo wasn't found")
-        return
+        return "quit"
     pyautogui.click(x=coords[1], y=coords[0])
     # return coords
 
@@ -221,11 +222,11 @@ def request_from_clash_main_menu():
     logger.log("requesting giant")
     pyautogui.click(x=86, y=564)
     # scroll till find card
-    time.sleep(2)
+    time.sleep(1)
     while check_for_request_card() is None:
-        pyautogui.moveTo(x=30,y=350)
-        pyautogui.dragTo(x=30,y=400, button='left',duration=2)
-        time.sleep(3)
+        pyautogui.moveTo(x=100,y=400)
+        pyautogui.dragTo(x=100,y=200, button='left',duration=2)
+        time.sleep(1)
         check_quit_key_press()
     # click card
     coords = check_for_request_card()
@@ -875,6 +876,7 @@ def main_loop():
         
         
         
+        
         orientate_memu_multi()
         time.sleep(1)
         orientate_window()
@@ -886,7 +888,10 @@ def main_loop():
             if restart_client() == "quit":
                 state = "restart"
             else:
-                state = "clash_main"
+                if check_if_on_clash_main_menu():
+                    state = "clash_main"
+                else:
+                    state = "restart"
         if state == "clash_main":
             logger.log("STATE=clash_main")
             #open chests
@@ -895,7 +900,7 @@ def main_loop():
             time.sleep(1)
             if check_if_in_a_clan_from_main() is True:
                 #request
-                if check_if_can_request is True:
+                if check_if_can_request() is True:
                     logger.log("Requesting")
                     request_from_clash_main_menu()
                 #donate
@@ -926,25 +931,27 @@ def main_loop():
             logger.log("STATE=end_of_fight")
             time.sleep(7)
             leave_end_battle_window()
-            state = "clash_main_post_fight"
+            if check_if_on_clash_main_menu():
+                state = "clash_main_post_fight"
+            else:
+                state = "restart"
         if state == "clash_main_post_fight":
             logger.log("STATE=clash_main_post_fight")
             time.sleep(10)
             logger.log("Checking is past game was a win or loss")
             past_game=check_if_past_game_is_win()
-                
             if past_game is True:
                 logger.log("Past game was a Win")
                 logger.add_win()
             else:
                 logger.log("Past game was a Loss")
                 logger.add_loss()
-            state = "clash_main"
-                
+            if check_if_on_clash_main_menu():
+                state = "clash_main"
+            else:
+                state = "restart"
             
             
-        
-        
 
 
         
