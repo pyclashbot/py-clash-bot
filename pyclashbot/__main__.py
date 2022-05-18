@@ -1057,9 +1057,15 @@ def main_loop():
         plt.imshow(iar)
         
         
-        plt.show()
+        #plt.show()
 
-        
+        loops=0
+        while True:
+            enemy_pos = look_for_enemy_troops()
+            print("Enemy: ",enemy_pos)
+            fight_with_deck_list(enemy_pos)
+            print(loops)
+            loops=loops+1
 
 
         
