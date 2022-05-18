@@ -357,6 +357,7 @@ def find_2v2_quick_match_button():
             return location  # found a location
     return None
 
+
 def find_party_button():
     current_image = pyautogui.screenshot()
     reference_folder = "party_button"
@@ -379,6 +380,7 @@ def find_party_button():
         if location is not None:
             return location  # found a location
     return None
+
 
 def start_1v1_ranked():
     check_quit_key_press()
@@ -584,10 +586,12 @@ def check_if_in_a_clan_from_main():
 def scroll_down():
     pyautogui.moveTo(x=215,y=350)
     pyautogui.dragTo(x=215,y=300, button='left',duration=1)
+   
     
 def scroll_up():
     pyautogui.moveTo(x=215,y=300)
     pyautogui.dragTo(x=215,y=350, button='left',duration=1)
+
 
 def find_donates():
     references = [
@@ -625,6 +629,7 @@ def find_donates():
         scroll_down()
         loops=loops+1
     return None
+
 
 def click_donates():
 
@@ -823,6 +828,41 @@ def look_for_enemy_troops():
     current_image = pyautogui.screenshot(region=(78,141, 271, 356))
 
     references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
+        "12.png",
+        "13.png",
+        "14.png",
+        "15.png",
+        "16.png",
+        "17.png",
+        "18.png",
+        "19.png",
+        "20.png",
+        "21.png",
+        "22.png",
+        "23.png",
+        "24.png",
+        "25.png",
+        "26.png",
+        "27.png",
+        "28.png",
+        "29.png",
+        "30.png",
+        "31.png",
+        "32.png",
+        "32.png",
+        "33.png",
+        "34.png",
         "14_10.png",
         "1_1.png",
         "1_2.png",
@@ -975,6 +1015,7 @@ def switch_accounts_to(ssid):
     if wait_for_clash_main_menu() == "quit":
         logger.log("Switching accounts failed. Restarting")
     check_quit_key_press()
+
 
 def check_for_reward_limit():
     references = [
