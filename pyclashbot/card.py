@@ -1,4 +1,5 @@
 import random
+import numpy as np
 import time
 from inspect import getmembers, isfunction
 
@@ -6,6 +7,12 @@ import pyautogui
 
 from pyclashbot.image_rec import find_references
 from pyclashbot import card
+
+
+def refresh_screen():
+    screenshot = pyautogui.screenshot()
+    iar = np.array(screenshot)
+    return iar
 
 
 def random_placement_coord_maker():
@@ -93,7 +100,33 @@ def card_place_hogs(card_loc):
     pyautogui.click(x=placement_loc[0],y=placement_loc[1])
 
 
+def check_if_hero_ability_is_available():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png"
+    ]
+
+    locations = find_references(
+        screenshot=pyautogui.screenshot(),
+        folder="hero_abilities",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return locations
+    return False
+
 def fight_with_deck_list(enemy_troop_position):
+
+#check for hero abilities
+    ability_coords = check_if_hero_ability_is_available()
+    if ability_coords:
+        pyautogui.click(x=ability_coords[1],y=ability_coords[0])
 #expensive has prio
 #     elite_barbs
     if (check_for_card_in_hand("elite_barbs") is not None):
@@ -1644,19 +1677,6 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     mirror
     #not gonna play mirror
-
-    
-    
-    
-    
-    
-    
-    
-
-    # print("No moves found. Waiting")
-    # time.sleep(3)
-    
-    
 # endregion
 
 
@@ -6230,10 +6250,1738 @@ def check_hand_for_rocket(hand_screenshot):
 # endregion
 
 def check_for_card_in_hand(card_name):
-    hand_screenshot = pyautogui.screenshot()
+    hand_screenshot = pyautogui.screenshot(region=(0,0, 460, 680))
     hand_checks = dict((name_function_pair[0], name_function_pair[1])for name_function_pair in getmembers(
         card, isfunction) if name_function_pair[0].startswith("check_hand_for"))
     location = hand_checks[f"check_hand_for_{card_name}"](hand_screenshot)
     if location is not None:
         return [location[1], location[0]]
     return None
+
+# region deck repo screenshots
+# archer_queen
+def check_for_card_in_deck_repo_archer_queen():
+    references = [
+        "archer_queen.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# archers
+def check_for_card_in_deck_repo_archers():
+    references = [
+        "archers.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# arrows
+def check_for_card_in_deck_repo_arrows():
+    references = [
+        "arrows.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# baby_dragon
+def check_for_card_in_deck_repo_baby_dragon():
+    references = [
+        "baby_dragon.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# balloon
+def check_for_card_in_deck_repo_balloon():
+    references = [
+        "balloon.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# bandit
+def check_for_card_in_deck_repo_bandit():
+    references = [
+        "bandit.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# barb_barrel
+def check_for_card_in_deck_repo_barb_barrel():
+    references = [
+        "barb_barrel.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# barb_hut
+def check_for_card_in_deck_repo_barb_hut():
+    references = [
+        "barb_hut.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# barbs
+def check_for_card_in_deck_repo_barbs():
+    references = [
+        "barbs.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# bats
+def check_for_card_in_deck_repo_bats():
+    references = [
+        "bats.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# battle_ram
+def check_for_card_in_deck_repo_battle_ram():
+    references = [
+        "battle_ram.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# bomb_tower
+def check_for_card_in_deck_repo_bomb_tower():
+    references = [
+        "bomb_tower.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# bomber
+def check_for_card_in_deck_repo_bomber():
+    references = [
+        "bomber.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# bowler
+def check_for_card_in_deck_repo_bowler():
+    references = [
+        "bowler.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# cannon
+def check_for_card_in_deck_repo_cannon():
+    references = [
+        "cannon.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# cannon_cart
+def check_for_card_in_deck_repo_cannon_cart():
+    references = [
+        "cannon_cart.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# clone
+def check_for_card_in_deck_repo_clone():
+    references = [
+        "clone.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# dark_knight
+def check_for_card_in_deck_repo_dark_knight():
+    references = [
+        "dark_knight.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# dart_goblin
+def check_for_card_in_deck_repo_dart_goblin():
+    references = [
+        "dart_goblin.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# e_dragon
+def check_for_card_in_deck_repo_e_dragon():
+    references = [
+        "e_dragon.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# e_giant
+def check_for_card_in_deck_repo_e_giant():
+    references = [
+        "e_giant.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# e_spirit
+def check_for_card_in_deck_repo_e_spirit():
+    references = [
+        "e_spirit.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# e_wiz
+def check_for_card_in_deck_repo_e_wiz():
+    references = [
+        "e_wiz.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# earthquake
+def check_for_card_in_deck_repo_earthquake():
+    references = [
+        "earthquake.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# elite_barbs
+def check_for_card_in_deck_repo_elite_barbs():
+    references = [
+        "elite_barbs.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# elixer_golem
+def check_for_card_in_deck_repo_elixer_golem():
+    references = [
+        "elixer_golem.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# elixer_pump
+def check_for_card_in_deck_repo_elixer_pump():
+    references = [
+        "elixer_pump.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# executioner
+def check_for_card_in_deck_repo_executioner():
+    references = [
+        "executioner.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# fire_spirit
+def check_for_card_in_deck_repo_fire_spirit():
+    references = [
+        "fire_spirit.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# fireball
+def check_for_card_in_deck_repo_fireball():
+    references = [
+        "fireball.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# fisherman
+def check_for_card_in_deck_repo_fisherman():
+    references = [
+        "fisherman.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# firecracker
+def check_for_card_in_deck_repo_firecracker():
+    references = [
+        "firecracker.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# flying_machine
+def check_for_card_in_deck_repo_flying_machine():
+    references = [
+        "flying_machine.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# freeze
+def check_for_card_in_deck_repo_freeze():
+    references = [
+        "freeze.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# furnace
+def check_for_card_in_deck_repo_furnace():
+    references = [
+        "furnace.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# giant
+def check_for_card_in_deck_repo_giant():
+    references = [
+        "giant.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# giant_skeleton
+def check_for_card_in_deck_repo_giant_skeleton():
+    references = [
+        "giant_skeleton.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblin_barrel
+def check_for_card_in_deck_repo_goblin_barrel():
+    references = [
+        "goblin_barrel.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblin_cage
+def check_for_card_in_deck_repo_goblin_cage():
+    references = [
+        "goblin_cage.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblin_drill
+def check_for_card_in_deck_repo_goblin_drill():
+    references = [
+        "goblin_drill.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblin_gang
+def check_for_card_in_deck_repo_goblin_gang():
+    references = [
+        "goblin_gang.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblin_giant
+def check_for_card_in_deck_repo_goblin_giant():
+    references = [
+        "goblin_giant.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblin_hut
+def check_for_card_in_deck_repo_goblin_hut():
+    references = [
+        "goblin_hut.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# goblins
+def check_for_card_in_deck_repo_goblins():
+    references = [
+        "goblins.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# golden_knight
+def check_for_card_in_deck_repo_golden_knight():
+    references = [
+        "golden_knight.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# golem
+def check_for_card_in_deck_repo_golem():
+    references = [
+        "golem.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# graveyard
+def check_for_card_in_deck_repo_graveyard():
+    references = [
+        "graveyard.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# guards
+def check_for_card_in_deck_repo_guards():
+    references = [
+        "guards.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# heal_spirit
+def check_for_card_in_deck_repo_heal_spirit():
+    references = [
+        "heal_spirit.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# healer
+def check_for_card_in_deck_repo_healer():
+    references = [
+        "healer.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# hog
+def check_for_card_in_deck_repo_hog():
+    references = [
+        "hog.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# hunter
+def check_for_card_in_deck_repo_hunter():
+    references = [
+        "hunter.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# ice_golem
+def check_for_card_in_deck_repo_ice_golem():
+    references = [
+        "ice_golem.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# ice_spirit
+def check_for_card_in_deck_repo_ice_spirit():
+    references = [
+        "ice_spirit.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# ice_wizard
+def check_for_card_in_deck_repo_ice_wizard():
+    references = [
+        "ice_wizard.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# inferno_dragon
+def check_for_card_in_deck_repo_inferno_dragon():
+    references = [
+        "inferno_dragon.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# inferno_tower
+def check_for_card_in_deck_repo_inferno_tower():
+    references = [
+        "inferno_tower.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# knight
+def check_for_card_in_deck_repo_knight():
+    references = [
+        "knight.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# lavahound
+def check_for_card_in_deck_repo_lavahound():
+    references = [
+        "lavahound.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# lightning
+def check_for_card_in_deck_repo_lightning():
+    references = [
+        "lightning.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# log
+def check_for_card_in_deck_repo_log():
+    references = [
+        "log.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# lumberjack
+def check_for_card_in_deck_repo_lumberjack():
+    references = [
+        "lumberjack.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# magic_archer
+def check_for_card_in_deck_repo_magic_archer():
+    references = [
+        "magic_archer.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mega_knight
+def check_for_card_in_deck_repo_mega_knight():
+    references = [
+        "mega_knight.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mega_minion
+def check_for_card_in_deck_repo_mega_minion():
+    references = [
+        "mega_minion.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mighty_miner
+def check_for_card_in_deck_repo_mighty_miner():
+    references = [
+        "mighty_miner.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# miner
+def check_for_card_in_deck_repo_miner():
+    references = [
+        "miner.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mini_pekka
+def check_for_card_in_deck_repo_mini_pekka():
+    references = [
+        "mini_pekka.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# minion_hoard
+def check_for_card_in_deck_repo_minion_hoard():
+    references = [
+        "minion_hoard.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# minions
+def check_for_card_in_deck_repo_minions():
+    references = [
+        "minions.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mirror
+def check_for_card_in_deck_repo_mirror():
+    references = [
+        "mirror.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mortar
+def check_for_card_in_deck_repo_mortar():
+    references = [
+        "mortar.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# mother_witch
+def check_for_card_in_deck_repo_mother_witch():
+    references = [
+        "mother_witch.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# musketeer
+def check_for_card_in_deck_repo_musketeer():
+    references = [
+        "musketeer.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# night_witch
+def check_for_card_in_deck_repo_night_witch():
+    references = [
+        "night_witch.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# pekka
+def check_for_card_in_deck_repo_pekka():
+    references = [
+        "pekka.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# poison
+def check_for_card_in_deck_repo_poison():
+    references = [
+        "poison.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# prince
+def check_for_card_in_deck_repo_prince():
+    references = [
+        "prince.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# princess
+def check_for_card_in_deck_repo_princess():
+    references = [
+        "princess.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# rage
+def check_for_card_in_deck_repo_rage():
+    references = [
+        "rage.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# ram_rider
+def check_for_card_in_deck_repo_ram_rider():
+    references = [
+        "ram_rider.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# rascals
+def check_for_card_in_deck_repo_rascals():
+    references = [
+        "rascals.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# rocket
+def check_for_card_in_deck_repo_rocket():
+    references = [
+        "rocket.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# royal_delivery
+def check_for_card_in_deck_repo_royal_delivery():
+    references = [
+        "royal_delivery.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# royal_ghost
+def check_for_card_in_deck_repo_royal_ghost():
+    references = [
+        "royal_ghost.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# royal_giant
+def check_for_card_in_deck_repo_royal_giant():
+    references = [
+        "royal_giant.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# royal_guards
+def check_for_card_in_deck_repo_royal_guards():
+    references = [
+        "royal_guards.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# royal_hogs
+def check_for_card_in_deck_repo_royal_hogs():
+    references = [
+        "royal_hogs.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# skeleton_army
+def check_for_card_in_deck_repo_skeleton_army():
+    references = [
+        "skeleton_army.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# skeleton_barrel
+def check_for_card_in_deck_repo_skeleton_barrel():
+    references = [
+        "skeleton_barrel.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# skeleton_dragons
+def check_for_card_in_deck_repo_skeleton_dragons():
+    references = [
+        "skeleton_dragons.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# skeleton_king
+def check_for_card_in_deck_repo_skeleton_king():
+    references = [
+        "skeleton_king.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# skeletons
+def check_for_card_in_deck_repo_skeletons():
+    references = [
+        "skeletons.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# snowball
+def check_for_card_in_deck_repo_snowball():
+    references = [
+        "snowball.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# sparky
+def check_for_card_in_deck_repo_sparky():
+    references = [
+        "sparky.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# spear_goblins
+def check_for_card_in_deck_repo_spear_goblins():
+    references = [
+        "spear_goblins.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# tesla
+def check_for_card_in_deck_repo_tesla():
+    references = [
+        "tesla.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# three_musketeers
+def check_for_card_in_deck_repo_three_musketeers():
+    references = [
+        "three_musketeers.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# tombstone
+def check_for_card_in_deck_repo_tombstone():
+    references = [
+        "tombstone.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# tornado
+def check_for_card_in_deck_repo_tornado():
+    references = [
+        "tornado.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# valk
+def check_for_card_in_deck_repo_valk():
+    references = [
+        "valk.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# wall_breaker
+def check_for_card_in_deck_repo_wall_breaker():
+    references = [
+        "wall_breaker.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# witch
+def check_for_card_in_deck_repo_witch():
+    references = [
+        "witch.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# wizard
+def check_for_card_in_deck_repo_():
+    references = [
+        "wizard.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# xbow
+def check_for_card_in_deck_repo_():
+    references = [
+        "xbow.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# zap
+def check_for_card_in_deck_repo_():
+    references = [
+        "zap.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# zappies
+def check_for_card_in_deck_repo_zappies():
+    references = [
+        "zappies.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="deck_repo_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+
+def scroll_to_card(card_name):
+    hand_screenshot = pyautogui.screenshot()
+    hand_checks = dict((name_function_pair[0], name_function_pair[1])for name_function_pair in getmembers(
+        card, isfunction) if name_function_pair[0].startswith("check_for_card_in_deck_repo_"))
+    location = hand_checks[f"check_for_card_in_deck_repo_{card_name}"](hand_screenshot)
+    if location is not None:
+        return [location[1], location[0]]
+    return None
+        
+
+
+
+# endregion
