@@ -121,6 +121,7 @@ def check_if_hero_ability_is_available():
             return True
     return False
 
+
 def fight_with_deck_list(enemy_troop_position):
 
 #check for hero abilities
