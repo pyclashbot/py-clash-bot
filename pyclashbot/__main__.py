@@ -207,59 +207,6 @@ def check_if_can_request():
     return True
 
 
-def request_from_clash_main_menu():
-    check_quit_key_press()
-    logger.log("Moving to clan chat page")
-    pyautogui.click(x=317, y=627)
-    time.sleep(1)
-    while not check_if_on_clan_chat_page():
-        pyautogui.click(x=317, y=627)
-        time.sleep(2)
-    logger.log("requesting giant")
-    pyautogui.click(x=86, y=564)
-    # scroll till find card
-    time.sleep(1)
-    while check_for_request_card() is None:
-        pyautogui.moveTo(x=100,y=400)
-        pyautogui.dragTo(x=100,y=200, button='left',duration=2)
-        time.sleep(1)
-        check_quit_key_press()
-    # click card
-    coords = check_for_request_card()
-    if coords is not None:
-        pyautogui.click(x=coords[1], y=coords[0])
-        time.sleep(2)
-    # click request
-    coords = look_for_request_button()
-    if coords is not None:
-        pyautogui.click(x=coords[1], y=coords[0])
-        time.sleep(2)
-    return_to_clash_main_menu()
-
-
-def check_for_request_card():
-    references = [
-        "giant_1.png",
-        "giant_2.png",
-        "giant_3.png",
-        "giant_4.png",
-        "giant_5.png",
-        "giant_6.png",
-        "giant_7.png",
-        "giant_8.png",
-    ]
-
-    locations = find_references(
-        screenshot=refresh_screen(),
-        folder="request_page_card_logos",
-        names=references,
-        tolerance=0.99
-    )
-
-    for location in locations:
-        if location is not None:
-            return location
-    return None
 
 
 def look_for_request_button():
@@ -707,13 +654,20 @@ def getto_donate_page():
     logger.log("Moving to clan chat page")
     pyautogui.click(x=317, y=627)
     time.sleep(1)
-    while not check_if_on_clan_chat_page():
+    loops =0
+    while (not check_if_on_clan_chat_page()) and (loops<20):
         time.sleep(1)
         pyautogui.click(x=317, y=627)
         time.sleep(1)
         pyautogui.click(x=393, y=580)
         time.sleep(1)
-    check_quit_key_press()
+        loops=loops+1
+        check_quit_key_press()
+    if check_if_on_clan_chat_page():
+        return
+    else:
+        return "quit"
+    
 
 
 def check_if_more_donates():
@@ -1039,12 +993,193 @@ def check_for_reward_limit():
             return True
     return False
 
+# region donate_cards
+def look_for_earthquake():
+    references = [
+        "earthquake.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
 
+def look_for_ice_spirit():
+    references = [
+        "ice_spirit.png",
+        "ice_spirit_1.png",
+        "ice_spirit_2.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+def look_for_skeleton_barrel():
+    references = [
+        "skeleton_barrel.png",
+        "skeleton_barrel_1.png",
+        "skeleton_barrel_2.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+def look_for_zappies():
+    references = [
+        "zappies.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+def look_for_skeletons():
+    references = [
+        "skeletons.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+# endregion
+
+def look_for_donates_by_card():
+    #region earthquake
+    earthquake = look_for_earthquake()
+    if earthquake is not None:
+        logger.log("Found a request for earthquake.")
+        logger.log(earthquake)
+        pyautogui.click(x=earthquake[1],y=earthquake[0])
+    # endregion
+    #region ice_spirit
+    ice_spirit = look_for_ice_spirit()
+    if ice_spirit is not None:
+        logger.log("Found a request for ice_spirit.")
+        logger.log(ice_spirit)
+        pyautogui.click(x=ice_spirit[1],y=ice_spirit[0])
+    # endregion
+    #region skeleton_barrel
+    skeleton_barrel = look_for_skeleton_barrel()
+    if skeleton_barrel is not None:
+        logger.log("Found a request for skeleton_barrel.")
+        logger.log(skeleton_barrel)
+        pyautogui.click(x=skeleton_barrel[1],y=skeleton_barrel[0])
+    # endregion
+    #region zappies
+    zappies = look_for_zappies()
+    if zappies is not None:
+        logger.log("Found a request for zappies.")
+        logger.log(zappies)
+        pyautogui.click(x=zappies[1],y=zappies[0])
+    # endregion
+    #region skeletons
+    skeletons = look_for_skeletons()
+    if skeletons is not None:
+        logger.log("Found a request for skeletons.")
+        logger.log(skeletons)
+        pyautogui.click(x=skeletons[1],y=skeletons[0])
+    # endregion
+    
+# region request_cards
+
+def request_from_clash_main_menu():
+    check_quit_key_press()
+    logger.log("Moving to clan chat page")
+    pyautogui.click(x=317, y=627)
+    time.sleep(1)
+    while not check_if_on_clan_chat_page():
+        pyautogui.click(x=317, y=627)
+        time.sleep(2)
+    logger.log("requesting giant")
+    pyautogui.click(x=86, y=564)
+    # scroll till find card
+
+    # click card
+    coords = check_for_request_card()
+    if coords is not None:
+        pyautogui.click(x=coords[1], y=coords[0])
+        time.sleep(2)
+    # click request
+    coords = look_for_request_button()
+    if coords is not None:
+        pyautogui.click(x=coords[1], y=coords[0])
+        time.sleep(2)
+    return_to_clash_main_menu()
+
+
+def scroll_till_find_giant():
+    n = None
+    while n is None:
+        references = [
+            "giant_1.png",
+            "giant_2.png",
+            "giant_3.png",
+            "giant_4.png",
+            "giant_5.png",
+            "giant_6.png",
+            "giant_7.png",
+            "giant_8.png",
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+        scroll_down()
+
+
+
+
+# endregion
+    
 
 def main_loop():
+    # user vars (these will be specified thru the GUI, but these are the placeholders for now.)
+    deck = ""
+    fight_type = "2v2"
+    request_card = "giant"
+    cards_to_not_donate=["card_1","card_2","card_3"]
+    
     # vars
     loop_count = 0
-    ssid = 2
     if not check_if_windows_exist():
         return
     state = "restart"
@@ -1059,15 +1194,8 @@ def main_loop():
         
         #plt.show()
 
-        loops=0
-        while True:
-            enemy_pos = look_for_enemy_troops()
-            print("Enemy: ",enemy_pos)
-            fight_with_deck_list(enemy_pos)
-            print(loops)
-            loops=loops+1
-
-
+        scroll_till_find_giant()
+        
         
         # orientate_memu_multi()
         # time.sleep(0.2)
@@ -1097,9 +1225,15 @@ def main_loop():
         #             logger.log("Requesting")
         #             request_from_clash_main_menu()
         #         # donate
-        #         getto_donate_page()
-        #         click_donates()
-        #     state = "start_a_fight"
+        #         if getto_donate_page() == "quit":
+        #             logger.log("Had trouble locating the clan chat page. Restarting")
+        #             state="restart"
+        #         else:
+        #             logger.log("Successfully located clan chat page. Starting donate alg")
+        #             click_donates()
+        #     else:
+        #         logger.log("Main menu shit done. Starting a ",fight_type," battle.")
+        #         state = "start_a_fight"
         # if state == "start_a_fight":
         #     logger.log("STATE=start_a_fight")  
         #     if start_2v2() == "quit":
@@ -1156,7 +1290,7 @@ def main_loop():
         #         logger.log("Dont seem to be on clash main. Restarting")
         #         state = "restart"
         #     if ssid == 1:
-        #         ssid =2
+        #         ssid =2   
         #     else:
         #         ssid=1
            
