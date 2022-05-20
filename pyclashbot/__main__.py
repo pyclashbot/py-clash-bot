@@ -1,7 +1,5 @@
 import random
 import time
-from inspect import getmembers, isfunction
-from unittest.mock import NonCallableMagicMock
 
 import keyboard
 import matplotlib.pyplot as plt
@@ -2484,7 +2482,7 @@ def main_loop():
                     logger.log(log)
                     state = "start_a_fight"
             else:
-                logger.log("Main menu shit done. Starting a ",fight_type," battle.")
+                logger.log(f"Main menu shit done. Starting a {fight_type} battle.")
                 state = "start_a_fight"
         if state == "start_a_fight":
             logger.log("STATE=start_a_fight")  
