@@ -4,6 +4,7 @@ import time
 from inspect import getmembers, isfunction
 
 import pyautogui
+from pyclashbot.__main__ import check_quit_key_press
 
 from pyclashbot.image_rec import find_references
 from pyclashbot import card
@@ -123,7 +124,7 @@ def check_if_hero_ability_is_available():
 
 
 def fight_with_deck_list(enemy_troop_position):
-
+    check_quit_key_press()
 #check for hero abilities
     ability_coords = check_if_hero_ability_is_available()
     if ability_coords:
