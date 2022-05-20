@@ -1,5 +1,5 @@
 import multiprocessing
-from os.path import isdir, join, dirname
+from os.path import dirname, join
 from typing import Union
 
 import cv2
