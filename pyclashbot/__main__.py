@@ -1,6 +1,7 @@
 import random
 import time
 from inspect import getmembers, isfunction
+from unittest.mock import NonCallableMagicMock
 
 import keyboard
 import matplotlib.pyplot as plt
@@ -1073,6 +1074,37 @@ def look_for_skeletons():
             return location
     return None
 
+def look_for_mini_pekka():
+    references = [
+        "mini_pekka.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+def look_for_inferno_tower():
+    references = [
+        "inferno_tower.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+
 # endregion
 
 def look_for_donates_by_card():
@@ -1111,10 +1143,26 @@ def look_for_donates_by_card():
         logger.log(skeletons)
         pyautogui.click(x=skeletons[1],y=skeletons[0])
     # endregion
+    #region mini_pekka
+    mini_pekka = look_for_skeletons()
+    if mini_pekka is not None:
+        logger.log("Found a request for mini_pekka.")
+        logger.log(mini_pekka)
+        pyautogui.click(x=mini_pekka[1],y=mini_pekka[0])
+    # endregion
+    #region inferno_tower
+    inferno_tower = look_for_inferno_tower()
+    if inferno_tower is not None:
+        logger.log("Found a request for infero_tower.")
+        logger.log(inferno_tower)
+        pyautogui.click(x=inferno_tower[1],y=inferno_tower[0])
+    # endregion
+    
+    
     
 # region request_cards
 
-def request_from_clash_main_menu():
+def request_from_clash_main_menu(card_to_request):
     check_quit_key_press()
     logger.log("Moving to clan chat page")
     pyautogui.click(x=317, y=627)
@@ -1122,23 +1170,146 @@ def request_from_clash_main_menu():
     while not check_if_on_clan_chat_page():
         pyautogui.click(x=317, y=627)
         time.sleep(2)
-    logger.log("requesting giant")
+    log = "requesting: "+str(card_to_request)
+    logger.log(log)
     pyautogui.click(x=86, y=564)
     # scroll till find card
 
     # click card
-    coords = check_for_request_card()
+    coords = scroll_to_request_card(card_to_request)
     if coords is not None:
-        pyautogui.click(x=coords[1], y=coords[0])
+        #pyautogui.click(x=coords[1], y=coords[0])
+        print(coords)
+        pyautogui.moveTo(x=coords[1],y=coords[0])
         time.sleep(2)
     # click request
     coords = look_for_request_button()
     if coords is not None:
-        pyautogui.click(x=coords[1], y=coords[0])
+        #pyautogui.click(x=coords[1], y=coords[0])
         time.sleep(2)
     return_to_clash_main_menu()
 
 
+def scroll_to_request_card(card):
+    if card=="archers":
+        return scroll_till_find_archers()
+    if card=="arrows":
+        return scroll_till_find_arrows()
+    if card=="barb_hut":
+        return scroll_till_find_barb_hut()
+    if card=="barbs":
+        return scroll_till_find_barbs()
+    if card=="bats":
+        return scroll_till_find_bats()
+    if card=="bomb_tower":
+        return scroll_till_find_bomb_tower()
+    if card=="bomber":
+        return scroll_till_find_bomber()
+    if card=="cannon":
+        return scroll_till_find_cannon()
+    if card=="dart_goblin":
+        return scroll_till_find_dart_goblin()
+    if card=="e_spirit":
+        return scroll_till_find_e_spirit()
+    if card=="earthquake":
+        return scroll_till_find_earthquake()
+    if card=="elite_barbs":
+        return scroll_till_find_elite_barbs()
+    if card=="elixer_golem":
+        return scroll_till_find_elixer_golem()
+    if card=="elixer_pump":
+        return scroll_till_find_elixer_pump()
+    if card=="flying_machine":
+        return scroll_till_find_flying_machine()
+    if card=="furnace":
+        return scroll_till_find_furnace()
+    if card=="giant":
+        return scroll_till_find_giant()
+    if card=="goblin_cage":
+        return scroll_till_find_goblin_cage()
+    if card=="goblin_hut":
+        return scroll_till_find_goblin_hut()
+    if card=="goblins":
+        return scroll_till_find_goblins()
+    if card=="heal_spirit":
+        return scroll_till_find_heal_spirit()
+    if card=="healer":
+        return scroll_till_find_healer()
+    if card=="ice_golem":
+        return scroll_till_find_ice_golem()
+    if card=="ice_spirit":
+        return scroll_till_find_ice_spirit()
+    if card=="knight":
+        return scroll_till_find_knight()
+    if card=="mega_minion":
+        return scroll_till_find_mega_minion()
+    if card=="minion_hoard":
+        return scroll_till_find_minion_hoard()
+    if card=="minions":
+        return scroll_till_find_minions()
+    if card=="mortar":
+        return scroll_till_find_mortar()
+    if card=="musketeer":
+        return scroll_till_find_musketeer()
+    if card=="rascals":
+        return scroll_till_find_rascals()
+    if card=="rocket":
+        return scroll_till_find_rocket()
+    if card=="royal_delivery":
+        return scroll_till_find_royal_delivery()
+    if card=="royal_giant":
+        return scroll_till_find_royal_giant()
+    if card=="royal_hogs":
+        return scroll_till_find_royal_hogs()
+    if card=="skeleton_barrel":
+        return scroll_till_find_skeleton_barrel()
+    if card=="skeleton_dragons":
+        return scroll_till_find_skeleton_dragons()
+    if card=="skeletons":
+        return scroll_till_find_skeletons()
+    if card=="snowball":
+        return scroll_till_find_snowball()
+    if card=="spear_goblins":
+        return scroll_till_find_spear_goblins()
+    if card=="tombstone":
+        return scroll_till_find_tombstone()
+    if card=="wizard":
+        return scroll_till_find_wizard()
+    if card=="zappies":
+        return scroll_till_find_zappies()
+    if card=="fire_spirit":
+        return scroll_till_find_fire_spirit()
+    if card=="fireball":
+        return scroll_till_find_fireball()
+    if card=="valk":
+        return scroll_till_find_valk()
+    if card=="goblin_gang":
+        return scroll_till_find_goblin_gang()
+    if card=="zap":
+        return scroll_till_find_zap()
+    if card=="inferno_tower":
+        return scroll_till_find_inferno_tower()
+    
+#archers
+def scroll_till_find_archers():
+    n = None
+    while n is None:
+        references = [
+            "archers.png",
+        ]
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#giant
 def scroll_till_find_giant():
     n = None
     while n is None:
@@ -1163,10 +1334,1054 @@ def scroll_till_find_giant():
         for location in locations:
             if location is not None:
                 n= location
+                if n is not None:
+                    return n
         scroll_down()
 
+#archersdef scroll_till_find_giant():
+    n = None
+    while n is None:
+        references = [
+            "giant_1.png",
+            "giant_2.png",
+            "giant_3.png",
+            "giant_4.png",
+            "giant_5.png",
+            "giant_6.png",
+            "giant_7.png",
+            "giant_8.png",
+        ]
 
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
 
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#arrows
+def scroll_till_find_arrows():
+    n = None
+    while n is None:
+        references = [
+            "arrows.png",
+        ]
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#barb_hut
+def scroll_till_find_barb_hut():
+    n = None
+    while n is None:
+        references = [
+            "barb_hut.png",
+        ]
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#barbs
+def scroll_till_find_barbs():
+    n = None
+    while n is None:
+        references = [
+            "barbs.png",
+        ]
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#bats
+def scroll_till_find_bats():
+    n = None
+    while n is None:
+        references = [
+            "bats.png",
+        ]
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#bomb_tower
+def scroll_till_find_bomb_tower():
+    n = None
+    while n is None:
+        references = [
+            "bomb_tower.png",
+        ]
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#bomber
+def scroll_till_find_bomber():
+    n = None
+    while n is None:
+        references = [
+            "bomber.png",
+ 
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#cannon
+def scroll_till_find_cannon():
+    n = None
+    while n is None:
+        references = [
+            "cannon.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#dart_goblin
+def scroll_till_find_dart_goblin():
+    n = None
+    while n is None:
+        references = [
+            "dart_goblin.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#e_spirit
+def scroll_till_find_e_spirit():
+    n = None
+    while n is None:
+        references = [
+            "e_spirit.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#earthquake
+def scroll_till_find_earthquake():
+    n = None
+    while n is None:
+        references = [
+            "earthquake.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#elite_barbs
+def scroll_till_find_elite_barbs():
+    n = None
+    while n is None:
+        references = [
+            "elite_barbs.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#elixer_golem
+def scroll_till_find_elixer_golem():
+    n = None
+    while n is None:
+        references = [
+            "elixer_golem.png",
+    
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#elixer_pump
+def scroll_till_find_elixer_pump():
+    n = None
+    while n is None:
+        references = [
+            "elixer_pump.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#flying_machine
+def scroll_till_find_flying_machine():
+    n = None
+    while n is None:
+        references = [
+            "flying_machine.png",
+   
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#furnace
+def scroll_till_find_furnace():
+    n = None
+    while n is None:
+        references = [
+            "furnace.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#goblin_cage
+def scroll_till_find_goblin_cage():
+    n = None
+    while n is None:
+        references = [
+            "goblin_cage.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#goblin_hut
+def scroll_till_find_goblin_hut():
+    n = None
+    while n is None:
+        references = [
+            "goblin_hut.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#goblins
+def scroll_till_find_goblins():
+    n = None
+    while n is None:
+        references = [
+            "goblins.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#heal_spirit
+def scroll_till_find_heal_spirit():
+    n = None
+    while n is None:
+        references = [
+            "heal_spirit.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#healer
+def scroll_till_find_healer():
+    n = None
+    while n is None:
+        references = [
+            "healer.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#ice_golem
+def scroll_till_find_ice_golem():
+    n = None
+    while n is None:
+        references = [
+            "ice_golem.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#ice_spirit
+def scroll_till_find_ice_spirit():
+    n = None
+    while n is None:
+        references = [
+            "ice_spirit.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#knight
+def scroll_till_find_knight():
+    n = None
+    while n is None:
+        references = [
+            "knight.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#mega_minion
+def scroll_till_find_mega_minion():
+    n = None
+    while n is None:
+        references = [
+            "mega_minion.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#minion_hoard
+def scroll_till_find_minion_hoard():
+    n = None
+    while n is None:
+        references = [
+            "minion_hoard.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#minions
+def scroll_till_find_minions():
+    n = None
+    while n is None:
+        references = [
+            "minions.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#mortar
+def scroll_till_find_mortar():
+    n = None
+    while n is None:
+        references = [
+            "mortar.png",
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#musketeer
+def scroll_till_find_musketeer():
+    n = None
+    while n is None:
+        references = [
+            "musketeer.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#rascals
+def scroll_till_find_rascals():
+    n = None
+    while n is None:
+        references = [
+            "rascals.png",
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#rocket
+def scroll_till_find_rocket():
+    n = None
+    while n is None:
+        references = [
+            "rocket.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#royal_delivery
+def scroll_till_find_royal_delivery():
+    n = None
+    while n is None:
+        references = [
+            "royal_delivery.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#royal_giant
+def scroll_till_find_royal_giant():
+    n = None
+    while n is None:
+        references = [
+            "royal_giant.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#royal_hogs
+def scroll_till_find_royal_hogs():
+    n = None
+    while n is None:
+        references = [
+            "royal_hogs.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#skeleton_barrel
+def scroll_till_find_skeleton_barrel():
+    n = None
+    while n is None:
+        references = [
+            "skeleton_barrel.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#skeleton_dragons
+def scroll_till_find_skeleton_dragons():
+    n = None
+    while n is None:
+        references = [
+            "skeleton_dragons.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#skeletons
+def scroll_till_find_skeletons():
+    n = None
+    while n is None:
+        references = [
+            "skeletons.png",
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#snowball
+def scroll_till_find_snowball():
+    n = None
+    while n is None:
+        references = [
+            "snowball.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#spear_goblins
+def scroll_till_find_spear_goblins():
+    n = None
+    while n is None:
+        references = [
+            "spear_goblins.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#tombstone
+def scroll_till_find_tombstone():
+    n = None
+    while n is None:
+        references = [
+            "tombstone.png",
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#wizard
+def scroll_till_find_wizard():
+    n = None
+    while n is None:
+        references = [
+            "wizard.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#zappies
+def scroll_till_find_zappies():
+    n = None
+    while n is None:
+        references = [
+            "zappies.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#fire_spirit
+def scroll_till_find_fire_spirit():
+    n = None
+    while n is None:
+        references = [
+            "fire_spirit.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#fireball
+def scroll_till_find_fireball():
+    n = None
+    while n is None:
+        references = [
+            "fireball.png",
+   
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#valk
+def scroll_till_find_valk():
+    n = None
+    while n is None:
+        references = [
+            "valk.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#goblin_gang
+def scroll_till_find_goblin_gang():
+    n = None
+    while n is None:
+        references = [
+            "goblin_gang.png",
+    
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#zap
+def scroll_till_find_zap():
+    n = None
+    while n is None:
+        references = [
+            "zap.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
+#inferno_tower
+def scroll_till_find_inferno_tower():
+    
+    n = None
+    while n is None:
+        references = [
+            "inferno_tower.png",
+
+        ]
+
+        locations = find_references(
+            screenshot=refresh_screen(),
+            folder="request_page_card_logos",
+            names=references,
+            tolerance=0.97
+        )
+
+        for location in locations:
+            if location is not None:
+                n= location
+                if n is not None:
+                    return n
+        scroll_down()
 
 # endregion
     
@@ -1175,9 +2390,9 @@ def main_loop():
     # user vars (these will be specified thru the GUI, but these are the placeholders for now.)
     deck = ""
     fight_type = "2v2"
-    request_card = "giant"
+    card_to_request = "giant"
     cards_to_not_donate=["card_1","card_2","card_3"]
-    
+    ssid = 1
     # vars
     loop_count = 0
     if not check_if_windows_exist():
@@ -1193,8 +2408,8 @@ def main_loop():
         
         
         #plt.show()
+        request_from_clash_main_menu(card_to_request)
 
-        scroll_till_find_giant()
         
         
         # orientate_memu_multi()
@@ -1221,9 +2436,9 @@ def main_loop():
         #     time.sleep(1)
         #     if check_if_in_a_clan_from_main() is True:
         #         #request
-        #         if check_if_can_request() is True:
-        #             logger.log("Requesting")
-        #             request_from_clash_main_menu()
+        #         # if check_if_can_request() is True:
+        #         #     logger.log("Requesting")
+        #         #     request_from_clash_main_menu(card_to_request)
         #         # donate
         #         if getto_donate_page() == "quit":
         #             logger.log("Had trouble locating the clan chat page. Restarting")
@@ -1231,6 +2446,9 @@ def main_loop():
         #         else:
         #             logger.log("Successfully located clan chat page. Starting donate alg")
         #             click_donates()
+        #             log = "Main menu shit done. Starting a "+str(fight_type)+" battle."
+        #             logger.log(log)
+        #             state = "start_a_fight"
         #     else:
         #         logger.log("Main menu shit done. Starting a ",fight_type," battle.")
         #         state = "start_a_fight"
