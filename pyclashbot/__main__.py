@@ -995,118 +995,6 @@ def check_for_reward_limit():
     return False
 
 # region donate_cards
-def look_for_earthquake():
-    references = [
-        "earthquake.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-def look_for_ice_spirit():
-    references = [
-        "ice_spirit.png",
-        "ice_spirit_1.png",
-        "ice_spirit_2.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-def look_for_skeleton_barrel():
-    references = [
-        "skeleton_barrel.png",
-        "skeleton_barrel_1.png",
-        "skeleton_barrel_2.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-def look_for_zappies():
-    references = [
-        "zappies.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-def look_for_skeletons():
-    references = [
-        "skeletons.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-def look_for_mini_pekka():
-    references = [
-        "mini_pekka.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-def look_for_inferno_tower():
-    references = [
-        "inferno_tower.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-
-
-# endregion
-
 def look_for_donates_by_card():
     #region earthquake
     earthquake = look_for_earthquake()
@@ -1157,8 +1045,159 @@ def look_for_donates_by_card():
         logger.log(inferno_tower)
         pyautogui.click(x=inferno_tower[1],y=inferno_tower[0])
     # endregion
-    
-    
+    #region goblins
+    goblins = look_for_goblins()
+    if goblins is not None:
+        logger.log("Found a request for infero_tower.")
+        logger.log(goblins)
+        pyautogui.click(x=goblins[1],y=goblins[0])
+    # endregion
+    #region bomber
+    coords = look_for_bomber()
+    if coords is not None:
+        logger.log("Found a request for infero_tower.")
+        logger.log(coords)
+        pyautogui.click(x=coords[1],y=coords[0])
+    # endregion
+ 
+
+
+
+
+def look_for_earthquake():
+    references = [
+        "earthquake.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_ice_spirit():
+    references = [
+        "ice_spirit.png",
+        "ice_spirit_1.png",
+        "ice_spirit_2.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_skeleton_barrel():
+    references = [
+        "skeleton_barrel.png",
+        "skeleton_barrel_1.png",
+        "skeleton_barrel_2.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_zappies():
+    references = [
+        "zappies.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_skeletons():
+    references = [
+        "skeletons.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_mini_pekka():
+    references = [
+        "mini_pekka.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_inferno_tower():
+    references = [
+        "inferno_tower.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_goblins():
+    references = [
+        "goblins.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_bomber():
+    references = [
+        "bomber.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+
+   
+# endregion  
     
 # region request_cards
 
@@ -1173,19 +1212,15 @@ def request_from_clash_main_menu(card_to_request):
     log = "requesting: "+str(card_to_request)
     logger.log(log)
     pyautogui.click(x=86, y=564)
-    # scroll till find card
-
-    # click card
+    # scroll till find card +click card
     coords = scroll_to_request_card(card_to_request)
     if coords is not None:
-        #pyautogui.click(x=coords[1], y=coords[0])
-        print(coords)
-        pyautogui.moveTo(x=coords[1],y=coords[0])
+        pyautogui.click(x=coords[1], y=coords[0])
         time.sleep(2)
     # click request
     coords = look_for_request_button()
     if coords is not None:
-        #pyautogui.click(x=coords[1], y=coords[0])
+        pyautogui.click(x=coords[1], y=coords[0])
         time.sleep(2)
     return_to_clash_main_menu()
 
@@ -2408,109 +2443,108 @@ def main_loop():
         
         
         #plt.show()
-        request_from_clash_main_menu(card_to_request)
-
         
         
-        # orientate_memu_multi()
-        # time.sleep(0.2)
-        # orientate_window()
+        
+        orientate_memu_multi()
+        time.sleep(0.2)
+        orientate_window()
 
-        # if state == "restart":
-        #     logger.log("STATE=restart")
-        #     logger.log("restart time loop")
-        #     logger.log("Restarting menu client")
-        #     if restart_client() == "quit":
-        #         state = "restart"
-        #     else:
-        #         if check_if_on_clash_main_menu():
-        #             state = "clash_main"
-        #         else:
-        #             state = "restart"
-        # if state == "clash_main":
-        #     switch_accounts_to(ssid)
-        #     logger.log("STATE=clash_main")
-        #     # open chests
-        #     time.sleep(1)
-        #     open_chests()
-        #     time.sleep(1)
-        #     if check_if_in_a_clan_from_main() is True:
-        #         #request
-        #         # if check_if_can_request() is True:
-        #         #     logger.log("Requesting")
-        #         #     request_from_clash_main_menu(card_to_request)
-        #         # donate
-        #         if getto_donate_page() == "quit":
-        #             logger.log("Had trouble locating the clan chat page. Restarting")
-        #             state="restart"
-        #         else:
-        #             logger.log("Successfully located clan chat page. Starting donate alg")
-        #             click_donates()
-        #             log = "Main menu shit done. Starting a "+str(fight_type)+" battle."
-        #             logger.log(log)
-        #             state = "start_a_fight"
-        #     else:
-        #         logger.log("Main menu shit done. Starting a ",fight_type," battle.")
-        #         state = "start_a_fight"
-        # if state == "start_a_fight":
-        #     logger.log("STATE=start_a_fight")  
-        #     if start_2v2() == "quit":
-        #         state = "restart"
-        #     else:
-        #         if wait_for_battle_start() == "quit":
-        #             state = "restart"
-        #         else:
-        #             state = "fighting"
-        # if state == "fighting":
-        #     logger.log("STATE=fighting")
-        #     loops = 0
-        #     while check_if_in_battle() is True:
-        #         loops = loops+1
-        #         enemy_troop_position = look_for_enemy_troops()
-        #         fight_with_deck_list(enemy_troop_position)
-        #         if loops > 50:
-        #             break
-        #     time.sleep(3)
-        #     loops = 0
-        #     while check_if_in_battle() is True:
-        #         loops = loops+1
-        #         enemy_troop_position = look_for_enemy_troops()
-        #         fight_with_deck_list(enemy_troop_position)
-        #         if loops > 50:
-        #             break
-        #     logger.log("Fight must be over")
-        #     state = "end_of_fight"
-        # if state == "end_of_fight":
-        #     logger.log("STATE=end_of_fight")
-        #     time.sleep(7)
-        #     leave_end_battle_window()
-        #     if check_if_on_clash_main_menu():
-        #         state = "clash_main_post_fight"
-        #     else:
-        #         state = "restart"
-        # if state == "clash_main_post_fight":
-        #     logger.log("STATE=clash_main_post_fight")
-        #     time.sleep(10)
-        #     logger.log("Checking is past game was a win or loss")
-        #     past_game=check_if_past_game_is_win()
-        #     if past_game is True:
-        #         logger.log("Past game was a Win")
-        #         logger.add_win()
-        #     else:
-        #         logger.log("Past game was a Loss")
-        #         logger.add_loss()
-        #     logger.log("Should be on clash main")
-        #     if check_if_on_clash_main_menu():
-        #         logger.log("On clash main")
-        #         state = "clash_main"
-        #         #switching ssids to switch accounds
-        #     else:
-        #         logger.log("Dont seem to be on clash main. Restarting")
-        #         state = "restart"
-        #     if ssid == 1:
-        #         ssid =2   
-        #     else:
-        #         ssid=1
+        if state == "restart":
+            logger.log("STATE=restart")
+            logger.log("restart time loop")
+            logger.log("Restarting menu client")
+            if restart_client() == "quit":
+                state = "restart"
+            else:
+                if check_if_on_clash_main_menu():
+                    state = "clash_main"
+                else:
+                    state = "restart"
+        if state == "clash_main":
+            switch_accounts_to(ssid)
+            logger.log("STATE=clash_main")
+            # open chests
+            time.sleep(1)
+            open_chests()
+            time.sleep(1)
+            if check_if_in_a_clan_from_main() is True:
+                #request
+                # if check_if_can_request() is True:
+                #     logger.log("Requesting")
+                #     request_from_clash_main_menu(card_to_request)
+                # donate
+                if getto_donate_page() == "quit":
+                    logger.log("Had trouble locating the clan chat page. Restarting")
+                    state="restart"
+                else:
+                    logger.log("Successfully located clan chat page. Starting donate alg")
+                    click_donates()
+                    log = "Main menu shit done. Starting a "+str(fight_type)+" battle."
+                    logger.log(log)
+                    state = "start_a_fight"
+            else:
+                logger.log("Main menu shit done. Starting a ",fight_type," battle.")
+                state = "start_a_fight"
+        if state == "start_a_fight":
+            logger.log("STATE=start_a_fight")  
+            if start_2v2() == "quit":
+                state = "restart"
+            else:
+                if wait_for_battle_start() == "quit":
+                    state = "restart"
+                else:
+                    state = "fighting"
+        if state == "fighting":
+            logger.log("STATE=fighting")
+            loops = 0
+            while check_if_in_battle() is True:
+                loops = loops+1
+                enemy_troop_position = look_for_enemy_troops()
+                fight_with_deck_list(enemy_troop_position)
+                if loops > 50:
+                    break
+            time.sleep(3)
+            loops = 0
+            while check_if_in_battle() is True:
+                loops = loops+1
+                enemy_troop_position = look_for_enemy_troops()
+                fight_with_deck_list(enemy_troop_position)
+                if loops > 50:
+                    break
+            logger.log("Fight must be over")
+            state = "end_of_fight"
+        if state == "end_of_fight":
+            logger.log("STATE=end_of_fight")
+            time.sleep(7)
+            leave_end_battle_window()
+            if check_if_on_clash_main_menu():
+                state = "clash_main_post_fight"
+            else:
+                state = "restart"
+        if state == "clash_main_post_fight":
+            logger.log("STATE=clash_main_post_fight")
+            time.sleep(10)
+            logger.log("Checking is past game was a win or loss")
+            past_game=check_if_past_game_is_win()
+            if past_game is True:
+                logger.log("Past game was a Win")
+                logger.add_win()
+            else:
+                logger.log("Past game was a Loss")
+                logger.add_loss()
+            logger.log("Should be on clash main")
+            if check_if_on_clash_main_menu():
+                logger.log("On clash main")
+                state = "clash_main"
+                #switching ssids to switch accounds
+            else:
+                logger.log("Dont seem to be on clash main. Restarting")
+                state = "restart"
+            if ssid == 1:
+                ssid =2   
+            else:
+                ssid=1
            
             
             
