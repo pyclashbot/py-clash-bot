@@ -22,7 +22,7 @@ try:
 except (IndexError, KeyError):
     logger.log("MEmu or Multiple Instance Manager not detected!")
 
-
+                 
 def refresh_screen():
     check_quit_key_press()
     orientate_window()
@@ -46,6 +46,7 @@ def orientate_window():
     window_memu.restore()
     time.sleep(1)
     window_memu.moveTo(0, 0)
+    time.sleep(1)
     window_memu.resizeTo(460, 680)
 
 
@@ -930,7 +931,7 @@ def check_if_in_battle():
 
 def switch_accounts_to(ssid):
     check_quit_key_press()
-    logger.log("Logging into the correct account")
+
     logger.log("Opening settings")
     pyautogui.click(x=364,y=99)
     time.sleep(3)
@@ -947,7 +948,7 @@ def switch_accounts_to(ssid):
         pyautogui.click(x=193,y=471)
     time.sleep(3)
     if wait_for_clash_main_menu() == "quit":
-        logger.log("Switching accounts failed. Restarting")
+        return "quit"
     check_quit_key_press()
 
 
@@ -1049,30 +1050,13 @@ def look_for_donates_by_card():
         logger.log(coords)
         pyautogui.click(x=coords[1],y=coords[0])
     # endregion
-    #region bats
-    coords = look_for_bats()
+    #region goblin_gang
+    coords = look_for_goblin_gang()
     if coords is not None:
-        logger.log("Found a request for bats.")
+        logger.log("Found a request for goblin_gang.")
         logger.log(coords)
         pyautogui.click(x=coords[1],y=coords[0])
-    
-    #endregion
-    #region valk
-    coords = look_for_valk()
-    if coords is not None:
-        logger.log("Found a request for valk.")
-        logger.log(coords)
-        pyautogui.click(x=coords[1],y=coords[0])
-    
-    #endregion
-    #region arrows
-    coords = look_for_arrows()
-    if coords is not None:
-        logger.log("Found a request for arrows.")
-        logger.log(coords)
-        pyautogui.click(x=coords[1],y=coords[0])
-    
-    #endregion
+    # endregion
 
 
 
@@ -1206,37 +1190,9 @@ def look_for_bomber():
         if location is not None:
             return location
     return None
-def look_for_bats():
+def look_for_goblin_gang():
     references = [
-        "bats.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-def look_for_valk():
-    references = [
-        "valk.png",
-    ]
-    locations = find_references(
-        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
-        folder="donate_card_images",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
-def look_for_arrows():
-    references = [
-        "arrows.png",
+        "goblin_gang.png",
     ]
     locations = find_references(
         screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
@@ -2580,7 +2536,7 @@ def main_loop():
     fight_type = "2v2"
     card_to_request = "goblin_cage"
     cards_to_not_donate=["card_1","card_2","card_3"]
-    ssid = 1
+    ssid = random.randint(1,2)
     # vars
     loop_count = 0
     
@@ -2605,15 +2561,11 @@ def main_loop():
         
         
         #plt.show()
-        
-        
+     
 
-         
         
-        orientate_memu_multi()
-        time.sleep(0.2) 
-        orientate_window()
-        print(state)
+        
+ 
         if state == "restart":  
             logger.log("-----STATE=restart-----")
             logger.log("restart time loop")
@@ -2627,21 +2579,30 @@ def main_loop():
                     state = "restart"
         if state == "clash_main":
             logger.log("-----STATE=clash_main-----")
-            #open chests
-            if check_if_on_clash_main_menu():
-                logger.log("Opening chests.")
-                open_chests()
-                time.sleep(2)
-                logger.log("Checking if can request.")
-                if check_if_can_request():
-                    logger.log("Can request. Passing to request state.")
-                    state="request"
-                else:
-                    logger.log("Cannot request. Skipping request and passing to donate state.")
-                    state="donate"
+            #account switch
+            logger.log("Logging in to the correct account")
+            if switch_accounts_to(ssid)=="quit":
+                #if switching accounts fails
+                logger.log("Failed to switch accounts. Restarting")
+                state="restart"
             else:
-                logger.log("Not on clash main. Restarting.")
-                state ="restart"
+                #if switching accounts works
+                logger.log("Successfully switched accounts.")
+                #open chests
+                if check_if_on_clash_main_menu():
+                    logger.log("Opening chests.")
+                    open_chests()
+                    time.sleep(2)
+                    logger.log("Checking if can request.")
+                    if check_if_can_request():
+                        logger.log("Can request. Passing to request state.")
+                        state="request"
+                    else:
+                        logger.log("Cannot request. Skipping request and passing to donate state.")
+                        state="donate"
+                else:
+                    logger.log("Not on clash main. Restarting.")
+                    state ="restart"
         if state == "request":
             logger.log("-----STATE=request-----")
             logger.log("Trying to get to donate page")
@@ -2694,6 +2655,7 @@ def main_loop():
             logger.log("-----STATE=fighting-----")
             fightloops=0
             while (check_if_in_battle())and(fightloops<100):
+                check_quit_key_press()
                 log="Plays: "+str(fightloops)
                 logger.log(log)
                 logger.log("Scanning field.")
@@ -2702,7 +2664,7 @@ def main_loop():
                 fight_with_deck_list(enemy_troop_position)
                 fightloops=fightloops+1
             logger.log("Battle must be finished")
-            time.sleep(5)
+            time.sleep(10)
             leave_end_battle_window()
             wait_for_clash_main_menu()
             state="post_fight"
@@ -2715,7 +2677,15 @@ def main_loop():
             else:
                 logger.log("Last game was a loss")
                 logger.add_loss()
+            #switch accounts feature
+            if ssid==1:
+                ssid=2 
+            else:
+                ssid=1
             state="clash_main"
+
+            
+            
 
            
 
