@@ -1286,104 +1286,104 @@ def request_from_clash_main_menu(card_to_request):
     return_to_clash_main_menu()
 
 
-def scroll_to_request_card(card):
-    if card=="archers":
+def scroll_to_request_card(card_to_request):
+    if card_to_request=="archers":
         return scroll_till_find_archers()
-    if card=="arrows":
+    if card_to_request=="arrows":
         return scroll_till_find_arrows()
-    if card=="barb_hut":
+    if card_to_request=="barb_hut":
         return scroll_till_find_barb_hut()
-    if card=="barbs":
+    if card_to_request=="barbs":
         return scroll_till_find_barbs()
-    if card=="bats":
+    if card_to_request=="bats":
         return scroll_till_find_bats()
-    if card=="bomb_tower":
+    if card_to_request=="bomb_tower":
         return scroll_till_find_bomb_tower()
-    if card=="bomber":
+    if card_to_request=="bomber":
         return scroll_till_find_bomber()
-    if card=="cannon":
+    if card_to_request=="cannon":
         return scroll_till_find_cannon()
-    if card=="dart_goblin":
+    if card_to_request=="dart_goblin":
         return scroll_till_find_dart_goblin()
-    if card=="e_spirit":
+    if card_to_request=="e_spirit":
         return scroll_till_find_e_spirit()
-    if card=="earthquake":
+    if card_to_request=="earthquake":
         return scroll_till_find_earthquake()
-    if card=="elite_barbs":
+    if card_to_request=="elite_barbs":
         return scroll_till_find_elite_barbs()
-    if card=="elixer_golem":
+    if card_to_request=="elixer_golem":
         return scroll_till_find_elixer_golem()
-    if card=="elixer_pump":
+    if card_to_request=="elixer_pump":
         return scroll_till_find_elixer_pump()
-    if card=="flying_machine":
+    if card_to_request=="flying_machine":
         return scroll_till_find_flying_machine()
-    if card=="furnace":
+    if card_to_request=="furnace":
         return scroll_till_find_furnace()
-    if card=="giant":
+    if card_to_request=="giant":
         return scroll_till_find_giant()
-    if card=="goblin_cage":
+    if card_to_request=="goblin_cage":
         return scroll_till_find_goblin_cage()
-    if card=="goblin_hut":
+    if card_to_request=="goblin_hut":
         return scroll_till_find_goblin_hut()
-    if card=="goblins":
+    if card_to_request=="goblins":
         return scroll_till_find_goblins()
-    if card=="heal_spirit":
+    if card_to_request=="heal_spirit":
         return scroll_till_find_heal_spirit()
-    if card=="healer":
+    if card_to_request=="healer":
         return scroll_till_find_healer()
-    if card=="ice_golem":
+    if card_to_request=="ice_golem":
         return scroll_till_find_ice_golem()
-    if card=="ice_spirit":
+    if card_to_request=="ice_spirit":
         return scroll_till_find_ice_spirit()
-    if card=="knight":
+    if card_to_request=="knight":
         return scroll_till_find_knight()
-    if card=="mega_minion":
+    if card_to_request=="mega_minion":
         return scroll_till_find_mega_minion()
-    if card=="minion_hoard":
+    if card_to_request=="minion_hoard":
         return scroll_till_find_minion_hoard()
-    if card=="minions":
+    if card_to_request=="minions":
         return scroll_till_find_minions()
-    if card=="mortar":
+    if card_to_request=="mortar":
         return scroll_till_find_mortar()
-    if card=="musketeer":
+    if card_to_request=="musketeer":
         return scroll_till_find_musketeer()
-    if card=="rascals":
+    if card_to_request=="rascals":
         return scroll_till_find_rascals()
-    if card=="rocket":
+    if card_to_request=="rocket":
         return scroll_till_find_rocket()
-    if card=="royal_delivery":
+    if card_to_request=="royal_delivery":
         return scroll_till_find_royal_delivery()
-    if card=="royal_giant":
+    if card_to_request=="royal_giant":
         return scroll_till_find_royal_giant()
-    if card=="royal_hogs":
+    if card_to_request=="royal_hogs":
         return scroll_till_find_royal_hogs()
-    if card=="skeleton_barrel":
+    if card_to_request=="skeleton_barrel":
         return scroll_till_find_skeleton_barrel()
-    if card=="skeleton_dragons":
+    if card_to_request=="skeleton_dragons":
         return scroll_till_find_skeleton_dragons()
-    if card=="skeletons":
+    if card_to_request=="skeletons":
         return scroll_till_find_skeletons()
-    if card=="snowball":
+    if card_to_request=="snowball":
         return scroll_till_find_snowball()
-    if card=="spear_goblins":
+    if card_to_request=="spear_goblins":
         return scroll_till_find_spear_goblins()
-    if card=="tombstone":
+    if card_to_request=="tombstone":
         return scroll_till_find_tombstone()
-    if card=="wizard":
+    if card_to_request=="wizard":
         return scroll_till_find_wizard()
-    if card=="zappies":
+    if card_to_request=="zappies":
         return scroll_till_find_zappies()
-    if card=="fire_spirit":
+    if card_to_request=="fire_spirit":
         return scroll_till_find_fire_spirit()
-    if card=="fireball":
+    if card_to_request=="fireball":
         return scroll_till_find_fireball()
-    if card=="valk":
+    if card_to_request=="valk":
         return scroll_till_find_valk()
-    if card=="goblin_gang":
+    if card_to_request=="goblin_gang":
         return scroll_till_find_goblin_gang()
-    if card=="zap":
+    if card_to_request=="zap":
         return scroll_till_find_zap()
-    if card=="inferno_tower":
+    if card_to_request=="inferno_tower":
         return scroll_till_find_inferno_tower()
     
 #archers
