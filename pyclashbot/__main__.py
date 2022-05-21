@@ -1046,19 +1046,41 @@ def look_for_donates_by_card():
     #region goblins
     goblins = look_for_goblins()
     if goblins is not None:
-        logger.log("Found a request for infero_tower.")
+        logger.log("Found a request for goblins.")
         logger.log(goblins)
         pyautogui.click(x=goblins[1],y=goblins[0])
     # endregion
     #region bomber
     coords = look_for_bomber()
     if coords is not None:
-        logger.log("Found a request for infero_tower.")
+        logger.log("Found a request for bomber.")
         logger.log(coords)
         pyautogui.click(x=coords[1],y=coords[0])
     # endregion
- 
-
+    #region bats
+    coords = look_for_bats()
+    if coords is not None:
+        logger.log("Found a request for bats.")
+        logger.log(coords)
+        pyautogui.click(x=coords[1],y=coords[0])
+    
+    #endregion
+    #region valk
+    coords = look_for_valk()
+    if coords is not None:
+        logger.log("Found a request for valk.")
+        logger.log(coords)
+        pyautogui.click(x=coords[1],y=coords[0])
+    
+    #endregion
+    #region arrows
+    coords = look_for_arrows()
+    if coords is not None:
+        logger.log("Found a request for arrows.")
+        logger.log(coords)
+        pyautogui.click(x=coords[1],y=coords[0])
+    
+    #endregion
 
 
 
@@ -1192,7 +1214,48 @@ def look_for_bomber():
         if location is not None:
             return location
     return None
-
+def look_for_bats():
+    references = [
+        "bats.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_valk():
+    references = [
+        "valk.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+def look_for_arrows():
+    references = [
+        "arrows.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(region=(0,0, 700, 700)),
+        folder="donate_card_images",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return location
+    return None
 
    
 # endregion  
