@@ -1,5 +1,7 @@
 import random
+from tabnanny import check
 import time
+from unittest.mock import NonCallableMagicMock
 
 import keyboard
 import matplotlib.pyplot as plt
@@ -426,27 +428,6 @@ def random_card_coord_picker():
     return coords
 
 
-def check_if_in_battle():
-    n = 0
-    check_quit_key_press()
-    iar = refresh_screen()
-    pix1 = iar[551][56]
-    pix2 = iar[549][78]
-    pix3 = iar[567][73]
-    sentinel = [1] * 3
-    sentinel[0] = 255
-    sentinel[1] = 255
-    sentinel[2] = 255
-
-    if not pixel_is_equal(pix1, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix2, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        return False
-    check_quit_key_press()
-    return True
-
 
 def leave_end_battle_window():
     check_quit_key_press()
@@ -709,7 +690,7 @@ def restart_client():
     logger.log("opening client")
     pyautogui.click(x=540, y=140)
     time.sleep(3)
-    if wait_for_menu_main() == "quit":
+    if wait_for_memu_main() == "quit":
         return "quit"
     logger.log("skipping ads")
     orientate_window()
@@ -913,7 +894,7 @@ def check_deck():
     return current_deck
 
 
-def wait_for_menu_main():
+def wait_for_memu_main():
     loops = 0
     while check_if_on_memu_main() is False:
         loops = loops+1
@@ -991,6 +972,17 @@ def check_for_reward_limit():
             pyautogui.click(x=211,y=432)
             return True
     return False
+
+
+def check_state():
+    time.sleep(3)
+    if check_if_on_clash_main_menu():
+        logger.log("On clash main")
+        return "clash_main"
+    if check_if_in_battle():
+        logger.log("In a fight")
+        return "fighting"
+    return None
 
 # region donate_cards
 def look_for_donates_by_card():
@@ -1275,6 +1267,8 @@ def request_from_clash_main_menu(card_to_request):
     pyautogui.click(x=86, y=564)
     # scroll till find card +click card
     coords = scroll_to_request_card(card_to_request)
+    if coords=="quit":
+        return "quit"
     if coords is not None:
         pyautogui.click(x=coords[1], y=coords[0])
         time.sleep(2)
@@ -1388,8 +1382,9 @@ def scroll_to_request_card(card_to_request):
     
 #archers
 def scroll_till_find_archers():
+    loops=0
     n = None
-    while n is None:
+    while (n is None):
         references = [
             "archers.png",
         ]
@@ -1405,10 +1400,12 @@ def scroll_till_find_archers():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #giant
 def scroll_till_find_giant():
+    loops=0
     n = None
-    while n is None:
+    while (n is None):
         references = [
             "giant_1.png",
             "giant_2.png",
@@ -1433,10 +1430,12 @@ def scroll_till_find_giant():
                 if n is not None:
                     return n
         scroll_down()
-
-#archersdef scroll_till_find_giant():
+    return "quit"
+#archers
+def scroll_till_find_giant():
+    loops=0
     n = None
-    while n is None:
+    while (n is None):
         references = [
             "giant_1.png",
             "giant_2.png",
@@ -1461,10 +1460,12 @@ def scroll_till_find_giant():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #arrows
 def scroll_till_find_arrows():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "arrows.png",
         ]
@@ -1480,10 +1481,12 @@ def scroll_till_find_arrows():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #barb_hut
 def scroll_till_find_barb_hut():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "barb_hut.png",
         ]
@@ -1499,10 +1502,12 @@ def scroll_till_find_barb_hut():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #barbs
 def scroll_till_find_barbs():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "barbs.png",
         ]
@@ -1518,10 +1523,12 @@ def scroll_till_find_barbs():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #bats
 def scroll_till_find_bats():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "bats.png",
         ]
@@ -1537,10 +1544,12 @@ def scroll_till_find_bats():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #bomb_tower
 def scroll_till_find_bomb_tower():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "bomb_tower.png",
         ]
@@ -1557,10 +1566,12 @@ def scroll_till_find_bomb_tower():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #bomber
 def scroll_till_find_bomber():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "bomber.png",
  
@@ -1579,10 +1590,12 @@ def scroll_till_find_bomber():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #cannon
 def scroll_till_find_cannon():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "cannon.png",
 
@@ -1601,10 +1614,12 @@ def scroll_till_find_cannon():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #dart_goblin
 def scroll_till_find_dart_goblin():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "dart_goblin.png",
 
@@ -1623,10 +1638,12 @@ def scroll_till_find_dart_goblin():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #e_spirit
 def scroll_till_find_e_spirit():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "e_spirit.png",
 
@@ -1645,10 +1662,12 @@ def scroll_till_find_e_spirit():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #earthquake
 def scroll_till_find_earthquake():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "earthquake.png",
 
@@ -1667,10 +1686,12 @@ def scroll_till_find_earthquake():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #elite_barbs
 def scroll_till_find_elite_barbs():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "elite_barbs.png",
 
@@ -1689,10 +1710,12 @@ def scroll_till_find_elite_barbs():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #elixer_golem
 def scroll_till_find_elixer_golem():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "elixer_golem.png",
     
@@ -1711,10 +1734,12 @@ def scroll_till_find_elixer_golem():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #elixer_pump
 def scroll_till_find_elixer_pump():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "elixer_pump.png",
 
@@ -1733,10 +1758,12 @@ def scroll_till_find_elixer_pump():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #flying_machine
 def scroll_till_find_flying_machine():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "flying_machine.png",
    
@@ -1755,10 +1782,12 @@ def scroll_till_find_flying_machine():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #furnace
 def scroll_till_find_furnace():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "furnace.png",
 
@@ -1777,10 +1806,12 @@ def scroll_till_find_furnace():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #goblin_cage
 def scroll_till_find_goblin_cage():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "goblin_cage.png",
 
@@ -1799,10 +1830,12 @@ def scroll_till_find_goblin_cage():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #goblin_hut
 def scroll_till_find_goblin_hut():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "goblin_hut.png",
 
@@ -1821,10 +1854,12 @@ def scroll_till_find_goblin_hut():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #goblins
 def scroll_till_find_goblins():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "goblins.png",
 
@@ -1843,10 +1878,12 @@ def scroll_till_find_goblins():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #heal_spirit
 def scroll_till_find_heal_spirit():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "heal_spirit.png",
 
@@ -1865,10 +1902,12 @@ def scroll_till_find_heal_spirit():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #healer
 def scroll_till_find_healer():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "healer.png",
 
@@ -1887,10 +1926,12 @@ def scroll_till_find_healer():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #ice_golem
 def scroll_till_find_ice_golem():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "ice_golem.png",
 
@@ -1909,10 +1950,12 @@ def scroll_till_find_ice_golem():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #ice_spirit
 def scroll_till_find_ice_spirit():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "ice_spirit.png",
 
@@ -1931,10 +1974,12 @@ def scroll_till_find_ice_spirit():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #knight
 def scroll_till_find_knight():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "knight.png",
 
@@ -1953,10 +1998,12 @@ def scroll_till_find_knight():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #mega_minion
 def scroll_till_find_mega_minion():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "mega_minion.png",
 
@@ -1975,10 +2022,12 @@ def scroll_till_find_mega_minion():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #minion_hoard
 def scroll_till_find_minion_hoard():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "minion_hoard.png",
 
@@ -1997,10 +2046,12 @@ def scroll_till_find_minion_hoard():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #minions
 def scroll_till_find_minions():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "minions.png",
 
@@ -2019,10 +2070,12 @@ def scroll_till_find_minions():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #mortar
 def scroll_till_find_mortar():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "mortar.png",
         ]
@@ -2040,10 +2093,12 @@ def scroll_till_find_mortar():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #musketeer
 def scroll_till_find_musketeer():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "musketeer.png",
 
@@ -2062,10 +2117,12 @@ def scroll_till_find_musketeer():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #rascals
 def scroll_till_find_rascals():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "rascals.png",
         ]
@@ -2083,10 +2140,12 @@ def scroll_till_find_rascals():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #rocket
 def scroll_till_find_rocket():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "rocket.png",
 
@@ -2105,10 +2164,12 @@ def scroll_till_find_rocket():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #royal_delivery
 def scroll_till_find_royal_delivery():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "royal_delivery.png",
 
@@ -2127,10 +2188,11 @@ def scroll_till_find_royal_delivery():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #royal_giant
 def scroll_till_find_royal_giant():
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "royal_giant.png",
 
@@ -2149,10 +2211,12 @@ def scroll_till_find_royal_giant():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #royal_hogs
 def scroll_till_find_royal_hogs():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "royal_hogs.png",
 
@@ -2171,10 +2235,12 @@ def scroll_till_find_royal_hogs():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #skeleton_barrel
 def scroll_till_find_skeleton_barrel():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "skeleton_barrel.png",
 
@@ -2193,10 +2259,12 @@ def scroll_till_find_skeleton_barrel():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #skeleton_dragons
 def scroll_till_find_skeleton_dragons():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "skeleton_dragons.png",
 
@@ -2215,10 +2283,12 @@ def scroll_till_find_skeleton_dragons():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #skeletons
 def scroll_till_find_skeletons():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "skeletons.png",
         ]
@@ -2236,10 +2306,12 @@ def scroll_till_find_skeletons():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #snowball
 def scroll_till_find_snowball():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "snowball.png",
 
@@ -2258,10 +2330,12 @@ def scroll_till_find_snowball():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #spear_goblins
 def scroll_till_find_spear_goblins():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "spear_goblins.png",
 
@@ -2280,10 +2354,12 @@ def scroll_till_find_spear_goblins():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #tombstone
 def scroll_till_find_tombstone():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "tombstone.png",
         ]
@@ -2301,10 +2377,12 @@ def scroll_till_find_tombstone():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #wizard
 def scroll_till_find_wizard():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "wizard.png",
 
@@ -2323,10 +2401,12 @@ def scroll_till_find_wizard():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #zappies
 def scroll_till_find_zappies():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "zappies.png",
 
@@ -2345,10 +2425,12 @@ def scroll_till_find_zappies():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #fire_spirit
 def scroll_till_find_fire_spirit():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "fire_spirit.png",
 
@@ -2367,10 +2449,12 @@ def scroll_till_find_fire_spirit():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #fireball
 def scroll_till_find_fireball():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "fireball.png",
    
@@ -2389,10 +2473,12 @@ def scroll_till_find_fireball():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #valk
 def scroll_till_find_valk():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "valk.png",
 
@@ -2411,10 +2497,12 @@ def scroll_till_find_valk():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #goblin_gang
 def scroll_till_find_goblin_gang():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "goblin_gang.png",
     
@@ -2433,10 +2521,12 @@ def scroll_till_find_goblin_gang():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #zap
 def scroll_till_find_zap():
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "zap.png",
 
@@ -2455,11 +2545,12 @@ def scroll_till_find_zap():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 #inferno_tower
 def scroll_till_find_inferno_tower():
-    
+    loops=0
     n = None
-    while n is None:
+    while (n is None)and(loops<50):
         references = [
             "inferno_tower.png",
 
@@ -2478,6 +2569,7 @@ def scroll_till_find_inferno_tower():
                 if n is not None:
                     return n
         scroll_down()
+    return "quit"
 
 # endregion
     
@@ -2486,16 +2578,25 @@ def main_loop():
     # user vars (these will be specified thru the GUI, but these are the placeholders for now.)
     deck = ""
     fight_type = "2v2"
-    card_to_request = "giant"
+    card_to_request = "goblin_cage"
     cards_to_not_donate=["card_1","card_2","card_3"]
     ssid = 1
     # vars
     loop_count = 0
+    
+    
     if not check_if_windows_exist():
         return
-    state = "restart"
+    
+    
+    orientate_memu_multi()
+    time.sleep(0.2)
+    orientate_window()
+    state=check_state()
+    if state is None:
+        state="restart"
+    
     while True:
-
         time.sleep(0.2)
         logger.log(f"loop count: {loop_count}")
         loop_count += 1
@@ -2506,13 +2607,15 @@ def main_loop():
         #plt.show()
         
         
+
+         
         
         orientate_memu_multi()
-        time.sleep(0.2)
+        time.sleep(0.2) 
         orientate_window()
-
-        if state == "restart":
-            logger.log("STATE=restart")
+        print(state)
+        if state == "restart":  
+            logger.log("-----STATE=restart-----")
             logger.log("restart time loop")
             logger.log("Restarting menu client")
             if restart_client() == "quit":
@@ -2523,94 +2626,100 @@ def main_loop():
                 else:
                     state = "restart"
         if state == "clash_main":
-            switch_accounts_to(ssid)
-            logger.log("STATE=clash_main")
-            # open chests
-            time.sleep(1)
-            open_chests()
-            time.sleep(1)
-            if check_if_in_a_clan_from_main() is True:
-                #request
-                # if check_if_can_request() is True:
-                #     logger.log("Requesting")
-                #     request_from_clash_main_menu(card_to_request)
-                # donate
-                if getto_donate_page() == "quit":
-                    logger.log("Had trouble locating the clan chat page. Restarting")
+            logger.log("-----STATE=clash_main-----")
+            #open chests
+            if check_if_on_clash_main_menu():
+                logger.log("Opening chests.")
+                open_chests()
+                time.sleep(2)
+                logger.log("Checking if can request.")
+                if check_if_can_request():
+                    logger.log("Can request. Passing to request state.")
+                    state="request"
+                else:
+                    logger.log("Cannot request. Skipping request and passing to donate state.")
+                    state="donate"
+            else:
+                logger.log("Not on clash main. Restarting.")
+                state ="restart"
+        if state == "request":
+            logger.log("-----STATE=request-----")
+            logger.log("Trying to get to donate page")
+            if getto_donate_page() == "quit":
+                #if failed to get to clan chat page
+                logger.log("Failed to get to clan chat page. Restarting")
+                state = "restart" 
+            else:
+                #if got to clan chat page
+                log = "Trying to request "+str(card_to_request)+"."
+                logger.log(log)
+                if request_from_clash_main_menu(card_to_request) == "quit":
+                    #if request failed
+                    log = "Failed to request "+str(card_to_request)+"."
+                    logger.log(log)
+                else:
+                    #if request works
+                    log = "Successfully requested "+str(card_to_request)+"."
+                    logger.log(log)
+                logger.log("Done with requesting. Passing to donate state.")
+                state="donate"
+        if state == "donate":
+            logger.log("-----STATE=donate-----")
+            if getto_donate_page() == "quit":
+                #if failed to get to clan chat page
+                logger.log("Failed to get to clan chat page. Restarting")
+                state = "restart" 
+            else:
+                #if got to clan chat page
+                logger.log("Successfully got to clan chat page. Starting donate alg")
+                click_donates()
+                logger.log("Done with donating. Passing to start_fight state")
+                state="start_fight"
+        if state == "start_fight":
+            logger.log("-----STATE=start_fight-----")
+            if fight_type =="1v1":
+                logger.log("I cant do 1v1s yet. Restarting")
+                state="restart"
+            if fight_type =="2v2":
+                logger.log("Starting a 2v2 match.")
+                start_2v2()
+                if wait_for_battle_start()=="quit":
+                    #if waiting for battle takes too long
+                    logger.log("Waited too long for battle start. Restarting")
                     state="restart"
                 else:
-                    logger.log("Successfully located clan chat page. Starting donate alg")
-                    click_donates()
-                    log = "Main menu shit done. Starting a "+str(fight_type)+" battle."
-                    logger.log(log)
-                    state = "start_a_fight"
-            else:
-                logger.log(f"Main menu shit done. Starting a {fight_type} battle.")
-                state = "start_a_fight"
-        if state == "start_a_fight":
-            logger.log("STATE=start_a_fight")  
-            if start_2v2() == "quit":
-                state = "restart"
-            else:
-                if wait_for_battle_start() == "quit":
-                    state = "restart"
-                else:
-                    state = "fighting"
+                    logger.log("Battle has begun. Passing to fighting state") 
+                    state="fighting"      
         if state == "fighting":
-            logger.log("STATE=fighting")
-            loops = 0
-            while check_if_in_battle() is True:
-                loops = loops+1
-                enemy_troop_position = look_for_enemy_troops()
+            logger.log("-----STATE=fighting-----")
+            fightloops=0
+            while (check_if_in_battle())and(fightloops<100):
+                log="Plays: "+str(fightloops)
+                logger.log(log)
+                logger.log("Scanning field.")
+                enemy_troop_position=look_for_enemy_troops()
+                logger.log("Choosing play.")
                 fight_with_deck_list(enemy_troop_position)
-                if loops > 50:
-                    break
-            time.sleep(3)
-            loops = 0
-            while check_if_in_battle() is True:
-                loops = loops+1
-                enemy_troop_position = look_for_enemy_troops()
-                fight_with_deck_list(enemy_troop_position)
-                if loops > 50:
-                    break
-            logger.log("Fight must be over")
-            state = "end_of_fight"
-        if state == "end_of_fight":
-            logger.log("STATE=end_of_fight")
-            time.sleep(7)
+                fightloops=fightloops+1
+            logger.log("Battle must be finished")
+            time.sleep(5)
             leave_end_battle_window()
-            if check_if_on_clash_main_menu():
-                state = "clash_main_post_fight"
-            else:
-                state = "restart"
-        if state == "clash_main_post_fight":
-            logger.log("STATE=clash_main_post_fight")
-            time.sleep(10)
-            logger.log("Checking is past game was a win or loss")
-            past_game=check_if_past_game_is_win()
-            if past_game is True:
-                logger.log("Past game was a Win")
+            wait_for_clash_main_menu()
+            state="post_fight"
+        if state == "post_fight":
+            logger.log("STATE=post_fight")
+            logger.log("Back on clash main")
+            if check_if_past_game_is_win():
+                logger.log("Last game was a win")
                 logger.add_win()
             else:
-                logger.log("Past game was a Loss")
+                logger.log("Last game was a loss")
                 logger.add_loss()
-            logger.log("Should be on clash main")
-            if check_if_on_clash_main_menu():
-                logger.log("On clash main")
-                state = "clash_main"
-                #switching ssids to switch accounds
-            else:
-                logger.log("Dont seem to be on clash main. Restarting")
-                state = "restart"
-            if ssid == 1:
-                ssid =2   
-            else:
-                ssid=1
+            state="clash_main"
+
            
-            
-            
 
-
+       
         
 
 
