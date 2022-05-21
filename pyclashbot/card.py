@@ -1880,43 +1880,15 @@ def fight_with_deck_list(enemy_troop_position):
     #not gonna play mirror
 # endregion
 
+# region checkdeck
 
-def add_card_to_deck(deck_list, card):
+
+def add_card_to_deck(deck_list, card_to_add):
     for deck_pos in deck_list:
         if deck_pos in ["empty"]:
-            deck_pos = card
+            deck_pos = card_to_add
             return deck_list
     return deck_list
-    # region oldcode
-    # if deck_list[0] == "empty":
-    #     deck_list[0] = card
-    #     return deck_list
-    # if deck_list[1] == "empty":
-    #     deck_list[1] = card
-    #     return deck_list
-    # if deck_list[2] == "empty":
-    #     deck_list[2] = card
-    #     return deck_list
-    # if deck_list[3] == "empty":
-    #     deck_list[3] = card
-    #     return deck_list
-    # if deck_list[4] == "empty":
-    #     deck_list[4] = card
-    #     return deck_list
-    # if deck_list[5] == "empty":
-    #     deck_list[5] = card
-    #     return deck_list
-    # if deck_list[6] == "empty":
-    #     deck_list[6] = card
-    #     return deck_list
-    # if deck_list[7] == "empty":
-    #     deck_list[7] = card
-    #     return deck_list
-    # return deck_list
-    # endregion
-
-# region deck card checks
-
 
 def check_deck_for_zap(deck_image):
     references = [
