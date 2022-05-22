@@ -3004,8 +3004,7 @@ def main_loop():
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
-    state=None
-    #state=check_state()
+    state=check_state()
     if state is None:
         state="restart"
     while True:
@@ -3015,127 +3014,123 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
         
-        #plt.show()
-        upgrade_cards_from_main()
-        #take_screenshots()
-        #print(look_for_upgrades())
         
-        # if state == "restart":  
-        #     logger.log("-----STATE=restart-----")
-        #     logger.log("restart time loop")
-        #     logger.log("Restarting menu client")
-        #     if restart_client() == "quit":
-        #         state = "restart"
-        #     else:
-        #         if check_if_on_clash_main_menu():
-        #             state = "clash_main"
-        #         else:
-        #             state = "restart"
-        # if state == "clash_main":
-        #     logger.log("-----STATE=clash_main-----")
-        #     #account switch
-        #     logger.log("Logging in to the correct account")
-        #     if switch_accounts_to(ssid)=="quit":
-        #         #if switching accounts fails
-        #         logger.log("Failed to switch accounts. Restarting")
-        #         state="restart"
-        #     else:
-        #         #if switching accounts works
-        #         logger.log("Successfully switched accounts.")
-        #         #open chests
-        #         if check_if_on_clash_main_menu():
-        #             logger.log("Opening chests.")
-        #             open_chests()
-        #             time.sleep(2)
-        #             logger.log("Checking if can request.")
-        #             if check_if_can_request():
-        #                 logger.log("Can request. Passing to request state.")
-        #                 state="request"
-        #             else:
-        #                 logger.log("Cannot request. Skipping request and passing to donate state.")
-        #                 state="donate"
-        #         else:
-        #             logger.log("Not on clash main. Restarting.")
-        #             state ="restart"
-        # if state == "request":
-        #     logger.log("-----STATE=request-----")
-        #     logger.log("Trying to get to donate page")
-        #     if getto_donate_page() == "quit":
-        #         #if failed to get to clan chat page
-        #         logger.log("Failed to get to clan chat page. Restarting")
-        #         state = "restart" 
-        #     else:
-        #         #if got to clan chat page
-        #         log = "Trying to request "+str(card_to_request)+"."
-        #         logger.log(log)
-        #         if request_from_clash_main_menu(card_to_request) == "quit":
-        #             #if request failed
-        #             log = "Failed to request "+str(card_to_request)+"."
-        #             logger.log(log)
-        #         else:
-        #             #if request works
-        #             log = "Successfully requested "+str(card_to_request)+"."
-        #             logger.log(log)
-        #         logger.log("Done with requesting. Passing to donate state.")
-        #         state="donate"
-        # if state == "donate":
-        #     logger.log("-----STATE=donate-----")
-        #     if getto_donate_page() == "quit":
-        #         #if failed to get to clan chat page
-        #         logger.log("Failed to get to clan chat page. Restarting")
-        #         state = "restart" 
-        #     else:
-        #         #if got to clan chat page
-        #         logger.log("Successfully got to clan chat page. Starting donate alg")
-        #         click_donates()
-        #         logger.log("Done with donating. Passing to start_fight state")
-        #         state="start_fight"
-        # if state == "start_fight":
-        #     logger.log("-----STATE=start_fight-----")
-        #     if fight_type =="1v1":
-        #         logger.log("I cant do 1v1s yet. Restarting")
-        #         state="restart"
-        #     if fight_type =="2v2":
-        #         logger.log("Starting a 2v2 match.")
-        #         start_2v2()
-        #         if wait_for_battle_start()=="quit":
-        #             #if waiting for battle takes too long
-        #             logger.log("Waited too long for battle start. Restarting")
-        #             state="restart"
-        #         else:
-        #             logger.log("Battle has begun. Passing to fighting state") 
-        #             state="fighting"      
-        # if state == "fighting":
-        #     logger.log("-----STATE=fighting-----")
-        #     fightloops=0
-        #     while (check_if_in_battle())and(fightloops<100):
-        #         check_quit_key_press()
-        #         log="Plays: "+str(fightloops)
-        #         logger.log(log)
-        #         logger.log("Scanning field.")
-        #         enemy_troop_position=look_for_enemy_troops()
-        #         logger.log("Choosing play.")
-        #         fight_with_deck_list(enemy_troop_position)
-        #         fightloops=fightloops+1
-        #     logger.log("Battle must be finished")
-        #     time.sleep(10)
-        #     leave_end_battle_window()
-        #     wait_for_clash_main_menu()
-        #     state="post_fight"
-        # if state == "post_fight":
-        #     logger.log("STATE=post_fight")
-        #     logger.log("Back on clash main")
-        #     if check_if_past_game_is_win():
-        #         logger.log("Last game was a win")
-        #         logger.add_win()
-        #     else:
-        #         logger.log("Last game was a loss")
-        #         logger.add_loss()
-        #     #switch accounts feature
-        #     ssid=random.randint(1,3)
-        #     log ="Next account was random chosen and is account: "+str(ssid)
-        #     logger.log(log)
-        #     state="clash_main"
+        if state == "restart":  
+            logger.log("-----STATE=restart-----")
+            logger.log("restart time loop")
+            logger.log("Restarting menu client")
+            if restart_client() == "quit":
+                state = "restart"
+            else:
+                if check_if_on_clash_main_menu():
+                    state = "clash_main"
+                else:
+                    state = "restart"
+        if state == "clash_main":
+            logger.log("-----STATE=clash_main-----")
+            #account switch
+            logger.log("Logging in to the correct account")
+            if switch_accounts_to(ssid)=="quit":
+                #if switching accounts fails
+                logger.log("Failed to switch accounts. Restarting")
+                state="restart"
+            else:
+                #if switching accounts works
+                logger.log("Successfully switched accounts.")
+                #open chests
+                if check_if_on_clash_main_menu():
+                    logger.log("Opening chests.")
+                    open_chests()
+                    time.sleep(2)
+                    logger.log("Checking if can request.")
+                    if check_if_can_request():
+                        logger.log("Can request. Passing to request state.")
+                        state="request"
+                    else:
+                        logger.log("Cannot request. Skipping request and passing to donate state.")
+                        state="donate"
+                else:
+                    logger.log("Not on clash main. Restarting.")
+                    state ="restart"
+        if state == "request":
+            logger.log("-----STATE=request-----")
+            logger.log("Trying to get to donate page")
+            if getto_donate_page() == "quit":
+                #if failed to get to clan chat page
+                logger.log("Failed to get to clan chat page. Restarting")
+                state = "restart" 
+            else:
+                #if got to clan chat page
+                log = "Trying to request "+str(card_to_request)+"."
+                logger.log(log)
+                if request_from_clash_main_menu(card_to_request) == "quit":
+                    #if request failed
+                    log = "Failed to request "+str(card_to_request)+"."
+                    logger.log(log)
+                else:
+                    #if request works
+                    log = "Successfully requested "+str(card_to_request)+"."
+                    logger.log(log)
+                logger.log("Done with requesting. Passing to donate state.")
+                state="donate"
+        if state == "donate":
+            logger.log("-----STATE=donate-----")
+            if getto_donate_page() == "quit":
+                #if failed to get to clan chat page
+                logger.log("Failed to get to clan chat page. Restarting")
+                state = "restart" 
+            else:
+                #if got to clan chat page
+                logger.log("Successfully got to clan chat page. Starting donate alg")
+                click_donates()
+                logger.log("Done with donating. Passing to start_fight state")
+                state="start_fight"
+        if state == "start_fight":
+            logger.log("-----STATE=start_fight-----")
+            if fight_type =="1v1":
+                logger.log("I cant do 1v1s yet. Restarting")
+                state="restart"
+            if fight_type =="2v2":
+                logger.log("Starting a 2v2 match.")
+                start_2v2()
+                if wait_for_battle_start()=="quit":
+                    #if waiting for battle takes too long
+                    logger.log("Waited too long for battle start. Restarting")
+                    state="restart"
+                else:
+                    logger.log("Battle has begun. Passing to fighting state") 
+                    state="fighting"      
+        if state == "fighting":
+            logger.log("-----STATE=fighting-----")
+            fightloops=0
+            while (check_if_in_battle())and(fightloops<100):
+                check_quit_key_press()
+                log="Plays: "+str(fightloops)
+                logger.log(log)
+                logger.log("Scanning field.")
+                enemy_troop_position=look_for_enemy_troops()
+                logger.log("Choosing play.")
+                fight_with_deck_list(enemy_troop_position)
+                fightloops=fightloops+1
+            logger.log("Battle must be finished")
+            time.sleep(10)
+            leave_end_battle_window()
+            wait_for_clash_main_menu()
+            state="post_fight"
+        if state == "post_fight":
+            logger.log("STATE=post_fight")
+            logger.log("Back on clash main")
+            if check_if_past_game_is_win():
+                logger.log("Last game was a win")
+                logger.add_win()
+            else:
+                logger.log("Last game was a loss")
+                logger.add_loss()
+            #switch accounts feature
+            ssid=random.randint(1,3)
+            log ="Next account was random chosen and is account: "+str(ssid)
+            logger.log(log)
+            state="clash_main"
 
             
             
