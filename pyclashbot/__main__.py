@@ -1,4 +1,6 @@
+from ast import Str
 import random
+import ssl
 from tabnanny import check
 import time
 from unittest.mock import NonCallableMagicMock
@@ -44,9 +46,9 @@ def orientate_window():
     check_quit_key_press()
     window_memu.minimize()
     window_memu.restore()
-    time.sleep(1)
+    time.sleep(0.2)
     window_memu.moveTo(0, 0)
-    time.sleep(1)
+    time.sleep(0.2)
     window_memu.resizeTo(460, 680)
 
 
@@ -55,7 +57,7 @@ def orientate_memu_multi():
     window_mimm.minimize()
     window_mimm.restore()
     window_mimm.moveTo(200, 200)
-    time.sleep(1)
+    time.sleep(0.2)
     window_mimm.moveTo(0, 0)
 
 
@@ -212,8 +214,6 @@ def check_if_can_request():
     return True
 
 
-
-
 def look_for_request_button():
     references = [
         "req_logo_1.png",
@@ -280,8 +280,6 @@ def return_to_clash_main_menu():
             click(location[1],location[0])
             return location
     return None
-
-
 
 
 def start_2v2():              
@@ -540,12 +538,14 @@ def scroll_down():
     pyautogui.moveTo(x=215,y=350)
     pyautogui.dragTo(x=215,y=300, button='left',duration=1)
     pyautogui.moveTo(x=origin[0],y=origin[1])
+   
     
 def scroll_up():
     origin = pyautogui.position()
     pyautogui.moveTo(x=215,y=300)
     pyautogui.dragTo(x=215,y=350, button='left',duration=1)
     pyautogui.moveTo(x=origin[0],y=origin[1])
+
 
 def find_donates():
     references = [
@@ -673,7 +673,6 @@ def getto_donate_page():
     else:
         return "quit"
     
-
 
 def check_if_more_donates():
     current_image = pyautogui.screenshot()
@@ -1026,17 +1025,12 @@ def check_if_on_clash_home():
     return False
 
 
-
 def check_state():
     time.sleep(3)
     #if on regular main menu
     if check_if_on_clash_main_menu():
         logger.log("On clash main")
         return "clash_main"
-    #if in a battle
-    if check_if_in_battle():
-        logger.log("In a fight")
-        return "fighting"
     #if on clan chat page
     if check_if_on_clan_chat_page():
         logger.log("On clan chat page")
@@ -1055,8 +1049,388 @@ def check_state():
             return"clash_main"
         else:
             return"restart"
+    #if in a battle
+    if check_if_in_battle():
+        logger.log("In a fight")
+        return "fighting"
     return None
 
+
+def click(x,y,clicks=1,interval=0.1):
+    original_pos = pyautogui.position()
+    loops=0
+    while loops<clicks:
+        check_quit_key_press()
+        pyautogui.click(x=x,y=y)
+        pyautogui.moveTo(original_pos[0],original_pos[1])
+        loops=loops+1
+        time.sleep(interval)
+
+
+def look_for_upgrades():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
+        "12.png",
+        "13.png",
+        "14.png",
+        "15.png",
+        "16.png",
+        "17.png",
+        "18.png",
+        "19.png",
+        "20.png",
+        "21.png",
+        "22.png",
+        "23.png",
+        "24.png",
+        "25.png",
+        "26.png",
+        "27.png",
+        "28.png",
+        "29.png",
+        "30.png",
+        "31.png",
+        "32.png",
+        "33.png",
+        "34.png",
+        "35.png",
+        "36.png",
+        "37.png",
+        "38.png",
+        "39.png",
+        "40.png",
+        "41.png",
+        "42.png",
+        "43.png",
+        "44.png",
+        "45.png",
+        "46.png",
+        "47.png",
+        "48.png",
+        "49.png",
+        "50.png",
+        "51.png",
+        "52.png",
+        "53.png",
+        "54.png",
+        "55.png",
+        "56.png",
+        "57.png",
+        "58.png",
+        "59.png",
+        "60.png",
+        "61.png",
+        "62.png",
+        "63.png",
+        "64.png",
+        "65.png",
+        "66.png",
+    ]
+
+    locations = find_references(
+        screenshot=pyautogui.screenshot(),
+        folder="green_upgrade_button",
+        names=references,
+        tolerance=0.97
+    )
+
+    for location in locations:
+        if location is not None:
+            #click(location[1],location[0])
+            return location
+    return None
+
+
+def take_screenshots():
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\1.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\2.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\3.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\4.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\5.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\6.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\7.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\8.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\9.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\10.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\11.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\12.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\13.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\14.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\15.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\16.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\17.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\18.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\19.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\20.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\21.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\22.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\23.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\24.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\25.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\26.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\27.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\28.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\29.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\30.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\31.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\32.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\33.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\34.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\35.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\36.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\37.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\38.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\39.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\40.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\41.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\42.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\43.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\44.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\45.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\46.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\47.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\48.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\49.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\50.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\51.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\52.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\53.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\54.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\55.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\56.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\57.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\58.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\59.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\60.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\61.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\62.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\63.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\64.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\65.png')
+    time.sleep(0.5)
+    ss=pyautogui.screenshot(region=(130,265,15,15))
+    ss.save(r'C:\Users\Matt\Desktop\inc_pics\66.png')
+    time.sleep(0.5)
+    
+    
+def upgrade_cards_from_main():
+    n=0
+    coords=look_for_upgrades()
+    if coords is not None:
+        click(coords[1],coords[0])
+        time.sleep(0.2)
+        coords = look_for_upgrade_button()
+        if coords is not None:
+            click(coords[1],coords[0])
+            time.sleep(0.2)
+    else:
+        while (n<20) and (coords is not None):
+            scroll_down()
+            coords=look_for_upgrades()
+            time.sleep(0.2)
+            n=n+1
+        if coords is not None:
+            click(coords[1],coords[0])
+            time.sleep(0.2)
+            coords = look_for_upgrade_button()
+            if coords is not None:
+                click(coords[1],coords[0])
+                time.sleep(0.2)
+  
+            
+def look_for_upgrade_button():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+    ]
+
+    locations = find_references(
+        screenshot=pyautogui.screenshot(),
+        folder="upgrade_button",
+        names=references,
+        tolerance=0.97
+    )
+
+    for location in locations:
+        if location is not None:
+            return location
+    return None
+
+
+def get_to_card_page():
+    if not check_if_on_clash_main_menu():
+        logger.log("Not on clash main.")
+        return "quit"
+    coords=find_card_page_logo()
+    if coords is None:
+        logger.log("Trouble locating card page.")
+        return "quit"
+    click(coords[1],coords[0])
+    
+    
+def find_card_page_logo():    
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+    ]
+    locations = find_references(
+        screenshot=pyautogui.screenshot(),
+        folder="card_page_logo",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            #click(location[1],location[0])
+            return location
+    return None
+    
 # region donate_cards
 def look_for_donates_by_card():
     #region earthquake
@@ -2615,16 +2989,6 @@ def scroll_till_find_inferno_tower():
 
 # endregion
      
-def click(x,y,clicks=1,interval=0.1):
-    original_pos = pyautogui.position()
-    loops=0
-    while loops<clicks:
-        check_quit_key_press()
-        pyautogui.click(x=x,y=y)
-        pyautogui.moveTo(original_pos[0],original_pos[1])
-        loops=loops+1
-        time.sleep(interval)
-
 
 def main_loop():
     # user vars (these will be specified thru the GUI, but these are the placeholders for now.)
@@ -2640,7 +3004,8 @@ def main_loop():
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
-    state=check_state()
+    state=None
+    #state=check_state()
     if state is None:
         state="restart"
     while True:
@@ -2650,124 +3015,127 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
         
-
-
-        if state == "restart":  
-            logger.log("-----STATE=restart-----")
-            logger.log("restart time loop")
-            logger.log("Restarting menu client")
-            if restart_client() == "quit":
-                state = "restart"
-            else:
-                if check_if_on_clash_main_menu():
-                    state = "clash_main"
-                else:
-                    state = "restart"
-        if state == "clash_main":
-            logger.log("-----STATE=clash_main-----")
-            #account switch
-            logger.log("Logging in to the correct account")
-            if switch_accounts_to(ssid)=="quit":
-                #if switching accounts fails
-                logger.log("Failed to switch accounts. Restarting")
-                state="restart"
-            else:
-                #if switching accounts works
-                logger.log("Successfully switched accounts.")
-                #open chests
-                if check_if_on_clash_main_menu():
-                    logger.log("Opening chests.")
-                    open_chests()
-                    time.sleep(2)
-                    logger.log("Checking if can request.")
-                    if check_if_can_request():
-                        logger.log("Can request. Passing to request state.")
-                        state="request"
-                    else:
-                        logger.log("Cannot request. Skipping request and passing to donate state.")
-                        state="donate"
-                else:
-                    logger.log("Not on clash main. Restarting.")
-                    state ="restart"
-        if state == "request":
-            logger.log("-----STATE=request-----")
-            logger.log("Trying to get to donate page")
-            if getto_donate_page() == "quit":
-                #if failed to get to clan chat page
-                logger.log("Failed to get to clan chat page. Restarting")
-                state = "restart" 
-            else:
-                #if got to clan chat page
-                log = "Trying to request "+str(card_to_request)+"."
-                logger.log(log)
-                if request_from_clash_main_menu(card_to_request) == "quit":
-                    #if request failed
-                    log = "Failed to request "+str(card_to_request)+"."
-                    logger.log(log)
-                else:
-                    #if request works
-                    log = "Successfully requested "+str(card_to_request)+"."
-                    logger.log(log)
-                logger.log("Done with requesting. Passing to donate state.")
-                state="donate"
-        if state == "donate":
-            logger.log("-----STATE=donate-----")
-            if getto_donate_page() == "quit":
-                #if failed to get to clan chat page
-                logger.log("Failed to get to clan chat page. Restarting")
-                state = "restart" 
-            else:
-                #if got to clan chat page
-                logger.log("Successfully got to clan chat page. Starting donate alg")
-                click_donates()
-                logger.log("Done with donating. Passing to start_fight state")
-                state="start_fight"
-        if state == "start_fight":
-            logger.log("-----STATE=start_fight-----")
-            if fight_type =="1v1":
-                logger.log("I cant do 1v1s yet. Restarting")
-                state="restart"
-            if fight_type =="2v2":
-                logger.log("Starting a 2v2 match.")
-                start_2v2()
-                if wait_for_battle_start()=="quit":
-                    #if waiting for battle takes too long
-                    logger.log("Waited too long for battle start. Restarting")
-                    state="restart"
-                else:
-                    logger.log("Battle has begun. Passing to fighting state") 
-                    state="fighting"      
-        if state == "fighting":
-            logger.log("-----STATE=fighting-----")
-            fightloops=0
-            while (check_if_in_battle())and(fightloops<100):
-                check_quit_key_press()
-                log="Plays: "+str(fightloops)
-                logger.log(log)
-                logger.log("Scanning field.")
-                enemy_troop_position=look_for_enemy_troops()
-                logger.log("Choosing play.")
-                fight_with_deck_list(enemy_troop_position)
-                fightloops=fightloops+1
-            logger.log("Battle must be finished")
-            time.sleep(10)
-            leave_end_battle_window()
-            wait_for_clash_main_menu()
-            state="post_fight"
-        if state == "post_fight":
-            logger.log("STATE=post_fight")
-            logger.log("Back on clash main")
-            if check_if_past_game_is_win():
-                logger.log("Last game was a win")
-                logger.add_win()
-            else:
-                logger.log("Last game was a loss")
-                logger.add_loss()
-            #switch accounts feature
-            ssid=random.randint(1,3)
-            log ="Next account was random chosen and is account: "+str(ssid)
-            logger.log(log)
-            state="clash_main"
+        #plt.show()
+        upgrade_cards_from_main()
+        #take_screenshots()
+        #print(look_for_upgrades())
+        
+        # if state == "restart":  
+        #     logger.log("-----STATE=restart-----")
+        #     logger.log("restart time loop")
+        #     logger.log("Restarting menu client")
+        #     if restart_client() == "quit":
+        #         state = "restart"
+        #     else:
+        #         if check_if_on_clash_main_menu():
+        #             state = "clash_main"
+        #         else:
+        #             state = "restart"
+        # if state == "clash_main":
+        #     logger.log("-----STATE=clash_main-----")
+        #     #account switch
+        #     logger.log("Logging in to the correct account")
+        #     if switch_accounts_to(ssid)=="quit":
+        #         #if switching accounts fails
+        #         logger.log("Failed to switch accounts. Restarting")
+        #         state="restart"
+        #     else:
+        #         #if switching accounts works
+        #         logger.log("Successfully switched accounts.")
+        #         #open chests
+        #         if check_if_on_clash_main_menu():
+        #             logger.log("Opening chests.")
+        #             open_chests()
+        #             time.sleep(2)
+        #             logger.log("Checking if can request.")
+        #             if check_if_can_request():
+        #                 logger.log("Can request. Passing to request state.")
+        #                 state="request"
+        #             else:
+        #                 logger.log("Cannot request. Skipping request and passing to donate state.")
+        #                 state="donate"
+        #         else:
+        #             logger.log("Not on clash main. Restarting.")
+        #             state ="restart"
+        # if state == "request":
+        #     logger.log("-----STATE=request-----")
+        #     logger.log("Trying to get to donate page")
+        #     if getto_donate_page() == "quit":
+        #         #if failed to get to clan chat page
+        #         logger.log("Failed to get to clan chat page. Restarting")
+        #         state = "restart" 
+        #     else:
+        #         #if got to clan chat page
+        #         log = "Trying to request "+str(card_to_request)+"."
+        #         logger.log(log)
+        #         if request_from_clash_main_menu(card_to_request) == "quit":
+        #             #if request failed
+        #             log = "Failed to request "+str(card_to_request)+"."
+        #             logger.log(log)
+        #         else:
+        #             #if request works
+        #             log = "Successfully requested "+str(card_to_request)+"."
+        #             logger.log(log)
+        #         logger.log("Done with requesting. Passing to donate state.")
+        #         state="donate"
+        # if state == "donate":
+        #     logger.log("-----STATE=donate-----")
+        #     if getto_donate_page() == "quit":
+        #         #if failed to get to clan chat page
+        #         logger.log("Failed to get to clan chat page. Restarting")
+        #         state = "restart" 
+        #     else:
+        #         #if got to clan chat page
+        #         logger.log("Successfully got to clan chat page. Starting donate alg")
+        #         click_donates()
+        #         logger.log("Done with donating. Passing to start_fight state")
+        #         state="start_fight"
+        # if state == "start_fight":
+        #     logger.log("-----STATE=start_fight-----")
+        #     if fight_type =="1v1":
+        #         logger.log("I cant do 1v1s yet. Restarting")
+        #         state="restart"
+        #     if fight_type =="2v2":
+        #         logger.log("Starting a 2v2 match.")
+        #         start_2v2()
+        #         if wait_for_battle_start()=="quit":
+        #             #if waiting for battle takes too long
+        #             logger.log("Waited too long for battle start. Restarting")
+        #             state="restart"
+        #         else:
+        #             logger.log("Battle has begun. Passing to fighting state") 
+        #             state="fighting"      
+        # if state == "fighting":
+        #     logger.log("-----STATE=fighting-----")
+        #     fightloops=0
+        #     while (check_if_in_battle())and(fightloops<100):
+        #         check_quit_key_press()
+        #         log="Plays: "+str(fightloops)
+        #         logger.log(log)
+        #         logger.log("Scanning field.")
+        #         enemy_troop_position=look_for_enemy_troops()
+        #         logger.log("Choosing play.")
+        #         fight_with_deck_list(enemy_troop_position)
+        #         fightloops=fightloops+1
+        #     logger.log("Battle must be finished")
+        #     time.sleep(10)
+        #     leave_end_battle_window()
+        #     wait_for_clash_main_menu()
+        #     state="post_fight"
+        # if state == "post_fight":
+        #     logger.log("STATE=post_fight")
+        #     logger.log("Back on clash main")
+        #     if check_if_past_game_is_win():
+        #         logger.log("Last game was a win")
+        #         logger.add_win()
+        #     else:
+        #         logger.log("Last game was a loss")
+        #         logger.add_loss()
+        #     #switch accounts feature
+        #     ssid=random.randint(1,3)
+        #     log ="Next account was random chosen and is account: "+str(ssid)
+        #     logger.log(log)
+        #     state="clash_main"
 
             
             
