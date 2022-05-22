@@ -3,21 +3,8 @@ import sys
 import time
 from inspect import getmembers, isfunction
 
-import numpy as np
-import pyautogui
-
+from pyclashbot.client import click, refresh_screen, screenshot
 from pyclashbot.image_rec import find_references
-
-
-def refresh_screen():
-    screenshot = pyautogui.screenshot()
-    iar = np.array(screenshot)
-    return iar
-
-def click(x,y,clicks=1,interval=0.1):
-    original_pos = pyautogui.position()
-    pyautogui.click(x=x,y=y,clicks=clicks,interval=interval)
-    pyautogui.moveTo(original_pos[0],original_pos[1])
 
 
 def random_placement_coord_maker():
@@ -50,59 +37,79 @@ def random_placement_coord_maker():
 
 # region fight
 
+
+def check_for_card_in_hand(card_name):
+    hand_screenshot = screenshot(region=(0, 0, 460, 680))
+    hand_checks = dict((name_function_pair[0], name_function_pair[1])for name_function_pair in getmembers(
+        sys.modules[__name__], isfunction) if name_function_pair[0].startswith("check_hand_for"))
+    location = hand_checks[f"check_hand_for_{card_name}"](hand_screenshot)
+    if location is not None:
+        return [location[1], location[0]]
+    return None
+
+
 def card_place_turret(card_loc):
-    
-    #choose placement
+    placement_loc = None
+
+    # choose placement
     n = random.randint(1, 4)
     if n == 1:
-        placement_loc = [208,401]
+        placement_loc = [208, 401]
     if n == 2:
-        placement_loc = [208,372]
+        placement_loc = [208, 372]
     if n == 3:
-        placement_loc = [211,393]
+        placement_loc = [211, 393]
     if n == 4:
-        placement_loc = [203,380]
-    #click on card
-    click(x=card_loc[0],y=card_loc[1])
+        placement_loc = [203, 380]
+    # click on card
+    if card_loc is not None:
+        click(x=card_loc[0], y=card_loc[1])
     time.sleep(0.5)
-    #click placement
-    click(x=placement_loc[0],y=placement_loc[1])
-    
+    # click placement
+    if placement_loc is not None:
+        click(x=placement_loc[0], y=placement_loc[1])
+
 
 def card_place_spawners(card_loc):
+    placement_loc = None
     n = random.randint(1, 6)
-    if n==1:
-        placement_loc = [86,485]
-    if n==2:
-        placement_loc = [139,488]
-    if n==3:
-        placement_loc = [174,436]
-    if n==4:
-        placement_loc = [265,442]
-    if n==5:
-        placement_loc = [281,492]
-    if n==6:
-        placement_loc = [341,495]
-    click(x=card_loc[0],y=card_loc[1])
+    if n == 1:
+        placement_loc = [86, 485]
+    if n == 2:
+        placement_loc = [139, 488]
+    if n == 3:
+        placement_loc = [174, 436]
+    if n == 4:
+        placement_loc = [265, 442]
+    if n == 5:
+        placement_loc = [281, 492]
+    if n == 6:
+        placement_loc = [341, 495]
+    if card_loc is not None:
+        click(x=card_loc[0], y=card_loc[1])
     time.sleep(0.25)
-    click(x=placement_loc[0],y=placement_loc[1])
-    
+    if placement_loc is not None:
+        click(x=placement_loc[0], y=placement_loc[1])
+
 
 def card_place_hogs(card_loc):
+    placement_loc = None
     if card_loc is None:
         return
     n = random.randint(1, 4)
-    if n==1:
-        placement_loc = [84,340]
-    if n==2:
-        placement_loc = [125,340]
-    if n==3:
-        placement_loc = [298,340]
-    if n==4:
-        placement_loc = [347,340]
-    click(x=card_loc[0],y=card_loc[1])
+    if n == 1:
+        placement_loc = [84, 340]
+    if n == 2:
+        placement_loc = [125, 340]
+    if n == 3:
+        placement_loc = [298, 340]
+    if n == 4:
+        placement_loc = [347, 340]
+    if card_loc is not None:
+        click(x=card_loc[0], y=card_loc[1])
     time.sleep(0.25)
-    click(x=placement_loc[0],y=placement_loc[1])
+    if placement_loc is not None:
+        click(x=placement_loc[0], y=placement_loc[1])
 
 
 def check_if_hero_ability_is_available():
@@ -116,7 +123,7 @@ def check_if_hero_ability_is_available():
     ]
 
     locations = find_references(
-        screenshot=pyautogui.screenshot(),
+        screenshot=screenshot(),
         folder="hero_abilities",
         names=references,
         tolerance=0.97
@@ -128,14 +135,14 @@ def check_if_hero_ability_is_available():
 
 
 def fight_with_deck_list(enemy_troop_position):
-#check for hero abilities
+    # check for hero abilities
     ability_coords = check_if_hero_ability_is_available()
     if ability_coords:
-        click(x=345,y=512)
-#expensive has prio
+        click(x=345, y=512)
+# expensive has prio
 #     elite_barbs
     if (check_for_card_in_hand("elite_barbs") is not None):
-        #print("playing elite_barbs")
+        #logger.log("playing elite_barbs")
         card_loc = check_for_card_in_hand("elite_barbs")
         if card_loc is None:
             return
@@ -143,17 +150,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     e_giant
     if (check_for_card_in_hand("e_giant") is not None):
-        #print("playing e_giant")
+        #logger.log("playing e_giant")
         card_loc = check_for_card_in_hand("e_giant")
         if card_loc is None:
             return
@@ -161,17 +170,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     giant_skeleton
     if (check_for_card_in_hand("giant_skeleton") is not None):
-        #print("playing giant_skeleton")
+        #logger.log("playing giant_skeleton")
         card_loc = check_for_card_in_hand("giant_skeleton")
         if card_loc is None:
             return
@@ -179,17 +190,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     goblin_giant
     if (check_for_card_in_hand("goblin_giant") is not None):
-        #print("playing goblin_giant")
+        #logger.log("playing goblin_giant")
         card_loc = check_for_card_in_hand("goblin_giant")
         if card_loc is None:
             return
@@ -197,17 +210,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     mega_knight
     if (check_for_card_in_hand("mega_knight") is not None):
-        #print("playing mega_knight")
+        #logger.log("playing mega_knight")
         card_loc = check_for_card_in_hand("mega_knight")
         if card_loc is None:
             return
@@ -215,17 +230,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     pekka
     if (check_for_card_in_hand("pekka") is not None):
-        #print("playing pekka")
+        #logger.log("playing pekka")
         card_loc = check_for_card_in_hand("pekka")
         if card_loc is None:
             return
@@ -233,17 +250,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     witch
     if (check_for_card_in_hand("witch") is not None):
-        #print("playing witch")
+        #logger.log("playing witch")
         card_loc = check_for_card_in_hand("witch")
         if card_loc is None:
             return
@@ -251,18 +270,20 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     wizard
     if (check_for_card_in_hand("wizard") is not None):
-        #print("playing wizard")
+        #logger.log("playing wizard")
         card_loc = check_for_card_in_hand("wizard")
         if card_loc is None:
             return
@@ -270,193 +291,206 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     barb_hut
     if (check_for_card_in_hand("barb_hut") is not None):
-        #print("playing barb_hut")
+        #logger.log("playing barb_hut")
         card_loc = check_for_card_in_hand("barb_hut")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     royal_guards
     if (check_for_card_in_hand("royal_guards") is not None):
-        #print("playing royal_guards")
+        #logger.log("playing royal_guards")
         card_loc = check_for_card_in_hand("royal_guards")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=212,y=333)
-        if n==2:
-            click(x=205,y=502)
+        if n == 1:
+            click(x=212, y=333)
+        if n == 2:
+            click(x=205, y=502)
         return
 #     royal_giant
     if (check_for_card_in_hand("royal_giant") is not None):
-        #print("playing royal_giant")
+        #logger.log("playing royal_giant")
         card_loc = check_for_card_in_hand("royal_giant")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 4)
-        if n==1:
-            click(x=114,y=346)
-        if n==2:
-            click(x=176,y=336)
-        if n==3:
-            click(x=298,y=336)
-        if n==4:
-            click(x=246,y=339)
+        if n == 1:
+            click(x=114, y=346)
+        if n == 2:
+            click(x=176, y=336)
+        if n == 3:
+            click(x=298, y=336)
+        if n == 4:
+            click(x=246, y=339)
         return
 # #turrets
 #     bomb_tower
     if (check_for_card_in_hand("bomb_tower") is not None):
-        #print("bomb_tower in decklist and hand.")
+        #logger.log("bomb_tower in decklist and hand.")
         card_loc = check_for_card_in_hand("bomb_tower")
         if card_loc is None:
             return
-        
+
         if card_loc is not None:
-            #print("Playing bomb_tower")
+            #logger.log("Playing bomb_tower")
             card_place_turret(card_loc)
         return
 #     cannon
     if (check_for_card_in_hand("cannon") is not None):
-        #print("cannon in decklist and hand.")
+        #logger.log("cannon in decklist and hand.")
         card_loc = check_for_card_in_hand("cannon")
         if card_loc is None:
             return
-        
+
         if card_loc is not None:
-            #print("Playing cannon")
+            #logger.log("Playing cannon")
             card_place_turret(card_loc)
         return
 #     goblin_cage
     if (check_for_card_in_hand("goblin_cage") is not None):
-        #print("goblin_cage in decklist and hand.")
+        #logger.log("goblin_cage in decklist and hand.")
         card_loc = check_for_card_in_hand("goblin_cage")
         if card_loc is None:
             return
-        
+
         if card_loc is not None:
-            #print("Playing goblin_cage")
+            #logger.log("Playing goblin_cage")
             card_place_turret(card_loc)
         return
 #     inferno_tower
     if (check_for_card_in_hand("inferno_tower") is not None):
-        #print("inferno_tower in decklist and hand.")
+        #logger.log("inferno_tower in decklist and hand.")
         card_loc = check_for_card_in_hand("inferno_tower")
         if card_loc is None:
             return
-        
+
         if card_loc is not None:
-            #print("Playing inferno_tower")
+            #logger.log("Playing inferno_tower")
             card_place_turret(card_loc)
         return
 #     tesla
     if (check_for_card_in_hand("tesla") is not None):
-        #print("tesla in decklist and hand.")
+        #logger.log("tesla in decklist and hand.")
         card_loc = check_for_card_in_hand("tesla")
         if card_loc is not None:
-            #print("Playing tesla")
+            #logger.log("Playing tesla")
             card_place_turret(card_loc)
         return
 # #goblin_barrels
 #     goblin_drill
     if (check_for_card_in_hand("goblin_drill") is not None):
-        #print("found goblin_drill in decklist and hand")
+        #logger.log("found goblin_drill in decklist and hand")
+        placement_loc = None
         n = random.randint(1, 6)
-        if n ==1:
-            placement_loc = [96,195]
-        if n ==2:
-            placement_loc = [144,193]
-        if n ==3:
-            placement_loc = [125,170]
-        if n ==4:
-            placement_loc = [297,220]
-        if n ==5:
-            placement_loc = [319,196]
-        if n ==6:
-            placement_loc = [297,165]
-        #click card
+        if n == 1:
+            placement_loc = [96, 195]
+        if n == 2:
+            placement_loc = [144, 193]
+        if n == 3:
+            placement_loc = [125, 170]
+        if n == 4:
+            placement_loc = [297, 220]
+        if n == 5:
+            placement_loc = [319, 196]
+        if n == 6:
+            placement_loc = [297, 165]
+        # click card
         card_loc = check_for_card_in_hand("goblin_drill")
         if card_loc is None:
             return
-        
-        click(x=card_loc[0],y=card_loc[1])
+
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.5)
-        #click placement
-        click(x=placement_loc[0],y=placement_loc[1])
+        # click placement
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     miner
     if (check_for_card_in_hand("miner") is not None):
-        #print("found miner in decklist and hand")
+        #logger.log("found miner in decklist and hand")
+        placement_loc = None
         n = random.randint(1, 6)
-        if n ==1:
-            placement_loc = [96,195]
-        if n ==2:
-            placement_loc = [144,193]
-        if n ==3:
-            placement_loc = [125,170]
-        if n ==4:
-            placement_loc = [297,220]
-        if n ==5:
-            placement_loc = [319,196]
-        if n ==6:
-            placement_loc = [297,165]
-        #click card
+        if n == 1:
+            placement_loc = [96, 195]
+        if n == 2:
+            placement_loc = [144, 193]
+        if n == 3:
+            placement_loc = [125, 170]
+        if n == 4:
+            placement_loc = [297, 220]
+        if n == 5:
+            placement_loc = [319, 196]
+        if n == 6:
+            placement_loc = [297, 165]
+        # click card
         card_loc = check_for_card_in_hand("miner")
         if card_loc is None:
             return
-        
-        click(x=card_loc[0],y=card_loc[1])
+
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.5)
-        #click placement
-        click(x=placement_loc[0],y=placement_loc[1])
+        # click placement
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     goblin_barrel
     if (check_for_card_in_hand("goblin_barrel") is not None):
-        #print("found goblin_barrel in decklist and hand")
+        #logger.log("found goblin_barrel in decklist and hand")
+        placement_loc = None
         n = random.randint(1, 6)
-        if n ==1:
-            placement_loc = [120,200]
-        if n ==2:
-            placement_loc = [120,200]
-        if n ==3:
-            placement_loc = [297,200]
-        if n ==4:
-            placement_loc = [297,200]
-        if n ==5:
-            placement_loc = [353,158]
-        if n ==6:
-            placement_loc = [71,166]
-        #click card
+        if n == 1:
+            placement_loc = [120, 200]
+        if n == 2:
+            placement_loc = [120, 200]
+        if n == 3:
+            placement_loc = [297, 200]
+        if n == 4:
+            placement_loc = [297, 200]
+        if n == 5:
+            placement_loc = [353, 158]
+        if n == 6:
+            placement_loc = [71, 166]
+        # click card
         card_loc = check_for_card_in_hand("goblin_barrel")
         if card_loc is None:
             return
-        
-        click(x=card_loc[0],y=card_loc[1])
+
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.5)
-        #click placement
-        click(x=placement_loc[0],y=placement_loc[1])
+        # click placement
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 # #melee_tanks
 #     barb_barrel
     if (check_for_card_in_hand("barb_barrel") is not None):
-        #print("playing barb_barrel")
+        #logger.log("playing barb_barrel")
         card_loc = check_for_card_in_hand("barb_barrel")
         placement_loc = enemy_troop_position
         if placement_loc is None:
@@ -465,33 +499,37 @@ def fight_with_deck_list(enemy_troop_position):
             placement_loc[1] = placement_loc[1] + 25
         if card_loc is None:
             return
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     bandit
     if (check_for_card_in_hand("bandit") is not None):
-        #print("playing bandit")
+        #logger.log("playing bandit")
         card_loc = check_for_card_in_hand("bandit")
         if card_loc is None:
             return
-        
+
         placement_loc = enemy_troop_position
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
-        return    
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
+        return
 #     barbs
     if (check_for_card_in_hand("barbs") is not None):
-        #print("playing barbs")
+        #logger.log("playing barbs")
         card_loc = check_for_card_in_hand("barbs")
         placement_loc = enemy_troop_position
         if card_loc is None:
@@ -499,17 +537,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     bats
     if (check_for_card_in_hand("bats") is not None):
-        #print("playing bats")
+        #logger.log("playing bats")
         card_loc = check_for_card_in_hand("bats")
         if card_loc is None:
             return
@@ -517,17 +557,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     dark_knight
     if (check_for_card_in_hand("dark_knight") is not None):
-        #print("playing dark_knight")
+        #logger.log("playing dark_knight")
         card_loc = check_for_card_in_hand("dark_knight")
         if card_loc is None:
             return
@@ -535,17 +577,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     e_spirit
     if (check_for_card_in_hand("e_spirit") is not None):
-        #print("playing e_spirit")
+        #logger.log("playing e_spirit")
         card_loc = check_for_card_in_hand("e_spirit")
         if card_loc is None:
             return
@@ -553,17 +597,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     fisherman
     if (check_for_card_in_hand("fisherman") is not None):
-        #print("playing fisherman")
+        #logger.log("playing fisherman")
         card_loc = check_for_card_in_hand("fisherman")
         if card_loc is None:
             return
@@ -571,17 +617,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 90
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     giant
     if (check_for_card_in_hand("giant") is not None):
-        #print("playing giant")
+        #logger.log("playing giant")
         card_loc = check_for_card_in_hand("giant")
         if card_loc is None:
             return
@@ -589,17 +637,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     goblins
     if (check_for_card_in_hand("goblins") is not None):
-        #print("playing goblins")
+        #logger.log("playing goblins")
         card_loc = check_for_card_in_hand("goblins")
         if card_loc is None:
             return
@@ -607,17 +657,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     golden_knight
     if (check_for_card_in_hand("golden_knight") is not None):
-        #print("playing golden_knight")
+        #logger.log("playing golden_knight")
         card_loc = check_for_card_in_hand("golden_knight")
         if card_loc is None:
             return
@@ -625,17 +677,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     guards
     if (check_for_card_in_hand("guards") is not None):
-        #print("playing guards")
+        #logger.log("playing guards")
         card_loc = check_for_card_in_hand("guards")
         if card_loc is None:
             return
@@ -643,17 +697,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     heal_spirit
     if (check_for_card_in_hand("heal_spirit") is not None):
-        #print("playing heal_spirit")
+        #logger.log("playing heal_spirit")
         card_loc = check_for_card_in_hand("heal_spirit")
         if card_loc is None:
             return
@@ -661,17 +717,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     healer
     if (check_for_card_in_hand("healer") is not None):
-        #print("playing healer")
+        #logger.log("playing healer")
         card_loc = check_for_card_in_hand("healer")
         if card_loc is None:
             return
@@ -679,17 +737,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     ice_golem
     if (check_for_card_in_hand("ice_golem") is not None):
-        #print("playing ice_golem")
+        #logger.log("playing ice_golem")
         card_loc = check_for_card_in_hand("ice_golem")
         if card_loc is None:
             return
@@ -697,17 +757,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     ice_spirit
     if (check_for_card_in_hand("ice_spirit") is not None):
-        #print("playing ice_spirit")
+        #logger.log("playing ice_spirit")
         card_loc = check_for_card_in_hand("ice_spirit")
         if card_loc is None:
             return
@@ -715,17 +777,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     knight
     if (check_for_card_in_hand("knight") is not None):
-        #print("playing knight")
+        #logger.log("playing knight")
         card_loc = check_for_card_in_hand("knight")
         if card_loc is None:
             return
@@ -733,17 +797,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     lumberjack
     if (check_for_card_in_hand("lumberjack") is not None):
-        #print("playing lumberjack")
+        #logger.log("playing lumberjack")
         card_loc = check_for_card_in_hand("lumberjack")
         if card_loc is None:
             return
@@ -751,17 +817,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     mega_minion
     if (check_for_card_in_hand("mega_minion") is not None):
-        #print("playing mega_minion")
+        #logger.log("playing mega_minion")
         card_loc = check_for_card_in_hand("mega_minion")
         if card_loc is None:
             return
@@ -769,17 +837,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     mighty_miner
     if (check_for_card_in_hand("mighty_miner") is not None):
-        #print("playing mighty_miner")
+        #logger.log("playing mighty_miner")
         card_loc = check_for_card_in_hand("mighty_miner")
         if card_loc is None:
             return
@@ -787,17 +857,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     mini_pekka
     if (check_for_card_in_hand("mini_pekka") is not None):
-        #print("playing mini_pekka")
+        #logger.log("playing mini_pekka")
         card_loc = check_for_card_in_hand("mini_pekka")
         if card_loc is None:
             return
@@ -805,17 +877,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     minion_hoard
     if (check_for_card_in_hand("minion_hoard") is not None):
-        #print("playing minion_hoard")
+        #logger.log("playing minion_hoard")
         card_loc = check_for_card_in_hand("minion_hoard")
         if card_loc is None:
             return
@@ -823,17 +897,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     minions
     if (check_for_card_in_hand("minions") is not None):
-        #print("playing minions")
+        #logger.log("playing minions")
         card_loc = check_for_card_in_hand("minions")
         if card_loc is None:
             return
@@ -841,17 +917,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     prince
     if (check_for_card_in_hand("prince") is not None):
-        #print("playing prince")
+        #logger.log("playing prince")
         card_loc = check_for_card_in_hand("prince")
         if card_loc is None:
             return
@@ -859,17 +937,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     royal_ghost
     if (check_for_card_in_hand("royal_ghost") is not None):
-        #print("playing royal_ghost")
+        #logger.log("playing royal_ghost")
         card_loc = check_for_card_in_hand("royal_ghost")
         if card_loc is None:
             return
@@ -877,17 +957,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     skeleton_army
     if (check_for_card_in_hand("skeleton_army") is not None):
-        #print("playing skeleton_army")
+        #logger.log("playing skeleton_army")
         card_loc = check_for_card_in_hand("skeleton_army")
         if card_loc is None:
             return
@@ -895,17 +977,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     skeleton_barrel
     if (check_for_card_in_hand("skeleton_barrel") is not None):
-        #print("playing skeleton_barrel")
+        #logger.log("playing skeleton_barrel")
         card_loc = check_for_card_in_hand("skeleton_barrel")
         if card_loc is None:
             return
@@ -913,17 +997,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     skeleton_dragons
     if (check_for_card_in_hand("skeleton_dragons") is not None):
-        #print("playing skeleton_dragons")
+        #logger.log("playing skeleton_dragons")
         card_loc = check_for_card_in_hand("skeleton_dragons")
         if card_loc is None:
             return
@@ -931,17 +1017,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     skeleton_king
     if (check_for_card_in_hand("skeleton_king") is not None):
-        #print("playing skeleton_king")
+        #logger.log("playing skeleton_king")
         card_loc = check_for_card_in_hand("skeleton_king")
         if card_loc is None:
             return
@@ -949,17 +1037,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     skeletons
     if (check_for_card_in_hand("skeletons") is not None):
-        #print("playing skeletons")
+        #logger.log("playing skeletons")
         card_loc = check_for_card_in_hand("skeletons")
         if card_loc is None:
             return
@@ -967,17 +1057,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     valk
     if (check_for_card_in_hand("valk") is not None):
-        #print("playing valk")
+        #logger.log("playing valk")
         card_loc = check_for_card_in_hand("valk")
         if card_loc is None:
             return
@@ -985,18 +1077,20 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 # #ranged
 #     archer_queen
     if (check_for_card_in_hand("archer_queen") is not None):
-        #print("playing archer_queen")
+        #logger.log("playing archer_queen")
         card_loc = check_for_card_in_hand("archer_queen")
         if card_loc is None:
             return
@@ -1004,34 +1098,38 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     archers
     if (check_for_card_in_hand("archers") is not None):
-        #print("playing archers")
+        #logger.log("playing archers")
         card_loc = check_for_card_in_hand("archers")
         placement_loc = enemy_troop_position
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     baby_dragon
     if (check_for_card_in_hand("baby_dragon") is not None):
-        #print("playing baby_dragon")
+        #logger.log("playing baby_dragon")
         card_loc = check_for_card_in_hand("baby_dragon")
         if card_loc is None:
             return
@@ -1039,17 +1137,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     bomber
     if (check_for_card_in_hand("bomber") is not None):
-        #print("playing bomber")
+        #logger.log("playing bomber")
         card_loc = check_for_card_in_hand("bomber")
         if card_loc is None:
             return
@@ -1057,17 +1157,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     bowler
     if (check_for_card_in_hand("bowler") is not None):
-        #print("playing bowler")
+        #logger.log("playing bowler")
         card_loc = check_for_card_in_hand("bowler")
         if card_loc is None:
             return
@@ -1075,17 +1177,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     cannon_cart
     if (check_for_card_in_hand("cannon_cart") is not None):
-        #print("playing cannon_cart")
+        #logger.log("playing cannon_cart")
         card_loc = check_for_card_in_hand("cannon_cart")
         if card_loc is None:
             return
@@ -1093,17 +1197,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     dart_goblin
     if (check_for_card_in_hand("dart_goblin") is not None):
-        #print("playing dart_goblin")
+        #logger.log("playing dart_goblin")
         card_loc = check_for_card_in_hand("dart_goblin")
         if card_loc is None:
             return
@@ -1111,17 +1217,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     e_dragon
     if (check_for_card_in_hand("e_dragon") is not None):
-        #print("playing e_dragon")
+        #logger.log("playing e_dragon")
         card_loc = check_for_card_in_hand("e_dragon")
         if card_loc is None:
             return
@@ -1129,17 +1237,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     e_wiz
     if (check_for_card_in_hand("e_wiz") is not None):
-        #print("playing e_wiz")
+        #logger.log("playing e_wiz")
         card_loc = check_for_card_in_hand("e_wiz")
         if card_loc is None:
             return
@@ -1147,17 +1257,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     elixer_golem
     if (check_for_card_in_hand("elixer_golem") is not None):
-        #print("playing elixer_golem")
+        #logger.log("playing elixer_golem")
         card_loc = check_for_card_in_hand("elixer_golem")
         if card_loc is None:
             return
@@ -1165,17 +1277,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     executioner
     if (check_for_card_in_hand("executioner") is not None):
-        #print("playing executioner")
+        #logger.log("playing executioner")
         card_loc = check_for_card_in_hand("executioner")
         if card_loc is None:
             return
@@ -1183,17 +1297,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     fire_spirit
     if (check_for_card_in_hand("fire_spirit") is not None):
-        #print("playing fire_spirit")
+        #logger.log("playing fire_spirit")
         card_loc = check_for_card_in_hand("fire_spirit")
         if card_loc is None:
             return
@@ -1201,17 +1317,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     firecracker
     if (check_for_card_in_hand("firecracker") is not None):
-        #print("playing firecracker")
+        #logger.log("playing firecracker")
         card_loc = check_for_card_in_hand("firecracker")
         if card_loc is None:
             return
@@ -1219,18 +1337,20 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     flying_machine
     if (check_for_card_in_hand("flying_machine") is not None):
-        #print("playing flying_machine")
+        #logger.log("playing flying_machine")
         card_loc = check_for_card_in_hand("flying_machine")
         if card_loc is None:
             return
@@ -1238,18 +1358,20 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
 
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     hunter
     if (check_for_card_in_hand("hunter") is not None):
-        #print("playing hunter")
+        #logger.log("playing hunter")
         card_loc = check_for_card_in_hand("hunter")
         if card_loc is None:
             return
@@ -1257,17 +1379,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     ice_wizard
     if (check_for_card_in_hand("ice_wizard") is not None):
-        #print("playing ice_wizard")
+        #logger.log("playing ice_wizard")
         card_loc = check_for_card_in_hand("ice_wizard")
         if card_loc is None:
             return
@@ -1275,17 +1399,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     inferno_dragon
     if (check_for_card_in_hand("inferno_dragon") is not None):
-        #print("playing inferno_dragon")
+        #logger.log("playing inferno_dragon")
         card_loc = check_for_card_in_hand("inferno_dragon")
         if card_loc is None:
             return
@@ -1293,17 +1419,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     magic_archer
     if (check_for_card_in_hand("magic_archer") is not None):
-        #print("playing magic_archer")
+        #logger.log("playing magic_archer")
         card_loc = check_for_card_in_hand("magic_archer")
         if card_loc is None:
             return
@@ -1311,18 +1439,20 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     mother_witch
     if (check_for_card_in_hand("mother_witch") is not None):
-        #print("playing mother_witch")
+        #logger.log("playing mother_witch")
         card_loc = check_for_card_in_hand("mother_witch")
         if card_loc is None:
             return
@@ -1330,17 +1460,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     musketeer
     if (check_for_card_in_hand("musketeer") is not None):
-        #print("playing musketeer")
+        #logger.log("playing musketeer")
         card_loc = check_for_card_in_hand("musketeer")
         if card_loc is None:
             return
@@ -1348,18 +1480,20 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     night_witch
     if (check_for_card_in_hand("night_witch") is not None):
-        #print("playing night_witch")
+        #logger.log("playing night_witch")
         card_loc = check_for_card_in_hand("night_witch")
         if card_loc is None:
             return
@@ -1367,17 +1501,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     sparky
     if (check_for_card_in_hand("sparky") is not None):
-        #print("playing sparky")
+        #logger.log("playing sparky")
         card_loc = check_for_card_in_hand("sparky")
         if card_loc is None:
             return
@@ -1385,17 +1521,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     spear_goblins
     if (check_for_card_in_hand("spear_goblins") is not None):
-        #print("playing spear_goblins")
+        #logger.log("playing spear_goblins")
         card_loc = check_for_card_in_hand("spear_goblins")
         if card_loc is None:
             return
@@ -1403,17 +1541,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     three_musketeers
     if (check_for_card_in_hand("three_musketeers") is not None):
-        #print("playing three_musketeers")
+        #logger.log("playing three_musketeers")
         card_loc = check_for_card_in_hand("three_musketeers")
         if card_loc is None:
             return
@@ -1421,17 +1561,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     goblin_gang
     if (check_for_card_in_hand("goblin_gang") is not None):
-        #print("playing goblin_gang")
+        #logger.log("playing goblin_gang")
         card_loc = check_for_card_in_hand("goblin_gang")
         if card_loc is None:
             return
@@ -1439,17 +1581,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     rascals
     if (check_for_card_in_hand("rascals") is not None):
-        #print("playing rascals")
+        #logger.log("playing rascals")
         card_loc = check_for_card_in_hand("rascals")
         if card_loc is None:
             return
@@ -1457,17 +1601,19 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     zappies
     if (check_for_card_in_hand("zappies") is not None):
-        #print("playing zappies")
+        #logger.log("playing zappies")
         card_loc = check_for_card_in_hand("zappies")
         if card_loc is None:
             return
@@ -1475,39 +1621,41 @@ def fight_with_deck_list(enemy_troop_position):
         if placement_loc is None:
             placement_loc = random_placement_coord_maker()
         else:
-            if placement_loc[1]<300:
-                placement_loc[1]=400
+            if placement_loc[1] < 300:
+                placement_loc[1] = 400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 # #spawners
 #     elixer_pump
     if (check_for_card_in_hand("elixer_pump") is not None):
-        #print("playing elixer_pump")
+        #logger.log("playing elixer_pump")
         card_loc = check_for_card_in_hand("elixer_pump")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     furnace
     if (check_for_card_in_hand("furnace") is not None):
-        #print("playing furnace")
+        #logger.log("playing furnace")
         card_loc = check_for_card_in_hand("furnace")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     goblin_hut
     if (check_for_card_in_hand("goblin_hut") is not None):
-        #print("playing goblin_hut")
+        #logger.log("playing goblin_hut")
         card_loc = check_for_card_in_hand("goblin_hut")
         if card_loc is None:
             return
         card_place_spawners(card_loc)
 #     tombstone
     if (check_for_card_in_hand("tombstone") is not None):
-        #print("playing tombstone")
+        #logger.log("playing tombstone")
         card_loc = check_for_card_in_hand("tombstone")
         if card_loc is None:
             return
@@ -1515,35 +1663,35 @@ def fight_with_deck_list(enemy_troop_position):
 # #hogs
 #     balloon
     if (check_for_card_in_hand("balloon") is not None):
-        #print("playing balloon")
+        #logger.log("playing balloon")
         card_loc = check_for_card_in_hand("balloon")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     battle_ram
     if (check_for_card_in_hand("battle_ram") is not None):
-        #print("playing battle_ram")
+        #logger.log("playing battle_ram")
         card_loc = check_for_card_in_hand("battle_ram")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     hog
     if (check_for_card_in_hand("hog") is not None):
-        #print("playing hog")
+        #logger.log("playing hog")
         card_loc = check_for_card_in_hand("hog")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     royal_hogs
     if (check_for_card_in_hand("royal_hogs") is not None):
-        #print("playing royal_hogs")
+        #logger.log("playing royal_hogs")
         card_loc = check_for_card_in_hand("royal_hogs")
         if card_loc is None:
             return
         card_place_hogs(card_loc)
 #     ram_rider
     if (check_for_card_in_hand("ram_rider") is not None):
-        #print("playing ram_rider")
+        #logger.log("playing ram_rider")
         card_loc = check_for_card_in_hand("ram_rider")
         if card_loc is None:
             return
@@ -1552,33 +1700,34 @@ def fight_with_deck_list(enemy_troop_position):
 #     arrows
     card_loc_arrows = check_for_card_in_hand("arrows")
     if (card_loc_arrows is not None):
-        #print("playing arrows")
-        #click card
-        click(x=card_loc_arrows[0],y=card_loc_arrows[1])
+        #logger.log("playing arrows")
+        # click card
+        click(x=card_loc_arrows[0], y=card_loc_arrows[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=123,y=252)
-        if n==2:
-            click(x=295,y=245)
+        if n == 1:
+            click(x=123, y=252)
+        if n == 2:
+            click(x=295, y=245)
 #     clone
-    #we not gonna play clone
+    # we not gonna play clone
 #     fireball
     if (check_for_card_in_hand("fireball") is not None):
-        #print("playing fireball")
+        #logger.log("playing fireball")
         card_loc = check_for_card_in_hand("fireball")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
 #     freeze
     if (check_for_card_in_hand("freeze") is not None):
         card_loc = check_for_card_in_hand("freeze")
@@ -1587,47 +1736,51 @@ def fight_with_deck_list(enemy_troop_position):
         if enemy_troop_position is not None:
             placement_loc = enemy_troop_position
         else:
-            #print("couldnt find freeze target so wont play")
+            #logger.log("couldnt find freeze target so wont play")
             placement_loc = card_loc
-        click(x=card_loc[0],y=card_loc[1])
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.26)
-        click(x=placement_loc[0],y=placement_loc[1])
+        if placement_loc is not None:
+            click(x=placement_loc[0], y=placement_loc[1])
         return
 #     log
     if (check_for_card_in_hand("log") is not None):
-        #print("playing log")
+        #logger.log("playing log")
         card_loc = check_for_card_in_hand("log")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
         return
 #     poison
     if (check_for_card_in_hand("poison") is not None):
-        #print("playing poison")
+        #logger.log("playing poison")
         card_loc = check_for_card_in_hand("poison")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=123,y=252)
-        if n==2:
-            click(x=295,y=245)
+        if n == 1:
+            click(x=123, y=252)
+        if n == 2:
+            click(x=295, y=245)
         return
 #     rage
     if (check_for_card_in_hand("rage") is not None):
-        #print("playing rage")
+        #logger.log("playing rage")
         card_loc = check_for_card_in_hand("rage")
         if card_loc is None:
             return
@@ -1635,252 +1788,266 @@ def fight_with_deck_list(enemy_troop_position):
         return
 #     rocket
     if (check_for_card_in_hand("rocket") is not None):
-        #print("playing rocket")
+        #logger.log("playing rocket")
         card_loc = check_for_card_in_hand("rocket")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
         return
-#     zap     
+#     zap
     if (check_for_card_in_hand("zap") is not None):
-        #print("playing zap")
+        #logger.log("playing zap")
         card_loc = check_for_card_in_hand("zap")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
         return
 #     snowball
     if (check_for_card_in_hand("snowball") is not None):
-        #print("playing snowball")
+        #logger.log("playing snowball")
         card_loc = check_for_card_in_hand("snowball")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
         return
 #     tornado
     if (check_for_card_in_hand("tornado") is not None):
-        #print("playing tornado")
+        #logger.log("playing tornado")
         card_loc = check_for_card_in_hand("tornado")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=123,y=252)
-        if n==2:
-            click(x=295,y=245)
+        if n == 1:
+            click(x=123, y=252)
+        if n == 2:
+            click(x=295, y=245)
         return
 #     earthquake
     if (check_for_card_in_hand("earthquake") is not None):
-        #print("playing earthquake")
+        #logger.log("playing earthquake")
         card_loc = check_for_card_in_hand("earthquake")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=123,y=252)
-        if n==2:
-            click(x=295,y=245)
+        if n == 1:
+            click(x=123, y=252)
+        if n == 2:
+            click(x=295, y=245)
         return
 #     graveyard
     if (check_for_card_in_hand("graveyard") is not None):
-        #print("playing graveyard")
+        #logger.log("playing graveyard")
         card_loc = check_for_card_in_hand("graveyard")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
         return
 #     lightning
     if (check_for_card_in_hand("lightning") is not None):
-        #print("playing lightning")
+        #logger.log("playing lightning")
         card_loc = check_for_card_in_hand("lightning")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=123,y=252)
-        if n==2:
-            click(x=295,y=245)
+        if n == 1:
+            click(x=123, y=252)
+        if n == 2:
+            click(x=295, y=245)
         return
 #     royal_delivery
     if (check_for_card_in_hand("royal_delivery") is not None):
-        #print("playing royal_delivery")
+        #logger.log("playing royal_delivery")
         card_loc = check_for_card_in_hand("royal_delivery")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=122,y=220)
-        if n==2:
-            click(x=298,y=227)
+        if n == 1:
+            click(x=122, y=220)
+        if n == 2:
+            click(x=298, y=227)
         return
 
 # #etc
 #     mortar
     if (check_for_card_in_hand("mortar") is not None):
-        #print("playing mortar")
+        #logger.log("playing mortar")
         card_loc = check_for_card_in_hand("mortar")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 4)
-        if n==1:
-            click(x=114,y=346)
-        if n==2:
-            click(x=176,y=336)
-        if n==3:
-            click(x=298,y=336)
-        if n==4:
-            click(x=246,y=339)
+        if n == 1:
+            click(x=114, y=346)
+        if n == 2:
+            click(x=176, y=336)
+        if n == 3:
+            click(x=298, y=336)
+        if n == 4:
+            click(x=246, y=339)
         return
 #     princess
     if (check_for_card_in_hand("princess") is not None):
-        #print("playing princess")
+        #logger.log("playing princess")
         card_loc = check_for_card_in_hand("princess")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 4)
-        if n==1:
-            click(x=114,y=346)
-        if n==2:
-            click(x=176,y=336)
-        if n==3:
-            click(x=298,y=336)
-        if n==4:
-            click(x=246,y=339)
+        if n == 1:
+            click(x=114, y=346)
+        if n == 2:
+            click(x=176, y=336)
+        if n == 3:
+            click(x=298, y=336)
+        if n == 4:
+            click(x=246, y=339)
         return
 #     wall_breaker
     if (check_for_card_in_hand("wall_breaker") is not None):
-        #print("playing wall_breaker")
+        #logger.log("playing wall_breaker")
         card_loc = check_for_card_in_hand("wall_breaker")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 2)
-        if n==1:
-            click(x=212,y=333)
-        if n==2:
-            click(x=205,y=502)
+        if n == 1:
+            click(x=212, y=333)
+        if n == 2:
+            click(x=205, y=502)
         return
 #     lavahound
     if (check_for_card_in_hand("lavahound") is not None):
-        #print("playing lavahound")
+        #logger.log("playing lavahound")
         card_loc = check_for_card_in_hand("lavahound")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 4)
-        if n==1:
-            click(x=78,y=502)
-        if n==2:
-            click(x=189,y=502)
-        if n==3:
-            click(x=236,y=507)
-        if n==4:
-            click(x=355,y=497)
+        if n == 1:
+            click(x=78, y=502)
+        if n == 2:
+            click(x=189, y=502)
+        if n == 3:
+            click(x=236, y=507)
+        if n == 4:
+            click(x=355, y=497)
         return
 #     golem
     if (check_for_card_in_hand("golem") is not None):
-        #print("playing golem")
+        #logger.log("playing golem")
         card_loc = check_for_card_in_hand("golem")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 4)
-        if n==1:
-            click(x=78,y=502)
-        if n==2:
-            click(x=189,y=502)
-        if n==3:
-            click(x=236,y=507)
-        if n==4:
-            click(x=355,y=497)
+        if n == 1:
+            click(x=78, y=502)
+        if n == 2:
+            click(x=189, y=502)
+        if n == 3:
+            click(x=236, y=507)
+        if n == 4:
+            click(x=355, y=497)
         return
 #     xbow
     if (check_for_card_in_hand("xbow") is not None):
-        #print("playing xbow")
+        #logger.log("playing xbow")
         card_loc = check_for_card_in_hand("xbow")
         if card_loc is None:
             return
-        #click card
-        click(x=card_loc[0],y=card_loc[1])
+        # click card
+        if card_loc is not None:
+            click(x=card_loc[0], y=card_loc[1])
         time.sleep(0.25)
-        #click placement
+        # click placement
         n = random.randint(1, 4)
-        if n==1:
-            click(x=114,y=346)
-        if n==2:
-            click(x=176,y=336)
-        if n==3:
-            click(x=298,y=336)
-        if n==4:
-            click(x=246,y=339)
+        if n == 1:
+            click(x=114, y=346)
+        if n == 2:
+            click(x=176, y=336)
+        if n == 3:
+            click(x=298, y=336)
+        if n == 4:
+            click(x=246, y=339)
         return
 #     mirror
-    #not gonna play mirror
+    # not gonna play mirror
 # endregion
 
 # region checkdeck
@@ -1892,6 +2059,7 @@ def add_card_to_deck(deck_list, card_to_add):
             deck_pos = card_to_add
             return deck_list
     return deck_list
+
 
 def check_deck_for_zap(deck_image):
     references = [
@@ -1909,7 +2077,7 @@ def check_deck_for_zap(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found zap in deck")
+            #logger.log("Found zap in deck")
             return location
     return None
 
@@ -1930,7 +2098,7 @@ def check_deck_for_witch(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found witch in deck")
+            #logger.log("Found witch in deck")
             return location
     return None
 
@@ -1951,7 +2119,7 @@ def check_deck_for_golden_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found golden knight in deck")
+            #logger.log("Found golden knight in deck")
             return location
     return None
 
@@ -1979,7 +2147,7 @@ def check_deck_for_royal_hogs(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal hogs in deck")
+            #logger.log("Found royal hogs in deck")
             return location
     return None
 
@@ -2005,7 +2173,7 @@ def check_deck_for_royal_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal giant in deck")
+            #logger.log("Found royal giant in deck")
             return location
     return None
 
@@ -2035,7 +2203,7 @@ def check_deck_for_cannon(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found cannon in deck")
+            #logger.log("Found cannon in deck")
             return location
     return None
 
@@ -2063,7 +2231,7 @@ def check_deck_for_fireball(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found fireball in deck")
+            #logger.log("Found fireball in deck")
             return location
     return None
 
@@ -2084,7 +2252,7 @@ def check_deck_for_earthquake(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found earthquake in deck")
+            #logger.log("Found earthquake in deck")
             return location
     return None
 
@@ -2112,7 +2280,7 @@ def check_deck_for_log(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found log in deck")
+            #logger.log("Found log in deck")
             return location
     return None
 
@@ -2140,7 +2308,7 @@ def check_deck_for_baby_dragon(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found baby dragon in deck")
+            #logger.log("Found baby dragon in deck")
             return location
     return None
 
@@ -2167,7 +2335,7 @@ def check_deck_for_pekka(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found pekka in deck")
+            #logger.log("Found pekka in deck")
             return location
     return None
 
@@ -2188,7 +2356,7 @@ def check_deck_for_mother_witch(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mother witch in deck")
+            #logger.log("Found mother witch in deck")
             return location
     return None
 
@@ -2214,7 +2382,7 @@ def check_deck_for_goblin_hut(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin hut in deck")
+            #logger.log("Found goblin hut in deck")
             return location
     return None
 
@@ -2240,7 +2408,7 @@ def check_deck_for_mighty_miner(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mighty miner in deck")
+            #logger.log("Found mighty miner in deck")
             return location
     return None
 
@@ -2266,7 +2434,7 @@ def check_deck_for_fisherman(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found fisherman in deck")
+            #logger.log("Found fisherman in deck")
             return location
     return None
 
@@ -2292,7 +2460,7 @@ def check_deck_for_inferno_tower(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found inferno tower in deck")
+            #logger.log("Found inferno tower in deck")
             return location
     return None
 
@@ -2313,7 +2481,7 @@ def check_deck_for_archers(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found archers in deck")
+            #logger.log("Found archers in deck")
             return location
     return None
 
@@ -2344,7 +2512,7 @@ def check_deck_for_bats(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found bats in deck")
+            #logger.log("Found bats in deck")
             return location
     return None
 
@@ -2365,7 +2533,7 @@ def check_deck_for_tombstone(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found tombstone in deck")
+            #logger.log("Found tombstone in deck")
             return location
     return None
 
@@ -2391,7 +2559,7 @@ def check_deck_for_e_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found e giant in deck")
+            #logger.log("Found e giant in deck")
             return location
     return None
 
@@ -2422,7 +2590,7 @@ def check_deck_for_rocket(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found rocket in deck")
+            #logger.log("Found rocket in deck")
             return location
     return None
 
@@ -2453,7 +2621,7 @@ def check_deck_for_graveyard(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found graveyard in deck")
+            #logger.log("Found graveyard in deck")
             return location
     return None
 
@@ -2484,7 +2652,7 @@ def check_deck_for_healer(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found healer in deck")
+            #logger.log("Found healer in deck")
             return location
     return None
 
@@ -2505,7 +2673,7 @@ def check_deck_for_barb_barrel(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found barb barrel in deck")
+            #logger.log("Found barb barrel in deck")
             return location
     return None
 
@@ -2531,7 +2699,7 @@ def check_deck_for_archer_queen(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found archer queen in deck")
+            #logger.log("Found archer queen in deck")
             return location
     return None
 
@@ -2552,7 +2720,7 @@ def check_deck_for_e_wiz(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found e wiz in deck")
+            #logger.log("Found e wiz in deck")
             return location
     return None
 
@@ -2573,7 +2741,7 @@ def check_deck_for_battle_ram(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found battle ram in deck")
+            #logger.log("Found battle ram in deck")
             return location
     return None
 
@@ -2594,7 +2762,7 @@ def check_deck_for_spear_goblins(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found spear goblins in deck")
+            #logger.log("Found spear goblins in deck")
             return location
     return None
 
@@ -2615,7 +2783,7 @@ def check_deck_for_arrows(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found arrows in deck")
+            #logger.log("Found arrows in deck")
             return location
     return None
 
@@ -2636,7 +2804,7 @@ def check_deck_for_skeleton_army(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton army in deck")
+            #logger.log("Found skeleton army in deck")
             return location
     return None
 
@@ -2670,7 +2838,7 @@ def check_deck_for_wizard(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found wizard in deck")
+            #logger.log("Found wizard in deck")
             return location
     return None
 
@@ -2701,7 +2869,7 @@ def check_deck_for_skeleton_dragons(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton dragons in deck")
+            #logger.log("Found skeleton dragons in deck")
             return location
     return None
 
@@ -2727,7 +2895,7 @@ def check_deck_for_prince(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found prince in deck")
+            #logger.log("Found prince in deck")
             return location
     return None
 
@@ -2759,7 +2927,7 @@ def check_deck_for_goblin_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin giant in deck")
+            #logger.log("Found goblin giant in deck")
             return location
     return None
 
@@ -2785,7 +2953,7 @@ def check_deck_for_zappies(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found zappies in deck")
+            #logger.log("Found zappies in deck")
             return location
     return None
 
@@ -2815,7 +2983,7 @@ def check_deck_for_lavahound(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found lavahound in deck")
+            #logger.log("Found lavahound in deck")
             return location
     return None
 
@@ -2844,7 +3012,7 @@ def check_deck_for_lightning(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found lightning in deck")
+            #logger.log("Found lightning in deck")
             return location
     return None
 
@@ -2870,7 +3038,7 @@ def check_deck_for_executioner(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found executioner in deck")
+            #logger.log("Found executioner in deck")
             return location
     return None
 
@@ -2893,7 +3061,7 @@ def check_deck_for_goblin_drill(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin drill in deck")
+            #logger.log("Found goblin drill in deck")
             return location
     return None
 
@@ -2919,7 +3087,7 @@ def check_deck_for_rage(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found rage in deck")
+            #logger.log("Found rage in deck")
             return location
     return None
 
@@ -2947,7 +3115,7 @@ def check_deck_for_clone(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found clone in deck")
+            #logger.log("Found clone in deck")
             return location
     return None
 
@@ -2968,7 +3136,7 @@ def check_deck_for_goblin_barrel(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin barrel in deck")
+            #logger.log("Found goblin barrel in deck")
             return location
     return None
 
@@ -2998,7 +3166,7 @@ def check_deck_for_minion_hoard(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found minion hoard in deck")
+            #logger.log("Found minion hoard in deck")
             return location
     return None
 
@@ -3029,7 +3197,7 @@ def check_deck_for_barbs(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found barbs in deck")
+            #logger.log("Found barbs in deck")
             return location
     return None
 
@@ -3050,7 +3218,7 @@ def check_deck_for_tornado(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found tornado in deck")
+            #logger.log("Found tornado in deck")
             return location
     return None
 
@@ -3080,7 +3248,7 @@ def check_deck_for_skeleton_barrel(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton barrel in deck")
+            #logger.log("Found skeleton barrel in deck")
             return location
     return None
 
@@ -3101,7 +3269,7 @@ def check_deck_for_miner(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found miner in deck")
+            #logger.log("Found miner in deck")
             return location
     return None
 
@@ -3132,7 +3300,7 @@ def check_deck_for_skeletons(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeletons in deck")
+            #logger.log("Found skeletons in deck")
             return location
     return None
 
@@ -3168,7 +3336,7 @@ def check_deck_for_elite_barbs(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found elite barbs in deck")
+            #logger.log("Found elite barbs in deck")
             return location
     return None
 
@@ -3199,7 +3367,7 @@ def check_deck_for_flying_machine(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found flying machine in deck")
+            #logger.log("Found flying machine in deck")
             return location
     return None
 
@@ -3225,7 +3393,7 @@ def check_deck_for_e_dragon(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found e dragon in deck")
+            #logger.log("Found e dragon in deck")
             return location
     return None
 
@@ -3251,7 +3419,7 @@ def check_deck_for_xbow(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found xbow in deck")
+            #logger.log("Found xbow in deck")
             return location
     return None
 
@@ -3272,7 +3440,7 @@ def check_deck_for_elixer_golem(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found elixer golem in deck")
+            #logger.log("Found elixer golem in deck")
             return location
     return None
 
@@ -3298,7 +3466,7 @@ def check_deck_for_rascals(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found rascals in deck")
+            #logger.log("Found rascals in deck")
             return location
     return None
 
@@ -3328,7 +3496,7 @@ def check_deck_for_skeleton_king(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton king in deck")
+            #logger.log("Found skeleton king in deck")
             return location
     return None
 
@@ -3359,7 +3527,7 @@ def check_deck_for_balloon(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found balloon in deck")
+            #logger.log("Found balloon in deck")
             return location
     return None
 
@@ -3385,7 +3553,7 @@ def check_deck_for_sparky(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found sparky in deck")
+            #logger.log("Found sparky in deck")
             return location
     return None
 
@@ -3406,7 +3574,7 @@ def check_deck_for_golem(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found golem in deck")
+            #logger.log("Found golem in deck")
             return location
     return None
 
@@ -3427,7 +3595,7 @@ def check_deck_for_barb_hut(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found barb hut in deck")
+            #logger.log("Found barb hut in deck")
             return location
     return None
 
@@ -3453,7 +3621,7 @@ def check_deck_for_bomb_tower(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found bomb tower in deck")
+            #logger.log("Found bomb tower in deck")
             return location
     return None
 
@@ -3474,7 +3642,7 @@ def check_deck_for_mortar(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mortar in deck")
+            #logger.log("Found mortar in deck")
             return location
     return None
 
@@ -3503,7 +3671,7 @@ def check_deck_for_inferno_dragon(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found inferno dragon in deck")
+            #logger.log("Found inferno dragon in deck")
             return location
     return None
 
@@ -3524,7 +3692,7 @@ def check_deck_for_hunter(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found hunter in deck")
+            #logger.log("Found hunter in deck")
             return location
     return None
 
@@ -3552,7 +3720,7 @@ def check_deck_for_giant(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found giant in deck")
+            #logger.log("Found giant in deck")
             return location
     return None
 
@@ -3573,7 +3741,7 @@ def check_deck_for_freeze(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found freeze in deck")
+            #logger.log("Found freeze in deck")
             return location
     return None
 
@@ -3594,7 +3762,7 @@ def check_deck_for_lumberjack(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found lumberjack in deck")
+            #logger.log("Found lumberjack in deck")
             return location
     return None
 
@@ -3615,7 +3783,7 @@ def check_deck_for_bowler(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found bowler in deck")
+            #logger.log("Found bowler in deck")
             return location
     return None
 
@@ -3639,7 +3807,7 @@ def check_deck_for_dart_goblin(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found dart goblin in deck")
+            #logger.log("Found dart goblin in deck")
             return location
     return None
 
@@ -3660,7 +3828,7 @@ def check_deck_for_mini_pekka(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mini pekka in deck")
+            #logger.log("Found mini pekka in deck")
             return location
     return None
 
@@ -3689,7 +3857,7 @@ def check_deck_for_mega_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mega knight in deck")
+            #logger.log("Found mega knight in deck")
             return location
     return None
 
@@ -3710,7 +3878,7 @@ def check_deck_for_elixer_pump(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found elixer pump in deck")
+            #logger.log("Found elixer pump in deck")
             return location
     return None
 
@@ -3731,7 +3899,7 @@ def check_deck_for_giant_skeleton(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found giant skeleton in deck")
+            #logger.log("Found giant skeleton in deck")
             return location
     return None
 
@@ -3752,7 +3920,7 @@ def check_deck_for_magic_archer(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found magic archer in deck")
+            #logger.log("Found magic archer in deck")
             return location
     return None
 
@@ -3773,7 +3941,7 @@ def check_deck_for_firecracker(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found firecracker in deck")
+            #logger.log("Found firecracker in deck")
             return location
     return None
 
@@ -3794,7 +3962,7 @@ def check_deck_for_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found knight in deck")
+            #logger.log("Found knight in deck")
             return location
     return None
 
@@ -3815,7 +3983,7 @@ def check_deck_for_cannon_cart(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found cannon cart in deck")
+            #logger.log("Found cannon cart in deck")
             return location
     return None
 
@@ -3841,7 +4009,7 @@ def check_deck_for_hog(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found hog in deck")
+            #logger.log("Found hog in deck")
             return location
     return None
 
@@ -3862,7 +4030,7 @@ def check_deck_for_fire_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found fire spirit in deck")
+            #logger.log("Found fire spirit in deck")
             return location
     return None
 
@@ -3888,7 +4056,7 @@ def check_deck_for_ice_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found ice spirit in deck")
+            #logger.log("Found ice spirit in deck")
             return location
     return None
 
@@ -3917,7 +4085,7 @@ def check_deck_for_bandit(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found bandit in deck")
+            #logger.log("Found bandit in deck")
             return location
     return None
 
@@ -3943,7 +4111,7 @@ def check_deck_for_musketeer(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found musketeer in deck")
+            #logger.log("Found musketeer in deck")
             return location
     return None
 
@@ -3984,7 +4152,7 @@ def check_deck_for_furnace(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found furnace in deck")
+            #logger.log("Found furnace in deck")
             return location
     return None
 
@@ -4012,7 +4180,7 @@ def check_deck_for_snowball(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found snowball in deck")
+            #logger.log("Found snowball in deck")
             return location
     return None
 
@@ -4033,7 +4201,7 @@ def check_deck_for_royal_recruits(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal recruits in deck")
+            #logger.log("Found royal recruits in deck")
             return location
     return None
 
@@ -4062,7 +4230,7 @@ def check_deck_for_dark_knight(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found dark knight in deck")
+            #logger.log("Found dark knight in deck")
             return location
     return None
 
@@ -4083,7 +4251,7 @@ def check_deck_for_valk(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found valk in deck")
+            #logger.log("Found valk in deck")
             return location
     return None
 
@@ -4104,7 +4272,7 @@ def check_deck_for_goblin_gang(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin gang in deck")
+            #logger.log("Found goblin gang in deck")
             return location
     return None
 
@@ -4125,7 +4293,7 @@ def check_deck_for_tesla(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found tesla in deck")
+            #logger.log("Found tesla in deck")
             return location
     return None
 
@@ -4146,7 +4314,7 @@ def check_deck_for_royal_ghost(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal ghost in deck")
+            #logger.log("Found royal ghost in deck")
             return location
     return None
 
@@ -4173,7 +4341,7 @@ def check_deck_for_bomber(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found bomber in deck")
+            #logger.log("Found bomber in deck")
             return location
     return None
 
@@ -4194,7 +4362,7 @@ def check_deck_for_ram_rider(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found ram rider in deck")
+            #logger.log("Found ram rider in deck")
             return location
     return None
 
@@ -4221,7 +4389,7 @@ def check_deck_for_mirror(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mirror in deck")
+            #logger.log("Found mirror in deck")
             return location
     return None
 
@@ -4242,7 +4410,7 @@ def check_deck_for_poison(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found poison in deck")
+            #logger.log("Found poison in deck")
             return location
     return None
 
@@ -4263,7 +4431,7 @@ def check_deck_for_royal_delivery(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal delivery in deck")
+            #logger.log("Found royal delivery in deck")
             return location
     return None
 
@@ -4284,7 +4452,7 @@ def check_deck_for_heal_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found heal spirit in deck")
+            #logger.log("Found heal spirit in deck")
             return location
     return None
 
@@ -4305,7 +4473,7 @@ def check_deck_for_ice_golem(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found ice golem in deck")
+            #logger.log("Found ice golem in deck")
             return location
     return None
 
@@ -4331,7 +4499,7 @@ def check_deck_for_wall_breaker(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found wall breaker in deck")
+            #logger.log("Found wall breaker in deck")
             return location
     return None
 
@@ -4356,7 +4524,7 @@ def check_deck_for_guards(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found guards in deck")
+            #logger.log("Found guards in deck")
             return location
     return None
 
@@ -4377,7 +4545,7 @@ def check_deck_for_princess(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found princess in deck")
+            #logger.log("Found princess in deck")
             return location
     return None
 
@@ -4397,7 +4565,7 @@ def check_deck_for_night_witch(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found night witch in deck")
+            #logger.log("Found night witch in deck")
             return location
     return None
 
@@ -4423,7 +4591,7 @@ def check_deck_for_e_spirit(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found e spirit in deck")
+            #logger.log("Found e spirit in deck")
             return location
     return None
 
@@ -4444,7 +4612,7 @@ def check_deck_for_ice_wizard(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found ice wizard in deck")
+            #logger.log("Found ice wizard in deck")
             return location
     return None
 
@@ -4465,7 +4633,7 @@ def check_deck_for_minions(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found minions in deck")
+            #logger.log("Found minions in deck")
             return location
     return None
 
@@ -4491,7 +4659,7 @@ def check_deck_for_goblins(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblins in deck")
+            #logger.log("Found goblins in deck")
             return location
     return None
 
@@ -4512,7 +4680,7 @@ def check_deck_for_mega_minion(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found mega minion in deck")
+            #logger.log("Found mega minion in deck")
             return location
     return None
 
@@ -4540,7 +4708,7 @@ def check_deck_for_three_musketeers(deck_image):
     )
     for location in locations:
         if location is not None:
-            #print("Found three musketeers in deck")
+            #logger.log("Found three musketeers in deck")
             return location
     return None
 
@@ -4560,6 +4728,24 @@ def find_all_cards(deck_screenshot, current_deck):
 def check_if_card_in_deck(deck_list, card):
     return card in deck_list
 
+
+def check_deck():
+    # get to deck tab
+    click(115, 634)
+    time.sleep(2)
+    click(30, 110)
+    time.sleep(2)
+    # screenshot deck region
+    #deck_image = screenshot()
+    deck_image = screenshot(region=(24, 203, 407, 324))
+    # check for all cards
+    current_deck = ["empty"]*8
+    current_deck = find_all_cards(deck_image, current_deck)
+    time.sleep(2)
+    click(245, 640)
+    time.sleep(2)
+    return current_deck
+
 # region hand card checks
 
 
@@ -4575,11 +4761,9 @@ def check_hand_for_rogal_hogs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found rogal_hogs in hand")
+            #logger.log("Found rogal_hogs in hand")
             return location
     return None
-
-
 
 
 def check_hand_for_mother_witch(hand_screenshot):
@@ -4594,7 +4778,7 @@ def check_hand_for_mother_witch(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mother_witch in hand")
+            #logger.log("Found mother_witch in hand")
             return location
     return None
 
@@ -4611,7 +4795,7 @@ def check_hand_for_e_dragon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found e_dragon in hand")
+            #logger.log("Found e_dragon in hand")
             return location
     return None
 
@@ -4628,10 +4812,9 @@ def check_hand_for_skeletons(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeletons in hand")
+            #logger.log("Found skeletons in hand")
             return location
     return None
-
 
 
 def check_hand_for_ice_spirit(hand_screenshot):
@@ -4646,7 +4829,7 @@ def check_hand_for_ice_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found ice spirit in hand")
+            #logger.log("Found ice spirit in hand")
             return location
     return None
 
@@ -4663,7 +4846,7 @@ def check_hand_for_fire_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found fire spirit in hand")
+            #logger.log("Found fire spirit in hand")
             return location
     return None
 
@@ -4680,9 +4863,10 @@ def check_hand_for_e_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found e spirit in hand")
+            #logger.log("Found e spirit in hand")
             return location
     return None
+
 
 def check_hand_for_e_giant(hand_screenshot):
     references = [
@@ -4696,7 +4880,7 @@ def check_hand_for_e_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found e_giant in hand")
+            #logger.log("Found e_giant in hand")
             return location
     return None
 
@@ -4713,7 +4897,7 @@ def check_hand_for_mirror(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mirror in hand")
+            #logger.log("Found mirror in hand")
             return location
     return None
 
@@ -4730,9 +4914,10 @@ def check_hand_for_heal_spirit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found heal spirit in hand")
+            #logger.log("Found heal spirit in hand")
             return location
     return None
+
 
 def check_hand_for_healer(hand_screenshot):
     references = [
@@ -4746,9 +4931,10 @@ def check_hand_for_healer(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found healer in hand")
+            #logger.log("Found healer in hand")
             return location
     return None
+
 
 def check_hand_for_goblins(hand_screenshot):
     references = [
@@ -4762,7 +4948,7 @@ def check_hand_for_goblins(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblins in hand")
+            #logger.log("Found goblins in hand")
             return location
     return None
 
@@ -4779,7 +4965,7 @@ def check_hand_for_bomber(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found bomber in hand")
+            #logger.log("Found bomber in hand")
             return location
     return None
 
@@ -4796,7 +4982,7 @@ def check_hand_for_spear_goblins(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found spear goblins in hand")
+            #logger.log("Found spear goblins in hand")
             return location
     return None
 
@@ -4813,7 +4999,7 @@ def check_hand_for_ice_golem(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found ice golem in hand")
+            #logger.log("Found ice golem in hand")
             return location
     return None
 
@@ -4830,7 +5016,7 @@ def check_hand_for_bats(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found bats in hand")
+            #logger.log("Found bats in hand")
             return location
     return None
 
@@ -4847,7 +5033,7 @@ def check_hand_for_wall_breaker(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found wall breaker in hand")
+            #logger.log("Found wall breaker in hand")
             return location
     return None
 
@@ -4864,7 +5050,7 @@ def check_hand_for_rage(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found rage in hand")
+            #logger.log("Found rage in hand")
             return location
     return None
 
@@ -4881,7 +5067,7 @@ def check_hand_for_zap(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found zap in hand")
+            #logger.log("Found zap in hand")
             return location
     return None
 
@@ -4898,7 +5084,7 @@ def check_hand_for_log(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found log in hand")
+            #logger.log("Found log in hand")
             return location
     return None
 
@@ -4915,7 +5101,7 @@ def check_hand_for_barb_barrel(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found barb barrel in hand")
+            #logger.log("Found barb barrel in hand")
             return location
     return None
 
@@ -4932,7 +5118,7 @@ def check_hand_for_snowball(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found snowball in hand")
+            #logger.log("Found snowball in hand")
             return location
     return None
 
@@ -4949,7 +5135,7 @@ def check_hand_for_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found knight in hand")
+            #logger.log("Found knight in hand")
             return location
     return None
 
@@ -4966,7 +5152,7 @@ def check_hand_for_archers(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found archers in hand")
+            #logger.log("Found archers in hand")
             return location
     return None
 
@@ -4983,9 +5169,10 @@ def check_hand_for_minions(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found minions in hand")
+            #logger.log("Found minions in hand")
             return location
     return None
+
 
 def check_hand_for_minion_hoard(hand_screenshot):
     references = [
@@ -4999,7 +5186,7 @@ def check_hand_for_minion_hoard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found minion_hoard in hand")
+            #logger.log("Found minion_hoard in hand")
             return location
     return None
 
@@ -5016,7 +5203,7 @@ def check_hand_for_skeleton_army(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton army in hand")
+            #logger.log("Found skeleton army in hand")
             return location
     return None
 
@@ -5033,7 +5220,7 @@ def check_hand_for_ice_wizard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found ice wizard in hand")
+            #logger.log("Found ice wizard in hand")
             return location
     return None
 
@@ -5050,7 +5237,7 @@ def check_hand_for_guards(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found guards in hand")
+            #logger.log("Found guards in hand")
             return location
     return None
 
@@ -5067,9 +5254,10 @@ def check_hand_for_princess(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found princess in hand")
+            #logger.log("Found princess in hand")
             return location
     return None
+
 
 def check_hand_for_prince(hand_screenshot):
     references = [
@@ -5083,7 +5271,7 @@ def check_hand_for_prince(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found prince in hand")
+            #logger.log("Found prince in hand")
             return location
     return None
 
@@ -5100,7 +5288,7 @@ def check_hand_for_miner(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found miner in hand")
+            #logger.log("Found miner in hand")
             return location
     return None
 
@@ -5117,7 +5305,7 @@ def check_hand_for_mega_minion(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mega minion in hand")
+            #logger.log("Found mega minion in hand")
             return location
     return None
 
@@ -5134,7 +5322,7 @@ def check_hand_for_dart_goblin(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found dart goblin in hand")
+            #logger.log("Found dart goblin in hand")
             return location
     return None
 
@@ -5151,7 +5339,7 @@ def check_hand_for_goblin_gang(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin gang in hand")
+            #logger.log("Found goblin gang in hand")
             return location
     return None
 
@@ -5168,7 +5356,7 @@ def check_hand_for_bandit(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found bandit in hand")
+            #logger.log("Found bandit in hand")
             return location
     return None
 
@@ -5185,7 +5373,7 @@ def check_hand_for_royal_ghost(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal ghost in hand")
+            #logger.log("Found royal ghost in hand")
             return location
     return None
 
@@ -5202,7 +5390,7 @@ def check_hand_for_skeleton_barrel(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton barrel in hand")
+            #logger.log("Found skeleton barrel in hand")
             return location
     return None
 
@@ -5219,7 +5407,7 @@ def check_hand_for_fisherman(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found fisherman in hand")
+            #logger.log("Found fisherman in hand")
             return location
     return None
 
@@ -5236,7 +5424,7 @@ def check_hand_for_firecracker(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found firecracker in hand")
+            #logger.log("Found firecracker in hand")
             return location
     return None
 
@@ -5253,7 +5441,7 @@ def check_hand_for_elixer_golem(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found elixer golem in hand")
+            #logger.log("Found elixer golem in hand")
             return location
     return None
 
@@ -5270,7 +5458,7 @@ def check_hand_for_cannon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found cannon in hand")
+            #logger.log("Found cannon in hand")
             return location
     return None
 
@@ -5287,7 +5475,7 @@ def check_hand_for_tombstone(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found tombstone in hand")
+            #logger.log("Found tombstone in hand")
             return location
     return None
 
@@ -5304,7 +5492,7 @@ def check_hand_for_arrows(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found arrows in hand")
+            #logger.log("Found arrows in hand")
             return location
     return None
 
@@ -5321,7 +5509,7 @@ def check_hand_for_goblin_barrel(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin barrel in hand")
+            #logger.log("Found goblin barrel in hand")
             return location
     return None
 
@@ -5338,7 +5526,7 @@ def check_hand_for_tornado(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found tornado in hand")
+            #logger.log("Found tornado in hand")
             return location
     return None
 
@@ -5355,7 +5543,7 @@ def check_hand_for_clone(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found clone in hand")
+            #logger.log("Found clone in hand")
             return location
     return None
 
@@ -5372,7 +5560,7 @@ def check_hand_for_earthquake(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found earthquake in hand")
+            #logger.log("Found earthquake in hand")
             return location
     return None
 
@@ -5389,7 +5577,7 @@ def check_hand_for_royal_delivery(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal delivery in hand")
+            #logger.log("Found royal delivery in hand")
             return location
     return None
 
@@ -5406,7 +5594,7 @@ def check_hand_for_valk(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found valk in hand")
+            #logger.log("Found valk in hand")
             return location
     return None
 
@@ -5423,7 +5611,7 @@ def check_hand_for_musketeer(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found musketeer in hand")
+            #logger.log("Found musketeer in hand")
             return location
     return None
 
@@ -5440,7 +5628,7 @@ def check_hand_for_baby_dragon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found baby dragon in hand")
+            #logger.log("Found baby dragon in hand")
             return location
     return None
 
@@ -5457,7 +5645,7 @@ def check_hand_for_mini_pekka(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mini pekka in hand")
+            #logger.log("Found mini pekka in hand")
             return location
     return None
 
@@ -5474,7 +5662,7 @@ def check_hand_for_hog(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found hog in hand")
+            #logger.log("Found hog in hand")
             return location
     return None
 
@@ -5491,7 +5679,7 @@ def check_hand_for_dark_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found dark knight in hand")
+            #logger.log("Found dark knight in hand")
             return location
     return None
 
@@ -5508,7 +5696,7 @@ def check_hand_for_lumberjack(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found lumberjack in hand")
+            #logger.log("Found lumberjack in hand")
             return location
     return None
 
@@ -5525,7 +5713,7 @@ def check_hand_for_battle_ram(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found battle ram in hand")
+            #logger.log("Found battle ram in hand")
             return location
     return None
 
@@ -5542,7 +5730,7 @@ def check_hand_for_inferno_dragon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found inferno dragon in hand")
+            #logger.log("Found inferno dragon in hand")
             return location
     return None
 
@@ -5559,7 +5747,7 @@ def check_hand_for_e_wiz(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found e wiz in hand")
+            #logger.log("Found e wiz in hand")
             return location
     return None
 
@@ -5576,7 +5764,7 @@ def check_hand_for_hunter(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found hunter in hand")
+            #logger.log("Found hunter in hand")
             return location
     return None
 
@@ -5593,7 +5781,7 @@ def check_hand_for_zappies(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found zappies in hand")
+            #logger.log("Found zappies in hand")
             return location
     return None
 
@@ -5610,7 +5798,7 @@ def check_hand_for_magic_archer(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found magic archer in hand")
+            #logger.log("Found magic archer in hand")
             return location
     return None
 
@@ -5627,7 +5815,7 @@ def check_hand_for_mighty_miner(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mighty miner in hand")
+            #logger.log("Found mighty miner in hand")
             return location
     return None
 
@@ -5644,7 +5832,7 @@ def check_hand_for_skeleton_king(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton king in hand")
+            #logger.log("Found skeleton king in hand")
             return location
     return None
 
@@ -5665,7 +5853,7 @@ def check_hand_for_golden_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found golden knight in hand")
+            #logger.log("Found golden knight in hand")
             return location
     return None
 
@@ -5682,7 +5870,7 @@ def check_hand_for_mortar(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mortar in hand")
+            #logger.log("Found mortar in hand")
             return location
     return None
 
@@ -5699,7 +5887,7 @@ def check_hand_for_bomb_tower(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found bomb tower in hand")
+            #logger.log("Found bomb tower in hand")
             return location
     return None
 
@@ -5716,7 +5904,7 @@ def check_hand_for_tesla(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found tesla in hand")
+            #logger.log("Found tesla in hand")
             return location
     return None
 
@@ -5733,7 +5921,7 @@ def check_hand_for_furnace(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found furnace in hand")
+            #logger.log("Found furnace in hand")
             return location
     return None
 
@@ -5750,7 +5938,7 @@ def check_hand_for_goblin_cage(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin cage in hand")
+            #logger.log("Found goblin cage in hand")
             return location
     return None
 
@@ -5774,7 +5962,7 @@ def check_hand_for_goblin_drill(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin drill in hand")
+            #logger.log("Found goblin drill in hand")
             return location
     return None
 
@@ -5791,7 +5979,7 @@ def check_hand_for_fireball(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found fireball in hand")
+            #logger.log("Found fireball in hand")
             return location
     return None
 
@@ -5805,8 +5993,8 @@ def check_hand_for_freeze(hand_screenshot):
         "freeze_4.png",
         "freeze_5.png",
         "freeze_6.png",
-        
-        
+
+
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -5816,7 +6004,7 @@ def check_hand_for_freeze(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found freeze in hand")
+            #logger.log("Found freeze in hand")
             return location
     return None
 
@@ -5833,7 +6021,7 @@ def check_hand_for_poison(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found poison in hand")
+            #logger.log("Found poison in hand")
             return location
     return None
 
@@ -5850,7 +6038,7 @@ def check_hand_for_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found giant in hand")
+            #logger.log("Found giant in hand")
             return location
     return None
 
@@ -5867,7 +6055,7 @@ def check_hand_for_balloon(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found balloon in hand")
+            #logger.log("Found balloon in hand")
             return location
     return None
 
@@ -5884,7 +6072,7 @@ def check_hand_for_barbs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found barbs in hand")
+            #logger.log("Found barbs in hand")
             return location
     return None
 
@@ -5901,7 +6089,7 @@ def check_hand_for_bowler(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found bowler in hand")
+            #logger.log("Found bowler in hand")
             return location
     return None
 
@@ -5918,7 +6106,7 @@ def check_hand_for_executioner(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found executioner in hand")
+            #logger.log("Found executioner in hand")
             return location
     return None
 
@@ -5935,7 +6123,7 @@ def check_hand_for_ram_rider(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found ram rider in hand")
+            #logger.log("Found ram rider in hand")
             return location
     return None
 
@@ -5952,7 +6140,7 @@ def check_hand_for_rascals(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found rascals in hand")
+            #logger.log("Found rascals in hand")
             return location
     return None
 
@@ -5969,7 +6157,7 @@ def check_hand_for_cannon_cart(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found cannon cart in hand")
+            #logger.log("Found cannon cart in hand")
             return location
     return None
 
@@ -5986,7 +6174,7 @@ def check_hand_for_royal_hogs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal hogs in hand")
+            #logger.log("Found royal hogs in hand")
             return location
     return None
 
@@ -5997,7 +6185,7 @@ def check_hand_for_archer_queen(hand_screenshot):
         "archer_queen_1.png",
         "archer_queen_2.png",
         "archer_queen_3.png",
-        "archer_queen_4.png",   
+        "archer_queen_4.png",
     ]
     locations = find_references(
         screenshot=hand_screenshot,
@@ -6007,7 +6195,7 @@ def check_hand_for_archer_queen(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found archer queen in hand")
+            #logger.log("Found archer queen in hand")
             return location
     return None
 
@@ -6024,7 +6212,7 @@ def check_hand_for_goblin_hut(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin hut in hand")
+            #logger.log("Found goblin hut in hand")
             return location
     return None
 
@@ -6041,7 +6229,7 @@ def check_hand_for_inferno_tower(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found inferno tower in hand")
+            #logger.log("Found inferno tower in hand")
             return location
     return None
 
@@ -6058,7 +6246,7 @@ def check_hand_for_graveyard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found graveyard in hand")
+            #logger.log("Found graveyard in hand")
             return location
     return None
 
@@ -6075,7 +6263,7 @@ def check_hand_for_giant_skeleton(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found giant skeleton in hand")
+            #logger.log("Found giant skeleton in hand")
             return location
     return None
 
@@ -6092,7 +6280,7 @@ def check_hand_for_royal_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal giant in hand")
+            #logger.log("Found royal giant in hand")
             return location
     return None
 
@@ -6109,7 +6297,7 @@ def check_hand_for_sparky(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found sparky in hand")
+            #logger.log("Found sparky in hand")
             return location
     return None
 
@@ -6126,7 +6314,7 @@ def check_hand_for_elite_barbs(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found elite barbs in hand")
+            #logger.log("Found elite barbs in hand")
             return location
     return None
 
@@ -6143,7 +6331,7 @@ def check_hand_for_goblin_giant(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found goblin giant in hand")
+            #logger.log("Found goblin giant in hand")
             return location
     return None
 
@@ -6160,7 +6348,7 @@ def check_hand_for_elixer_pump(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found elixer pump in hand")
+            #logger.log("Found elixer pump in hand")
             return location
     return None
 
@@ -6177,7 +6365,7 @@ def check_hand_for_xbow(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found xbow in hand")
+            #logger.log("Found xbow in hand")
             return location
     return None
 
@@ -6194,7 +6382,7 @@ def check_hand_for_lightning(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found lightning in hand")
+            #logger.log("Found lightning in hand")
             return location
     return None
 
@@ -6211,7 +6399,7 @@ def check_hand_for_pekka(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found pekka in hand")
+            #logger.log("Found pekka in hand")
             return location
     return None
 
@@ -6228,7 +6416,7 @@ def check_hand_for_lavahound(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found lavahound in hand")
+            #logger.log("Found lavahound in hand")
             return location
     return None
 
@@ -6248,7 +6436,7 @@ def check_hand_for_royal_guards(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found royal guards in hand")
+            #logger.log("Found royal guards in hand")
             return location
     return None
 
@@ -6265,7 +6453,7 @@ def check_hand_for_mega_knight(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found mega knight in hand")
+            #logger.log("Found mega knight in hand")
             return location
     return None
 
@@ -6282,7 +6470,7 @@ def check_hand_for_barb_hut(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found barb hut in hand")
+            #logger.log("Found barb hut in hand")
             return location
     return None
 
@@ -6299,7 +6487,7 @@ def check_hand_for_golem(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found golem in hand")
+            #logger.log("Found golem in hand")
             return location
     return None
 
@@ -6316,7 +6504,7 @@ def check_hand_for_three_musketeers(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found three musketeers in hand")
+            #logger.log("Found three musketeers in hand")
             return location
     return None
 
@@ -6333,9 +6521,10 @@ def check_hand_for_skeleton_dragons(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found skeleton_dragons in hand")
+            #logger.log("Found skeleton_dragons in hand")
             return location
     return None
+
 
 def check_hand_for_flying_machine(hand_screenshot):
     references = [
@@ -6353,7 +6542,7 @@ def check_hand_for_flying_machine(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found flying_machine in hand")
+            #logger.log("Found flying_machine in hand")
             return location
     return None
 
@@ -6370,7 +6559,7 @@ def check_hand_for_night_witch(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found night_witch in hand")
+            #logger.log("Found night_witch in hand")
             return location
     return None
 
@@ -6387,9 +6576,10 @@ def check_hand_for_witch(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found witch in hand")
+            #logger.log("Found witch in hand")
             return location
     return None
+
 
 def check_hand_for_wizard(hand_screenshot):
     references = [
@@ -6403,9 +6593,10 @@ def check_hand_for_wizard(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found wizard in hand")
+            #logger.log("Found wizard in hand")
             return location
     return None
+
 
 def check_hand_for_rocket(hand_screenshot):
     references = [
@@ -6419,23 +6610,15 @@ def check_hand_for_rocket(hand_screenshot):
     )
     for location in locations:
         if location is not None:
-            #print("Found rocket in hand")
+            #logger.log("Found rocket in hand")
             return location
     return None
 
 # endregion
-
-def check_for_card_in_hand(card_name):
-    hand_screenshot = pyautogui.screenshot(region=(0,0, 460, 680))
-    hand_checks = dict((name_function_pair[0], name_function_pair[1])for name_function_pair in getmembers(
-        sys.modules[__name__], isfunction) if name_function_pair[0].startswith("check_hand_for"))
-    location = hand_checks[f"check_hand_for_{card_name}"](hand_screenshot)
-    if location is not None:
-        return [location[1], location[0]]
-    return None
-
 # region deck repo screenshots
 # archer_queen
+
+
 def check_for_card_in_deck_repo_archer_queen():
     references = [
         "archer_queen.png",
@@ -6452,6 +6635,8 @@ def check_for_card_in_deck_repo_archer_queen():
     return None
 
 # archers
+
+
 def check_for_card_in_deck_repo_archers():
     references = [
         "archers.png",
@@ -6468,6 +6653,8 @@ def check_for_card_in_deck_repo_archers():
     return None
 
 # arrows
+
+
 def check_for_card_in_deck_repo_arrows():
     references = [
         "arrows.png",
@@ -6484,6 +6671,8 @@ def check_for_card_in_deck_repo_arrows():
     return None
 
 # baby_dragon
+
+
 def check_for_card_in_deck_repo_baby_dragon():
     references = [
         "baby_dragon.png",
@@ -6500,6 +6689,8 @@ def check_for_card_in_deck_repo_baby_dragon():
     return None
 
 # balloon
+
+
 def check_for_card_in_deck_repo_balloon():
     references = [
         "balloon.png",
@@ -6516,6 +6707,8 @@ def check_for_card_in_deck_repo_balloon():
     return None
 
 # bandit
+
+
 def check_for_card_in_deck_repo_bandit():
     references = [
         "bandit.png",
@@ -6532,6 +6725,8 @@ def check_for_card_in_deck_repo_bandit():
     return None
 
 # barb_barrel
+
+
 def check_for_card_in_deck_repo_barb_barrel():
     references = [
         "barb_barrel.png",
@@ -6548,6 +6743,8 @@ def check_for_card_in_deck_repo_barb_barrel():
     return None
 
 # barb_hut
+
+
 def check_for_card_in_deck_repo_barb_hut():
     references = [
         "barb_hut.png",
@@ -6564,6 +6761,8 @@ def check_for_card_in_deck_repo_barb_hut():
     return None
 
 # barbs
+
+
 def check_for_card_in_deck_repo_barbs():
     references = [
         "barbs.png",
@@ -6580,6 +6779,8 @@ def check_for_card_in_deck_repo_barbs():
     return None
 
 # bats
+
+
 def check_for_card_in_deck_repo_bats():
     references = [
         "bats.png",
@@ -6596,6 +6797,8 @@ def check_for_card_in_deck_repo_bats():
     return None
 
 # battle_ram
+
+
 def check_for_card_in_deck_repo_battle_ram():
     references = [
         "battle_ram.png",
@@ -6612,6 +6815,8 @@ def check_for_card_in_deck_repo_battle_ram():
     return None
 
 # bomb_tower
+
+
 def check_for_card_in_deck_repo_bomb_tower():
     references = [
         "bomb_tower.png",
@@ -6628,6 +6833,8 @@ def check_for_card_in_deck_repo_bomb_tower():
     return None
 
 # bomber
+
+
 def check_for_card_in_deck_repo_bomber():
     references = [
         "bomber.png",
@@ -6644,6 +6851,8 @@ def check_for_card_in_deck_repo_bomber():
     return None
 
 # bowler
+
+
 def check_for_card_in_deck_repo_bowler():
     references = [
         "bowler.png",
@@ -6660,6 +6869,8 @@ def check_for_card_in_deck_repo_bowler():
     return None
 
 # cannon
+
+
 def check_for_card_in_deck_repo_cannon():
     references = [
         "cannon.png",
@@ -6676,6 +6887,8 @@ def check_for_card_in_deck_repo_cannon():
     return None
 
 # cannon_cart
+
+
 def check_for_card_in_deck_repo_cannon_cart():
     references = [
         "cannon_cart.png",
@@ -6692,6 +6905,8 @@ def check_for_card_in_deck_repo_cannon_cart():
     return None
 
 # clone
+
+
 def check_for_card_in_deck_repo_clone():
     references = [
         "clone.png",
@@ -6708,6 +6923,8 @@ def check_for_card_in_deck_repo_clone():
     return None
 
 # dark_knight
+
+
 def check_for_card_in_deck_repo_dark_knight():
     references = [
         "dark_knight.png",
@@ -6724,6 +6941,8 @@ def check_for_card_in_deck_repo_dark_knight():
     return None
 
 # dart_goblin
+
+
 def check_for_card_in_deck_repo_dart_goblin():
     references = [
         "dart_goblin.png",
@@ -6740,6 +6959,8 @@ def check_for_card_in_deck_repo_dart_goblin():
     return None
 
 # e_dragon
+
+
 def check_for_card_in_deck_repo_e_dragon():
     references = [
         "e_dragon.png",
@@ -6756,6 +6977,8 @@ def check_for_card_in_deck_repo_e_dragon():
     return None
 
 # e_giant
+
+
 def check_for_card_in_deck_repo_e_giant():
     references = [
         "e_giant.png",
@@ -6772,6 +6995,8 @@ def check_for_card_in_deck_repo_e_giant():
     return None
 
 # e_spirit
+
+
 def check_for_card_in_deck_repo_e_spirit():
     references = [
         "e_spirit.png",
@@ -6788,6 +7013,8 @@ def check_for_card_in_deck_repo_e_spirit():
     return None
 
 # e_wiz
+
+
 def check_for_card_in_deck_repo_e_wiz():
     references = [
         "e_wiz.png",
@@ -6804,6 +7031,8 @@ def check_for_card_in_deck_repo_e_wiz():
     return None
 
 # earthquake
+
+
 def check_for_card_in_deck_repo_earthquake():
     references = [
         "earthquake.png",
@@ -6820,6 +7049,8 @@ def check_for_card_in_deck_repo_earthquake():
     return None
 
 # elite_barbs
+
+
 def check_for_card_in_deck_repo_elite_barbs():
     references = [
         "elite_barbs.png",
@@ -6836,6 +7067,8 @@ def check_for_card_in_deck_repo_elite_barbs():
     return None
 
 # elixer_golem
+
+
 def check_for_card_in_deck_repo_elixer_golem():
     references = [
         "elixer_golem.png",
@@ -6852,6 +7085,8 @@ def check_for_card_in_deck_repo_elixer_golem():
     return None
 
 # elixer_pump
+
+
 def check_for_card_in_deck_repo_elixer_pump():
     references = [
         "elixer_pump.png",
@@ -6868,6 +7103,8 @@ def check_for_card_in_deck_repo_elixer_pump():
     return None
 
 # executioner
+
+
 def check_for_card_in_deck_repo_executioner():
     references = [
         "executioner.png",
@@ -6884,6 +7121,8 @@ def check_for_card_in_deck_repo_executioner():
     return None
 
 # fire_spirit
+
+
 def check_for_card_in_deck_repo_fire_spirit():
     references = [
         "fire_spirit.png",
@@ -6900,6 +7139,8 @@ def check_for_card_in_deck_repo_fire_spirit():
     return None
 
 # fireball
+
+
 def check_for_card_in_deck_repo_fireball():
     references = [
         "fireball.png",
@@ -6916,6 +7157,8 @@ def check_for_card_in_deck_repo_fireball():
     return None
 
 # fisherman
+
+
 def check_for_card_in_deck_repo_fisherman():
     references = [
         "fisherman.png",
@@ -6932,6 +7175,8 @@ def check_for_card_in_deck_repo_fisherman():
     return None
 
 # firecracker
+
+
 def check_for_card_in_deck_repo_firecracker():
     references = [
         "firecracker.png",
@@ -6948,6 +7193,8 @@ def check_for_card_in_deck_repo_firecracker():
     return None
 
 # flying_machine
+
+
 def check_for_card_in_deck_repo_flying_machine():
     references = [
         "flying_machine.png",
@@ -6964,6 +7211,8 @@ def check_for_card_in_deck_repo_flying_machine():
     return None
 
 # freeze
+
+
 def check_for_card_in_deck_repo_freeze():
     references = [
         "freeze.png",
@@ -6980,6 +7229,8 @@ def check_for_card_in_deck_repo_freeze():
     return None
 
 # furnace
+
+
 def check_for_card_in_deck_repo_furnace():
     references = [
         "furnace.png",
@@ -6996,6 +7247,8 @@ def check_for_card_in_deck_repo_furnace():
     return None
 
 # giant
+
+
 def check_for_card_in_deck_repo_giant():
     references = [
         "giant.png",
@@ -7012,6 +7265,8 @@ def check_for_card_in_deck_repo_giant():
     return None
 
 # giant_skeleton
+
+
 def check_for_card_in_deck_repo_giant_skeleton():
     references = [
         "giant_skeleton.png",
@@ -7028,6 +7283,8 @@ def check_for_card_in_deck_repo_giant_skeleton():
     return None
 
 # goblin_barrel
+
+
 def check_for_card_in_deck_repo_goblin_barrel():
     references = [
         "goblin_barrel.png",
@@ -7044,6 +7301,8 @@ def check_for_card_in_deck_repo_goblin_barrel():
     return None
 
 # goblin_cage
+
+
 def check_for_card_in_deck_repo_goblin_cage():
     references = [
         "goblin_cage.png",
@@ -7060,6 +7319,8 @@ def check_for_card_in_deck_repo_goblin_cage():
     return None
 
 # goblin_drill
+
+
 def check_for_card_in_deck_repo_goblin_drill():
     references = [
         "goblin_drill.png",
@@ -7076,6 +7337,8 @@ def check_for_card_in_deck_repo_goblin_drill():
     return None
 
 # goblin_gang
+
+
 def check_for_card_in_deck_repo_goblin_gang():
     references = [
         "goblin_gang.png",
@@ -7092,6 +7355,8 @@ def check_for_card_in_deck_repo_goblin_gang():
     return None
 
 # goblin_giant
+
+
 def check_for_card_in_deck_repo_goblin_giant():
     references = [
         "goblin_giant.png",
@@ -7108,6 +7373,8 @@ def check_for_card_in_deck_repo_goblin_giant():
     return None
 
 # goblin_hut
+
+
 def check_for_card_in_deck_repo_goblin_hut():
     references = [
         "goblin_hut.png",
@@ -7124,6 +7391,8 @@ def check_for_card_in_deck_repo_goblin_hut():
     return None
 
 # goblins
+
+
 def check_for_card_in_deck_repo_goblins():
     references = [
         "goblins.png",
@@ -7140,6 +7409,8 @@ def check_for_card_in_deck_repo_goblins():
     return None
 
 # golden_knight
+
+
 def check_for_card_in_deck_repo_golden_knight():
     references = [
         "golden_knight.png",
@@ -7156,6 +7427,8 @@ def check_for_card_in_deck_repo_golden_knight():
     return None
 
 # golem
+
+
 def check_for_card_in_deck_repo_golem():
     references = [
         "golem.png",
@@ -7172,6 +7445,8 @@ def check_for_card_in_deck_repo_golem():
     return None
 
 # graveyard
+
+
 def check_for_card_in_deck_repo_graveyard():
     references = [
         "graveyard.png",
@@ -7188,6 +7463,8 @@ def check_for_card_in_deck_repo_graveyard():
     return None
 
 # guards
+
+
 def check_for_card_in_deck_repo_guards():
     references = [
         "guards.png",
@@ -7204,6 +7481,8 @@ def check_for_card_in_deck_repo_guards():
     return None
 
 # heal_spirit
+
+
 def check_for_card_in_deck_repo_heal_spirit():
     references = [
         "heal_spirit.png",
@@ -7220,6 +7499,8 @@ def check_for_card_in_deck_repo_heal_spirit():
     return None
 
 # healer
+
+
 def check_for_card_in_deck_repo_healer():
     references = [
         "healer.png",
@@ -7236,6 +7517,8 @@ def check_for_card_in_deck_repo_healer():
     return None
 
 # hog
+
+
 def check_for_card_in_deck_repo_hog():
     references = [
         "hog.png",
@@ -7252,6 +7535,8 @@ def check_for_card_in_deck_repo_hog():
     return None
 
 # hunter
+
+
 def check_for_card_in_deck_repo_hunter():
     references = [
         "hunter.png",
@@ -7268,6 +7553,8 @@ def check_for_card_in_deck_repo_hunter():
     return None
 
 # ice_golem
+
+
 def check_for_card_in_deck_repo_ice_golem():
     references = [
         "ice_golem.png",
@@ -7284,6 +7571,8 @@ def check_for_card_in_deck_repo_ice_golem():
     return None
 
 # ice_spirit
+
+
 def check_for_card_in_deck_repo_ice_spirit():
     references = [
         "ice_spirit.png",
@@ -7300,6 +7589,8 @@ def check_for_card_in_deck_repo_ice_spirit():
     return None
 
 # ice_wizard
+
+
 def check_for_card_in_deck_repo_ice_wizard():
     references = [
         "ice_wizard.png",
@@ -7316,6 +7607,8 @@ def check_for_card_in_deck_repo_ice_wizard():
     return None
 
 # inferno_dragon
+
+
 def check_for_card_in_deck_repo_inferno_dragon():
     references = [
         "inferno_dragon.png",
@@ -7332,6 +7625,8 @@ def check_for_card_in_deck_repo_inferno_dragon():
     return None
 
 # inferno_tower
+
+
 def check_for_card_in_deck_repo_inferno_tower():
     references = [
         "inferno_tower.png",
@@ -7348,6 +7643,8 @@ def check_for_card_in_deck_repo_inferno_tower():
     return None
 
 # knight
+
+
 def check_for_card_in_deck_repo_knight():
     references = [
         "knight.png",
@@ -7364,6 +7661,8 @@ def check_for_card_in_deck_repo_knight():
     return None
 
 # lavahound
+
+
 def check_for_card_in_deck_repo_lavahound():
     references = [
         "lavahound.png",
@@ -7380,6 +7679,8 @@ def check_for_card_in_deck_repo_lavahound():
     return None
 
 # lightning
+
+
 def check_for_card_in_deck_repo_lightning():
     references = [
         "lightning.png",
@@ -7396,6 +7697,8 @@ def check_for_card_in_deck_repo_lightning():
     return None
 
 # log
+
+
 def check_for_card_in_deck_repo_log():
     references = [
         "log.png",
@@ -7412,6 +7715,8 @@ def check_for_card_in_deck_repo_log():
     return None
 
 # lumberjack
+
+
 def check_for_card_in_deck_repo_lumberjack():
     references = [
         "lumberjack.png",
@@ -7428,6 +7733,8 @@ def check_for_card_in_deck_repo_lumberjack():
     return None
 
 # magic_archer
+
+
 def check_for_card_in_deck_repo_magic_archer():
     references = [
         "magic_archer.png",
@@ -7444,6 +7751,8 @@ def check_for_card_in_deck_repo_magic_archer():
     return None
 
 # mega_knight
+
+
 def check_for_card_in_deck_repo_mega_knight():
     references = [
         "mega_knight.png",
@@ -7460,6 +7769,8 @@ def check_for_card_in_deck_repo_mega_knight():
     return None
 
 # mega_minion
+
+
 def check_for_card_in_deck_repo_mega_minion():
     references = [
         "mega_minion.png",
@@ -7476,6 +7787,8 @@ def check_for_card_in_deck_repo_mega_minion():
     return None
 
 # mighty_miner
+
+
 def check_for_card_in_deck_repo_mighty_miner():
     references = [
         "mighty_miner.png",
@@ -7492,6 +7805,8 @@ def check_for_card_in_deck_repo_mighty_miner():
     return None
 
 # miner
+
+
 def check_for_card_in_deck_repo_miner():
     references = [
         "miner.png",
@@ -7508,6 +7823,8 @@ def check_for_card_in_deck_repo_miner():
     return None
 
 # mini_pekka
+
+
 def check_for_card_in_deck_repo_mini_pekka():
     references = [
         "mini_pekka.png",
@@ -7524,6 +7841,8 @@ def check_for_card_in_deck_repo_mini_pekka():
     return None
 
 # minion_hoard
+
+
 def check_for_card_in_deck_repo_minion_hoard():
     references = [
         "minion_hoard.png",
@@ -7540,6 +7859,8 @@ def check_for_card_in_deck_repo_minion_hoard():
     return None
 
 # minions
+
+
 def check_for_card_in_deck_repo_minions():
     references = [
         "minions.png",
@@ -7556,6 +7877,8 @@ def check_for_card_in_deck_repo_minions():
     return None
 
 # mirror
+
+
 def check_for_card_in_deck_repo_mirror():
     references = [
         "mirror.png",
@@ -7572,6 +7895,8 @@ def check_for_card_in_deck_repo_mirror():
     return None
 
 # mortar
+
+
 def check_for_card_in_deck_repo_mortar():
     references = [
         "mortar.png",
@@ -7588,6 +7913,8 @@ def check_for_card_in_deck_repo_mortar():
     return None
 
 # mother_witch
+
+
 def check_for_card_in_deck_repo_mother_witch():
     references = [
         "mother_witch.png",
@@ -7604,6 +7931,8 @@ def check_for_card_in_deck_repo_mother_witch():
     return None
 
 # musketeer
+
+
 def check_for_card_in_deck_repo_musketeer():
     references = [
         "musketeer.png",
@@ -7620,6 +7949,8 @@ def check_for_card_in_deck_repo_musketeer():
     return None
 
 # night_witch
+
+
 def check_for_card_in_deck_repo_night_witch():
     references = [
         "night_witch.png",
@@ -7636,6 +7967,8 @@ def check_for_card_in_deck_repo_night_witch():
     return None
 
 # pekka
+
+
 def check_for_card_in_deck_repo_pekka():
     references = [
         "pekka.png",
@@ -7652,6 +7985,8 @@ def check_for_card_in_deck_repo_pekka():
     return None
 
 # poison
+
+
 def check_for_card_in_deck_repo_poison():
     references = [
         "poison.png",
@@ -7668,6 +8003,8 @@ def check_for_card_in_deck_repo_poison():
     return None
 
 # prince
+
+
 def check_for_card_in_deck_repo_prince():
     references = [
         "prince.png",
@@ -7684,6 +8021,8 @@ def check_for_card_in_deck_repo_prince():
     return None
 
 # princess
+
+
 def check_for_card_in_deck_repo_princess():
     references = [
         "princess.png",
@@ -7700,6 +8039,8 @@ def check_for_card_in_deck_repo_princess():
     return None
 
 # rage
+
+
 def check_for_card_in_deck_repo_rage():
     references = [
         "rage.png",
@@ -7716,6 +8057,8 @@ def check_for_card_in_deck_repo_rage():
     return None
 
 # ram_rider
+
+
 def check_for_card_in_deck_repo_ram_rider():
     references = [
         "ram_rider.png",
@@ -7732,6 +8075,8 @@ def check_for_card_in_deck_repo_ram_rider():
     return None
 
 # rascals
+
+
 def check_for_card_in_deck_repo_rascals():
     references = [
         "rascals.png",
@@ -7748,6 +8093,8 @@ def check_for_card_in_deck_repo_rascals():
     return None
 
 # rocket
+
+
 def check_for_card_in_deck_repo_rocket():
     references = [
         "rocket.png",
@@ -7764,6 +8111,8 @@ def check_for_card_in_deck_repo_rocket():
     return None
 
 # royal_delivery
+
+
 def check_for_card_in_deck_repo_royal_delivery():
     references = [
         "royal_delivery.png",
@@ -7780,6 +8129,8 @@ def check_for_card_in_deck_repo_royal_delivery():
     return None
 
 # royal_ghost
+
+
 def check_for_card_in_deck_repo_royal_ghost():
     references = [
         "royal_ghost.png",
@@ -7796,6 +8147,8 @@ def check_for_card_in_deck_repo_royal_ghost():
     return None
 
 # royal_giant
+
+
 def check_for_card_in_deck_repo_royal_giant():
     references = [
         "royal_giant.png",
@@ -7812,6 +8165,8 @@ def check_for_card_in_deck_repo_royal_giant():
     return None
 
 # royal_guards
+
+
 def check_for_card_in_deck_repo_royal_guards():
     references = [
         "royal_guards.png",
@@ -7828,6 +8183,8 @@ def check_for_card_in_deck_repo_royal_guards():
     return None
 
 # royal_hogs
+
+
 def check_for_card_in_deck_repo_royal_hogs():
     references = [
         "royal_hogs.png",
@@ -7844,6 +8201,8 @@ def check_for_card_in_deck_repo_royal_hogs():
     return None
 
 # skeleton_army
+
+
 def check_for_card_in_deck_repo_skeleton_army():
     references = [
         "skeleton_army.png",
@@ -7860,6 +8219,8 @@ def check_for_card_in_deck_repo_skeleton_army():
     return None
 
 # skeleton_barrel
+
+
 def check_for_card_in_deck_repo_skeleton_barrel():
     references = [
         "skeleton_barrel.png",
@@ -7876,6 +8237,8 @@ def check_for_card_in_deck_repo_skeleton_barrel():
     return None
 
 # skeleton_dragons
+
+
 def check_for_card_in_deck_repo_skeleton_dragons():
     references = [
         "skeleton_dragons.png",
@@ -7892,6 +8255,8 @@ def check_for_card_in_deck_repo_skeleton_dragons():
     return None
 
 # skeleton_king
+
+
 def check_for_card_in_deck_repo_skeleton_king():
     references = [
         "skeleton_king.png",
@@ -7908,6 +8273,8 @@ def check_for_card_in_deck_repo_skeleton_king():
     return None
 
 # skeletons
+
+
 def check_for_card_in_deck_repo_skeletons():
     references = [
         "skeletons.png",
@@ -7924,6 +8291,8 @@ def check_for_card_in_deck_repo_skeletons():
     return None
 
 # snowball
+
+
 def check_for_card_in_deck_repo_snowball():
     references = [
         "snowball.png",
@@ -7940,6 +8309,8 @@ def check_for_card_in_deck_repo_snowball():
     return None
 
 # sparky
+
+
 def check_for_card_in_deck_repo_sparky():
     references = [
         "sparky.png",
@@ -7956,6 +8327,8 @@ def check_for_card_in_deck_repo_sparky():
     return None
 
 # spear_goblins
+
+
 def check_for_card_in_deck_repo_spear_goblins():
     references = [
         "spear_goblins.png",
@@ -7972,6 +8345,8 @@ def check_for_card_in_deck_repo_spear_goblins():
     return None
 
 # tesla
+
+
 def check_for_card_in_deck_repo_tesla():
     references = [
         "tesla.png",
@@ -7988,6 +8363,8 @@ def check_for_card_in_deck_repo_tesla():
     return None
 
 # three_musketeers
+
+
 def check_for_card_in_deck_repo_three_musketeers():
     references = [
         "three_musketeers.png",
@@ -8004,6 +8381,8 @@ def check_for_card_in_deck_repo_three_musketeers():
     return None
 
 # tombstone
+
+
 def check_for_card_in_deck_repo_tombstone():
     references = [
         "tombstone.png",
@@ -8020,6 +8399,8 @@ def check_for_card_in_deck_repo_tombstone():
     return None
 
 # tornado
+
+
 def check_for_card_in_deck_repo_tornado():
     references = [
         "tornado.png",
@@ -8036,6 +8417,8 @@ def check_for_card_in_deck_repo_tornado():
     return None
 
 # valk
+
+
 def check_for_card_in_deck_repo_valk():
     references = [
         "valk.png",
@@ -8052,6 +8435,8 @@ def check_for_card_in_deck_repo_valk():
     return None
 
 # wall_breaker
+
+
 def check_for_card_in_deck_repo_wall_breaker():
     references = [
         "wall_breaker.png",
@@ -8068,6 +8453,8 @@ def check_for_card_in_deck_repo_wall_breaker():
     return None
 
 # witch
+
+
 def check_for_card_in_deck_repo_witch():
     references = [
         "witch.png",
@@ -8084,7 +8471,9 @@ def check_for_card_in_deck_repo_witch():
     return None
 
 # wizard
-def check_for_card_in_deck_repo_():
+
+
+def check_for_card_in_deck_repo_wizard():
     references = [
         "wizard.png",
     ]
@@ -8100,7 +8489,9 @@ def check_for_card_in_deck_repo_():
     return None
 
 # xbow
-def check_for_card_in_deck_repo_():
+
+
+def check_for_card_in_deck_repo_xbow():
     references = [
         "xbow.png",
     ]
@@ -8116,6 +8507,8 @@ def check_for_card_in_deck_repo_():
     return None
 
 # zap
+
+
 def check_for_card_in_deck_repo_():
     references = [
         "zap.png",
@@ -8132,6 +8525,8 @@ def check_for_card_in_deck_repo_():
     return None
 
 # zappies
+
+
 def check_for_card_in_deck_repo_zappies():
     references = [
         "zappies.png",
@@ -8149,15 +8544,14 @@ def check_for_card_in_deck_repo_zappies():
 
 
 def scroll_to_card(card_name):
-    hand_screenshot = pyautogui.screenshot()
+    hand_screenshot = screenshot()
     hand_checks = dict((name_function_pair[0], name_function_pair[1])for name_function_pair in getmembers(
         sys.modules[__name__], isfunction) if name_function_pair[0].startswith("check_for_card_in_deck_repo_"))
-    location = hand_checks[f"check_for_card_in_deck_repo_{card_name}"](hand_screenshot)
+    location = hand_checks[f"check_for_card_in_deck_repo_{card_name}"](
+        hand_screenshot)
     if location is not None:
         return [location[1], location[0]]
     return None
-        
-
 
 
 # endregion
