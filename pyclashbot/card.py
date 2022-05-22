@@ -14,6 +14,11 @@ def refresh_screen():
     iar = np.array(screenshot)
     return iar
 
+def click(x,y,clicks=1,interval=0.1):
+    original_pos = pyautogui.position()
+    pyautogui.click(x=x,y=y,clicks=clicks,interval=interval)
+    pyautogui.moveTo(original_pos[0],original_pos[1])
+
 
 def random_placement_coord_maker():
 
@@ -58,10 +63,10 @@ def card_place_turret(card_loc):
     if n == 4:
         placement_loc = [203,380]
     #click on card
-    pyautogui.click(x=card_loc[0],y=card_loc[1])
+    click(x=card_loc[0],y=card_loc[1])
     time.sleep(0.5)
     #click placement
-    pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+    click(x=placement_loc[0],y=placement_loc[1])
     
 
 def card_place_spawners(card_loc):
@@ -78,9 +83,9 @@ def card_place_spawners(card_loc):
         placement_loc = [281,492]
     if n==6:
         placement_loc = [341,495]
-    pyautogui.click(x=card_loc[0],y=card_loc[1])
+    click(x=card_loc[0],y=card_loc[1])
     time.sleep(0.25)
-    pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+    click(x=placement_loc[0],y=placement_loc[1])
     
 
 def card_place_hogs(card_loc):
@@ -95,9 +100,9 @@ def card_place_hogs(card_loc):
         placement_loc = [298,340]
     if n==4:
         placement_loc = [347,340]
-    pyautogui.click(x=card_loc[0],y=card_loc[1])
+    click(x=card_loc[0],y=card_loc[1])
     time.sleep(0.25)
-    pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+    click(x=placement_loc[0],y=placement_loc[1])
 
 
 def check_if_hero_ability_is_available():
@@ -126,7 +131,7 @@ def fight_with_deck_list(enemy_troop_position):
 #check for hero abilities
     ability_coords = check_if_hero_ability_is_available()
     if ability_coords:
-        pyautogui.click(x=345,y=512)
+        click(x=345,y=512)
 #expensive has prio
 #     elite_barbs
     if (check_for_card_in_hand("elite_barbs") is not None):
@@ -142,9 +147,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     e_giant
     if (check_for_card_in_hand("e_giant") is not None):
@@ -160,9 +165,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     giant_skeleton
     if (check_for_card_in_hand("giant_skeleton") is not None):
@@ -178,9 +183,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     goblin_giant
     if (check_for_card_in_hand("goblin_giant") is not None):
@@ -196,9 +201,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     mega_knight
     if (check_for_card_in_hand("mega_knight") is not None):
@@ -214,9 +219,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     pekka
     if (check_for_card_in_hand("pekka") is not None):
@@ -232,9 +237,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     witch
     if (check_for_card_in_hand("witch") is not None):
@@ -251,9 +256,9 @@ def fight_with_deck_list(enemy_troop_position):
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     wizard
     if (check_for_card_in_hand("wizard") is not None):
@@ -269,9 +274,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     barb_hut
     if (check_for_card_in_hand("barb_hut") is not None):
@@ -287,14 +292,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=212,y=333)
+            click(x=212,y=333)
         if n==2:
-            pyautogui.click(x=205,y=502)
+            click(x=205,y=502)
         return
 #     royal_giant
     if (check_for_card_in_hand("royal_giant") is not None):
@@ -303,18 +308,18 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 4)
         if n==1:
-            pyautogui.click(x=114,y=346)
+            click(x=114,y=346)
         if n==2:
-            pyautogui.click(x=176,y=336)
+            click(x=176,y=336)
         if n==3:
-            pyautogui.click(x=298,y=336)
+            click(x=298,y=336)
         if n==4:
-            pyautogui.click(x=246,y=339)
+            click(x=246,y=339)
         return
 # #turrets
 #     bomb_tower
@@ -391,10 +396,10 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.5)
         #click placement
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     miner
     if (check_for_card_in_hand("miner") is not None):
@@ -417,10 +422,10 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.5)
         #click placement
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     goblin_barrel
     if (check_for_card_in_hand("goblin_barrel") is not None):
@@ -443,10 +448,10 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.5)
         #click placement
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 # #melee_tanks
 #     barb_barrel
@@ -460,9 +465,9 @@ def fight_with_deck_list(enemy_troop_position):
             placement_loc[1] = placement_loc[1] + 25
         if card_loc is None:
             return
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     bandit
     if (check_for_card_in_hand("bandit") is not None):
@@ -480,9 +485,9 @@ def fight_with_deck_list(enemy_troop_position):
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return    
 #     barbs
     if (check_for_card_in_hand("barbs") is not None):
@@ -498,9 +503,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     bats
     if (check_for_card_in_hand("bats") is not None):
@@ -516,9 +521,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     dark_knight
     if (check_for_card_in_hand("dark_knight") is not None):
@@ -534,9 +539,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     e_spirit
     if (check_for_card_in_hand("e_spirit") is not None):
@@ -552,9 +557,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     fisherman
     if (check_for_card_in_hand("fisherman") is not None):
@@ -570,9 +575,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 90
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     giant
     if (check_for_card_in_hand("giant") is not None):
@@ -588,9 +593,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     goblins
     if (check_for_card_in_hand("goblins") is not None):
@@ -606,9 +611,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     golden_knight
     if (check_for_card_in_hand("golden_knight") is not None):
@@ -624,9 +629,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     guards
     if (check_for_card_in_hand("guards") is not None):
@@ -642,9 +647,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     heal_spirit
     if (check_for_card_in_hand("heal_spirit") is not None):
@@ -660,9 +665,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     healer
     if (check_for_card_in_hand("healer") is not None):
@@ -678,9 +683,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     ice_golem
     if (check_for_card_in_hand("ice_golem") is not None):
@@ -696,9 +701,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     ice_spirit
     if (check_for_card_in_hand("ice_spirit") is not None):
@@ -714,9 +719,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     knight
     if (check_for_card_in_hand("knight") is not None):
@@ -732,9 +737,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     lumberjack
     if (check_for_card_in_hand("lumberjack") is not None):
@@ -750,9 +755,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     mega_minion
     if (check_for_card_in_hand("mega_minion") is not None):
@@ -768,9 +773,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     mighty_miner
     if (check_for_card_in_hand("mighty_miner") is not None):
@@ -786,9 +791,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     mini_pekka
     if (check_for_card_in_hand("mini_pekka") is not None):
@@ -804,9 +809,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     minion_hoard
     if (check_for_card_in_hand("minion_hoard") is not None):
@@ -822,9 +827,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     minions
     if (check_for_card_in_hand("minions") is not None):
@@ -840,9 +845,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     prince
     if (check_for_card_in_hand("prince") is not None):
@@ -858,9 +863,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     royal_ghost
     if (check_for_card_in_hand("royal_ghost") is not None):
@@ -876,9 +881,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     skeleton_army
     if (check_for_card_in_hand("skeleton_army") is not None):
@@ -894,9 +899,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     skeleton_barrel
     if (check_for_card_in_hand("skeleton_barrel") is not None):
@@ -912,9 +917,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     skeleton_dragons
     if (check_for_card_in_hand("skeleton_dragons") is not None):
@@ -930,9 +935,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     skeleton_king
     if (check_for_card_in_hand("skeleton_king") is not None):
@@ -948,9 +953,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     skeletons
     if (check_for_card_in_hand("skeletons") is not None):
@@ -966,9 +971,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     valk
     if (check_for_card_in_hand("valk") is not None):
@@ -984,9 +989,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 25
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 # #ranged
 #     archer_queen
@@ -1004,9 +1009,9 @@ def fight_with_deck_list(enemy_troop_position):
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     archers
     if (check_for_card_in_hand("archers") is not None):
@@ -1020,9 +1025,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     baby_dragon
     if (check_for_card_in_hand("baby_dragon") is not None):
@@ -1038,9 +1043,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     bomber
     if (check_for_card_in_hand("bomber") is not None):
@@ -1056,9 +1061,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     bowler
     if (check_for_card_in_hand("bowler") is not None):
@@ -1074,9 +1079,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     cannon_cart
     if (check_for_card_in_hand("cannon_cart") is not None):
@@ -1092,9 +1097,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     dart_goblin
     if (check_for_card_in_hand("dart_goblin") is not None):
@@ -1110,9 +1115,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     e_dragon
     if (check_for_card_in_hand("e_dragon") is not None):
@@ -1128,9 +1133,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     e_wiz
     if (check_for_card_in_hand("e_wiz") is not None):
@@ -1146,9 +1151,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     elixer_golem
     if (check_for_card_in_hand("elixer_golem") is not None):
@@ -1164,9 +1169,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     executioner
     if (check_for_card_in_hand("executioner") is not None):
@@ -1182,9 +1187,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     fire_spirit
     if (check_for_card_in_hand("fire_spirit") is not None):
@@ -1200,9 +1205,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     firecracker
     if (check_for_card_in_hand("firecracker") is not None):
@@ -1219,9 +1224,9 @@ def fight_with_deck_list(enemy_troop_position):
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     flying_machine
     if (check_for_card_in_hand("flying_machine") is not None):
@@ -1237,10 +1242,10 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
 
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     hunter
     if (check_for_card_in_hand("hunter") is not None):
@@ -1256,9 +1261,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     ice_wizard
     if (check_for_card_in_hand("ice_wizard") is not None):
@@ -1274,9 +1279,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     inferno_dragon
     if (check_for_card_in_hand("inferno_dragon") is not None):
@@ -1292,9 +1297,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     magic_archer
     if (check_for_card_in_hand("magic_archer") is not None):
@@ -1311,9 +1316,9 @@ def fight_with_deck_list(enemy_troop_position):
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     mother_witch
     if (check_for_card_in_hand("mother_witch") is not None):
@@ -1329,9 +1334,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     musketeer
     if (check_for_card_in_hand("musketeer") is not None):
@@ -1348,9 +1353,9 @@ def fight_with_deck_list(enemy_troop_position):
             else:
                 placement_loc[1] = placement_loc[1] + 100
 
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     night_witch
     if (check_for_card_in_hand("night_witch") is not None):
@@ -1366,9 +1371,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     sparky
     if (check_for_card_in_hand("sparky") is not None):
@@ -1384,9 +1389,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     spear_goblins
     if (check_for_card_in_hand("spear_goblins") is not None):
@@ -1402,9 +1407,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     three_musketeers
     if (check_for_card_in_hand("three_musketeers") is not None):
@@ -1420,9 +1425,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     goblin_gang
     if (check_for_card_in_hand("goblin_gang") is not None):
@@ -1438,9 +1443,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     rascals
     if (check_for_card_in_hand("rascals") is not None):
@@ -1456,9 +1461,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     zappies
     if (check_for_card_in_hand("zappies") is not None):
@@ -1474,9 +1479,9 @@ def fight_with_deck_list(enemy_troop_position):
                 placement_loc[1]=400
             else:
                 placement_loc[1] = placement_loc[1] + 100
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 # #spawners
 #     elixer_pump
@@ -1549,14 +1554,14 @@ def fight_with_deck_list(enemy_troop_position):
     if (card_loc_arrows is not None):
         #print("playing arrows")
         #click card
-        pyautogui.click(x=card_loc_arrows[0],y=card_loc_arrows[1])
+        click(x=card_loc_arrows[0],y=card_loc_arrows[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=123,y=252)
+            click(x=123,y=252)
         if n==2:
-            pyautogui.click(x=295,y=245)
+            click(x=295,y=245)
 #     clone
     #we not gonna play clone
 #     fireball
@@ -1566,14 +1571,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
 #     freeze
     if (check_for_card_in_hand("freeze") is not None):
         card_loc = check_for_card_in_hand("freeze")
@@ -1584,9 +1589,9 @@ def fight_with_deck_list(enemy_troop_position):
         else:
             #print("couldnt find freeze target so wont play")
             placement_loc = card_loc
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.26)
-        pyautogui.click(x=placement_loc[0],y=placement_loc[1])
+        click(x=placement_loc[0],y=placement_loc[1])
         return
 #     log
     if (check_for_card_in_hand("log") is not None):
@@ -1595,14 +1600,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
         return
 #     poison
     if (check_for_card_in_hand("poison") is not None):
@@ -1611,14 +1616,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=123,y=252)
+            click(x=123,y=252)
         if n==2:
-            pyautogui.click(x=295,y=245)
+            click(x=295,y=245)
         return
 #     rage
     if (check_for_card_in_hand("rage") is not None):
@@ -1635,14 +1640,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
         return
 #     zap     
     if (check_for_card_in_hand("zap") is not None):
@@ -1651,14 +1656,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
         return
 #     snowball
     if (check_for_card_in_hand("snowball") is not None):
@@ -1667,14 +1672,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
         return
 #     tornado
     if (check_for_card_in_hand("tornado") is not None):
@@ -1683,14 +1688,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=123,y=252)
+            click(x=123,y=252)
         if n==2:
-            pyautogui.click(x=295,y=245)
+            click(x=295,y=245)
         return
 #     earthquake
     if (check_for_card_in_hand("earthquake") is not None):
@@ -1699,14 +1704,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=123,y=252)
+            click(x=123,y=252)
         if n==2:
-            pyautogui.click(x=295,y=245)
+            click(x=295,y=245)
         return
 #     graveyard
     if (check_for_card_in_hand("graveyard") is not None):
@@ -1715,14 +1720,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
         return
 #     lightning
     if (check_for_card_in_hand("lightning") is not None):
@@ -1731,14 +1736,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=123,y=252)
+            click(x=123,y=252)
         if n==2:
-            pyautogui.click(x=295,y=245)
+            click(x=295,y=245)
         return
 #     royal_delivery
     if (check_for_card_in_hand("royal_delivery") is not None):
@@ -1747,14 +1752,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=122,y=220)
+            click(x=122,y=220)
         if n==2:
-            pyautogui.click(x=298,y=227)
+            click(x=298,y=227)
         return
 
 # #etc
@@ -1765,18 +1770,18 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 4)
         if n==1:
-            pyautogui.click(x=114,y=346)
+            click(x=114,y=346)
         if n==2:
-            pyautogui.click(x=176,y=336)
+            click(x=176,y=336)
         if n==3:
-            pyautogui.click(x=298,y=336)
+            click(x=298,y=336)
         if n==4:
-            pyautogui.click(x=246,y=339)
+            click(x=246,y=339)
         return
 #     princess
     if (check_for_card_in_hand("princess") is not None):
@@ -1785,18 +1790,18 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 4)
         if n==1:
-            pyautogui.click(x=114,y=346)
+            click(x=114,y=346)
         if n==2:
-            pyautogui.click(x=176,y=336)
+            click(x=176,y=336)
         if n==3:
-            pyautogui.click(x=298,y=336)
+            click(x=298,y=336)
         if n==4:
-            pyautogui.click(x=246,y=339)
+            click(x=246,y=339)
         return
 #     wall_breaker
     if (check_for_card_in_hand("wall_breaker") is not None):
@@ -1805,14 +1810,14 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 2)
         if n==1:
-            pyautogui.click(x=212,y=333)
+            click(x=212,y=333)
         if n==2:
-            pyautogui.click(x=205,y=502)
+            click(x=205,y=502)
         return
 #     lavahound
     if (check_for_card_in_hand("lavahound") is not None):
@@ -1821,18 +1826,18 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 4)
         if n==1:
-            pyautogui.click(x=78,y=502)
+            click(x=78,y=502)
         if n==2:
-            pyautogui.click(x=189,y=502)
+            click(x=189,y=502)
         if n==3:
-            pyautogui.click(x=236,y=507)
+            click(x=236,y=507)
         if n==4:
-            pyautogui.click(x=355,y=497)
+            click(x=355,y=497)
         return
 #     golem
     if (check_for_card_in_hand("golem") is not None):
@@ -1841,18 +1846,18 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 4)
         if n==1:
-            pyautogui.click(x=78,y=502)
+            click(x=78,y=502)
         if n==2:
-            pyautogui.click(x=189,y=502)
+            click(x=189,y=502)
         if n==3:
-            pyautogui.click(x=236,y=507)
+            click(x=236,y=507)
         if n==4:
-            pyautogui.click(x=355,y=497)
+            click(x=355,y=497)
         return
 #     xbow
     if (check_for_card_in_hand("xbow") is not None):
@@ -1861,18 +1866,18 @@ def fight_with_deck_list(enemy_troop_position):
         if card_loc is None:
             return
         #click card
-        pyautogui.click(x=card_loc[0],y=card_loc[1])
+        click(x=card_loc[0],y=card_loc[1])
         time.sleep(0.25)
         #click placement
         n = random.randint(1, 4)
         if n==1:
-            pyautogui.click(x=114,y=346)
+            click(x=114,y=346)
         if n==2:
-            pyautogui.click(x=176,y=336)
+            click(x=176,y=336)
         if n==3:
-            pyautogui.click(x=298,y=336)
+            click(x=298,y=336)
         if n==4:
-            pyautogui.click(x=246,y=339)
+            click(x=246,y=339)
         return
 #     mirror
     #not gonna play mirror
