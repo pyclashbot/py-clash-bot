@@ -21,6 +21,7 @@ def find_references(screenshot: Union[np.ndarray, Image.Image], folder: str, nam
         list[Union[tuple[int,int],None]: coordinate locations
     """
     num_cores = multiprocessing.cpu_count()
+
     return Parallel(n_jobs=num_cores, prefer="threads")(
         delayed(find_reference)(screenshot, folder, name, tolerance) for name in names)
 
@@ -76,6 +77,7 @@ def compare_images(image: Union[np.ndarray, Image.Image], template: Union[np.nda
     # template.show()
 
     # Convert image to np.array
+
     image = np.array(image)
     template = np.array(template)
 
