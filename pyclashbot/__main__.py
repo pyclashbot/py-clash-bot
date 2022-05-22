@@ -139,7 +139,7 @@ def open_chests():
     check_if_unlock_chest_button_exists()
     time.sleep(0.2)
     check_quit_key_press()
-    click(20,556,20,0.1)
+    click(20,556,20,0.05)
     logger.log("clicking chest2")
     click(162,549)
     time.sleep(1)
@@ -147,7 +147,7 @@ def open_chests():
     check_if_unlock_chest_button_exists()
     time.sleep(0.2)
     check_quit_key_press()
-    click(20,556,20,0.2)
+    click(20,556,20,0.05)
 
     logger.log("clicking chest3")
     click(263,541)
@@ -156,7 +156,7 @@ def open_chests():
     check_if_unlock_chest_button_exists()
     time.sleep(0.2)
     check_quit_key_press()
-    click(20,556,20,0.1)
+    click(20,556,20,0.05)
     logger.log("clicking chest4")
     click(349,551)
     time.sleep(1)
@@ -164,7 +164,7 @@ def open_chests():
     check_if_unlock_chest_button_exists()
     time.sleep(0.2)
     check_quit_key_press()
-    click(20,556,20,0.1)
+    click(20,556,20,0.05)
 
 
 def check_if_on_clash_main_menu():
@@ -259,11 +259,29 @@ def check_if_on_clan_chat_page():
 
 
 def return_to_clash_main_menu():
-    check_quit_key_press()
-    logger.log("Returning to clash main menu")
-    click(180,625)
-    time.sleep(1)
-    check_quit_key_press()
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="return_to_clash_main",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            click(location[1],location[0])
+            return location
+    return None
+
+
 
 
 def start_2v2():              
@@ -276,11 +294,15 @@ def start_2v2():
     logger.log("Scrolling until 2v2 button is found")
     while find_2v2_quick_match_button() is None:
         scroll_down()
+        time.sleep(0.05)
+        scroll_down()
         time.sleep(1)
     logger.log("Clicking 2v2 quickmatch button")
+    time.sleep(1)
     quick_match_button_coords = find_2v2_quick_match_button()
     if quick_match_button_coords is None:
         return "quit"
+    time.sleep(1)
     click(x=quick_match_button_coords[1],y=quick_match_button_coords[0])
     time.sleep(0.25)
     check_for_reward_limit()
@@ -514,14 +536,16 @@ def check_if_in_a_clan_from_main():
 
 
 def scroll_down():
+    origin = pyautogui.position()
     pyautogui.moveTo(x=215,y=350)
     pyautogui.dragTo(x=215,y=300, button='left',duration=1)
-   
+    pyautogui.moveTo(x=origin[0],y=origin[1])
     
 def scroll_up():
+    origin = pyautogui.position()
     pyautogui.moveTo(x=215,y=300)
     pyautogui.dragTo(x=215,y=350, button='left',duration=1)
-
+    pyautogui.moveTo(x=origin[0],y=origin[1])
 
 def find_donates():
     references = [
@@ -942,10 +966,12 @@ def switch_accounts_to(ssid):
     if ssid==1:
         logger.log("Clicking account 1")
         click(x=211,y=388)
-
     if ssid==2:
         logger.log("Clicking account 2")
         click(x=193,y=471)
+    if ssid==3:
+        logger.log("Clicking account 3")
+        click(x=200,y=560)
 
     time.sleep(3)
     if wait_for_clash_main_menu() == "quit":
@@ -977,14 +1003,58 @@ def check_for_reward_limit():
     return False
 
 
+def check_if_on_clash_home():
+    current_image = pyautogui.screenshot()
+    reference_folder = "clash_home_images"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    time.sleep(1)
+    for location in locations:
+        if location is not None:
+            return True  # found a location
+    return False
+
+
+
 def check_state():
     time.sleep(3)
+    #if on regular main menu
     if check_if_on_clash_main_menu():
         logger.log("On clash main")
         return "clash_main"
+    #if in a battle
     if check_if_in_battle():
         logger.log("In a fight")
         return "fighting"
+    #if on clan chat page
+    if check_if_on_clan_chat_page():
+        logger.log("On clan chat page")
+        return_to_clash_main_menu()
+        time.sleep(2)
+        if check_if_on_clash_main_menu():
+            return "clash_main"
+        else:
+            return "restart"
+    #if anywhere in clash home pages
+    if check_if_on_clash_home():
+        logger.log("Detected that we're somewhere on the clash home")
+        return_to_clash_main_menu()
+        time.sleep(2)
+        if check_if_on_clash_main_menu():
+            return"clash_main"
+        else:
+            return"restart"
     return None
 
 # region donate_cards
@@ -2544,12 +2614,17 @@ def scroll_till_find_inferno_tower():
     return "quit"
 
 # endregion
-    
-    
+     
 def click(x,y,clicks=1,interval=0.1):
     original_pos = pyautogui.position()
-    pyautogui.click(x=x,y=y,clicks=clicks,interval=interval)
-    pyautogui.moveTo(original_pos[0],original_pos[1])
+    loops=0
+    while loops<clicks:
+        check_quit_key_press()
+        pyautogui.click(x=x,y=y)
+        pyautogui.moveTo(original_pos[0],original_pos[1])
+        loops=loops+1
+        time.sleep(interval)
+
 
 def main_loop():
     # user vars (these will be specified thru the GUI, but these are the placeholders for now.)
@@ -2560,22 +2635,14 @@ def main_loop():
     ssid = random.randint(1,2)
     # vars
     loop_count = 0
-    
-    
     if not check_if_windows_exist():
         return
-    
-    
-    
-    
-    
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
     state=check_state()
     if state is None:
         state="restart"
-    
     while True:
         time.sleep(0.2)
         logger.log(f"loop count: {loop_count}")
@@ -2583,13 +2650,8 @@ def main_loop():
         iar = refresh_screen()
         plt.imshow(iar)
         
-        
-        #plt.show()
-     
 
- 
-        
- 
+
         if state == "restart":  
             logger.log("-----STATE=restart-----")
             logger.log("restart time loop")
@@ -2702,10 +2764,9 @@ def main_loop():
                 logger.log("Last game was a loss")
                 logger.add_loss()
             #switch accounts feature
-            if ssid==1:
-                ssid=2 
-            else:
-                ssid=1
+            ssid=random.randint(1,3)
+            log ="Next account was random chosen and is account: "+str(ssid)
+            logger.log(log)
             state="clash_main"
 
             
