@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import time
 
 import keyboard
@@ -66,7 +67,10 @@ def orientate_window():
     window_memu.minimize()
     window_memu.restore()
     time.sleep(0.2)
-    window_memu.moveTo(0, 0)
+    try:
+        window_memu.moveTo(0, 0)
+    except:
+        logger.log("Had trouble moving MEmu window.")
     time.sleep(0.2)
     window_memu.resizeTo(460, 680)
 
