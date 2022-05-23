@@ -60,8 +60,8 @@ def main_loop():
         plt.imshow(iar)
 
         #plt.show()
-        print(check_if_has_chest_unlocking())
-        #take_screenshots()
+        print()
+
         
         
         if state == "restart":
@@ -89,9 +89,11 @@ def main_loop():
                 logger.log("Successfully switched accounts.")
                 # open chests
                 if check_if_on_clash_main_menu():
-                    logger.log("Opening chests.")
-                    open_chests(logger)
-                    time.sleep(2)
+                    logger.log("Checking if a chest is being unlocked right now.")
+                    if not check_if_has_chest_unlocking():
+                        logger.log("Found no unlocking symbols. Opening chests.")
+                        open_chests(logger)
+                        time.sleep(2)
                     logger.log("Checking if can request.")
                     if check_if_can_request(logger):
                         logger.log("Can request. Passing to request state.")
