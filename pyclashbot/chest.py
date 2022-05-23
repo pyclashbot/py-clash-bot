@@ -33,7 +33,7 @@ def check_if_unlock_chest_button_exists():
 
 
 def look_for_clock():
-    current_image = screenshot()
+    current_image = screenshot(region=(35,490,360,40))
     reference_folder = "unlocking_chest_images"
     references = [
         "clock1.png",
