@@ -32,7 +32,7 @@ def check_if_unlock_chest_button_exists():
     return False
 
 
-def check_if_has_chest_unlocking():
+def look_for_clock():
     current_image = screenshot()
     reference_folder = "unlocking_chest_images"
     references = [
@@ -117,6 +117,16 @@ def check_if_has_chest_unlocking():
             return True
     return False
 
+
+def check_if_has_chest_unlocking():
+    n=5
+    while n != 0:
+        if look_for_clock():
+            return True
+        else:
+            n=n-1
+            time.sleep(0.2)
+        
 
 def open_chests(logger):
     logger.log("clicking chest1")
