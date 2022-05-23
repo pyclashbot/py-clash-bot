@@ -60,7 +60,7 @@ def wait_for_memu_main(logger):
 
 
 def orientate_window():
-    #logger.log("Orientating memu client")
+    # logger.log("Orientating memu client")
     window_memu = pygetwindow.getWindowsWithTitle('MEmu')[0]
     check_quit_key_press()
     window_memu.minimize()
