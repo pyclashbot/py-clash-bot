@@ -78,10 +78,7 @@ def pixel_is_equal(pix1, pix2, tol):
     diff_r = abs(pix1[0] - pix2[0])
     diff_g = abs(pix1[1] - pix2[1])
     diff_b = abs(pix1[2] - pix2[2])
-    if (diff_r < tol) and (diff_g < tol) and (diff_b < tol):
-        return True
-    else:
-        return False
+    return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
 
 def compare_images(image: Union[np.ndarray,
