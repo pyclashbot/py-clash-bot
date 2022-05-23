@@ -41,7 +41,7 @@ def main_loop():
     total_accounts=2
     deck = ""
     fight_type = "2v2"
-    card_to_request = "goblin_cage"
+    card_to_request = "archers"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssid = random.randint(1, 2)
     # vars
@@ -55,11 +55,11 @@ def main_loop():
     if state is None:
         state = "restart"
     
-    
-    # region=[219,614,54,46]
+    # region=[45,500,8,8]
     # folder=r"C:\Users\Matt\Desktop\inc_pics"
-    # take_many_screenshots(duration=2, frequency=30,name="g", region=region,folder=folder)
-    
+    # take_many_screenshots(duration=9, frequency=30,name="e", region=region,folder=folder)
+    # print("done")
+    # time.sleep(30)
     
     while True:
         time.sleep(0.2)
@@ -67,13 +67,10 @@ def main_loop():
         loop_count += 1
         iar = refresh_screen()                    
         plt.imshow(iar)
-
+        
         #plt.show()
 
 
-
-      
-        
         if state == "restart":
             logger.log("-----STATE=restart-----")
             logger.log("restart time loop")
@@ -167,7 +164,7 @@ def main_loop():
             time.sleep(1)
             return_to_clash_main_menu()
             logger.log("Finished with upgrading. Passing to start fight state")
-            state == "start_fight" 
+            state = "start_fight" 
         if state == "start_fight":
             logger.log("-----STATE=start_fight-----")
             return_to_clash_main_menu()
