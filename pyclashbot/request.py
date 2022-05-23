@@ -31,20 +31,24 @@ def check_if_can_request(logger):
 
 def look_for_request_button():
     references = [
-        "req_logo_1.png",
-        "req_logo_2.png",
-        "req_logo_3.png",
-        "req_logo_4.png",
-        "req_logo_5.png"
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
     ]
-
     locations = find_references(
         screenshot=refresh_screen(),
-        folder="request_page_card_logos",
+        folder="request_button",
         names=references,
         tolerance=0.99
     )
-
     for location in locations:
         if location is not None:
             return location
@@ -70,7 +74,6 @@ def request_from_clash_main_menu(card_to_request, logger):
         return "quit"
     if coords is not None:
         click(x=coords[1], y=coords[0])
-
         time.sleep(2)
     # click request
     coords = look_for_request_button()

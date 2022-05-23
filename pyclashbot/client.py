@@ -75,7 +75,7 @@ def orientate_window():
     try:
         window_memu.resizeTo(460, 680)
     except:
-        logger.log("Had trouble resizing MEmu window")
+        print("Had trouble resizing MEmu window")
 
 
 def orientate_memu_multi():
@@ -152,7 +152,7 @@ def scroll_up_fast():
 
 
 
-def click(x, y, clicks=1, interval=0.1):
+def click(x, y, clicks=1, interval=0):
     original_pos = pyautogui.position()
     loops = 0
     while loops < clicks:
