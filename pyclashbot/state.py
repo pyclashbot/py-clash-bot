@@ -181,6 +181,75 @@ def return_to_clash_main_menu():
         "6.png",
         "7.png",
         "8.png",
+        "main_menu_golden1.png",
+        "main_menu_golden2.png",
+        "main_menu_golden3.png",
+        "main_menu_golden4.png",
+        "main_menu_golden5.png",
+        "main_menu_golden6.png",
+        "main_menu_golden7.png",
+        "main_menu_golden8.png",
+        "main_menu_golden9.png",
+        "main_menu_golden10.png",
+        "main_menu_golden11.png",
+        "main_menu_golden12.png",
+        "main_menu_golden13.png",
+        "main_menu_golden14.png",
+        "main_menu_golden15.png",
+        "main_menu_golden16.png",
+        "main_menu_golden17.png",
+        "main_menu_golden18.png",
+        "main_menu_golden19.png",
+        "main_menu_golden20.png",
+        "main_menu_golden21.png",
+        "main_menu_golden22.png",
+        "main_menu_golden23.png",
+        "main_menu_golden24.png",
+        "main_menu_golden25.png",
+        "main_menu_golden26.png",
+        "main_menu_golden27.png",
+        "main_menu_golden28.png",
+        "main_menu_golden29.png",
+        "main_menu_golden30.png",
+        "main_menu_golden31.png",
+        "main_menu_golden32.png",
+        "main_menu_golden33.png",
+        "main_menu_golden34.png",
+        "main_menu_golden35.png",
+        "main_menu_golden36.png",
+        "main_menu_golden37.png",
+        "main_menu_golden38.png",
+        "main_menu_golden39.png",
+        "main_menu_golden40.png",
+        "main_menu_golden41.png",
+        "main_menu_golden42.png",
+        "main_menu_golden43.png",
+        "main_menu_golden44.png",
+        "main_menu_golden45.png",
+        "main_menu_golden46.png",
+        "main_menu_golden47.png",
+        "main_menu_golden48.png",
+        "main_menu_golden49.png",
+        "main_menu_golden50.png",
+        "main_menu_golden51.png",
+        "main_menu_golden52.png",
+        "main_menu_golden53.png",
+        "main_menu_golden54.png",
+        "main_menu_golden55.png",
+        "main_menu_golden56.png",
+        "main_menu_golden57.png",
+        "main_menu_golden58.png",
+        "main_menu_golden59.png",
+        "main_menu_golden60.png",
+        "main_menu_golden61.png",
+        "main_menu_golden62.png",
+        "main_menu_golden63.png",
+        "main_menu_golden64.png",
+        "main_menu_golden65.png",
+        "main_menu_golden66.png",
+        "main_menu_golden67.png",
+        "main_menu_golden68.png",
+        "main_menu_golden69.png",
     ]
     locations = find_references(
         screenshot=refresh_screen(),
@@ -190,8 +259,10 @@ def return_to_clash_main_menu():
     )
     for location in locations:
         if location is not None:
-            click(location[1], location[0])
-    check_if_in_progression_menu()
+            click(location[1], location[0]) 
+            check_if_in_progression_menu()
+            return
+
 
 def check_if_in_progression_menu():
     references = [
@@ -210,7 +281,23 @@ def check_if_in_progression_menu():
     )
     for location in locations:
         if location is not None:
-            return_to_clash_main_menu()
+            leave_progression_menu()
+            return
+
+def leave_progression_menu():
+    references = [
+        "progression_menu_exit.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="progression_menu",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            print("DEBUG trying to leave progression menu")
+            click(location[1], location[0])
             return
 
 def check_if_in_a_clan_from_main(logger):
