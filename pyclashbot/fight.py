@@ -297,7 +297,7 @@ def check_if_past_game_is_win(logger):
             click(20, 507)
 
             return True
-        n = n+1
+        n = n + 1
     time.sleep(1)
     click(385, 507)
     click(20, 507)

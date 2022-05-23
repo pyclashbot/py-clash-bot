@@ -104,7 +104,7 @@ def upgrade_cards_from_main():
             scroll_down()
             coords = look_for_upgrades()
             time.sleep(0.2)
-            n = n+1
+            n = n + 1
         if coords is not None:
             click(coords[1], coords[0])
             time.sleep(0.2)

@@ -19,7 +19,7 @@ class Logger:
         Returns:
             str: log time stamp
         """
-        output_time = time.time()-self.start_time
+        output_time = time.time() - self.start_time
         output_time = int(output_time)
 
         time_str = str(self.convert_int_to_time(output_time))
@@ -34,8 +34,8 @@ class Logger:
         Returns:
             str: log scoreboard
         """
-        wins_str = str(self.wins)+"W"
-        losses_str = str(self.losses)+"L"
+        wins_str = str(self.wins) + "W"
+        losses_str = str(self.losses) + "L"
         gap_str = "|"
         return wins_str + gap_str + losses_str
 
