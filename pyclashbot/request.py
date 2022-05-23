@@ -60,7 +60,7 @@ def request_from_clash_main_menu(card_to_request, logger):
         click(x=317, y=627)
 
         time.sleep(2)
-    log = "requesting: "+str(card_to_request)
+    log = "requesting: " + str(card_to_request)
     logger.log(log)
     click(x=86, y=564)
 

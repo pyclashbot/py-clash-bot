@@ -41,7 +41,7 @@ def find_donates():
             if location is not None:
                 return location
         scroll_down()
-        loops = loops+1
+        loops = loops + 1
     return None
 
 
@@ -128,7 +128,7 @@ def getto_donate_page(logger):
         click(x=393, y=580)
 
         time.sleep(1)
-        loops = loops+1
+        loops = loops + 1
         check_quit_key_press()
     if check_if_on_clan_chat_page():
         return

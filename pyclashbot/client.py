@@ -50,8 +50,8 @@ def check_if_on_memu_main():
 def wait_for_memu_main(logger):
     loops = 0
     while check_if_on_memu_main() is False:
-        loops = loops+1
-        log = "Waiting for memu main:"+str(loops)
+        loops = loops + 1
+        log = "Waiting for memu main:" + str(loops)
         logger.log(log)
         time.sleep(1)
         if loops > 20:
@@ -137,7 +137,7 @@ def click(x, y, clicks=1, interval=0.1):
         check_quit_key_press()
         pyautogui.click(x=x, y=y)
         pyautogui.moveTo(original_pos[0], original_pos[1])
-        loops = loops+1
+        loops = loops + 1
         time.sleep(interval)
 
 
