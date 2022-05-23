@@ -1,6 +1,8 @@
 import time
 from os.path import join
+import numpy
 from pyautogui import screenshot
+from PIL import Image
 
 
 def take_many_screenshots(duration, frequency, region=None, name=None, folder=None):
@@ -15,11 +17,27 @@ def take_many_screenshots(duration, frequency, region=None, name=None, folder=No
     """
     number_of_screenshots = duration*frequency
     interval = 1/frequency
+    screenshots = []
+
+    # take screenshots
     for i in range(number_of_screenshots):
         if region is not None:
             ss = screenshot(region=region)
         else:
             ss = screenshot()
+        screenshots.append(numpy.array(ss))
+        time.sleep(interval)
+
+    # remove duplicate screenshots
+    unique_screenshots = []
+    for arr in screenshots:
+        if not any(numpy.array_equal(arr, unique_arr) for unique_arr in unique_screenshots):
+            unique_screenshots.append(arr)
+
+    screenshots = unique_screenshots
+
+    # save screenshots to file
+    for i, ss in enumerate(screenshots):
         path = None
         if folder is not None:
             if name is not None:
@@ -31,13 +49,11 @@ def take_many_screenshots(duration, frequency, region=None, name=None, folder=No
                 path = f'C:\\Users\\Matt\\Desktop\\inc_pics\\{name}{i}.png'
             else:
                 path = f'C:\\Users\\Matt\\Desktop\\inc_pics\\{i}.png'
-
-        ss.save(path)
-        time.sleep(interval)
+        Image.fromarray(ss).save(path)
 
 
 def take_screenshots():
-    
+
     ss = screenshot(region=(46, 499, 10, 8))
     ss.save(r'C:\Users\Matt\Desktop\inc_pics\1.png')
     time.sleep(0.05)
