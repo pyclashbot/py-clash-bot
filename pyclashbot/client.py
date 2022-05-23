@@ -70,7 +70,7 @@ def orientate_window():
     try:
         window_memu.moveTo(0, 0)
     except:
-        logger.log("Had trouble moving MEmu window.")
+        print("Had trouble moving MEmu window.")
     time.sleep(0.2)
     window_memu.resizeTo(460, 680)
 
