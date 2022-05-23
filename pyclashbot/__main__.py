@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 
 from pyclashbot.account import switch_accounts_to
-from pyclashbot.card import fight_with_deck_list, find_all_cards
+from pyclashbot.card import fight_with_deck_list
 from pyclashbot.chest import open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_memu_multi, orientate_window,
