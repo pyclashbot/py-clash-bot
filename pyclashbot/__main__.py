@@ -16,8 +16,12 @@ from pyclashbot.fight import (check_if_past_game_is_win,
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
-from pyclashbot.state import (check_if_in_battle, check_if_on_clash_main_menu,
-                              check_state, open_clash, wait_for_clash_main_menu)
+from pyclashbot.state import (
+    check_if_in_battle,
+    check_if_on_clash_main_menu,
+    check_state,
+    open_clash,
+    wait_for_clash_main_menu)
 
 logger = Logger()
 
@@ -29,7 +33,8 @@ def show_image(iar):
 
 
 def main_loop():
-    # user vars (these will be specified thru the GUI, but these are the placeholders for now.)
+    # user vars (these will be specified thru the GUI, but these are the
+    # placeholders for now.)
     deck = ""
     fight_type = "2v2"
     card_to_request = "goblin_cage"
@@ -100,15 +105,17 @@ def main_loop():
                 state = "restart"
             else:
                 # if got to clan chat page
-                log = "Trying to request "+str(card_to_request)+"."
+                log = "Trying to request " + str(card_to_request) + "."
                 logger.log(log)
-                if request_from_clash_main_menu(card_to_request, logger) == "quit":
+                if request_from_clash_main_menu(
+                        card_to_request, logger) == "quit":
                     # if request failed
-                    log = "Failed to request "+str(card_to_request)+"."
+                    log = "Failed to request " + str(card_to_request) + "."
                     logger.log(log)
                 else:
                     # if request works
-                    log = "Successfully requested "+str(card_to_request)+"."
+                    log = "Successfully requested " + \
+                        str(card_to_request) + "."
                     logger.log(log)
                 logger.log("Done with requesting. Passing to donate state.")
                 state = "donate"
@@ -145,13 +152,13 @@ def main_loop():
             fightloops = 0
             while (check_if_in_battle()) and (fightloops < 100):
                 check_quit_key_press()
-                log = "Plays: "+str(fightloops)
+                log = "Plays: " + str(fightloops)
                 logger.log(log)
                 logger.log("Scanning field.")
                 enemy_troop_position = look_for_enemy_troops()
                 logger.log("Choosing play.")
                 fight_with_deck_list(enemy_troop_position)
-                fightloops = fightloops+1
+                fightloops = fightloops + 1
             logger.log("Battle must be finished")
             time.sleep(10)
             leave_end_battle_window(logger)
@@ -168,7 +175,7 @@ def main_loop():
                 logger.add_loss()
             # switch accounts feature
             ssid = random.randint(1, 3)
-            log = "Next account was random chosen and is account: "+str(ssid)
+            log = "Next account was random chosen and is account: " + str(ssid)
             logger.log(log)
             state = "clash_main"
 

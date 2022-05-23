@@ -8,7 +8,11 @@ from joblib import Parallel, delayed
 from PIL import Image
 
 
-def find_references(screenshot: Union[np.ndarray, Image.Image], folder: str, names: list[str], tolerance=0.97):
+def find_references(screenshot: Union[np.ndarray,
+                                      Image.Image],
+                    folder: str,
+                    names: list[str],
+                    tolerance=0.97):
     """find reference images in a screenshot
 
     Args:
@@ -22,11 +26,21 @@ def find_references(screenshot: Union[np.ndarray, Image.Image], folder: str, nam
     """
     num_cores = multiprocessing.cpu_count()
 
-    return Parallel(n_jobs=num_cores, prefer="threads")(
-        delayed(find_reference)(screenshot, folder, name, tolerance) for name in names)
+    return Parallel(
+        n_jobs=num_cores,
+        prefer="threads")(
+        delayed(find_reference)(
+            screenshot,
+            folder,
+            name,
+            tolerance) for name in names)
 
 
-def find_reference(screenshot: Union[np.ndarray, Image.Image], folder: str, name: str, tolerance=0.97):
+def find_reference(screenshot: Union[np.ndarray,
+                                     Image.Image],
+                   folder: str,
+                   name: str,
+                   tolerance=0.97):
     """find a reference image in a screenshot
 
     Args:
@@ -40,7 +54,14 @@ def find_reference(screenshot: Union[np.ndarray, Image.Image], folder: str, name
     """
     top_level = dirname(__file__)
     reference_folder = join(top_level, "reference_images")
-    return compare_images(screenshot, Image.open(join(reference_folder, folder, name)), tolerance)
+    return compare_images(
+        screenshot,
+        Image.open(
+            join(
+                reference_folder,
+                folder,
+                name)),
+        tolerance)
 
 
 def pixel_is_equal(pix1, pix2, tol):
@@ -63,7 +84,11 @@ def pixel_is_equal(pix1, pix2, tol):
         return False
 
 
-def compare_images(image: Union[np.ndarray, Image.Image], template: Union[np.ndarray, Image.Image], threshold=0.8):
+def compare_images(image: Union[np.ndarray,
+                                Image.Image],
+                   template: Union[np.ndarray,
+                                   Image.Image],
+                   threshold=0.8):
     """detects pixel location of a template in an image
     Args:
         image (Union[np.ndarray, Image.Image]): image to find template within
