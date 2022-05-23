@@ -1,6 +1,39 @@
 import time
-
+from os.path import join
 from pyautogui import screenshot
+
+
+def take_many_screenshots(duration, frequency, region=None, name=None, folder=None):
+    """_summary_
+
+    Args:
+        duration (float): seconds to take screenshots
+        frequency (float): screenshot per second
+        region (tuple[int], optional): screenshot region. Defaults to None.
+        name (str, optional): screenshot save name. Defaults to None.
+        folder (str, optional): screenshot save folder. Defaults to None.
+    """
+    number_of_screenshots = duration*frequency
+    interval = 1/frequency
+    for i in range(number_of_screenshots):
+        if region is not None:
+            ss = screenshot(region=region)
+        else:
+            ss = screenshot()
+        path = None
+        if folder is not None:
+            if name is not None:
+                path = join(folder, f'{name}{i}.png')
+            else:
+                path = join(folder, f'{i}.png')
+        else:
+            if name is not None:
+                path = f'C:\\Users\\Matt\\Desktop\\inc_pics\\{name}{i}.png'
+            else:
+                path = f'C:\\Users\\Matt\\Desktop\\inc_pics\\{i}.png'
+
+        ss.save(path)
+        time.sleep(interval)
 
 
 def take_screenshots():
