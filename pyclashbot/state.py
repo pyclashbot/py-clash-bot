@@ -191,7 +191,27 @@ def return_to_clash_main_menu():
     for location in locations:
         if location is not None:
             click(location[1], location[0])
+    check_if_in_progression_menu()
 
+def check_if_in_progression_menu():
+    references = [
+        "progression_menu1.png",
+        "progression_menu2.png",
+        "progression_menu3.png",
+        "progression_menu4.png",
+        "progression_menu5.png",
+        "progression_menu6.png",
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="progression_menu",
+        names=references,
+        tolerance=0.97
+    )
+    for location in locations:
+        if location is not None:
+            return_to_clash_main_menu()
+            return
 
 def check_if_in_a_clan_from_main(logger):
     logger.log("Checking if you're in a clan")
