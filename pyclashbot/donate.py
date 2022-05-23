@@ -87,7 +87,7 @@ def click_donates(logger):
         click(x=down_arrow_loc[1], y=down_arrow_loc[0])
 
     time.sleep(0.2)
-    return_to_clash_main_menu()
+
 
 
 def check_if_clan_chat_down_arrow_exists():
