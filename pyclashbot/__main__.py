@@ -14,7 +14,6 @@ from pyclashbot.fight import (check_if_past_game_is_win,
                               leave_end_battle_window, look_for_enemy_troops,
                               start_2v2, wait_for_battle_start)
 from pyclashbot.logger import Logger
-from pyclashbot.mass_screenshot import take_screenshots
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
 from pyclashbot.state import (
