@@ -6,14 +6,15 @@ import matplotlib.pyplot as plt
 from pyclashbot.account import switch_accounts_to
 from pyclashbot.card import fight_with_deck_list
 from pyclashbot.chest import check_if_has_chest_unlocking, look_for_clock, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
+from pyclashbot.client import (check_if_windows_exist, check_quit_key_press, click,
                                orientate_memu_multi, orientate_window,
-                               refresh_screen, restart_client)
+                               refresh_screen, restart_client, scroll_down, scroll_down_fast)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win,
                               leave_end_battle_window, look_for_enemy_troops,
                               start_2v2, wait_for_battle_start)
 from pyclashbot.logger import Logger
+from pyclashbot.mass_screenshot import take_many_screenshots
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
 from pyclashbot.state import (
@@ -23,6 +24,7 @@ from pyclashbot.state import (
     open_clash,
     return_to_clash_main_menu,
     wait_for_clash_main_menu)
+from pyclashbot.upgrade import check_for_elixer_icon, find_upgradable_cards, getto_card_page, look_for_upgrade_button_2, upgrade_cards_from_main
 
 logger = Logger()
 
@@ -36,6 +38,7 @@ def show_image(iar):
 def main_loop():
     # user vars (these will be specified thru the GUI, but these are the
     # placeholders for now.)
+    total_accounts=2
     deck = ""
     fight_type = "2v2"
     card_to_request = "goblin_cage"
@@ -51,6 +54,13 @@ def main_loop():
     state = check_state(logger)
     if state is None:
         state = "restart"
+    
+    
+    # region=[219,614,54,46]
+    # folder=r"C:\Users\Matt\Desktop\inc_pics"
+    # take_many_screenshots(duration=2, frequency=30,name="g", region=region,folder=folder)
+    
+    
     while True:
         time.sleep(0.2)
         logger.log(f"loop count: {loop_count}")
@@ -59,9 +69,10 @@ def main_loop():
         plt.imshow(iar)
 
         #plt.show()
-        print()
 
-        
+
+
+      
         
         if state == "restart":
             logger.log("-----STATE=restart-----")
@@ -69,9 +80,9 @@ def main_loop():
             logger.log("Restarting menu client")
             restart_client(logger)
             if open_clash(logger) == "quit":
-                state = "restart"
+                state = "restart"   
             else:
-                if check_if_on_clash_main_menu():
+                if check_if_on_clash_main_menu():                        
                     state = "clash_main"
                 else:
                     state = "restart"
@@ -140,8 +151,23 @@ def main_loop():
                 logger.log(
                     "Successfully got to clan chat page. Starting donate alg")
                 click_donates(logger)
-                logger.log("Done with donating. Passing to start_fight state")
-                state = "start_fight"
+                n=random.randint(1,3)
+                if n==1:
+                    logger.log("Done with donating. Passing to upgrade state")
+                    state = "upgrade"
+                else:
+                    logger.log("Done with donating. Passing to start_fight state")
+                    state = "start_fight"
+        if state == "upgrade":
+            logger.log("-----STATE=upgrade-----")     
+            #only run upgrade a third of the time because its fucking slow as shit but what can u do yk?
+            return_to_clash_main_menu()
+            time.sleep(1)
+            upgrade_cards_from_main(logger)
+            time.sleep(1)
+            return_to_clash_main_menu()
+            logger.log("Finished with upgrading. Passing to start fight state")
+            state == "start_fight" 
         if state == "start_fight":
             logger.log("-----STATE=start_fight-----")
             return_to_clash_main_menu()
@@ -191,7 +217,7 @@ def main_loop():
                 logger.log("Last game was a loss")
                 logger.add_loss()
             # switch accounts feature
-            ssid = random.randint(1, 3)
+            ssid = random.randint(1, total_accounts)
             log = "Next account was random chosen and is account: " + str(ssid)
             logger.log(log)
             state = "clash_main"
