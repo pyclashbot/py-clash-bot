@@ -144,6 +144,7 @@ def main_loop():
                 state = "start_fight"
         if state == "start_fight":
             logger.log("-----STATE=start_fight-----")
+            return_to_clash_main_menu()
             if fight_type == "1v1":
                 logger.log("I cant do 1v1s yet. Restarting")
                 state = "restart"
