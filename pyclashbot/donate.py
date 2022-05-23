@@ -130,11 +130,84 @@ def getto_donate_page(logger):
         time.sleep(1)
         loops = loops + 1
         check_quit_key_press()
+        #check if war chest is blocking page switch
+        war_chest_coords = check_for_war_chest()
+        if war_chest_coords is not None:
+            logger.log("Found a war chest to open.")
+            click(war_chest_coords[1],war_chest_coords[0])
+            time.sleep(2)
+            logger.log("Clicking through war chest")
+            click(24,640,20,0.05)
+            time.sleep(2)
+            ok_button_coords = find_ok_button_from_war()
+            if ok_button_coords is None:
+                logger.log("Had trouble locating OK button after opening war chest.")
+                return "quit"
+            else:
+                logger.log("Successfully located OK button after opening war chest.")
+                click(ok_button_coords[1],ok_button_coords[0])
+                time.sleep(2)
+            
+            
     if check_if_on_clan_chat_page():
         return
     else:
         return "quit"
 
+def find_ok_button_from_war():
+    current_image = screenshot()
+    reference_folder = "war_ok_button"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    time.sleep(1)
+    for location in locations:
+        if location is not None:
+            return location  # found a location
+    return None
+
+
+def check_for_war_chest():
+    current_image = screenshot()
+    reference_folder = "war_chest"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    time.sleep(1)
+    for location in locations:
+        if location is not None:
+            return location  # found a location
+    return None
 
 def check_if_more_donates():
     current_image = screenshot()
