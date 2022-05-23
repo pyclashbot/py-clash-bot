@@ -167,6 +167,7 @@ def find_ok_button_from_war():
         "7.png",
         "8.png",
         "9.png",
+        
     ]
 
     locations = find_references(

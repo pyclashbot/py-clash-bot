@@ -20,11 +20,11 @@ def upgrade_cards_from_main(logger):
     logger.log("Getting to card page")
     getto_card_page(logger)
     loops=0
-    while loops<17:
+    while loops<10:
         loops=loops+1
         check_quit_key_press()
         #check if loops is too many
-        if loops>17:
+        if loops>10:
             logger.log("Found no upgrades. Returning")
             return
         #look for upgrade arrows
@@ -75,10 +75,15 @@ def upgrade_cards_from_main(logger):
             #scroll
             scroll_down_fast()
             scroll_down_fast()
+            scroll_down_fast()
+            scroll_down_fast()
+            scroll_down_fast()
+            scroll_down_fast()
             time.sleep(0.5)
     time.sleep(1)
     return_to_clash_main_menu()
     time.sleep(1)
+    
     
 def look_for_upgrade_button_1():
     references = [
@@ -99,6 +104,20 @@ def look_for_upgrade_button_1():
         "15.png",
         "16.png",
         "17.png",
+        "18.png",
+        "19.png",
+        "20.png",
+        "21.png",
+        "22.png",
+        "23.png",
+        "24.png",
+        "25.png",
+        "26.png",
+        "27.png",
+        "28.png",
+        "29.png",
+        "30.png",
+        "31.png",
     ]
     locations = find_references(
         screenshot=screenshot(),
@@ -231,6 +250,51 @@ def find_upgradable_cards():
         "64.png",
         "65.png",
         "66.png",
+        "e1.png",
+        "e2.png",
+        "e3.png",
+        "e4.png",
+        "e5.png",
+        "e6.png",
+        "e7.png",
+        "e8.png",
+        "e9.png",
+        "e10.png",
+        "e11.png",
+        "e12.png",
+        "e13.png",
+        "e14.png",
+        "e15.png",
+        "e16.png",
+        "e17.png",
+        "e18.png",
+        "e19.png",
+        "e20.png",
+        "e21.png",
+        "e22.png",
+        "e23.png",
+        "e24.png",
+        "e25.png",
+        "e26.png",
+        "e27.png",
+        "e28.png",
+        "e29.png",
+        "e30.png",
+        "e31.png",
+        "e32.png",
+        "e33.png",
+        "e34.png",
+        "e35.png",
+        "e36.png",
+        "e37.png",
+        "e38.png",
+        "e39.png",
+        "e40.png",
+        "e41.png",
+        "e42.png",
+        "e43.png",
+        "e44.png",
+        
     ]
 
     locations = find_references(
@@ -274,7 +338,7 @@ def getto_card_page(logger):
         if loops>10:
             logger.log("Couldn't make it to card page")
             return"quit"
-        time.sleep(0.5)
+        time.sleep(0.2)
     scroll_up_fast()
     logger.log("Made it to card page")
     time.sleep(1)
