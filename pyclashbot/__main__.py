@@ -228,18 +228,17 @@ def initialize_client(logger):
 
 
 def main_loop():
-    #mass screenshot. also leave here??? ffs??
-    orientate_memu_multi()
-    time.sleep(0.2)
-    orientate_window()
-    time.sleep(0.2)
-    region=[216,331,8,13]
-    folder=r"C:\Users\Matt\Desktop\inc_pics"
-    take_many_screenshots(duration=9, frequency=30, name="r", region=region,folder=folder)
-    print("done")
-    time.sleep(30)
     
-    
+    # orientate_memu_multi()
+    # time.sleep(0.2)
+    # orientate_window()
+    # time.sleep(0.2)
+    # region=[216,331,8,13]
+    # folder=r"C:\Users\Matt\Desktop\inc_pics"
+    # take_many_screenshots(duration=9, frequency=30, name="r", region=region,folder=folder)
+    # print("done")
+    # time.sleep(30)
+
     # user vars
     # these will be specified thru the GUI, but these are the placeholders for
     # now.
@@ -248,26 +247,17 @@ def main_loop():
     card_to_request = "archers"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssids = cycle([1, 2])  # change to which account positions to use
-
-    #leave this here FFS!
-    # iar = refresh_screen()
-    # plt.imshow(iar)
-    # plt.show()
-    
     
     # loop vars
     # *not user vars, do not change*
-    ssid = next(ssids)
-    logger = Logger()
-    state = initialize_client(logger)
-
-
+    # ssid = next(ssids)
+    # logger = Logger()
+    # state = initialize_client(logger)
+    # loop_count = 0
     
     
-
-    # show_image(refresh_screen())
-
-    loop_count = 0
+    
+    show_image(refresh_screen())
 
     while True:
         logger.log(f"loop count: {loop_count}")
