@@ -3227,7 +3227,7 @@ def check_hand_for_rogal_hogs(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mother_witch(hand_screenshot):
@@ -3240,7 +3240,7 @@ def check_hand_for_mother_witch(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_e_dragon(hand_screenshot):
@@ -3253,7 +3253,7 @@ def check_hand_for_e_dragon(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_skeletons(hand_screenshot):
@@ -3266,7 +3266,7 @@ def check_hand_for_skeletons(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_ice_spirit(hand_screenshot):
@@ -3279,7 +3279,7 @@ def check_hand_for_ice_spirit(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_fire_spirit(hand_screenshot):
@@ -3292,7 +3292,7 @@ def check_hand_for_fire_spirit(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_e_spirit(hand_screenshot):
@@ -3305,7 +3305,7 @@ def check_hand_for_e_spirit(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_e_giant(hand_screenshot):
@@ -3318,7 +3318,7 @@ def check_hand_for_e_giant(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mirror(hand_screenshot):
@@ -3331,7 +3331,7 @@ def check_hand_for_mirror(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_heal_spirit(hand_screenshot):
@@ -3344,7 +3344,7 @@ def check_hand_for_heal_spirit(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_healer(hand_screenshot):
@@ -3357,7 +3357,7 @@ def check_hand_for_healer(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblins(hand_screenshot):
@@ -3370,7 +3370,7 @@ def check_hand_for_goblins(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_bomber(hand_screenshot):
@@ -3383,7 +3383,7 @@ def check_hand_for_bomber(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_spear_goblins(hand_screenshot):
@@ -3396,7 +3396,7 @@ def check_hand_for_spear_goblins(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_ice_golem(hand_screenshot):
@@ -3409,7 +3409,7 @@ def check_hand_for_ice_golem(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_bats(hand_screenshot):
@@ -3422,7 +3422,7 @@ def check_hand_for_bats(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_wall_breaker(hand_screenshot):
@@ -3435,7 +3435,7 @@ def check_hand_for_wall_breaker(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_rage(hand_screenshot):
@@ -3448,7 +3448,7 @@ def check_hand_for_rage(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_zap(hand_screenshot):
@@ -3461,7 +3461,7 @@ def check_hand_for_zap(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_log(hand_screenshot):
@@ -3474,7 +3474,7 @@ def check_hand_for_log(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_barb_barrel(hand_screenshot):
@@ -3487,7 +3487,7 @@ def check_hand_for_barb_barrel(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_snowball(hand_screenshot):
@@ -3500,7 +3500,7 @@ def check_hand_for_snowball(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_knight(hand_screenshot):
@@ -3513,7 +3513,7 @@ def check_hand_for_knight(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_archers(hand_screenshot):
@@ -3526,7 +3526,7 @@ def check_hand_for_archers(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_minions(hand_screenshot):
@@ -3539,7 +3539,7 @@ def check_hand_for_minions(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_minion_hoard(hand_screenshot):
@@ -3552,7 +3552,7 @@ def check_hand_for_minion_hoard(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_skeleton_army(hand_screenshot):
@@ -3565,7 +3565,7 @@ def check_hand_for_skeleton_army(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_ice_wizard(hand_screenshot):
@@ -3578,7 +3578,7 @@ def check_hand_for_ice_wizard(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_guards(hand_screenshot):
@@ -3591,7 +3591,7 @@ def check_hand_for_guards(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_princess(hand_screenshot):
@@ -3604,7 +3604,7 @@ def check_hand_for_princess(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_prince(hand_screenshot):
@@ -3617,7 +3617,7 @@ def check_hand_for_prince(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_miner(hand_screenshot):
@@ -3630,7 +3630,7 @@ def check_hand_for_miner(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mega_minion(hand_screenshot):
@@ -3643,7 +3643,7 @@ def check_hand_for_mega_minion(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_dart_goblin(hand_screenshot):
@@ -3656,7 +3656,7 @@ def check_hand_for_dart_goblin(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblin_gang(hand_screenshot):
@@ -3669,7 +3669,7 @@ def check_hand_for_goblin_gang(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_bandit(hand_screenshot):
@@ -3682,7 +3682,7 @@ def check_hand_for_bandit(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_royal_ghost(hand_screenshot):
@@ -3695,7 +3695,7 @@ def check_hand_for_royal_ghost(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_skeleton_barrel(hand_screenshot):
@@ -3708,7 +3708,7 @@ def check_hand_for_skeleton_barrel(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_fisherman(hand_screenshot):
@@ -3721,7 +3721,7 @@ def check_hand_for_fisherman(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_firecracker(hand_screenshot):
@@ -3734,7 +3734,7 @@ def check_hand_for_firecracker(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_elixer_golem(hand_screenshot):
@@ -3747,7 +3747,7 @@ def check_hand_for_elixer_golem(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_cannon(hand_screenshot):
@@ -3760,7 +3760,7 @@ def check_hand_for_cannon(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_tombstone(hand_screenshot):
@@ -3773,7 +3773,7 @@ def check_hand_for_tombstone(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_arrows(hand_screenshot):
@@ -3786,7 +3786,7 @@ def check_hand_for_arrows(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblin_barrel(hand_screenshot):
@@ -3799,7 +3799,7 @@ def check_hand_for_goblin_barrel(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_tornado(hand_screenshot):
@@ -3812,7 +3812,7 @@ def check_hand_for_tornado(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_clone(hand_screenshot):
@@ -3825,7 +3825,7 @@ def check_hand_for_clone(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_earthquake(hand_screenshot):
@@ -3838,7 +3838,7 @@ def check_hand_for_earthquake(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_royal_delivery(hand_screenshot):
@@ -3851,7 +3851,7 @@ def check_hand_for_royal_delivery(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_valk(hand_screenshot):
@@ -3864,7 +3864,7 @@ def check_hand_for_valk(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_musketeer(hand_screenshot):
@@ -3877,7 +3877,7 @@ def check_hand_for_musketeer(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_baby_dragon(hand_screenshot):
@@ -3890,7 +3890,7 @@ def check_hand_for_baby_dragon(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mini_pekka(hand_screenshot):
@@ -3903,7 +3903,7 @@ def check_hand_for_mini_pekka(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_hog(hand_screenshot):
@@ -3916,7 +3916,7 @@ def check_hand_for_hog(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_dark_knight(hand_screenshot):
@@ -3929,7 +3929,7 @@ def check_hand_for_dark_knight(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_lumberjack(hand_screenshot):
@@ -3942,7 +3942,7 @@ def check_hand_for_lumberjack(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_battle_ram(hand_screenshot):
@@ -3955,7 +3955,7 @@ def check_hand_for_battle_ram(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_inferno_dragon(hand_screenshot):
@@ -3968,7 +3968,7 @@ def check_hand_for_inferno_dragon(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_e_wiz(hand_screenshot):
@@ -3981,7 +3981,7 @@ def check_hand_for_e_wiz(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_hunter(hand_screenshot):
@@ -3994,7 +3994,7 @@ def check_hand_for_hunter(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_zappies(hand_screenshot):
@@ -4007,7 +4007,7 @@ def check_hand_for_zappies(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_magic_archer(hand_screenshot):
@@ -4020,7 +4020,7 @@ def check_hand_for_magic_archer(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mighty_miner(hand_screenshot):
@@ -4033,7 +4033,7 @@ def check_hand_for_mighty_miner(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_skeleton_king(hand_screenshot):
@@ -4046,7 +4046,7 @@ def check_hand_for_skeleton_king(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_golden_knight(hand_screenshot):
@@ -4063,7 +4063,7 @@ def check_hand_for_golden_knight(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mortar(hand_screenshot):
@@ -4076,7 +4076,7 @@ def check_hand_for_mortar(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_bomb_tower(hand_screenshot):
@@ -4089,7 +4089,7 @@ def check_hand_for_bomb_tower(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_tesla(hand_screenshot):
@@ -4102,7 +4102,7 @@ def check_hand_for_tesla(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_furnace(hand_screenshot):
@@ -4115,7 +4115,7 @@ def check_hand_for_furnace(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblin_cage(hand_screenshot):
@@ -4128,7 +4128,7 @@ def check_hand_for_goblin_cage(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblin_drill(hand_screenshot):
@@ -4148,7 +4148,7 @@ def check_hand_for_goblin_drill(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_fireball(hand_screenshot):
@@ -4161,7 +4161,7 @@ def check_hand_for_fireball(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_freeze(hand_screenshot):
@@ -4182,7 +4182,7 @@ def check_hand_for_freeze(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_poison(hand_screenshot):
@@ -4195,7 +4195,7 @@ def check_hand_for_poison(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_giant(hand_screenshot):
@@ -4208,7 +4208,7 @@ def check_hand_for_giant(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_balloon(hand_screenshot):
@@ -4221,7 +4221,7 @@ def check_hand_for_balloon(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_barbs(hand_screenshot):
@@ -4234,7 +4234,7 @@ def check_hand_for_barbs(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_bowler(hand_screenshot):
@@ -4247,7 +4247,7 @@ def check_hand_for_bowler(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_executioner(hand_screenshot):
@@ -4260,7 +4260,7 @@ def check_hand_for_executioner(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_ram_rider(hand_screenshot):
@@ -4273,7 +4273,7 @@ def check_hand_for_ram_rider(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_rascals(hand_screenshot):
@@ -4286,7 +4286,7 @@ def check_hand_for_rascals(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_cannon_cart(hand_screenshot):
@@ -4299,7 +4299,7 @@ def check_hand_for_cannon_cart(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_royal_hogs(hand_screenshot):
@@ -4312,7 +4312,7 @@ def check_hand_for_royal_hogs(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_archer_queen(hand_screenshot):
@@ -4329,7 +4329,7 @@ def check_hand_for_archer_queen(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblin_hut(hand_screenshot):
@@ -4342,7 +4342,7 @@ def check_hand_for_goblin_hut(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_inferno_tower(hand_screenshot):
@@ -4355,7 +4355,7 @@ def check_hand_for_inferno_tower(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_graveyard(hand_screenshot):
@@ -4368,7 +4368,7 @@ def check_hand_for_graveyard(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_giant_skeleton(hand_screenshot):
@@ -4381,7 +4381,7 @@ def check_hand_for_giant_skeleton(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_royal_giant(hand_screenshot):
@@ -4394,7 +4394,7 @@ def check_hand_for_royal_giant(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_sparky(hand_screenshot):
@@ -4407,7 +4407,7 @@ def check_hand_for_sparky(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_elite_barbs(hand_screenshot):
@@ -4420,7 +4420,7 @@ def check_hand_for_elite_barbs(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_goblin_giant(hand_screenshot):
@@ -4433,7 +4433,7 @@ def check_hand_for_goblin_giant(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_elixer_pump(hand_screenshot):
@@ -4446,7 +4446,7 @@ def check_hand_for_elixer_pump(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_xbow(hand_screenshot):
@@ -4459,7 +4459,7 @@ def check_hand_for_xbow(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_lightning(hand_screenshot):
@@ -4472,7 +4472,7 @@ def check_hand_for_lightning(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_pekka(hand_screenshot):
@@ -4485,7 +4485,7 @@ def check_hand_for_pekka(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_lavahound(hand_screenshot):
@@ -4498,7 +4498,7 @@ def check_hand_for_lavahound(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_royal_guards(hand_screenshot):
@@ -4514,7 +4514,7 @@ def check_hand_for_royal_guards(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_mega_knight(hand_screenshot):
@@ -4527,7 +4527,7 @@ def check_hand_for_mega_knight(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_barb_hut(hand_screenshot):
@@ -4540,7 +4540,7 @@ def check_hand_for_barb_hut(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_golem(hand_screenshot):
@@ -4553,7 +4553,7 @@ def check_hand_for_golem(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_three_musketeers(hand_screenshot):
@@ -4566,7 +4566,7 @@ def check_hand_for_three_musketeers(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_skeleton_dragons(hand_screenshot):
@@ -4579,7 +4579,7 @@ def check_hand_for_skeleton_dragons(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_flying_machine(hand_screenshot):
@@ -4596,7 +4596,7 @@ def check_hand_for_flying_machine(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_night_witch(hand_screenshot):
@@ -4609,7 +4609,7 @@ def check_hand_for_night_witch(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_witch(hand_screenshot):
@@ -4622,7 +4622,7 @@ def check_hand_for_witch(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_wizard(hand_screenshot):
@@ -4635,7 +4635,7 @@ def check_hand_for_wizard(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 
 def check_hand_for_rocket(hand_screenshot):
@@ -4648,7 +4648,7 @@ def check_hand_for_rocket(hand_screenshot):
         names=references,
         tolerance=0.97
     )
-    return check_for_location(locations)
+    return get_first_location(locations)
 
 # endregion
 # region deck repo screenshots
