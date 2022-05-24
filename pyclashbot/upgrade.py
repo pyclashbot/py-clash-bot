@@ -28,22 +28,32 @@ def upgrade_cards_from_main(logger):
             logger.log("Clicking upgrade arrow")
             click(arrow_coords[1], arrow_coords[0])
             time.sleep(0.5)
+            
+            
+
+            region=[arrow_coords[1]-75,arrow_coords[0]-75,350,350]
             # click upgrade1
             logger.log("Clicking first upgrade button")
-            upgrade_1_coords = look_for_upgrade_button_1()
+            upgrade_1_coords = look_for_upgrade_button_1(region)
             if upgrade_1_coords is not None:
                 click(upgrade_1_coords[1], upgrade_1_coords[0])
             else:
                 logger.log("Couldn't find upgrade1 button")
             time.sleep(0.5)
+            
+            
+            
             # click upgrade2
             logger.log("Clicking second upgrade button")
-            upgrade_2_coords = look_for_upgrade_button_2()
+            upgrade_2_coords = look_for_upgrade_button_2(region)
             if upgrade_2_coords is not None:
                 click(upgrade_2_coords[1], upgrade_2_coords[0])
             else:
                 logger.log("Couldn't find upgrade2 button")
             time.sleep(0.5)
+            
+            
+            
             # click upgrade_confirm
             logger.log("Clicking upgrade confirm button")
             upgrade_confirm_coords = look_for_upgrade_confirm_button()
@@ -77,7 +87,7 @@ def upgrade_cards_from_main(logger):
     time.sleep(1)
 
 
-def look_for_upgrade_button_1():
+def look_for_upgrade_button_1(region):
     references = [
         "1.png",
         "2.png",
@@ -112,7 +122,7 @@ def look_for_upgrade_button_1():
         "31.png",
     ]
     locations = find_references(
-        screenshot=screenshot(),
+        screenshot=screenshot(region),
         folder="upgrade_button_1",
         names=references,
         tolerance=0.97
@@ -120,7 +130,7 @@ def look_for_upgrade_button_1():
     return get_first_location(locations)
 
 
-def look_for_upgrade_button_2():
+def look_for_upgrade_button_2(region):
     references = [
         "1.png",
         "2.png",
@@ -136,9 +146,22 @@ def look_for_upgrade_button_2():
         "12.png",
         "13.png",
         "14.png",
+        "15.png",
+        "16.png",
+        "17.png",
+        "18.png",
+        "19.png",
+        "20.png",
+        "21.png",
+        "22.png",
+        "23.png",
+        "24.png",
+        "25.png",
+        "26.png",
+        "27.png",
     ]
     locations = find_references(
-        screenshot=screenshot(),
+        screenshot=screenshot(region),
         folder="upgrade_button_2",
         names=references,
         tolerance=0.97
@@ -233,51 +256,7 @@ def find_upgradable_cards():
         "64.png",
         "65.png",
         "66.png",
-        "e1.png",
-        "e2.png",
-        "e3.png",
-        "e4.png",
-        "e5.png",
-        "e6.png",
-        "e7.png",
-        "e8.png",
-        "e9.png",
-        "e10.png",
-        "e11.png",
-        "e12.png",
-        "e13.png",
-        "e14.png",
-        "e15.png",
-        "e16.png",
-        "e17.png",
-        "e18.png",
-        "e19.png",
-        "e20.png",
-        "e21.png",
-        "e22.png",
-        "e23.png",
-        "e24.png",
-        "e25.png",
-        "e26.png",
-        "e27.png",
-        "e28.png",
-        "e29.png",
-        "e30.png",
-        "e31.png",
-        "e32.png",
-        "e33.png",
-        "e34.png",
-        "e35.png",
-        "e36.png",
-        "e37.png",
-        "e38.png",
-        "e39.png",
-        "e40.png",
-        "e41.png",
-        "e42.png",
-        "e43.png",
-        "e44.png",
-
+        
     ]
 
     region = [37, 102, 343, 496]
