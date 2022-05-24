@@ -1,13 +1,19 @@
-from asyncio.log import logger
 import time
+from asyncio.log import logger
 
 import keyboard
+import matplotlib.pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
 
 from pyclashbot.image_rec import pixel_is_equal
 
+
+def show_image(iar):
+    plt.imshow(iar)
+    check_quit_key_press()
+    plt.show()
 
 def check_for_windows(logger):
     try:
