@@ -319,7 +319,7 @@ def return_to_clash_main_menu():
     )
     for location in locations:
         if location is not None:
-            click(location[1], location[0]) 
+            click(location[1], location[0])
             check_if_in_progression_menu()
             return
 
@@ -344,6 +344,7 @@ def check_if_in_progression_menu():
             leave_progression_menu()
             return
 
+
 def leave_progression_menu():
     references = [
         "progression_menu_exit.png",
@@ -359,6 +360,7 @@ def leave_progression_menu():
             print("DEBUG trying to leave progression menu")
             click(location[1], location[0])
             return
+
 
 def check_if_in_a_clan_from_main(logger):
     logger.log("Checking if you're in a clan")

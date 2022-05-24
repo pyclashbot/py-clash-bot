@@ -23,15 +23,15 @@ def start_2v2(logger):
         return "quit"
     click(x=party_button_coords[1], y=party_button_coords[0])
     logger.log("Scrolling until 2v2 button is found")
-    loops=0
+    loops = 0
     while find_2v2_quick_match_button() is None:
-        if loops>20:
+        if loops > 20:
             return"quit"
         scroll_down()
         time.sleep(0.05)
         scroll_down()
         time.sleep(1)
-        loops=loops+1
+        loops = loops+1
     logger.log("Clicking 2v2 quickmatch button")
     time.sleep(1)
     quick_match_button_coords = find_2v2_quick_match_button()
