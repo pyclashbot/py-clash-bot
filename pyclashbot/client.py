@@ -1,3 +1,4 @@
+import sys
 import time
 
 import keyboard
@@ -171,4 +172,4 @@ def click(x, y, clicks=1, interval=0.0):
 def check_quit_key_press():
     if keyboard.is_pressed("space"):
         print("space is pressed. Quitting the program")
-        quit()
+        sys.exit()
