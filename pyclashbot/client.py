@@ -1,12 +1,19 @@
-from asyncio.log import logger
+import sys
 import time
 
 import keyboard
+import matplotlib.pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
 
 from pyclashbot.image_rec import pixel_is_equal
+
+
+def show_image(iar):
+    plt.imshow(iar)
+    check_quit_key_press()
+    plt.show()
 
 
 def check_for_windows(logger):
@@ -151,8 +158,7 @@ def scroll_up_fast():
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
-
-def click(x, y, clicks=1, interval=0):
+def click(x, y, clicks=1, interval=0.0):
     original_pos = pyautogui.position()
     loops = 0
     while loops < clicks:
@@ -166,4 +172,4 @@ def click(x, y, clicks=1, interval=0):
 def check_quit_key_press():
     if keyboard.is_pressed("space"):
         print("space is pressed. Quitting the program")
-        quit()
+        sys.exit()

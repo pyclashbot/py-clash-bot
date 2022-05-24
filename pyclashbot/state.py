@@ -2,7 +2,7 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, orientate_window,
                                refresh_screen, screenshot)
-from pyclashbot.image_rec import find_reference, find_references
+from pyclashbot.image_rec import check_for_location, find_reference, find_references
 
 # region state checking
 
@@ -56,10 +56,7 @@ def check_if_on_clash_main_menu():
         tolerance=0.99
     )
 
-    for location in locations:
-        if location is not None:
-            return True  # found a location
-    return False
+    return check_for_location(locations)
 
 
 def check_if_on_clan_chat_page():
@@ -78,10 +75,7 @@ def check_if_on_clan_chat_page():
         tolerance=0.97
     )
 
-    for location in locations:
-        if location is not None:
-            return True
-    return False
+    return check_for_location(locations)
 
 
 def check_if_on_clash_home():
@@ -101,10 +95,7 @@ def check_if_on_clash_home():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return True  # found a location
-    return False
+    return check_for_location(locations)
 
 
 def check_if_in_battle():
@@ -123,10 +114,7 @@ def check_if_in_battle():
         tolerance=0.97
     )
 
-    for location in locations:
-        if location is not None:
-            return True
-    return False
+    return check_for_location(locations)
 
 
 # endregion
@@ -319,7 +307,7 @@ def return_to_clash_main_menu():
     )
     for location in locations:
         if location is not None:
-            click(location[1], location[0]) 
+            click(location[1], location[0])
             check_if_in_progression_menu()
             return
 
@@ -344,6 +332,7 @@ def check_if_in_progression_menu():
             leave_progression_menu()
             return
 
+
 def leave_progression_menu():
     references = [
         "progression_menu_exit.png",
@@ -359,6 +348,7 @@ def leave_progression_menu():
             print("DEBUG trying to leave progression menu")
             click(location[1], location[0])
             return
+
 
 def check_if_in_a_clan_from_main(logger):
     logger.log("Checking if you're in a clan")
