@@ -205,7 +205,7 @@ def scroll_till_find_archers():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # giant
 
 
@@ -238,7 +238,7 @@ def scroll_till_find_giant():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # arrows
 
 
@@ -262,7 +262,7 @@ def scroll_till_find_arrows():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # barb_hut
 
 
@@ -286,7 +286,7 @@ def scroll_till_find_barb_hut():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # barbs
 
 
@@ -310,7 +310,7 @@ def scroll_till_find_barbs():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # bats
 
 
@@ -334,7 +334,7 @@ def scroll_till_find_bats():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # bomb_tower
 
 
@@ -359,7 +359,7 @@ def scroll_till_find_bomb_tower():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # bomber
 
 
@@ -386,7 +386,7 @@ def scroll_till_find_bomber():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # cannon
 
 
@@ -413,7 +413,7 @@ def scroll_till_find_cannon():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # dart_goblin
 
 
@@ -440,7 +440,7 @@ def scroll_till_find_dart_goblin():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # e_spirit
 
 
@@ -467,7 +467,7 @@ def scroll_till_find_e_spirit():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # earthquake
 
 
@@ -494,7 +494,7 @@ def scroll_till_find_earthquake():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # elite_barbs
 
 
@@ -521,7 +521,7 @@ def scroll_till_find_elite_barbs():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # elixer_golem
 
 
@@ -548,7 +548,7 @@ def scroll_till_find_elixer_golem():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # elixer_pump
 
 
@@ -575,7 +575,7 @@ def scroll_till_find_elixer_pump():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # flying_machine
 
 
@@ -602,7 +602,7 @@ def scroll_till_find_flying_machine():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # furnace
 
 
@@ -629,7 +629,7 @@ def scroll_till_find_furnace():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # goblin_cage
 
 
@@ -656,7 +656,7 @@ def scroll_till_find_goblin_cage():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # goblin_hut
 
 
@@ -683,7 +683,7 @@ def scroll_till_find_goblin_hut():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # goblins
 
 
@@ -710,7 +710,7 @@ def scroll_till_find_goblins():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # heal_spirit
 
 
@@ -737,7 +737,7 @@ def scroll_till_find_heal_spirit():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # healer
 
 
@@ -764,7 +764,7 @@ def scroll_till_find_healer():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # ice_golem
 
 
@@ -791,7 +791,7 @@ def scroll_till_find_ice_golem():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # ice_spirit
 
 
@@ -818,7 +818,7 @@ def scroll_till_find_ice_spirit():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # knight
 
 
@@ -845,7 +845,7 @@ def scroll_till_find_knight():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # mega_minion
 
 
@@ -872,7 +872,7 @@ def scroll_till_find_mega_minion():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # minion_hoard
 
 
@@ -899,7 +899,7 @@ def scroll_till_find_minion_hoard():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # minions
 
 
@@ -926,7 +926,7 @@ def scroll_till_find_minions():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # mortar
 
 
@@ -952,7 +952,7 @@ def scroll_till_find_mortar():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # musketeer
 
 
@@ -979,7 +979,7 @@ def scroll_till_find_musketeer():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # rascals
 
 
@@ -1005,7 +1005,7 @@ def scroll_till_find_rascals():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # rocket
 
 
@@ -1032,7 +1032,7 @@ def scroll_till_find_rocket():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # royal_delivery
 
 
@@ -1059,7 +1059,7 @@ def scroll_till_find_royal_delivery():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # royal_giant
 
 
@@ -1086,7 +1086,7 @@ def scroll_till_find_royal_giant():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # royal_hogs
 
 
@@ -1113,7 +1113,7 @@ def scroll_till_find_royal_hogs():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # skeleton_barrel
 
 
@@ -1140,7 +1140,7 @@ def scroll_till_find_skeleton_barrel():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # skeleton_dragons
 
 
@@ -1167,7 +1167,7 @@ def scroll_till_find_skeleton_dragons():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # skeletons
 
 
@@ -1193,7 +1193,7 @@ def scroll_till_find_skeletons():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # snowball
 
 
@@ -1220,7 +1220,7 @@ def scroll_till_find_snowball():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # spear_goblins
 
 
@@ -1247,7 +1247,7 @@ def scroll_till_find_spear_goblins():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # tombstone
 
 
@@ -1273,7 +1273,7 @@ def scroll_till_find_tombstone():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # wizard
 
 
@@ -1300,7 +1300,7 @@ def scroll_till_find_wizard():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # zappies
 
 
@@ -1327,7 +1327,7 @@ def scroll_till_find_zappies():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # fire_spirit
 
 
@@ -1354,7 +1354,7 @@ def scroll_till_find_fire_spirit():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # fireball
 
 
@@ -1381,7 +1381,7 @@ def scroll_till_find_fireball():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # valk
 
 
@@ -1408,7 +1408,7 @@ def scroll_till_find_valk():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # goblin_gang
 
 
@@ -1435,7 +1435,7 @@ def scroll_till_find_goblin_gang():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # zap
 
 
@@ -1462,7 +1462,7 @@ def scroll_till_find_zap():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 # inferno_tower
 
 
@@ -1489,6 +1489,6 @@ def scroll_till_find_inferno_tower():
                     return n
         scroll_down()
         loops += 1
-    return "quit"
+        if loops > 20: return "quit"
 
 # endregion
