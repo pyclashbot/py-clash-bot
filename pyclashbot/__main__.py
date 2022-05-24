@@ -3,16 +3,19 @@ import sys
 import time
 from itertools import cycle
 
+from matplotlib import pyplot as plt
+
 from pyclashbot.account import switch_accounts_to
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
-                               orientate_memu_multi, orientate_window,
+                               orientate_memu_multi, orientate_window, refresh_screen,
                                restart_client)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
                               start_2v2, wait_for_battle_start)
 from pyclashbot.logger import Logger
+from pyclashbot.mass_screenshot import take_many_screenshots
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
 from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
@@ -225,6 +228,17 @@ def initialize_client(logger):
 
 
 def main_loop():
+    
+    # orientate_memu_multi()
+    # time.sleep(0.2)
+    # orientate_window()
+    # time.sleep(0.2)
+    # region=[216,331,8,13]
+    # folder=r"C:\Users\Matt\Desktop\inc_pics"
+    # take_many_screenshots(duration=9, frequency=30, name="r", region=region,folder=folder)
+    # print("done")
+    # time.sleep(30)
+
     # user vars
     # these will be specified thru the GUI, but these are the placeholders for
     # now.
@@ -233,25 +247,17 @@ def main_loop():
     card_to_request = "archers"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssids = cycle([1, 2])  # change to which account positions to use
-
+    
     # loop vars
     # *not user vars, do not change*
-    ssid = next(ssids)
-    logger = Logger()
-    state = initialize_client(logger)
-
-    # region=[45,500,8,8]
-    # folder=r"C:\Users\Matt\Desktop\inc_pics"
-    # take_many_screenshots(duration=9, frequency=30, name="e", region=region,folder=folder)
-    # print("done")
-    # time.sleep(30)
-    # upgrade_cards_from_main(logger)
-    # print("Done")
-    # time.sleep(700)
-
-    # show_image(refresh_screen())
-
-    loop_count = 0
+    # ssid = next(ssids)
+    # logger = Logger()
+    # state = initialize_client(logger)
+    # loop_count = 0
+    
+    
+    
+    show_image(refresh_screen())
 
     while True:
         logger.log(f"loop count: {loop_count}")
