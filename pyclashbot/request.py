@@ -59,10 +59,11 @@ def request_from_clash_main_menu(card_to_request, logger):
     time.sleep(1)
     while not check_if_on_clan_chat_page():
         click(x=317, y=627)
-
+        scroll_down()
         time.sleep(2)
     log = "requesting: " + str(card_to_request)
     logger.log(log)
+    #clicking request button in bottom left
     click(x=86, y=564)
 
     # scroll till find card +click card
