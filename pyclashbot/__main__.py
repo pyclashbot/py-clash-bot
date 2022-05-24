@@ -219,7 +219,7 @@ def main_loop():
     fight_type = "2v2"
     card_to_request = "archers"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
-    ssids = cycle([1, 2, 3])  # change to which account positions to use
+    ssids = cycle([1, 2])  # change to which account positions to use
 
     # loop vars
     # *not user vars, do not change*
