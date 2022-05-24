@@ -152,7 +152,7 @@ def scroll_up_fast():
 
 
 
-def click(x, y, clicks=1, interval=0):
+def click(x, y, clicks=1, interval=0.0):
     original_pos = pyautogui.position()
     loops = 0
     while loops < clicks:
