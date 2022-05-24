@@ -107,6 +107,9 @@ def wait_for_battle_start(logger):
 
 def fight_in_2v2(logger):
     check_quit_key_press()
+    if check_if_hero_ability_is_available():
+        click(346,515)
+        time.sleep(1)
     card_coord = random_card_coord_picker(logger)
     placement_coord = look_for_enemy_troops()
     if placement_coord is None:
