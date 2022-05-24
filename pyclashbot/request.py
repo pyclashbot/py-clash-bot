@@ -2,7 +2,7 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                scroll_down)
-from pyclashbot.image_rec import find_references, pixel_is_equal
+from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 from pyclashbot.state import (check_if_on_clan_chat_page,
                               return_to_clash_main_menu)
 
@@ -49,10 +49,7 @@ def look_for_request_button():
         names=references,
         tolerance=0.99
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def request_from_clash_main_menu(card_to_request, logger):
