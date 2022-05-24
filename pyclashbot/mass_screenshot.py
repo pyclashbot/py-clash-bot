@@ -1,8 +1,9 @@
 import time
 from os.path import join
+
 import numpy
-from pyautogui import screenshot
 from PIL import Image
+from pyautogui import screenshot
 
 
 def take_many_screenshots(duration, frequency, region=None, name=None, folder=None):
