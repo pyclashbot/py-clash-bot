@@ -8,6 +8,37 @@ from joblib import Parallel, delayed
 from PIL import Image
 
 
+def get_first_location(locations: list[list[int]], flip=False):
+    """get the first location from a list of locations
+
+    Args:
+        locations (list[list[int]]): list of locations 
+        flip (bool, optional): flip coordinates. Defaults to False.
+
+    Returns:
+        list[int]: location
+    """
+    for location in locations:
+        if location is not None:
+            return [location[1], location[0]] if flip else location
+    return None
+
+
+def check_for_location(locations: list[list[int]]):
+    """check for a location
+
+    Args:
+        locations (list[list[int]]): _description_
+
+    Returns:
+        bool: if location is found or not
+    """
+    for location in locations:
+        if location is not None:
+            return True
+    return False
+
+
 def find_references(screenshot: Union[np.ndarray,
                                       Image.Image],
                     folder: str,
