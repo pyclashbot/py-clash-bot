@@ -4,21 +4,20 @@ import time
 from itertools import cycle
 
 from pyclashbot.account import switch_accounts_to
-from pyclashbot.card import fight_with_deck_list
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_memu_multi, orientate_window,
                                restart_client)
 from pyclashbot.donate import click_donates, getto_donate_page
-from pyclashbot.fight import (check_if_past_game_is_win,
+from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
                               start_2v2, wait_for_battle_start)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
-from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle, check_if_on_clash_main_menu,
-                              check_state, open_clash,
-                              return_to_clash_main_menu,
+from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
+                              check_if_on_clash_main_menu, check_state,
+                              open_clash, return_to_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import upgrade_cards_from_main
 
