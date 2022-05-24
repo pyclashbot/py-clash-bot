@@ -3,6 +3,7 @@ import sys
 from tabnanny import check
 import time
 from itertools import cycle
+from urllib import request
 
 from matplotlib import pyplot as plt
 
@@ -242,11 +243,11 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger)
+    #state = initialize_client(logger)
     loop_count = 0
     
     
-    
+    request_from_clash_main_menu(card_to_request, logger)
    
  
 
