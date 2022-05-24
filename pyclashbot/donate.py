@@ -127,6 +127,7 @@ def getto_donate_page(logger):
         check_quit_key_press()
         # check if war chest is blocking page switch
         war_chest_coords = check_for_war_chest()
+        scroll_down()
         if war_chest_coords is not None:
             logger.log("Found a war chest to open.")
             click(war_chest_coords[1], war_chest_coords[0])
