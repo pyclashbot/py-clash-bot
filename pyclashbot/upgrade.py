@@ -3,7 +3,7 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                screenshot, scroll_down_fast, scroll_up_fast)
-from pyclashbot.image_rec import find_references, pixel_is_equal
+from pyclashbot.image_rec import check_for_location, find_references, get_first_location, pixel_is_equal
 from pyclashbot.state import return_to_clash_main_menu
 
 
@@ -13,7 +13,7 @@ def upgrade_cards_from_main(logger):
     getto_card_page(logger)
     loops = 0
     while loops < 10:
-        loops = loops+1
+        loops = loops + 1
         check_quit_key_press()
         # check if loops is too many
         if loops > 10:
@@ -117,10 +117,7 @@ def look_for_upgrade_button_1():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_upgrade_button_2():
@@ -146,10 +143,7 @@ def look_for_upgrade_button_2():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_upgrade_confirm_button():
@@ -168,10 +162,7 @@ def look_for_upgrade_confirm_button():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def find_upgradable_cards():
@@ -305,8 +296,8 @@ def find_upgradable_cards():
 
 def confirm_upgrade_arrow(location):
     # location of center of arrow
-    x = location[1]+3
-    y = location[0]+7
+    x = location[1] + 3
+    y = location[0] + 7
     coords = [x, y]
 
     iar = refresh_screen()
@@ -326,7 +317,7 @@ def getto_card_page(logger):
         logger.log("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
-        loops = loops+1
+        loops = loops + 1
         if loops > 10:
             logger.log("Couldn't make it to card page")
             return"quit"
@@ -357,10 +348,7 @@ def check_for_elixer_icon():
         tolerance=0.97
     )
 
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def find_card_page_logo():
@@ -376,8 +364,4 @@ def find_card_page_logo():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            # click(location[1],location[0])
-            return location
-    return None
+    return check_for_location(locations)
