@@ -119,7 +119,7 @@ def check_if_has_chest_unlocking():
         if look_for_clock():
             return True
         else:
-            n = n-1
+            n = n - 1
             time.sleep(0.2)
 
 
