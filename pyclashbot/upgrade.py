@@ -1,78 +1,70 @@
 
-from asyncio import sslproto
-from http.client import PROXY_AUTHENTICATION_REQUIRED
-
 import time
 
-from matplotlib import pyplot as plt
-from numpy import true_divide
-
-from pyclashbot.client import check_quit_key_press, click, refresh_screen, screenshot, scroll_down, scroll_down_fast, scroll_up_fast
+from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
+                               screenshot, scroll_down_fast, scroll_up_fast)
 from pyclashbot.image_rec import find_references, pixel_is_equal
-from pyclashbot.logger import Logger
-from pyclashbot.state import check_if_on_clash_main_menu, return_to_clash_main_menu
+from pyclashbot.state import return_to_clash_main_menu
 
-#can removepyautogui. its here for debugging
-import pyautogui
 
 def upgrade_cards_from_main(logger):
-    #get to card menu from main
+    # get to card menu from main
     logger.log("Getting to card page")
     getto_card_page(logger)
-    loops=0
-    while loops<10:
-        loops=loops+1
+    loops = 0
+    while loops < 10:
+        loops = loops+1
         check_quit_key_press()
-        #check if loops is too many
-        if loops>10:
+        # check if loops is too many
+        if loops > 10:
             logger.log("Found no upgrades. Returning")
             return
-        #look for upgrade arrows
-        arrow_coords=find_upgradable_cards()
+        # look for upgrade arrows
+        arrow_coords = find_upgradable_cards()
         if arrow_coords is not None:
-        #if arrows found
+            # if arrows found
             logger.log("Found upgrade arrow.")
-            #click arrow
+            # click arrow
             logger.log("Clicking upgrade arrow")
-            click(arrow_coords[1],arrow_coords[0])
+            click(arrow_coords[1], arrow_coords[0])
             time.sleep(0.5)
-            #click upgrade1
+            # click upgrade1
             logger.log("Clicking first upgrade button")
-            upgrade_1_coords=look_for_upgrade_button_1()
+            upgrade_1_coords = look_for_upgrade_button_1()
             if upgrade_1_coords is not None:
-                click(upgrade_1_coords[1],upgrade_1_coords[0])
+                click(upgrade_1_coords[1], upgrade_1_coords[0])
             else:
                 logger.log("Couldn't find upgrade1 button")
             time.sleep(0.5)
-            #click upgrade2
+            # click upgrade2
             logger.log("Clicking second upgrade button")
-            upgrade_2_coords=look_for_upgrade_button_2()
+            upgrade_2_coords = look_for_upgrade_button_2()
             if upgrade_2_coords is not None:
-                click(upgrade_2_coords[1],upgrade_2_coords[0])
+                click(upgrade_2_coords[1], upgrade_2_coords[0])
             else:
                 logger.log("Couldn't find upgrade2 button")
             time.sleep(0.5)
-            #click upgrade_confirm
+            # click upgrade_confirm
             logger.log("Clicking upgrade confirm button")
-            upgrade_confirm_coords=look_for_upgrade_confirm_button()
+            upgrade_confirm_coords = look_for_upgrade_confirm_button()
             if upgrade_confirm_coords is not None:
-                click(upgrade_confirm_coords[1],upgrade_confirm_coords[0])
+                click(upgrade_confirm_coords[1], upgrade_confirm_coords[0])
             else:
                 logger.log("Couldn't find upgrade confirm button")
             time.sleep(0.5)
-            #skip through
+            # skip through
             logger.log("Skipping through screens.")
-            click(x=349,y=250)
+            click(x=349, y=250)
             time.sleep(0.2)
-            click(x=20,y=540,clicks=5,interval=0.2)
+            click(x=20, y=540, clicks=5, interval=0.2)
             scroll_down_fast()
             time.sleep(0.2)
             scroll_down_fast()
             time.sleep(0.2)
         else:
-        #if arrows not found
+            # if arrows not found
             logger.log("No upgrades found yet.")
-            #scroll
+            # scroll
             scroll_down_fast()
             scroll_down_fast()
             scroll_down_fast()
@@ -83,8 +75,8 @@ def upgrade_cards_from_main(logger):
     time.sleep(1)
     return_to_clash_main_menu()
     time.sleep(1)
-    
-    
+
+
 def look_for_upgrade_button_1():
     references = [
         "1.png",
@@ -294,7 +286,7 @@ def find_upgradable_cards():
         "e42.png",
         "e43.png",
         "e44.png",
-        
+
     ]
 
     locations = find_references(
@@ -312,38 +304,38 @@ def find_upgradable_cards():
 
 
 def confirm_upgrade_arrow(location):
-    #location of center of arrow
-    x=location[1]+3
-    y=location[0]+7
-    coords=[x,y]
-    
+    # location of center of arrow
+    x = location[1]+3
+    y = location[0]+7
+    coords = [x, y]
+
     iar = refresh_screen()
     arrow_pix = iar[y][x]
-    sentinel = [146,255,94]
+    sentinel = [146, 255, 94]
 
-    if pixel_is_equal(arrow_pix,sentinel,20):
+    if pixel_is_equal(arrow_pix, sentinel, 20):
         return True
     return False
 
 
 def getto_card_page(logger):
-    click(x=100,y=630)
+    click(x=100, y=630)
     time.sleep(2)
-    loops=0
+    loops = 0
     while not check_for_elixer_icon():
         logger.log("Not elixer button. Moving pages")
         time.sleep(1)
-        click(x=100,y=630)
-        loops=loops+1
-        if loops>10:
+        click(x=100, y=630)
+        loops = loops+1
+        if loops > 10:
             logger.log("Couldn't make it to card page")
             return"quit"
         time.sleep(0.2)
     scroll_up_fast()
     logger.log("Made it to card page")
     time.sleep(1)
- 
-    
+
+
 def check_for_elixer_icon():
     references = [
         "1.png",

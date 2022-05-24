@@ -1,5 +1,4 @@
 import time
-from asyncio.log import logger
 
 import keyboard
 import matplotlib.pyplot as plt
@@ -14,6 +13,7 @@ def show_image(iar):
     plt.imshow(iar)
     check_quit_key_press()
     plt.show()
+
 
 def check_for_windows(logger):
     try:
@@ -155,7 +155,6 @@ def scroll_up_fast():
     pyautogui.moveTo(x=215, y=300)
     pyautogui.dragTo(x=215, y=350, button='left', duration=0.5)
     pyautogui.moveTo(x=origin[0], y=origin[1])
-
 
 
 def click(x, y, clicks=1, interval=0.0):
