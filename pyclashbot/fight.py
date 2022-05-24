@@ -3,7 +3,7 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                screenshot, scroll_down)
-from pyclashbot.image_rec import find_references, pixel_is_equal
+from pyclashbot.image_rec import check_for_location, find_references, get_first_location, pixel_is_equal
 from pyclashbot.state import check_if_in_battle, wait_for_clash_main_menu
 
 
@@ -31,7 +31,7 @@ def start_2v2(logger):
         time.sleep(0.05)
         scroll_down()
         time.sleep(1)
-        loops = loops+1
+        loops = loops + 1
     logger.log("Clicking 2v2 quickmatch button")
     time.sleep(1)
     quick_match_button_coords = find_2v2_quick_match_button()
@@ -61,10 +61,7 @@ def find_2v2_quick_match_button():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return location  # found a location
-    return None
+    return get_first_location(locations)
 
 
 def find_party_button():
@@ -85,10 +82,7 @@ def find_party_button():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return location  # found a location
-    return None
+    return get_first_location(locations)
 
 
 def wait_for_battle_start(logger):
@@ -232,10 +226,7 @@ def look_for_enemy_troops():
         tolerance=0.97
     )
 
-    for location in locations:
-        if location is not None:
-            return [location[1], location[0]]
-    return None
+    return get_first_location(locations, flip=True)
 
 
 def leave_end_battle_window(logger):
@@ -267,10 +258,7 @@ def check_if_exit_battle_button_exists():
         tolerance=0.99
     )
 
-    for location in locations:
-        if location is not None:
-            return True  # found a location
-    return False
+    return check_for_location(locations)
 
 
 def open_activity_log(logger):
