@@ -23,7 +23,29 @@
     gtag('config', 'G-Y7520HNKMG');
   </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/get_release.js?raw=true"></script>
+  <script>
+    function GetLatestReleaseInfo()
+    {
+      $.getJSON("https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest").done(function (release)
+      {
+        var asset = release.assets[0];
+        var downloadCount = 0;
+        for (var i = 0; i < release.assets.length; i++)
+        {
+          downloadCount += release.assets[i].download_count;
+        }
+        var oneHour = 60 * 60 * 1000;
+        var oneDay = 24 * oneHour;
+        var dateDiff = new Date() - new Date(asset.updated_at);
+        var timeAgo = dateDiff < oneDay ? `${(dateDiff / oneHour).toFixed()} hours ago` : `${(dateDiff / oneDay).toFixed()} days ago`;
+        var releaseInfo = `py-clash-bot ${release.name} was released ${timeAgo}.`;
+        $(".download").attr("href", asset.browser_download_url);
+        $(".release-info").text(releaseInfo);
+        $(".release-info").fadeIn("slow");
+      });
+    }
+    GetLatestReleaseInfo();
+  </script>
   <style>
     code[class*="language-"],
     pre[class*="language-"] {
@@ -821,10 +843,10 @@
           alt="GitHub Python tests badge" /></a>
     </h2>
     <p>A Clash Royale automation bot written in Python.</p>
-    <p class="release-info"></p>
     <h2 class="mume-header" id="install">Install</h2>
 
-    <p>Choose one of the install methods below</p>
+    <p>Choose one of the install methods below.</p>
+    <p class="release-info"></p>
     <h4 class="mume-header" id="a-windows-install">a. Windows Install</h4>
 
     <p><a class="download" href="https://github.com/matthewmiglio/py-clash-bot/releases/latest"
