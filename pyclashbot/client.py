@@ -152,6 +152,15 @@ def scroll_down_fast():
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
+def scroll_down_super_fast():
+    origin = pyautogui.position()
+    pyautogui.moveTo(x=215, y=400)
+    pyautogui.dragTo(x=215, y=300, button='left', duration=0.2)
+    pyautogui.moveTo(x=origin[0], y=origin[1])
+
+
+
+
 def scroll_up_fast():
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=300)
