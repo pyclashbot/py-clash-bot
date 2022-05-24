@@ -20,7 +20,7 @@
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
-    gtag('config', 'G-Y7520HNKMG');
+    gtag('config', 'G-Y7520HNKMG', { 'debug_mode': true });
   </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script>
@@ -40,6 +40,7 @@
         var timeAgo = dateDiff < oneDay ? `${(dateDiff / oneHour).toFixed()} hours ago` : `${(dateDiff / oneDay).toFixed()} days ago`;
         var releaseInfo = `py-clash-bot ${release.name} was released ${timeAgo}.`;
         $(".download").attr("href", asset.browser_download_url);
+        $(".download").attr("onclick", "gtag('event', 'file_download',{file_extension: '.msi',file_name: asset.browser_download_url.split('/').pop(),link_url: asset.browser_download_url,link_text: 'Download the latest release',});");
         $(".release-info").text(releaseInfo);
         $(".release-info").fadeIn("slow");
       });
@@ -849,9 +850,8 @@
     <p class="release-info"></p>
     <h4 class="mume-header" id="a-windows-install">a. Windows Install</h4>
 
-    <p><a class="download" href="https://github.com/matthewmiglio/py-clash-bot/releases/latest"
-        onclick="gtag('event', 'WindowsReleaseDownload', { event_category: 'download', event_action: 'click', event_label: 'windows_download', event_value: 1} );">Download
-        the latest release</a>.</p>
+    <p><a class="download" href="https://github.com/matthewmiglio/py-clash-bot/releases/latest">Download the latest
+        release</a>.</p>
     <h4 class="mume-header" id="b-install-from-source">b. Install with pip</h4>
 
     <p>Enter the following into the command line:</p>
