@@ -90,7 +90,8 @@ def start_fight_state(logger, fight_type):
 
 def upgrade_state(logger):
     logger.log("-----STATE=upgrade-----")
-    # only run upgrade a third of the time because its fucking slow as shit but what can u do yk?
+    # only run upgrade a third of the time because its fucking slow as shit
+    # but what can u do yk?
     return_to_clash_main_menu()
     time.sleep(1)
     upgrade_cards_from_main(logger)
@@ -214,7 +215,8 @@ def initialize_client(logger):
 
 def main_loop():
     # user vars
-    # these will be specified thru the GUI, but these are the placeholders for now.
+    # these will be specified thru the GUI, but these are the placeholders for
+    # now.
     deck = ""
     fight_type = "2v2"
     card_to_request = "archers"
