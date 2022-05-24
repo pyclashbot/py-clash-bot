@@ -1,5 +1,6 @@
 import random
 import sys
+from tabnanny import check
 import time
 from itertools import cycle
 
@@ -9,7 +10,7 @@ from pyclashbot.account import switch_accounts_to
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_memu_multi, orientate_window, refresh_screen,
-                               restart_client)
+                               restart_client, scroll_down_super_fast, show_image)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -22,7 +23,7 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               check_if_on_clash_main_menu, check_state,
                               open_clash, return_to_clash_main_menu,
                               wait_for_clash_main_menu)
-from pyclashbot.upgrade import upgrade_cards_from_main
+from pyclashbot.upgrade import find_upgradable_cards, upgrade_cards_from_main, upgrade_cards_from_main_2
 
 
 def post_fight_state(logger, ssids):
@@ -35,8 +36,9 @@ def post_fight_state(logger, ssids):
         logger.log("Last game was a loss")
         logger.add_loss()
         # switch accounts feature
+
     ssid = next(ssids)
-    log = "Next account was random chosen and is account: " + str(ssid)
+    log = "Next account is: " + str(ssid)
     logger.log(log)
     state = "clash_main"
     return ssid, state
@@ -70,7 +72,6 @@ def start_fight_state(logger, fight_type):
         logger.log("I cant do 1v1s yet. Restarting")
         state = "restart"
     if fight_type == "2v2":
-        logger.log("Starting a 2v2 match.")
         if start_2v2(logger) == "quit":
             # if couldnt find quickmatch button
             logger.log("Had problems finding 2v2 quickmatch button.")
@@ -110,7 +111,7 @@ def donate_state(logger):
     time.sleep(2)
     do_upgrade = 1 == random.randint(1, 3)
     if check_if_in_a_clan_from_main(logger):
-        logger.log("You're in a clan. Starting donate alg.")
+        logger.log("Starting donate alg.")
         time.sleep(2)
         if getto_donate_page(logger) == "quit":
             # if failed to get to clan chat page
@@ -228,17 +229,6 @@ def initialize_client(logger):
 
 
 def main_loop():
-    
-    # orientate_memu_multi()
-    # time.sleep(0.2)
-    # orientate_window()
-    # time.sleep(0.2)
-    # region=[216,331,8,13]
-    # folder=r"C:\Users\Matt\Desktop\inc_pics"
-    # take_many_screenshots(duration=9, frequency=30, name="r", region=region,folder=folder)
-    # print("done")
-    # time.sleep(30)
-
     # user vars
     # these will be specified thru the GUI, but these are the placeholders for
     # now.
@@ -250,14 +240,15 @@ def main_loop():
     
     # loop vars
     # *not user vars, do not change*
-    # ssid = next(ssids)
-    # logger = Logger()
-    # state = initialize_client(logger)
-    # loop_count = 0
+    logger = Logger()
+    ssid = next(ssids)
+    state = initialize_client(logger)
+    loop_count = 0
     
     
     
-    show_image(refresh_screen())
+   
+ 
 
     while True:
         logger.log(f"loop count: {loop_count}")
