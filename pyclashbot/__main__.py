@@ -1,4 +1,5 @@
 import random
+import sys
 import time
 from itertools import cycle
 
@@ -21,10 +22,8 @@ from pyclashbot.state import (check_if_in_battle, check_if_on_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import upgrade_cards_from_main
 
-logger = Logger()
 
-
-def post_fight_state(ssids):
+def post_fight_state(logger, ssids):
     logger.log("STATE=post_fight")
     logger.log("Back on clash main")
     if check_if_past_game_is_win(logger):
@@ -38,10 +37,30 @@ def post_fight_state(ssids):
     log = "Next account was random chosen and is account: " + str(ssid)
     logger.log(log)
     state = "clash_main"
+    return ssid, state
+
+
+def fighting_state(logger):
+    logger.log("-----STATE=fighting-----")
+    fightloops = 0
+    while (check_if_in_battle()) and (fightloops < 100):
+        check_quit_key_press()
+        log = "Plays: " + str(fightloops)
+        logger.log(log)
+        logger.log("Scanning field.")
+        enemy_troop_position = look_for_enemy_troops()
+        logger.log("Choosing play.")
+        fight_with_deck_list(enemy_troop_position)
+        fightloops = fightloops + 1
+    logger.log("Battle must be finished")
+    time.sleep(10)
+    leave_end_battle_window(logger)
+    wait_for_clash_main_menu(logger)
+    state = "post_fight"
     return state
 
 
-def fight_state(fight_type):
+def start_fight_state(logger, fight_type):
     logger.log("-----STATE=start_fight-----")
     state = "restart"
     return_to_clash_main_menu()
@@ -69,7 +88,7 @@ def fight_state(fight_type):
     return state
 
 
-def upgrade_state():
+def upgrade_state(logger):
     logger.log("-----STATE=upgrade-----")
     # only run upgrade a third of the time because its fucking slow as shit but what can u do yk?
     return_to_clash_main_menu()
@@ -82,7 +101,7 @@ def upgrade_state():
     return state
 
 
-def donate_state():
+def donate_state(logger):
     logger.log("-----STATE=donate-----")
     if getto_donate_page(logger) == "quit":
         # if failed to get to clan chat page
@@ -104,7 +123,7 @@ def donate_state():
     return state
 
 
-def request_state(card_to_request):
+def request_state(logger, card_to_request):
     logger.log("-----STATE=request-----")
     logger.log("Trying to get to donate page")
     if getto_donate_page(logger) == "quit":
@@ -132,7 +151,7 @@ def request_state(card_to_request):
     return state
 
 
-def clash_main_state(ssid):
+def clash_main_state(logger, ssid):
     logger.log("-----STATE=clash_main-----")
     # account switch
     logger.log("Logging in to the correct account")
@@ -166,7 +185,7 @@ def clash_main_state(ssid):
     return state
 
 
-def restart_state():
+def restart_state(logger):
     logger.log("-----STATE=restart-----")
     logger.log("restart time loop")
     logger.log("Restarting menu client")
@@ -181,26 +200,32 @@ def restart_state():
     return state
 
 
-def main_loop():
-    # user vars (these will be specified thru the GUI, but these are the
-    # placeholders for now.)
-    total_accounts = 2
-    deck = ""
-    fight_type = "2v2"
-    card_to_request = "archers"
-    cards_to_not_donate = ["card_1", "card_2", "card_3"]
-    ssids = cycle([1, 2, 3]) # change to which account positions to use
-    ssid = next(ssids)
-    # vars
-    loop_count = 0
+def initialize_client(logger):
     if not check_if_windows_exist(logger):
-        return
+        sys.exit()
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
     state = check_state(logger)
     if state is None:
         state = "restart"
+    return state
+
+
+def main_loop():
+    # user vars
+    # these will be specified thru the GUI, but these are the placeholders for now.
+    deck = ""
+    fight_type = "2v2"
+    card_to_request = "archers"
+    cards_to_not_donate = ["card_1", "card_2", "card_3"]
+    ssids = cycle([1, 2, 3])  # change to which account positions to use
+
+    # loop vars
+    # *not user vars, do not change*
+    ssid = next(ssids)
+    logger = Logger()
+    state = initialize_client(logger)
 
     # region=[45,500,8,8]
     # folder=r"C:\Users\Matt\Desktop\inc_pics"
@@ -208,44 +233,29 @@ def main_loop():
     # print("done")
     # time.sleep(30)
 
+    # show_image(refresh_screen())
+
+    loop_count = 0
     while True:
-        time.sleep(0.2)
         logger.log(f"loop count: {loop_count}")
-        loop_count += 1
-
-        # show_image(refresh_screen())
-
         if state == "restart":
-            state = restart_state()
+            state = restart_state(logger)
         if state == "clash_main":
-            state = clash_main_state(ssid)
+            state = clash_main_state(logger, ssid)
         if state == "request":
-            state = request_state(card_to_request)
+            state = request_state(logger, card_to_request)
         if state == "donate":
-            state = donate_state()
+            state = donate_state(logger)
         if state == "upgrade":
-            state = upgrade_state()
+            state = upgrade_state(logger)
         if state == "start_fight":
-            state = fight_state(fight_type)
+            state = start_fight_state(logger, fight_type)
         if state == "fighting":
-            logger.log("-----STATE=fighting-----")
-            fightloops = 0
-            while (check_if_in_battle()) and (fightloops < 100):
-                check_quit_key_press()
-                log = "Plays: " + str(fightloops)
-                logger.log(log)
-                logger.log("Scanning field.")
-                enemy_troop_position = look_for_enemy_troops()
-                logger.log("Choosing play.")
-                fight_with_deck_list(enemy_troop_position)
-                fightloops = fightloops + 1
-            logger.log("Battle must be finished")
-            time.sleep(10)
-            leave_end_battle_window(logger)
-            wait_for_clash_main_menu(logger)
-            state = "post_fight"
+            state = fighting_state(logger)
         if state == "post_fight":
-            post_fight_state(ssids)
+            ssid, state = post_fight_state(logger, ssids)
+        loop_count += 1
+        time.sleep(0.2)
 
 
 if __name__ == "__main__":
