@@ -2,7 +2,7 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                screenshot, scroll_down)
-from pyclashbot.image_rec import find_references
+from pyclashbot.image_rec import find_references, get_first_location
 from pyclashbot.state import check_if_on_clan_chat_page
 
 
@@ -105,10 +105,7 @@ def check_if_clan_chat_down_arrow_exists():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return location  # found a location
-    return None
+    return get_first_location(locations)
 
 
 def getto_donate_page(logger):
@@ -177,10 +174,7 @@ def find_ok_button_from_war():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return location  # found a location
-    return None
+    return get_first_location(locations)
 
 
 def check_for_war_chest():
@@ -205,10 +199,7 @@ def check_for_war_chest():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return location  # found a location
-    return None
+    return get_first_location(locations)
 
 
 def check_if_more_donates():
@@ -229,10 +220,7 @@ def check_if_more_donates():
         tolerance=0.97
     )
     time.sleep(1)
-    for location in locations:
-        if location is not None:
-            return location  # found a location
-    return None
+    return get_first_location(locations)
 
 
 # region donate_cards
@@ -330,10 +318,7 @@ def look_for_earthquake():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_ice_spirit():
@@ -348,10 +333,7 @@ def look_for_ice_spirit():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_skeleton_barrel():
@@ -366,10 +348,7 @@ def look_for_skeleton_barrel():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_zappies():
@@ -382,10 +361,7 @@ def look_for_zappies():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_skeletons():
@@ -398,10 +374,7 @@ def look_for_skeletons():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_mini_pekka():
@@ -414,10 +387,7 @@ def look_for_mini_pekka():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_inferno_tower():
@@ -430,10 +400,7 @@ def look_for_inferno_tower():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_goblins():
@@ -446,10 +413,7 @@ def look_for_goblins():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_bomber():
@@ -462,10 +426,7 @@ def look_for_bomber():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 def look_for_goblin_gang():
@@ -478,10 +439,7 @@ def look_for_goblin_gang():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if location is not None:
-            return location
-    return None
+    return get_first_location(locations)
 
 
 # endregion
