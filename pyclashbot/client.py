@@ -65,6 +65,7 @@ def wait_for_memu_main(logger):
         if loops > 20:
             logger.log("Waited too long for memu start")
             return "quit"
+    time.sleep(5)
 
 
 def orientate_window():
