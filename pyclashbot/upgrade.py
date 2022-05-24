@@ -297,8 +297,9 @@ def find_upgradable_cards():
         
     ]
 
+    region=[37,102,343,496]
     locations = find_references(
-        screenshot=screenshot(),
+        screenshot=screenshot(region),
         folder="green_upgrade_button",
         names=references,
         tolerance=0.97
