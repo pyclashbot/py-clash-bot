@@ -18,6 +18,7 @@ from pyclashbot.mass_screenshot import take_many_screenshots
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
 from pyclashbot.state import (
+    check_if_in_a_clan_from_main,
     check_if_in_battle,
     check_if_on_clash_main_menu,
     check_state,
@@ -41,7 +42,7 @@ def main_loop():
     total_accounts=2
     deck = ""
     fight_type = "2v2"
-    card_to_request = "archers"
+    card_to_request = "giant"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssid = random.randint(1, 2)
     # vars
@@ -60,6 +61,11 @@ def main_loop():
     # take_many_screenshots(duration=9, frequency=30,name="e", region=region,folder=folder)
     # print("done")
     # time.sleep(30)
+    
+    
+    # upgrade_cards_from_main(logger)
+    # print("Done")
+    # time.sleep(700)
     
     while True:
         time.sleep(0.2)
@@ -134,26 +140,39 @@ def main_loop():
                         str(card_to_request) + "."
                     logger.log(log)
                 logger.log("Done with requesting. Passing to donate state.")
-                return_to_clash_main_menu()
+                return_to_clash_main_menu()        
                 time.sleep(2)
                 state = "donate"
         if state == "donate":
             logger.log("-----STATE=donate-----")
-            if getto_donate_page(logger) == "quit":
-                # if failed to get to clan chat page
-                logger.log("Failed to get to clan chat page. Restarting")
-                state = "restart"
+            logger.log("Checking if in a clan")
+            time.sleep(2)
+            if check_if_in_a_clan_from_main(logger):
+                logger.log("You're in a clan. Starting donate alg.")
+                time.sleep(2)
+                if getto_donate_page(logger) == "quit":
+                    # if failed to get to clan chat page
+                    logger.log("Failed to get to clan chat page. Restarting")
+                    state = "restart"
+                else:
+                    # if got to clan chat page
+                    logger.log(
+                        "Successfully got to clan chat page. Starting donate alg")
+                    click_donates(logger)
+                    n=random.randint(1,3)
+                    if n==1:
+                        logger.log("Done with donating. Passing to upgrade state")
+                        state = "upgrade"
+                    else:
+                        logger.log("Done with donating. Passing to start_fight state")
+                        state = "start_fight"
             else:
-                # if got to clan chat page
-                logger.log(
-                    "Successfully got to clan chat page. Starting donate alg")
-                click_donates(logger)
-                n=random.randint(1,3)
+                logger.log("You're not in a clan. Skipping donate.")
                 if n==1:
-                    logger.log("Done with donating. Passing to upgrade state")
+                    logger.log("Passing to upgrade state")
                     state = "upgrade"
                 else:
-                    logger.log("Done with donating. Passing to start_fight state")
+                    logger.log("Passing to start_fight state")
                     state = "start_fight"
         if state == "upgrade":
             logger.log("-----STATE=upgrade-----")     
