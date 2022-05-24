@@ -12,7 +12,7 @@ def get_first_location(locations: list[list[int]], flip=False):
     """get the first location from a list of locations
 
     Args:
-        locations (list[list[int]]): list of locations 
+        locations (list[list[int]]): list of locations
         flip (bool, optional): flip coordinates. Defaults to False.
 
     Returns:
