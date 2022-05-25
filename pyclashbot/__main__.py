@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 import numpy
 
 from pyclashbot.account import switch_accounts_to
+from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_memu_multi, orientate_window, refresh_screen,
@@ -243,7 +244,7 @@ def main_loop():
     # loop vars
     # *not user vars, do not change*
     logger = Logger()
-    ssid = next(ssids)
+    #ssid = next(ssids)
     #state = initialize_client(logger)
     loop_count = 0
     
@@ -253,7 +254,18 @@ def main_loop():
     # plt.imshow(iar)
     # plt.show()
 
-   
+    #mass screenshot
+    orientate_memu_multi()
+    time.sleep(0.2)
+    orientate_window()
+    time.sleep(0.2)
+    # print("taking screenshots")
+    # region=[166,445,98,8]
+    # take_many_screenshots(3, 60, region=region, name=None, folder=r"C:\Users\Matt\Desktop\inc_pics")
+    # print("Done")
+    
+
+
 
     # while True:
     #     logger.log(f"loop count: {loop_count}")
