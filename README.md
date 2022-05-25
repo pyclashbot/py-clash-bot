@@ -21,11 +21,13 @@ To emulate the game, [Download and install MEmu](https://www.memuplay.com/).
 
 ### Configure MEmu
 
-Using the Multiple Instance Manager, set the instance and display settings of your instance to match the following
+Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match the following
 
-![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/memu_instance_settings.png?raw=true)
+![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_instance_settings.png?raw=true)
 
-![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/memu_display_settings.png?raw=true)
+![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_display_settings.png?raw=true)
+
+![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_appearance_settings.png?raw=true)
 
 Then start the emulator and install Clash Royale with the Google Play Store.
 
