@@ -205,7 +205,7 @@ def look_for_upgrade_button():
         "31.png",
     ]
     locations = find_references(
-        screenshot=screenshot(500,700),
+        screenshot=screenshot(),
         folder="upgrade_button",
         names=references,
         tolerance=0.97
