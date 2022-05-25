@@ -9,6 +9,7 @@ import ReleaseLink from './components/release/ReleaseLink';
 import ReleaseUpdate from './components/release/ReleaseUpdate';
 import ReleaseDownloadCount from './components/release/ReleaseDownloadCount';
 import {initializeGA} from './GoogleAnalytics';
+import PyPiBadge from './components/badge/PyPiBadge';
 
 /**
  * main app
@@ -20,8 +21,9 @@ export default function App() {
     <div className="mume markdown-preview  ">
       <h1 className="mume-header" id="py-clash-bot">py-clash-bot</h1>
       <h2>
-        <SourceBadge />
-        <TestBadge />
+        <SourceBadge/>
+        <PyPiBadge/>
+        <TestBadge/>
       </h2>
       <p>A Clash Royale automation bot written in Python.</p>
       <h2 className="mume-header" id="install">Install</h2>
