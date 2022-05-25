@@ -243,20 +243,12 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    #state = initialize_client(logger)
+    state = initialize_client(logger)
     loop_count = 0
     
     
     
-    orientate_memu_multi()
-    time.sleep(0.2)
-    orientate_window()
-    time.sleep(0.2)
-    time.sleep(4)
-    print("Screenshotting")
-    screenshot_around_mouse()
-    print("Done")
- 
+   
 
     while True:
         logger.log(f"loop count: {loop_count}")
