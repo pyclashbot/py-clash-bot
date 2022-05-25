@@ -1,4 +1,5 @@
 import multiprocessing
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from os.path import dirname, join
 from typing import Union
 
@@ -8,7 +9,7 @@ from joblib import Parallel, delayed
 from PIL import Image
 
 
-def get_first_location(locations: list[list[int]], flip=False):
+def get_first_location(locations: list[Union[tuple[int, int], None]], flip=False):
     """get the first location from a list of locations
 
     Args:
@@ -24,7 +25,7 @@ def get_first_location(locations: list[list[int]], flip=False):
     return None
 
 
-def check_for_location(locations: list[list[int]]):
+def check_for_location(locations: list[Union[tuple[int, int], None]]):
     """check for a location
 
     Args:
@@ -43,7 +44,7 @@ def find_references(screenshot: Union[np.ndarray,
                                       Image.Image],
                     folder: str,
                     names: list[str],
-                    tolerance=0.97):
+                    tolerance=0.97) -> list[Union[tuple[int, int], None]]:
     """find reference images in a screenshot
 
     Args:
@@ -53,7 +54,34 @@ def find_references(screenshot: Union[np.ndarray,
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        list[Union[tuple[int,int],None]: coordinate locations
+        list[Union[tuple[int,int], None]: coordinate locations
+    """
+    num_cores = multiprocessing.cpu_count()
+    with ThreadPoolExecutor(num_cores) as ex:
+        futures = [ex.submit(find_reference, screenshot,
+                             folder, name, tolerance) for name in names]
+        for future in as_completed(futures):
+            result = future.result()
+            if result is not None:
+                return [result]
+    return [None]
+
+
+def find_all_references(screenshot: Union[np.ndarray,
+                                          Image.Image],
+                        folder: str,
+                        names: list[str],
+                        tolerance=0.97) -> list[Union[tuple[int, int], None]]:
+    """find all reference images in a screenshot
+
+    Args:
+        screenshot (Union[np.ndarray, Image.Image]): find references in screenshot
+        folder (str): folder to find references (from within reference_images)
+        names (list[str]): names of references
+        tolerance (float, optional): tolerance. Defaults to 0.97.
+
+    Returns:
+        list[Union[tuple[int,int],None]]: coordinate locations
     """
     num_cores = multiprocessing.cpu_count()
 
