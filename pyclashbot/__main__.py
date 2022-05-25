@@ -11,9 +11,15 @@ import numpy
 from pyclashbot.account import switch_accounts_to
 from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
-                               orientate_memu_multi, orientate_window, refresh_screen,
-                               restart_client, scroll_down_super_fast, show_image)
+from pyclashbot.client import (
+    check_if_windows_exist,
+    check_quit_key_press,
+    orientate_memu_multi,
+    orientate_window,
+    refresh_screen,
+    restart_client,
+    scroll_down_super_fast,
+    show_image)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -240,21 +246,20 @@ def main_loop():
     card_to_request = "archers"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssids = cycle([1, 2])  # change to which account positions to use
-    
+
     # loop vars
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
     state = initialize_client(logger)
     loop_count = 0
-    
-    
+
     # ss=refresh_screen()
     # iar = numpy.asarray(ss)
     # plt.imshow(iar)
     # plt.show()
 
-    #mass screenshot
+    # mass screenshot
     # orientate_memu_multi()
     # time.sleep(0.2)
     # orientate_window()
@@ -263,9 +268,6 @@ def main_loop():
     # region=[166,445,98,8]
     # take_many_screenshots(3, 60, region=region, name=None, folder=r"C:\Users\Matt\Desktop\inc_pics")
     # print("Done")
-    
-
-
 
     while True:
         logger.log(f"loop count: {loop_count}")
