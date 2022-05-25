@@ -1,11 +1,52 @@
+from distutils.util import run_2to3
 import time
 from os.path import join
 
 import numpy
 from PIL import Image
-from pyautogui import screenshot
+import pyautogui
+
+from pyclashbot.client import screenshot 
 
 
+def screenshot_around_mouse():
+    #takes pics to the bottom left of the mouse
+    origin=pyautogui.position()
+    
+    r1=[origin[0],origin[1],33,33]
+    ss_1=pyautogui.screenshot(region=(r1))
+    ss_1.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_1.png')
+    
+    r2=[origin[0],origin[1],38,38]
+    ss_2=pyautogui.screenshot(region=(r2))
+    ss_2.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_2.png')
+    
+    r3=[origin[0],origin[1],45,45]
+    ss_3=pyautogui.screenshot(region=(r3))
+    ss_3.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_3.png')
+    
+    r4=[origin[0],origin[1],20,20]
+    ss_4=pyautogui.screenshot(region=(r4))
+    ss_4.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_4.png')
+    
+    r5=[origin[0],origin[1],25,25]
+    ss_5=pyautogui.screenshot(region=(r5))
+    ss_5.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_5.png')
+    
+    r6=[origin[0],origin[1],30,30]
+    ss_6=pyautogui.screenshot(region=(r6))
+    ss_6.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_6.png')
+    
+    r7=[origin[0],origin[1],35,35]
+    ss_7=pyautogui.screenshot(region=(r7))
+    ss_7.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_7.png')
+    
+    r8=[origin[0],origin[1],40,40]
+    ss_8=pyautogui.screenshot(region=(r8))
+    ss_8.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_8.png')
+    
+    
+    
 def take_many_screenshots(duration, frequency, region=None, name=None, folder=None):
     """_summary_
 
