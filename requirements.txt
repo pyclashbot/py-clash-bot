@@ -1,7 +1,11 @@
+certifi==2022.5.18.1
+charset-normalizer==2.0.12
+colorama==0.4.4
 cx-Freeze==6.10
 cx-Logging==3.0
 cycler==0.11.0
 fonttools==4.33.3
+idna==3.3
 joblib==1.1.0
 keyboard==0.13.5
 kiwisolver==1.4.2
@@ -20,4 +24,7 @@ PyRect==0.2.0
 PyScreeze==0.1.28
 python-dateutil==2.8.2
 pytweening==1.0.4
+requests==2.27.1
 six==1.16.0
+tqdm==4.64.0
+urllib3==1.26.9
