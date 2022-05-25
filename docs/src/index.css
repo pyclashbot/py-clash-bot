@@ -748,15 +748,12 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 
 html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul {
     padding: 0 1.6em;
-    margin-top: .8em
+    margin-top: .8em;
+    list-style-type: none
 }
 
 html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li {
     margin-bottom: .8em
-}
-
-html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul {
-    list-style-type: none
 }
 
 html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview {
