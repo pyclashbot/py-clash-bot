@@ -37,7 +37,6 @@ setup(
         'pyautogui',
         'pygetwindow',
         'joblib',
-        'cx_freeze'
     ],
     packages=['pyclashbot'],
     include_package_data=True,
