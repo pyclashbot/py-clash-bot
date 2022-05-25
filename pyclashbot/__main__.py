@@ -251,7 +251,6 @@ def main_loop():
     # ss=refresh_screen()
     # iar = numpy.asarray(ss)
     # plt.imshow(iar)
-    # print(iar)
     # plt.show()
 
    
