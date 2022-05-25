@@ -73,7 +73,7 @@ def request_from_clash_main_menu(card_to_request, logger):
         time.sleep(2)
     log = "requesting: " + str(card_to_request)
     logger.log(log)
-    #clicking request button in bottom left
+    # clicking request button in bottom left
     click(x=86, y=564)
 
     # scroll till find card +click card
@@ -209,7 +209,7 @@ def scroll_till_find_archers():
             "archers_6.png",
             "archers_7.png",
             "archers_8.png",
-            
+
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -224,7 +224,8 @@ def scroll_till_find_archers():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # giant
 
 
@@ -257,7 +258,8 @@ def scroll_till_find_giant():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # arrows
 
 
@@ -275,7 +277,7 @@ def scroll_till_find_arrows():
             "arrows_6.png",
             "arrows_7.png",
             "arrows_8.png",
-            
+
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -290,7 +292,8 @@ def scroll_till_find_arrows():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # barb_hut
 
 
@@ -308,7 +311,7 @@ def scroll_till_find_barb_hut():
             "barb_hut.png",
             "barb_hut.png",
             "barb_hut.png",
-            
+
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -323,7 +326,8 @@ def scroll_till_find_barb_hut():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # barbs
 
 
@@ -341,7 +345,7 @@ def scroll_till_find_barbs():
             "barbs_6.png",
             "barbs_7.png",
             "barbs_8.png",
-            
+
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -356,7 +360,8 @@ def scroll_till_find_barbs():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # bats
 
 
@@ -374,7 +379,7 @@ def scroll_till_find_bats():
             "bats_6.png",
             "bats_7.png",
             "bats_8.png",
-            
+
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -389,7 +394,8 @@ def scroll_till_find_bats():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # bomb_tower
 
 
@@ -407,7 +413,7 @@ def scroll_till_find_bomb_tower():
             "bomb_tower_6.png",
             "bomb_tower_7.png",
             "bomb_tower_8.png",
-            
+
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -423,7 +429,8 @@ def scroll_till_find_bomb_tower():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # bomber
 
 
@@ -441,7 +448,7 @@ def scroll_till_find_bomber():
             "bomber_6.png",
             "bomber_7.png",
             "bomber_8.png",
-            
+
 
         ]
 
@@ -459,7 +466,8 @@ def scroll_till_find_bomber():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # cannon
 
 
@@ -477,7 +485,7 @@ def scroll_till_find_cannon():
             "cannon_6.png",
             "cannon_7.png",
             "cannon_8.png",
-            
+
 
         ]
 
@@ -495,7 +503,8 @@ def scroll_till_find_cannon():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # dart_goblin
 
 
@@ -513,7 +522,7 @@ def scroll_till_find_dart_goblin():
             "dart_goblin_6.png",
             "dart_goblin_7.png",
             "dart_goblin_8.png",
-            
+
 
         ]
 
@@ -531,7 +540,8 @@ def scroll_till_find_dart_goblin():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # e_spirit
 
 
@@ -549,7 +559,7 @@ def scroll_till_find_e_spirit():
             "e_spirit_6.png",
             "e_spirit_7.png",
             "e_spirit_8.png",
-            
+
 
         ]
 
@@ -567,7 +577,8 @@ def scroll_till_find_e_spirit():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # earthquake
 
 
@@ -585,7 +596,7 @@ def scroll_till_find_earthquake():
             "earthquake_6.png",
             "earthquake_7.png",
             "earthquake_8.png",
-            
+
 
         ]
 
@@ -603,7 +614,8 @@ def scroll_till_find_earthquake():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # elite_barbs
 
 
@@ -621,7 +633,7 @@ def scroll_till_find_elite_barbs():
             "elite_barbs_6.png",
             "elite_barbs_7.png",
             "elite_barbs_8.png",
-            
+
 
         ]
 
@@ -639,7 +651,8 @@ def scroll_till_find_elite_barbs():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # elixer_golem
 
 
@@ -657,7 +670,7 @@ def scroll_till_find_elixer_golem():
             "elixer_golem_6.png",
             "elixer_golem_7.png",
             "elixer_golem_8.png",
-            
+
 
         ]
 
@@ -675,7 +688,8 @@ def scroll_till_find_elixer_golem():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # elixer_pump
 
 
@@ -693,7 +707,7 @@ def scroll_till_find_elixer_pump():
             "elixer_pump_6.png",
             "elixer_pump_7.png",
             "elixer_pump_8.png",
-            
+
 
         ]
 
@@ -711,7 +725,8 @@ def scroll_till_find_elixer_pump():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # flying_machine
 
 
@@ -729,7 +744,7 @@ def scroll_till_find_flying_machine():
             "flying_machine_6.png",
             "flying_machine_7.png",
             "flying_machine_8.png",
-            
+
 
         ]
 
@@ -747,7 +762,8 @@ def scroll_till_find_flying_machine():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # furnace
 
 
@@ -765,7 +781,7 @@ def scroll_till_find_furnace():
             "furnace_6.png",
             "furnace_7.png",
             "furnace_8.png",
-            
+
 
         ]
 
@@ -783,7 +799,8 @@ def scroll_till_find_furnace():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # goblin_cage
 
 
@@ -801,7 +818,7 @@ def scroll_till_find_goblin_cage():
             "goblin_cage_6.png",
             "goblin_cage_7.png",
             "goblin_cage_8.png",
-            
+
 
         ]
 
@@ -819,7 +836,8 @@ def scroll_till_find_goblin_cage():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # goblin_hut
 
 
@@ -837,7 +855,7 @@ def scroll_till_find_goblin_hut():
             "goblin_hut_6.png",
             "goblin_hut_7.png",
             "goblin_hut_8.png",
-            
+
 
         ]
 
@@ -855,7 +873,8 @@ def scroll_till_find_goblin_hut():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # goblins
 
 
@@ -873,7 +892,7 @@ def scroll_till_find_goblins():
             "goblins_6.png",
             "goblins_7.png",
             "goblins_8.png",
-            
+
 
         ]
 
@@ -891,7 +910,8 @@ def scroll_till_find_goblins():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # heal_spirit
 
 
@@ -909,7 +929,7 @@ def scroll_till_find_heal_spirit():
             "heal_spirit_6.png",
             "heal_spirit_7.png",
             "heal_spirit_8.png",
-            
+
 
         ]
 
@@ -927,7 +947,8 @@ def scroll_till_find_heal_spirit():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # healer
 
 
@@ -945,7 +966,7 @@ def scroll_till_find_healer():
             "healer_6.png",
             "healer_7.png",
             "healer_8.png",
-            
+
 
         ]
 
@@ -963,7 +984,8 @@ def scroll_till_find_healer():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # ice_golem
 
 
@@ -981,7 +1003,7 @@ def scroll_till_find_ice_golem():
             "ice_golem_6.png",
             "ice_golem_7.png",
             "ice_golem_8.png",
-            
+
 
         ]
 
@@ -999,7 +1021,8 @@ def scroll_till_find_ice_golem():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # ice_spirit
 
 
@@ -1017,7 +1040,7 @@ def scroll_till_find_ice_spirit():
             "ice_spirit_6.png",
             "ice_spirit_7.png",
             "ice_spirit_8.png",
-            
+
 
         ]
 
@@ -1035,7 +1058,8 @@ def scroll_till_find_ice_spirit():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # knight
 
 
@@ -1053,7 +1077,7 @@ def scroll_till_find_knight():
             "knight_6.png",
             "knight_7.png",
             "knight_8.png",
-            
+
 
         ]
 
@@ -1071,7 +1095,8 @@ def scroll_till_find_knight():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # mega_minion
 
 
@@ -1089,7 +1114,7 @@ def scroll_till_find_mega_minion():
             "mega_minion_6.png",
             "mega_minion_7.png",
             "mega_minion_8.png",
-            
+
 
         ]
 
@@ -1107,7 +1132,8 @@ def scroll_till_find_mega_minion():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # minion_hoard
 
 
@@ -1125,7 +1151,7 @@ def scroll_till_find_minion_hoard():
             "minion_hoard_6.png",
             "minion_hoard_7.png",
             "minion_hoard_8.png",
-            
+
 
         ]
 
@@ -1143,7 +1169,8 @@ def scroll_till_find_minion_hoard():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # minions
 
 
@@ -1161,7 +1188,7 @@ def scroll_till_find_minions():
             "minions_6.png",
             "minions_7.png",
             "minions_8.png",
-            
+
 
         ]
 
@@ -1179,7 +1206,8 @@ def scroll_till_find_minions():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # mortar
 
 
@@ -1197,7 +1225,7 @@ def scroll_till_find_mortar():
             "mortar_6.png",
             "mortar_7.png",
             "mortar_8.png",
-            
+
         ]
 
         locations = find_references(
@@ -1214,7 +1242,8 @@ def scroll_till_find_mortar():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # musketeer
 
 
@@ -1232,7 +1261,7 @@ def scroll_till_find_musketeer():
             "musketeer_6.png",
             "musketeer_7.png",
             "musketeer_8.png",
-            
+
 
         ]
 
@@ -1250,7 +1279,8 @@ def scroll_till_find_musketeer():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # rascals
 
 
@@ -1268,7 +1298,7 @@ def scroll_till_find_rascals():
             "rascals_6.png",
             "rascals_7.png",
             "rascals_8.png",
-            
+
         ]
 
         locations = find_references(
@@ -1285,7 +1315,8 @@ def scroll_till_find_rascals():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # rocket
 
 
@@ -1303,7 +1334,7 @@ def scroll_till_find_rocket():
             "rocket_6.png",
             "rocket_7.png",
             "rocket_8.png",
-            
+
 
         ]
 
@@ -1321,7 +1352,8 @@ def scroll_till_find_rocket():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # royal_delivery
 
 
@@ -1339,7 +1371,7 @@ def scroll_till_find_royal_delivery():
             "royal_delivery_6.png",
             "royal_delivery_7.png",
             "royal_delivery_8.png",
-            
+
 
         ]
 
@@ -1357,7 +1389,8 @@ def scroll_till_find_royal_delivery():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # royal_giant
 
 
@@ -1375,7 +1408,7 @@ def scroll_till_find_royal_giant():
             "royal_giant_6.png",
             "royal_giant_7.png",
             "royal_giant_8.png",
-            
+
 
         ]
 
@@ -1393,7 +1426,8 @@ def scroll_till_find_royal_giant():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # royal_hogs
 
 
@@ -1411,7 +1445,7 @@ def scroll_till_find_royal_hogs():
             "royal_hogs_6.png",
             "royal_hogs_7.png",
             "royal_hogs_8.png",
-            
+
 
         ]
 
@@ -1429,7 +1463,8 @@ def scroll_till_find_royal_hogs():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # skeleton_barrel
 
 
@@ -1447,7 +1482,7 @@ def scroll_till_find_skeleton_barrel():
             "skeleton_barrel_6.png",
             "skeleton_barrel_7.png",
             "skeleton_barrel_8.png",
-            
+
 
         ]
 
@@ -1465,7 +1500,8 @@ def scroll_till_find_skeleton_barrel():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # skeleton_dragons
 
 
@@ -1483,7 +1519,7 @@ def scroll_till_find_skeleton_dragons():
             "skeleton_dragons_6.png",
             "skeleton_dragons_7.png",
             "skeleton_dragons_8.png",
-            
+
 
         ]
 
@@ -1501,7 +1537,8 @@ def scroll_till_find_skeleton_dragons():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # skeletons
 
 
@@ -1519,7 +1556,7 @@ def scroll_till_find_skeletons():
             "skeletons_6.png",
             "skeletons_7.png",
             "skeletons_8.png",
-            
+
         ]
 
         locations = find_references(
@@ -1536,7 +1573,8 @@ def scroll_till_find_skeletons():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # snowball
 
 
@@ -1554,7 +1592,7 @@ def scroll_till_find_snowball():
             "snowball_6.png",
             "snowball_7.png",
             "snowball_8.png",
-            
+
 
         ]
 
@@ -1572,7 +1610,8 @@ def scroll_till_find_snowball():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # spear_goblins
 
 
@@ -1590,7 +1629,7 @@ def scroll_till_find_spear_goblins():
             "spear_goblins_6.png",
             "spear_goblins_7.png",
             "spear_goblins_8.png",
-            
+
 
         ]
 
@@ -1608,7 +1647,8 @@ def scroll_till_find_spear_goblins():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # tombstone
 
 
@@ -1626,7 +1666,7 @@ def scroll_till_find_tombstone():
             "tombstone_6.png",
             "tombstone_7.png",
             "tombstone_8.png",
-            
+
         ]
 
         locations = find_references(
@@ -1643,7 +1683,8 @@ def scroll_till_find_tombstone():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # wizard
 
 
@@ -1661,7 +1702,7 @@ def scroll_till_find_wizard():
             "wizard_6.png",
             "wizard_7.png",
             "wizard_8.png",
-            
+
 
         ]
 
@@ -1679,7 +1720,8 @@ def scroll_till_find_wizard():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # zappies
 
 
@@ -1697,7 +1739,7 @@ def scroll_till_find_zappies():
             "zappies_6.png",
             "zappies_7.png",
             "zappies_8.png",
-            
+
 
         ]
 
@@ -1715,7 +1757,8 @@ def scroll_till_find_zappies():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # fire_spirit
 
 
@@ -1733,7 +1776,7 @@ def scroll_till_find_fire_spirit():
             "fire_spirit_6.png",
             "fire_spirit_7.png",
             "fire_spirit_8.png",
-            
+
 
         ]
 
@@ -1751,7 +1794,8 @@ def scroll_till_find_fire_spirit():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # fireball
 
 
@@ -1769,7 +1813,7 @@ def scroll_till_find_fireball():
             "fireball_6.png",
             "fireball_7.png",
             "fireball_8.png",
-            
+
 
         ]
 
@@ -1787,7 +1831,8 @@ def scroll_till_find_fireball():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # valk
 
 
@@ -1805,7 +1850,7 @@ def scroll_till_find_valk():
             "valk_6.png",
             "valk_7.png",
             "valk_8.png",
-            
+
 
         ]
 
@@ -1823,7 +1868,8 @@ def scroll_till_find_valk():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # goblin_gang
 
 
@@ -1841,7 +1887,7 @@ def scroll_till_find_goblin_gang():
             "goblin_gang_6.png",
             "goblin_gang_7.png",
             "goblin_gang_8.png",
-            
+
 
         ]
 
@@ -1859,7 +1905,8 @@ def scroll_till_find_goblin_gang():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # zap
 
 
@@ -1877,7 +1924,7 @@ def scroll_till_find_zap():
             "zap_6.png",
             "zap_7.png",
             "zap_8.png",
-            
+
 
         ]
 
@@ -1895,7 +1942,8 @@ def scroll_till_find_zap():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 # inferno_tower
 
 
@@ -1913,7 +1961,7 @@ def scroll_till_find_inferno_tower():
             "inferno_tower_6.png",
             "inferno_tower_7.png",
             "inferno_tower_8.png",
-            
+
 
         ]
 
@@ -1931,6 +1979,7 @@ def scroll_till_find_inferno_tower():
                     return n
         scroll_down()
         loops += 1
-        if loops > 20: return "quit"
+        if loops > 20:
+            return "quit"
 
 # endregion
