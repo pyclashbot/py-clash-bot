@@ -42,14 +42,14 @@ def check_if_on_level_up_screen(logger):
     current_image = screenshot()
     reference_folder = "level_up_screen"
     references = [
-        "level_up_screen_1.png",
-        "level_up_screen_2.png",
-        "level_up_screen_3.png",
-        "level_up_screen_4.png",
-        "level_up_screen_5.png",
-        "level_up_screen_6.png",
-        "level_up_screen_7.png",
-        "level_up_screen_8.png",
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
     ]
     locations = find_references(
         screenshot=current_image,
