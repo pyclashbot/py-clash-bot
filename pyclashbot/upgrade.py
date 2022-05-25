@@ -5,13 +5,19 @@ import time
 
 import numpy
 
-from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
-                               screenshot, scroll_down_fast, scroll_down_super_fast, scroll_up_fast)
+from pyclashbot.client import (
+    check_quit_key_press,
+    click,
+    refresh_screen,
+    screenshot,
+    scroll_down_fast,
+    scroll_down_super_fast,
+    scroll_up_fast)
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location, pixel_is_equal
 from pyclashbot.state import check_if_on_level_up_screen, return_to_clash_main_menu
 
 
-#here for debugging
+# here for debugging
 import pyautogui
 
 
@@ -67,18 +73,18 @@ def upgrade_cards_from_main(logger):
             click(x=20, y=540, clicks=5, interval=0.2)
             time.sleep(0.2)
             if check_if_on_level_up_screen(logger):
-                click(208,560)
+                click(208, 560)
                 time.sleep(2)
-                
+
         else:
             # if arrows not found
             logger.log("No upgrades found yet.")
         # scroll
-        n=random.randint(3,7)
-        while n>0:
+        n = random.randint(3, 7)
+        while n > 0:
             scroll_down_fast()
             time.sleep(0.1)
-            n=n-1
+            n = n - 1
         time.sleep(3)
     time.sleep(1)
     return_to_clash_main_menu()
@@ -90,59 +96,58 @@ def upgrade_cards_from_main_2(logger):
     logger.log("Getting to card page")
     getto_card_page(logger)
     loops = 0
-    while loops<2:
-        #region click_and_check_cards
-        #card1
-        click(84,281)
+    while loops < 2:
+        # region click_and_check_cards
+        # card1
+        click(84, 281)
         upgrade_given_card(logger)
-        #card2
-        click(169,281)
+        # card2
+        click(169, 281)
         upgrade_given_card(logger)
-        #card3
-        click(258,281)
+        # card3
+        click(258, 281)
         upgrade_given_card(logger)
-        #card4
-        click(346,281)
+        # card4
+        click(346, 281)
         upgrade_given_card(logger)
-        #card5
-        click(169,403)
+        # card5
+        click(169, 403)
         upgrade_given_card(logger)
-        #card6
-        click(258,403)
+        # card6
+        click(258, 403)
         upgrade_given_card(logger)
-        #card7
-        click(346,403)
+        # card7
+        click(346, 403)
         upgrade_given_card(logger)
-        #card8
-        click(78,403)
+        # card8
+        click(78, 403)
         upgrade_given_card(logger)
-        #endregion
-        #scroll
-        n=random.randint(1,16)
-        while n>0:
+        # endregion
+        # scroll
+        n = random.randint(1, 16)
+        while n > 0:
             scroll_down_super_fast()
-            n=n-1
-        loops=loops+1
+            n = n - 1
+        loops = loops + 1
 
 
 def upgrade_given_card(logger):
-    upgrade_coords=look_for_upgrade_button()
+    upgrade_coords = look_for_upgrade_button()
     if upgrade_coords is not None:
-        click(upgrade_coords[1],upgrade_coords[0])
+        click(upgrade_coords[1], upgrade_coords[0])
         time.sleep(0.2)
-    upgrade_coords=look_for_upgrade_button()
+    upgrade_coords = look_for_upgrade_button()
     if upgrade_coords is not None:
-        click(upgrade_coords[1],upgrade_coords[0])
+        click(upgrade_coords[1], upgrade_coords[0])
         time.sleep(0.2)
-    confirm_upgrade_coords=look_for_upgrade_confirm_button()
+    confirm_upgrade_coords = look_for_upgrade_confirm_button()
     if confirm_upgrade_coords is not None:
-        click(confirm_upgrade_coords[1],confirm_upgrade_coords[0])
+        click(confirm_upgrade_coords[1], confirm_upgrade_coords[0])
         time.sleep(0.2)
     # skip through
     logger.log("Skipping through screens.")
     click(x=349, y=250)
     click(x=20, y=540, clicks=5, interval=0.05)
-
 
 
 def look_for_upgrade_button():
@@ -211,7 +216,6 @@ def look_for_upgrade_button():
         tolerance=0.97
     )
     return get_first_location(locations)
-
 
 
 def look_for_upgrade_confirm_button():
@@ -320,20 +324,19 @@ def find_upgradable_cards():
 def confirm_upgrade_arrow(location):
     print("confirm_upgrade_arrow recieved a coord to confirm")
     # get location of center of arrow
-    x=location[1]+5
-    y=location[0]+3
-    print("Location: ",location)
-    print("Recieved coords: ",x,",",y)
+    x = location[1] + 5
+    y = location[0] + 3
+    print("Location: ", location)
+    print("Recieved coords: ", x, ",", y)
 
-
-    #get center pixel of arrow and check if green
-    region=[x,y,5,5]
-    ss=screenshot(region)
-    ss_iar=numpy.array(ss)
+    # get center pixel of arrow and check if green
+    region = [x, y, 5, 5]
+    ss = screenshot(region)
+    ss_iar = numpy.array(ss)
     pix1 = ss_iar[1][1]
     print(pix1)
-    sentinel=[145,255,90]
-    if pixel_is_equal(pix1,sentinel,20):
+    sentinel = [145, 255, 90]
+    if pixel_is_equal(pix1, sentinel, 20):
         return True
     return False
 
