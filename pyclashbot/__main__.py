@@ -98,7 +98,7 @@ def upgrade_state(logger):
     # but what can u do yk?
     return_to_clash_main_menu()
     time.sleep(1)
-    upgrade_cards_from_main(logger)
+    upgrade_cards_from_main_2(logger)
     time.sleep(1)
     return_to_clash_main_menu()
     logger.log("Finished with upgrading. Passing to start fight state")
@@ -258,26 +258,26 @@ def main_loop():
     print("Done")
  
 
-    # while True:
-    #     logger.log(f"loop count: {loop_count}")
-    #     if state == "restart":
-    #         state = restart_state(logger)
-    #     if state == "clash_main":
-    #         state = clash_main_state(logger, ssid)
-    #     if state == "request":
-    #         state = request_state(logger, card_to_request)
-    #     if state == "donate":
-    #         state = donate_state(logger)
-    #     if state == "upgrade":
-    #         state = upgrade_state(logger)
-    #     if state == "start_fight":
-    #         state = start_fight_state(logger, fight_type)
-    #     if state == "fighting":
-    #         state = fighting_state(logger)
-    #     if state == "post_fight":
-    #         ssid, state = post_fight_state(logger, ssids)
-    #     loop_count += 1
-    #     time.sleep(0.2)
+    while True:
+        logger.log(f"loop count: {loop_count}")
+        if state == "restart":
+            state = restart_state(logger)
+        if state == "clash_main":
+            state = clash_main_state(logger, ssid)
+        if state == "request":
+            state = request_state(logger, card_to_request)
+        if state == "donate":
+            state = donate_state(logger)
+        if state == "upgrade":
+            state = upgrade_state(logger)
+        if state == "start_fight":
+            state = start_fight_state(logger, fight_type)
+        if state == "fighting":
+            state = fighting_state(logger)
+        if state == "post_fight":
+            ssid, state = post_fight_state(logger, ssids)
+        loop_count += 1
+        time.sleep(0.2)
 
 
 if __name__ == "__main__":
