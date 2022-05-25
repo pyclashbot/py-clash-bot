@@ -42,14 +42,14 @@ def check_if_on_level_up_screen(logger):
     current_image = screenshot()
     reference_folder = "level_up_screen"
     references = [
-        "level_up_screen_1.png",
-        "level_up_screen_2.png",
-        "level_up_screen_3.png",
-        "level_up_screen_4.png",
-        "level_up_screen_5.png",
-        "level_up_screen_6.png",
-        "level_up_screen_7.png",
-        "level_up_screen_8.png",
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
     ]
     locations = find_references(
         screenshot=current_image,
@@ -58,7 +58,11 @@ def check_if_on_level_up_screen(logger):
         tolerance=0.97
     )
     
-    return check_for_location(locations)
+    for location in locations:
+        if location is not None:
+            return True
+    return False
+    
     
 
 
@@ -179,6 +183,9 @@ def wait_for_clash_main_menu(logger):
         if n > 20:
             logger.log("Waiting longer than a minute for clash main menu")
             return "quit"
+        if check_if_on_level_up_screen(logger):
+                click(208,560)
+                time.sleep(2)
 
         click(10, 170)
 

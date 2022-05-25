@@ -32,7 +32,7 @@ def start_2v2(logger):
         scroll_down()
         time.sleep(0.05)
         scroll_down()
-        time.sleep(1)
+        time.sleep(3)
         loops = loops + 1
     logger.log("Clicking 2v2 quickmatch button")
     time.sleep(1)

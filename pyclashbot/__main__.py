@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 import numpy
 
 from pyclashbot.account import switch_accounts_to
+from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_memu_multi, orientate_window, refresh_screen,
@@ -244,7 +245,7 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    #state = initialize_client(logger)
+    state = initialize_client(logger)
     loop_count = 0
     
     
@@ -253,28 +254,39 @@ def main_loop():
     # plt.imshow(iar)
     # plt.show()
 
-   
+    #mass screenshot
+    # orientate_memu_multi()
+    # time.sleep(0.2)
+    # orientate_window()
+    # time.sleep(0.2)
+    # print("taking screenshots")
+    # region=[166,445,98,8]
+    # take_many_screenshots(3, 60, region=region, name=None, folder=r"C:\Users\Matt\Desktop\inc_pics")
+    # print("Done")
+    
 
-    # while True:
-    #     logger.log(f"loop count: {loop_count}")
-    #     if state == "restart":
-    #         state = restart_state(logger)
-    #     if state == "clash_main":
-    #         state = clash_main_state(logger, ssid)
-    #     if state == "request":
-    #         state = request_state(logger, card_to_request)
-    #     if state == "donate":
-    #         state = donate_state(logger)
-    #     if state == "upgrade":
-    #         state = upgrade_state(logger)
-    #     if state == "start_fight":
-    #         state = start_fight_state(logger, fight_type)
-    #     if state == "fighting":
-    #         state = fighting_state(logger)
-    #     if state == "post_fight":
-    #         ssid, state = post_fight_state(logger, ssids)
-    #     loop_count += 1
-    #     time.sleep(0.2)
+
+
+    while True:
+        logger.log(f"loop count: {loop_count}")
+        if state == "restart":
+            state = restart_state(logger)
+        if state == "clash_main":
+            state = clash_main_state(logger, ssid)
+        if state == "request":
+            state = request_state(logger, card_to_request)
+        if state == "donate":
+            state = donate_state(logger)
+        if state == "upgrade":
+            state = upgrade_state(logger)
+        if state == "start_fight":
+            state = start_fight_state(logger, fight_type)
+        if state == "fighting":
+            state = fighting_state(logger)
+        if state == "post_fight":
+            ssid, state = post_fight_state(logger, ssids)
+        loop_count += 1
+        time.sleep(0.2)
 
 
 if __name__ == "__main__":
