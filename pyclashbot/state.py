@@ -2,7 +2,7 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, orientate_window,
                                refresh_screen, screenshot)
-from pyclashbot.image_rec import check_for_location, find_reference, find_references
+from pyclashbot.image_rec import check_for_location, find_reference, find_references, get_first_location
 
 # region state checking
 
@@ -36,6 +36,31 @@ def check_state(logger):
         logger.log("In a fight")
         return "fighting"
     return None
+
+
+def check_if_on_level_up_screen(logger):
+    current_image = screenshot()
+    reference_folder = "level_up_screen"
+    references = [
+        "level_up_screen_1.png",
+        "level_up_screen_2.png",
+        "level_up_screen_3.png",
+        "level_up_screen_4.png",
+        "level_up_screen_5.png",
+        "level_up_screen_6.png",
+        "level_up_screen_7.png",
+        "level_up_screen_8.png",
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97
+    )
+    
+    return check_for_location(locations)
+    
 
 
 def check_if_on_clash_main_menu():
