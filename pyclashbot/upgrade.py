@@ -8,7 +8,7 @@ import numpy
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                screenshot, scroll_down_fast, scroll_down_super_fast, scroll_up_fast)
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location, pixel_is_equal
-from pyclashbot.state import return_to_clash_main_menu
+from pyclashbot.state import check_if_on_level_up_screen, return_to_clash_main_menu
 
 
 #here for debugging
@@ -20,11 +20,11 @@ def upgrade_cards_from_main(logger):
     logger.log("Getting to card page")
     getto_card_page(logger)
     loops = 0
-    while loops < 10:
+    while loops < 5:
         loops = loops + 1
         check_quit_key_press()
         # check if loops is too many
-        if loops > 10:
+        if loops > 5:
             logger.log("Found no upgrades. Returning")
             return
         # look for upgrade arrows
@@ -36,10 +36,6 @@ def upgrade_cards_from_main(logger):
             logger.log("Clicking upgrade arrow")
             click(arrow_coords[1], arrow_coords[0])
             time.sleep(0.5)
-            
-            
-
-
             # click upgrade1
             logger.log("Clicking first upgrade button")
             upgrade_1_coords = look_for_upgrade_button()
@@ -48,9 +44,6 @@ def upgrade_cards_from_main(logger):
             else:
                 logger.log("Couldn't find upgrade1 button")
             time.sleep(0.5)
-            
-            
-            
             # click upgrade2
             logger.log("Clicking second upgrade button")
             upgrade_2_coords = look_for_upgrade_button()
@@ -59,9 +52,6 @@ def upgrade_cards_from_main(logger):
             else:
                 logger.log("Couldn't find upgrade2 button")
             time.sleep(0.5)
-            
-            
-            
             # click upgrade_confirm
             logger.log("Clicking upgrade confirm button")
             upgrade_confirm_coords = look_for_upgrade_confirm_button()
@@ -76,6 +66,10 @@ def upgrade_cards_from_main(logger):
             time.sleep(0.2)
             click(x=20, y=540, clicks=5, interval=0.2)
             time.sleep(0.2)
+            if check_if_on_level_up_screen(logger):
+                click(208,560)
+                time.sleep(2)
+                
         else:
             # if arrows not found
             logger.log("No upgrades found yet.")
@@ -211,12 +205,13 @@ def look_for_upgrade_button():
         "31.png",
     ]
     locations = find_references(
-        screenshot=screenshot(),
+        screenshot=screenshot(500,700),
         folder="upgrade_button",
         names=references,
         tolerance=0.97
     )
     return get_first_location(locations)
+
 
 
 def look_for_upgrade_confirm_button():
