@@ -9,7 +9,7 @@ from joblib import Parallel, delayed
 from PIL import Image
 
 
-def get_first_location(locations: list[Union[tuple[int, int], None]], flip=False):
+def get_first_location(locations: list[Union[list[int], None]], flip=False):
     """get the first location from a list of locations
 
     Args:
@@ -25,7 +25,7 @@ def get_first_location(locations: list[Union[tuple[int, int], None]], flip=False
     return None
 
 
-def check_for_location(locations: list[Union[tuple[int, int], None]]):
+def check_for_location(locations: list[Union[list[int], None]]):
     """check for a location
 
     Args:
@@ -44,7 +44,7 @@ def find_references(screenshot: Union[np.ndarray,
                                       Image.Image],
                     folder: str,
                     names: list[str],
-                    tolerance=0.97) -> list[Union[tuple[int, int], None]]:
+                    tolerance=0.97) -> list[Union[list[int], None]]:
     """find reference images in a screenshot
 
     Args:
@@ -54,7 +54,7 @@ def find_references(screenshot: Union[np.ndarray,
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        list[Union[tuple[int,int], None]: coordinate locations
+        list[Union[list[int], None]: coordinate locations
     """
     num_cores = multiprocessing.cpu_count()
     with ThreadPoolExecutor(num_cores) as ex:
@@ -71,7 +71,7 @@ def find_all_references(screenshot: Union[np.ndarray,
                                           Image.Image],
                         folder: str,
                         names: list[str],
-                        tolerance=0.97) -> list[Union[tuple[int, int], None]]:
+                        tolerance=0.97) -> list[Union[list[int], None]]:
     """find all reference images in a screenshot
 
     Args:
@@ -81,7 +81,7 @@ def find_all_references(screenshot: Union[np.ndarray,
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        list[Union[tuple[int,int],None]]: coordinate locations
+        list[Union[list[int],None]]: coordinate locations
     """
     num_cores = multiprocessing.cpu_count()
 
@@ -109,7 +109,7 @@ def find_reference(screenshot: Union[np.ndarray,
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        Union[tuple[int,int], None]: coordinate location
+        Union[list[int], None]: coordinate location
     """
     top_level = dirname(__file__)
     reference_folder = join(top_level, "reference_images")
@@ -151,7 +151,7 @@ def compare_images(image: Union[np.ndarray,
         template (Union[np.ndarray, Image.Image]): template image to match to
         threshold (float, optional): matching threshold. defaults to 0.8
     Returns:
-        Union[tuple[int,int], None]: a tuple of pixel location (x,y)
+        Union[list[int], None]: a list of pixel location (x,y)
     """
 
     # show template
@@ -175,4 +175,4 @@ def compare_images(image: Union[np.ndarray,
     if len(loc[0]) != 1:
         return None
 
-    return (int(loc[0][0]), int(loc[1][0]))
+    return [int(loc[0][0]), int(loc[1][0])]
