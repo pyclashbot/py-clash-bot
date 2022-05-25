@@ -37,6 +37,8 @@ setup(
         'pyautogui',
         'pygetwindow',
         'joblib',
+        'tqdm',
+        'requests',
     ],
     packages=['pyclashbot'],
     include_package_data=True,
