@@ -28,7 +28,6 @@ export function pageChange(page) {
 
 /**
  * source badge click event handler
- * @param {string} socialType Name of contact event
  */
 export function sourceBadgeEvent() {
   ReactGA.event({
@@ -39,12 +38,21 @@ export function sourceBadgeEvent() {
 
 /**
  * test badge click event handler
- * @param {string} socialType Name of contact event
  */
 export function testBadgeEvent() {
   ReactGA.event({
     category: 'User',
     action: `Clicked test badge`,
+  });
+}
+
+/**
+ * pypi badge click event handler
+ */
+export function pypiBadgeEvent() {
+  ReactGA.event({
+    category: 'User',
+    action: `Clicked pypi badge`,
   });
 }
 
