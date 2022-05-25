@@ -106,7 +106,7 @@ def refresh_screen():
     return iar
 
 
-def screenshot(region=None):
+def screenshot(region=(0,0,500,700)):
     if region is None:
         return pyautogui.screenshot()
     else:
