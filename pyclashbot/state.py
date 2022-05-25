@@ -51,7 +51,6 @@ def check_if_on_level_up_screen(logger):
         "level_up_screen_7.png",
         "level_up_screen_8.png",
     ]
-
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
