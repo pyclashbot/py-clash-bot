@@ -25,7 +25,9 @@ dependencies = [
     'numpy',
     'pyautogui',
     'pygetwindow',
-    'joblib'
+    'joblib',
+    'tqdm',
+    'requests',
 ]
 
 build_exe_options = {
