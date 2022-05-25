@@ -57,13 +57,11 @@ def check_if_on_level_up_screen(logger):
         names=references,
         tolerance=0.97
     )
-    
+
     for location in locations:
         if location is not None:
             return True
     return False
-    
-    
 
 
 def check_if_on_clash_main_menu():
@@ -184,8 +182,8 @@ def wait_for_clash_main_menu(logger):
             logger.log("Waiting longer than a minute for clash main menu")
             return "quit"
         if check_if_on_level_up_screen(logger):
-                click(208,560)
-                time.sleep(2)
+            click(208, 560)
+            time.sleep(2)
 
         click(10, 170)
 
