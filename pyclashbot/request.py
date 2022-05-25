@@ -201,6 +201,15 @@ def scroll_till_find_archers():
     while (n is None):
         references = [
             "archers.png",
+            "archers_1.png",
+            "archers_2.png",
+            "archers_3.png",
+            "archers_4.png",
+            "archers_5.png",
+            "archers_6.png",
+            "archers_7.png",
+            "archers_8.png",
+            
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -258,6 +267,15 @@ def scroll_till_find_arrows():
     while (n is None) and (loops < 50):
         references = [
             "arrows.png",
+            "arrows_1.png",
+            "arrows_2.png",
+            "arrows_3.png",
+            "arrows_4.png",
+            "arrows_5.png",
+            "arrows_6.png",
+            "arrows_7.png",
+            "arrows_8.png",
+            
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -282,6 +300,15 @@ def scroll_till_find_barb_hut():
     while (n is None) and (loops < 50):
         references = [
             "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            "barb_hut.png",
+            
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -306,6 +333,15 @@ def scroll_till_find_barbs():
     while (n is None) and (loops < 50):
         references = [
             "barbs.png",
+            "barbs_1.png",
+            "barbs_2.png",
+            "barbs_3.png",
+            "barbs_4.png",
+            "barbs_5.png",
+            "barbs_6.png",
+            "barbs_7.png",
+            "barbs_8.png",
+            
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -330,6 +366,15 @@ def scroll_till_find_bats():
     while (n is None) and (loops < 50):
         references = [
             "bats.png",
+            "bats_1.png",
+            "bats_2.png",
+            "bats_3.png",
+            "bats_4.png",
+            "bats_5.png",
+            "bats_6.png",
+            "bats_7.png",
+            "bats_8.png",
+            
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -354,6 +399,15 @@ def scroll_till_find_bomb_tower():
     while (n is None) and (loops < 50):
         references = [
             "bomb_tower.png",
+            "bomb_tower_1.png",
+            "bomb_tower_2.png",
+            "bomb_tower_3.png",
+            "bomb_tower_4.png",
+            "bomb_tower_5.png",
+            "bomb_tower_6.png",
+            "bomb_tower_7.png",
+            "bomb_tower_8.png",
+            
         ]
         locations = find_references(
             screenshot=refresh_screen(),
@@ -379,6 +433,15 @@ def scroll_till_find_bomber():
     while (n is None) and (loops < 50):
         references = [
             "bomber.png",
+            "bomber_1.png",
+            "bomber_2.png",
+            "bomber_3.png",
+            "bomber_4.png",
+            "bomber_5.png",
+            "bomber_6.png",
+            "bomber_7.png",
+            "bomber_8.png",
+            
 
         ]
 
@@ -406,6 +469,15 @@ def scroll_till_find_cannon():
     while (n is None) and (loops < 50):
         references = [
             "cannon.png",
+            "cannon_1.png",
+            "cannon_2.png",
+            "cannon_3.png",
+            "cannon_4.png",
+            "cannon_5.png",
+            "cannon_6.png",
+            "cannon_7.png",
+            "cannon_8.png",
+            
 
         ]
 
@@ -433,6 +505,15 @@ def scroll_till_find_dart_goblin():
     while (n is None) and (loops < 50):
         references = [
             "dart_goblin.png",
+            "dart_goblin_1.png",
+            "dart_goblin_2.png",
+            "dart_goblin_3.png",
+            "dart_goblin_4.png",
+            "dart_goblin_5.png",
+            "dart_goblin_6.png",
+            "dart_goblin_7.png",
+            "dart_goblin_8.png",
+            
 
         ]
 
@@ -460,6 +541,15 @@ def scroll_till_find_e_spirit():
     while (n is None) and (loops < 50):
         references = [
             "e_spirit.png",
+            "e_spirit_1.png",
+            "e_spirit_2.png",
+            "e_spirit_3.png",
+            "e_spirit_4.png",
+            "e_spirit_5.png",
+            "e_spirit_6.png",
+            "e_spirit_7.png",
+            "e_spirit_8.png",
+            
 
         ]
 
@@ -487,6 +577,15 @@ def scroll_till_find_earthquake():
     while (n is None) and (loops < 50):
         references = [
             "earthquake.png",
+            "earthquake_1.png",
+            "earthquake_2.png",
+            "earthquake_3.png",
+            "earthquake_4.png",
+            "earthquake_5.png",
+            "earthquake_6.png",
+            "earthquake_7.png",
+            "earthquake_8.png",
+            
 
         ]
 
@@ -514,6 +613,15 @@ def scroll_till_find_elite_barbs():
     while (n is None) and (loops < 50):
         references = [
             "elite_barbs.png",
+            "elite_barbs_1.png",
+            "elite_barbs_2.png",
+            "elite_barbs_3.png",
+            "elite_barbs_4.png",
+            "elite_barbs_5.png",
+            "elite_barbs_6.png",
+            "elite_barbs_7.png",
+            "elite_barbs_8.png",
+            
 
         ]
 
@@ -541,6 +649,15 @@ def scroll_till_find_elixer_golem():
     while (n is None) and (loops < 50):
         references = [
             "elixer_golem.png",
+            "elixer_golem_1.png",
+            "elixer_golem_2.png",
+            "elixer_golem_3.png",
+            "elixer_golem_4.png",
+            "elixer_golem_5.png",
+            "elixer_golem_6.png",
+            "elixer_golem_7.png",
+            "elixer_golem_8.png",
+            
 
         ]
 
@@ -568,6 +685,15 @@ def scroll_till_find_elixer_pump():
     while (n is None) and (loops < 50):
         references = [
             "elixer_pump.png",
+            "elixer_pump_1.png",
+            "elixer_pump_2.png",
+            "elixer_pump_3.png",
+            "elixer_pump_4.png",
+            "elixer_pump_5.png",
+            "elixer_pump_6.png",
+            "elixer_pump_7.png",
+            "elixer_pump_8.png",
+            
 
         ]
 
@@ -595,6 +721,15 @@ def scroll_till_find_flying_machine():
     while (n is None) and (loops < 50):
         references = [
             "flying_machine.png",
+            "flying_machine_1.png",
+            "flying_machine_2.png",
+            "flying_machine_3.png",
+            "flying_machine_4.png",
+            "flying_machine_5.png",
+            "flying_machine_6.png",
+            "flying_machine_7.png",
+            "flying_machine_8.png",
+            
 
         ]
 
@@ -622,6 +757,15 @@ def scroll_till_find_furnace():
     while (n is None) and (loops < 50):
         references = [
             "furnace.png",
+            "furnace_1.png",
+            "furnace_2.png",
+            "furnace_3.png",
+            "furnace_4.png",
+            "furnace_5.png",
+            "furnace_6.png",
+            "furnace_7.png",
+            "furnace_8.png",
+            
 
         ]
 
@@ -649,6 +793,15 @@ def scroll_till_find_goblin_cage():
     while (n is None) and (loops < 50):
         references = [
             "goblin_cage.png",
+            "goblin_cage_1.png",
+            "goblin_cage_2.png",
+            "goblin_cage_3.png",
+            "goblin_cage_4.png",
+            "goblin_cage_5.png",
+            "goblin_cage_6.png",
+            "goblin_cage_7.png",
+            "goblin_cage_8.png",
+            
 
         ]
 
@@ -676,6 +829,15 @@ def scroll_till_find_goblin_hut():
     while (n is None) and (loops < 50):
         references = [
             "goblin_hut.png",
+            "goblin_hut_1.png",
+            "goblin_hut_2.png",
+            "goblin_hut_3.png",
+            "goblin_hut_4.png",
+            "goblin_hut_5.png",
+            "goblin_hut_6.png",
+            "goblin_hut_7.png",
+            "goblin_hut_8.png",
+            
 
         ]
 
@@ -703,6 +865,15 @@ def scroll_till_find_goblins():
     while (n is None) and (loops < 50):
         references = [
             "goblins.png",
+            "goblins_1.png",
+            "goblins_2.png",
+            "goblins_3.png",
+            "goblins_4.png",
+            "goblins_5.png",
+            "goblins_6.png",
+            "goblins_7.png",
+            "goblins_8.png",
+            
 
         ]
 
@@ -730,6 +901,15 @@ def scroll_till_find_heal_spirit():
     while (n is None) and (loops < 50):
         references = [
             "heal_spirit.png",
+            "heal_spirit_1.png",
+            "heal_spirit_2.png",
+            "heal_spirit_3.png",
+            "heal_spirit_4.png",
+            "heal_spirit_5.png",
+            "heal_spirit_6.png",
+            "heal_spirit_7.png",
+            "heal_spirit_8.png",
+            
 
         ]
 
@@ -757,6 +937,15 @@ def scroll_till_find_healer():
     while (n is None) and (loops < 50):
         references = [
             "healer.png",
+            "healer_1.png",
+            "healer_2.png",
+            "healer_3.png",
+            "healer_4.png",
+            "healer_5.png",
+            "healer_6.png",
+            "healer_7.png",
+            "healer_8.png",
+            
 
         ]
 
@@ -784,6 +973,15 @@ def scroll_till_find_ice_golem():
     while (n is None) and (loops < 50):
         references = [
             "ice_golem.png",
+            "ice_golem_1.png",
+            "ice_golem_2.png",
+            "ice_golem_3.png",
+            "ice_golem_4.png",
+            "ice_golem_5.png",
+            "ice_golem_6.png",
+            "ice_golem_7.png",
+            "ice_golem_8.png",
+            
 
         ]
 
@@ -811,6 +1009,15 @@ def scroll_till_find_ice_spirit():
     while (n is None) and (loops < 50):
         references = [
             "ice_spirit.png",
+            "ice_spirit_1.png",
+            "ice_spirit_2.png",
+            "ice_spirit_3.png",
+            "ice_spirit_4.png",
+            "ice_spirit_5.png",
+            "ice_spirit_6.png",
+            "ice_spirit_7.png",
+            "ice_spirit_8.png",
+            
 
         ]
 
@@ -838,6 +1045,15 @@ def scroll_till_find_knight():
     while (n is None) and (loops < 50):
         references = [
             "knight.png",
+            "knight_1.png",
+            "knight_2.png",
+            "knight_3.png",
+            "knight_4.png",
+            "knight_5.png",
+            "knight_6.png",
+            "knight_7.png",
+            "knight_8.png",
+            
 
         ]
 
@@ -865,6 +1081,15 @@ def scroll_till_find_mega_minion():
     while (n is None) and (loops < 50):
         references = [
             "mega_minion.png",
+            "mega_minion_1.png",
+            "mega_minion_2.png",
+            "mega_minion_3.png",
+            "mega_minion_4.png",
+            "mega_minion_5.png",
+            "mega_minion_6.png",
+            "mega_minion_7.png",
+            "mega_minion_8.png",
+            
 
         ]
 
@@ -892,6 +1117,15 @@ def scroll_till_find_minion_hoard():
     while (n is None) and (loops < 50):
         references = [
             "minion_hoard.png",
+            "minion_hoard_1.png",
+            "minion_hoard_2.png",
+            "minion_hoard_3.png",
+            "minion_hoard_4.png",
+            "minion_hoard_5.png",
+            "minion_hoard_6.png",
+            "minion_hoard_7.png",
+            "minion_hoard_8.png",
+            
 
         ]
 
@@ -919,6 +1153,15 @@ def scroll_till_find_minions():
     while (n is None) and (loops < 50):
         references = [
             "minions.png",
+            "minions_1.png",
+            "minions_2.png",
+            "minions_3.png",
+            "minions_4.png",
+            "minions_5.png",
+            "minions_6.png",
+            "minions_7.png",
+            "minions_8.png",
+            
 
         ]
 
@@ -946,6 +1189,15 @@ def scroll_till_find_mortar():
     while (n is None) and (loops < 50):
         references = [
             "mortar.png",
+            "mortar_1.png",
+            "mortar_2.png",
+            "mortar_3.png",
+            "mortar_4.png",
+            "mortar_5.png",
+            "mortar_6.png",
+            "mortar_7.png",
+            "mortar_8.png",
+            
         ]
 
         locations = find_references(
@@ -972,6 +1224,15 @@ def scroll_till_find_musketeer():
     while (n is None) and (loops < 50):
         references = [
             "musketeer.png",
+            "musketeer_1.png",
+            "musketeer_2.png",
+            "musketeer_3.png",
+            "musketeer_4.png",
+            "musketeer_5.png",
+            "musketeer_6.png",
+            "musketeer_7.png",
+            "musketeer_8.png",
+            
 
         ]
 
@@ -999,6 +1260,15 @@ def scroll_till_find_rascals():
     while (n is None) and (loops < 50):
         references = [
             "rascals.png",
+            "rascals_1.png",
+            "rascals_2.png",
+            "rascals_3.png",
+            "rascals_4.png",
+            "rascals_5.png",
+            "rascals_6.png",
+            "rascals_7.png",
+            "rascals_8.png",
+            
         ]
 
         locations = find_references(
@@ -1025,6 +1295,15 @@ def scroll_till_find_rocket():
     while (n is None) and (loops < 50):
         references = [
             "rocket.png",
+            "rocket_1.png",
+            "rocket_2.png",
+            "rocket_3.png",
+            "rocket_4.png",
+            "rocket_5.png",
+            "rocket_6.png",
+            "rocket_7.png",
+            "rocket_8.png",
+            
 
         ]
 
@@ -1052,6 +1331,15 @@ def scroll_till_find_royal_delivery():
     while (n is None) and (loops < 50):
         references = [
             "royal_delivery.png",
+            "royal_delivery_1.png",
+            "royal_delivery_2.png",
+            "royal_delivery_3.png",
+            "royal_delivery_4.png",
+            "royal_delivery_5.png",
+            "royal_delivery_6.png",
+            "royal_delivery_7.png",
+            "royal_delivery_8.png",
+            
 
         ]
 
@@ -1079,6 +1367,15 @@ def scroll_till_find_royal_giant():
     while (n is None) and (loops < 50):
         references = [
             "royal_giant.png",
+            "royal_giant_1.png",
+            "royal_giant_2.png",
+            "royal_giant_3.png",
+            "royal_giant_4.png",
+            "royal_giant_5.png",
+            "royal_giant_6.png",
+            "royal_giant_7.png",
+            "royal_giant_8.png",
+            
 
         ]
 
@@ -1106,6 +1403,15 @@ def scroll_till_find_royal_hogs():
     while (n is None) and (loops < 50):
         references = [
             "royal_hogs.png",
+            "royal_hogs_1.png",
+            "royal_hogs_2.png",
+            "royal_hogs_3.png",
+            "royal_hogs_4.png",
+            "royal_hogs_5.png",
+            "royal_hogs_6.png",
+            "royal_hogs_7.png",
+            "royal_hogs_8.png",
+            
 
         ]
 
@@ -1132,7 +1438,16 @@ def scroll_till_find_skeleton_barrel():
     n = None
     while (n is None) and (loops < 50):
         references = [
-            "skeleton_barrel.png",
+            "skeleton_barrel.png"
+            "skeleton_barrel_1.png",
+            "skeleton_barrel_2.png",
+            "skeleton_barrel_3.png",
+            "skeleton_barrel_4.png",
+            "skeleton_barrel_5.png",
+            "skeleton_barrel_6.png",
+            "skeleton_barrel_7.png",
+            "skeleton_barrel_8.png",
+            
 
         ]
 
@@ -1160,6 +1475,15 @@ def scroll_till_find_skeleton_dragons():
     while (n is None) and (loops < 50):
         references = [
             "skeleton_dragons.png",
+            "skeleton_dragons_1.png",
+            "skeleton_dragons_2.png",
+            "skeleton_dragons_3.png",
+            "skeleton_dragons_4.png",
+            "skeleton_dragons_5.png",
+            "skeleton_dragons_6.png",
+            "skeleton_dragons_7.png",
+            "skeleton_dragons_8.png",
+            
 
         ]
 
@@ -1187,6 +1511,15 @@ def scroll_till_find_skeletons():
     while (n is None) and (loops < 50):
         references = [
             "skeletons.png",
+            "skeletons_1.png",
+            "skeletons_2.png",
+            "skeletons_3.png",
+            "skeletons_4.png",
+            "skeletons_5.png",
+            "skeletons_6.png",
+            "skeletons_7.png",
+            "skeletons_8.png",
+            
         ]
 
         locations = find_references(
@@ -1213,6 +1546,15 @@ def scroll_till_find_snowball():
     while (n is None) and (loops < 50):
         references = [
             "snowball.png",
+            "snowball_1.png",
+            "snowball_2.png",
+            "snowball_3.png",
+            "snowball_4.png",
+            "snowball_5.png",
+            "snowball_6.png",
+            "snowball_7.png",
+            "snowball_8.png",
+            
 
         ]
 
@@ -1240,6 +1582,15 @@ def scroll_till_find_spear_goblins():
     while (n is None) and (loops < 50):
         references = [
             "spear_goblins.png",
+            "spear_goblins_1.png",
+            "spear_goblins_2.png",
+            "spear_goblins_3.png",
+            "spear_goblins_4.png",
+            "spear_goblins_5.png",
+            "spear_goblins_6.png",
+            "spear_goblins_7.png",
+            "spear_goblins_8.png",
+            
 
         ]
 
@@ -1267,6 +1618,15 @@ def scroll_till_find_tombstone():
     while (n is None) and (loops < 50):
         references = [
             "tombstone.png",
+            "tombstone_1.png",
+            "tombstone_2.png",
+            "tombstone_3.png",
+            "tombstone_4.png",
+            "tombstone_5.png",
+            "tombstone_6.png",
+            "tombstone_7.png",
+            "tombstone_8.png",
+            
         ]
 
         locations = find_references(
@@ -1293,6 +1653,15 @@ def scroll_till_find_wizard():
     while (n is None) and (loops < 50):
         references = [
             "wizard.png",
+            "wizard_1.png",
+            "wizard_2.png",
+            "wizard_3.png",
+            "wizard_4.png",
+            "wizard_5.png",
+            "wizard_6.png",
+            "wizard_7.png",
+            "wizard_8.png",
+            
 
         ]
 
@@ -1320,6 +1689,15 @@ def scroll_till_find_zappies():
     while (n is None) and (loops < 50):
         references = [
             "zappies.png",
+            "zappies_1.png",
+            "zappies_2.png",
+            "zappies_3.png",
+            "zappies_4.png",
+            "zappies_5.png",
+            "zappies_6.png",
+            "zappies_7.png",
+            "zappies_8.png",
+            
 
         ]
 
@@ -1347,6 +1725,15 @@ def scroll_till_find_fire_spirit():
     while (n is None) and (loops < 50):
         references = [
             "fire_spirit.png",
+            "fire_spirit_1.png",
+            "fire_spirit_2.png",
+            "fire_spirit_3.png",
+            "fire_spirit_4.png",
+            "fire_spirit_5.png",
+            "fire_spirit_6.png",
+            "fire_spirit_7.png",
+            "fire_spirit_8.png",
+            
 
         ]
 
@@ -1374,6 +1761,15 @@ def scroll_till_find_fireball():
     while (n is None) and (loops < 50):
         references = [
             "fireball.png",
+            "fireball_1.png",
+            "fireball_2.png",
+            "fireball_3.png",
+            "fireball_4.png",
+            "fireball_5.png",
+            "fireball_6.png",
+            "fireball_7.png",
+            "fireball_8.png",
+            
 
         ]
 
@@ -1401,6 +1797,15 @@ def scroll_till_find_valk():
     while (n is None) and (loops < 50):
         references = [
             "valk.png",
+            "valk_1.png",
+            "valk_2.png",
+            "valk_3.png",
+            "valk_4.png",
+            "valk_5.png",
+            "valk_6.png",
+            "valk_7.png",
+            "valk_8.png",
+            
 
         ]
 
@@ -1428,6 +1833,15 @@ def scroll_till_find_goblin_gang():
     while (n is None) and (loops < 50):
         references = [
             "goblin_gang.png",
+            "goblin_gang_1.png",
+            "goblin_gang_2.png",
+            "goblin_gang_3.png",
+            "goblin_gang_4.png",
+            "goblin_gang_5.png",
+            "goblin_gang_6.png",
+            "goblin_gang_7.png",
+            "goblin_gang_8.png",
+            
 
         ]
 
@@ -1455,6 +1869,15 @@ def scroll_till_find_zap():
     while (n is None) and (loops < 50):
         references = [
             "zap.png",
+            "zap_1.png",
+            "zap_2.png",
+            "zap_3.png",
+            "zap_4.png",
+            "zap_5.png",
+            "zap_6.png",
+            "zap_7.png",
+            "zap_8.png",
+            
 
         ]
 
@@ -1482,6 +1905,15 @@ def scroll_till_find_inferno_tower():
     while (n is None) and (loops < 50):
         references = [
             "inferno_tower.png",
+            "inferno_tower_1.png",
+            "inferno_tower_2.png",
+            "inferno_tower_3.png",
+            "inferno_tower_4.png",
+            "inferno_tower_5.png",
+            "inferno_tower_6.png",
+            "inferno_tower_7.png",
+            "inferno_tower_8.png",
+            
 
         ]
 
