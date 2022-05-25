@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 import numpy
 
 from pyclashbot.account import switch_accounts_to
+from pyclashbot.auto_update import install_latest_release
 from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (
@@ -270,6 +271,7 @@ def main_loop():
     # print("Done")
 
     while True:
+        installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
         logger.log(f"loop count: {loop_count}")
         if state == "restart":
             state = restart_state(logger)
