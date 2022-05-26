@@ -122,7 +122,7 @@ def orientate_bot_window(logger):
                 time.sleep(0.2)
             index=index+1
     except:
-        print("End")
+        logger.log("Unable to orientate terminal window. Who cares?")
     
 
 
