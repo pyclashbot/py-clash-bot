@@ -107,16 +107,23 @@ def refresh_screen():
 
 
 def orientate_bot_window(logger):
+    list=pygetwindow.getAllTitles()
+    index=0
     try:
-        window_terminal=pygetwindow.getWindowsWithTitle('py-clash')
-        window_terminal.minimize()
-        window_terminal.restore()
-        window_terminal.moveTo(200, 200)
-        time.sleep(0.2)
-        window_terminal.moveTo(730, 0)
+        while list[index]is not None:
+            window_string=list[index]
+            if window_string.startswith("py-clash"):
+                terminal_window=pygetwindow.getWindowsWithTitle(window_string)
+                terminal_window.minimize()
+                terminal_window.restore()
+                terminal_window.moveTo(200,200)
+                time.sleep(0.2)
+                terminal_window.moveTo(733, 0)
+                time.sleep(0.2)
+            index=index+1
     except:
-        logger.log("Couldn't orientate terminal window.")
-
+        print("End")
+    
 
 
 
