@@ -100,10 +100,25 @@ def orientate_memu_multi():
 def refresh_screen():
     check_quit_key_press()
     orientate_window()
-    screenshot = pyautogui.screenshot()
+    screenshot = pyautogui.screenshot(region=(0,0,500,700))
     check_quit_key_press()
     iar = numpy.array(screenshot)
     return iar
+
+
+def orientate_bot_window(logger):
+    try:
+        window_terminal=pygetwindow.getWindowsWithTitle('py-clash')
+        window_terminal.minimize()
+        window_terminal.restore()
+        window_terminal.moveTo(200, 200)
+        time.sleep(0.2)
+        window_terminal.moveTo(730, 0)
+    except:
+        logger.log("Couldn't orientate terminal window.")
+
+
+
 
 
 def screenshot(region=(0, 0, 500, 700)):
