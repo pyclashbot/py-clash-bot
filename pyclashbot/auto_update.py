@@ -4,7 +4,7 @@ from os import makedirs, remove, system
 from os.path import dirname, exists, join
 from urllib.request import urlretrieve
 
-from requests import get
+#from requests import get
 from tqdm import tqdm
 
 

@@ -108,7 +108,8 @@ def refresh_screen():
 
 def orientate_bot_window(logger):
     try:
-        window_terminal = pygetwindow.getWindowsWithTitle([title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
+        window_terminal = pygetwindow.getWindowsWithTitle(
+            [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
         window_terminal.minimize()
         window_terminal.restore()
         window_terminal.moveTo(200, 200)
