@@ -2572,6 +2572,13 @@ def check_hand_for_barb_barrel(hand_screenshot):
 def check_hand_for_snowball(hand_screenshot):
     references = [
         "snowball.png",
+        "sb1.png",
+        "sb2.png",
+        "sb3.png",
+        "sb4.png",
+        "sb5.png",
+        "sb6.png",
+        
     ]
     locations = find_references(
         screenshot=hand_screenshot,
