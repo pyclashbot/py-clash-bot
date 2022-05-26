@@ -268,7 +268,10 @@ def main_loop():
     # x_region=[294,369]
     # y_region=[521,557]
     # print(find_cluster(x_region,y_region))
-    
+    orientate_memu_multi()
+    time.sleep(0.2)
+    orientate_window()
+    time.sleep(0.2)
     region=[0,0,1280,960]
     ss=screenshot(region)
     iar = numpy.asarray(ss)                            
@@ -276,10 +279,7 @@ def main_loop():
     plt.show()
     #orientate_bot_window(logger)
     # mass screenshot
-    # orientate_memu_multi()
-    # time.sleep(0.2)
-    # orientate_window()
-    # time.sleep(0.2)
+    
     # print("taking screenshots")
     # region=[166,445,98,8]
     # take_many_screenshots(3, 60, region=region, name=None, folder=r"C:\Users\Matt\Desktop\inc_pics")
