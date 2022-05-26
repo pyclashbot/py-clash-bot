@@ -7,6 +7,7 @@ from urllib import request
 
 from matplotlib import pyplot as plt
 import numpy
+import pyautogui
 
 from pyclashbot.account import switch_accounts_to
 from pyclashbot.card_mastery import collect_mastery_rewards
@@ -14,14 +15,16 @@ from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (
     check_if_windows_exist,
     check_quit_key_press,
+    orientate_bot_window,
     orientate_memu_multi,
     orientate_window,
     refresh_screen,
     restart_client,
+    screenshot,
     scroll_down_super_fast,
     show_image)
 from pyclashbot.donate import click_donates, getto_donate_page
-from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
+from pyclashbot.fight import (check_board_for_clusters, check_if_past_game_is_win, check_region_for_cluster, fight_with_deck_list, find_cluster,
                               leave_end_battle_window, look_for_enemy_troops,
                               start_2v2, wait_for_battle_start)
 from pyclashbot.logger import Logger
@@ -214,6 +217,12 @@ def restart_state(logger):
     logger.log("-----STATE=restart-----")
     logger.log("restart time loop")
     logger.log("Restarting menu client")
+    orientate_window()
+    time.sleep(0.2)
+    orientate_memu_multi()
+    time.sleep(0.2)
+    orientate_bot_window(logger)
+    time.sleep(0.2)
     restart_client(logger)
     if open_clash(logger) == "quit":
         state = "restart"
@@ -231,6 +240,8 @@ def initialize_client(logger):
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
+    time.sleep(0.2)
+    orientate_bot_window(logger)
     state = check_state(logger)
     if state is None:
         state = "restart"
@@ -241,9 +252,8 @@ def main_loop():
     # user vars
     # these will be specified thru the GUI, but these are the placeholders for
     # now.
-    deck = ""
     fight_type = "2v2"
-    card_to_request = "archers"
+    card_to_request = "giant"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssids = cycle([1, 2])  # change to which account positions to use
 
@@ -254,8 +264,13 @@ def main_loop():
     state = initialize_client(logger)
     loop_count = 0
 
-    # ss=refresh_screen()
-    # iar = numpy.asarray(ss)
+    # x_region=[294,369]
+    # y_region=[521,557]
+    # print(find_cluster(x_region,y_region))
+    
+    # region=[0,0,1280,960]
+    # ss=screenshot(region)
+    # iar = numpy.asarray(ss)                            
     # plt.imshow(iar)
     # plt.show()
 
@@ -274,7 +289,7 @@ def main_loop():
         if state == "restart":
             state = restart_state(logger)
         if state == "clash_main":
-            state = clash_main_state(logger, ssid)
+            state = clash_main_state(logger, ssid)    
         if state == "request":
             state = request_state(logger, card_to_request)
         if state == "donate":
