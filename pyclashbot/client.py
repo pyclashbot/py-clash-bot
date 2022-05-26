@@ -77,12 +77,12 @@ def orientate_window():
     time.sleep(0.2)
     try:
         window_memu.moveTo(0, 0)
-    except:
+    except pygetwindow.PyGetWindowException:
         print("Had trouble moving MEmu window.")
     time.sleep(0.2)
     try:
         window_memu.resizeTo(460, 680)
-    except:
+    except pygetwindow.PyGetWindowException:
         print("Had trouble resizing MEmu window")
 
 
@@ -100,7 +100,7 @@ def orientate_memu_multi():
 def refresh_screen():
     check_quit_key_press()
     orientate_window()
-    screenshot = pyautogui.screenshot(region=(0,0,500,700))
+    screenshot = pyautogui.screenshot(region=(0, 0, 500, 700))
     check_quit_key_press()
     iar = numpy.array(screenshot)
     return iar
@@ -108,17 +108,14 @@ def refresh_screen():
 
 def orientate_bot_window(logger):
     try:
-        window_terminal=pygetwindow.getWindowsWithTitle('py-clash')
+        window_terminal = pygetwindow.getWindowsWithTitle([title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
         window_terminal.minimize()
         window_terminal.restore()
         window_terminal.moveTo(200, 200)
         time.sleep(0.2)
         window_terminal.moveTo(730, 0)
-    except:
+    except pygetwindow.PyGetWindowException:
         logger.log("Couldn't orientate terminal window.")
-
-
-
 
 
 def screenshot(region=(0, 0, 500, 700)):
