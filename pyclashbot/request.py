@@ -217,11 +217,9 @@ def scroll_till_find_archers():
             names=references,
             tolerance=0.97
         )
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -251,11 +249,9 @@ def scroll_till_find_giant():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -285,11 +281,9 @@ def scroll_till_find_arrows():
             names=references,
             tolerance=0.97
         )
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -319,11 +313,9 @@ def scroll_till_find_barb_hut():
             names=references,
             tolerance=0.97
         )
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -353,11 +345,9 @@ def scroll_till_find_barbs():
             names=references,
             tolerance=0.97
         )
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -387,11 +377,9 @@ def scroll_till_find_bats():
             names=references,
             tolerance=0.97
         )
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -422,11 +410,9 @@ def scroll_till_find_bomb_tower():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -459,11 +445,9 @@ def scroll_till_find_bomber():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -496,11 +480,9 @@ def scroll_till_find_cannon():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -533,11 +515,9 @@ def scroll_till_find_dart_goblin():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -570,11 +550,9 @@ def scroll_till_find_e_spirit():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -607,11 +585,9 @@ def scroll_till_find_earthquake():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -644,11 +620,9 @@ def scroll_till_find_elite_barbs():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -681,11 +655,9 @@ def scroll_till_find_elixer_golem():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -718,11 +690,9 @@ def scroll_till_find_elixer_pump():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -755,11 +725,9 @@ def scroll_till_find_flying_machine():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -792,11 +760,9 @@ def scroll_till_find_furnace():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -829,11 +795,9 @@ def scroll_till_find_goblin_cage():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -866,11 +830,9 @@ def scroll_till_find_goblin_hut():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -903,11 +865,9 @@ def scroll_till_find_goblins():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -940,11 +900,9 @@ def scroll_till_find_heal_spirit():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -977,11 +935,9 @@ def scroll_till_find_healer():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1014,11 +970,9 @@ def scroll_till_find_ice_golem():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1051,11 +1005,9 @@ def scroll_till_find_ice_spirit():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1088,11 +1040,9 @@ def scroll_till_find_knight():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1125,11 +1075,9 @@ def scroll_till_find_mega_minion():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1162,11 +1110,9 @@ def scroll_till_find_minion_hoard():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1199,11 +1145,9 @@ def scroll_till_find_minions():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1235,11 +1179,9 @@ def scroll_till_find_mortar():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1272,11 +1214,9 @@ def scroll_till_find_musketeer():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1308,11 +1248,9 @@ def scroll_till_find_rascals():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1345,11 +1283,9 @@ def scroll_till_find_rocket():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1382,11 +1318,9 @@ def scroll_till_find_royal_delivery():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1419,11 +1353,9 @@ def scroll_till_find_royal_giant():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1456,11 +1388,9 @@ def scroll_till_find_royal_hogs():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1493,11 +1423,9 @@ def scroll_till_find_skeleton_barrel():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1530,11 +1458,9 @@ def scroll_till_find_skeleton_dragons():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1566,11 +1492,9 @@ def scroll_till_find_skeletons():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1603,11 +1527,9 @@ def scroll_till_find_snowball():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1640,11 +1562,9 @@ def scroll_till_find_spear_goblins():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1676,11 +1596,9 @@ def scroll_till_find_tombstone():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1713,11 +1631,9 @@ def scroll_till_find_wizard():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1750,11 +1666,9 @@ def scroll_till_find_zappies():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1787,11 +1701,9 @@ def scroll_till_find_fire_spirit():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1824,11 +1736,9 @@ def scroll_till_find_fireball():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1861,11 +1771,9 @@ def scroll_till_find_valk():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1898,11 +1806,9 @@ def scroll_till_find_goblin_gang():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1935,11 +1841,9 @@ def scroll_till_find_zap():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
@@ -1972,11 +1876,9 @@ def scroll_till_find_inferno_tower():
             tolerance=0.97
         )
 
-        for location in locations:
-            if location is not None:
-                n = location
-                if n is not None:
-                    return n
+        location = get_first_location(locations)
+        if location is not None:
+            return location
         scroll_down()
         loops += 1
         if loops > 20:
