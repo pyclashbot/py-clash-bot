@@ -491,19 +491,25 @@ def fight_with_deck_list(enemy_troop_position):
             # click card
             card_loc = check_for_card_in_hand("arrows")
             placement=clusters
+            if placement[1]<250:
+                return
             click(card_loc[0],card_loc[1])
             time.sleep(0.2)
             click(placement[0],placement[1])
             time.sleep(0.2)
+            return
     #     poison
         if (check_for_card_in_hand("poison") is not None):
             # logger.log("playing poison")
             card_loc = check_for_card_in_hand("poison")
             placement=clusters
+            if placement[1]<250:
+                return
             click(card_loc[0],card_loc[1])
             time.sleep(0.2)
             click(placement[0],placement[1])
             time.sleep(0.2)
+            return
     #     zap
         if (check_for_card_in_hand("zap") is not None):
             # logger.log("playing zap")
@@ -513,15 +519,19 @@ def fight_with_deck_list(enemy_troop_position):
             time.sleep(0.2)
             click(placement[0],placement[1])
             time.sleep(0.2)
+            return
     #     snowball
         if (check_for_card_in_hand("snowball") is not None):
             # logger.log("playing snowball")
             card_loc = check_for_card_in_hand("snowball")
             placement=clusters
+            if placement[1]<200:
+                return
             click(card_loc[0],card_loc[1])
             time.sleep(0.2)
             click(placement[0],placement[1])
             time.sleep(0.2)
+            return
 
         
 # check for hero abilities
