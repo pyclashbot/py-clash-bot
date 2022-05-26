@@ -25,12 +25,14 @@ dependencies = [
     'numpy',
     'pyautogui',
     'pygetwindow',
-    'joblib'
+    'joblib',
+    'tqdm',
+    'requests',
 ]
 
 build_exe_options = {
     'includes': dependencies,
-    'include_files': ['pyclashbot/reference_images/', 'README.md'],
+    'include_files': ['pyclashbot/reference_images/', 'README.md']
 }
 
 
