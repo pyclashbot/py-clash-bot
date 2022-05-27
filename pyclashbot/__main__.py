@@ -260,27 +260,9 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    #state = initialize_client(logger)
+    state = initialize_client(logger)
     loop_count = 0
 
-    orientate_memu_multi()
-    time.sleep(0.2)
-    orientate_window()
-    time.sleep(0.2)
-    
-    # ss = refresh_screen()
-    # plt.imshow(ss)
-    # plt.show()
-    #request_from_clash_main_menu(card_to_request, logger)
-    n=3
-    while n!=0:
-        print(n)
-        n=n-1
-        time.sleep(1)
-    screenshot_around_mouse()
-    print("Done")
-    
-    
     
     
     # while True:
