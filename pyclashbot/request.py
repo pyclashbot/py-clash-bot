@@ -57,7 +57,7 @@ def look_for_request_button():
         screenshot=refresh_screen(),
         folder="request_button",
         names=references,
-        tolerance=0.99
+        tolerance=0.97
     )
     return get_first_location(locations)
 
