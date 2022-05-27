@@ -46,7 +46,7 @@ def screenshot_around_mouse():
     ss_8.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_8.png')
     
     
-    
+
 def take_many_screenshots(duration, frequency, region=None, name=None, folder=None):
     """_summary_
 
