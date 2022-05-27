@@ -7,7 +7,7 @@ import numpy
 import pyautogui
 import pygetwindow
 
-from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def show_image(iar):
@@ -37,27 +37,29 @@ def check_if_windows_exist(logger):
 
 
 def check_if_on_memu_main():
-    iar = refresh_screen()
-    check_quit_key_press()
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
 
-    pix2 = iar[71][142]
-    pix3 = iar[77][275]
-
-    sentinel = [1] * 3
-    sentinel[0] = 5
-    sentinel[1] = 18
-    sentinel[2] = 35
-    check_quit_key_press()
-    if not pixel_is_equal(pix2, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        return False
-    return True
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="memu_main",
+        names=references,
+        tolerance=0.97
+    )
+    return get_first_location(locations)
 
 
 def wait_for_memu_main(logger):
     loops = 0
     while check_if_on_memu_main() is False:
+        orientate_bot_window()
+        time.sleep(0.2)
         loops = loops + 1
         log = "Waiting for memu main:" + str(loops)
         logger.log(log)
