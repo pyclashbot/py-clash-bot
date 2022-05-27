@@ -149,7 +149,7 @@ def restart_client(logger):
     logger.log("closing client")
     time.sleep(1)
     click(x=540, y=140)
-    time.sleep(1)
+    time.sleep(5)
     check_quit_key_press()
     logger.log("opening client")
     click(x=540, y=140)
