@@ -107,6 +107,7 @@ def refresh_screen():
     iar = numpy.array(screenshot)
     return iar
 
+
 def orientate_bot_window(logger):
     terminal_window=get_terminal_window(logger)
     if terminal_window is None:
@@ -124,12 +125,12 @@ def orientate_bot_window(logger):
 def get_terminal_window(logger):
     # window_terminal = pygetwindow.getWindowsWithTitle(
     #     [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
-    list=pygetwindow.getAllWindows()
+    list=pygetwindow.getAllTitles()
     n=len(list)
     while n!=0:
         n=n-1
-        program_string=str(list[n])
-        if program_string.startswith("py-clash"): return program_string
+        #print(list[n])
+        if list[n].startswith("py-clash"): return list[n]
     return None
     
     
