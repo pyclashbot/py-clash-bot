@@ -105,18 +105,32 @@ def refresh_screen():
     iar = numpy.array(screenshot)
     return iar
 
-
 def orientate_bot_window(logger):
-    try:
-        window_terminal = pygetwindow.getWindowsWithTitle(
-            [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
-        window_terminal.minimize()
-        window_terminal.restore()
-        window_terminal.moveTo(200, 200)
-        time.sleep(0.2)
-        window_terminal.moveTo(730, 0)
-    except pygetwindow.PyGetWindowException:
-        logger.log("Couldn't orientate terminal window.")
+    terminal_window=get_terminal_window(logger)
+    if terminal_window is None:
+        logger.log("Unable to orientate terminal menu.")
+        return
+    terminal_window.minimize()
+    terminal_window.restore()
+    terminal_window.moveTo(200, 200)
+    time.sleep(0.2)
+    terminal_window.moveTo(730, 0)
+    
+    
+
+
+def get_terminal_window(logger):
+    # window_terminal = pygetwindow.getWindowsWithTitle(
+    #     [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
+    list=pygetwindow.getAllWindows()
+    n=len(list)
+    while n!=0:
+        n=n-1
+        program_string=str(list[n])
+        if program_string.startswith("py-clash"): return program_string
+    return None
+    
+    
 
 
 def screenshot(region=(0, 0, 500, 700)):
