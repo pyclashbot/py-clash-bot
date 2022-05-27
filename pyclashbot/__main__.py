@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 import numpy
 import pyautogui
 
-from pyclashbot.account import check_for_gold_rush_event, switch_accounts_to
+from pyclashbot.account import check_for_gold_rush_event, handle_gold_rush_event, switch_accounts_to
 from pyclashbot.auto_update import install_latest_release
 from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
@@ -19,6 +19,8 @@ from pyclashbot.client import (
     check_quit_key_press,
     click,
     get_terminal_window,
+    look_for_client_close_button,
+    look_for_client_start_button,
     orientate_bot_window,
     orientate_memu_multi,
     orientate_window,
@@ -260,10 +262,12 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger)
+    #state = initialize_client(logger)
     loop_count = 0
 
-    
+
+    while True:
+        print(look_for_client_start_button())
     
     # while True:
     #     installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
