@@ -171,11 +171,6 @@ def request_state(logger, card_to_request):
             # if request failed
             log = "Failed to request " + str(card_to_request) + "."
             logger.log(log)
-        else:
-            # if request works
-            log = "Successfully requested " + \
-                str(card_to_request) + "."
-            logger.log(log)
         logger.log("Done with requesting. Passing to donate state.")
         return_to_clash_main_menu()
         time.sleep(2)
@@ -273,11 +268,21 @@ def main_loop():
     orientate_window()
     time.sleep(0.2)
     
-    ss = refresh_screen()
-    plt.imshow(ss)
-    plt.show()
+    # ss = refresh_screen()
+    # plt.imshow(ss)
+    # plt.show()
+    #request_from_clash_main_menu(card_to_request, logger)
+    n=3
+    while n!=0:
+        print(n)
+        n=n-1
+        time.sleep(1)
+    screenshot_around_mouse()
+    print("Done")
     
-   
+    
+    
+    
     # while True:
     #     installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
     #     logger.log(f"loop count: {loop_count}")

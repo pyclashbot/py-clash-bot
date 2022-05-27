@@ -13,37 +13,37 @@ def screenshot_around_mouse():
     #takes pics to the bottom left of the mouse
     origin=pyautogui.position()
     
-    r1=[origin[0],origin[1],33,33]
+    r1=[origin[0],origin[1],33,10]
     ss_1=pyautogui.screenshot(region=(r1))
-    ss_1.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_1.png')
+    ss_1.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_1.png')
     
-    r2=[origin[0],origin[1],38,38]
+    r2=[origin[0],origin[1],38,10]
     ss_2=pyautogui.screenshot(region=(r2))
-    ss_2.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_2.png')
+    ss_2.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_2.png')
     
-    r3=[origin[0],origin[1],45,45]
+    r3=[origin[0],origin[1],45,15]
     ss_3=pyautogui.screenshot(region=(r3))
-    ss_3.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_3.png')
+    ss_3.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_3.png')
     
-    r4=[origin[0],origin[1],20,20]
+    r4=[origin[0],origin[1],20,15]
     ss_4=pyautogui.screenshot(region=(r4))
-    ss_4.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_4.png')
+    ss_4.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_4.png')
     
-    r5=[origin[0],origin[1],25,25]
+    r5=[origin[0],origin[1],25,20]
     ss_5=pyautogui.screenshot(region=(r5))
-    ss_5.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_5.png')
+    ss_5.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_5.png')
     
-    r6=[origin[0],origin[1],30,30]
+    r6=[origin[0],origin[1],30,20]
     ss_6=pyautogui.screenshot(region=(r6))
-    ss_6.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_6.png')
+    ss_6.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_6.png')
     
-    r7=[origin[0],origin[1],35,35]
+    r7=[origin[0],origin[1],35,25]
     ss_7=pyautogui.screenshot(region=(r7))
-    ss_7.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_7.png')
+    ss_7.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_7.png')
     
-    r8=[origin[0],origin[1],40,40]
+    r8=[origin[0],origin[1],40,25]
     ss_8=pyautogui.screenshot(region=(r8))
-    ss_8.save(r'C:\Users\Matt\Desktop\inc_pics\royal_guards_8.png')
+    ss_8.save(r'C:\Users\Matt\Desktop\inc_pics\ifhy_8.png')
     
     
     
