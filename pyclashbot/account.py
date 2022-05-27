@@ -7,8 +7,9 @@ from pyclashbot.state import wait_for_clash_main_menu
 
 def switch_accounts_to(logger, ssid):
     check_quit_key_press()
+    time.sleep(0.5)
     handle_gold_rush_event()        
-
+    time.sleep(0.5)
 
     logger.log("Opening settings")
     click(x=364, y=99)
@@ -54,7 +55,9 @@ def check_for_gold_rush_event():
         return False
     return True
 
+
 def handle_gold_rush_event():
+    time.sleep(0.5)
     if check_for_gold_rush_event():
         click(193,465)
         time.sleep(0.2)
