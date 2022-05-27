@@ -279,7 +279,7 @@ def main_loop():
     # plt.show()
     #orientate_bot_window(logger)
     # mass screenshot
-    
+    orientate_bot_window(logger)
     # print("taking screenshots")
     # region=[166,445,98,8]
     # take_many_screenshots(3, 60, region=region, name=None, folder=r"C:\Users\Matt\Desktop\inc_pics")
