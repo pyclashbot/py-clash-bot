@@ -9,11 +9,12 @@ from matplotlib import pyplot as plt
 import numpy
 import pyautogui
 
-from pyclashbot.account import switch_accounts_to
+from pyclashbot.account import check_for_gold_rush_event, switch_accounts_to
 from pyclashbot.auto_update import install_latest_release
 from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (
+    check_if_on_memu_main,
     check_if_windows_exist,
     check_quit_key_press,
     orientate_bot_window,
@@ -262,50 +263,51 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger)
+    #state = initialize_client(logger)
     loop_count = 0
 
     # x_region=[294,369]
     # y_region=[521,557]
     # print(find_cluster(x_region,y_region))
-    # orientate_memu_multi()
-    # time.sleep(0.2)
-    # orientate_window()
-    # time.sleep(0.2)
-    # region=[0,0,1280,960]
-    # ss=screenshot(region)
-    # iar = numpy.asarray(ss)                            
-    # plt.imshow(iar)
-    # plt.show()
+    orientate_memu_multi()
+    time.sleep(0.2)
+    orientate_window()
+    time.sleep(0.2)
+    region=[0,0,1280,960]
+    ss=screenshot(region)
+    iar = numpy.asarray(ss)                            
+    plt.imshow(iar)
+    plt.show()
     #orientate_bot_window(logger)
     # mass screenshot
-    orientate_bot_window(logger)
+    #orientate_bot_window(logger)
     # print("taking screenshots")
     # region=[166,445,98,8]
     # take_many_screenshots(3, 60, region=region, name=None, folder=r"C:\Users\Matt\Desktop\inc_pics")
     # print("Done")
 
-    while True:
-        installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
-        logger.log(f"loop count: {loop_count}")
-        if state == "restart":
-            state = restart_state(logger)
-        if state == "clash_main":
-            state = clash_main_state(logger, ssid)    
-        if state == "request":
-            state = request_state(logger, card_to_request)
-        if state == "donate":
-            state = donate_state(logger)
-        if state == "upgrade":
-            state = upgrade_state(logger)
-        if state == "start_fight":
-            state = start_fight_state(logger, fight_type)
-        if state == "fighting":
-            state = fighting_state(logger)
-        if state == "post_fight":
-            ssid, state = post_fight_state(logger, ssids)
-        loop_count += 1
-        time.sleep(0.2)
+    #while True:
+
+        # installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
+        # logger.log(f"loop count: {loop_count}")
+        # if state == "restart":
+        #     state = restart_state(logger)
+        # if state == "clash_main":
+        #     state = clash_main_state(logger, ssid)    
+        # if state == "request":
+        #     state = request_state(logger, card_to_request)
+        # if state == "donate":
+        #     state = donate_state(logger)
+        # if state == "upgrade":
+        #     state = upgrade_state(logger)
+        # if state == "start_fight":
+        #     state = start_fight_state(logger, fight_type)
+        # if state == "fighting":
+        #     state = fighting_state(logger)
+        # if state == "post_fight":
+        #     ssid, state = post_fight_state(logger, ssids)
+        # loop_count += 1
+        # time.sleep(0.2)
 
 
 if __name__ == "__main__":
