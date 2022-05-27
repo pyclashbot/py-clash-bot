@@ -130,7 +130,8 @@ def get_terminal_window(logger):
     while n!=0:
         n=n-1
         #print(list[n])
-        if list[n].startswith("py-clash"): return list[n]
+        if list[n].startswith("py-clash"): 
+            return pygetwindow.getWindowsWithTitle(list[n])
     return None
     
     
