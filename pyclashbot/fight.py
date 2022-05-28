@@ -23,6 +23,7 @@ def start_1v1_ranked(logger):
 def start_2v2(logger):
     logger.log("Initiating 2v2 match from main menu")
     logger.log("Clicking party mode")
+    time.sleep(1)
     party_button_coords = find_party_button()
     if party_button_coords is None:
         return "quit"
