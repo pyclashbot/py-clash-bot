@@ -6,17 +6,15 @@ from itertools import cycle
 from urllib import request
 
 from matplotlib import pyplot as plt
-import numpy
-import pyautogui
+
 
 from pyclashbot.account import  switch_accounts_to
-from pyclashbot.auto_update import install_latest_release
+
 
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (
     
     check_if_windows_exist,
-    check_quit_key_press,
     
     
     orientate_bot_window,
