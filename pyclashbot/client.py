@@ -147,7 +147,7 @@ def screenshot(region=(0, 0, 500, 700)):
 def restart_client(logger):
     check_quit_key_press()
     logger.log("closing client")
-    time.sleep(1)
+    time.sleep(3)
     click(x=540, y=140)
     time.sleep(5)
     check_quit_key_press()
