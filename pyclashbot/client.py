@@ -7,7 +7,7 @@ import numpy
 import pyautogui
 import pygetwindow
 
-from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
+from pyclashbot.image_rec import find_references, get_first_location
 
 
 def show_image(iar):
@@ -58,7 +58,7 @@ def check_if_on_memu_main():
 def wait_for_memu_main(logger):
     loops = 0
     while check_if_on_memu_main() is False:
-        orientate_bot_window()
+        orientate_bot_window(logger)
         time.sleep(0.2)
         loops = loops + 1
         log = "Waiting for memu main:" + str(loops)
@@ -109,7 +109,7 @@ def refresh_screen():
 
 
 def orientate_bot_window(logger):
-    terminal_window=get_terminal_window(logger)
+    terminal_window = get_terminal_window()
     if terminal_window is None:
         logger.log("Unable to orientate terminal menu.")
         return
@@ -118,23 +118,15 @@ def orientate_bot_window(logger):
     terminal_window.moveTo(200, 200)
     time.sleep(0.2)
     terminal_window.moveTo(730, 0)
-    
-    
 
 
-def get_terminal_window(logger):
-    # window_terminal = pygetwindow.getWindowsWithTitle(
-    #     [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
-    list=pygetwindow.getAllTitles()
-    n=len(list)
-    while n!=0:
-        n=n-1
-        #print(list[n])
-        if list[n].startswith("py-clash"): 
-            return pygetwindow.getWindowsWithTitle(list[n])
+def get_terminal_window():
+    terminal_titles = [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')]
+    if len(terminal_titles) > 0:
+        terminal_windows = pygetwindow.getWindowsWithTitle(terminal_titles.pop())
+        if len(terminal_windows) > 0:
+            return terminal_windows.pop()
     return None
-    
-    
 
 
 def screenshot(region=(0, 0, 500, 700)):
