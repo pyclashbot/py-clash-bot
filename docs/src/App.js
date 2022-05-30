@@ -1,15 +1,16 @@
-import './App.css';
 import React from 'react';
+import './App.css';
+import memuAppearanceSettings from './assets/memu_appearance_settings.png';
 import memuDisplaySettings from './assets/memu_display_settings.png';
 import memuInstaceSettings from './assets/memu_instance_settings.png';
-import memuAppearanceSettings from './assets/memu_appearance_settings.png';
+import CodeFactorBadge from './components/badge/CodeFactorBadge';
+import PyPiBadge from './components/badge/PyPiBadge';
 import SourceBadge from './components/badge/SourceBadge';
 import TestBadge from './components/badge/TestBadge';
+import ReleaseDownloadCount from './components/release/ReleaseDownloadCount';
 import ReleaseLink from './components/release/ReleaseLink';
 import ReleaseUpdate from './components/release/ReleaseUpdate';
-import ReleaseDownloadCount from './components/release/ReleaseDownloadCount';
 import {initializeGA} from './GoogleAnalytics';
-import PyPiBadge from './components/badge/PyPiBadge';
 
 /**
  * main app
@@ -21,9 +22,10 @@ export default function App() {
     <div className="mume markdown-preview  ">
       <h1 className="mume-header" id="py-clash-bot">py-clash-bot</h1>
       <h2>
-        <SourceBadge/>
-        <PyPiBadge/>
-        <TestBadge/>
+        <SourceBadge />
+        <PyPiBadge />
+        <TestBadge />
+        <CodeFactorBadge />
       </h2>
       <p>A Clash Royale automation bot written in Python.</p>
       <h2 className="mume-header" id="install">Install</h2>
