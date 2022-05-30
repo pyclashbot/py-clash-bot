@@ -65,8 +65,11 @@ def get_asset_info(api_url) -> dict[str, str]:
     Returns:
         dict[str,str]: asset information
     """
-    response = get(api_url)
-    return response.json()['assets'][0]
+    if api_url.lower().startswith('http'):
+        response = get(api_url) #nosec
+        return response.json()['assets'][0]
+    else:
+        raise ValueError from None
 
 
 def install_msi(cache_dir, file_name):
