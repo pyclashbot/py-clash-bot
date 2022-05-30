@@ -23,6 +23,7 @@ def start_1v1_ranked(logger):
 def start_2v2(logger):
     logger.log("Initiating 2v2 match from main menu")
     logger.log("Clicking party mode")
+    time.sleep(1)
     party_button_coords = find_party_button()
     if party_button_coords is None:
         return "quit"
@@ -78,6 +79,12 @@ def find_party_button():
         "3.png",
         "4.png",
         "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
     ]
 
     locations = find_references(
@@ -481,6 +488,7 @@ def play_hogs_card(card_loc):
 
 
 def fight_with_deck_list(enemy_troop_position):
+
 # check for clusters
     clusters=check_board_for_clusters()
     if clusters is not None:
@@ -542,6 +550,7 @@ def fight_with_deck_list(enemy_troop_position):
     ability_coords = check_if_hero_ability_is_available()
     if ability_coords:
         click(x=345, y=512)
+        return
 # expensive has prio
 #     elite_barbs
     if (check_for_card_in_hand("elite_barbs") is not None):
