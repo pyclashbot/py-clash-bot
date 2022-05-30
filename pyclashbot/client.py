@@ -7,7 +7,7 @@ import numpy
 import pyautogui
 import pygetwindow
 
-from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def show_image(iar):
@@ -37,27 +37,29 @@ def check_if_windows_exist(logger):
 
 
 def check_if_on_memu_main():
-    iar = refresh_screen()
-    check_quit_key_press()
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
 
-    pix2 = iar[71][142]
-    pix3 = iar[77][275]
-
-    sentinel = [1] * 3
-    sentinel[0] = 5
-    sentinel[1] = 18
-    sentinel[2] = 35
-    check_quit_key_press()
-    if not pixel_is_equal(pix2, sentinel, 10):
-        return False
-    if not pixel_is_equal(pix3, sentinel, 10):
-        return False
-    return True
+    ]
+    locations = find_references(
+        screenshot=refresh_screen(),
+        folder="memu_main",
+        names=references,
+        tolerance=0.97
+    )
+    return get_first_location(locations)
 
 
 def wait_for_memu_main(logger):
     loops = 0
     while check_if_on_memu_main() is False:
+        orientate_bot_window()
+        time.sleep(0.2)
         loops = loops + 1
         log = "Waiting for memu main:" + str(loops)
         logger.log(log)
@@ -107,16 +109,32 @@ def refresh_screen():
 
 
 def orientate_bot_window(logger):
-    try:
-        window_terminal = pygetwindow.getWindowsWithTitle(
-            [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
-        window_terminal.minimize()
-        window_terminal.restore()
-        window_terminal.moveTo(200, 200)
-        time.sleep(0.2)
-        window_terminal.moveTo(730, 0)
-    except pygetwindow.PyGetWindowException:
-        logger.log("Couldn't orientate terminal window.")
+    terminal_window=get_terminal_window(logger)
+    if terminal_window is None:
+        logger.log("Unable to orientate terminal menu.")
+        return
+    terminal_window.minimize()
+    terminal_window.restore()
+    terminal_window.moveTo(200, 200)
+    time.sleep(0.2)
+    terminal_window.moveTo(730, 0)
+    
+    
+
+
+def get_terminal_window(logger):
+    # window_terminal = pygetwindow.getWindowsWithTitle(
+    #     [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')][0])[0]
+    list=pygetwindow.getAllTitles()
+    n=len(list)
+    while n!=0:
+        n=n-1
+        #print(list[n])
+        if list[n].startswith("py-clash"): 
+            return pygetwindow.getWindowsWithTitle(list[n])
+    return None
+    
+    
 
 
 def screenshot(region=(0, 0, 500, 700)):
@@ -127,11 +145,12 @@ def screenshot(region=(0, 0, 500, 700)):
 
 
 def restart_client(logger):
+    orientate_memu_multi()
     check_quit_key_press()
     logger.log("closing client")
-    time.sleep(1)
+    time.sleep(3)
     click(x=540, y=140)
-    time.sleep(1)
+    time.sleep(10)
     check_quit_key_press()
     logger.log("opening client")
     click(x=540, y=140)
