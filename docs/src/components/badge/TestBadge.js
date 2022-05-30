@@ -14,7 +14,9 @@ export default class TestBadge extends Component {
       <a href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml" rel="nofollow" onClick={() => testBadgeEvent()}>
         <img
           src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg"
-          alt="GitHub Python tests badge" />
+          alt="GitHub Python tests badge"
+          style={{marginRight: '3px'}}
+        />
       </a>
     );
   }
