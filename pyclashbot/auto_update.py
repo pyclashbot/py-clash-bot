@@ -1,6 +1,7 @@
 import sys
 from glob import iglob
-from os import makedirs, remove, system
+from os import makedirs, remove, environ
+from subprocess import call
 from os.path import dirname, exists, join
 from urllib.request import urlretrieve
 
@@ -65,8 +66,7 @@ def get_asset_info(api_url) -> dict[str, str]:
         dict[str,str]: asset information
     """
     response = get(api_url)
-    asset = response.json()['assets'][0]
-    return asset
+    return response.json()['assets'][0]
 
 
 def install_msi(cache_dir, file_name):
@@ -82,11 +82,12 @@ def install_msi(cache_dir, file_name):
     try:
         print(f"Installing latest version: {file_name}")
         print("Program will exit after update. Please restart to continue.")
-        msi_install = f"msiexec.exe /i {join(cache_dir,file_name)} /passive"
-        system(msi_install)
-        return True
+        msi_exec_path = join(environ['WINDIR'], 'SYSTEM32', 'msiexec.exe')
+        install_call = f"{msi_exec_path} /i {join(cache_dir,file_name)} /passive"
+        return 0 == call(install_call, shell=False)
     finally:
         return False
+
 
 def make_cache():
     """get cache directory. make one if necessary.
@@ -99,12 +100,14 @@ def make_cache():
         makedirs(cache_dir)
     return cache_dir
 
+
 def install_latest_release():
     """install the latest release from github
 
     Returns:
         bool: Whether or not new update was installed.
     """
+    # if running in a frozen executable
     if getattr(sys, "frozen", False):
         print('Checking for new version to install.')
 
