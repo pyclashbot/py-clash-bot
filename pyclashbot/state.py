@@ -175,6 +175,11 @@ def wait_for_clash_main_menu(logger):
     while not check_if_on_clash_main_menu():
 
         check_quit_key_press()
+        #handle if stuck on trophy progression page
+        if check_if_on_trophy_progession_rewards_page():
+            logger.log("Bot appears to be stuck on trophy progression rewards menu. Closing that.")
+            click(212,633)
+            time.sleep(0.5)
         time.sleep(3)
         logger.log(f"Waiting for clash main menu/{n}")
         n = n + 1
@@ -337,46 +342,33 @@ def return_to_clash_main_menu():
     for location in locations:
         if location is not None:
             click(location[1], location[0])
-            check_if_in_progression_menu()
             return
 
 
-def check_if_in_progression_menu():
+def check_if_on_trophy_progession_rewards_page():
+    current_image = screenshot()
+    reference_folder = "trophy_progression_rewards"
     references = [
-        "progression_menu1.png",
-        "progression_menu2.png",
-        "progression_menu3.png",
-        "progression_menu4.png",
-        "progression_menu5.png",
-        "progression_menu6.png",
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
     ]
+
     locations = find_references(
-        screenshot=refresh_screen(),
-        folder="progression_menu",
+        screenshot=current_image,
+        folder=reference_folder,
         names=references,
         tolerance=0.97
     )
     for location in locations:
         if location is not None:
-            leave_progression_menu()
-            return
+            return True  # found a location
+    return False
 
-
-def leave_progression_menu():
-    references = [
-        "progression_menu_exit.png",
-    ]
-    locations = find_references(
-        screenshot=refresh_screen(),
-        folder="progression_menu",
-        names=references,
-        tolerance=0.97
-    )
-    for location in locations:
-        if location is not None:
-            print("DEBUG trying to leave progression menu")
-            click(location[1], location[0])
-            return
 
 
 def check_if_in_a_clan_from_main(logger):
