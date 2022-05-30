@@ -52,12 +52,45 @@ def look_for_request_button():
         "19.png",
         "20.png",
         "21.png",
+        "ifhy_1.png",
+        "ifhy_2.png",
+        "ifhy_3.png",
+        "ifhy_4.png",
+        "ifhy_5.png",
+        "ifhy_6.png",
+        "ifhy_7.png",
+        "ifhy_8.png",
+        "iuyfgh_1.png",
+        "iuyfgh_2.png",
+        "iuyfgh_3.png",
+        "iuyfgh_4.png",
+        "iuyfgh_5.png",
+        "iuyfgh_6.png",
+        "iuyfgh_7.png",
+        "iuyfgh_8.png",
+        "royal_guards_1.png",
+        "royal_guards_2.png",
+        "royal_guards_3.png",
+        "royal_guards_4.png",
+        "royal_guards_5.png",
+        "royal_guards_6.png",
+        "royal_guards_7.png",
+        "royal_guards_8.png",
+        "telotet_1.png",
+        "telotet_2.png",
+        "telotet_3.png",
+        "telotet_4.png",
+        "telotet_5.png",
+        "telotet_6.png",
+        "telotet_7.png",
+        "telotet_8.png",
+        
     ]
     locations = find_references(
         screenshot=refresh_screen(),
         folder="request_button",
         names=references,
-        tolerance=0.99
+        tolerance=0.97
     )
     return get_first_location(locations)
 
@@ -87,8 +120,9 @@ def request_from_clash_main_menu(card_to_request, logger):
     coords = look_for_request_button()
     if coords is not None:
         click(x=coords[1], y=coords[0])
-
         time.sleep(2)
+    else:
+        return "quit"
     return_to_clash_main_menu()
 
 
