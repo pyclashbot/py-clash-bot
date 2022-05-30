@@ -1,6 +1,6 @@
 # py-clash-bot
 
-[![PyPI version](https://badge.fury.io/py/py-clash-bot.svg)](https://pypi.org/project/py-clash-bot/) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml)
+[![PyPI version](https://badge.fury.io/py/py-clash-bot.svg)](https://pypi.org/project/py-clash-bot/) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
 
 A Clash Royale automation bot written in Python.
 

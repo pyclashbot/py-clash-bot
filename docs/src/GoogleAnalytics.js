@@ -57,6 +57,16 @@ export function pypiBadgeEvent() {
 }
 
 /**
+ * codefactor badge click event handler
+ */
+export function codeFactorBadgeEvent() {
+  ReactGA.event({
+    category: 'User',
+    action: `Clicked codefactor badge`,
+  });
+}
+
+/**
  * release link click event handler
  */
 export function releaseLinkEvent() {
