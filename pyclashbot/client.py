@@ -2,18 +2,11 @@ import sys
 import time
 
 import keyboard
-import matplotlib.pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
 
 from pyclashbot.image_rec import find_references, get_first_location
-
-
-def show_image(iar):
-    plt.imshow(iar)
-    check_quit_key_press()
-    plt.show()
 
 
 def check_for_windows(logger):
