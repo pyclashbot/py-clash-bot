@@ -21,7 +21,6 @@ dependencies = [
     'PIL',
     'cv2',
     'keyboard',
-    'matplotlib',
     'numpy',
     'pyautogui',
     'pygetwindow',

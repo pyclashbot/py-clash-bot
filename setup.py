@@ -32,7 +32,6 @@ setup(
         'pillow',
         'opencv-python',
         'keyboard',
-        'matplotlib',
         'numpy',
         'pyautogui',
         'pygetwindow',
