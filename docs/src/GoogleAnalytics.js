@@ -37,6 +37,16 @@ export function sourceBadgeEvent() {
 }
 
 /**
+ * memu install click event handler
+ */
+export function memuDownloadEvent() {
+  ReactGA.event({
+    category: 'User',
+    action: `Clicked memu download`,
+  });
+}
+
+/**
  * test badge click event handler
  */
 export function testBadgeEvent() {
