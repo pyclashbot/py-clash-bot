@@ -9,22 +9,12 @@ import pygetwindow
 from pyclashbot.image_rec import find_references, get_first_location
 
 
-def check_for_windows(logger):
+def check_if_windows_exist(logger):
     try:
         pygetwindow.getWindowsWithTitle('MEmu')[0]
         pygetwindow.getWindowsWithTitle('Multiple Instance Manager')[0]
     except (IndexError, KeyError):
         logger.log("MEmu or Multiple Instance Manager not detected!")
-        return False
-    return True
-
-
-def check_if_windows_exist(logger):
-    if pygetwindow.getWindowsWithTitle('MEmu') == []:
-        logger.log("MEmu window not found")
-        return False
-    if pygetwindow.getWindowsWithTitle('Multiple Instance Manager') == []:
-        logger.log("MMIM window not found")
         return False
     return True
 
