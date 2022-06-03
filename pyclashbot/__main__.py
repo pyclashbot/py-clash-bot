@@ -21,6 +21,8 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import upgrade_cards_from_main_2
 
+from auto_update import install_latest_release
+
 
 def post_fight_state(logger, ssids):
     logger.log("STATE=post_fight")
@@ -240,32 +242,32 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    #state = initialize_client(logger)
+    state = initialize_client(logger)
     loop_count = 0
 
     restart_client(logger)
 
-    # while True:
-    #     installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
-    #     logger.log(f"loop count: {loop_count}")
-    #     if state == "restart":
-    #         state = restart_state(logger)
-    #     if state == "clash_main":
-    #         state = clash_main_state(logger, ssid)
-    #     if state == "request":
-    #         state = request_state(logger, card_to_request)
-    #     if state == "donate":
-    #         state = donate_state(logger)
-    #     if state == "upgrade":
-    #         state = upgrade_state(logger)
-    #     if state == "start_fight":
-    #         state = start_fight_state(logger, fight_type)
-    #     if state == "fighting":
-    #         state = fighting_state(logger)
-    #     if state == "post_fight":
-    #         ssid, state = post_fight_state(logger, ssids)
-    #     loop_count += 1
-    #     time.sleep(0.2)
+    while True:
+        installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
+        logger.log(f"loop count: {loop_count}")
+        if state == "restart":
+            state = restart_state(logger)
+        if state == "clash_main":
+            state = clash_main_state(logger, ssid)
+        if state == "request":
+            state = request_state(logger, card_to_request)
+        if state == "donate":
+            state = donate_state(logger)
+        if state == "upgrade":
+            state = upgrade_state(logger)
+        if state == "start_fight":
+            state = start_fight_state(logger, fight_type)
+        if state == "fighting":
+            state = fighting_state(logger)
+        if state == "post_fight":
+            ssid, state = post_fight_state(logger, ssids)
+        loop_count += 1
+        time.sleep(0.2)
 
 
 if __name__ == "__main__":
