@@ -21,7 +21,7 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import upgrade_cards_from_main_2
 
-from auto_update import install_latest_release
+from pyclashbot.auto_update import install_latest_release
 
 
 def post_fight_state(logger, ssids):
