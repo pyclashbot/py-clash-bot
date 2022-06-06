@@ -38,6 +38,7 @@ setup(
         'joblib',
         'tqdm',
         'requests',
+        'pkg_resources',
     ],
     packages=['pyclashbot'],
     include_package_data=True,
