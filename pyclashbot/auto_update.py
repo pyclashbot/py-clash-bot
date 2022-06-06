@@ -4,6 +4,7 @@ from os import makedirs, remove, environ
 from subprocess import call
 from os.path import dirname, exists, join
 from urllib.request import urlretrieve
+from pkg_resources import get_distribution
 
 from requests import get
 from tqdm import tqdm
@@ -66,7 +67,7 @@ def get_asset_info(api_url) -> dict[str, str]:
         dict[str,str]: asset information
     """
     if api_url.lower().startswith('http'):
-        response = get(api_url) #nosec
+        response = get(api_url)  # nosec
         return response.json()['assets'][0]
     else:
         raise ValueError from None
@@ -104,32 +105,46 @@ def make_cache():
     return cache_dir
 
 
+def pip_update_availible(file_name):
+    """check if pip has an update availible
+
+    Args:
+        asset_version (str): asset version string
+
+    Returns:
+        bool: if pip has an update
+    """
+    current_version = get_distribution("py-clash-bot").version
+    return f"py-clash-bot-{current_version}-win64.msi" == file_name
+
+
 def install_latest_release():
     """install the latest release from github
 
     Returns:
         bool: Whether or not new update was installed.
     """
+
+    print('Checking for new version to install...')
+
+    # make api request to github to get information about latest asset
+    api_url = "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest"
+    asset_info = get_asset_info(api_url)
+    download_url = asset_info['browser_download_url']
+    file_name = asset_info['name']
+
     # if running in a frozen executable
     if getattr(sys, "frozen", False):
-        print('Checking for new version to install.')
-
-        # make api request to github to get information about latest asset
-        api_url = "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest"
-        asset_info = get_asset_info(api_url)
-        download_url = asset_info['browser_download_url']
-        file_name = asset_info['name']
-
         # download latest asset to cache (create dir if necessary)
         cache_dir = make_cache()
         if download_from_url(download_url, cache_dir, file_name):
             return install_msi(cache_dir, file_name)
-        else:
-            print('Already latest version, continuing.')
+    # if running from pip or source
+    else:
+        if pip_update_availible(file_name):
+            print('Try running \'pip install --force-reinstall --upgrade py-clash-bot\'.')
             return False
-
-    print('Not running from cx_freeze install, cannot auto update.')
-    print('Try running \'pip install --force-reinstall --upgrade py-clash-bot\'.')
+    print('No update found.')
     return False
 
 
