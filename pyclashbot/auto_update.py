@@ -1,11 +1,11 @@
 import sys
 from glob import iglob
-from os import makedirs, remove, environ
-from subprocess import call
+from os import environ, execv, makedirs, remove
 from os.path import dirname, exists, join
+from subprocess import call
 from urllib.request import urlretrieve
-from pkg_resources import get_distribution
 
+from pkg_resources import get_distribution
 from requests import get
 from tqdm import tqdm
 
@@ -118,6 +118,13 @@ def pip_update_availible(file_name):
     return f"py-clash-bot-{current_version}-win64.msi" == file_name
 
 
+def restart_program():
+    """restarts the program
+    """
+    print("Restarting program now.")
+    execv(sys.argv[0], sys.argv)
+
+
 def install_latest_release():
     """install the latest release from github
 
@@ -146,6 +153,17 @@ def install_latest_release():
             return False
     print('No update found.')
     return False
+
+
+def auto_update(restart=True):
+    """check for and install new updates, automatically restart program if enabled
+
+    Args:
+        restart (bool, optional): Whether or not to restart program  automatically on update. Defaults to True.
+    """
+    update_installed = install_latest_release()
+    if update_installed and restart:
+        restart_program()
 
 
 if __name__ == '__main__':
