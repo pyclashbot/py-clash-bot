@@ -23,7 +23,7 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import upgrade_cards_from_main_2
 
-from pyclashbot.auto_update import install_latest_release
+from pyclashbot.auto_update import auto_update
 
 
 def post_fight_state(logger, ssids):
@@ -258,7 +258,7 @@ def main_loop():
     handle_new_challenge(logger)
 
     # while True:
-    #     installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
+    # installed_update = auto_update() # will be true if installed update, needs feature to restart program
     #     logger.log(f"loop count: {loop_count}")
     #     if state == "restart":
     #         state = restart_state(logger)
