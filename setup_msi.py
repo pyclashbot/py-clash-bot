@@ -27,12 +27,11 @@ dependencies = [
     'joblib',
     'tqdm',
     'requests',
-    'pkg_resources',
 ]
 
 build_exe_options = {
     'includes': dependencies,
-    'include_files': ['pyclashbot/reference_images/', 'README.md']
+    'include_files': ['pyclashbot/reference_images/', 'README.md', 'pyclashbot/cache/']
 }
 
 
