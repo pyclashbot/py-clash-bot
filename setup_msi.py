@@ -27,7 +27,6 @@ dependencies = [
     'joblib',
     'tqdm',
     'requests',
-    'pkg_resources',
 ]
 
 build_exe_options = {
