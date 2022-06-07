@@ -1,4 +1,4 @@
-name: Python Test
+name: Python 3.11 Build Test
 
 on:
   schedule:
