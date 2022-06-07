@@ -3,11 +3,13 @@ import sys
 import time
 from itertools import cycle
 
-from pyclashbot.account import switch_accounts_to
+from matplotlib import pyplot as plt
+
+from pyclashbot.account import handle_new_challenge, switch_accounts_to
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_bot_window, orientate_memu_multi,
-                               orientate_window, restart_client)
+                               orientate_window, refresh_screen, restart_client)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -242,32 +244,40 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger)
+    #state = initialize_client(logger)
     loop_count = 0
 
-    restart_client(logger)
 
-    while True:
-        installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
-        logger.log(f"loop count: {loop_count}")
-        if state == "restart":
-            state = restart_state(logger)
-        if state == "clash_main":
-            state = clash_main_state(logger, ssid)
-        if state == "request":
-            state = request_state(logger, card_to_request)
-        if state == "donate":
-            state = donate_state(logger)
-        if state == "upgrade":
-            state = upgrade_state(logger)
-        if state == "start_fight":
-            state = start_fight_state(logger, fight_type)
-        if state == "fighting":
-            state = fighting_state(logger)
-        if state == "post_fight":
-            ssid, state = post_fight_state(logger, ssids)
-        loop_count += 1
-        time.sleep(0.2)
+    orientate_window()
+    orientate_memu_multi()
+
+    # ss=refresh_screen()
+    # plt.imshow(ss)
+    # plt.show()
+
+    handle_new_challenge(logger)
+
+    # while True:
+    #     installed_update = install_latest_release() # will be true if installed update, needs feature to restart program
+    #     logger.log(f"loop count: {loop_count}")
+    #     if state == "restart":
+    #         state = restart_state(logger)
+    #     if state == "clash_main":
+    #         state = clash_main_state(logger, ssid)
+    #     if state == "request":
+    #         state = request_state(logger, card_to_request)
+    #     if state == "donate":
+    #         state = donate_state(logger)
+    #     if state == "upgrade":
+    #         state = upgrade_state(logger)
+    #     if state == "start_fight":
+    #         state = start_fight_state(logger, fight_type)
+    #     if state == "fighting":
+    #         state = fighting_state(logger)
+    #     if state == "post_fight":
+    #         ssid, state = post_fight_state(logger, ssids)
+    #     loop_count += 1
+    #     time.sleep(0.2)
 
 
 if __name__ == "__main__":
