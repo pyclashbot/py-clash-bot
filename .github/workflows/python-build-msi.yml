@@ -1,4 +1,4 @@
-name: Compile Binary
+name: Build windows package
 
 on:
   push:
