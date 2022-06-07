@@ -3,13 +3,18 @@ import sys
 import time
 from itertools import cycle
 
-from matplotlib import pyplot as plt
+try:
+    from matplotlib import pyplot as plt
+finally:
+    print("Could not import optional dependency matplotlib, moving on.")
 
 from pyclashbot.account import handle_new_challenge, switch_accounts_to
+from pyclashbot.auto_update import auto_update
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_bot_window, orientate_memu_multi,
-                               orientate_window, refresh_screen, restart_client)
+                               orientate_window, refresh_screen,
+                               restart_client)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -22,8 +27,6 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               open_clash, return_to_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import upgrade_cards_from_main_2
-
-from pyclashbot.auto_update import auto_update
 
 
 def post_fight_state(logger, ssids):
@@ -246,7 +249,6 @@ def main_loop():
     ssid = next(ssids)
     #state = initialize_client(logger)
     loop_count = 0
-
 
     orientate_window()
     orientate_memu_multi()
