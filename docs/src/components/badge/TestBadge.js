@@ -17,6 +17,7 @@ export default class TestBadge extends Component {
           alt="GitHub Python tests badge"
           style={{marginRight: '3px'}}
           content="no-cache, no-store, must-revalidate"
+          rel="preconnect"
         />
       </a>
     );

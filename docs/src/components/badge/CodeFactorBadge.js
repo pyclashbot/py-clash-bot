@@ -18,6 +18,7 @@ export default class CodeFactorBadge extends Component {
           src="https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge"
           alt="CodeFactor badge"
           content="no-cache, no-store, must-revalidate"
+          rel="preconnect"
         />
       </a>
     );
