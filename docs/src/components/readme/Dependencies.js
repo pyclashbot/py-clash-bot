@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
+import memuAppearanceSettings from '../../assets/memu_appearance_settings.webp';
+import memuDisplaySettings from '../../assets/memu_display_settings.webp';
+import memuInstaceSettings from '../../assets/memu_instance_settings.webp';
 import {memuDownloadEvent} from '../../GoogleAnalytics';
-import memuAppearanceSettings from '../../assets/memu_appearance_settings.png';
-import memuDisplaySettings from '../../assets/memu_display_settings.png';
-import memuInstaceSettings from '../../assets/memu_instance_settings.png';
 
 /**
 * Component for memu dependency instructions
@@ -25,15 +25,18 @@ export default class MEmuDependency extends Component {
         <p><img
           src={memuInstaceSettings}
           alt="MEmu instace options"
-          style={{mixBlendMode: 'lighten'}}/></p>
+          style={{mixBlendMode: 'lighten'}}
+          content="no-cache, no-store, must-revalidate"/></p>
         <p><
           img src={memuDisplaySettings}
           alt="MEmu display options"
-          style={{mixBlendMode: 'lighten'}}/></p>
+          style={{mixBlendMode: 'lighten'}}
+          content="no-cache, no-store, must-revalidate"/></p>
         <p><
           img src={memuAppearanceSettings}
           alt="MEmu appearance options"
-          style={{mixBlendMode: 'lighten'}} /></p>
+          style={{mixBlendMode: 'lighten'}}
+          content="no-cache, no-store, must-revalidate"/></p>
         <p>
           Then start the emulator and install
           Clash Royale with the Google Play Store.
