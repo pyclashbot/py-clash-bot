@@ -18,7 +18,9 @@ export default class SourceBadge extends Component {
         onClick={() => sourceBadgeEvent()}>
         <img
           src={SourceBadgeSVG}
-          alt="Link to Source on GitHub" />
+          alt="Link to Source on GitHub"
+          content="no-cache, no-store, must-revalidate"
+        />
       </a>
     );
   }

@@ -16,6 +16,7 @@ export default class TestBadge extends Component {
           src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg"
           alt="GitHub Python tests badge"
           style={{marginRight: '3px'}}
+          content="no-cache, no-store, must-revalidate"
         />
       </a>
     );
