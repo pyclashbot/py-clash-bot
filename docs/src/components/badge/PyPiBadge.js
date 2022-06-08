@@ -18,6 +18,7 @@ export default class PyPiBadge extends Component {
           src="https://badge.fury.io/py/py-clash-bot.svg"
           alt="PyPI version"
           style={{marginRight: '3px'}}
+          content="no-cache, no-store, must-revalidate"
         />
       </a>
     );
