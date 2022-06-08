@@ -20,6 +20,8 @@ export default class PyPiBadge extends Component {
           style={{marginRight: '3px'}}
           content="no-cache, no-store, must-revalidate"
           rel="preconnect"
+          height="20"
+          width="132"
         />
       </a>
     );
