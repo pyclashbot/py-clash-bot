@@ -26,17 +26,26 @@ export default class MEmuDependency extends Component {
           src={memuInstaceSettings}
           alt="MEmu instace options"
           style={{mixBlendMode: 'lighten'}}
-          content="no-cache, no-store, must-revalidate"/></p>
-        <p><
-          img src={memuDisplaySettings}
+          content="no-cache, no-store, must-revalidate"
+          height={memuAppearanceSettings.height}
+          width={memuAppearanceSettings.width}
+        /></p>
+        <p><img
+          src={memuDisplaySettings}
           alt="MEmu display options"
           style={{mixBlendMode: 'lighten'}}
-          content="no-cache, no-store, must-revalidate"/></p>
-        <p><
-          img src={memuAppearanceSettings}
+          content="no-cache, no-store, must-revalidate"
+          height={memuDisplaySettings.height}
+          width={memuDisplaySettings.width}
+        /></p>
+        <p><img
+          src={memuAppearanceSettings}
           alt="MEmu appearance options"
           style={{mixBlendMode: 'lighten'}}
-          content="no-cache, no-store, must-revalidate"/></p>
+          content="no-cache, no-store, must-revalidate"
+          height={memuAppearanceSettings.height}
+          width={memuAppearanceSettings.width}
+        /></p>
         <p>
           Then start the emulator and install
           Clash Royale with the Google Play Store.

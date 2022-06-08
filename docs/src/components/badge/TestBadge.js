@@ -18,6 +18,8 @@ export default class TestBadge extends Component {
           style={{marginRight: '3px'}}
           content="no-cache, no-store, must-revalidate"
           rel="preconnect"
+          height="20"
+          widht="142"
         />
       </a>
     );
