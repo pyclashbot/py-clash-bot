@@ -4,6 +4,7 @@ import Execution from './components/readme/Execution';
 import Install from './components/readme/Install';
 import {initializeGA} from './GoogleAnalytics';
 import React from 'react';
+import AppHelmet from './components/AppHelmet';
 
 /**
  * main app
@@ -13,6 +14,7 @@ export default function App() {
   initializeGA();
   return (
     <div className="mume markdown-preview  ">
+      <AppHelmet/>
       <Description/>
       <Install/>
       <Dependencies/>
