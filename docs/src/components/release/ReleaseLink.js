@@ -45,6 +45,7 @@ export default class ReleaseLink extends Component {
         className='download'
         href={this.state.release_url}
         onClick={() => releaseLinkEvent()}
+        rel="preconnect"
       >
                 Download the latest release
       </a></p>
