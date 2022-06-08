@@ -19,6 +19,8 @@ export default class CodeFactorBadge extends Component {
           alt="CodeFactor badge"
           content="no-cache, no-store, must-revalidate"
           rel="preconnect"
+          height="20"
+          width="88"
         />
       </a>
     );

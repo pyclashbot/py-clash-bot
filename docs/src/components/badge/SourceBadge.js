@@ -20,6 +20,8 @@ export default class SourceBadge extends Component {
           src={SourceBadgeSVG}
           alt="Link to Source on GitHub"
           content="no-cache, no-store, must-revalidate"
+          height="20"
+          width="100"
         />
       </a>
     );
