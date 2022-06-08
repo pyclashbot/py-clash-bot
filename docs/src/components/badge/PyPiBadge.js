@@ -19,6 +19,7 @@ export default class PyPiBadge extends Component {
           alt="PyPI version"
           style={{marginRight: '3px'}}
           content="no-cache, no-store, must-revalidate"
+          rel="preconnect"
         />
       </a>
     );
