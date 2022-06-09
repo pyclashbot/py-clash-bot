@@ -57,10 +57,6 @@ def make_corners(file_name, corners):
     return crops
 
 
-image_corners = {file_name: make_corners(
-    file_name, corners) for file_name in file_names}
-
-
 def prompt_for_class(image_corners, file_name):
     corner_images = image_corners[file_name]
     layout = [
@@ -92,6 +88,10 @@ def prompt_for_class(image_corners, file_name):
     window.close()
 
 
+image_corners = {file_name: make_corners(
+    file_name, corners) for file_name in file_names}
+
+
 make_directories(train_data_dir, classes)
 
 for file_name in image_corners:
@@ -104,3 +104,4 @@ for file_name in image_corners:
         class_dir = os.path.join(train_data_dir, "None")
         image_dir = os.path.join(class_dir, f"{int(time.time())}.png")
         Image.open(file_name).save(image_dir)
+    os.remove(file_name)
