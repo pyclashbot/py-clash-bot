@@ -71,11 +71,12 @@ def make_corners(file_name, corners) -> list[Image.Image]:
     return crops
 
 
-def prompt_for_class(corner_images: list[Image.Image]):
+def prompt_for_class(classes: list[str], corner_images: list[Image.Image]):
     """prompt user for classes
 
     Args:
-        corner_images (list[Image.Image]): list of crops of imag
+        classes(list[str]) : list of classes
+        corner_images (list[Image.Image]): list of crops of image
 
     Returns:
         str: classification of image
@@ -97,16 +98,19 @@ def prompt_for_class(corner_images: list[Image.Image]):
             sg.Button("C2", image_data=corner_images[7]),
             sg.Button("C3", image_data=corner_images[8])
         ],
-        [sg.Button("Exit"), sg.Button("None"), sg.Button("Next")]
+        [sg.Button("Exit"), sg.Button("None")]
     ]
     # define GUI window
-    window = sg.Window("Manual Classifier", layout,
-                       no_titlebar=True, element_justification='r')
+    window = sg.Window(
+        "Manual Classifier",
+        layout,
+        element_justification='r'
+    )
 
     # GUI Event Loop
     while True:
         event, values = window.read()
-        if event in (sg.WIN_CLOSED, 'Next'):
+        if event in classes:
             break
         elif event in (sg.WIN_CLOSED, 'Exit'):
             sys.exit()
@@ -140,5 +144,5 @@ image_crop_dict = {file_name: make_corners(
 # prompt and save each image
 for file_name in image_crop_dict:
     image_crops = image_crop_dict[file_name]
-    classification = prompt_for_class(image_crops)
+    classification = prompt_for_class(classes, image_crops)
     save_classified_image(classes, train_data_dir, file_name, classification)
