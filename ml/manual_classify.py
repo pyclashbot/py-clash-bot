@@ -7,46 +7,60 @@ from io import BytesIO
 import PySimpleGUI as sg
 from PIL import Image
 
-module_path = os.path.dirname(os.path.realpath(__file__))
-pre_process_data_dir = os.path.join(module_path, 'data', 'preprocess')
-train_data_dir = os.path.join(module_path, 'data', 'train')
+# classes for which to make folders
+classes = ["A1", "A3", "B1", "B3", "C1", "C2", "C3", "None"]
 
-classes = [
-    "A1",
-    "A3",
-    "B1",
-    "B3",
-    "C1",
-    "C2",
-    "C3",
-    "None"
-]
-
+# locations of corners on grid
 corners = {
-    #name:(left, top, right, lower)
-    "A1": (65, 190, 175, 255),
-    "A2": (175, 190, 245, 255),
-    "A3": (245, 190, 355, 255),
-    "B1": (65, 275, 175, 400),
-    "B2": (175, 275, 245, 400),
-    "B3": (245, 275, 355, 400),
-    "C1": (65, 400, 175, 515),
-    "C2": (175, 400, 245, 515),
-    "C3": (245, 400, 355, 515),
+    #name:(left, top, right, bottom)
+    "A1": (65, 190, 175, 255),    "A2": (175, 190, 245, 255),    "A3": (245, 190, 355, 255),
+    "B1": (65, 275, 175, 400),    "B2": (175, 275, 245, 400),    "B3": (245, 275, 355, 400),
+    "C1": (65, 400, 175, 515),    "C2": (175, 400, 245, 515),    "C3": (245, 400, 355, 515),
 }
 
-file_names = [os.path.join(pre_process_data_dir, file_name) for file_name in next(
-    os.walk(pre_process_data_dir), (None, None, []))[2]]
 
+def prepare_files(classes):
+    """make the necessary directories
 
-def make_directories(train_data_dir, classes):
+    Args:
+        classes (list[str]): list of classes for which to make directories
+
+    Returns:
+        str, list[str]: training data (output) dir and list of input files
+    """
+    module_path = os.path.dirname(os.path.realpath(__file__))
+
+    pre_process_data_dir = os.path.join(module_path, 'data', 'preprocess')
+    if not os.path.exists(pre_process_data_dir):
+        os.makedirs(pre_process_data_dir)
+        print("Made preprocesing dir, add images there first, quitting.")
+        sys.exit()
+
+    file_names = [os.path.join(pre_process_data_dir, file_name) for file_name in next(
+        os.walk(pre_process_data_dir), (None, None, []))[2]]
+
+    train_data_dir = os.path.join(module_path, 'data', 'train')
+    if not os.path.exists(train_data_dir):
+        os.makedirs(train_data_dir)
+
     for classification in classes:
         class_dir = os.path.join(train_data_dir, classification)
         if not os.path.exists(class_dir):
             os.makedirs(class_dir)
 
+    return train_data_dir, file_names
 
-def make_corners(file_name, corners):
+
+def make_corners(file_name, corners) -> list[Image.Image]:
+    """make cropped images
+
+    Args:
+        file_name (str): location of folder
+        corners (tuple[int]): the left, top, right, and bottom coordinates
+
+    Returns:
+        list[Image.Image]: list of cropped images
+    """
     crops = []
     for key in corners:
         im_file = BytesIO()
@@ -57,8 +71,17 @@ def make_corners(file_name, corners):
     return crops
 
 
-def prompt_for_class(image_corners, file_name):
-    corner_images = image_corners[file_name]
+def prompt_for_class(image_crops: dict[str, list[Image.Image]], file_name):
+    """prompt user for classes
+
+    Args:
+        image_crops (dict[str, list[Image.Image]]): list of crops of image
+        file_name (str): location of image file
+
+    Returns:
+        str: classified image
+    """
+    corner_images = image_crops[file_name]
     layout = [
         [
             sg.Button("A1", image_data=corner_images[0]),
@@ -88,20 +111,30 @@ def prompt_for_class(image_corners, file_name):
     window.close()
 
 
-image_corners = {file_name: make_corners(
+def save_classified_image(classes, train_data_dir, file_name, classification):
+    """save image to proper class folder
+
+    Args:
+        classes (list[str]): list of classes
+        train_data_dir (str): directory of training data
+        file_name (str): name of file
+        classification (str): image classification
+    """
+    class_dir = os.path.join(train_data_dir, str(
+        classification)) if classification in classes else os.path.join(train_data_dir, "None")
+    image_dir = os.path.join(class_dir, f"{int(time.time())}.png")
+    Image.open(file_name).save(image_dir)
+    os.remove(file_name)
+
+
+# locate the training data dir and the file names
+train_data_dir, file_names = prepare_files(classes)
+
+# crop images
+image_crops = {file_name: make_corners(
     file_name, corners) for file_name in file_names}
 
-
-make_directories(train_data_dir, classes)
-
-for file_name in image_corners:
-    classification = prompt_for_class(image_corners, file_name)
-    if classification in classes:
-        class_dir = os.path.join(train_data_dir, str(classification))
-        image_dir = os.path.join(class_dir, f"{time.time()}.png")
-        Image.open(file_name).save(image_dir)
-    else:
-        class_dir = os.path.join(train_data_dir, "None")
-        image_dir = os.path.join(class_dir, f"{int(time.time())}.png")
-        Image.open(file_name).save(image_dir)
-    os.remove(file_name)
+# prompt and save each image
+for file_name in image_crops:
+    classification = prompt_for_class(image_crops, file_name)
+    save_classified_image(classes, train_data_dir, file_name, classification)
