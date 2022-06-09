@@ -8,7 +8,7 @@ flatbuffers==1.12
 fonttools==4.33.3
 gast==0.4.0
 google-auth==2.7.0
-google-auth-oauthlib==0.4.6
+google-auth-oauthlib==0.5.2
 google-pasta==0.2.0
 grpcio==1.46.3
 h5py==3.7.0
