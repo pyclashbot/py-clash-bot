@@ -4,7 +4,7 @@ cachetools==5.2.0
 certifi==2022.5.18.1
 charset-normalizer==2.0.12
 cycler==0.11.0
-flatbuffers==1.12
+flatbuffers==2.0
 fonttools==4.33.3
 gast==0.4.0
 google-auth==2.7.0
