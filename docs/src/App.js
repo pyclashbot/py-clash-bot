@@ -1,10 +1,10 @@
-import Dependencies from './components/readme/Dependencies';
-import Description from './components/readme/Description';
-import Execution from './components/readme/Execution';
-import Install from './components/readme/Install';
+import ReadMe from './components/readme/ReadMe';
 import {initializeGA} from './GoogleAnalytics';
 import React from 'react';
+import {BrowserRouter as Router, Routes,
+  Route} from 'react-router-dom';
 import AppHelmet from './components/AppHelmet';
+import Contributing from './components/contributing/Contributing';
 
 /**
  * main app
@@ -13,12 +13,18 @@ import AppHelmet from './components/AppHelmet';
 export default function App() {
   initializeGA();
   return (
-    <div className="mume markdown-preview  ">
-      <AppHelmet/>
-      <Description/>
-      <Install/>
-      <Dependencies/>
-      <Execution/>
-    </div>
+
+
+    <Router basename="/py-clash-bot">
+      <div className="mume markdown-preview  ">
+        <AppHelmet/>
+        <Routes>
+          <Route path="contributing" element={<Contributing/>} />
+          <Route path="/" element={<ReadMe />} />
+        </Routes>
+      </div>
+    </Router>
+
+
   );
 }
