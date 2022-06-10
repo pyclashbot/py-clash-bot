@@ -85,3 +85,23 @@ export function releaseLinkEvent() {
     action: 'Clicked release download link',
   });
 }
+
+/**
+ * bug report link click event handler
+ */
+export function bugReportEvent() {
+  ReactGA.event({
+    category: 'User',
+    action: 'Clicked bug report link',
+  });
+}
+
+/**
+ * feature request link click event handler
+ */
+export function featureRequestEvent() {
+  ReactGA.event({
+    category: 'User',
+    action: 'Clicked feature request link',
+  });
+}
