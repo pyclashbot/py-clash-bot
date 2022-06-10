@@ -61,6 +61,7 @@ def crop_image(file_name: str) -> list[str]:
     for key in corners:
         # crop image
         crop = Image.open(file_name).crop(corners[key])
+        crop = crop.resize((round(crop.size[0]*2), round(crop.size[1]*2)))
         # convert image to b64 for use in button image
         im_file = BytesIO()
         crop.save(im_file, format="PNG")
@@ -90,10 +91,11 @@ def crop_images(file_names: list[str]) -> dict[str, list[str]]:
     return image_crop_dict
 
 
-def prompt_for_class(file_name: str, image_crops: list[str]) -> str:
+def prompt_for_class(classes:list[str],file_name: str, image_crops: list[str]) -> str:
     """prompt user to classify image
 
     Args:
+        classes (list[str]): list of classes
         file_name (str): name of file to be classified
         corner_images (list[str]): list of crops of image b64 encoded
 
@@ -118,13 +120,14 @@ def prompt_for_class(file_name: str, image_crops: list[str]) -> str:
             sg.Button("C3", image_data=image_crops[8])
         ],
         [sg.Button("Exit"), sg.Text(
-            file_name, size=(27, None)), sg.Button("None")]
+            file_name, size=(63, None)), sg.Button("None")]
     ]
     # define GUI window
     window = sg.Window(
         "Manual Classifier",
         layout,
-        element_justification='r'
+        element_justification='r',
+        return_keyboard_events=True
     )
 
     # GUI Event Loop
@@ -133,8 +136,11 @@ def prompt_for_class(file_name: str, image_crops: list[str]) -> str:
         if event in (sg.WIN_CLOSED, 'Exit'):
             window.close()
             sys.exit()
-        window.close()
-        return event
+        elif event in classes:
+            window.close()
+            return event
+        elif event == 'n':
+            return "None"
 
 
 def save_classified_image(classes: list[str], train_data_dir: str, file_name: str, classification: str) -> None:
@@ -166,7 +172,7 @@ def main() -> None:
     # prompt and save each image
     for file_name in image_crop_dict:
         image_crops = image_crop_dict[file_name]
-        classification = prompt_for_class(
+        classification = prompt_for_class(classes,
             os.path.basename(file_name), image_crops)
         save_classified_image(classes, train_data_dir,
                               file_name, classification)
