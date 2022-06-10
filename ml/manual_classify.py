@@ -123,7 +123,7 @@ def prompt_for_class(classes:list[str],file_name: str, image_crops: list[str]) -
             sg.Button("C3", image_data=image_crops[8])
         ],
         [sg.Button("Exit"), sg.Text(
-            file_name, size=(63, None)), sg.Button("None")]
+            file_name, size=(63, None)), sg.Button("None(n)")]
     ]
     # define GUI window
     window = sg.Window(
