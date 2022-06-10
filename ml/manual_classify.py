@@ -51,7 +51,7 @@ def prepare_files(classes):
     return train_data_dir, file_names
 
 
-def make_corners(file_name, corners) -> list[Image.Image]:
+def make_corners(file_name, corners) -> list[str]:
     """make cropped images
 
     Args:
@@ -59,7 +59,7 @@ def make_corners(file_name, corners) -> list[Image.Image]:
         corners (tuple[int]): the left, top, right, and bottom coordinates
 
     Returns:
-        list[Image.Image]: list of cropped images
+        list[str]: list of cropped images
     """
     crops = []
     for key in corners:
@@ -71,12 +71,12 @@ def make_corners(file_name, corners) -> list[Image.Image]:
     return crops
 
 
-def prompt_for_class(classes: list[str], corner_images: list[Image.Image]):
+def prompt_for_class(classes: list[str], corner_images: list[str]):
     """prompt user for classes
 
     Args:
         classes(list[str]) : list of classes
-        corner_images (list[Image.Image]): list of crops of image
+        corner_images (list[str]): list of crops of image b64 encoded
 
     Returns:
         str: classification of image
@@ -110,12 +110,11 @@ def prompt_for_class(classes: list[str], corner_images: list[Image.Image]):
     # GUI Event Loop
     while True:
         event, values = window.read()
-        if event in classes:
-            break
-        elif event in (sg.WIN_CLOSED, 'Exit'):
+        if event in (sg.WIN_CLOSED, 'Exit'):
+            window.close()
             sys.exit()
+        window.close()
         return event
-    window.close()
 
 
 def save_classified_image(classes, train_data_dir, file_name, classification):
@@ -130,7 +129,7 @@ def save_classified_image(classes, train_data_dir, file_name, classification):
     class_dir = os.path.join(train_data_dir, str(
         classification)) if classification in classes else os.path.join(train_data_dir, "None")
     image_dir = os.path.join(class_dir, f"{int(time.time())}.png")
-    Image.open(file_name).save(image_dir)
+    Image.open(file_name).crop((65, 190, 355, 515)).save(image_dir)
     os.remove(file_name)
 
 
