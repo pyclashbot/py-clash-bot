@@ -71,11 +71,10 @@ def make_corners(file_name, corners) -> list[str]:
     return crops
 
 
-def prompt_for_class(classes: list[str], corner_images: list[str]):
+def prompt_for_class(file_name: str, corner_images: list[str]):
     """prompt user for classes
 
     Args:
-        classes(list[str]) : list of classes
         corner_images (list[str]): list of crops of image b64 encoded
 
     Returns:
@@ -98,7 +97,7 @@ def prompt_for_class(classes: list[str], corner_images: list[str]):
             sg.Button("C2", image_data=corner_images[7]),
             sg.Button("C3", image_data=corner_images[8])
         ],
-        [sg.Button("Exit"), sg.Button("None")]
+        [sg.Button("Exit"), sg.Text(file_name, size=(27,None)), sg.Button("None")]
     ]
     # define GUI window
     window = sg.Window(
@@ -143,5 +142,5 @@ image_crop_dict = {file_name: make_corners(
 # prompt and save each image
 for file_name in image_crop_dict:
     image_crops = image_crop_dict[file_name]
-    classification = prompt_for_class(classes, image_crops)
+    classification = prompt_for_class(os.path.basename(file_name), image_crops)
     save_classified_image(classes, train_data_dir, file_name, classification)
