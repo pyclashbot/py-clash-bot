@@ -140,6 +140,7 @@ def prompt_for_class(classes:list[str],file_name: str, image_crops: list[str]) -
             window.close()
             return event
         elif event == 'n':
+            window.close()
             return "None"
 
 
