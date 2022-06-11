@@ -10,6 +10,7 @@ from PIL import Image
 
 
 def prepare_files(classes):
+    print("prepping files")
     """make the necessary directories
 
     Args:
@@ -42,6 +43,7 @@ def prepare_files(classes):
 
 
 def crop_image(file_name: str) -> list[str]:
+    print(f"Cropping {file_name[70:]}")
     """make cropped images
 
     Args:
@@ -71,6 +73,7 @@ def crop_image(file_name: str) -> list[str]:
 
 
 def crop_images(file_names: list[str]) -> dict[str, list[str]]:
+    print(f"Cropping images")
     """crop a list of images
 
     Args:
@@ -120,7 +123,7 @@ def prompt_for_class(classes:list[str],file_name: str, image_crops: list[str]) -
             sg.Button("C3", image_data=image_crops[8])
         ],
         [sg.Button("Exit"), sg.Text(
-            file_name, size=(63, None)), sg.Button("None")]
+            file_name, size=(63, None)), sg.Button("None(n)")]
     ]
     # define GUI window
     window = sg.Window(
