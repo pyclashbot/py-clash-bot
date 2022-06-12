@@ -4,7 +4,6 @@ colorama==0.4.4
 cx-Freeze==6.11.0
 idna==3.3
 joblib==1.1.0
-keras==2.9.0
 keyboard==0.13.5
 lief==0.12.1
 MouseInfo==0.1.3
