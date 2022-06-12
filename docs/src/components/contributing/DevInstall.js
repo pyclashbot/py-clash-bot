@@ -29,7 +29,7 @@ export default class DevInstall extends Component {
           </code></p>
         </p>
         <p>Install repository development dependencies and scripts
-          <p><code>pip install -r ./requirements-dev.txt</code></p>
+          <p><code>pip install -r ./requirements.txt</code></p>
           <p><code>pip install -e .
           </code></p>
         </p>
