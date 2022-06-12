@@ -1,4 +1,4 @@
-from distutils.util import run_2to3
+
 import time
 from os.path import join
 
