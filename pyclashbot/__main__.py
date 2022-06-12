@@ -6,10 +6,6 @@ from itertools import cycle
 from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp, find_claim_buttons
 from pyclashbot.mass_screenshot import take_many_screenshots
 
-try:
-    from matplotlib import pyplot as plt
-finally:
-    print("Could not import optional dependency matplotlib, moving on.")
 
 from pyclashbot.account import handle_new_challenge, handle_special_offer, switch_accounts_to
 from pyclashbot.auto_update import auto_update
