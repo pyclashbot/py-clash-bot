@@ -7,14 +7,10 @@ from pyclashbot.state import check_if_on_trophy_progession_rewards_page, return_
 
 def switch_accounts_to(logger, ssid):
     check_quit_key_press()
+    time.sleep(0.5)
+    handle_gold_rush_event(logger) 
+    time.sleep(0.5)
     
-    #handling the various things notifications and such that need to be cleared before bot can get going
-    time.sleep(0.5)
-    handle_gold_rush_event(logger)        
-    time.sleep(0.5)
-    handle_new_challenge(logger)
-    time.sleep(0.5)
-
     logger.log("Opening settings")
     click(x=364, y=99)
 
@@ -40,6 +36,16 @@ def switch_accounts_to(logger, ssid):
         return "quit"
     check_quit_key_press()
 
+    #handling the various things notifications and such that need to be cleared before bot can get going
+    time.sleep(0.5)
+    handle_gold_rush_event(logger) 
+    time.sleep(0.5)
+    handle_new_challenge(logger)
+    time.sleep(0.5)
+    handle_special_offer(logger)
+    time.sleep(0.5)
+
+
 
 def check_for_gold_rush_event():
     references = [
@@ -63,11 +69,10 @@ def check_for_gold_rush_event():
 def handle_gold_rush_event(logger):
     logger.log("Handling the possibility of a gold rush event notification obstructing the bot.")
     time.sleep(0.5)
-    if check_for_gold_rush_event():
-        click(193,465)
-        time.sleep(0.2)
-        click(193,465)
-        time.sleep(0.2)
+    click(193,465)
+    time.sleep(0.2)
+    click(193,465)
+    time.sleep(0.5)
     
 
 
@@ -84,3 +89,15 @@ def handle_new_challenge(logger):
         time.sleep(0.5)
 
 
+def handle_special_offer(logger):
+    logger.log("Handling the possibility of special offer notification obstructing the bot.")
+    time.sleep(0.5)
+    click(35,633)
+    time.sleep(0.5)
+    click(242,633)
+    time.sleep(0.5)
+    if check_if_on_trophy_progession_rewards_page():
+        click(212,633)
+        time.sleep(0.5)
+
+    

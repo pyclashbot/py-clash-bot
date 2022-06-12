@@ -120,23 +120,14 @@ def screenshot(region=(0, 0, 500, 700)):
 
 
 def restart_client(logger):
-    orientate_memu_multi()
-    check_quit_key_press()
-    logger.log("closing client")
-    time.sleep(3)
-    click(x=540, y=140)
-    time.sleep(10)
-    check_quit_key_press()
-    logger.log("opening client")
-    click(x=540, y=140)
-    time.sleep(3)
-    if wait_for_memu_main(logger) == "quit":
-        return "quit"
-    logger.log("skipping ads")
-    orientate_window()
     time.sleep(1)
-    click(x=440, y=600, clicks=5, interval=1)
-
+    #close client
+    orientate_memu_multi()
+    click(99,99)
+    #open client
+    #wait for client
+    #skip ads
+    
 
 def scroll_down():
     origin = pyautogui.position()

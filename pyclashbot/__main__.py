@@ -3,18 +3,21 @@ import sys
 import time
 from itertools import cycle
 
+from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp, find_claim_buttons
+from pyclashbot.mass_screenshot import take_many_screenshots
+
 try:
     from matplotlib import pyplot as plt
 finally:
     print("Could not import optional dependency matplotlib, moving on.")
 
-from pyclashbot.account import handle_new_challenge, switch_accounts_to
+from pyclashbot.account import handle_new_challenge, handle_special_offer, switch_accounts_to
 from pyclashbot.auto_update import auto_update
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_bot_window, orientate_memu_multi,
                                orientate_window, refresh_screen,
-                               restart_client)
+                               restart_client, screenshot)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -104,7 +107,7 @@ def upgrade_state(logger):
     time.sleep(1)
     return_to_clash_main_menu()
     logger.log("Finished with upgrading. Passing to start fight state")
-    state = "start_fight"
+    state = "battlepass"
     return state
 
 
@@ -220,6 +223,19 @@ def restart_state(logger):
     return state
 
 
+def battlepass_state(logger):
+    logger.log("-----STATE=battlepass-----")
+    logger.log("Handling battlepass rewards")
+    if check_if_can_collect_bp():
+        #if we can collect rewards
+        logger.log("Battlepass rewards are available.")
+        collect_bp(logger)
+    else:
+        logger.log("Battlepass rewards are unavailable. Continuing to a fight.")
+    state="start_fight"
+    return state
+
+
 def initialize_client(logger):
     if not check_if_windows_exist(logger):
         sys.exit()
@@ -250,7 +266,35 @@ def main_loop():
     state = initialize_client(logger)
     loop_count = 0
 
-
+    #orientate_window()
+    
+    # time.sleep(2)
+    # state="battlepass"
+    
+    # ss=screenshot()
+    # plt.imshow(ss)
+    # plt.show()
+    
+    
+    # path=r"C:\Users\Matt\Desktop\inc_pics"
+    # region=[276,394,40,13]
+    # n=60
+    # print("Start")
+    # while n>0:
+    #     n=n-1
+    #     print_n="t"+str(n)
+    #     ss=screenshot(region)
+    #     ss.save(f"{path}\{print_n}.png")
+    #     time.sleep(0.02)
+    #     print(n)
+    # print("End")
+            
+    # while True:
+    #     print(find_claim_buttons())
+    
+    
+    #collect_bp(logger)
+        
     while True:
         installed_update = auto_update() # will be true if installed update, needs feature to restart program
         logger.log(f"loop count: {loop_count}")
@@ -270,6 +314,8 @@ def main_loop():
             state = fighting_state(logger)
         if state == "post_fight":
             ssid, state = post_fight_state(logger, ssids)
+        if state == "battlepass":
+            state = battlepass_state(logger)
         loop_count += 1
         time.sleep(0.2)
 
