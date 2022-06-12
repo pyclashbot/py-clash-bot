@@ -70,6 +70,8 @@ def handle_gold_rush_event(logger):
         time.sleep(0.2)
     
 
+
+
 def handle_new_challenge(logger):
     logger.log("Handling the possibility of a new challenge notification obstructing the bot.")
     time.sleep(0.5)
