@@ -266,23 +266,7 @@ def main_loop():
     state = initialize_client(logger)
     loop_count = 0
 
-    # orientate_window()
-    
-    # orientate_memu_multi()
-    
-    # time.sleep(2)
-    # state="battlepass"
-    # region=[0,0,1280,960]
-    # ss=screenshot(region)
-    # plt.imshow(ss)
-    # plt.show()
-    
-    
-    #restart_client(logger)
-    
-    # while True:
-    #     print(check_for_memu_loading_background())
-        
+     
     while True:
         installed_update = auto_update() # will be true if installed update, needs feature to restart program
         logger.log(f"loop count: {loop_count}")
