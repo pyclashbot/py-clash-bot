@@ -14,7 +14,7 @@ finally:
 from pyclashbot.account import handle_new_challenge, handle_special_offer, switch_accounts_to
 from pyclashbot.auto_update import auto_update
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
+from pyclashbot.client import (check_for_memu_loading_background, check_if_windows_exist, check_quit_key_press,
                                orientate_bot_window, orientate_memu_multi,
                                orientate_window, refresh_screen,
                                restart_client, screenshot)
@@ -266,34 +266,22 @@ def main_loop():
     state = initialize_client(logger)
     loop_count = 0
 
-    #orientate_window()
+    # orientate_window()
+    
+    # orientate_memu_multi()
     
     # time.sleep(2)
     # state="battlepass"
-    
-    # ss=screenshot()
+    # region=[0,0,1280,960]
+    # ss=screenshot(region)
     # plt.imshow(ss)
     # plt.show()
     
     
-    # path=r"C:\Users\Matt\Desktop\inc_pics"
-    # region=[276,394,40,13]
-    # n=60
-    # print("Start")
-    # while n>0:
-    #     n=n-1
-    #     print_n="t"+str(n)
-    #     ss=screenshot(region)
-    #     ss.save(f"{path}\{print_n}.png")
-    #     time.sleep(0.02)
-    #     print(n)
-    # print("End")
-            
+    #restart_client(logger)
+    
     # while True:
-    #     print(find_claim_buttons())
-    
-    
-    #collect_bp(logger)
+    #     print(check_for_memu_loading_background())
         
     while True:
         installed_update = auto_update() # will be true if installed update, needs feature to restart program

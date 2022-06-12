@@ -6,7 +6,7 @@ import numpy
 import pyautogui
 import pygetwindow
 
-from pyclashbot.image_rec import find_references, get_first_location
+from pyclashbot.image_rec import check_for_location, find_references, get_first_location
 
 
 def check_if_windows_exist(logger):
@@ -122,12 +122,56 @@ def screenshot(region=(0, 0, 500, 700)):
 def restart_client(logger):
     time.sleep(1)
     #close client
+    logger.log("Closing client")
     orientate_memu_multi()
-    click(99,99)
+    time.sleep(1)
+    click(541,133)
+    time.sleep(3)
     #open client
+    logger.log("Opening client")
+    click(541,133)
+    time.sleep(3)
     #wait for client
+    logger.log("Waiting for client")
+    orientate_window()
+    time.sleep(3)
+    loading=True
+    loading_loops=0
+    while (loading==True)and(loading_loops<20):
+        loading_loops=loading_loops+1
+        logger.log(f"Waiting for memu to load:{loading_loops}")
+        loading=check_for_memu_loading_background()
+        time.sleep(1)
+    logger.log("Done waiting for memu to load.")
+    time.sleep(5)
     #skip ads
-    
+    logger.log("Skipping ads")
+    click(440, 600, clicks=7, interval=1)
+
+
+def check_for_memu_loading_background():
+    check_quit_key_press()
+    current_image = screenshot()
+    reference_folder = "memu_loading_background"
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "5.png",     
+    ]
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.99
+    )
+
+    return check_for_location(locations)
+
+
 
 def scroll_down():
     origin = pyautogui.position()
