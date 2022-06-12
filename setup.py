@@ -13,9 +13,8 @@ except KeyError:
     version = '0.0.0'
 
 # get files to include in dist
-dist_files = glob("pyclashbot/reference_images/*/*.png")
-
-dist_files = [file.replace('pyclashbot/', '') for file in dist_files]
+dist_files = [file.replace('pyclashbot/', '')
+              for file in glob("pyclashbot/reference_images/*/*.png")]
 
 setup(
     name='py-clash-bot',
@@ -26,8 +25,8 @@ setup(
     license='MIT',
     keywords='clash royale bot',
     author='Matthew Miglio, Martin Miglio',
-    url='https://github.com/matthewmiglio/py-clash-bot',
-    download_url='https://github.com/matthewmiglio/py-clash-bot/releases',
+    url='https://matthewmiglio.github.io/py-clash-bot/',
+    download_url='https://matthewmiglio.github.io/py-clash-bot/',
     install_requires=[
         'pillow',
         'opencv-python',
