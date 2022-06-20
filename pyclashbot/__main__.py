@@ -3,7 +3,11 @@ import sys
 import time
 from itertools import cycle
 
+from matplotlib import pyplot as plt
+import numpy
+
 from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp, find_claim_buttons
+from pyclashbot.card_mastery import check_if_has_mastery_rewards, collect_mastery_rewards
 from pyclashbot.mass_screenshot import take_many_screenshots
 
 
@@ -25,7 +29,7 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               check_if_on_clash_main_menu, check_state,
                               open_clash, return_to_clash_main_menu,
                               wait_for_clash_main_menu)
-from pyclashbot.upgrade import upgrade_cards_from_main_2
+from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 
 def post_fight_state(logger, ssids):
@@ -102,10 +106,22 @@ def upgrade_state(logger):
     upgrade_cards_from_main_2(logger)
     time.sleep(1)
     return_to_clash_main_menu()
-    logger.log("Finished with upgrading. Passing to start fight state")
-    state = "battlepass"
+    logger.log("Finished with upgrading. Passing to card_mastery_collection state")
+    state = "card_mastery_collection"
     return state
 
+
+def card_mastery_collection_state(logger):
+    logger.log("Getting to card page")
+    getto_card_page(logger)
+    logger.log("Checking if mastery rewards are available.")
+    if check_if_has_mastery_rewards():
+        logger.log("Mastery rewards are available. Running mastery collection alg.")
+        collect_mastery_rewards(logger)
+    logger.log("No mastery rewards are available.")
+    logger.log("Done with card mastery collection. Passing to battlepass collection state.")
+    state="battlepass"
+    return state
 
 def donate_state(logger):
     logger.log("-----STATE=donate-----")
@@ -253,7 +269,7 @@ def main_loop():
     fight_type = "2v2"
     card_to_request = "giant"
     cards_to_not_donate = ["card_1", "card_2", "card_3"]
-    ssids = cycle([1, 2])  # change to which account positions to use
+    ssids = cycle([1, 2])  # change to which account positions to use  
 
     # loop vars
     # *not user vars, do not change*
@@ -261,6 +277,9 @@ def main_loop():
     ssid = next(ssids)
     state = initialize_client(logger)
     loop_count = 0
+
+    
+
 
      
     while True:
@@ -284,6 +303,9 @@ def main_loop():
             ssid, state = post_fight_state(logger, ssids)
         if state == "battlepass":
             state = battlepass_state(logger)
+        if state == "card_mastery_collection":
+            state = card_mastery_collection_state(logger)
+            
         loop_count += 1
         time.sleep(0.2)
 
