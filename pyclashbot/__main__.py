@@ -6,18 +6,18 @@ from itertools import cycle
 from matplotlib import pyplot as plt
 import numpy
 
-from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp, find_claim_buttons
+from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp
 from pyclashbot.card_mastery import check_if_has_mastery_rewards, collect_mastery_rewards
-from pyclashbot.mass_screenshot import take_many_screenshots
 
 
-from pyclashbot.account import handle_new_challenge, handle_special_offer, switch_accounts_to
+
+from pyclashbot.account import  switch_accounts_to
 from pyclashbot.auto_update import auto_update
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_for_memu_loading_background, check_if_windows_exist, check_quit_key_press,
+from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_bot_window, orientate_memu_multi,
-                               orientate_window, refresh_screen,
-                               restart_client, screenshot)
+                               orientate_window,
+                               restart_client,)
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -279,8 +279,6 @@ def main_loop():
     loop_count = 0
 
     
-
-
      
     while True:
         installed_update = auto_update() # will be true if installed update, needs feature to restart program
