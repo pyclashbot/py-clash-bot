@@ -1,5 +1,5 @@
 certifi==2022.6.15
-charset-normalizer==2.0.12
+charset-normalizer==2.1.0
 colorama==0.4.5
 cx-Freeze==6.11.0
 idna==3.3
