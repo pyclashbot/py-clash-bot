@@ -15,6 +15,7 @@ def check_if_windows_exist(logger):
         pygetwindow.getWindowsWithTitle('Multiple Instance Manager')[0]
     except (IndexError, KeyError):
         logger.log("MEmu or Multiple Instance Manager not detected!")
+        logger.log("Make sure both MEmu and Multi Instance Manager are open and running before starting the program.")
         return False
     return True
 
@@ -77,7 +78,7 @@ def orientate_memu_multi():
         'Multiple Instance Manager')[0]
     window_mimm.minimize()
     window_mimm.restore()
-    window_mimm.moveTo(200, 200)
+    #window_mimm.moveTo(200, 200)
     time.sleep(0.2)
     window_mimm.moveTo(0, 0)
 
@@ -104,7 +105,7 @@ def orientate_bot_window(logger):
 
 
 def get_terminal_window():
-    terminal_titles = [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash')]
+    terminal_titles = [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash-bot v')]
     if len(terminal_titles) > 0:
         terminal_windows = pygetwindow.getWindowsWithTitle(terminal_titles.pop())
         if len(terminal_windows) > 0:
