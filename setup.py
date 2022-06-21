@@ -37,6 +37,7 @@ setup(
         'joblib',
         'tqdm',
         'requests',
+        'matplotlib'
     ],
     packages=['pyclashbot'],
     include_package_data=True,
