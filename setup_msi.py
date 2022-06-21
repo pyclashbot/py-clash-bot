@@ -27,6 +27,7 @@ dependencies = [
     'joblib',
     'tqdm',
     'requests',
+    'matplotlib'
 ]
 
 build_exe_options = {

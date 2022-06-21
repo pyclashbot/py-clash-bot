@@ -123,6 +123,7 @@ def card_mastery_collection_state(logger):
     state="battlepass"
     return state
 
+     
 def donate_state(logger):
     logger.log("-----STATE=donate-----")
     logger.log("Checking if in a clan")
