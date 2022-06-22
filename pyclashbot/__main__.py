@@ -293,11 +293,11 @@ def main_loop():
     # now.
     card_to_request = "giant"
     ssids = cycle([1, 2])  # change to which account positions to use  
-    enable_donate=False
-    enable_card_mastery_collection=False
-    enable_battlepass_collection=False
-    enable_request=False
-    enable_card_upgrade=False
+    enable_donate=True
+    enable_card_mastery_collection=True
+    enable_battlepass_collection=True
+    enable_request=True
+    enable_card_upgrade=True
 
     # loop vars
     # *not user vars, do not change*
