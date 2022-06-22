@@ -1,7 +1,7 @@
 certifi==2022.6.15
 charset-normalizer==2.0.12
 colorama==0.4.5
-cx-Freeze==6.11.0
+cx-Freeze==6.11.1
 cycler==0.11.0
 fonttools==4.33.3
 idna==3.3
