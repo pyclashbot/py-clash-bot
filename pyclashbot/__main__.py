@@ -5,6 +5,7 @@ from itertools import cycle
 
 from matplotlib import pyplot as plt
 import numpy
+from board_scanner import find_enemy_2
 
 from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp
 from pyclashbot.card_mastery import check_if_has_mastery_rewards, collect_mastery_rewards
@@ -58,7 +59,9 @@ def fighting_state(logger):
         log = "Plays: " + str(fightloops)
         logger.log(log)
         logger.log("Scanning field.")
-        enemy_troop_position = look_for_enemy_troops()
+        enemy_troop_position = find_enemy_2()
+        if enemy_troop_position is not None:
+            logger.log(f"New enemy position alg found enemy coord to be around {enemy_troop_position[0]},{enemy_troop_position[1]}")
         logger.log("Choosing play.")
         fight_with_deck_list(enemy_troop_position)
         fightloops = fightloops + 1
@@ -125,6 +128,7 @@ def card_mastery_collection_state(logger):
 
      
 def donate_state(logger):
+    if enable_donate
     logger.log("-----STATE=donate-----")
     logger.log("Checking if in a clan")
     time.sleep(2)
@@ -267,10 +271,13 @@ def main_loop():
     # user vars
     # these will be specified thru the GUI, but these are the placeholders for
     # now.
-    fight_type = "2v2"
     card_to_request = "giant"
-    cards_to_not_donate = ["card_1", "card_2", "card_3"]
     ssids = cycle([1, 2])  # change to which account positions to use  
+    enable_donate=True
+    enable_card_mastery_collection=True
+    enable_battlepass_collection=True
+    enable_request=True
+    enable_card_upgrade=True
 
     # loop vars
     # *not user vars, do not change*
@@ -289,21 +296,21 @@ def main_loop():
         if state == "clash_main":
             state = clash_main_state(logger, ssid)
         if state == "request":
-            state = request_state(logger, card_to_request)
+            state = request_state(logger, card_to_request,enable_request)
         if state == "donate":
-            state = donate_state(logger)
+            state = donate_state(logger,enable_donate)
         if state == "upgrade":
-            state = upgrade_state(logger)
+            state = upgrade_state(logger,enable_card_upgrade)
         if state == "start_fight":
-            state = start_fight_state(logger, fight_type)
+            state = start_fight_state(logger)
         if state == "fighting":
             state = fighting_state(logger)
         if state == "post_fight":
             ssid, state = post_fight_state(logger, ssids)
         if state == "battlepass":
-            state = battlepass_state(logger)
+            state = battlepass_state(logger,enable_battlepass_collection)
         if state == "card_mastery_collection":
-            state = card_mastery_collection_state(logger)
+            state = card_mastery_collection_state(logger,enable_card_mastery_collection)
             
         loop_count += 1
         time.sleep(0.2)

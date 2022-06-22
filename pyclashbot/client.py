@@ -1,10 +1,13 @@
 import sys
 import time
+from PIL import Image
 
 import keyboard
+from matplotlib import pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
+from os.path import dirname, join
 
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location
 
@@ -118,6 +121,76 @@ def screenshot(region=(0, 0, 500, 700)):
         return pyautogui.screenshot()
     else:
         return pyautogui.screenshot(region=region)
+
+
+def get_image(folder=None,name=None):
+    if (folder==None)or(name==None):
+        print("Tried to get_image with empty params")
+        return
+    
+    top_level = dirname(__file__)
+    reference_folder = join(top_level, "reference_images")
+    return Image.open(join(reference_folder,folder,name))
+
+
+def draw_picture(coords):
+    #make black image and open up white_pix image for pasting
+    black_image=get_image(name="draw_background.png",folder="draw_images")    
+    white_pix=get_image(name="white_pix.png",folder="draw_images")
+    
+    
+    
+    
+    image=screenshot(region=[0,0,700,700])
+    image.paste(black_image)
+    image.paste(im=get_image(name="board_outline_image.png",folder="draw_images"),box=[0,0])
+    
+    #for each coord, paste a white pixel at each coord
+    size=len(coords)
+    
+    print(size)
+    print("-------")
+    
+    size=size-1
+    while size>0:
+        #print(size)
+
+        image.paste(white_pix,coords[size])
+        size=size-1
+    
+    iar=numpy.asarray(image)
+    plt.imshow(iar)
+    plt.show()
+ 
+
+def get_avg_coord(coord_list):
+    #handle null params
+    if (coord_list==[])or(coord_list is None):
+        return
+    if len(coord_list)==0:
+        return
+    
+    #vars
+    x_total=0
+    y_total=0
+    coord_total=0
+    
+    #loop
+    size=len(coord_list)
+    index=size-1
+    while index>-1:
+        current_coord=coord_list[index]
+        x_total=x_total+current_coord[0]
+        y_total=y_total+current_coord[1]
+        coord_total=coord_total+1
+    
+        index=index-1
+        
+    #calc average
+    avg_x=int(x_total/coord_total)
+    avg_y=int(y_total/coord_total)
+    
+    return [avg_x,avg_y]
 
 
 def restart_client(logger):
