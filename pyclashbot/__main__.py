@@ -5,7 +5,7 @@ from itertools import cycle
 
 from matplotlib import pyplot as plt
 import numpy
-from board_scanner import find_enemy_2
+from pyclashbot.board_scanner import find_enemy_2
 
 from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp
 from pyclashbot.card_mastery import check_if_has_mastery_rewards, collect_mastery_rewards
