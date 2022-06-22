@@ -73,34 +73,34 @@ def fighting_state(logger):
     return state
 
 
-def start_fight_state(logger, fight_type):
+def start_fight_state(logger):
     logger.log("-----STATE=start_fight-----")
-    state = "restart"
     return_to_clash_main_menu()
-    if fight_type == "1v1":
-        logger.log("I cant do 1v1s yet. Restarting")
+    if start_2v2(logger) == "quit":
+        # if couldnt find quickmatch button
+        logger.log("Had problems finding 2v2 quickmatch button.")
         state = "restart"
-    if fight_type == "2v2":
-        if start_2v2(logger) == "quit":
-            # if couldnt find quickmatch button
-            logger.log("Had problems finding 2v2 quickmatch button.")
+    else:
+        # if could find the quickmatch button
+        if wait_for_battle_start(logger) == "quit":
+            # if waiting for battle takes too long
+            logger.log(
+                "Waited too long for battle start. Restarting")
             state = "restart"
         else:
-            # if could find the quickmatch button
-            if wait_for_battle_start(logger) == "quit":
-                # if waiting for battle takes too long
-                logger.log(
-                    "Waited too long for battle start. Restarting")
-                state = "restart"
-            else:
-                # if battle started before wait was too long
-                logger.log(
-                    "Battle has begun. Passing to fighting state")
-                state = "fighting"
+            # if battle started before wait was too long
+            logger.log(
+                "Battle has begun. Passing to fighting state")
+            state = "fighting"
     return state
 
 
-def upgrade_state(logger):
+def upgrade_state(logger,enable_card_upgrade):
+    if enable_card_upgrade==False:
+        logger.log("Card upgrade is disabled. Passing to card_mastery_collection state.")
+        state = "card_mastery_collection"
+        return state
+    
     logger.log("-----STATE=upgrade-----")
     # only run upgrade a third of the time because its fucking slow as shit
     # but what can u do yk?
@@ -114,7 +114,10 @@ def upgrade_state(logger):
     return state
 
 
-def card_mastery_collection_state(logger):
+def card_mastery_collection_state(logger,enable_card_mastery_collection):
+    if enable_card_mastery_collection==False:
+        logger.log("Card_mastery_collection is disabled. Passing to battlepass collection state.")
+    
     logger.log("Getting to card page")
     getto_card_page(logger)
     logger.log("Checking if mastery rewards are available.")
@@ -127,8 +130,18 @@ def card_mastery_collection_state(logger):
     return state
 
      
-def donate_state(logger):
-    if enable_donate
+def donate_state(logger,enable_donate):
+    if enable_donate==False:
+        do_upgrade = 1 == random.randint(1, 3)
+        if do_upgrade:
+            logger.log("Donate is disabled. Passing to upgrade state")
+            return "upgrade"
+        else:
+            logger.log("Donate is disabled. Passing to start_fight state")
+            return "start_fight"
+        
+        
+        
     logger.log("-----STATE=donate-----")
     logger.log("Checking if in a clan")
     time.sleep(2)
@@ -162,7 +175,11 @@ def donate_state(logger):
     return state
 
 
-def request_state(logger, card_to_request):
+def request_state(logger, card_to_request,enable_request=True):
+    if enable_request==False:
+        logger.log("Request is disabled. Passing to donate state.")
+        return "donate"
+    
     logger.log("-----STATE=request-----")
     logger.log("Trying to get to donate page")
     if getto_donate_page(logger) == "quit":
@@ -240,7 +257,10 @@ def restart_state(logger):
     return state
 
 
-def battlepass_state(logger):
+def battlepass_state(logger,enable_battlepass_collection):
+    if enable_battlepass_collection==False:
+        logger.log("Battlepass collection is disabled. Passing to start_fight state.")
+    
     logger.log("-----STATE=battlepass-----")
     logger.log("Handling battlepass rewards")
     if check_if_can_collect_bp():
@@ -273,11 +293,11 @@ def main_loop():
     # now.
     card_to_request = "giant"
     ssids = cycle([1, 2])  # change to which account positions to use  
-    enable_donate=True
-    enable_card_mastery_collection=True
-    enable_battlepass_collection=True
-    enable_request=True
-    enable_card_upgrade=True
+    enable_donate=False
+    enable_card_mastery_collection=False
+    enable_battlepass_collection=False
+    enable_request=False
+    enable_card_upgrade=False
 
     # loop vars
     # *not user vars, do not change*
