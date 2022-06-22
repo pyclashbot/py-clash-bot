@@ -67,6 +67,16 @@ export function pypiBadgeEvent() {
 }
 
 /**
+ * python version badge click event handler
+ */
+export function pythonVersionBadgeEvent() {
+  ReactGA.event({
+    category: 'User',
+    action: `Clicked python version badge`,
+  });
+}
+
+/**
  * codefactor badge click event handler
  */
 export function codeFactorBadgeEvent() {
