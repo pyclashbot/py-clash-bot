@@ -42,7 +42,7 @@ setup(
     packages=['pyclashbot'],
     include_package_data=True,
     package_data={'pyclashbot': dist_files},
-    python_requires='>=3',
+    python_requires='>=3.10',
     zip_safe=False,
     entry_points={
         'console_scripts': [
