@@ -1,15 +1,16 @@
 import sys
 import time
-from PIL import Image
+from os.path import dirname, join
 
 import keyboard
-from matplotlib import pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
-from os.path import dirname, join
+from matplotlib import pyplot as plt
+from PIL import Image
 
-from pyclashbot.image_rec import check_for_location, find_references, get_first_location
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location)
 
 
 def check_if_windows_exist(logger):
@@ -18,7 +19,8 @@ def check_if_windows_exist(logger):
         pygetwindow.getWindowsWithTitle('Multiple Instance Manager')[0]
     except (IndexError, KeyError):
         logger.log("MEmu or Multiple Instance Manager not detected!")
-        logger.log("Make sure both MEmu and Multi Instance Manager are open and running before starting the program.")
+        logger.log(
+            "Ensure both MEmu and Multi Instance Manager are open and running before starting the program.")
         return False
     return True
 
@@ -108,9 +110,11 @@ def orientate_bot_window(logger):
 
 
 def get_terminal_window():
-    terminal_titles = [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash-bot v')]
+    terminal_titles = [title for title in pygetwindow.getAllTitles(
+    ) if title.startswith('py-clash-bot v')]
     if len(terminal_titles) > 0:
-        terminal_windows = pygetwindow.getWindowsWithTitle(terminal_titles.pop())
+        terminal_windows = pygetwindow.getWindowsWithTitle(
+            terminal_titles.pop())
         if len(terminal_windows) > 0:
             return terminal_windows.pop()
     return None
@@ -123,102 +127,96 @@ def screenshot(region=(0, 0, 500, 700)):
         return pyautogui.screenshot(region=region)
 
 
-def get_image(folder=None,name=None):
-    if (folder==None)or(name==None):
-        print("Tried to get_image with empty params")
-        return
-    
+def get_image(folder, name):
     top_level = dirname(__file__)
     reference_folder = join(top_level, "reference_images")
-    return Image.open(join(reference_folder,folder,name))
+    return Image.open(join(reference_folder, folder, name))
 
 
 def draw_picture(coords):
-    #make black image and open up white_pix image for pasting
-    black_image=get_image(name="draw_background.png",folder="draw_images")    
-    white_pix=get_image(name="white_pix.png",folder="draw_images")
-    
-    
-    
-    
-    image=screenshot(region=[0,0,700,700])
+    # make black image and open up white_pix image for pasting
+    black_image = get_image(name="draw_background.png", folder="draw_images")
+    white_pix = get_image(name="white_pix.png", folder="draw_images")
+
+    image = screenshot(region=[0, 0, 700, 700])
     image.paste(black_image)
-    image.paste(im=get_image(name="board_outline_image.png",folder="draw_images"),box=[0,0])
-    
-    #for each coord, paste a white pixel at each coord
-    size=len(coords)
-    
+    image.paste(im=get_image(name="board_outline_image.png",
+                folder="draw_images"), box=(0, 0))
+
+    # for each coord, paste a white pixel at each coord
+    size = len(coords)
+
     print(size)
     print("-------")
-    
-    size=size-1
-    while size>0:
-        #print(size)
 
-        image.paste(white_pix,coords[size])
-        size=size-1
-    
-    iar=numpy.asarray(image)
+    size = size - 1
+    while size > 0:
+        # print(size)
+
+        image.paste(white_pix, coords[size])
+        size = size - 1
+
+    iar = numpy.asarray(image)
     plt.imshow(iar)
     plt.show()
- 
+
 
 def get_avg_coord(coord_list):
-    #handle null params
-    if (coord_list==[])or(coord_list is None):
+    # handle null params
+    if (coord_list == []) or (coord_list is None):
         return
-    if len(coord_list)==0:
+    if len(coord_list) == 0:
         return
-    
-    #vars
-    x_total=0
-    y_total=0
-    coord_total=0
-    
-    #loop
-    size=len(coord_list)
-    index=size-1
-    while index>-1:
-        current_coord=coord_list[index]
-        x_total=x_total+current_coord[0]
-        y_total=y_total+current_coord[1]
-        coord_total=coord_total+1
-    
-        index=index-1
-        
-    #calc average
-    avg_x=int(x_total/coord_total)
-    avg_y=int(y_total/coord_total)
-    
-    return [avg_x,avg_y]
+
+    # vars
+    x_total = 0
+    y_total = 0
+    coord_total = 0
+
+    # loop
+    size = len(coord_list)
+    index = size - 1
+    while index > -1:
+        current_coord = coord_list[index]
+        x_total = x_total + current_coord[0]
+        y_total = y_total + current_coord[1]
+        coord_total = coord_total + 1
+
+        index = index - 1
+
+    # calc average
+    avg_x = int(x_total / coord_total)
+    avg_y = int(y_total / coord_total)
+
+    return [avg_x, avg_y]
 
 
 def restart_client(logger):
     time.sleep(1)
-    #close client
+    # close client
     logger.log("Closing client")
     orientate_memu_multi()
     time.sleep(1)
-    click(541,133)
+    click(541, 133)
     time.sleep(3)
-    #open client
+    # open client
     logger.log("Opening client")
-    click(541,133)
+    click(541, 133)
     time.sleep(3)
-    #wait for client
+    # wait for client
     logger.log("Waiting for client")
     orientate_window()
     time.sleep(3)
-    loading=True
-    loading_loops=0
-    while (loading==True)and(loading_loops<20):
-        loading_loops=loading_loops+1
+    loading = True
+    loading_loops = 0
+    while (loading) and (loading_loops < 20):
+        loading_loops = loading_loops + 1
         logger.log(f"Waiting for memu to load:{loading_loops}")
-        loading=check_for_memu_loading_background()
+        loading = check_for_memu_loading_background()
         time.sleep(1)
     logger.log("Done waiting for memu to load.")
     time.sleep(5)
-    #skip ads
+    # skip ads
     logger.log("Skipping ads")
     click(440, 600, clicks=7, interval=1)
 
@@ -233,7 +231,7 @@ def check_for_memu_loading_background():
         "3.png",
         "4.png",
         "5.png",
-        "5.png",     
+        "5.png",
     ]
 
     locations = find_references(
@@ -244,7 +242,6 @@ def check_for_memu_loading_background():
     )
 
     return check_for_location(locations)
-
 
 
 def scroll_down():

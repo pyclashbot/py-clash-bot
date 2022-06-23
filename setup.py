@@ -1,5 +1,6 @@
 import os
 from glob import glob
+
 from setuptools import setup
 
 with open("README.md", "r", encoding="utf-8") as f:

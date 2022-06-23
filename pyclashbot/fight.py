@@ -1,6 +1,6 @@
 import random
-from re import X
 import time
+from re import X
 
 import numpy
 
@@ -486,11 +486,9 @@ def play_hogs_card(card_loc):
     )
 
 
-
 def fight_with_deck_list(enemy_troop_position):
 
-
-# check for hero abilities
+    # check for hero abilities
     ability_coords = check_if_hero_ability_is_available()
     if ability_coords:
         click(x=345, y=512)
@@ -1168,64 +1166,60 @@ def fight_with_deck_list(enemy_troop_position):
         return play_card_at_a_random_coord(card_loc, [[122, 220], [298, 227]])
 
 # check for clusters
-    clusters=check_board_for_clusters()
+    clusters = check_board_for_clusters()
     if clusters is not None:
         #print("Found clusters")
-    #     arrows
+        #     arrows
         if (check_for_card_in_hand("arrows") is not None):
             # logger.log("playing arrows")
             # click card
             card_loc = check_for_card_in_hand("arrows")
-            placement=clusters
-            if placement[1]<250:
+            placement = clusters
+            if placement[1] < 250:
                 return
             elif card_loc is not None:
-                click(card_loc[0],card_loc[1])
+                click(card_loc[0], card_loc[1])
                 time.sleep(0.2)
-                click(placement[0],placement[1])
+                click(placement[0], placement[1])
                 time.sleep(0.2)
             return
     #     poison
         if (check_for_card_in_hand("poison") is not None):
             # logger.log("playing poison")
             card_loc = check_for_card_in_hand("poison")
-            placement=clusters
-            if placement[1]<250:
+            placement = clusters
+            if placement[1] < 250:
                 return
             elif card_loc is not None:
-                click(card_loc[0],card_loc[1])
+                click(card_loc[0], card_loc[1])
                 time.sleep(0.2)
-                click(placement[0],placement[1])
+                click(placement[0], placement[1])
                 time.sleep(0.2)
             return
     #     zap
         if (check_for_card_in_hand("zap") is not None):
             # logger.log("playing zap")
             card_loc = check_for_card_in_hand("zap")
-            placement=clusters
+            placement = clusters
             if card_loc is not None:
-                click(card_loc[0],card_loc[1])
+                click(card_loc[0], card_loc[1])
                 time.sleep(0.2)
-                click(placement[0],placement[1])
+                click(placement[0], placement[1])
                 time.sleep(0.2)
             return
     #     snowball
         if (check_for_card_in_hand("snowball") is not None):
             # logger.log("playing snowball")
             card_loc = check_for_card_in_hand("snowball")
-            placement=clusters
-            if placement[1]<200:
+            placement = clusters
+            if placement[1] < 200:
                 return
             elif card_loc is not None:
-                click(card_loc[0],card_loc[1])
+                click(card_loc[0], card_loc[1])
                 time.sleep(0.2)
-                click(placement[0],placement[1])
+                click(placement[0], placement[1])
                 time.sleep(0.2)
             return
-
-        
-
-
 
 
 # etc
@@ -1304,201 +1298,222 @@ def fight_with_deck_list(enemy_troop_position):
 # endregion
 
 
-def find_cluster(x_region=[0,100],y_region=[0,100]):
-    section1_pix_ar=[]
-    ss_img=screenshot()
+def find_cluster(x_region=[0, 100], y_region=[0, 100]):
+    section1_pix_ar = []
+    ss_img = screenshot()
     ss = numpy.asarray(ss_img)
-    x=x_region[0]
-    y=y_region[0]
-    
-    while x<x_region[1]:
-        y=y_region[0]
-        while y<y_region[1]:
-            pix=ss[y][x]
+    x = x_region[0]
+    y = y_region[0]
+
+    while x < x_region[1]:
+        y = y_region[0]
+        while y < y_region[1]:
+            pix = ss[y][x]
             section1_pix_ar.append(pix)
-            y=y+1
-        x=x+1
-    avg_pix=get_avg_pix(section1_pix_ar)
+            y = y + 1
+        x = x + 1
+    avg_pix = get_avg_pix(section1_pix_ar)
     return avg_pix
-        
-        
+
+
 def get_avg_pix(ar):
-    r_total=0
-    g_total=0
-    b_total=0
-    
-    pixel_total=0
+    r_total = 0
+    g_total = 0
+    b_total = 0
+
+    pixel_total = 0
     for pix in ar:
-        #R color
-        r_total= r_total+pix[0]
-        #g
-        g_total=g_total+pix[1]
-        #b
-        b_total=b_total+pix[2]
-        #add pixel to count
-        pixel_total=pixel_total+1
-    r_avg=r_total/pixel_total
-    b_avg=b_total/pixel_total
-    g_avg=g_total/pixel_total
-    avg_pix=[r_avg,g_avg,b_avg]
+        # R color
+        r_total = r_total + pix[0]
+        # g
+        g_total = g_total + pix[1]
+        # b
+        b_total = b_total + pix[2]
+        # add pixel to count
+        pixel_total = pixel_total + 1
+    r_avg = r_total / pixel_total
+    b_avg = b_total / pixel_total
+    g_avg = g_total / pixel_total
+    avg_pix = [r_avg, g_avg, b_avg]
     return avg_pix
 
 
 def verify_cluster(RGB_ar):
-    #print(RGB_ar)
-    r=RGB_ar[0]
-    g=RGB_ar[1]
-    b=RGB_ar[2]
-    if b+10>r: return False
-    if g+10>r: return False
-    if 130>r: return False
+    # print(RGB_ar)
+    r = RGB_ar[0]
+    g = RGB_ar[1]
+    b = RGB_ar[2]
+    if b + 10 > r:
+        return False
+    if g + 10 > r:
+        return False
+    if 130 > r:
+        return False
 
-
-
-    if check_if_pix_in_deadzone(RGB_ar,[169,117,63]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[191,131,51]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[209,175,67]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[160,130,69]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[155,125,66]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[172,120,67]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[152,120,74]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[196,132,53]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[162,110,61]): return False
-    if check_if_pix_in_deadzone(RGB_ar,[150,104,55]): return False
+    if check_if_pix_in_deadzone(RGB_ar, [169, 117, 63]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [191, 131, 51]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [209, 175, 67]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [160, 130, 69]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [155, 125, 66]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [172, 120, 67]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [152, 120, 74]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [196, 132, 53]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [162, 110, 61]):
+        return False
+    if check_if_pix_in_deadzone(RGB_ar, [150, 104, 55]):
+        return False
 
     return True
-  
 
-def check_if_pix_in_deadzone(rgb_ar,pix_to_ignore):
-    pix_r=rgb_ar[0]
-    pix_g=rgb_ar[1]
-    pix_b=rgb_ar[2]
-    sent_r=pix_to_ignore[0]
-    sent_g=pix_to_ignore[1]
-    sent_b=pix_to_ignore[2]
-    if (pix_r>sent_r-5)and(pix_r<sent_r+5)and(pix_g>sent_g-5)and(pix_g<sent_g+5)and(pix_b>sent_b-5)and(pix_b<sent_b+5):
+
+def check_if_pix_in_deadzone(rgb_ar, pix_to_ignore):
+    pix_r = rgb_ar[0]
+    pix_g = rgb_ar[1]
+    pix_b = rgb_ar[2]
+    sent_r = pix_to_ignore[0]
+    sent_g = pix_to_ignore[1]
+    sent_b = pix_to_ignore[2]
+    if (
+            pix_r > sent_r -
+            5) and (
+            pix_r < sent_r +
+            5) and (
+                pix_g > sent_g -
+                5) and (
+                    pix_g < sent_g +
+                    5) and (
+                        pix_b > sent_b -
+                        5) and (
+                            pix_b < sent_b +
+            5):
         return True
     return False
-    
-    
-def check_region_for_cluster(x_region,y_region):
-    cluster_RGB=find_cluster(x_region,y_region)
+
+
+def check_region_for_cluster(x_region, y_region):
+    cluster_RGB = find_cluster(x_region, y_region)
     if verify_cluster(cluster_RGB):
-        x_coord=(x_region[1]+x_region[0])/2
-        y_coord=(y_region[1]+y_region[0])/2
-        coords=[x_coord,y_coord]            
+        x_coord = (x_region[1] + x_region[0]) / 2
+        y_coord = (y_region[1] + y_region[0]) / 2
+        coords = [x_coord, y_coord]
         return coords
     return None
-   
-    
-def check_board_for_clusters():
-    r1=check_region_for_cluster([73,123],[178,228]) 
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([73,123],[229,278]) 
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([73,123],[279,328]) 
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([73,123],[329,378]) 
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([73,123],[379,428]) 
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([73,123],[429,455]) 
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([124,173],[178,228])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([124,173],[229,278])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([124,173],[279,328])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([124,173],[329,378])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([124,173],[379,428])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([124,173],[429,455])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([174,223],[178,228])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([174,223],[229,278])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([174,223],[279,328])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([174,223],[329,378])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([174,223],[379,428])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([174,223],[429,455])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([224,273],[178,228])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([224,273],[229,278])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([224,273],[279,328])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([224,273],[329,378])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([224,273],[379,428])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([224,273],[429,455])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([274,323],[178,228])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([274,323],[229,278])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([274,323],[279,328])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([274,323],[329,378])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([274,323],[379,428])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([274,323],[429,455])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([324,350],[178,228])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([324,350],[229,278])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([324,350],[279,328])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([324,350],[329,378])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([324,350],[379,428])
-    if r1 is not None:
-        return r1
-    r1=check_region_for_cluster([324,350],[429,455])
-    if r1 is not None:
-        return r1
-    
 
+
+def check_board_for_clusters():
+    r1 = check_region_for_cluster([73, 123], [178, 228])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([73, 123], [229, 278])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([73, 123], [279, 328])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([73, 123], [329, 378])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([73, 123], [379, 428])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([73, 123], [429, 455])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([124, 173], [178, 228])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([124, 173], [229, 278])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([124, 173], [279, 328])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([124, 173], [329, 378])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([124, 173], [379, 428])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([124, 173], [429, 455])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([174, 223], [178, 228])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([174, 223], [229, 278])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([174, 223], [279, 328])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([174, 223], [329, 378])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([174, 223], [379, 428])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([174, 223], [429, 455])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([224, 273], [178, 228])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([224, 273], [229, 278])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([224, 273], [279, 328])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([224, 273], [329, 378])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([224, 273], [379, 428])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([224, 273], [429, 455])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([274, 323], [178, 228])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([274, 323], [229, 278])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([274, 323], [279, 328])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([274, 323], [329, 378])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([274, 323], [379, 428])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([274, 323], [429, 455])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([324, 350], [178, 228])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([324, 350], [229, 278])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([324, 350], [279, 328])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([324, 350], [329, 378])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([324, 350], [379, 428])
+    if r1 is not None:
+        return r1
+    r1 = check_region_for_cluster([324, 350], [429, 455])
+    if r1 is not None:
+        return r1
