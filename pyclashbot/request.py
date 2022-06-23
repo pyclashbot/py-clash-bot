@@ -2,7 +2,8 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                scroll_down)
-from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
+from pyclashbot.image_rec import (find_references, get_first_location,
+                                  pixel_is_equal)
 from pyclashbot.state import (check_if_on_clan_chat_page,
                               return_to_clash_main_menu)
 
@@ -84,7 +85,7 @@ def look_for_request_button():
         "telotet_6.png",
         "telotet_7.png",
         "telotet_8.png",
-        
+
     ]
     locations = find_references(
         screenshot=refresh_screen(),
