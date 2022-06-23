@@ -35,7 +35,8 @@ build_exe_options = {
     'include_files': [
         'pyclashbot/reference_images/',
         'README.md',
-        'pyclashbot/cache/']}
+        'pyclashbot/cache/',
+        'pyclashbot/config.json']}
 
 
 # GUI applications require a different base on Windows
