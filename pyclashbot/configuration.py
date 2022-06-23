@@ -25,8 +25,8 @@ def create_config_file():
             }
             f.write(json.dumps(default_config))
     try:
-        json.load(open(config_file))
-    finally:
+        load_user_settings()
+    except:
         print("User config file could not be loaded, is it misconfigured?")
         sys.exit()
 
