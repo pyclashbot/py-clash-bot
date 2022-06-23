@@ -42,3 +42,7 @@ Run the desktop shortcut the installer created.
 #### b. Installed with pip
 
 Enter `pyclashbot` in the command line.
+
+## Configuration
+
+To configure the program, edit **`config.json`** in the install location of the program.
