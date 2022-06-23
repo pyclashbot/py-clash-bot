@@ -2578,7 +2578,7 @@ def check_hand_for_snowball(hand_screenshot):
         "sb4.png",
         "sb5.png",
         "sb6.png",
-        
+
     ]
     locations = find_references(
         screenshot=hand_screenshot,
