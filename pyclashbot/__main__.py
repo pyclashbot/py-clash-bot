@@ -1,9 +1,8 @@
-import json
+
 import random
 import sys
 import time
 from itertools import cycle
-from os.path import dirname, join
 
 import numpy
 from matplotlib import pyplot as plt
@@ -18,6 +17,7 @@ from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
                                orientate_bot_window, orientate_memu_multi,
                                orientate_window, restart_client)
+from pyclashbot.configuration import load_user_settings
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, look_for_enemy_troops,
@@ -288,12 +288,6 @@ def initialize_client(logger):
     if state is None:
         state = "restart"
     return state
-
-
-def load_user_settings():
-    top_level = dirname(__file__)
-    config_file = open(join(top_level, 'config.json'))
-    return json.load(config_file)
 
 
 def main_loop():
