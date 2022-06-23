@@ -3,10 +3,10 @@
     "selected_accounts": [
         0
     ],
-    "enable_donate": "True",
-    "enable_card_mastery_collection": "True",
-    "enable_battlepass_collection": "True",
-    "enable_request": "True",
-    "enable_card_upgrade": "True",
-    "enable_program_auto_update": "True"
+    "enable_donate": true,
+    "enable_card_mastery_collection": true,
+    "enable_battlepass_collection": true,
+    "enable_request": true,
+    "enable_card_upgrade": true,
+    "enable_program_auto_update": true
 }
