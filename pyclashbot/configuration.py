@@ -16,12 +16,12 @@ def create_config_file():
             default_config = {
                 "card_to_request": "giant",
                 "selected_accounts": [0],
-                "enable_donate": "True",
-                "enable_card_mastery_collection": "True",
-                "enable_battlepass_collection": "True",
-                "enable_request": "True",
-                "enable_card_upgrade": "True",
-                "enable_program_auto_update": "True"
+                "enable_donate": True,
+                "enable_card_mastery_collection": True,
+                "enable_battlepass_collection": True,
+                "enable_request": True,
+                "enable_card_upgrade": True,
+                "enable_program_auto_update": True
             }
             f.write(json.dumps(default_config))
     try:
