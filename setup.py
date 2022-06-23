@@ -16,7 +16,6 @@ except KeyError:
 # get files to include in dist
 dist_files = [file.replace('pyclashbot/', '')
               for file in glob("pyclashbot/reference_images/*/*.png")]
-dist_files.append('config.json')
 
 setup(
     name='py-clash-bot',
