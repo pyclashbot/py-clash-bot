@@ -7,12 +7,12 @@ config_file = join(top_level, 'config.json')
 
 
 def load_user_settings():
-    return json.load(open(config_file))
+    return json.load(open(config_file, 'r'))
 
 
 def create_config_file():
     if not exists(config_file):
-        with open(config_file) as f:
+        with open(config_file, "w") as f:
             default_config = {
                 "card_to_request": "giant",
                 "selected_accounts": [0],
