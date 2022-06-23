@@ -1,7 +1,9 @@
+import json
 import random
 import sys
 import time
 from itertools import cycle
+from os.path import dirname, join
 
 import numpy
 from matplotlib import pyplot as plt
@@ -288,17 +290,27 @@ def initialize_client(logger):
     return state
 
 
+def load_user_settings():
+    top_level = dirname(__file__)
+    config_file = open(join(top_level, 'config.json'))
+    return json.load(config_file)
+
+
 def main_loop():
-    # user vars
-    # these will be specified thru the GUI, but these are the placeholders for
-    # now.
-    card_to_request = "giant"
-    ssids = cycle([1, 2])  # change to which account positions to use
-    enable_donate = True
-    enable_card_mastery_collection = True
-    enable_battlepass_collection = True
-    enable_request = True
-    enable_card_upgrade = True
+    # # user vars
+    # # these will be specified thru the GUI, but these are the placeholders for
+    # # now.
+    # card_to_request = "giant"
+    # ssids = cycle([1, 2])  # change to which account positions to use
+    # enable_donate = True
+    # enable_card_mastery_collection = True
+    # enable_battlepass_collection = True
+    # enable_request = True
+    # enable_card_upgrade = True
+    # enable_program_auto_update = True
+
+    user_settings = load_user_settings()
+    ssids = cycle(user_settings['selected_accounts'])
 
     # loop vars
     # *not user vars, do not change*
@@ -309,18 +321,20 @@ def main_loop():
 
     while True:
         # will be true if installed update, needs feature to restart program
-        installed_update = auto_update()
+        installed_update = auto_update(
+        ) if user_settings['enable_program_auto_update'] else False
         logger.log(f"loop count: {loop_count}")
         if state == "restart":
             state = restart_state(logger)
         if state == "clash_main":
             state = clash_main_state(logger, ssid)
         if state == "request":
-            state = request_state(logger, card_to_request, enable_request)
+            state = request_state(
+                logger, user_settings['card_to_request'], user_settings['enable_request'])
         if state == "donate":
-            state = donate_state(logger, enable_donate)
+            state = donate_state(logger, user_settings['enable_donate'])
         if state == "upgrade":
-            state = upgrade_state(logger, enable_card_upgrade)
+            state = upgrade_state(logger, user_settings['enable_card_upgrade'])
         if state == "start_fight":
             state = start_fight_state(logger)
         if state == "fighting":
@@ -328,12 +342,14 @@ def main_loop():
         if state == "post_fight":
             ssid, state = post_fight_state(logger, ssids)
         if state == "battlepass":
-            state = battlepass_state(logger, enable_battlepass_collection)
+            state = battlepass_state(
+                logger, user_settings['enable_battlepass_collection'])
         if state == "card_mastery_collection":
             state = card_mastery_collection_state(
-                logger, enable_card_mastery_collection)
+                logger, ['enable_card_mastery_collection'])
 
         loop_count += 1
+        user_settings = load_user_settings()
         time.sleep(0.2)
 
 
