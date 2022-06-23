@@ -4,21 +4,16 @@ import random
 import time
 
 import numpy
-
-from pyclashbot.client import (
-    check_quit_key_press,
-    click,
-    refresh_screen,
-    screenshot,
-    scroll_down_fast,
-    scroll_down_super_fast,
-    scroll_up_fast)
-from pyclashbot.image_rec import check_for_location, find_references, get_first_location, pixel_is_equal
-from pyclashbot.state import check_if_on_level_up_screen, return_to_clash_main_menu
-
-
 # here for debugging
 import pyautogui
+
+from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
+                               screenshot, scroll_down_fast,
+                               scroll_down_super_fast, scroll_up_fast)
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location, pixel_is_equal)
+from pyclashbot.state import (check_if_on_level_up_screen,
+                              return_to_clash_main_menu)
 
 
 def upgrade_cards_from_main(logger):

@@ -2,7 +2,8 @@ import time
 
 from pyclashbot.client import (check_quit_key_press, click, orientate_window,
                                refresh_screen, screenshot)
-from pyclashbot.image_rec import check_for_location, find_reference, find_references, get_first_location
+from pyclashbot.image_rec import (check_for_location, find_reference,
+                                  find_references, get_first_location)
 
 # region state checking
 
@@ -175,10 +176,11 @@ def wait_for_clash_main_menu(logger):
     while not check_if_on_clash_main_menu():
 
         check_quit_key_press()
-        #handle if stuck on trophy progression page
+        # handle if stuck on trophy progression page
         if check_if_on_trophy_progession_rewards_page():
-            logger.log("Bot appears to be stuck on trophy progression rewards menu. Closing that.")
-            click(212,633)
+            logger.log(
+                "Bot appears to be stuck on trophy progression rewards menu. Closing that.")
+            click(212, 633)
             time.sleep(0.5)
         time.sleep(3)
         logger.log(f"Waiting for clash main menu/{n}")
@@ -368,7 +370,6 @@ def check_if_on_trophy_progession_rewards_page():
         if location is not None:
             return True  # found a location
     return False
-
 
 
 def check_if_in_a_clan_from_main(logger):

@@ -158,5 +158,3 @@ def open_chests(logger):
     time.sleep(0.2)
     check_quit_key_press()
     click(20, 556, 20, 0.05)
-
-
