@@ -23,13 +23,13 @@ def switch_accounts_to(logger, ssid):
 
     time.sleep(3)
     check_quit_key_press()
-    if ssid == 1:
+    if ssid == 0:
         logger.log("Clicking account 1")
         click(x=211, y=388)
-    if ssid == 2:
+    if ssid == 1:
         logger.log("Clicking account 2")
         click(x=193, y=471)
-    if ssid == 3:
+    if ssid == 2:
         logger.log("Clicking account 3")
         click(x=200, y=560)
 
