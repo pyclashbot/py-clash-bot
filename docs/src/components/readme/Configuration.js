@@ -14,7 +14,7 @@ export default class Configuration extends Component {
         <h2 className="mume-header" id="install">Configuration</h2>
         <p>
             To configure the program, edit &nbsp;
-          <code>config.json</code>
+          <code>lib\pyclashbot\config.json</code>
             &nbsp; in the install location of the program.
         </p>
       </div>
