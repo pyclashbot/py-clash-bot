@@ -23,7 +23,7 @@ def create_config_file():
                 "enable_card_upgrade": True,
                 "enable_program_auto_update": True
             }
-            f.write(json.dumps(default_config))
+            f.write(json.dumps(default_config, indent=4))
     try:
         load_user_settings()
     except:
