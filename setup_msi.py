@@ -1,6 +1,6 @@
 import os
-from cx_Freeze import setup, Executable
 
+from cx_Freeze import Executable, setup
 
 # get github workflow env vars
 try:
@@ -32,8 +32,10 @@ dependencies = [
 
 build_exe_options = {
     'includes': dependencies,
-    'include_files': ['pyclashbot/reference_images/', 'README.md', 'pyclashbot/cache/']
-}
+    'include_files': [
+        'pyclashbot/reference_images/',
+        'README.md',
+        'pyclashbot/cache/']}
 
 
 # GUI applications require a different base on Windows

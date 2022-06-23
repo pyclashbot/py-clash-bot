@@ -1,13 +1,7 @@
-
-
-from os.path import dirname, join
-import time
-from matplotlib import pyplot as plt
 import numpy
-from PIL import Image
 
-
-from pyclashbot.client import draw_picture, get_avg_coord, get_image, orientate_window, screenshot
+from pyclashbot.client import (draw_picture, get_avg_coord, get_image,
+                               orientate_window, screenshot)
 from pyclashbot.image_rec import pixel_is_equal
 
 
@@ -67,15 +61,31 @@ def get_red_pix_from_ss(ss):
             # print(current_coord)
             # print(current_pix)
 
-            if (pixel_is_equal(current_pix, sentinel_1, tol=20)) or (pixel_is_equal(current_pix, sentinel_2, tol=20)) or (pixel_is_equal(current_pix, sentinel_3, tol=20)) or (pixel_is_equal(current_pix, sentinel_4, tol=20)):
+            if (
+                pixel_is_equal(
+                    current_pix,
+                    sentinel_1,
+                    tol=20)) or (
+                pixel_is_equal(
+                    current_pix,
+                    sentinel_2,
+                    tol=20)) or (
+                    pixel_is_equal(
+                        current_pix,
+                        sentinel_3,
+                        tol=20)) or (
+                            pixel_is_equal(
+                                current_pix,
+                                sentinel_4,
+                                tol=20)):
                 #print("Found positive pixel")
                 if red_pix_list == []:
                     red_pix_list = [current_coord]
                 else:
                     red_pix_list.append(current_coord)
 
-            y_index = y_index-1
-        x_index = x_index-1
+            y_index = y_index - 1
+        x_index = x_index - 1
 
     return red_pix_list
 
@@ -86,13 +96,14 @@ def show_red_pix(pix_list):
 
 
 def find_enemy_2():
-    # use board scanner methods to find red coords of red pixels and find the avg coord
+    # use board scanner methods to find red coords of red pixels and find the
+    # avg coord
     red_pix_list = get_red_pix_from_ss(get_board_screenshot())
     if red_pix_list is not None:
         avg_coord = get_avg_coord(red_pix_list)
         if (avg_coord is not None):
             # adjust the coordinates so they're usable for the fight bot
-            avg_coord = [avg_coord[0]+70, avg_coord[1]+130]
+            avg_coord = [avg_coord[0] + 70, avg_coord[1] + 130]
             return avg_coord
     return None
 

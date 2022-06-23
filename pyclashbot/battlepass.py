@@ -1,10 +1,11 @@
 
 
 import time
-from pyclashbot.client import check_quit_key_press, click, screenshot, scroll_down, scroll_down_fast, scroll_up_fast
-from pyclashbot.image_rec import check_for_location, find_references, get_first_location
 
-
+from pyclashbot.client import (check_quit_key_press, click, screenshot,
+                               scroll_down, scroll_down_fast, scroll_up_fast)
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location)
 
 
 def collect_bp(logger):
@@ -12,15 +13,15 @@ def collect_bp(logger):
     logger.log("Collecting battlepass rewards")
     time.sleep(0.5)
     logger.log("Opening battlepass tab from clash main.")
-    click(190,150)
+    click(190, 150)
     time.sleep(2)
-    #loops 5 times just bc
+    # loops 5 times just bc
     logger.log("Beginning collection loop.")
-    n=5
-    while n>0:
+    n = 5
+    while n > 0:
         check_quit_key_press()
-        n=n-1
-        coords=find_claim_buttons_with_duration()
+        n = n - 1
+        coords = find_claim_buttons_with_duration()
         if coords is None:
             logger.log("No claim buttons found. Scrolling")
             scroll_down()
@@ -28,7 +29,7 @@ def collect_bp(logger):
 
         else:
             logger.log("Claim coord found. Clicking it.")
-            click(coords[1],coords[0]+50)
+            click(coords[1], coords[0] + 50)
             time.sleep(1)
             click(25, 100, clicks=20, interval=0.3)
             time.sleep(1)
@@ -36,10 +37,9 @@ def collect_bp(logger):
             time.sleep(1)
     logger.log("Finished with collection loop.")
     time.sleep(1)
-    click(210,630)
-    
-    
-    
+    click(210, 630)
+
+
 def find_claim_buttons():
     check_quit_key_press()
     current_image = screenshot()
@@ -50,31 +50,31 @@ def find_claim_buttons():
         "3.png",
         "4.png",
         "5.png",
-        "6.png",     
+        "6.png",
         "7.png",
         "8.png",
         "9.png",
         "10.png",
         "11.png",
-        "12.png", 
+        "12.png",
         "13.png",
         "14.png",
         "15.png",
         "16.png",
         "17.png",
-        "18.png", 
+        "18.png",
         "19.png",
         "20.png",
         "21.png",
         "22.png",
         "23.png",
-        "24.png", 
+        "24.png",
         "25.png",
         "26.png",
         "27.png",
         "28.png",
         "29.png",
-        "30.png", 
+        "30.png",
         "31.png",
         "32.png",
         "t1.png",
@@ -149,13 +149,14 @@ def find_claim_buttons():
 
 
 def find_claim_buttons_with_duration():
-    n=20
-    coords=None
-    while (n>0)and(coords is None):
-        n=n-1
-        coords=find_claim_buttons()
+    n = 20
+    coords = None
+    while (n > 0) and (coords is None):
+        n = n - 1
+        coords = find_claim_buttons()
         time.sleep(0.2)
     return coords
+
 
 def check_if_can_collect_bp():
     check_quit_key_press()
@@ -167,7 +168,7 @@ def check_if_can_collect_bp():
         "3.png",
         "4.png",
         "5.png",
-        "5.png",     
+        "5.png",
     ]
 
     locations = find_references(
