@@ -33,17 +33,20 @@ def download_from_url(url, cache_dir, file_name):
     if not exists(join(cache_dir, file_name)):
         print(f'Latest version to install: {file_name}')
         remove_previous_downloads(cache_dir)
-        with DownloadProgressBar(
-                unit='B',
-                unit_scale=True,
-                miniters=1,
-                desc=url.split('/')[-1]) as t:
-            urlretrieve(
-                url,
-                filename=join(cache_dir, file_name),
-                reporthook=t.update_to
-            )
-        return True
+        try:
+            with DownloadProgressBar(
+                    unit='B',
+                    unit_scale=True,
+                    miniters=1,
+                    desc=url.split('/')[-1]) as t:
+                urlretrieve(
+                    url,
+                    filename=join(cache_dir, file_name),
+                    reporthook=t.update_to
+                )
+            return True
+        except:
+            return False
     return False
 
 
