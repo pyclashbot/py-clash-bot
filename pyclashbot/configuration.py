@@ -7,7 +7,15 @@ config_file = join(top_level, 'config.json')
 
 
 def load_user_settings():
-    return json.load(open(config_file, 'r'))
+    try:
+        return json.load(open(config_file, 'r'))
+    except json.JSONDecodeError:
+        print("User config file could not be loaded, is it misconfigured?")
+        sys.exit()
+    except OSError:
+        print("Could not find config file, creating one now")
+        create_config_file()
+        return load_user_settings()
 
 
 def create_config_file():
@@ -24,11 +32,6 @@ def create_config_file():
                 "enable_program_auto_update": True
             }
             f.write(json.dumps(default_config, indent=4))
-    try:
-        load_user_settings()
-    except:
-        print("User config file could not be loaded, is it misconfigured?")
-        sys.exit()
 
 
 create_config_file()
