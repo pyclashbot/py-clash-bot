@@ -2,12 +2,15 @@ import sys
 from glob import iglob
 from os import environ, execv, makedirs, remove
 from os.path import dirname, exists, join
+from socket import gaierror
 from subprocess import call
 from urllib.request import urlretrieve
 
 from pkg_resources import get_distribution
 from requests import get
+from requests.exceptions import ConnectionError
 from tqdm import tqdm
+from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 
 class DownloadProgressBar(tqdm):
@@ -45,7 +48,7 @@ def download_from_url(url, cache_dir, file_name):
                     reporthook=t.update_to
                 )
             return True
-        except:
+        except (ConnectionError, MaxRetryError, NewConnectionError, gaierror):
             return False
     return False
 
