@@ -35,6 +35,8 @@ Then start the emulator and install Clash Royale with the Google Play Store.
 
 ## Run py-clash-bot
 
+Before attempting to run the bot, make sure both the 'Multi Instance Manager' and the MEmu client are both open.
+
 #### a. Installed on Windows
 
 Run the desktop shortcut the installer created.
