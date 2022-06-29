@@ -347,5 +347,17 @@ def main_loop():
         time.sleep(0.2)
 
 
+def end_loop():
+    print("Press ctrl-c to close the program.")
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        sys.exit()
+
+
 if __name__ == "__main__":
-    main_loop()
+    try:
+        main_loop()
+    finally:
+        end_loop()
