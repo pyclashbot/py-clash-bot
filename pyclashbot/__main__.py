@@ -52,6 +52,7 @@ def post_fight_state(logger, ssids):
 
 def fighting_state(logger):
     logger.log("-----STATE=fighting-----")
+    time.sleep(7)
     fightloops = 0
     while (check_if_in_battle()) and (fightloops < 100):
         check_quit_key_press()
