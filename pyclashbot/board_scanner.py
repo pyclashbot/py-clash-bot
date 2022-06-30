@@ -20,7 +20,7 @@ def get_board_screenshot():
     name = "black_king_tower_cover.png"
     cover_king_tower_image = get_image(name=name, folder=folder)
 
-    name = "cover_river_image.png"
+    name = "cover_river_image.png"  
     cover_river_image = get_image(name=name, folder=folder)
 
     # define coords for pasting
@@ -28,12 +28,18 @@ def get_board_screenshot():
     tower_2_paste_coords = (205, 25)
     king_tower_paste_coords = (80, 0)
     river_paste_coords = (0, 181)
+    friendly_king_tower_paste_coords = (150, 350)
+    friendly_tower_paste_coords = (86, 350)
+    
 
     # paste images in their spots
     ss.paste(im=cover_tower_image, box=tower_1_paste_coords)
     ss.paste(im=cover_tower_image, box=tower_2_paste_coords)
     ss.paste(im=cover_king_tower_image, box=king_tower_paste_coords)
     ss.paste(im=cover_river_image, box=river_paste_coords)
+    ss.paste(im=cover_king_tower_image,box=friendly_king_tower_paste_coords)
+    ss.paste(im=cover_king_tower_image,box=friendly_tower_paste_coords)
+    
 
     return ss
 
