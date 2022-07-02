@@ -21,6 +21,8 @@ Enter the following into the command line:
 
 To emulate the game, [Download and install MEmu](https://www.memuplay.com/).
 
+It is reccomended to install the emulator in Enligsh mode.
+
 ### Configure MEmu
 
 Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match the following
@@ -32,6 +34,8 @@ Using the Multiple Instance Manager, set the instance, display and appearance se
 ![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_appearance_settings.webp?raw=true)
 
 Then start the emulator and install Clash Royale with the Google Play Store.
+
+It is reccomended to play Clash Royale in English mode.
 
 ## Run py-clash-bot
 
