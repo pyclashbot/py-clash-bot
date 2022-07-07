@@ -3,7 +3,7 @@ charset-normalizer==2.0.12
 colorama==0.4.5
 cx-Freeze==6.11.1
 cycler==0.11.0
-fonttools==4.34.0
+fonttools==4.34.3
 idna==3.3
 joblib==1.1.0
 keyboard==0.13.5
