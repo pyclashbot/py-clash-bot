@@ -10,6 +10,9 @@ from pyclashbot.image_rec import (check_for_location, find_reference,
 
 def check_state(logger):
     time.sleep(3)
+
+    #add a check for memu main
+    
     # if on regular main menu
     if check_if_on_clash_main_menu():
         logger.log("On clash main")
