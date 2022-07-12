@@ -1,7 +1,9 @@
 
+import os
 import random
 import sys
 import time
+import pygetwindow
 from itertools import cycle
 
 import numpy
@@ -277,14 +279,32 @@ def battlepass_state(logger, enable_battlepass_collection):
     return state
 
 
-def initialize_client(logger):
+def initialize_client(logger,MMIM_path):
+    #check if windows are already open
     if not check_if_windows_exist(logger):
-        sys.exit()
+        logger.log("Either MEmu or Multi-Instance Manager were not detected.")
+        #if some windows aren't open, close everything MEmu
+        memu_window=pygetwindow.getWindowsWithTitle('MEMu')
+        memu_window.close()
+        MMIM_window=pygetwindow.getWindowsWithTitle('Multiple Instance Manager')
+        MMIM_window.close()
+        MMIM_window_oldname=pygetwindow.getWindowsWithTitle('Multi-MEmu')
+        MMIM_window_oldname.close()
+
+    #open memu-multi using path in config
+    logger.log("Opening WOT launcher.")
+    wot_launcher_path = MMIM_path
+    os.system(wot_launcher_path)
+    time.sleep(6)
+    
+    #orientate windows
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
     time.sleep(0.2)
     orientate_bot_window(logger)
+    
+    #check the state
     state = check_state(logger)
     if state is None:
         state = "restart"
@@ -306,12 +326,13 @@ def main_loop():
 
     user_settings = load_user_settings()
     ssids = cycle(user_settings['selected_accounts'])
+    MMIM_path=r"C:\Program Files (x86)\Microvirt\MEmu\MEmuConsole.exe"
 
     # loop vars
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger)
+    state = initialize_client(logger,MMIM_path)
     loop_count = 0
 
     while True:
