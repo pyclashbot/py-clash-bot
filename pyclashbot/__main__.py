@@ -16,7 +16,7 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
+from pyclashbot.client import (check_if_windows_exist, check_quit_key_press, click,
                                orientate_bot_window, orientate_memu_multi,
                                orientate_window, restart_client)
 from pyclashbot.configuration import load_user_settings
@@ -280,7 +280,7 @@ def battlepass_state(logger, enable_battlepass_collection):
 
 
 def initialize_client(logger,MMIM_path):
-    #check if windows are already open
+    #if some windows aren't open
     if not check_if_windows_exist(logger):
         logger.log("Either MEmu or Multi-Instance Manager were not detected.")
         #if some windows aren't open, close everything MEmu
@@ -291,12 +291,24 @@ def initialize_client(logger,MMIM_path):
         MMIM_window_oldname=pygetwindow.getWindowsWithTitle('Multi-MEmu')
         MMIM_window_oldname.close()
 
-    #open memu-multi using path in config
-    logger.log("Opening WOT launcher.")
-    wot_launcher_path = MMIM_path
-    os.system(wot_launcher_path)
-    time.sleep(6)
-    
+        #open memu-multi using path in config
+        logger.log("Opening WOT launcher.")
+        wot_launcher_path = MMIM_path
+        os.system(wot_launcher_path)
+        time.sleep(6)
+
+        #add skip ads section.
+
+
+
+        # skip ads
+        logger.log("Skipping ads")
+        click(440, 600, clicks=7, interval=1)
+        
+
+        #open clash from this menu
+        open_clash(logger)
+        
     #orientate windows
     orientate_memu_multi()
     time.sleep(0.2)
