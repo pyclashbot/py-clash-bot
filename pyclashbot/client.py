@@ -13,30 +13,38 @@ from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location)
 
 
+def close_all_windows():
+    windows = pygetwindow.getWindowsWithTitle('MEMu')
+    windows += pygetwindow.getWindowsWithTitle('Multiple Instance Manager')
+    windows += pygetwindow.getWindowsWithTitle('Multi-MEmu')
+    for window in windows:
+        if window is not None:
+            window.close()
+
+
 def check_if_windows_exist(logger):
     try:
-        #try to get memu
+        # try to get memu
         pygetwindow.getWindowsWithTitle('MEmu')[0]
     except:
-        #if i cant find memu i always return false
-        logger.log("MEmu not found. Make sure MEmu and Multiple Instance Manager are both open before running the program.")
+        # if i cant find memu i always return false
+        logger.log(
+            "MEmu not found. Make sure MEmu and Multiple Instance Manager are both open before running the program.")
         return False
-    try: 
-        #try to get MIM with normal name
+    try:
+        # try to get MIM with normal name
         pygetwindow.getWindowsWithTitle('Multiple Instance Manager')[0]
     except:
-        #if that didnt work try to get MIM with other name.
+        # if that didnt work try to get MIM with other name.
         try:
             pygetwindow.getWindowsWithTitle('Multi-MEmu')[0]
         except:
-            #if that didnt work either then there is no MIM so return false
-            logger.log("Multi-Instance Manager not found. Make sure MEmu and Multiple Instance Manager are both open before running the program.")
+            # if that didnt work either then there is no MIM so return false
+            logger.log(
+                "Multi-Instance Manager not found. Make sure MEmu and Multiple Instance Manager are both open before running the program.")
             return False
-            
+
     return True
-        
-
-
 
 
 def check_if_on_memu_main():
@@ -93,13 +101,13 @@ def orientate_window():
 
 def orientate_memu_multi():
     check_quit_key_press()
-    
+
     try:
         window_mimm = pygetwindow.getWindowsWithTitle(
             'Multiple Instance Manager')[0]
     except:
         window_mimm = pygetwindow.getWindowsWithTitle('Multi-MEmu')[0]
-    
+
     window_mimm.minimize()
     window_mimm.restore()
     #window_mimm.moveTo(200, 200)
