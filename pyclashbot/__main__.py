@@ -16,7 +16,7 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press, click,
+from pyclashbot.client import (check_if_windows_exist, check_quit_key_press, click, close_all_windows,
                                orientate_bot_window, orientate_memu_multi,
                                orientate_window, restart_client)
 from pyclashbot.configuration import load_user_settings
@@ -279,44 +279,36 @@ def battlepass_state(logger, enable_battlepass_collection):
     return state
 
 
-def initialize_client(logger,MMIM_path):
-    #if some windows aren't open
+def initialize_client(logger, MMIM_path):
+    # if some windows aren't open
     if not check_if_windows_exist(logger):
         logger.log("Either MEmu or Multi-Instance Manager were not detected.")
-        #if some windows aren't open, close everything MEmu
-        memu_window=pygetwindow.getWindowsWithTitle('MEMu')
-        memu_window.close()
-        MMIM_window=pygetwindow.getWindowsWithTitle('Multiple Instance Manager')
-        MMIM_window.close()
-        MMIM_window_oldname=pygetwindow.getWindowsWithTitle('Multi-MEmu')
-        MMIM_window_oldname.close()
+        # if some windows aren't open, close everything MEmu
+        close_all_windows()
 
-        #open memu-multi using path in config
+        # open memu-multi using path in config
         logger.log("Opening WOT launcher.")
         wot_launcher_path = MMIM_path
         os.system(wot_launcher_path)
         time.sleep(6)
 
-        #add skip ads section.
-
-
+        # add skip ads section.
 
         # skip ads
         logger.log("Skipping ads")
         click(440, 600, clicks=7, interval=1)
-        
 
-        #open clash from this menu
+        # open clash from this menu
         open_clash(logger)
-        
-    #orientate windows
+
+    # orientate windows
     orientate_memu_multi()
     time.sleep(0.2)
     orientate_window()
     time.sleep(0.2)
     orientate_bot_window(logger)
-    
-    #check the state
+
+    # check the state
     state = check_state(logger)
     if state is None:
         state = "restart"
@@ -338,13 +330,13 @@ def main_loop():
 
     user_settings = load_user_settings()
     ssids = cycle(user_settings['selected_accounts'])
-    MMIM_path=r"C:\Program Files (x86)\Microvirt\MEmu\MEmuConsole.exe"
+    MMIM_path = r"C:\Program Files (x86)\Microvirt\MEmu\MEmuConsole.exe"
 
     # loop vars
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger,MMIM_path)
+    state = initialize_client(logger, MMIM_path)
     loop_count = 0
 
     while True:
