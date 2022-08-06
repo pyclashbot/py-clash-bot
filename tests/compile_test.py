@@ -1,5 +1,6 @@
-from platform import system
 import unittest
+from platform import system
+
 from setuptools import sandbox
 
 
