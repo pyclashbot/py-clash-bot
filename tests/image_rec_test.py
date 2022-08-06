@@ -1,5 +1,5 @@
-import unittest
 import timeit
+import unittest
 
 from PIL import Image
 from pyclashbot.image_rec import compare_images
