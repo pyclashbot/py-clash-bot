@@ -1,9 +1,9 @@
-import Dependencies from './Dependencies';
+import MEmuDependency from './MEmuDependency';
 import Description from './Description';
 import Execution from './Execution';
 import Install from './Install';
 import React, {Component} from 'react';
-import NavToContributing from '../navigation/ToContributing';
+import NavToContributing from '../navigation/NavToContributing';
 import Configuration from './Configuration';
 
 /**
@@ -19,7 +19,7 @@ export default class ReadMe extends Component {
       <div className="mume markdown-preview  ">
         <Description/>
         <Install/>
-        <Dependencies/>
+        <MEmuDependency/>
         <Execution/>
         <Configuration/>
         <NavToContributing/>
