@@ -3,11 +3,8 @@ import os
 import random
 import sys
 import time
-import pygetwindow
 from itertools import cycle
 
-import numpy
-from matplotlib import pyplot as plt
 
 from pyclashbot.account import switch_accounts_to
 from pyclashbot.auto_update import auto_update
@@ -16,9 +13,10 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press, click, close_all_windows,
-                               orientate_bot_window, orientate_memu_multi,
-                               orientate_window, restart_client)
+from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
+                               click, close_all_windows, orientate_bot_window,
+                               orientate_memu_multi, orientate_window,
+                               restart_client)
 from pyclashbot.configuration import load_user_settings
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
