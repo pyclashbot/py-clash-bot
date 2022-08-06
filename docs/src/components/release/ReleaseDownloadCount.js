@@ -26,8 +26,8 @@ export default class ReleaseDownloadCount extends Component {
         .then((response) => response.json())
         .then((data) => {
           let downloadCount = 0;
-          for (let i = 0; i < data.assets.length; i++) {
-            downloadCount += data.assets[i].download_count;
+          for (const element of data.assets) {
+            downloadCount += element.download_count;
           }
           this.setState({download_count: downloadCount});
         });
