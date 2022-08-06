@@ -1,6 +1,5 @@
 import random
 import time
-from re import X
 
 import numpy
 
@@ -420,7 +419,6 @@ def play_card_at_a_random_coord(card_loc, random_coords):
     # click placement
     placement_loc = random.choice(random_coords)
     click(x=placement_loc[0], y=placement_loc[1])
-    return
 
 
 def play_card_on_enemy_with_offset(card_loc, enemy_troop_position, offset):
