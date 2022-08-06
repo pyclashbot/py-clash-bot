@@ -1,7 +1,8 @@
 import unittest
 from os.path import dirname, join
 
-from pyclashbot.auto_update import download_from_url, get_asset_info, remove_previous_downloads
+from pyclashbot.auto_update import (download_from_url, get_asset_info,
+                                    remove_previous_downloads)
 
 
 class AutoUpdateTest(unittest.TestCase):
