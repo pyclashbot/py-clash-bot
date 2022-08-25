@@ -56,3 +56,6 @@ def test():
         '''
         count = 5000000
         print(f"{timeit.timeit(testcode, number=count)} seconds for {count} image compares")
+
+if __name__ == '__main__':
+    unittest.main()
