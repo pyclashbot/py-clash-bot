@@ -5,7 +5,7 @@ import subprocess
 import sys
 import time
 
-from pyclashbot.__main__ import initialize_client, restart_state
+from pyclashbot.__main__ import initialize_client, main_loop, restart_state
 from pyclashbot.configuration import load_user_settings
 from pyclashbot.logger import Logger
 
@@ -19,15 +19,6 @@ loop_count = 0
 print(launcher_path)
 
 
-# def open_memu_launcher(launcher_path):
-#     logger.log("Opening launcher.")
-#     try:
-#         subprocess.Popen(launcher_path)
-#     except FileNotFoundError:
-#         print(r"Launcher path not found, edit config file: %appdata%\py-TarkBot\config.json")
-#         sys.exit("Launcher path not found")
-#     time.sleep(10)
 
-
-
-create
+jobs = ['Fight', 'Request', 'Donate', 'Upgrade_cards', 'Collect_battlepass_rewards', 'Collect_mastery_rewards']
+main_loop(jobs)
