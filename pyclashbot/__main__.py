@@ -20,13 +20,13 @@ from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import check_quit_key_press
-from pyclashbot.configuration import create_config_file, load_user_settings
+from pyclashbot.configuration import create_config_file, load_user_config
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
                               wait_for_battle_start)
-from pyclashbot.launcher import (initialize_client, 
-                                 orientate_memu_multi, 
+from pyclashbot.launcher import (initialize_client,
+                                 orientate_memu_multi,
                                  restart_client)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
@@ -39,7 +39,7 @@ from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 
 create_config_file()
-user_settings = load_user_settings()
+user_settings = load_user_config()
 ssids = cycle(user_settings['selected_accounts'])
 launcher_path=cycle(user_settings['MEmu_Multi_launcher_path'])
 
@@ -67,15 +67,15 @@ def main_loop2():
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
     window = sg.Window('PY-ClashBot', layout)
-    
+
     # run the gui
     while True:
         event, values = window.read()
-        
+
         #if window close or exit button click
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
-    
+
         jobs=[]
         if values["-Fight-in-"]:
             jobs.append("Fight")
@@ -89,11 +89,12 @@ def main_loop2():
             jobs.append("Collect_battlepass_rewards")
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
-        
+
         print(jobs)
-    
+
     window.close()
-    
+
+
 
 
 def main_loop():
@@ -115,14 +116,14 @@ def main_loop():
     ssid = next(ssids)
     state = initialize_client(logger,launcher_path)
     loop_count = 0
-   
+
     while True:
         # will be true if installed update, needs feature to restart program
         installed_update = auto_update(
         ) if user_settings['enable_program_auto_update'] else False
         logger.log(f"loop count: {loop_count}")
-        
-        
+
+
         if state == "restart":
             state = restart_state(logger)
         if state == "clash_main":
@@ -145,7 +146,7 @@ def main_loop():
             state = card_mastery_collection_state(logger, ['enable_card_mastery_collection'])
 
         loop_count += 1
-        user_settings = load_user_settings()
+        user_settings = load_user_config()
         time.sleep(0.2)
 
 
@@ -157,13 +158,13 @@ def main_loop():
 def open_MMIM_state(logger,MMIM_path):
     logger.log("open_MMIM_state")
 
-    #open MMeu 
+    #open MMeu
 
 
 
 def open_MEmu_state(logger):
     logger.log("STATE=open_MEmu_state")
-    
+
     #open MEmu by clicking start button in MEmu
     pass
 
