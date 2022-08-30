@@ -1,12 +1,15 @@
 
+import code
 import os
 import random
 import sys
 import time
-import pygetwindow
 from itertools import cycle
 
 import numpy
+import pygetwindow
+import pyperclip
+import PySimpleGUI as sg
 from matplotlib import pyplot as plt
 
 from pyclashbot.account import switch_accounts_to
@@ -16,21 +19,126 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_quit_key_press)
-from pyclashbot.configuration import load_user_settings
+from pyclashbot.client import check_quit_key_press
+from pyclashbot.configuration import create_config_file, load_user_settings
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
-                              leave_end_battle_window, 
-                              start_2v2, wait_for_battle_start)
-from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi, orientate_window, restart_client
+                              leave_end_battle_window, start_2v2,
+                              wait_for_battle_start)
+from pyclashbot.launcher import (initialize_client, 
+                                 orientate_memu_multi, 
+                                 restart_client)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
 from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
-                              check_if_on_clash_main_menu, 
-                              open_clash, return_to_clash_main_menu,
+                              check_if_on_clash_main_menu, open_clash,
+                              return_to_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
+
+
+create_config_file()
+user_settings = load_user_settings()
+ssids = cycle(user_settings['selected_accounts'])
+launcher_path=cycle(user_settings['launcher_path'])
+
+
+def main_loop2():
+    out_text=""
+    out_text=out_text+"Py-ClashBot\n "
+    out_text=out_text+"Matthew Miglio ~May 2022\n\n"
+    out_text=out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
+    out_text=out_text+"progress by farming 2v2 matches with random teammates.\n\n"
+
+    sg.theme('Material2')
+    # defining various things that r gonna be in the gui.
+    layout = [
+        [
+        sg.Text("Using the checkboxes, indicate what you'd like the bot to do"),
+        sg.Checkbox('Fight',default=True,key="-scav_case_crafts_in-"),
+        sg.Checkbox('Requesting', default=True, key="-workbench_crafts_in-"),
+        sg.Checkbox('Donating',default=True,key="-medstation_crafts_in-"),
+        sg.Checkbox('Upgrade cards',default=True,key="-water_collector_crafts_in-"),
+        sg.Checkbox('Battlepass reward collection', default=True, key="-lavatory_crafts_in-"),
+        sg.Checkbox('Card mastery collection', default=True, key="-lavatory_crafts_in-"),
+        ],
+
+        # buttons
+        [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
+        # https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD
+    ]
+    # window layout
+    window = sg.Window('PY-TarkBot', layout)
+    # run the gui
+    
+    
+    while True:
+        event, values = window.read()
+        
+        #if window close or exit button click
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+    
+    
+    window.close()
+    
+
+
+def main_loop():
+    # # user vars
+    # # these will be specified thru the GUI, but these are the placeholders for
+    # # now.
+    # card_to_request = "giant"
+    # ssids = cycle([1, 2])  # change to which account positions to use
+    # enable_donate = True
+    # enable_card_mastery_collection = True
+    # enable_battlepass_collection = True
+    # enable_request = True
+    # enable_card_upgrade = True
+    # enable_program_auto_update = True
+
+    # loop vars
+    # *not user vars, do not change*
+    logger = Logger()
+    ssid = next(ssids)
+    state = initialize_client(logger,launcher_path)
+    loop_count = 0
+   
+    while True:
+        # will be true if installed update, needs feature to restart program
+        installed_update = auto_update(
+        ) if user_settings['enable_program_auto_update'] else False
+        logger.log(f"loop count: {loop_count}")
+        
+        
+        if state == "restart":
+            state = restart_state(logger)
+        if state == "clash_main":
+            state = clash_main_state(logger, ssid)
+        if state == "request":
+            state = request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])
+        if state == "donate":
+            state = donate_state(logger, user_settings['enable_donate'])
+        if state == "upgrade":
+            state = upgrade_state(logger, user_settings['enable_card_upgrade'])
+        if state == "start_fight":
+            state = start_fight_state(logger)
+        if state == "fighting":
+            state = fighting_state(logger)
+        if state == "post_fight":
+            ssid, state = post_fight_state(logger, ssids)
+        if state == "battlepass":
+            state = battlepass_state(logger, user_settings['enable_battlepass_collection'])
+        if state == "card_mastery_collection":
+            state = card_mastery_collection_state(logger, ['enable_card_mastery_collection'])
+
+        loop_count += 1
+        user_settings = load_user_settings()
+        time.sleep(0.2)
+
+
+
 
 
 
@@ -301,62 +409,6 @@ def battlepass_state(logger, enable_battlepass_collection):
 
 
 
-
-def main_loop():
-    # # user vars
-    # # these will be specified thru the GUI, but these are the placeholders for
-    # # now.
-    # card_to_request = "giant"
-    # ssids = cycle([1, 2])  # change to which account positions to use
-    # enable_donate = True
-    # enable_card_mastery_collection = True
-    # enable_battlepass_collection = True
-    # enable_request = True
-    # enable_card_upgrade = True
-    # enable_program_auto_update = True
-
-    user_settings = load_user_settings()
-    ssids = cycle(user_settings['selected_accounts'])
-    launcher_path=cycle(user_settings['launcher_path'])
-
-    # loop vars
-    # *not user vars, do not change*
-    logger = Logger()
-    ssid = next(ssids)
-    state = initialize_client(logger,MMIM_path)
-    loop_count = 0
-
-    while True:
-        # will be true if installed update, needs feature to restart program
-        installed_update = auto_update(
-        ) if user_settings['enable_program_auto_update'] else False
-        logger.log(f"loop count: {loop_count}")
-        
-        
-        if state == "restart":
-            state = restart_state(logger)
-        if state == "clash_main":
-            state = clash_main_state(logger, ssid)
-        if state == "request":
-            state = request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])
-        if state == "donate":
-            state = donate_state(logger, user_settings['enable_donate'])
-        if state == "upgrade":
-            state = upgrade_state(logger, user_settings['enable_card_upgrade'])
-        if state == "start_fight":
-            state = start_fight_state(logger)
-        if state == "fighting":
-            state = fighting_state(logger)
-        if state == "post_fight":
-            ssid, state = post_fight_state(logger, ssids)
-        if state == "battlepass":
-            state = battlepass_state(logger, user_settings['enable_battlepass_collection'])
-        if state == "card_mastery_collection":
-            state = card_mastery_collection_state(logger, ['enable_card_mastery_collection'])
-
-        loop_count += 1
-        user_settings = load_user_settings()
-        time.sleep(0.2)
 
 
 def end_loop():

@@ -14,6 +14,35 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 
 
 
+def orientate_window():
+    # logger.log("Orientating memu client")
+    window_memu = pygetwindow.getWindowsWithTitle('MEmu')[0]
+    check_quit_key_press()
+    window_memu.minimize()
+    window_memu.restore()
+    time.sleep(0.2)
+    try:
+        window_memu.moveTo(0, 0)
+    except pygetwindow.PyGetWindowException:
+        print("Had trouble moving MEmu window.")
+    time.sleep(0.2)
+    try:
+        window_memu.resizeTo(460, 680)
+    except pygetwindow.PyGetWindowException:
+        print("Had trouble resizing MEmu window")
+
+
+
+def refresh_screen():
+    check_quit_key_press()
+    orientate_window()
+    screenshot = pyautogui.screenshot(region=(0, 0, 500, 700))
+    check_quit_key_press()
+    iar = numpy.array(screenshot)
+    return iar
+
+
+
 def screenshot(region=(0, 0, 500, 700)):
     if region is None:
         return pyautogui.screenshot()

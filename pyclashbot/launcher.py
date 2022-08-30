@@ -96,24 +96,6 @@ def wait_for_memu_main(logger):
     time.sleep(5)
 
 
-def orientate_window():
-    # logger.log("Orientating memu client")
-    window_memu = pygetwindow.getWindowsWithTitle('MEmu')[0]
-    check_quit_key_press()
-    window_memu.minimize()
-    window_memu.restore()
-    time.sleep(0.2)
-    try:
-        window_memu.moveTo(0, 0)
-    except pygetwindow.PyGetWindowException:
-        print("Had trouble moving MEmu window.")
-    time.sleep(0.2)
-    try:
-        window_memu.resizeTo(460, 680)
-    except pygetwindow.PyGetWindowException:
-        print("Had trouble resizing MEmu window")
-
-
 def orientate_memu_multi():
     check_quit_key_press()
 
@@ -128,15 +110,6 @@ def orientate_memu_multi():
     #window_mimm.moveTo(200, 200)
     time.sleep(0.2)
     window_mimm.moveTo(0, 0)
-
-
-def refresh_screen():
-    check_quit_key_press()
-    orientate_window()
-    screenshot = pyautogui.screenshot(region=(0, 0, 500, 700))
-    check_quit_key_press()
-    iar = numpy.array(screenshot)
-    return iar
 
 
 def orientate_bot_window(logger):
@@ -160,7 +133,6 @@ def get_terminal_window():
         if len(terminal_windows) > 0:
             return terminal_windows.pop()
     return None
-
 
 
 def restart_client(logger):
