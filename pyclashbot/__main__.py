@@ -1,7 +1,9 @@
 
+import os
 import random
 import sys
 import time
+import pygetwindow
 from itertools import cycle
 
 import numpy
@@ -14,22 +16,40 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import (check_if_windows_exist, check_quit_key_press,
-                               orientate_bot_window, orientate_memu_multi,
-                               orientate_window, restart_client)
+from pyclashbot.client import (check_quit_key_press)
 from pyclashbot.configuration import load_user_settings
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
-                              leave_end_battle_window, look_for_enemy_troops,
+                              leave_end_battle_window, 
                               start_2v2, wait_for_battle_start)
+from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi, orientate_window, restart_client
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
 from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
-                              check_if_on_clash_main_menu, check_state,
+                              check_if_on_clash_main_menu, 
                               open_clash, return_to_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
+
+
+
+
+def open_MMIM_state(logger,MMIM_path):
+    logger.log("open_MMIM_state")
+
+    #open MMeu 
+
+
+
+def open_MEmu_state(logger):
+    logger.log("STATE=open_MEmu_state")
+    
+    #open MEmu by clicking start button in MEmu
+    pass
+
+def open_clash_state(logger):
+    logger.log("STATE=open_clash_state")
 
 
 def post_fight_state(logger, ssids):
@@ -277,18 +297,9 @@ def battlepass_state(logger, enable_battlepass_collection):
     return state
 
 
-def initialize_client(logger):
-    if not check_if_windows_exist(logger):
-        sys.exit()
-    orientate_memu_multi()
-    time.sleep(0.2)
-    orientate_window()
-    time.sleep(0.2)
-    orientate_bot_window(logger)
-    state = check_state(logger)
-    if state is None:
-        state = "restart"
-    return state
+
+
+
 
 
 def main_loop():
@@ -312,7 +323,7 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger)
+    state = initialize_client(logger,MMIM_path)
     loop_count = 0
 
     while True:
@@ -320,13 +331,14 @@ def main_loop():
         installed_update = auto_update(
         ) if user_settings['enable_program_auto_update'] else False
         logger.log(f"loop count: {loop_count}")
+        
+        
         if state == "restart":
             state = restart_state(logger)
         if state == "clash_main":
             state = clash_main_state(logger, ssid)
         if state == "request":
-            state = request_state(
-                logger, user_settings['card_to_request'], user_settings['enable_request'])
+            state = request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])
         if state == "donate":
             state = donate_state(logger, user_settings['enable_donate'])
         if state == "upgrade":
@@ -338,11 +350,9 @@ def main_loop():
         if state == "post_fight":
             ssid, state = post_fight_state(logger, ssids)
         if state == "battlepass":
-            state = battlepass_state(
-                logger, user_settings['enable_battlepass_collection'])
+            state = battlepass_state(logger, user_settings['enable_battlepass_collection'])
         if state == "card_mastery_collection":
-            state = card_mastery_collection_state(
-                logger, ['enable_card_mastery_collection'])
+            state = card_mastery_collection_state(logger, ['enable_card_mastery_collection'])
 
         loop_count += 1
         user_settings = load_user_settings()

@@ -4,7 +4,7 @@ import {pythonVersionBadgeEvent} from '../../GoogleAnalytics';
 /**
 * Component for latest release download link
 */
-export default class PyPiBadge extends Component {
+export default class PythonVersionBadge extends Component {
   /**
    * react render override
    * @return {JSX.Element}
