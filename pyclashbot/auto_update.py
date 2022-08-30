@@ -89,14 +89,11 @@ def install_msi(cache_dir, file_name):
     Returns:
         bool: Whether or not install finished
     """
-    try:
-        print(f"Installing latest version: {file_name}")
-        print("Program will exit after update. Please restart to continue.")
-        msi_exec_path = join(environ['WINDIR'], 'SYSTEM32', 'msiexec.exe')
-        install_call = f"{msi_exec_path} /i {join(cache_dir,file_name)} /passive"
-        return 0 == call(install_call, shell=False)
-    finally:
-        return False
+    print(f"Installing latest version: {file_name}")
+    print("Program will exit after update. Please restart to continue.")
+    msi_exec_path = join(environ['WINDIR'], 'SYSTEM32', 'msiexec.exe')
+    install_call = f"{msi_exec_path} /i {join(cache_dir,file_name)} /passive"
+    return 0 == call(install_call, shell=False)
 
 
 def make_cache():
