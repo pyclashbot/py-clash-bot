@@ -22,14 +22,8 @@ def create_config_file():
     if not exists(config_file):
         with open(config_file, "w") as f:
             default_config = {
-                "card_to_request": "giant",
                 "selected_accounts": [0],
-                "enable_donate": True,
-                "enable_card_mastery_collection": True,
-                "enable_battlepass_collection": True,
-                "enable_request": True,
-                "enable_card_upgrade": True,
-                "enable_program_auto_update": True
+                "MEmu_Multi_launcher_path": "D:\\Program Files\\Microvirt\\MEmu\\MEmuConsole.exe",
             }
             f.write(json.dumps(default_config, indent=4))
 
