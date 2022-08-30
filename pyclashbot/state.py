@@ -1,11 +1,15 @@
 import time
 
-from pyclashbot.client import (check_quit_key_press, click, orientate_window,
-                               refresh_screen, screenshot)
+from pyclashbot.client import (check_quit_key_press, click, refresh_screen, screenshot)
+
 from pyclashbot.image_rec import (check_for_location, find_reference,
-                                  find_references, get_first_location)
+                                  find_references)
+
 
 # region state checking
+
+
+
 
 
 def check_state(logger):
