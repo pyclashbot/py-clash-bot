@@ -1,12 +1,6 @@
 {
-    "card_to_request": "giant",
     "selected_accounts": [
         0
     ],
-    "enable_donate": true,
-    "enable_card_mastery_collection": true,
-    "enable_battlepass_collection": true,
-    "enable_request": true,
-    "enable_card_upgrade": true,
-    "enable_program_auto_update": true
+    "MEmu_Multi_launcher_path": "D:\\Program Files\\Microvirt\\MEmu\\MEmuConsole.exe"
 }
