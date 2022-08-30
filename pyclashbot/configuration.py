@@ -65,14 +65,14 @@ def load_user_config() -> dict[str, Any]:
         return load_user_config()
 
 
-def create_config_file():
+def create_config_file() -> None:
     if not isdir(top_level):
         makedirs(top_level)
     if not exists(config_file):
         write_config_file(default_config)
 
 
-def write_config_file(config):
+def write_config_file(config) -> None:
     with open(config_file, "w") as f:
         f.write(json.dumps(config, indent=4))
 
