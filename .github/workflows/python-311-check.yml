@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.11.0-beta.3"]
+        python-version: ["3.11-dev"]
 
     steps:
       - uses: actions/checkout@v2

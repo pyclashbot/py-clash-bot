@@ -1,5 +1,6 @@
-from platform import system
 import unittest
+from platform import system
+
 from setuptools import sandbox
 
 
@@ -13,3 +14,6 @@ class CompileTest(unittest.TestCase):
 
     def test_source_dist_compile(self):
         sandbox.run_setup('setup.py', ['sdist'])
+
+if __name__ == '__main__':
+    unittest.main()
