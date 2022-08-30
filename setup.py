@@ -38,7 +38,8 @@ setup(
         'joblib',
         'tqdm',
         'requests',
-        'matplotlib'
+        'matplotlib',
+        'PySimpleGUI'
     ],
     packages=['pyclashbot'],
     include_package_data=True,
