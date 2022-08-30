@@ -44,7 +44,7 @@ ssids = cycle(user_settings['selected_accounts'])
 launcher_path=cycle(user_settings['MEmu_Multi_launcher_path'])
 
 
-def main_loop2():
+def main_gui():
     out_text=""
     out_text=out_text+"Py-ClashBot\n"
     out_text=out_text+"Matthew Miglio ~May 2022\n\n"
@@ -54,7 +54,7 @@ def main_loop2():
     sg.theme('Material2')
     # defining various things that r gonna be in the gui.
     layout = [
-        [sg.Text(out_text+"\n\n")],
+        [sg.Text(out_text)],
         [
         sg.Checkbox('Fight',default=False,key="-Fight-in-"),
         sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
@@ -90,14 +90,15 @@ def main_loop2():
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
 
-        print(jobs)
-
+        if event == 'Start':
+            main_loop(jobs)
+        window.close()
     window.close()
 
 
 
 
-def main_loop():
+def main_loop(jobs):
     # # user vars
     # # these will be specified thru the GUI, but these are the placeholders for
     # # now.
@@ -114,7 +115,7 @@ def main_loop():
     # *not user vars, do not change*
     logger = Logger()
     ssid = next(ssids)
-    state = initialize_client(logger,launcher_path)
+    state = "restart"
     loop_count = 0
 
     while True:
@@ -123,27 +124,26 @@ def main_loop():
         ) if user_settings['enable_program_auto_update'] else False
         logger.log(f"loop count: {loop_count}")
 
-
-        if state == "restart":
+        if (state == "restart"):
             state = restart_state(logger)
-        if state == "clash_main":
+        if (state == "clash_main"):
             state = clash_main_state(logger, ssid)
-        if state == "request":
+        if (state == "request")and("Request" in jobs):
             state = request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])
-        if state == "donate":
+        if (state == "donate")and("Donate" in jobs):
             state = donate_state(logger, user_settings['enable_donate'])
-        if state == "upgrade":
+        if (state == "upgrade")and("Upgrade_cards" in jobs):
             state = upgrade_state(logger, user_settings['enable_card_upgrade'])
-        if state == "start_fight":
-            state = start_fight_state(logger)
-        if state == "fighting":
-            state = fighting_state(logger)
-        if state == "post_fight":
-            ssid, state = post_fight_state(logger, ssids)
-        if state == "battlepass":
+        if (state == "battlepass")and("Collect_battlepass_rewards" in jobs):
             state = battlepass_state(logger, user_settings['enable_battlepass_collection'])
-        if state == "card_mastery_collection":
+        if (state == "card_mastery_collection")and("Collect_mastery_rewards" in jobs):
             state = card_mastery_collection_state(logger, ['enable_card_mastery_collection'])
+        if (state == "start_fight")and("Fight" in jobs):
+            state = start_fight_state(logger)
+        if (state == "fighting"):
+            state = fighting_state(logger)
+        if (state == "post_fight"):
+            ssid, state = post_fight_state(logger, ssids)
 
         loop_count += 1
         user_settings = load_user_config()
@@ -434,6 +434,6 @@ def end_loop():
 
 if __name__ == "__main__":
     try:
-        main_loop2()
+        main_gui()
     finally:
         end_loop()
