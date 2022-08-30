@@ -9,7 +9,7 @@
     "react-helmet": "^6",
     "react-router-dom": "^6",
     "react-scripts": "^5",
-    "web-vitals": "^2"
+    "web-vitals": "^3"
   },
   "devDependencies": {
     "eslint": "^8",
