@@ -306,6 +306,7 @@ def main_loop():
 
     user_settings = load_user_settings()
     ssids = cycle(user_settings['selected_accounts'])
+    launcher_path=cycle(user_settings['launcher_path'])
 
     # loop vars
     # *not user vars, do not change*
