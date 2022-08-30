@@ -1,5 +1,5 @@
 
-from pyclashbot.client import check_quit_key_press, click, screenshot
+from pyclashbot.client import check_quit_key_press, click, orientate_window, screenshot
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location
 from pyclashbot.state import check_state
 import pygetwindow

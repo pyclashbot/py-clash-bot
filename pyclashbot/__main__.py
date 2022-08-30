@@ -41,12 +41,12 @@ from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 create_config_file()
 user_settings = load_user_settings()
 ssids = cycle(user_settings['selected_accounts'])
-launcher_path=cycle(user_settings['launcher_path'])
+launcher_path=cycle(user_settings['MEmu_Multi_launcher_path'])
 
 
 def main_loop2():
     out_text=""
-    out_text=out_text+"Py-ClashBot\n "
+    out_text=out_text+"Py-ClashBot\n"
     out_text=out_text+"Matthew Miglio ~May 2022\n\n"
     out_text=out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
     out_text=out_text+"progress by farming 2v2 matches with random teammates.\n\n"
@@ -54,25 +54,21 @@ def main_loop2():
     sg.theme('Material2')
     # defining various things that r gonna be in the gui.
     layout = [
+        [sg.Text(out_text+"\n\n")],
         [
-        sg.Text("Using the checkboxes, indicate what you'd like the bot to do"),
-        sg.Checkbox('Fight',default=True,key="-scav_case_crafts_in-"),
-        sg.Checkbox('Requesting', default=True, key="-workbench_crafts_in-"),
-        sg.Checkbox('Donating',default=True,key="-medstation_crafts_in-"),
-        sg.Checkbox('Upgrade cards',default=True,key="-water_collector_crafts_in-"),
-        sg.Checkbox('Battlepass reward collection', default=True, key="-lavatory_crafts_in-"),
-        sg.Checkbox('Card mastery collection', default=True, key="-lavatory_crafts_in-"),
+        sg.Checkbox('Fight',default=False,key="-Fight-in-"),
+        sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
+        sg.Checkbox('Donating',default=False,key="-Donating-in-"),
+        sg.Checkbox('Upgrade_cards',default=False,key="-Upgrade_cards-in-"),
+        sg.Checkbox('Battlepass_reward_collection', default=False, key="-Battlepass_reward_collection-in-"),
+        sg.Checkbox('Card_mastery_collection', default=False, key="-Card_mastery_collection-in-"),
         ],
-
         # buttons
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
-        # https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD
     ]
-    # window layout
-    window = sg.Window('PY-TarkBot', layout)
+    window = sg.Window('PY-ClashBot', layout)
+    
     # run the gui
-    
-    
     while True:
         event, values = window.read()
         
@@ -80,6 +76,21 @@ def main_loop2():
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
     
+        jobs=[]
+        if values["-Fight-in-"]:
+            jobs.append("Fight")
+        if values["-Requesting-in-"]:
+            jobs.append("Request")
+        if values["-Donating-in-"]:
+            jobs.append("Donate")
+        if values["-Upgrade_cards-in-"]:
+            jobs.append("Upgrade_cards")
+        if values["-Battlepass_reward_collection-in-"]:
+            jobs.append("Collect_battlepass_rewards")
+        if values["-Card_mastery_collection-in-"]:
+            jobs.append("Collect_mastery_rewards")
+        
+        print(jobs)
     
     window.close()
     
@@ -422,6 +433,6 @@ def end_loop():
 
 if __name__ == "__main__":
     try:
-        main_loop()
+        main_loop2()
     finally:
         end_loop()
