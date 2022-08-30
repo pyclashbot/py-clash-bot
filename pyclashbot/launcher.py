@@ -9,11 +9,7 @@ import numpy
 
 
 
-def initialize_client(logger,MMIM_path):
-    #if some windows aren't open
-    if not check_if_windows_exist(logger):
-        logger.log("Either MEmu or Multi-Instance Manager were not detected.")
-
+def initialize_client(logger):
     #orientate windows
     orientate_memu_multi()
     time.sleep(0.2)
