@@ -43,7 +43,7 @@ def main_gui():
     out_text=out_text+"Py-ClashBot\n"
     out_text=out_text+"Matthew Miglio ~May 2022\n\n"
     out_text=out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
-    out_text=out_text+"progress by farming 2v2 matches with random teammates.\n\n"
+    out_text=out_text+"progress by farming 2v2 matches with random teammates.\n"
 
     sg.theme('Material2')
     # defining various things that r gonna be in the gui.
@@ -51,6 +51,7 @@ def main_gui():
         #first text lines
         [sg.Text(out_text)],
         #first checkboxes
+        [sg.Text("Select which jobs youd like the bot to do:")],
         [
         sg.Checkbox('Fight',default=False,key="-Fight-in-"),
         sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
@@ -60,7 +61,11 @@ def main_gui():
         sg.Checkbox('Card_mastery_collection', default=False, key="-Card_mastery_collection-in-"),
         ],
         #dropdown for amount of accounts
-        [sg.Combo(1,2,3,4)],
+        [sg.Text("Choose how many account you'd like to simultaneously farm:")],
+        [sg.Combo(['1','2','3', '4'],key='-SSID_IN-')],
+        #dropdown for card to request
+        [sg.Text("Select the card you'd like to request:")],
+        [sg.Combo(['Giant','Archers'],key='-CARD_TO_REQUEST_IN-')],
         #bottons at bottom
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
@@ -73,7 +78,8 @@ def main_gui():
         #if window close or exit button click
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
-
+        
+        #get job list
         jobs=[]
         if values["-Fight-in-"]:
             jobs.append("Fight")
@@ -88,16 +94,22 @@ def main_gui():
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
 
+        #get ssid list
+        accounts=values["-SSID_IN-"]
+        
+        #get card_to_request
+        card_to_request=values["-CARD_TO_REQUEST_IN-"]
+
         if event == 'Start':
             window.close()
-            main_loop(jobs)
+            main_loop(jobs,accounts,card_to_request)
            
     window.close()
 
 
 
 
-def main_loop(jobs):
+def main_loop(jobs,accounts,card_to_request):
     # # user vars
     # # these will be specified thru the GUI, but these are the placeholders for
     # # now.
@@ -113,19 +125,60 @@ def main_loop(jobs):
     # loop vars
     # *not user vars, do not change*
     logger = Logger()
-    ssid = 0
+    ssid_total=accounts
+    current_ssid = 0
     state = "restart"
     loop_count = 0
 
     while True:
-        pass
+        if state=="restart":
+            restart_state(logger)
+            time.sleep(5)
+            state="clash_main"
+        
+        if state=="clash_main":
+            clash_main_state(logger, current_ssid)
+            state="start_fight"
+            
+        if state=="start_fight":
+            if "Fight" in jobs:
+                start_fight_state(logger)
+                state="fighting"
+            else:
+                "request"
+                
+        if state=="fighting":
+            fighting_state(logger)
+            state="post_fight"
+            
+            
+        if state=="post_fight":
+            if post_fight_state(logger)=="in battle":
+                state="fighting"
+            else:
+                state="request"
+                
+        if state=="request":
+            if "Request" in jobs:
+                request_state(logger, card_to_request)
+                
+        
+        #handle chests and get to correct account
+        
+        
+        
+        
+        
+        
 
 
 
 
 
 
-def post_fight_state(logger, ssids):
+def post_fight_state(logger):
+    if check_if_in_battle():
+        return "in battle"
     logger.log("STATE=post_fight")
     logger.log("Back on clash main")
     if check_if_past_game_is_win(logger):
@@ -134,13 +187,7 @@ def post_fight_state(logger, ssids):
     else:
         logger.log("Last game was a loss")
         logger.add_loss()
-        # switch accounts feature
 
-    ssid = next(ssids)
-    log = "Next account is: " + str(ssid)
-    logger.log(log)
-    state = "clash_main"
-    return ssid, state
 
 
 def fighting_state(logger):
@@ -271,11 +318,9 @@ def donate_state(logger, enable_donate):
     return state
 
 
-def request_state(logger, card_to_request, enable_request=True):
+def request_state(logger, card_to_request):
     logger.log("State=REQUEST")
-    if not enable_request:
-        logger.log("Request is disabled. Passing to donate state.")
-        return "donate"
+
 
     logger.log("-----STATE=request-----")
     logger.log("Trying to get to donate page")
@@ -320,8 +365,6 @@ def clash_main_state(logger, ssid):
                 open_chests(logger)
                 time.sleep(2)
     
-
-
 
 def restart_state(logger):
     logger.log("-----STATE=restart-----")
