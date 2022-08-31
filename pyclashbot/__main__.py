@@ -468,12 +468,6 @@ def battlepass_state(logger):
     return state
 
 
-
-
-
-
-
-
 def end_loop():
     print("Press ctrl-c to close the program.")
     try:
