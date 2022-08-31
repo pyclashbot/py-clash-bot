@@ -18,6 +18,21 @@ def show_image(image):
     plt.show()
 
 
+def handle_clash_main_notifications():
+    click(34,624)
+    time.sleep(0.33)
+    click(180,620)
+    time.sleep(0.33)
+    click(326,621)
+    time.sleep(0.33)
+    click(396,626)
+    time.sleep(1)
+    
+    click(175,618)
+    time.sleep(1)
+
+
+
 
 def get_next_ssid(current_ssid,ssid_total):
     if (current_ssid + 1) == ssid_total:
