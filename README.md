@@ -21,7 +21,7 @@ Enter the following into the command line:
 
 To emulate the game, [Download and install MEmu](https://www.memuplay.com/).
 
-It is reccomended to install the emulator in Enligsh mode.
+It is reccomended to install the emulator in English mode.
 
 ### Configure MEmu
 
