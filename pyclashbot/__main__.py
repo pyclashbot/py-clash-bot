@@ -20,7 +20,6 @@ from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import check_quit_key_press, orientate_memu
-from pyclashbot.configuration import create_config_file, load_user_settings
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
@@ -38,11 +37,6 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
 from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 
-create_config_file()
-user_settings = load_user_config()
-ssids = cycle(user_settings['selected_accounts'])
-launcher_path=cycle(user_settings['MEmu_Multi_launcher_path'])
-
 
 def main_gui():
     out_text=""
@@ -54,7 +48,9 @@ def main_gui():
     sg.theme('Material2')
     # defining various things that r gonna be in the gui.
     layout = [
+        #first text lines
         [sg.Text(out_text)],
+        #first checkboxes
         [
         sg.Checkbox('Fight',default=False,key="-Fight-in-"),
         sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
@@ -63,7 +59,9 @@ def main_gui():
         sg.Checkbox('Battlepass_reward_collection', default=False, key="-Battlepass_reward_collection-in-"),
         sg.Checkbox('Card_mastery_collection', default=False, key="-Card_mastery_collection-in-"),
         ],
-        # buttons
+        #dropdown for amount of accounts
+        [sg.Combo(1,2,3,4)],
+        #bottons at bottom
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
     window = sg.Window('PY-ClashBot', layout)
@@ -115,86 +113,17 @@ def main_loop(jobs):
     # loop vars
     # *not user vars, do not change*
     logger = Logger()
-    ssid = next(ssids)
+    ssid = 0
     state = "restart"
     loop_count = 0
 
     while True:
-        # will be true if installed update, needs feature to restart program
-        # installed_update = auto_update(
-        # ) if user_settings['enable_program_auto_update'] else False
-        logger.log(f"loop count: {loop_count}")
-
-        if (state == "restart"):
-            if restart_state(logger) == "restart":
-                restart_state(logger)
-            else:
-                state="clash_main"
-            
-        if (state == "clash_main"):
-            print("clash_main state")
-            if clash_main_state(logger, ssid)=="restart": state ="restart"
-            else: state = "request"
-            
-        if (state == "request"):
-            if "Request" in jobs:
-                if request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])=="restart": state="restart"
-                else: state="donate"
-            else: state= "donate"
-            
-        if (state == "donate"):
-            if "Donate" in jobs:
-                if donate_state(logger, user_settings['enable_donate'])=="restart":state="restart"
-                else: state="upgrade"
-            else:
-                state="upgrade"
-            
-        if (state == "upgrade"):
-            if ("Upgrade_cards" in jobs):
-                if upgrade_state(logger, user_settings['enable_card_upgrade'])=="restart": state="restart"
-                else: state="battlepass"
-            else:
-                state="battlepass"
-      
-        if (state == "battlepass"):
-            if ("Collect_battlepass_rewards" in jobs):
-                if battlepass_state(logger, user_settings['enable_battlepass_collection']) == "restart" : state = "restart"
-                else: state="card_mastery_collection"
-            else:
-                state="card_mastery_collection"
-        
-        if (state == "card_mastery_collection"):
-            if ("Collect_mastery_rewards" in jobs):
-                if card_mastery_collection_state(logger, ['enable_card_mastery_collection']) == "restart": state="restart"
-                else: state= "start_fight"
-            else: state= "start_fight"
-            
-        if (state == "start_fight"):
-            if ("Fight" in jobs):
-                if start_fight_state(logger) == "restart": state="restart"
-                else: state="fighting"
-            else: state="fighting"
-            
-        if (state == "fighting"):
-            print("fighting state")
-            if fighting_state(logger)=="restart": state="restart"
-            else: state = "post_fight"
-        
-        if (state == "post_fight"):
-            print("post_fight state")
-        ssid, state = post_fight_state(logger, ssids)
-        
-        loop_count += 1
-        user_settings = load_user_settings()
-        time.sleep(0.2)
+        pass
 
 
 
 
 
-
-
->>>>>>> d2fe85cd915d832e103aaaa0184555483230ee0a
 
 def post_fight_state(logger, ssids):
     logger.log("STATE=post_fight")
