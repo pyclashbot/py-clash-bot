@@ -27,7 +27,8 @@ dependencies = [
     'joblib',
     'tqdm',
     'requests',
-    'matplotlib'
+    'matplotlib',
+    'PySimpleGUI'
 ]
 
 build_exe_options = {

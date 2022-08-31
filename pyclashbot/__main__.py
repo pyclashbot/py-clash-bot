@@ -39,7 +39,7 @@ from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 
 create_config_file()
-user_settings = load_user_settings()
+user_settings = load_user_config()
 ssids = cycle(user_settings['selected_accounts'])
 launcher_path=cycle(user_settings['MEmu_Multi_launcher_path'])
 
@@ -67,15 +67,15 @@ def main_gui():
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
     window = sg.Window('PY-ClashBot', layout)
-    
+
     # run the gui
     while True:
         event, values = window.read()
-        
+
         #if window close or exit button click
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
-    
+
         jobs=[]
         if values["-Fight-in-"]:
             jobs.append("Fight")
@@ -89,14 +89,14 @@ def main_gui():
             jobs.append("Collect_battlepass_rewards")
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
-        
+
         if event == 'Start':
             window.close()
             main_loop(jobs)
            
     window.close()
-    
-    
+
+
 
 
 def main_loop(jobs):
@@ -118,13 +118,13 @@ def main_loop(jobs):
     ssid = next(ssids)
     state = "restart"
     loop_count = 0
-   
+
     while True:
         # will be true if installed update, needs feature to restart program
         # installed_update = auto_update(
         # ) if user_settings['enable_program_auto_update'] else False
         logger.log(f"loop count: {loop_count}")
-        
+
         if (state == "restart"):
             if restart_state(logger) == "restart":
                 restart_state(logger)
@@ -194,6 +194,7 @@ def main_loop(jobs):
 
 
 
+>>>>>>> d2fe85cd915d832e103aaaa0184555483230ee0a
 
 def post_fight_state(logger, ssids):
     logger.log("STATE=post_fight")
