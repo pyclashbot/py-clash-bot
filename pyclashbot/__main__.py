@@ -1,9 +1,9 @@
-import code
-import os
+
+
 import random
 import sys
 import time
-from itertools import cycle
+
 
 import numpy
 import pygetwindow
@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 
 from pyclashbot.account import switch_accounts_to
 from pyclashbot.auto_update import auto_update
-from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp
+from pyclashbot.battlepass import check_battlepass_state, check_if_can_collect_bp, collect_bp
 from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
@@ -38,7 +38,6 @@ from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 def main_gui():
     out_text=""
-    out_text=out_text+"Py-ClashBot\n"
     out_text=out_text+"Matthew Miglio ~May 2022\n\n"
     out_text=out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
     out_text=out_text+"progress by farming 2v2 matches with random teammates.\n"
@@ -92,34 +91,46 @@ def main_gui():
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
 
-        #get ssid list
+        #get ssid count
         accounts=values["-SSID_IN-"]
         
         #get card_to_request
         card_to_request=values["-CARD_TO_REQUEST_IN-"]
 
+
+
         if event == 'Start':
+            #check if vars are filled out before starting
+            possible_accounts_choices=["1","2","3","4"]
+            if accounts not in possible_accounts_choices:
+                print("MISINPUT FOR ACCOUNTS TO FARM VAR")
+                window.close()
+                main_gui()
+                
+            possible_request_choices=["Giant","Archers"]
+            if card_to_request not in possible_request_choices:
+                print("MISINPUT FOR CARD TO REQUEST VAR")
+                window.close()
+                main_gui()
+            
+            
+            
             window.close()
             main_loop(jobs,accounts,card_to_request)
-           
+          
+        if event == 'Donate':
+            show_donate_gui()
+
+        if event == 'Help':
+            show_help_gui()
+
+
+          
+        
     window.close()
 
 
 def main_loop(jobs,accounts,card_to_request):
-    # # user vars
-    # # these will be specified thru the GUI, but these are the placeholders for
-    # # now.
-    # card_to_request = "giant"
-    # ssids = cycle([1, 2])  # change to which account positions to use
-    # enable_donate = True
-    # enable_card_mastery_collection = True
-    # enable_battlepass_collection = True
-    # enable_request = True
-    # enable_card_upgrade = True
-    # enable_program_auto_update = True
-
-    # loop vars
-    # *not user vars, do not change*
     logger = Logger()
     ssid_total=accounts
     current_ssid = 0
@@ -205,6 +216,54 @@ def main_loop(jobs,accounts,card_to_request):
         current_ssid=get_next_ssid(current_ssid,ssid_total)
         loop_count = loop_count +1
         logger.log(f"Main is running loop: {loop_count}")
+        
+        
+        
+def show_donate_gui():
+    sg.theme('Material2')
+    layout = [
+        [sg.Text('Paypal donate link: \n\nhttps://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD'),
+         sg.Text(size=(15, 1), key='-OUTPUT-')],
+
+        [sg.Button('Exit'), sg.Button('Copy link to clipboard')]
+        # https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD
+    ]
+    window = sg.Window('Donate', layout)
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+
+        if event == "Copy link to clipboard":
+            pyperclip.copy(
+                'https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD')
+
+    window.close()
+
+
+def show_help_gui():
+    #help menu text
+    out_text=""
+    out_text=out_text+"Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
+    out_text=out_text+"To emulate the game, Download and install MEmu.\n"
+    out_text=out_text+"It is reccomended to install the emulator in Enligsh mode.\n\n"
+    out_text=out_text+"Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
+    out_text=out_text+"Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
+    out_text=out_text+"It is reccomended to play Clash Royale in English mode.\n"
+
+    sg.theme('Material2')
+    layout = [
+        [sg.Text(out_text)],
+        [sg.Button('Exit')],
+        ]
+    window = sg.Window('PY-TarkBot', layout)
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+    window.close()
+
+
         
 
 def post_fight_state(logger):
