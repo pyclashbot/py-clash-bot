@@ -1,11 +1,14 @@
 
 
+
+import numpy
 import time
+
 
 from pyclashbot.client import (check_quit_key_press, click, screenshot,
                                scroll_down, scroll_down_fast, scroll_up_fast)
 from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location)
+                                  get_first_location, pixel_is_equal)
 
 
 def collect_bp(logger):
@@ -13,7 +16,7 @@ def collect_bp(logger):
     logger.log("Collecting battlepass rewards")
     time.sleep(0.5)
     logger.log("Opening battlepass tab from clash main.")
-    click(190, 150)
+    click(304,160)
     time.sleep(2)
     # loops 5 times just bc
     logger.log("Beginning collection loop.")
@@ -157,25 +160,27 @@ def find_claim_buttons_with_duration():
         time.sleep(0.2)
     return coords
 
-
 def check_if_can_collect_bp():
-    check_quit_key_press()
-    current_image = screenshot()
-    reference_folder = "claim_bp_button"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "5.png",
-    ]
+    has_battlepass = False
+    loops=0
+    while (has_battlepass==False)and(loops<5):
+        has_battlepass = check_battlepass_state()
+        time.sleep(1)
+        loops=loops+1
+    return has_battlepass
 
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.99
-    )
 
-    return check_for_location(locations)
+def check_battlepass_state():
+    iar = numpy.asarray(screenshot())
+    
+    pix_list=[]
+    pix_list.append(iar[151][265])
+    pix_list.append(iar[189][272])
+    pix_list.append(iar[189][352])
+    
+    sentinel=[245,175,5]
+    for pix in pix_list:
+        if not(pixel_is_equal(pix,sentinel,tol=40)):
+            return False
+    return True
+        
