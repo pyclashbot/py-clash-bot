@@ -1,23 +1,21 @@
-
-
-from itertools import cycle
 import subprocess
 import sys
 import time
+from itertools import cycle
+
+import pyautogui
 import pygetwindow
+import pyperclip
+import PySimpleGUI as sg
 
 from pyclashbot.__main__ import initialize_client, main_loop, restart_state
 from pyclashbot.client import screenshot, show_image
-from pyclashbot.configuration import load_user_settings
-from pyclashbot.launcher import orientate_memu_multi, restart_client2
+from pyclashbot.launcher import orientate_memu_multi
 from pyclashbot.logger import Logger
 
-user_settings = load_user_settings()
-ssids = cycle(user_settings['selected_accounts'])
-launcher_path=user_settings['MEmu_Multi_launcher_path']
 logger = Logger()
-ssid = next(ssids)
 loop_count = 0
+ssid=0
 
 # print(launcher_path)
 
@@ -30,6 +28,10 @@ loop_count = 0
 
 
 
-restart_client2(logger)
-
-# orientate_memu_multi()
+def get_next_ssid(current_ssid,ssid_total):
+    if (current_ssid + 1) == ssid_total:
+        return 0
+    else: return current_ssid + 1
+    
+    
+    
