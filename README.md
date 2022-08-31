@@ -39,7 +39,6 @@ It is reccomended to play Clash Royale in English mode.
 
 ## Run py-clash-bot
 
-Before attempting to run the bot, make sure both the 'Multi Instance Manager' and the MEmu client are both open.
 
 #### a. Installed on Windows
 
