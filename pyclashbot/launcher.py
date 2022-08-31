@@ -132,39 +132,6 @@ def get_terminal_window():
     return None
 
 
-def restart_clientXXX(logger):
-    time.sleep(1)
-    
-    # close client
-    logger.log("Closing client")
-    orientate_memu_multi()
-    time.sleep(1)
-    click(541, 133)
-    time.sleep(3)
-    
-    # open client
-    logger.log("Opening client")
-    click(541, 133)
-    time.sleep(3)
-    
-    # wait for client
-    logger.log("Waiting for client")
-    orientate_memu()
-    time.sleep(3)
-    loading = True
-    loading_loops = 0
-    while (loading) and (loading_loops < 20):
-        loading_loops = loading_loops + 1
-        logger.log(f"Waiting for memu to load:{loading_loops}")
-        loading = check_for_memu_loading_background()
-        time.sleep(1)
-    logger.log("Done waiting for memu to load.")
-    time.sleep(5)
-    # skip ads
-    logger.log("Skipping ads")
-    click(440, 600, clicks=7, interval=1)
-
-
 def restart_client(logger):
     logger.log("Restarting everything.")
     logger.log("Closing any existing windows.")
