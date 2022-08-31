@@ -48,6 +48,4 @@ Run the desktop shortcut the installer created.
 
 Enter `pyclashbot` in the command line.
 
-## Configuration
 
-To configure the program, edit **`%appdata%\py-clash-bot\config.json`** in the install location of the program.
