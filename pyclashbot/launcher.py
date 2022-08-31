@@ -10,20 +10,6 @@ import numpy
 
 
 
-def initialize_client(logger):
-    #orientate windows
-    orientate_memu_multi()
-    time.sleep(0.2)
-    orientate_memu()
-    time.sleep(0.2)
-    orientate_bot_window(logger)
-    
-    #check the state
-    state = check_state(logger)
-    if state is None:
-        state = "restart"
-    return state
-
 
 def close_all_windows():
     windows = pygetwindow.getWindowsWithTitle('MEMu')
@@ -132,6 +118,25 @@ def get_terminal_window():
     return None
 
 
+def wait_for_memu_launcher(logger):
+    waiting=True
+    if look_for_memu_launcher(): waiting=False
+    loops=0
+    while waiting:
+        time.sleep(1)
+        logger.log(f"Waiting for memu launcher to open up: {loops}")
+        if look_for_memu_launcher(): waiting=False
+        
+
+
+def look_for_memu_launcher():
+    titles=pygetwindow.getAllTitles
+    for title in titles:
+        if title.startswith("Multiple Instance Manager"):
+            return True
+    return False
+
+
 def restart_client(logger):
     logger.log("Restarting everything.")
     logger.log("Closing any existing windows.")
@@ -152,7 +157,9 @@ def restart_client(logger):
     logger.log("Opening MEmu launcher")
     path=r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
     subprocess.Popen(path)
-    time.sleep(3)
+    
+    #wait for launcher to open
+    wait_for_memu_launcher(logger)
     
     #orientate launcher
     orientate_memu_multi()
