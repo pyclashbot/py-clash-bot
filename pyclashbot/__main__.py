@@ -20,7 +20,7 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import check_quit_key_press, orientate_memu
+from pyclashbot.client import check_quit_key_press, get_next_ssid, orientate_memu
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
@@ -138,14 +138,14 @@ def main_loop(jobs,accounts,card_to_request):
             state="clash_main"
         
         if state=="clash_main":
-            clash_main_state(logger, current_ssid)
-            state="start_fight"
+            if clash_main_state(logger, current_ssid)=="restart": state="restart"
+            else: state="start_fight"
             
         if state=="start_fight":
             if "Fight" in jobs:
                 logger.log("Doing fights")
-                start_fight_state(logger)
-                state="fighting"
+                if start_fight_state(logger)=="restart":state= "restart"
+                else: state="fighting"
             else:
                 logger.log("Skipping fights. Moving to request.")
                 state="request"
@@ -164,47 +164,50 @@ def main_loop(jobs,accounts,card_to_request):
         if state=="request":
             if "Request" in jobs:
                 logger.log("Doing request.")
-                request_state(logger, card_to_request)
+                if request_state(logger, card_to_request)=="restart":state="restart"
+                else:state="donate"
             else:
                 logger.log("Skipping request")
-            
-            state="donate"
+                state="donate"
             
         if state=="donate":
             if "Donate" in jobs:
                 logger.log("Doing donate.")
-                donate_state(logger)
+                if donate_state(logger)=="restart": state="restart"
+                else: state="upgrade"
             else:
                 logger.log("Skipping donate.")
-            state="upgrade"
+                state="upgrade"
                 
         if state=="upgrade":
             if "Upgrade" in jobs:
                 logger.log("Doing upgrade")
-                upgrade_state(logger)
+                if upgrade_state(logger)== "restart": state="restart"
+                else: state="card_mastery_collection"
             else:
                 logger.log("Skipping upgrade")
-                
-            state="card_mastery_collection"
+                state="card_mastery_collection"
                 
         if state=="card_mastery_collection":
             if "Collect_mastery_rewards" in jobs:
                 logger.log("Doing card mastery collection")
-                card_mastery_collection_state(logger)
+                if card_mastery_collection_state(logger)=="restart":state = "restart"
+                else: state="battlepass_collection"
             else:
                 logger.log("Skipping card mastery collection")
-            
-            state="battlepass_collection"
+                state="battlepass_collection"
             
         if state=="battlepass_collection":
             if "Collect_battlepass_rewards" in jobs:
                 logger.log("Doing collect battlepass rewards.")
-                battlepass_state(logger)
+                if battlepass_state(logger)=="restart":state="restart"
+                else: state="clash_main"
             else:
                 logger.log("Skipping collect battlepass rewards.")
+                state="clash_main"
             
-            state="clash main"
-            
+
+        current_ssid=get_next_ssid(current_ssid,ssid_total)
         loop_count = loop_count +1
         logger.log(f"Main is running loop: {loop_count}")
         
@@ -378,7 +381,7 @@ def clash_main_state(logger, ssid):
     if switch_accounts_to(logger, ssid) == "quit":
         # if switching accounts fails
         logger.log("Failed to switch accounts. Restarting")
-        state = "restart"
+        return "restart"
     else:
         # if switching accounts works
         logger.log("Successfully switched accounts.")

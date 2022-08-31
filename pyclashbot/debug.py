@@ -28,10 +28,3 @@ ssid=0
 
 
 
-def get_next_ssid(current_ssid,ssid_total):
-    if (current_ssid + 1) == ssid_total:
-        return 0
-    else: return current_ssid + 1
-    
-    
-    
