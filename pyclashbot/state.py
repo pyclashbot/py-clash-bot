@@ -1,6 +1,6 @@
 import time
 
-from pyclashbot.client import (check_quit_key_press, click, refresh_screen, screenshot)
+from pyclashbot.client import (check_quit_key_press, click, orientate_memu, refresh_screen, screenshot)
 
 from pyclashbot.image_rec import (check_for_location, find_reference,
                                   find_references)
@@ -156,7 +156,7 @@ def check_if_in_battle():
 # region state changing
 
 def open_clash(logger):
-    orientate_window()
+    orientate_memu()
     time.sleep(1)
     check_quit_key_press()
     logger.log("opening clash")
