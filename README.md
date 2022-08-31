@@ -21,7 +21,7 @@ Enter the following into the command line:
 
 To emulate the game, [Download and install MEmu](https://www.memuplay.com/).
 
-It is reccomended to install the emulator in Enligsh mode.
+It is reccomended to install the emulator in English mode.
 
 ### Configure MEmu
 
@@ -39,7 +39,6 @@ It is reccomended to play Clash Royale in English mode.
 
 ## Run py-clash-bot
 
-Before attempting to run the bot, make sure both the 'Multi Instance Manager' and the MEmu client are both open.
 
 #### a. Installed on Windows
 
@@ -49,6 +48,4 @@ Run the desktop shortcut the installer created.
 
 Enter `pyclashbot` in the command line.
 
-## Configuration
 
-To configure the program, edit **`%appdata%\py-clash-bot\config.json`** in the install location of the program.
