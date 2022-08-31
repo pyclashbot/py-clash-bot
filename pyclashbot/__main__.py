@@ -19,13 +19,13 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import check_quit_key_press
+from pyclashbot.client import check_quit_key_press, orientate_memu
 from pyclashbot.configuration import create_config_file, load_user_settings
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
                               wait_for_battle_start)
-from pyclashbot.launcher import (initialize_client, 
+from pyclashbot.launcher import (initialize_client, orientate_bot_window, 
                                  orientate_memu_multi, 
                                  restart_client)
 from pyclashbot.logger import Logger
@@ -91,8 +91,9 @@ def main_gui():
             jobs.append("Collect_mastery_rewards")
         
         if event == 'Start':
-            main_loop(jobs)
             window.close()
+            main_loop(jobs)
+           
     window.close()
     
     
@@ -120,30 +121,68 @@ def main_loop(jobs):
    
     while True:
         # will be true if installed update, needs feature to restart program
-        installed_update = auto_update(
-        ) if user_settings['enable_program_auto_update'] else False
+        # installed_update = auto_update(
+        # ) if user_settings['enable_program_auto_update'] else False
         logger.log(f"loop count: {loop_count}")
         
         if (state == "restart"):
-            state = restart_state(logger)
+            if restart_state(logger) == "restart":
+                restart_state(logger)
+            else:
+                state="clash_main"
+            
         if (state == "clash_main"):
-            state = clash_main_state(logger, ssid)
-        if (state == "request")and("Request" in jobs):
-            state = request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])
-        if (state == "donate")and("Donate" in jobs):
-            state = donate_state(logger, user_settings['enable_donate'])
-        if (state == "upgrade")and("Upgrade_cards" in jobs):
-            state = upgrade_state(logger, user_settings['enable_card_upgrade'])
-        if (state == "battlepass")and("Collect_battlepass_rewards" in jobs):
-            state = battlepass_state(logger, user_settings['enable_battlepass_collection'])
-        if (state == "card_mastery_collection")and("Collect_mastery_rewards" in jobs):
-            state = card_mastery_collection_state(logger, ['enable_card_mastery_collection'])
-        if (state == "start_fight")and("Fight" in jobs):
-            state = start_fight_state(logger)
+            print("clash_main state")
+            if clash_main_state(logger, ssid)=="restart": state ="restart"
+            else: state = "request"
+            
+        if (state == "request"):
+            if "Request" in jobs:
+                if request_state(logger, user_settings['card_to_request'], user_settings['enable_request'])=="restart": state="restart"
+                else: state="donate"
+            else: state= "donate"
+            
+        if (state == "donate"):
+            if "Donate" in jobs:
+                if donate_state(logger, user_settings['enable_donate'])=="restart":state="restart"
+                else: state="upgrade"
+            else:
+                state="upgrade"
+            
+        if (state == "upgrade"):
+            if ("Upgrade_cards" in jobs):
+                if upgrade_state(logger, user_settings['enable_card_upgrade'])=="restart": state="restart"
+                else: state="battlepass"
+            else:
+                state="battlepass"
+      
+        if (state == "battlepass"):
+            if ("Collect_battlepass_rewards" in jobs):
+                if battlepass_state(logger, user_settings['enable_battlepass_collection']) == "restart" : state = "restart"
+                else: state="card_mastery_collection"
+            else:
+                state="card_mastery_collection"
+        
+        if (state == "card_mastery_collection"):
+            if ("Collect_mastery_rewards" in jobs):
+                if card_mastery_collection_state(logger, ['enable_card_mastery_collection']) == "restart": state="restart"
+                else: state= "start_fight"
+            else: state= "start_fight"
+            
+        if (state == "start_fight"):
+            if ("Fight" in jobs):
+                if start_fight_state(logger) == "restart": state="restart"
+                else: state="fighting"
+            else: state="fighting"
+            
         if (state == "fighting"):
-            state = fighting_state(logger)
+            print("fighting state")
+            if fighting_state(logger)=="restart": state="restart"
+            else: state = "post_fight"
+        
         if (state == "post_fight"):
-            ssid, state = post_fight_state(logger, ssids)
+            print("post_fight state")
+        ssid, state = post_fight_state(logger, ssids)
         
         loop_count += 1
         user_settings = load_user_settings()
@@ -154,22 +193,6 @@ def main_loop(jobs):
 
 
 
-
-def open_MMIM_state(logger,MMIM_path):
-    logger.log("open_MMIM_state")
-
-    #open MMeu 
-
-
-
-def open_MEmu_state(logger):
-    logger.log("STATE=open_MEmu_state")
-    
-    #open MEmu by clicking start button in MEmu
-    pass
-
-def open_clash_state(logger):
-    logger.log("STATE=open_clash_state")
 
 
 def post_fight_state(logger, ssids):
@@ -319,6 +342,7 @@ def donate_state(logger, enable_donate):
 
 
 def request_state(logger, card_to_request, enable_request=True):
+    logger.log("State=REQUEST")
     if not enable_request:
         logger.log("Request is disabled. Passing to donate state.")
         return "donate"
@@ -365,30 +389,13 @@ def clash_main_state(logger, ssid):
                     "Found no unlocking symbols. Opening chests.")
                 open_chests(logger)
                 time.sleep(2)
-            logger.log("Checking if can request.")
-            if check_if_can_request(logger):
-                logger.log("Can request. Passing to request state.")
-                state = "request"
-            else:
-                logger.log(
-                    "Cannot request. Skipping request and passing to donate state.")
-                state = "donate"
-        else:
-            logger.log("Not on clash main. Restarting.")
-            state = "restart"
-    return state
+    
+
 
 
 def restart_state(logger):
     logger.log("-----STATE=restart-----")
-    logger.log("restart time loop")
-    logger.log("Restarting menu client")
-    orientate_window()
-    time.sleep(0.2)
-    orientate_memu_multi()
-    time.sleep(0.2)
-    orientate_bot_window(logger)
-    time.sleep(0.2)
+
     restart_client(logger)
     if open_clash(logger) == "quit":
         state = "restart"
@@ -433,7 +440,9 @@ def end_loop():
 
 
 if __name__ == "__main__":
-    try:
-        main_gui()
-    finally:
-        end_loop()
+    # try:
+    #     main_gui()
+    # finally:
+    #     end_loop()
+    
+    main_gui()
