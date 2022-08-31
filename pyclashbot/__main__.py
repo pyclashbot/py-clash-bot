@@ -18,14 +18,13 @@ from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import check_quit_key_press, get_next_ssid, orientate_memu
+from pyclashbot.client import check_quit_key_press, get_next_ssid, handle_clash_main_notifications, orientate_memu
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
                               wait_for_battle_start)
-from pyclashbot.launcher import (initialize_client, orientate_bot_window, 
-                                 orientate_memu_multi, 
-                                 restart_client)
+from pyclashbot.launcher import (  
+restart_client)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
@@ -358,6 +357,11 @@ def request_state(logger, card_to_request):
 
 def clash_main_state(logger, ssid):
     logger.log("-----STATE=clash_main-----")
+    
+    #handle dumb popups        
+    logger.log("Handling clash main notifications.")
+    handle_clash_main_notifications()
+    
     # account switch
     logger.log("Logging in to the correct account")
     if switch_accounts_to(logger, ssid) == "quit":
