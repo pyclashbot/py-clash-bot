@@ -13,8 +13,13 @@ from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location)
 
 
+def show_image(image):
+    plt.imshow(numpy.asarray(image))
+    plt.show()
 
-def orientate_window():
+
+
+def orientate_memu():
     # logger.log("Orientating memu client")
     window_memu = pygetwindow.getWindowsWithTitle('MEmu')[0]
     check_quit_key_press()
@@ -35,7 +40,7 @@ def orientate_window():
 
 def refresh_screen():
     check_quit_key_press()
-    orientate_window()
+    orientate_memu()
     screenshot = pyautogui.screenshot(region=(0, 0, 500, 700))
     check_quit_key_press()
     iar = numpy.array(screenshot)

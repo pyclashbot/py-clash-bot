@@ -1,5 +1,6 @@
 
-from pyclashbot.client import check_quit_key_press, click, orientate_window, screenshot
+import subprocess
+from pyclashbot.client import check_quit_key_press, click, orientate_memu, screenshot
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location
 from pyclashbot.state import check_state
 import pygetwindow
@@ -13,7 +14,7 @@ def initialize_client(logger):
     #orientate windows
     orientate_memu_multi()
     time.sleep(0.2)
-    orientate_window()
+    orientate_memu()
     time.sleep(0.2)
     orientate_bot_window(logger)
     
@@ -131,21 +132,24 @@ def get_terminal_window():
     return None
 
 
-def restart_client(logger):
+def restart_clientXXX(logger):
     time.sleep(1)
+    
     # close client
     logger.log("Closing client")
     orientate_memu_multi()
     time.sleep(1)
     click(541, 133)
     time.sleep(3)
+    
     # open client
     logger.log("Opening client")
     click(541, 133)
     time.sleep(3)
+    
     # wait for client
     logger.log("Waiting for client")
-    orientate_window()
+    orientate_memu()
     time.sleep(3)
     loading = True
     loading_loops = 0
@@ -159,6 +163,61 @@ def restart_client(logger):
     # skip ads
     logger.log("Skipping ads")
     click(440, 600, clicks=7, interval=1)
+
+
+def restart_client(logger):
+    logger.log("Restarting everything.")
+    logger.log("Closing any existing windows.")
+    #get windows
+    memu_windows = pygetwindow.getWindowsWithTitle("(MEmu)")
+    memu_multi_windows = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")
+    
+    #close everything
+    if len (memu_windows) != 0:
+        logger.log("Closing MEmu client.")
+        memu_windows[0].close()
+    
+    if len (memu_multi_windows) != 0:
+        logger.log("Closing MEmu launcher.")
+        memu_multi_windows[0].close()
+    
+    #open launcher
+    logger.log("Opening MEmu launcher")
+    path=r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
+    subprocess.Popen(path)
+    time.sleep(3)
+    
+    #orientate launcher
+    orientate_memu_multi()
+    time.sleep(3)
+    
+    #click start
+    click(556,141)
+    time.sleep(3)
+    
+    #orientate memu client
+    orientate_memu()
+    
+    # wait for client
+    logger.log("Waiting for client")
+    orientate_memu()
+    time.sleep(3)
+    loading = True
+    loading_loops = 0
+    while (loading) and (loading_loops < 20):
+        loading_loops = loading_loops + 1
+        logger.log(f"Waiting for memu to load:{loading_loops}")
+        loading = check_for_memu_loading_background()
+        time.sleep(1)
+    logger.log("Done waiting for memu to load.")
+    time.sleep(5)
+    # skip ads
+    logger.log("Skipping ads")
+    click(440, 600, clicks=7, interval=1)
+    time.sleep(3)
+    
+
+
 
 
 def check_for_memu_loading_background():
