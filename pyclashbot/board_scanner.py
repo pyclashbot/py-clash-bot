@@ -1,7 +1,7 @@
 import numpy
 
 from pyclashbot.client import (draw_picture, get_avg_coord, get_image,
-                               orientate_window, screenshot)
+                               orientate_memu, screenshot)
 from pyclashbot.image_rec import pixel_is_equal
 
 
