@@ -1,5 +1,3 @@
-
-from asyncore import loop
 import code
 import os
 import random
@@ -57,12 +55,12 @@ def main_gui():
         sg.Checkbox('Fight',default=False,key="-Fight-in-"),
         sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
         sg.Checkbox('Donating',default=False,key="-Donating-in-"),
-        sg.Checkbox('Upgrade_cards',default=False,key="-Upgrade_cards-in-"),
-        sg.Checkbox('Battlepass_reward_collection', default=False, key="-Battlepass_reward_collection-in-"),
-        sg.Checkbox('Card_mastery_collection', default=False, key="-Card_mastery_collection-in-"),
+        sg.Checkbox('Upgrade cards',default=False,key="-Upgrade_cards-in-"),
+        sg.Checkbox('Battlepass reward collection', default=False, key="-Battlepass_reward_collection-in-"),
+        sg.Checkbox('Card mastery collection', default=False, key="-Card_mastery_collection-in-"),
         ],
         #dropdown for amount of accounts
-        [sg.Text("Choose how many account you'd like to simultaneously farm:")],
+        [sg.Text("Choose how many accounts you'd like to simultaneously farm:")],
         [sg.Combo(['1','2','3', '4'],key='-SSID_IN-')],
         #dropdown for card to request
         [sg.Text("Select the card you'd like to request:")],
@@ -106,8 +104,6 @@ def main_gui():
             main_loop(jobs,accounts,card_to_request)
            
     window.close()
-
-
 
 
 def main_loop(jobs,accounts,card_to_request):
@@ -211,19 +207,6 @@ def main_loop(jobs,accounts,card_to_request):
         loop_count = loop_count +1
         logger.log(f"Main is running loop: {loop_count}")
         
-        
-        
-                
-        
-
-        
-
-        
-        
-
-
-
-
 
 def post_fight_state(logger):
     if check_if_in_battle():
@@ -236,7 +219,6 @@ def post_fight_state(logger):
     else:
         logger.log("Last game was a loss")
         logger.add_loss()
-
 
 
 def fighting_state(logger):
