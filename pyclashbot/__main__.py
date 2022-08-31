@@ -1,4 +1,5 @@
 
+from asyncore import loop
 import code
 import os
 import random
@@ -142,35 +143,80 @@ def main_loop(jobs,accounts,card_to_request):
             
         if state=="start_fight":
             if "Fight" in jobs:
+                logger.log("Doing fights")
                 start_fight_state(logger)
                 state="fighting"
             else:
-                "request"
+                logger.log("Skipping fights. Moving to request.")
+                state="request"
                 
         if state=="fighting":
             fighting_state(logger)
             state="post_fight"
-            
-            
+               
         if state=="post_fight":
             if post_fight_state(logger)=="in battle":
+                logger.log("Moved to post fight too soon. Passing it back to fighting state.")
                 state="fighting"
             else:
                 state="request"
                 
         if state=="request":
             if "Request" in jobs:
+                logger.log("Doing request.")
                 request_state(logger, card_to_request)
+            else:
+                logger.log("Skipping request")
+            
+            state="donate"
+            
+        if state=="donate":
+            if "Donate" in jobs:
+                logger.log("Doing donate.")
+                donate_state(logger)
+            else:
+                logger.log("Skipping donate.")
+            state="upgrade"
+                
+        if state=="upgrade":
+            if "Upgrade" in jobs:
+                logger.log("Doing upgrade")
+                upgrade_state(logger)
+            else:
+                logger.log("Skipping upgrade")
+                
+            state="card_mastery_collection"
+                
+        if state=="card_mastery_collection":
+            if "Collect_mastery_rewards" in jobs:
+                logger.log("Doing card mastery collection")
+                card_mastery_collection_state(logger)
+            else:
+                logger.log("Skipping card mastery collection")
+            
+            state="battlepass_collection"
+            
+        if state=="battlepass_collection":
+            if "Collect_battlepass_rewards" in jobs:
+                logger.log("Doing collect battlepass rewards.")
+                battlepass_state(logger)
+            else:
+                logger.log("Skipping collect battlepass rewards.")
+            
+            state="clash main"
+            
+        loop_count = loop_count +1
+        logger.log(f"Main is running loop: {loop_count}")
+        
+        
+        
                 
         
-        #handle chests and get to correct account
-        
-        
-        
-        
-        
+
         
 
+        
+        
 
 
 
@@ -236,13 +282,7 @@ def start_fight_state(logger):
     return state
 
 
-def upgrade_state(logger, enable_card_upgrade):
-    if not enable_card_upgrade:
-        logger.log(
-            "Card upgrade is disabled. Passing to card_mastery_collection state.")
-        state = "card_mastery_collection"
-        return state
-
+def upgrade_state(logger):
     logger.log("-----STATE=upgrade-----")
     # only run upgrade a third of the time because its fucking slow as shit
     # but what can u do yk?
@@ -256,11 +296,7 @@ def upgrade_state(logger, enable_card_upgrade):
     return state
 
 
-def card_mastery_collection_state(logger, enable_card_mastery_collection):
-    if not enable_card_mastery_collection:
-        logger.log(
-            "Card_mastery_collection is disabled. Passing to battlepass collection state.")
-
+def card_mastery_collection_state(logger):
     logger.log("Getting to card page")
     getto_card_page(logger)
     logger.log("Checking if mastery rewards are available.")
@@ -275,16 +311,7 @@ def card_mastery_collection_state(logger, enable_card_mastery_collection):
     return state
 
 
-def donate_state(logger, enable_donate):
-    if not enable_donate:
-        do_upgrade = 1 == random.randint(1, 3)
-        if do_upgrade:
-            logger.log("Donate is disabled. Passing to upgrade state")
-            return "upgrade"
-        else:
-            logger.log("Donate is disabled. Passing to start_fight state")
-            return "start_fight"
-
+def donate_state(logger):
     logger.log("-----STATE=donate-----")
     logger.log("Checking if in a clan")
     time.sleep(2)
@@ -380,11 +407,7 @@ def restart_state(logger):
     return state
 
 
-def battlepass_state(logger, enable_battlepass_collection):
-    if not enable_battlepass_collection:
-        logger.log(
-            "Battlepass collection is disabled. Passing to start_fight state.")
-
+def battlepass_state(logger):
     logger.log("-----STATE=battlepass-----")
     logger.log("Handling battlepass rewards")
     if check_if_can_collect_bp():
