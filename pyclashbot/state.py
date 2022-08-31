@@ -155,18 +155,23 @@ def check_if_in_battle():
 
 # region state changing
 
-def open_clash(logger):
-    orientate_memu()
-    time.sleep(1)
-    check_quit_key_press()
-    logger.log("opening clash")
-
+def find_clash_app_logo():
     coords = find_reference(
         screenshot=refresh_screen(),
         folder="logo",
         name="clash_logo.png",
         tolerance=0.97
     )
+    return coords
+
+
+def open_clash(logger):
+    orientate_memu()
+    time.sleep(1)
+    check_quit_key_press()
+    logger.log("opening clash")
+
+    coords = find_clash_app_logo()
 
     if coords is None:
         logger.log("Clash logo wasn't found")

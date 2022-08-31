@@ -123,6 +123,7 @@ def wait_for_memu_launcher(logger):
     if look_for_memu_launcher(): waiting=False
     loops=0
     while waiting:
+        loops=loops+1
         time.sleep(1)
         logger.log(f"Waiting for memu launcher to open up: {loops}")
         if look_for_memu_launcher(): waiting=False
@@ -130,11 +131,18 @@ def wait_for_memu_launcher(logger):
 
 
 def look_for_memu_launcher():
-    titles=pygetwindow.getAllTitles
+    titles=pygetwindow.getAllTitles()
     for title in titles:
         if title.startswith("Multiple Instance Manager"):
             return True
     return False
+
+
+def wait_for_memu_client(logger):
+    pass
+
+def check_for_memu_client():
+    pass
 
 
 def restart_client(logger):
@@ -157,6 +165,7 @@ def restart_client(logger):
     logger.log("Opening MEmu launcher")
     path=r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
     subprocess.Popen(path)
+    time.sleep(6)
     
     #wait for launcher to open
     wait_for_memu_launcher(logger)
