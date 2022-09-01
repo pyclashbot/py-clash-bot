@@ -143,10 +143,12 @@ def wait_for_memu_client(logger):
     if find_clash_app_logo() is not None: waiting = False
     loops=0
     while waiting:
-        loops=loops+1
+        loops=loops+2
         logger.log(f"Waiting for clash logo to appear {loops}")
         time.sleep(1)
-        click(440, 600)
+        click(445, 600)
+        time.sleep(1)
+        if find_clash_app_logo() is not None: waiting = False
     logger.log("Clash logo found.")
         
 
@@ -203,7 +205,7 @@ def restart_client(logger):
     time.sleep(5)
     # skip ads
     logger.log("Skipping ads")
-    click(440, 600, clicks=7, interval=1)
+    click(445, 600, clicks=7, interval=1)
     time.sleep(3)
     
     #second wait for client
