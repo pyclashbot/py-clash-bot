@@ -14,7 +14,7 @@ from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.client import click, orientate_memu, screenshot, show_image
 from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi
 from pyclashbot.logger import Logger
-from pyclashbot.state import find_clash_app_logo
+from pyclashbot.state import check_if_on_clash_main_menu, find_clash_app_logo
 from pyclashbot.upgrade import upgrade_cards_from_main
 
 logger = Logger()
@@ -36,5 +36,6 @@ ssid=0
 
 
 
+# orientate_memu()
 
-
+print(check_if_on_clash_main_menu())
