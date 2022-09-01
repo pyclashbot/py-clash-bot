@@ -1,9 +1,11 @@
 import time
+from unittest.mock import sentinel
+import numpy
 
 from pyclashbot.client import (check_quit_key_press, click, orientate_memu, refresh_screen, screenshot)
 
 from pyclashbot.image_rec import (check_for_location, find_reference,
-                                  find_references)
+                                  find_references, pixel_is_equal)
 
 
 # region state checking
@@ -73,25 +75,31 @@ def check_if_on_level_up_screen(logger):
 
 
 def check_if_on_clash_main_menu():
-    current_image = screenshot()
-    reference_folder = "clash_main_menu"
-    references = [
-        "clash_main_1.png",
-        "clash_main_2.png",
-        "clash_main_3.png",
-        "clash_main_4.png",
-        "clash_main_5.png"
-    ]
+    iar = numpy.asarray(screenshot())
+    
+    blue_pix_list=[]
+    blue_pix_list.append(iar[447][390])
+    blue_pix_list.append(iar[391][37])
+    
+    yellow_pix_list=[]
+    yellow_pix_list.append(iar[427][98])
+    yellow_pix_list.append(iar[468][97])
+    yellow_pix_list.append(iar[472][192])
 
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.99
-    )
+    
+    blue_sentinel=[ 22,70,159]
+    yellow_sentinel=[255,187,0]
+    
+    for pix in blue_pix_list:
+        if not(pixel_is_equal(pix,blue_sentinel,tol=50)):
+            return False
 
-    return check_for_location(locations)
-
+    
+    for pix in yellow_pix_list:
+        if not(pixel_is_equal(pix,yellow_sentinel,tol=50)):
+            return False
+        return True
+    
 
 def check_if_on_clan_chat_page():
     references = [
@@ -184,6 +192,39 @@ def open_clash(logger):
 
 
 def wait_for_clash_main_menu(logger):
+    logger.log("Starting wait for clash main.")
+    waiting=True
+    if check_if_on_clash_main_menu(): waiting=False
+    loops=0
+    while waiting:
+        if check_if_on_trophy_progession_rewards_page():
+            logger.log(
+                "Bot appears to be stuck on trophy progression rewards menu. Closing that.")
+            click(212, 633)
+            time.sleep(0.5)
+        
+        check_quit_key_press()
+        
+        if check_if_on_level_up_screen(logger):
+            click(208, 560)
+            time.sleep(2)
+        
+        logger.log(f"Waiting for clash main menu {loops}")
+        
+        loops=loops+1
+        time.sleep(1)
+       
+        if check_if_on_clash_main_menu(): waiting=False
+        
+        if loops>100: return "restart"
+        
+        click(10, 350)
+        
+        
+    
+
+
+def wait_for_clash_main_menu3(logger):
     n = 0
     while not check_if_on_clash_main_menu():
 
