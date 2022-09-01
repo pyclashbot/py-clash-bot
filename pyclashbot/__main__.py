@@ -439,7 +439,7 @@ def clash_main_state(logger, ssid):
                     "Found no unlocking symbols. Opening chests.")
                 open_chests(logger)
                 time.sleep(2)
-    
+     
 
 def restart_state(logger):
     logger.log("-----STATE=restart-----")
