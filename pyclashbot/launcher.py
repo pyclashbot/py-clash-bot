@@ -2,7 +2,7 @@
 import subprocess
 from pyclashbot.client import check_quit_key_press, click, orientate_memu, screenshot
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location
-from pyclashbot.state import check_state
+from pyclashbot.state import check_state, find_clash_app_logo
 import pygetwindow
 import time
 import pyautogui
@@ -139,10 +139,17 @@ def look_for_memu_launcher():
 
 
 def wait_for_memu_client(logger):
-    pass
+    waiting=True
+    if find_clash_app_logo() is not None: waiting = False
+    loops=0
+    while waiting:
+        loops=loops+1
+        logger.log(f"Waiting for clash logo to appear {loops}")
+        time.sleep(1)
+        click(440, 600)
+    logger.log("Clash logo found.")
+        
 
-def check_for_memu_client():
-    pass
 
 
 def restart_client(logger):
@@ -198,6 +205,9 @@ def restart_client(logger):
     logger.log("Skipping ads")
     click(440, 600, clicks=7, interval=1)
     time.sleep(3)
+    
+    #second wait for client
+    wait_for_memu_client(logger)
     
 
 
