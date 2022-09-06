@@ -143,6 +143,7 @@ def wait_for_memu_client(logger):
     if find_clash_app_logo() is not None: waiting = False
     loops=0
     while waiting:
+        check_quit_key_press()
         loops=loops+2
         logger.log(f"Waiting for clash logo to appear {loops}")
         time.sleep(1)
