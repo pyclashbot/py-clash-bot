@@ -210,6 +210,7 @@ def wait_for_clash_main_menu(logger):
             time.sleep(2)
         
         logger.log(f"Waiting for clash main menu {loops}")
+        check_quit_key_press()
         
         loops=loops+1
         time.sleep(1)
@@ -237,6 +238,7 @@ def wait_for_clash_main_menu3(logger):
             time.sleep(0.5)
         time.sleep(3)
         logger.log(f"Waiting for clash main menu/{n}")
+        check_quit_key_press()
         n = n + 1
         if n > 20:
             logger.log("Waiting longer than a minute for clash main menu")
