@@ -1,4 +1,4 @@
-certifi==2022.6.15
+certifi==2022.6.15.1
 charset-normalizer==2.1.1
 colorama==0.4.5
 cx-Freeze==6.11.1
