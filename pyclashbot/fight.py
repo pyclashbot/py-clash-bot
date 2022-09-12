@@ -437,7 +437,6 @@ def play_card_on_enemy_with_offset(card_loc, enemy_troop_position, offset):
     time.sleep(0.25)
     if placement_loc is not None:
         click(x=placement_loc[0], y=placement_loc[1])
-    return
 
 
 def play_turret_card(card_loc):
@@ -629,7 +628,6 @@ def fight_with_deck_list(enemy_troop_position):
                         297, 220], [
                             319, 196], [
                                 297, 165]])
-        return
 #     miner
     if (check_for_card_in_hand("miner") is not None):
         # logger.log("found miner in decklist and hand")
@@ -643,7 +641,6 @@ def fight_with_deck_list(enemy_troop_position):
                         297, 220], [
                             319, 196], [
                                 297, 165]])
-        return
 #     goblin_barrel
     if (check_for_card_in_hand("goblin_barrel") is not None):
         # logger.log("found goblin_barrel in decklist and hand")
@@ -657,7 +654,6 @@ def fight_with_deck_list(enemy_troop_position):
                         297, 200], [
                             353, 158], [
                                 71, 166]])
-        return
 # melee_tanks
 #     barb_barrel
     if (check_for_card_in_hand("barb_barrel") is not None):
