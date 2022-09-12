@@ -1,6 +1,6 @@
 
 import subprocess
-from pyclashbot.client import check_quit_key_press, click, orientate_memu, screenshot
+from pyclashbot.client import check_quit_key_press, click, orientate_memu, refresh_screen, screenshot
 from pyclashbot.image_rec import check_for_location, find_references, get_first_location
 from pyclashbot.state import check_state, find_clash_app_logo
 import pygetwindow
@@ -127,7 +127,7 @@ def wait_for_memu_launcher(logger):
         time.sleep(1)
         logger.log(f"Waiting for memu launcher to open up: {loops}")
         if look_for_memu_launcher(): waiting=False
-        
+
 
 
 def look_for_memu_launcher():
@@ -151,7 +151,7 @@ def wait_for_memu_client(logger):
         time.sleep(1)
         if find_clash_app_logo() is not None: waiting = False
     logger.log("Clash logo found.")
-        
+
 
 
 
@@ -161,36 +161,36 @@ def restart_client(logger):
     #get windows
     memu_windows = pygetwindow.getWindowsWithTitle("(MEmu)")
     memu_multi_windows = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")
-    
+
     #close everything
     if len (memu_windows) != 0:
         logger.log("Closing MEmu client.")
         memu_windows[0].close()
-    
+
     if len (memu_multi_windows) != 0:
         logger.log("Closing MEmu launcher.")
         memu_multi_windows[0].close()
-    
+
     #open launcher
     logger.log("Opening MEmu launcher")
     path=r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
     subprocess.Popen(path)
     time.sleep(6)
-    
+
     #wait for launcher to open
     wait_for_memu_launcher(logger)
-    
+
     #orientate launcher
     orientate_memu_multi()
     time.sleep(3)
-    
+
     #click start
     click(556,141)
     time.sleep(3)
-    
+
     #orientate memu client
     orientate_memu()
-    
+
     # wait for client
     logger.log("Waiting for client")
     orientate_memu()
@@ -208,10 +208,10 @@ def restart_client(logger):
     logger.log("Skipping ads")
     click(445, 600, clicks=7, interval=1)
     time.sleep(3)
-    
+
     #second wait for client
     wait_for_memu_client(logger)
-    
+
 
 
 
