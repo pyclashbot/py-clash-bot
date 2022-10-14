@@ -28,7 +28,7 @@ from pyclashbot.launcher import (
     restart_client)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
-                                request_from_clash_main_menu)
+                                request_from_clash_main_menu, request_random_card_from_clash_main)
 from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               check_if_on_clash_main_menu, open_clash,
                               return_to_clash_main_menu,
@@ -68,7 +68,7 @@ def main_gui():
         [sg.Combo(['1', '2', '3', '4'], key='-SSID_IN-')],
         # dropdown for card to request
         [sg.Text("Select the card you'd like to request:")],
-        [sg.Combo(['Giant', 'Archers'], key='-CARD_TO_REQUEST_IN-')],
+        [sg.Combo(['Random'], key='-CARD_TO_REQUEST_IN-')],
         # bottons at bottom
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
@@ -111,11 +111,7 @@ def main_gui():
                 window.close()
                 main_gui()
 
-            possible_request_choices = ["Giant", "Archers"]
-            if card_to_request not in possible_request_choices:
-                print("MISINPUT FOR CARD TO REQUEST VAR")
-                window.close()
-                main_gui()
+            
 
             window.close()
             main_loop(jobs, accounts, card_to_request)
@@ -419,11 +415,7 @@ def request_state(logger, card_to_request):
         # if got to clan chat page
         log = "Trying to request " + str(card_to_request) + "."
         logger.log(log)
-        if request_from_clash_main_menu(
-                card_to_request, logger) == "quit":
-            # if request failed
-            log = "Failed to request " + str(card_to_request) + "."
-            logger.log(log)
+        request_random_card_from_clash_main(logger)
         logger.log("Done with requesting. Passing to donate state.")
         return_to_clash_main_menu()
         time.sleep(2)

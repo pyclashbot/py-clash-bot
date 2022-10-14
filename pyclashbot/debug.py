@@ -1,3 +1,4 @@
+from random import Random
 import subprocess
 import sys
 import time
@@ -15,6 +16,7 @@ from pyclashbot.chest import check_if_unlock_chest_button_exists, open_chests
 from pyclashbot.client import click, orientate_memu, screenshot, show_image
 from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi, restart_client
 from pyclashbot.logger import Logger
+from pyclashbot.request import look_for_request_button
 from pyclashbot.state import check_if_on_clash_main_menu, find_clash_app_logo
 from pyclashbot.upgrade import upgrade_cards_from_main
 
@@ -27,9 +29,9 @@ ssid=0
 # # jobs = ['Fight', 'Request', 'Donate', 'Upgrade_cards', 'Collect_battlepass_rewards', 'Collect_mastery_rewards']
 # main_loop(jobs)
 
-# region=[0,0,2560,1440]
-# image=screenshot(region)
-# show_image(image)
+
+
+# show_image(screenshot([0,0,2560,1440]))
 
 # orientate_memu_multi()
 # orientate_memu()
@@ -37,7 +39,6 @@ ssid=0
 
 
 
-open_chests(logger)
 
 
-
+request_random_card(logger)
