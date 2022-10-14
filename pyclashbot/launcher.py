@@ -127,6 +127,8 @@ def wait_for_memu_launcher(logger):
         time.sleep(1)
         logger.log(f"Waiting for memu launcher to open up: {loops}")
         if look_for_memu_launcher(): waiting=False
+    logger.log("Done waiting for MEmu to appear in process list.")
+    time.sleep(3)
         
 
 
@@ -178,15 +180,17 @@ def restart_client(logger):
     time.sleep(6)
     
     #wait for launcher to open
+    logger.log("Waiting for MEmu to appear in process list.")
     wait_for_memu_launcher(logger)
+    
     
     #orientate launcher
     orientate_memu_multi()
     time.sleep(3)
     
     #click start
-    click(556,141)
-    time.sleep(3)
+    click(556,141,clicks=2,interval=0.1)
+    time.sleep(8)
     
     #orientate memu client
     orientate_memu()
