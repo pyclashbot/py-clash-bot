@@ -23,8 +23,8 @@ from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
                               wait_for_battle_start)
-from pyclashbot.launcher import (  
-restart_client)
+from pyclashbot.launcher import (
+    restart_client)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_can_request,
                                 request_from_clash_main_menu)
@@ -35,49 +35,51 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
 from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 
-
 def main_gui():
-    out_text=""
-    out_text=out_text+"Matthew Miglio ~May 2022\n\n"
-    out_text=out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
-    out_text=out_text+"progress by farming 2v2 matches with random teammates.\n"
+    out_text = ""
+    out_text = out_text+"Matthew Miglio ~May 2022\n\n"
+    out_text = out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
+    out_text = out_text+"progress by farming 2v2 matches with random teammates.\n"
 
     sg.theme('Material2')
     # defining various things that r gonna be in the gui.
     layout = [
-        #first text lines
+        # first text lines
         [sg.Text(out_text)],
-        #first checkboxes
+        # first checkboxes
         [sg.Text("Select which jobs youd like the bot to do:")],
         [
-        sg.Checkbox('Fight',default=False,key="-Fight-in-"),
-        sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
-        sg.Checkbox('Donating',default=False,key="-Donating-in-"),
-        sg.Checkbox('Upgrade cards',default=False,key="-Upgrade_cards-in-"),
-        sg.Checkbox('Battlepass reward collection', default=False, key="-Battlepass_reward_collection-in-"),
-        sg.Checkbox('Card mastery collection', default=False, key="-Card_mastery_collection-in-"),
+            sg.Checkbox('Fight', default=False, key="-Fight-in-"),
+            sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
+            sg.Checkbox('Donating', default=False, key="-Donating-in-"),
+            sg.Checkbox('Upgrade cards', default=False,
+                        key="-Upgrade_cards-in-"),
+            sg.Checkbox('Battlepass reward collection', default=False,
+                        key="-Battlepass_reward_collection-in-"),
+            sg.Checkbox('Card mastery collection', default=False,
+                        key="-Card_mastery_collection-in-"),
         ],
-        #dropdown for amount of accounts
+        # dropdown for amount of accounts
         [sg.Text("Choose how many accounts you'd like to simultaneously farm:")],
-        [sg.Combo(['1','2','3', '4'],key='-SSID_IN-')],
-        #dropdown for card to request
+        [sg.Combo(['1', '2', '3', '4'], key='-SSID_IN-')],
+        # dropdown for card to request
         [sg.Text("Select the card you'd like to request:")],
-        [sg.Combo(['Giant','Archers'],key='-CARD_TO_REQUEST_IN-')],
-        #bottons at bottom
+        [sg.Combo(['Giant', 'Archers'], key='-CARD_TO_REQUEST_IN-')],
+        # bottons at bottom
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
     window = sg.Window('PY-ClashBot', layout)
 
     # run the gui
     while True:
-        event, values = window.read()
+        event, values = read_window(window)
 
-        #if window close or exit button click
+        # if window close or exit button click
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
-        
-        #get job list
-        jobs=[]
+
+        # get job list
+        jobs = []
         if values["-Fight-in-"]:
             jobs.append("Fight")
         if values["-Requesting-in-"]:
@@ -91,134 +93,140 @@ def main_gui():
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
 
-        #get ssid count
-        accounts=values["-SSID_IN-"]
-        
-        #get card_to_request
-        card_to_request=values["-CARD_TO_REQUEST_IN-"]
+        # get ssid count
+        accounts = values["-SSID_IN-"]
 
-
+        # get card_to_request
+        card_to_request = values["-CARD_TO_REQUEST_IN-"]
 
         if event == 'Start':
-            #check if vars are filled out before starting
-            possible_accounts_choices=["1","2","3","4"]
+            # check if vars are filled out before starting
+            possible_accounts_choices = ["1", "2", "3", "4"]
             if accounts not in possible_accounts_choices:
                 print("MISINPUT FOR ACCOUNTS TO FARM VAR")
                 window.close()
                 main_gui()
-                
-            possible_request_choices=["Giant","Archers"]
+
+            possible_request_choices = ["Giant", "Archers"]
             if card_to_request not in possible_request_choices:
                 print("MISINPUT FOR CARD TO REQUEST VAR")
                 window.close()
                 main_gui()
-            
-            
-            
+
             window.close()
-            main_loop(jobs,accounts,card_to_request)
-          
+            main_loop(jobs, accounts, card_to_request)
+
         if event == 'Donate':
             show_donate_gui()
 
         if event == 'Help':
             show_help_gui()
 
-
-          
-        
     window.close()
 
 
-def main_loop(jobs,accounts,card_to_request):
+def main_loop(jobs, accounts, card_to_request):
     logger = Logger()
-    ssid_total=accounts
+    ssid_total = accounts
     current_ssid = 0
     state = "restart"
     loop_count = 0
 
     while True:
-        if state=="restart":
+        if state == "restart":
             restart_state(logger)
             time.sleep(5)
-            state="clash_main"
-        
-        if state=="clash_main":
-            if clash_main_state(logger, current_ssid)=="restart": state="restart"
-            else: state="start_fight"
-            
-        if state=="start_fight":
+            state = "clash_main"
+
+        if state == "clash_main":
+            if clash_main_state(logger, current_ssid) == "restart":
+                state = "restart"
+            else:
+                state = "start_fight"
+
+        if state == "start_fight":
             if "Fight" in jobs:
                 logger.log("Doing fights")
-                if start_fight_state(logger)=="restart":state= "restart"
-                else: state="fighting"
+                if start_fight_state(logger) == "restart":
+                    state = "restart"
+                else:
+                    state = "fighting"
             else:
                 logger.log("Skipping fights. Moving to request.")
-                state="request"
-                
-        if state=="fighting":
+                state = "request"
+
+        if state == "fighting":
             fighting_state(logger)
-            state="post_fight"
-               
-        if state=="post_fight":
-            if post_fight_state(logger)=="in battle":
-                logger.log("Moved to post fight too soon. Passing it back to fighting state.")
-                state="fighting"
+            state = "post_fight"
+
+        if state == "post_fight":
+            if post_fight_state(logger) == "in battle":
+                logger.log(
+                    "Moved to post fight too soon. Passing it back to fighting state.")
+                state = "fighting"
             else:
-                state="request"
-                
-        if state=="request":
+                state = "request"
+
+        if state == "request":
             if "Request" in jobs:
                 logger.log("Doing request.")
-                if request_state(logger, card_to_request)=="restart":state="restart"
-                else:state="donate"
+                if request_state(logger, card_to_request) == "restart":
+                    state = "restart"
+                else:
+                    state = "donate"
             else:
                 logger.log("Skipping request")
-                state="donate"
-            
-        if state=="donate":
+                state = "donate"
+
+        if state == "donate":
             if "Donate" in jobs:
                 logger.log("Doing donate.")
-                if donate_state(logger)=="restart": state="restart"
-                else: state="upgrade"
+                if donate_state(logger) == "restart":
+                    state = "restart"
+                else:
+                    state = "upgrade"
             else:
                 logger.log("Skipping donate.")
-                state="upgrade"
-                
-        if state=="upgrade":
+                state = "upgrade"
+
+        if state == "upgrade":
             if "Upgrade" in jobs:
                 logger.log("Doing upgrade")
-                if upgrade_state(logger)== "restart": state="restart"
-                else: state="card_mastery_collection"
+                if upgrade_state(logger) == "restart":
+                    state = "restart"
+                else:
+                    state = "card_mastery_collection"
             else:
                 logger.log("Skipping upgrade")
-                state="card_mastery_collection"
-                
-        if state=="card_mastery_collection":
+                state = "card_mastery_collection"
+
+        if state == "card_mastery_collection":
             if "Collect_mastery_rewards" in jobs:
                 logger.log("Doing card mastery collection")
-                if card_mastery_collection_state(logger)=="restart":state = "restart"
-                else: state="battlepass_collection"
+                if card_mastery_collection_state(logger) == "restart":
+                    state = "restart"
+                else:
+                    state = "battlepass_collection"
             else:
                 logger.log("Skipping card mastery collection")
-                state="battlepass_collection"
-            
-        if state=="battlepass_collection":
+                state = "battlepass_collection"
+
+        if state == "battlepass_collection":
             if "Collect_battlepass_rewards" in jobs:
                 logger.log("Doing collect battlepass rewards.")
-                if battlepass_state(logger)=="restart":state="restart"
-                else: state="clash_main"
+                if battlepass_state(logger) == "restart":
+                    state = "restart"
+                else:
+                    state = "clash_main"
             else:
                 logger.log("Skipping collect battlepass rewards.")
-                state="clash_main"
-            
+                state = "clash_main"
 
-        current_ssid=get_next_ssid(current_ssid,ssid_total)
-        loop_count = loop_count +1
+        current_ssid = get_next_ssid(current_ssid, ssid_total)
+        loop_count = loop_count + 1
         logger.log(f"Main is running loop: {loop_count}")
-        
-        
-        
+
+
 def show_donate_gui():
     sg.theme('Material2')
     layout = [
@@ -230,7 +238,7 @@ def show_donate_gui():
     ]
     window = sg.Window('Donate', layout)
     while True:
-        event, values = window.read()
+        event, values = read_window(window)
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
 
@@ -242,29 +250,28 @@ def show_donate_gui():
 
 
 def show_help_gui():
-    #help menu text
-    out_text=""
-    out_text=out_text+"Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
-    out_text=out_text+"To emulate the game, Download and install MEmu.\n"
-    out_text=out_text+"It is reccomended to install the emulator in Enligsh mode.\n\n"
-    out_text=out_text+"Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
-    out_text=out_text+"Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
-    out_text=out_text+"It is reccomended to play Clash Royale in English mode.\n"
+    # help menu text
+    out_text = ""
+    out_text = out_text+"Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
+    out_text = out_text+"To emulate the game, Download and install MEmu.\n"
+    out_text = out_text+"It is reccomended to install the emulator in Enligsh mode.\n\n"
+    out_text = out_text+"Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
+    out_text = out_text + \
+        "Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
+    out_text = out_text+"It is reccomended to play Clash Royale in English mode.\n"
 
     sg.theme('Material2')
     layout = [
         [sg.Text(out_text)],
         [sg.Button('Exit')],
-        ]
+    ]
     window = sg.Window('PY-TarkBot', layout)
     while True:
-        event, values = window.read()
+        event, values = read_window(window)
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
     window.close()
 
-
-        
 
 def post_fight_state(logger):
     if check_if_in_battle():
@@ -391,7 +398,6 @@ def donate_state(logger):
 def request_state(logger, card_to_request):
     logger.log("State=REQUEST")
 
-
     logger.log("-----STATE=request-----")
     logger.log("Trying to get to donate page")
     if getto_donate_page(logger) == "quit":
@@ -416,11 +422,11 @@ def request_state(logger, card_to_request):
 
 def clash_main_state(logger, ssid):
     logger.log("-----STATE=clash_main-----")
-    
-    #handle dumb popups        
+
+    # handle dumb popups
     logger.log("Handling clash main notifications.")
     handle_clash_main_notifications()
-    
+
     # account switch
     logger.log("Logging in to the correct account")
     if switch_accounts_to(logger, ssid) == "quit":
@@ -439,7 +445,7 @@ def clash_main_state(logger, ssid):
                     "Found no unlocking symbols. Opening chests.")
                 open_chests(logger)
                 time.sleep(2)
-     
+
 
 def restart_state(logger):
     logger.log("-----STATE=restart-----")
@@ -468,6 +474,14 @@ def battlepass_state(logger):
     return state
 
 
+def read_window(window: sg.Window):
+    read_result = window.read()
+    if read_result is None:
+        print("Window not found")
+        end_loop()
+    return read_result
+
+
 def end_loop():
     print("Press ctrl-c to close the program.")
     try:
@@ -482,5 +496,5 @@ if __name__ == "__main__":
     #     main_gui()
     # finally:
     #     end_loop()
-    
+
     main_gui()

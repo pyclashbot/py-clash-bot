@@ -19,7 +19,7 @@ export default class TestBadge extends Component {
           content="no-cache, no-store, must-revalidate"
           rel="preconnect"
           height="20"
-          widht="142"
+          width="142"
         />
       </a>
     );
