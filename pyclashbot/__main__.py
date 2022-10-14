@@ -19,6 +19,7 @@ from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
 from pyclashbot.client import check_quit_key_press, get_next_ssid, handle_clash_main_notifications, orientate_memu
+from pyclashbot.configuration import load_user_config
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
@@ -33,6 +34,9 @@ from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               return_to_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
+
+
+
 
 
 def main_gui():
@@ -131,10 +135,17 @@ def main_loop(jobs, accounts, card_to_request):
     current_ssid = 0
     state = "restart"
     loop_count = 0
+    
+    user_settings = load_user_config()
+    launcher_path = user_settings["launcher_path"]
+
+    
+    
+    
 
     while True:
         if state == "restart":
-            restart_state(logger)
+            restart_state(logger,launcher_path)
             time.sleep(5)
             state = "clash_main"
 
@@ -422,6 +433,7 @@ def request_state(logger, card_to_request):
 
 def clash_main_state(logger, ssid):
     logger.log("-----STATE=clash_main-----")
+    check_quit_key_press()
 
     # handle dumb popups
     logger.log("Handling clash main notifications.")
@@ -447,10 +459,10 @@ def clash_main_state(logger, ssid):
                 time.sleep(2)
 
 
-def restart_state(logger):
+def restart_state(logger,launcher_path):
     logger.log("-----STATE=restart-----")
 
-    restart_client(logger)
+    restart_client(logger,launcher_path)
     if open_clash(logger) == "quit":
         state = "restart"
     else:

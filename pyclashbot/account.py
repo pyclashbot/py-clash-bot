@@ -15,9 +15,11 @@ def switch_accounts_to(logger, ssid):
     handle_gold_rush_event(logger)
 
     time.sleep(0.5)
-
+    check_quit_key_press()
+    
     logger.log("Opening settings")
     click(x=364, y=99)
+    check_quit_key_press()
 
     time.sleep(3)
     check_quit_key_press()
@@ -25,6 +27,7 @@ def switch_accounts_to(logger, ssid):
     click(x=198, y=401)
 
     time.sleep(3)
+    check_quit_key_press()
     check_quit_key_press()
     if ssid == 0:
         logger.log("Clicking account 1")
@@ -37,12 +40,14 @@ def switch_accounts_to(logger, ssid):
         click(x=200, y=560)
 
     time.sleep(3)
+    check_quit_key_press()
     if wait_for_clash_main_menu(logger) == "quit":
         return "quit"
     check_quit_key_press()
 
     # handling the various things notifications and such that need to be
     # cleared before bot can get going
+    check_quit_key_press()
     time.sleep(0.5)
     handle_gold_rush_event(logger)
     time.sleep(0.5)
@@ -50,6 +55,7 @@ def switch_accounts_to(logger, ssid):
     time.sleep(0.5)
     handle_special_offer(logger)
     time.sleep(0.5)
+    check_quit_key_press()
 
 
 def check_for_gold_rush_event():
