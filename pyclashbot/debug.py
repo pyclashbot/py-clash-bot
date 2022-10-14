@@ -10,9 +10,10 @@ import PySimpleGUI as sg
 from pyclashbot.__main__ import battlepass_state, card_mastery_collection_state, donate_state, request_state, upgrade_state
 from pyclashbot.battlepass import check_battlepass_state, check_if_can_collect_bp
 from pyclashbot.card_mastery import collect_mastery_rewards
+from pyclashbot.chest import check_if_unlock_chest_button_exists, open_chests
 
 from pyclashbot.client import click, orientate_memu, screenshot, show_image
-from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi
+from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi, restart_client
 from pyclashbot.logger import Logger
 from pyclashbot.state import check_if_on_clash_main_menu, find_clash_app_logo
 from pyclashbot.upgrade import upgrade_cards_from_main
@@ -33,9 +34,4 @@ ssid=0
 # orientate_memu_multi()
 # orientate_memu()
 
-
-
-
-# orientate_memu()
-
-print(check_if_on_clash_main_menu())
+open_chests(logger)
