@@ -85,7 +85,11 @@ def look_for_request_button():
         "telotet_6.png",
         "telotet_7.png",
         "telotet_8.png",
-
+        "22.png",
+        "23.png",
+        "24.png",
+        "25.png",
+        "26.png",
     ]
     locations = find_references(
         screenshot=refresh_screen(),
@@ -94,6 +98,54 @@ def look_for_request_button():
         tolerance=0.97
     )
     return get_first_location(locations)
+
+
+#method to request a random card
+def request_random_card(logger):
+    #starts on the request screen (the one with a bunch of pictures of the cards)
+    #ends back on the clash main menu
+    logger.log("Requesting a random card.")
+    
+    #scroll a little for randomness
+    n=Random().randint(0,500)
+    pyautogui.moveTo(203,552)
+    time.sleep(0.33)
+    pyautogui.dragTo(203,552-n,0.33)
+    
+    logger.log("Looking for card to request.")
+    has_card_to_request=False
+    while not(has_card_to_request):
+        #click random coord in region of card selection
+        click(Random().randint(72,343),Random().randint(264,570))
+        time.sleep(3)
+        
+        #check if request button appears
+        request_button_coord=look_for_request_button()
+        
+        if request_button_coord is not None:
+            has_card_to_request=True
+    logger.log("Found a satisfactory card to request.")
+
+    #click request button
+    click(request_button_coord[1],request_button_coord[0])
+
+
+def request_random_card_from_clash_main(logger):
+    logger.log("Moving to clan chat page")
+    click(x=317, y=627)
+
+    time.sleep(1)
+    while not check_if_on_clan_chat_page():
+        click(x=317, y=627)
+        scroll_down()
+        time.sleep(2)
+    logger.log("Requesting a random card")
+    # clicking request button in bottom left
+    click(x=86, y=564)
+    
+    request_random_card(logger)
+    
+    return_to_clash_main_menu()
 
 
 def request_from_clash_main_menu(card_to_request, logger):
