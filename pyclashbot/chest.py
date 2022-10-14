@@ -1,3 +1,4 @@
+import pyautogui
 import time
 
 from pyclashbot.client import check_quit_key_press, click, screenshot
@@ -13,7 +14,9 @@ def check_if_unlock_chest_button_exists():
         "3.png",
         "4.png",
         "5.png",
-        "6.png"
+        "6.png",
+        "7.png",
+        "8.png",
     ]
 
     locations = find_references(
@@ -25,9 +28,6 @@ def check_if_unlock_chest_button_exists():
 
     for location in locations:
         if location is not None:
-            # found a location
-            click(x=210, y=455)
-
             return True
     return False
 
@@ -122,39 +122,37 @@ def check_if_has_chest_unlocking():
             n = n - 1
             time.sleep(0.2)
 
-
+#method to handle the chest unlocking in any state
 def open_chests(logger):
-    logger.log("clicking chest1")
-    click(78, 554)
-
-    time.sleep(1)
-    check_quit_key_press()
-    check_if_unlock_chest_button_exists()
-    time.sleep(0.2)
-    check_quit_key_press()
-    click(20, 556, 20, 0.05)
-    logger.log("clicking chest2")
-    click(162, 549)
-    time.sleep(1)
-    check_quit_key_press()
-    check_if_unlock_chest_button_exists()
-    time.sleep(0.2)
-    check_quit_key_press()
-    click(20, 556, 20, 0.05)
-
-    logger.log("clicking chest3")
-    click(263, 541)
-    time.sleep(1)
-    check_quit_key_press()
-    check_if_unlock_chest_button_exists()
-    time.sleep(0.2)
-    check_quit_key_press()
-    click(20, 556, 20, 0.05)
-    logger.log("clicking chest4")
-    click(349, 551)
-    time.sleep(1)
-    check_quit_key_press()
-    check_if_unlock_chest_button_exists()
-    time.sleep(0.2)
-    check_quit_key_press()
-    click(20, 556, 20, 0.05)
+    #unlock coord (210, 455)
+    #chest 1 coord (78, 554)
+    #chest 2 coord (162,549)
+    #chest 3 coord (263,541)
+    #chest 4 coord (349 551)
+    #dead space coord (20, 556)
+    #check_if_unlock_chest_button_exists()
+    
+    chest_coord_list=[[78, 554],[162,549],[263,541],[349,551]]
+    
+    chest_index=0
+    for chest_coord in chest_coord_list:
+        #increment index for printing
+        chest_index=chest_index+1
+        logger.log(str("Checking chest "+str(chest_index)))
+        
+        #click this chest slot
+        click(chest_coord[0],chest_coord[1])
+        time.sleep(2)
+    
+        #if the unlock symbol appears click it then run unlock alg
+        if check_if_unlock_chest_button_exists():
+            logger.log(str("Unlocking chest " + str(chest_index)))
+            pyautogui.moveTo()
+            
+            
+            
+            time.sleep(2)
+       
+        #else, skip through this chests's rewards
+        click(20,556,clicks=20,interval=0.1)
+        time.sleep(0.5)

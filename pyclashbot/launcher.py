@@ -10,7 +10,6 @@ import numpy
 
 
 
-
 def close_all_windows():
     windows = pygetwindow.getWindowsWithTitle('MEMu')
     windows += pygetwindow.getWindowsWithTitle('Multiple Instance Manager')
@@ -123,6 +122,7 @@ def wait_for_memu_launcher(logger):
     if look_for_memu_launcher(): waiting=False
     loops=0
     while waiting:
+        check_quit_key_press()
         loops=loops+1
         time.sleep(1)
         logger.log(f"Waiting for memu launcher to open up: {loops}")
@@ -155,7 +155,7 @@ def wait_for_memu_client(logger):
 
 
 
-def restart_client(logger):
+def restart_client(logger,launcher_path):
     logger.log("Restarting everything.")
     logger.log("Closing any existing windows.")
     #get windows
@@ -166,31 +166,40 @@ def restart_client(logger):
     if len (memu_windows) != 0:
         logger.log("Closing MEmu client.")
         memu_windows[0].close()
+        check_quit_key_press()
+        time.sleep(5)
 
     if len (memu_multi_windows) != 0:
         logger.log("Closing MEmu launcher.")
         memu_multi_windows[0].close()
+        check_quit_key_press()
+        time.sleep(5)
 
     #open launcher
     logger.log("Opening MEmu launcher")
-    path=r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
-    subprocess.Popen(path)
+    #path=r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
+    subprocess.Popen(launcher_path)
     time.sleep(6)
+    check_quit_key_press()
 
     #wait for launcher to open
     logger.log("Waiting for MEmu to appear in process list.")
     wait_for_memu_launcher(logger)
+    check_quit_key_press()
 
     #orientate launcher
     orientate_memu_multi()
     time.sleep(3)
+    check_quit_key_press()
 
     #click start
     click(556,141)
     time.sleep(3)
+    check_quit_key_press()
 
     #orientate memu client
     orientate_memu()
+    check_quit_key_press()
 
     # wait for client
     logger.log("Waiting for client")
@@ -199,19 +208,23 @@ def restart_client(logger):
     loading = True
     loading_loops = 0
     while (loading) and (loading_loops < 20):
+        check_quit_key_press()
         loading_loops = loading_loops + 1
         logger.log(f"Waiting for memu to load:{loading_loops}")
         loading = check_for_memu_loading_background()
         time.sleep(1)
     logger.log("Done waiting for memu to load.")
     time.sleep(5)
+    check_quit_key_press()
     # skip ads
     logger.log("Skipping ads")
     click(445, 600, clicks=7, interval=1)
+    check_quit_key_press()
     time.sleep(3)
 
     #second wait for client
     wait_for_memu_client(logger)
+    check_quit_key_press()
 
 
 
