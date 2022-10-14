@@ -19,15 +19,19 @@ def show_image(image):
 
 
 def handle_clash_main_notifications():
+    check_quit_key_press()
     click(34,624)
     time.sleep(0.33)
     click(180,620)
     time.sleep(0.33)
+    check_quit_key_press()
     click(326,621)
     time.sleep(0.33)
     click(396,626)
+    check_quit_key_press()
     time.sleep(1)
     
+    check_quit_key_press()
     click(175,618)
     time.sleep(1)
 
@@ -192,5 +196,15 @@ def click(x, y, clicks=1, interval=0.0):
 
 def check_quit_key_press():
     if keyboard.is_pressed("space"):
-        print("space is pressed. Quitting the program")
+        print("Space is held. Quitting the program")
         sys.exit()
+    if keyboard.is_pressed("pause"):
+        print("Pausing program until pause is held again")
+        time.sleep(5)
+        pressed = False
+        while not (pressed):
+            time.sleep(0.05)
+            if keyboard.is_pressed("pause"):
+                print("Pause held again. Resuming program.")
+                time.sleep(3)
+                pressed = True
