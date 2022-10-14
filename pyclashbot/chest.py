@@ -1,3 +1,4 @@
+from ast import Str
 import pyautogui
 import time
 
@@ -17,13 +18,17 @@ def check_if_unlock_chest_button_exists():
         "6.png",
         "7.png",
         "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
+        
     ]
 
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
         names=references,
-        tolerance=0.97
+        tolerance=0.90
     )
 
     for location in locations:
@@ -136,23 +141,26 @@ def open_chests(logger):
     
     chest_index=0
     for chest_coord in chest_coord_list:
-        #increment index for printing
         chest_index=chest_index+1
-        logger.log(str("Checking chest "+str(chest_index)))
         
-        #click this chest slot
+        #click chest
         click(chest_coord[0],chest_coord[1])
-        time.sleep(2)
-    
-        #if the unlock symbol appears click it then run unlock alg
+        time.sleep(1)
+        
         if check_if_unlock_chest_button_exists():
+            print("Found unlock in chest", chest_index)
+            time.sleep(0.5)
+            
             logger.log(str("Unlocking chest " + str(chest_index)))
-            pyautogui.moveTo()
+            time.sleep(0.5)
+            click(210, 465)
             
-            
-            
-            time.sleep(2)
-       
-        #else, skip through this chests's rewards
-        click(20,556,clicks=20,interval=0.1)
-        time.sleep(0.5)
+        else:
+            logger.log("Handling possibility of rewards screen")
+            click(20,556,clicks=20,interval=0.1)
+            time.sleep(3)
+    
+        
+        #close chest menu
+        click(20,556)
+        time.sleep(0.33)
