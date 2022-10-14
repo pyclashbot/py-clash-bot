@@ -48,7 +48,7 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'pyclashbot = pyclashbot.__main__:main_loop',
+            'pyclashbot = pyclashbot.__main__:main_gui',
         ],
     },
     classifiers=[
