@@ -27,8 +27,8 @@ from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
 from pyclashbot.launcher import (
     restart_client)
 from pyclashbot.logger import Logger
-from pyclashbot.request import (check_if_can_request,
-                                request_from_clash_main_menu, request_random_card_from_clash_main)
+from pyclashbot.request import (check_if_can_request, get_to_clan_chat_page,
+                                 request_random_card_from_clash_main)
 from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               check_if_on_clash_main_menu, open_clash,
                               return_to_clash_main_menu,
@@ -54,7 +54,7 @@ def main_gui():
         [sg.Text("Select which jobs youd like the bot to do:")],
         [
             sg.Checkbox('Fight', default=False, key="-Fight-in-"),
-            sg.Checkbox('Requesting', default=False, key="-Requesting-in-"),
+            sg.Checkbox('Random Requesting', default=False, key="-Requesting-in-"),
             sg.Checkbox('Donating', default=False, key="-Donating-in-"),
             sg.Checkbox('Upgrade cards', default=False,
                         key="-Upgrade_cards-in-"),
@@ -66,9 +66,6 @@ def main_gui():
         # dropdown for amount of accounts
         [sg.Text("Choose how many accounts you'd like to simultaneously farm:")],
         [sg.Combo(['1', '2', '3', '4'], key='-SSID_IN-')],
-        # dropdown for card to request
-        [sg.Text("Select the card you'd like to request:")],
-        [sg.Combo(['Random'], key='-CARD_TO_REQUEST_IN-')],
         # bottons at bottom
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
     ]
@@ -100,9 +97,6 @@ def main_gui():
         # get ssid count
         accounts = values["-SSID_IN-"]
 
-        # get card_to_request
-        card_to_request = values["-CARD_TO_REQUEST_IN-"]
-
         if event == 'Start':
             # check if vars are filled out before starting
             possible_accounts_choices = ["1", "2", "3", "4"]
@@ -114,7 +108,7 @@ def main_gui():
             
 
             window.close()
-            main_loop(jobs, accounts, card_to_request)
+            main_loop(jobs, accounts)
 
         if event == 'Donate':
             show_donate_gui()
@@ -125,7 +119,7 @@ def main_gui():
     window.close()
 
 
-def main_loop(jobs, accounts, card_to_request):
+def main_loop(jobs, accounts):
     logger = Logger()
     ssid_total = accounts
     current_ssid = 0
@@ -177,7 +171,7 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "request":
             if "Request" in jobs:
                 logger.log("Doing request.")
-                if request_state(logger, card_to_request) == "restart":
+                if request_state(logger) == "restart":
                     state = "restart"
                 else:
                     state = "donate"
@@ -376,7 +370,7 @@ def donate_state(logger):
     if check_if_in_a_clan_from_main(logger):
         logger.log("Starting donate alg.")
         time.sleep(2)
-        if getto_donate_page(logger) == "quit":
+        if get_to_clan_chat_page(logger) == "restart":
             # if failed to get to clan chat page
             logger.log("Failed to get to clan chat page. Restarting")
             state = "restart"
@@ -402,22 +396,25 @@ def donate_state(logger):
     return state
 
 
-def request_state(logger, card_to_request):
+def request_state(logger):
     logger.log("State=REQUEST")
 
     logger.log("-----STATE=request-----")
     logger.log("Trying to get to donate page")
-    if getto_donate_page(logger) == "quit":
+    if get_to_clan_chat_page(logger) == "restart":
         # if failed to get to clan chat page
         logger.log("Failed to get to clan chat page. Restarting")
         state = "restart"
     else:
         # if got to clan chat page
-        log = "Trying to request " + str(card_to_request) + "."
-        logger.log(log)
-        request_random_card_from_clash_main(logger)
-        logger.log("Done with requesting. Passing to donate state.")
+        logger.log("Requesting random card")
+        if check_if_can_request():
+            request_random_card_from_clash_main(logger)
+            logger.log("Done with requesting.")
+        else:
+            logger.log("Reuqests are not available.")
         return_to_clash_main_menu()
+        
         time.sleep(2)
         state = "donate"
     return state
@@ -442,13 +439,8 @@ def clash_main_state(logger, ssid):
         logger.log("Successfully switched accounts.")
         # open chests
         if check_if_on_clash_main_menu():
-            logger.log(
-                "Checking if a chest is being unlocked right now.")
-            if not check_if_has_chest_unlocking():
-                logger.log(
-                    "Found no unlocking symbols. Opening chests.")
-                open_chests(logger)
-                time.sleep(2)
+            open_chests(logger)
+            time.sleep(2)
 
 
 def restart_state(logger,launcher_path):
