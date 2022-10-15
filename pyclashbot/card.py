@@ -2246,11 +2246,8 @@ def check_deck_for_three_musketeers(deck_image):
 
 
 def find_all_cards(deck_screenshot, current_deck):
-    deck_checks = dict(
-        (name_function_pair[0],
-         name_function_pair[1])for name_function_pair in getmembers(
-            sys.modules[__name__],
-            isfunction) if name_function_pair[0].startswith("check_deck_for"))
+    deck_checks = {name_function_pair[0]: name_function_pair[1] for name_function_pair in getmembers(sys.modules[__name__], isfunction) if name_function_pair[0].startswith("check_deck_for")}
+
     for deck_check in deck_checks:
         if deck_checks[deck_check](deck_screenshot) is not None:
             current_deck = add_card_to_deck(
@@ -2285,15 +2282,10 @@ def check_deck():
 
 def check_for_card_in_hand(card_name):
     hand_screenshot = screenshot(region=(0, 0, 460, 680))
-    hand_checks = dict(
-        (name_function_pair[0],
-         name_function_pair[1])for name_function_pair in getmembers(
-            sys.modules[__name__],
-            isfunction) if name_function_pair[0].startswith("check_hand_for"))
+    hand_checks = {name_function_pair[0]: name_function_pair[1] for name_function_pair in getmembers(sys.modules[__name__], isfunction) if name_function_pair[0].startswith("check_hand_for")}
+
     location = hand_checks[f"check_hand_for_{card_name}"](hand_screenshot)
-    if location is not None:
-        return [location[1], location[0]]
-    return None
+    return [location[1], location[0]] if location is not None else None
 
 
 def check_hand_for_rogal_hogs(hand_screenshot):
@@ -5346,16 +5338,11 @@ def check_for_card_in_deck_repo_zappies():
 
 def scroll_to_card(card_name):
     hand_screenshot = screenshot()
-    hand_checks = dict(
-        (name_function_pair[0],
-         name_function_pair[1])for name_function_pair in getmembers(
-            sys.modules[__name__],
-            isfunction) if name_function_pair[0].startswith("check_for_card_in_deck_repo_"))
+    hand_checks = {name_function_pair[0]: name_function_pair[1] for name_function_pair in getmembers(sys.modules[__name__], isfunction) if name_function_pair[0].startswith("check_for_card_in_deck_repo_")}
+
     location = hand_checks[f"check_for_card_in_deck_repo_{card_name}"](
         hand_screenshot)
-    if location is not None:
-        return [location[1], location[0]]
-    return None
+    return [location[1], location[0]] if location is not None else None
 
 
 # endregion

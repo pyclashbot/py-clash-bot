@@ -28,8 +28,7 @@ def find_donates():
         "20.png",
     ]
 
-    loops = 0
-    while loops < 3:
+    for _ in range(3):
         locations = find_references(
             screenshot=refresh_screen(),
             folder="donate",
@@ -40,7 +39,6 @@ def find_donates():
             if location is not None:
                 return location
         scroll_down()
-        loops = loops + 1
     return None
 
 
@@ -49,36 +47,23 @@ def click_donates(logger):
     # find+click donate
     donate_button_loc = find_donates()
     if donate_button_loc is not None:
-        logger.log("Found a donate coord. Clicking it")
-        click(x=donate_button_loc[1],
-              y=donate_button_loc[0], clicks=3, interval=0.25)
-        time.sleep(1)
+        on_screen_dontate_detected(logger, donate_button_loc)
     # find + click more donates button
     more_donates_button_loc = check_if_more_donates()
     if more_donates_button_loc is not None:
-        logger.log("Detected off-screen donates. Clicking it")
-        click(x=more_donates_button_loc[1], y=more_donates_button_loc[0])
-        time.sleep(1)
+        off_screen_donate_detected(logger, more_donates_button_loc)
     # find+click donate
     donate_button_loc = find_donates()
     if donate_button_loc is not None:
-        logger.log("Found a donate coord. Clicking it")
-        click(x=donate_button_loc[1],
-              y=donate_button_loc[0], clicks=3, interval=0.25)
-        time.sleep(1)
+        on_screen_dontate_detected(logger, donate_button_loc)
     # find + click more donates button
     more_donates_button_loc = check_if_more_donates()
     if more_donates_button_loc is not None:
-        logger.log("Detected off-screen donates. Clicking it")
-        click(x=more_donates_button_loc[1], y=more_donates_button_loc[0])
-        time.sleep(1)
+        off_screen_donate_detected(logger, more_donates_button_loc)
     # find+click donate
     donate_button_loc = find_donates()
     if donate_button_loc is not None:
-        logger.log("Found a donate coord. Clicking it")
-        click(x=donate_button_loc[1],
-              y=donate_button_loc[0], clicks=3, interval=0.25)
-        time.sleep(1)
+        on_screen_dontate_detected(logger, donate_button_loc)
     # find+click 'scroll to bottom arrow button'
     down_arrow_loc = check_if_clan_chat_down_arrow_exists()
     if down_arrow_loc is not None:
@@ -86,6 +71,19 @@ def click_donates(logger):
         click(x=down_arrow_loc[1], y=down_arrow_loc[0])
 
     time.sleep(0.2)
+
+
+def off_screen_donate_detected(logger, more_donates_button_loc):
+    logger.log("Detected off-screen donates. Clicking it")
+    click(x=more_donates_button_loc[1], y=more_donates_button_loc[0])
+    time.sleep(1)
+
+
+def on_screen_dontate_detected(logger, donate_button_loc):
+    logger.log("Found a donate coord. Clicking it")
+    click(x=donate_button_loc[1],
+          y=donate_button_loc[0], clicks=3, interval=0.25)
+    time.sleep(1)
 
 
 def check_if_clan_chat_down_arrow_exists():
@@ -123,7 +121,7 @@ def getto_donate_page(logger):
         click(x=393, y=580)
 
         time.sleep(1)
-        loops = loops + 1
+        loops += 1
         check_quit_key_press()
         # check if war chest is blocking page switch
         war_chest_coords = check_for_war_chest()

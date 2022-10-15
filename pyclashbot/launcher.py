@@ -1,13 +1,14 @@
 
 import subprocess
-from pyclashbot.client import check_quit_key_press, click, orientate_memu, refresh_screen, screenshot
-from pyclashbot.image_rec import check_for_location, find_references, get_first_location
-from pyclashbot.state import check_state, find_clash_app_logo
-import pygetwindow
 import time
-import pyautogui
-import numpy
 
+import pygetwindow
+
+from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
+                               refresh_screen, screenshot)
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location)
+from pyclashbot.state import check_state, find_clash_app_logo
 
 
 def close_all_windows():
@@ -23,7 +24,7 @@ def check_if_windows_exist(logger):
     try:
         # try to get memu
         pygetwindow.getWindowsWithTitle('MEmu')[0]
-    except:
+    except Exception:
         # if i cant find memu i always return false
         logger.log(
             "MEmu not found. Make sure MEmu and Multiple Instance Manager are both open before running the program.")
@@ -31,11 +32,11 @@ def check_if_windows_exist(logger):
     try:
         # try to get MIM with normal name
         pygetwindow.getWindowsWithTitle('Multiple Instance Manager')[0]
-    except:
+    except Exception:
         # if that didnt work try to get MIM with other name.
         try:
             pygetwindow.getWindowsWithTitle('Multi-MEmu')[0]
-        except:
+        except Exception:
             # if that didnt work either then there is no MIM so return false
             logger.log(
                 "Multi-Instance Manager not found. Make sure MEmu and Multiple Instance Manager are both open before running the program.")
@@ -69,7 +70,7 @@ def wait_for_memu_main(logger):
         orientate_bot_window(logger)
         time.sleep(0.2)
         loops = loops + 1
-        log = "Waiting for memu main:" + str(loops)
+        log = f"Waiting for memu main:{str(loops)}"
         logger.log(log)
         time.sleep(1)
         if loops > 20:
@@ -84,7 +85,7 @@ def orientate_memu_multi():
     try:
         window_mimm = pygetwindow.getWindowsWithTitle(
             'Multiple Instance Manager')[0]
-    except:
+    except Exception:
         window_mimm = pygetwindow.getWindowsWithTitle('Multi-MEmu')[0]
 
     window_mimm.minimize()
@@ -107,9 +108,7 @@ def orientate_bot_window(logger):
 
 
 def get_terminal_window():
-    terminal_titles = [title for title in pygetwindow.getAllTitles(
-    ) if title.startswith('py-clash-bot v')]
-    if len(terminal_titles) > 0:
+    if terminal_titles := [title for title in pygetwindow.getAllTitles() if title.startswith('py-clash-bot v')]:
         terminal_windows = pygetwindow.getWindowsWithTitle(
             terminal_titles.pop())
         if len(terminal_windows) > 0:
@@ -118,8 +117,7 @@ def get_terminal_window():
 
 
 def wait_for_memu_launcher(logger):
-    waiting=True
-    if look_for_memu_launcher(): waiting=False
+    waiting = not look_for_memu_launcher()
     loops=0
     while waiting:
         check_quit_key_press()
@@ -132,15 +130,11 @@ def wait_for_memu_launcher(logger):
 
 def look_for_memu_launcher():
     titles=pygetwindow.getAllTitles()
-    for title in titles:
-        if title.startswith("Multiple Instance Manager"):
-            return True
-    return False
+    return any(title.startswith("Multiple Instance Manager") for title in titles)
 
 
 def wait_for_memu_client(logger):
-    waiting=True
-    if find_clash_app_logo() is not None: waiting = False
+    waiting = find_clash_app_logo() is None
     loops=0
     while waiting:
         check_quit_key_press()
@@ -209,7 +203,7 @@ def restart_client(logger,launcher_path):
     loading_loops = 0
     while (loading) and (loading_loops < 20):
         check_quit_key_press()
-        loading_loops = loading_loops + 1
+        loading_loops += 1
         logger.log(f"Waiting for memu to load:{loading_loops}")
         loading = check_for_memu_loading_background()
         time.sleep(1)
