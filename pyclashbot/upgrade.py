@@ -20,9 +20,7 @@ def upgrade_cards_from_main(logger):
     # get to card menu from main
     logger.log("Getting to card page")
     getto_card_page(logger)
-    loops = 0
-    while loops < 5:
-        loops = loops + 1
+    for loops in range(1, 6):
         check_quit_key_press()
         # check if loops is too many
         if loops > 5:
@@ -79,19 +77,29 @@ def upgrade_cards_from_main(logger):
         while n > 0:
             scroll_down_fast()
             time.sleep(0.1)
-            n = n - 1
+            n -= 1
         time.sleep(3)
     time.sleep(1)
     return_to_clash_main_menu()
     time.sleep(1)
 
 
+# TODO Rename this here and in `upgrade_cards_from_main`
+def _extracted_from_upgrade_cards_from_main_25(arg0, logger, arg2, arg3):
+    if arg0 is not None:
+        click(arg0[1], arg0[0])
+    else:
+        logger.log(arg2)
+    time.sleep(0.5)
+            # click upgrade2
+    logger.log(arg3)
+
+
 def upgrade_cards_from_main_2(logger):
     # get to card menu from main
     logger.log("Getting to card page")
     getto_card_page(logger)
-    loops = 0
-    while loops < 2:
+    for _ in range(2):
         # region click_and_check_cards
         # card1
         click(84, 281)
@@ -122,8 +130,7 @@ def upgrade_cards_from_main_2(logger):
         n = random.randint(1, 16)
         while n > 0:
             scroll_down_super_fast()
-            n = n - 1
-        loops = loops + 1
+            n -= 1
 
 
 def upgrade_given_card(logger):
@@ -310,10 +317,7 @@ def find_upgradable_cards():
         names=references,
         tolerance=0.97
     )
-    for location in locations:
-        if (location is not None) and (confirm_upgrade_arrow(location)):
-            return location
-    return None
+    return next((location for location in locations if (location is not None) and (confirm_upgrade_arrow(location))), None)
 
 
 def confirm_upgrade_arrow(location):
@@ -331,9 +335,7 @@ def confirm_upgrade_arrow(location):
     pix1 = ss_iar[1][1]
     print(pix1)
     sentinel = [145, 255, 90]
-    if pixel_is_equal(pix1, sentinel, 20):
-        return True
-    return False
+    return bool(pixel_is_equal(pix1, sentinel, 20))
 
 
 def getto_card_page(logger):

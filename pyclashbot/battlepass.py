@@ -1,9 +1,9 @@
 
 
 
-import numpy
 import time
 
+import numpy
 
 from pyclashbot.client import (check_quit_key_press, click, screenshot,
                                scroll_down, scroll_down_fast, scroll_up_fast)
@@ -20,24 +20,20 @@ def collect_bp(logger):
     time.sleep(2)
     # loops 5 times just bc
     logger.log("Beginning collection loop.")
-    n = 5
-    while n > 0:
+    for _ in range(5, 0, -1):
         check_quit_key_press()
-        n = n - 1
         coords = find_claim_buttons_with_duration()
         if coords is None:
             logger.log("No claim buttons found. Scrolling")
-            scroll_down()
-            time.sleep(1)
-
         else:
             logger.log("Claim coord found. Clicking it.")
             click(coords[1], coords[0] + 50)
             time.sleep(1)
             click(25, 100, clicks=20, interval=0.3)
             time.sleep(1)
-            scroll_down()
-            time.sleep(1)
+        scroll_down()
+        time.sleep(1)
+
     logger.log("Finished with collection loop.")
     time.sleep(1)
     click(210, 630)
@@ -155,7 +151,7 @@ def find_claim_buttons_with_duration():
     n = 20
     coords = None
     while (n > 0) and (coords is None):
-        n = n - 1
+        n -= 1
         coords = find_claim_buttons()
         time.sleep(0.2)
     return coords
@@ -163,24 +159,17 @@ def find_claim_buttons_with_duration():
 def check_if_can_collect_bp():
     has_battlepass = False
     loops=0
-    while (has_battlepass==False)and(loops<5):
+    while not has_battlepass and loops < 5:
         has_battlepass = check_battlepass_state()
         time.sleep(1)
-        loops=loops+1
+        loops += 1
     return has_battlepass
 
 
 def check_battlepass_state():
     iar = numpy.asarray(screenshot())
-    
-    pix_list=[]
-    pix_list.append(iar[151][265])
-    pix_list.append(iar[189][272])
-    pix_list.append(iar[189][352])
-    
+
+    pix_list = [iar[151][265], iar[189][272], iar[189][352]]
     sentinel=[245,175,5]
-    for pix in pix_list:
-        if not(pixel_is_equal(pix,sentinel,tol=40)):
-            return False
-    return True
-        
+    return all((pixel_is_equal(pix,sentinel,tol=40)) for pix in pix_list)
+

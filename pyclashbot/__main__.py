@@ -29,10 +29,7 @@ from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
 
 
 def main_gui():
-    out_text = ""
-    out_text = out_text+"Matthew Miglio ~May 2022\n\n"
-    out_text = out_text+"Py-ClashBot can farm gold, chests, card mastery and battlepass\n"
-    out_text = out_text+"progress by farming 2v2 matches with random teammates.\n"
+    out_text = "Matthew Miglio ~May 2022\n\nPy-ClashBot can farm gold, chests, card mastery and battlepass\nprogress by farming 2v2 matches with random teammates.\n"
 
     sg.theme('Material2')
     # defining various things that r gonna be in the gui.
@@ -68,7 +65,7 @@ def main_gui():
         event, values = read_window(window)
 
         # if window close or exit button click
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
 
         # get job list
@@ -86,15 +83,12 @@ def main_gui():
         if values["-Card_mastery_collection-in-"]:
             jobs.append("Collect_mastery_rewards")
 
-        # get ssid count
-        accounts = values["-SSID_IN-"]
-
-        # get card_to_request
-        card_to_request = values["-CARD_TO_REQUEST_IN-"]
-
         if event == 'Start':
             # check if vars are filled out before starting
             possible_accounts_choices = ["1", "2", "3", "4"]
+            # get ssid count
+            accounts = values["-SSID_IN-"]
+
             if accounts not in possible_accounts_choices:
                 print("MISINPUT FOR ACCOUNTS TO FARM VAR")
                 window.close()
@@ -103,6 +97,9 @@ def main_gui():
 
 
             window.close()
+            # get card_to_request
+            card_to_request = values["-CARD_TO_REQUEST_IN-"]
+
             main_loop(jobs, accounts, card_to_request)
 
         if event == 'Donate':
@@ -143,10 +140,7 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "start_fight":
             if "Fight" in jobs:
                 logger.log("Doing fights")
-                if start_fight_state(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "fighting"
+                state = "restart" if start_fight_state(logger) == "restart" else "fighting"
             else:
                 logger.log("Skipping fights. Moving to request.")
                 state = "request"
@@ -166,10 +160,8 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "request":
             if "Request" in jobs:
                 logger.log("Doing request.")
-                if request_state(logger, card_to_request) == "restart":
-                    state = "restart"
-                else:
-                    state = "donate"
+                state = "restart" if request_state(logger, card_to_request) == "restart" else "donate"
+
             else:
                 logger.log("Skipping request")
                 state = "donate"
@@ -177,10 +169,7 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "donate":
             if "Donate" in jobs:
                 logger.log("Doing donate.")
-                if donate_state(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "upgrade"
+                state = "restart" if donate_state(logger) == "restart" else "upgrade"
             else:
                 logger.log("Skipping donate.")
                 state = "upgrade"
@@ -188,10 +177,8 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "upgrade":
             if "Upgrade" in jobs:
                 logger.log("Doing upgrade")
-                if upgrade_state(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "card_mastery_collection"
+                state = "restart" if upgrade_state(logger) == "restart" else "card_mastery_collection"
+
             else:
                 logger.log("Skipping upgrade")
                 state = "card_mastery_collection"
@@ -199,10 +186,8 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "card_mastery_collection":
             if "Collect_mastery_rewards" in jobs:
                 logger.log("Doing card mastery collection")
-                if card_mastery_collection_state(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "battlepass_collection"
+                state = "restart" if card_mastery_collection_state(logger) == "restart" else "battlepass_collection"
+
             else:
                 logger.log("Skipping card mastery collection")
                 state = "battlepass_collection"
@@ -210,10 +195,7 @@ def main_loop(jobs, accounts, card_to_request):
         if state == "battlepass_collection":
             if "Collect_battlepass_rewards" in jobs:
                 logger.log("Doing collect battlepass rewards.")
-                if battlepass_state(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "clash_main"
+                state = "restart" if battlepass_state(logger) == "restart" else "clash_main"
             else:
                 logger.log("Skipping collect battlepass rewards.")
                 state = "clash_main"
@@ -235,7 +217,7 @@ def show_donate_gui():
     window = sg.Window('Donate', layout)
     while True:
         event, values = read_window(window)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
 
         if event == "Copy link to clipboard":
@@ -246,15 +228,15 @@ def show_donate_gui():
 
 
 def show_help_gui():
-    # help menu text
-    out_text = ""
-    out_text = out_text+"Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
-    out_text = out_text+"To emulate the game, Download and install MEmu.\n"
-    out_text = out_text+"It is reccomended to install the emulator in Enligsh mode.\n\n"
-    out_text = out_text+"Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
-    out_text = out_text + \
-        "Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
-    out_text = out_text+"It is reccomended to play Clash Royale in English mode.\n"
+    out_text = "" + "Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
+
+    out_text += "To emulate the game, Download and install MEmu.\n"
+    out_text += "It is reccomended to install the emulator in Enligsh mode.\n\n"
+    out_text += "Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
+
+    out_text += "Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
+
+    out_text += "It is reccomended to play Clash Royale in English mode.\n"
 
     sg.theme('Material2')
     layout = [
@@ -264,7 +246,7 @@ def show_help_gui():
     window = sg.Window('PY-TarkBot', layout)
     while True:
         event, values = read_window(window)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
     window.close()
 
@@ -288,7 +270,7 @@ def fighting_state(logger):
     fightloops = 0
     while (check_if_in_battle()) and (fightloops < 100):
         check_quit_key_press()
-        log = "Plays: " + str(fightloops)
+        log = f"Plays: {fightloops}"
         logger.log(log)
         logger.log("Scanning field.")
         enemy_troop_position = find_enemy_2()
@@ -297,13 +279,12 @@ def fighting_state(logger):
                 f"New enemy position alg found enemy coord to be around {enemy_troop_position[0]},{enemy_troop_position[1]}")
         logger.log("Choosing play.")
         fight_with_deck_list(enemy_troop_position)
-        fightloops = fightloops + 1
+        fightloops += 1
     logger.log("Battle must be finished")
     time.sleep(10)
     leave_end_battle_window(logger)
     wait_for_clash_main_menu(logger)
-    state = "post_fight"
-    return state
+    return "post_fight"
 
 
 def start_fight_state(logger):
@@ -312,20 +293,17 @@ def start_fight_state(logger):
     if start_2v2(logger) == "quit":
         # if couldnt find quickmatch button
         logger.log("Had problems finding 2v2 quickmatch button.")
-        state = "restart"
+        return "restart"
+    elif wait_for_battle_start(logger) == "quit":
+        # if waiting for battle takes too long
+        logger.log(
+            "Waited too long for battle start. Restarting")
+        return "restart"
     else:
-        # if could find the quickmatch button
-        if wait_for_battle_start(logger) == "quit":
-            # if waiting for battle takes too long
-            logger.log(
-                "Waited too long for battle start. Restarting")
-            state = "restart"
-        else:
-            # if battle started before wait was too long
-            logger.log(
-                "Battle has begun. Passing to fighting state")
-            state = "fighting"
-    return state
+        # if battle started before wait was too long
+        logger.log(
+            "Battle has begun. Passing to fighting state")
+        return "fighting"
 
 
 def upgrade_state(logger):
@@ -338,8 +316,7 @@ def upgrade_state(logger):
     time.sleep(1)
     return_to_clash_main_menu()
     logger.log("Finished with upgrading. Passing to card_mastery_collection state")
-    state = "card_mastery_collection"
-    return state
+    return "card_mastery_collection"
 
 
 def card_mastery_collection_state(logger):
@@ -353,15 +330,14 @@ def card_mastery_collection_state(logger):
     logger.log("No mastery rewards are available.")
     logger.log(
         "Done with card mastery collection. Passing to battlepass collection state.")
-    state = "battlepass"
-    return state
+    return "battlepass"
 
 
 def donate_state(logger):
     logger.log("-----STATE=donate-----")
     logger.log("Checking if in a clan")
     time.sleep(2)
-    do_upgrade = 1 == random.randint(1, 3)
+    do_upgrade = random.randint(1, 3) == 1
     if check_if_in_a_clan_from_main(logger):
         logger.log("Starting donate alg.")
         time.sleep(2)
@@ -396,20 +372,22 @@ def request_state(logger, card_to_request):
 
     logger.log("-----STATE=request-----")
     logger.log("Trying to get to donate page")
-    if getto_donate_page(logger) == "quit":
-        # if failed to get to clan chat page
-        logger.log("Failed to get to clan chat page. Restarting")
-        state = "restart"
-    else:
+    if getto_donate_page(logger) != "quit":
+        return do_request(card_to_request, logger)
+    # if failed to get to clan chat page
+    logger.log("Failed to get to clan chat page. Restarting")
+    return "restart"
+
+
+def do_request(card_to_request, logger):
         # if got to clan chat page
-        log = "Trying to request " + str(card_to_request) + "."
-        logger.log(log)
-        request_random_card_from_clash_main(logger)
-        logger.log("Done with requesting. Passing to donate state.")
-        return_to_clash_main_menu()
-        time.sleep(2)
-        state = "donate"
-    return state
+    log = f"Trying to request {str(card_to_request)}."
+    logger.log(log)
+    request_random_card_from_clash_main(logger)
+    logger.log("Done with requesting. Passing to donate state.")
+    return_to_clash_main_menu()
+    time.sleep(2)
+    return "donate"
 
 
 def clash_main_state(logger, ssid):
@@ -445,13 +423,9 @@ def restart_state(logger,launcher_path):
 
     restart_client(logger,launcher_path)
     if open_clash(logger) == "quit":
-        state = "restart"
+        return "restart"
     else:
-        if check_if_on_clash_main_menu():
-            state = "clash_main"
-        else:
-            state = "restart"
-    return state
+        return "clash_main" if check_if_on_clash_main_menu() else "restart"
 
 
 def battlepass_state(logger):
@@ -463,8 +437,7 @@ def battlepass_state(logger):
         collect_bp(logger)
     else:
         logger.log("Battlepass rewards are unavailable. Continuing to a fight.")
-    state = "start_fight"
-    return state
+    return "start_fight"
 
 
 def read_window(window: sg.Window):
