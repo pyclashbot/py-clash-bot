@@ -1,42 +1,31 @@
-
-
 import random
 import sys
 import time
 
-
-import numpy
-import pygetwindow
 import pyperclip
 import PySimpleGUI as sg
-from matplotlib import pyplot as plt
 
 from pyclashbot.account import switch_accounts_to
-from pyclashbot.auto_update import auto_update
-from pyclashbot.battlepass import check_battlepass_state, check_if_can_collect_bp, collect_bp
+from pyclashbot.battlepass import check_if_can_collect_bp, collect_bp
 from pyclashbot.board_scanner import find_enemy_2
 from pyclashbot.card_mastery import (check_if_has_mastery_rewards,
                                      collect_mastery_rewards)
 from pyclashbot.chest import check_if_has_chest_unlocking, open_chests
-from pyclashbot.client import check_quit_key_press, get_next_ssid, handle_clash_main_notifications, orientate_memu
+from pyclashbot.client import (check_quit_key_press, get_next_ssid,
+                               handle_clash_main_notifications, orientate_memu)
 from pyclashbot.configuration import load_user_config
 from pyclashbot.donate import click_donates, getto_donate_page
 from pyclashbot.fight import (check_if_past_game_is_win, fight_with_deck_list,
                               leave_end_battle_window, start_2v2,
                               wait_for_battle_start)
-from pyclashbot.launcher import (
-    restart_client)
+from pyclashbot.launcher import restart_client
 from pyclashbot.logger import Logger
-from pyclashbot.request import (check_if_can_request,
-                                request_from_clash_main_menu, request_random_card_from_clash_main)
+from pyclashbot.request import request_random_card_from_clash_main
 from pyclashbot.state import (check_if_in_a_clan_from_main, check_if_in_battle,
                               check_if_on_clash_main_menu, open_clash,
                               return_to_clash_main_menu,
                               wait_for_clash_main_menu)
 from pyclashbot.upgrade import getto_card_page, upgrade_cards_from_main_2
-
-
-
 
 
 def main_gui():
@@ -111,7 +100,7 @@ def main_gui():
                 window.close()
                 main_gui()
 
-            
+
 
             window.close()
             main_loop(jobs, accounts, card_to_request)
@@ -131,13 +120,13 @@ def main_loop(jobs, accounts, card_to_request):
     current_ssid = 0
     state = "restart"
     loop_count = 0
-    
+
     user_settings = load_user_config()
     launcher_path = user_settings["launcher_path"]
 
-    
-    
-    
+
+
+
 
     while True:
         if state == "restart":
