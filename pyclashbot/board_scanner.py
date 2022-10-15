@@ -1,3 +1,5 @@
+import itertools
+
 import numpy
 
 from pyclashbot.client import (draw_picture, get_avg_coord, get_image,
@@ -20,7 +22,7 @@ def get_board_screenshot():
     name = "black_king_tower_cover.png"
     cover_king_tower_image = get_image(name=name, folder=folder)
 
-    name = "cover_river_image.png"  
+    name = "cover_river_image.png"
     cover_river_image = get_image(name=name, folder=folder)
 
     # define coords for pasting
@@ -30,7 +32,7 @@ def get_board_screenshot():
     river_paste_coords = (0, 181)
     friendly_king_tower_paste_coords = (150, 350)
     friendly_tower_paste_coords = (86, 350)
-    
+
 
     # paste images in their spots
     ss.paste(im=cover_tower_image, box=tower_1_paste_coords)
@@ -39,7 +41,7 @@ def get_board_screenshot():
     ss.paste(im=cover_river_image, box=river_paste_coords)
     ss.paste(im=cover_king_tower_image,box=friendly_king_tower_paste_coords)
     ss.paste(im=cover_king_tower_image,box=friendly_tower_paste_coords)
-    
+
 
     return ss
 
@@ -57,17 +59,9 @@ def get_red_pix_from_ss(ss):
     sentinel_4 = [196, 37, 37]
 
     iar = numpy.asarray(ss)
-    x_index = 279
-    while x_index > 0:
-        y_index = 379
-        while y_index > 0:
-            current_pix = iar[y_index][x_index]
-            current_coord = [x_index, y_index]
-
-            # print(current_coord)
-            # print(current_pix)
-
-            if (
+    for x_index, y_index in itertools.product(range(279, 0, -1), range(379, 0, -1)):
+        current_pix = iar[y_index][x_index]
+        if (
                 pixel_is_equal(
                     current_pix,
                     sentinel_1,
@@ -84,14 +78,12 @@ def get_red_pix_from_ss(ss):
                                 current_pix,
                                 sentinel_4,
                                 tol=20)):
-                #print("Found positive pixel")
-                if red_pix_list == []:
-                    red_pix_list = [current_coord]
-                else:
-                    red_pix_list.append(current_coord)
+            current_coord = [x_index, y_index]
 
-            y_index = y_index - 1
-        x_index = x_index - 1
+            if red_pix_list == []:
+                red_pix_list = [current_coord]
+            else:
+                red_pix_list.append(current_coord)
 
     return red_pix_list
 
