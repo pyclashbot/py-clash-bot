@@ -28,10 +28,8 @@ def collect_mastery_rewards(logger):
 
 
 def check_if_has_mastery_rewards():
-    n = 10
     button_exists = False
-    while n > 0:
-        n = n - 1
+    for _ in range(10, 0, -1):
         if mastery_reward_button():
             button_exists = True
         time.sleep(0.2)
@@ -48,30 +46,4 @@ def mastery_reward_button():
     sent1 = [255, 200, 80]
     sent2 = [255, 188, 42]
 
-    if (
-        pixel_is_equal(
-            pix1,
-            sent1,
-            tol=15)) or (
-            pixel_is_equal(
-                pix2,
-                sent1,
-                tol=15)) or (
-                    pixel_is_equal(
-                        pix3,
-                        sent1,
-                        tol=15)) or (
-                            pixel_is_equal(
-                                pix1,
-                                sent2,
-                                tol=15)) or (
-                                    pixel_is_equal(
-                                        pix2,
-                                        sent2,
-                                        tol=15)) or (
-                                            pixel_is_equal(
-                                                pix3,
-                                                sent2,
-                                                tol=15)):
-        return True
-    return False
+    return bool((pixel_is_equal(pix1, sent1, tol=15)) or (pixel_is_equal(pix2, sent1, tol=15)) or (pixel_is_equal(pix3, sent1, tol=15)) or (pixel_is_equal(pix1, sent2, tol=15)) or (pixel_is_equal(pix2, sent2, tol=15)) or (pixel_is_equal(pix3, sent2, tol=15)))

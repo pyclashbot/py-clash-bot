@@ -292,8 +292,7 @@ def check_if_past_game_is_win(logger):
     open_activity_log(logger)
     iar = refresh_screen()
 
-    n = 40
-    while n < 130:
+    for n in range(40, 130):
         pix = iar[191][n]
         sentinel = [1] * 3
         sentinel[0] = 102
@@ -303,7 +302,6 @@ def check_if_past_game_is_win(logger):
             click(20, 507)
 
             return True
-        n = n + 1
     time.sleep(1)
     click(385, 507)
     click(20, 507)
@@ -318,15 +316,15 @@ def random_card_coord_picker(logger):
         # logger.log("randomly selected card 1")
         coords[0] = 146
         coords[1] = 588
-    if n == 2:
+    elif n == 2:
         # logger.log("randomly selected card 2")
         coords[0] = 206
         coords[1] = 590
-    if n == 3:
+    elif n == 3:
         # logger.log("randomly selected card 3")
         coords[0] = 278
         coords[1] = 590
-    if n == 4:
+    elif n == 4:
         # logger.log("randomly selected card 4")
         coords[0] = 343
         coords[1] = 588
@@ -339,25 +337,22 @@ def random_placement_coord_maker():
     check_quit_key_press()
     n = random.randint(1, 6)
     coords = [1] * 2
-    if n == 0:
+    if n in {0, 1}:
         coords[0] = 55
         coords[1] = 333
-    if n == 1:
-        coords[0] = 55
-        coords[1] = 333
-    if n == 2:
+    elif n == 2:
         coords[0] = 73
         coords[1] = 439
-    if n == 3:
+    elif n == 3:
         coords[0] = 177
         coords[1] = 502
-    if n == 4:
+    elif n == 4:
         coords[0] = 240
         coords[1] = 515
-    if n == 5:
+    elif n == 5:
         coords[0] = 346
         coords[1] = 429
-    if n == 6:
+    elif n == 6:
         coords[0] = 364
         coords[1] = 343
     check_quit_key_press()
@@ -412,9 +407,7 @@ def check_if_hero_ability_is_available():
 def play_card_at_a_random_coord(card_loc, random_coords):
     if card_loc is None:
         return
-    # click card
-    if card_loc is not None:
-        click(x=card_loc[0], y=card_loc[1])
+    click(x=card_loc[0], y=card_loc[1])
     time.sleep(0.25)
     # click placement
     placement_loc = random.choice(random_coords)
@@ -428,10 +421,7 @@ def play_card_on_enemy_with_offset(card_loc, enemy_troop_position, offset):
     if placement_loc is None:
         placement_loc = random_placement_coord_maker()
     else:
-        if placement_loc[1] < 300:
-            placement_loc[1] = 400
-        else:
-            placement_loc[1] = placement_loc[1] + offset
+        placement_loc[1] = 400 if placement_loc[1] < 300 else placement_loc[1] + offset
     if card_loc is not None:
         click(x=card_loc[0], y=card_loc[1])
     time.sleep(0.25)
@@ -1297,7 +1287,6 @@ def find_cluster(x_region=[0, 100], y_region=[0, 100]):
     ss_img = screenshot()
     ss = numpy.asarray(ss_img)
     x = x_region[0]
-    y = y_region[0]
 
     while x < x_region[1]:
         y = y_region[0]
