@@ -4,7 +4,7 @@ from os import makedirs
 from os.path import exists, expandvars, isdir, join
 from typing import Any
 
-top_level = join(expandvars(f'%appdata%'), "py-ClashBot")
+top_level = join(expandvars('%appdata%'), "py-ClashBot")
 config_file = join(top_level, 'config.json')
 
 default_config = {

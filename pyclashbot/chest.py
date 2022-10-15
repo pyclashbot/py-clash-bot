@@ -1,8 +1,6 @@
-from ast import Str
-import pyautogui
 import time
 
-from pyclashbot.client import check_quit_key_press, click, screenshot
+from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import find_references
 
 
@@ -21,7 +19,7 @@ def check_if_unlock_chest_button_exists():
         "9.png",
         "10.png",
         "11.png",
-        
+
     ]
 
     locations = find_references(
@@ -31,10 +29,7 @@ def check_if_unlock_chest_button_exists():
         tolerance=0.90
     )
 
-    for location in locations:
-        if location is not None:
-            return True
-    return False
+    return any(location is not None for location in locations)
 
 
 def look_for_clock():
@@ -111,11 +106,7 @@ def look_for_clock():
         tolerance=0.97
     )
 
-    for location in locations:
-        if location is not None:
-            # found a location
-            return True
-    return False
+    return any(location is not None for location in locations)
 
 
 def check_if_has_chest_unlocking():
@@ -123,9 +114,8 @@ def check_if_has_chest_unlocking():
     while n != 0:
         if look_for_clock():
             return True
-        else:
-            n = n - 1
-            time.sleep(0.2)
+        n -= 1
+        time.sleep(0.2)
 
 #method to handle the chest unlocking in any state
 def open_chests(logger):
@@ -136,31 +126,31 @@ def open_chests(logger):
     #chest 4 coord (349 551)
     #dead space coord (20, 556)
     #check_if_unlock_chest_button_exists()
-    
+
     chest_coord_list=[[78, 554],[162,549],[263,541],[349,551]]
-    
+
     chest_index=0
     for chest_coord in chest_coord_list:
         chest_index=chest_index+1
-        
+
         #click chest
         click(chest_coord[0],chest_coord[1])
         time.sleep(1)
-        
+
         if check_if_unlock_chest_button_exists():
             print("Found unlock in chest", chest_index)
             time.sleep(0.5)
-            
-            logger.log(str("Unlocking chest " + str(chest_index)))
+
+            logger.log(str(f"Unlocking chest {str(chest_index)}"))
             time.sleep(0.5)
             click(210, 465)
-            
+
         else:
             logger.log("Handling possibility of rewards screen")
             click(20,556,clicks=20,interval=0.1)
             time.sleep(3)
-    
-        
+
+
         #close chest menu
         click(20,556)
         time.sleep(0.33)
