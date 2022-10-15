@@ -30,7 +30,7 @@ def handle_clash_main_notifications():
     click(396,626)
     check_quit_key_press()
     time.sleep(1)
-    
+
     check_quit_key_press()
     click(175,618)
     time.sleep(1)
@@ -39,12 +39,10 @@ def handle_clash_main_notifications():
 
 
 def get_next_ssid(current_ssid,ssid_total):
-    if (current_ssid + 1) == ssid_total:
-        return 0
-    else: return current_ssid + 1
-    
-    
-    
+    return 0 if (current_ssid + 1) == ssid_total else current_ssid + 1
+
+
+
 
 
 def orientate_memu():
@@ -69,18 +67,17 @@ def orientate_memu():
 def refresh_screen():
     check_quit_key_press()
     orientate_memu()
-    screenshot = pyautogui.screenshot(region=(0, 0, 500, 700))
+    screenshot = pyautogui.screenshot(region=(0, 0, 500, 700))  # type: ignore
     check_quit_key_press()
-    iar = numpy.array(screenshot)
-    return iar
+    return numpy.array(screenshot)
 
 
 
 def screenshot(region=(0, 0, 500, 700)):
     if region is None:
-        return pyautogui.screenshot()
+        return pyautogui.screenshot()  # type: ignore
     else:
-        return pyautogui.screenshot(region=region)
+        return pyautogui.screenshot(region=region)  # type: ignore
 
 
 def get_image(folder, name):
@@ -105,12 +102,12 @@ def draw_picture(coords):
     print(size)
     print("-------")
 
-    size = size - 1
+    size -= 1
     while size > 0:
         # print(size)
 
         image.paste(white_pix, coords[size])
-        size = size - 1
+        size -= 1
 
     iar = numpy.asarray(image)
     plt.imshow(iar)
@@ -190,7 +187,7 @@ def click(x, y, clicks=1, interval=0.0):
         check_quit_key_press()
         pyautogui.click(x=x, y=y)
         pyautogui.moveTo(original_pos[0], original_pos[1])
-        loops = loops + 1
+        loops += 1
         time.sleep(interval)
 
 
