@@ -93,7 +93,7 @@ def install_msi(cache_dir, file_name):
     print("Program will exit after update. Please restart to continue.")
     msi_exec_path = join(environ['WINDIR'], 'SYSTEM32', 'msiexec.exe')
     install_call = f"{msi_exec_path} /i {join(cache_dir,file_name)} /passive"
-    return 0 == call(install_call, shell=False)
+    return call(install_call, shell=False) == 0
 
 
 def make_cache():
@@ -149,11 +149,9 @@ def install_latest_release():
         cache_dir = make_cache()
         if download_from_url(download_url, cache_dir, file_name):
             return install_msi(cache_dir, file_name)
-    # if running from pip or source
-    else:
-        if pip_update_availible(file_name):
-            print('Try running \'pip install --force-reinstall --upgrade py-clash-bot\'.')
-            return False
+    elif pip_update_availible(file_name):
+        print('Try running \'pip install --force-reinstall --upgrade py-clash-bot\'.')
+        return False
     print('No update found.')
     return False
 
