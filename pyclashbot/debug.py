@@ -6,6 +6,7 @@ from itertools import cycle
 
 import pyautogui
 import pygetwindow
+import numpy
 import pyperclip
 import PySimpleGUI as sg
 from pyclashbot.__main__ import battlepass_state, card_mastery_collection_state, donate_state, request_state, upgrade_state
@@ -14,9 +15,10 @@ from pyclashbot.card_mastery import collect_mastery_rewards
 from pyclashbot.chest import check_if_unlock_chest_button_exists, open_chests
 
 from pyclashbot.client import click, orientate_memu, screenshot, show_image
+from pyclashbot.image_rec import pixel_is_equal
 from pyclashbot.launcher import orientate_bot_window, orientate_memu_multi, restart_client
 from pyclashbot.logger import Logger
-from pyclashbot.request import look_for_request_button
+from pyclashbot.request import check_if_on_clan_page, get_to_clan_chat_page, look_for_request_button, request_random_card_from_clash_main
 from pyclashbot.state import check_if_on_clash_main_menu, find_clash_app_logo
 from pyclashbot.upgrade import upgrade_cards_from_main
 
@@ -36,9 +38,4 @@ ssid=0
 # orientate_memu_multi()
 # orientate_memu()
 
-
-
-
-
-
-request_random_card(logger)
+donate_state(logger)
