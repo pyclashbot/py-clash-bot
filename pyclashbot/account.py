@@ -2,7 +2,6 @@ import time
 
 from pyclashbot.client import check_quit_key_press, click, refresh_screen
 from pyclashbot.image_rec import find_references, get_first_location
-
 from pyclashbot.state import (check_if_on_trophy_progession_rewards_page,
                               return_to_clash_main_menu,
                               wait_for_clash_main_menu)
@@ -16,7 +15,7 @@ def switch_accounts_to(logger, ssid):
 
     time.sleep(0.5)
     check_quit_key_press()
-    
+
     logger.log("Opening settings")
     click(x=364, y=99)
     check_quit_key_press()
@@ -72,9 +71,7 @@ def check_for_gold_rush_event():
         tolerance=0.97
     )
     loc = get_first_location(locations)
-    if loc is None:
-        return False
-    return True
+    return loc is not None
 
 
 def handle_gold_rush_event(logger):

@@ -1,4 +1,7 @@
 import time
+from random import Random
+
+import pyautogui
 
 from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
                                scroll_down)
@@ -105,29 +108,29 @@ def request_random_card(logger):
     #starts on the request screen (the one with a bunch of pictures of the cards)
     #ends back on the clash main menu
     logger.log("Requesting a random card.")
-    
+
     #scroll a little for randomness
     n=Random().randint(0,500)
     pyautogui.moveTo(203,552)
     time.sleep(0.33)
     pyautogui.dragTo(203,552-n,0.33)
-    
+
     logger.log("Looking for card to request.")
     has_card_to_request=False
     while not(has_card_to_request):
         #click random coord in region of card selection
         click(Random().randint(72,343),Random().randint(264,570))
         time.sleep(3)
-        
+
         #check if request button appears
         request_button_coord=look_for_request_button()
-        
+
         if request_button_coord is not None:
             has_card_to_request=True
-    logger.log("Found a satisfactory card to request.")
+            logger.log("Found a satisfactory card to request.")
+            click(request_button_coord[1],request_button_coord[0])
 
-    #click request button
-    click(request_button_coord[1],request_button_coord[0])
+
 
 
 def request_random_card_from_clash_main(logger):
@@ -142,9 +145,9 @@ def request_random_card_from_clash_main(logger):
     logger.log("Requesting a random card")
     # clicking request button in bottom left
     click(x=86, y=564)
-    
+
     request_random_card(logger)
-    
+
     return_to_clash_main_menu()
 
 
@@ -157,7 +160,7 @@ def request_from_clash_main_menu(card_to_request, logger):
         click(x=317, y=627)
         scroll_down()
         time.sleep(2)
-    log = "requesting: " + str(card_to_request)
+    log = f"requesting: {str(card_to_request)}"
     logger.log(log)
     # clicking request button in bottom left
     click(x=86, y=564)
@@ -171,11 +174,10 @@ def request_from_clash_main_menu(card_to_request, logger):
         time.sleep(2)
     # click request
     coords = look_for_request_button()
-    if coords is not None:
-        click(x=coords[1], y=coords[0])
-        time.sleep(2)
-    else:
+    if coords is None:
         return "quit"
+    click(x=coords[1], y=coords[0])
+    time.sleep(2)
     return_to_clash_main_menu()
 
 

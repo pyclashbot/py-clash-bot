@@ -22,11 +22,7 @@ class Logger:
         output_time = time.time() - self.start_time
         output_time = int(output_time)
 
-        time_str = str(self.convert_int_to_time(output_time))
-
-        output_string = time_str
-
-        return output_string
+        return str(self.convert_int_to_time(output_time))
 
     def make_score_board(self):
         """creates scoreboard for log output
@@ -34,10 +30,9 @@ class Logger:
         Returns:
             str: log scoreboard
         """
-        wins_str = str(self.wins) + "W"
-        losses_str = str(self.losses) + "L"
-        gap_str = "|"
-        return wins_str + gap_str + losses_str
+        losses_str = f"{str(self.losses)}L"
+        wins_str = f"{str(self.wins)}W"
+        return f"{wins_str}|{losses_str}"
 
     def convert_int_to_time(self, seconds):
         """convert epoch to time
