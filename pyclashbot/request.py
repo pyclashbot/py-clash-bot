@@ -1,6 +1,9 @@
+from random import Random
 import time
+import pyautogui
+import numpy
 
-from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
+from pyclashbot.client import (check_quit_key_press, click, refresh_screen, screenshot,
                                scroll_down)
 from pyclashbot.image_rec import (find_references, get_first_location,
                                   pixel_is_equal)
@@ -131,51 +134,13 @@ def request_random_card(logger):
 
 
 def request_random_card_from_clash_main(logger):
-    logger.log("Moving to clan chat page")
-    click(x=317, y=627)
-
-    time.sleep(1)
-    while not check_if_on_clan_chat_page():
-        click(x=317, y=627)
-        scroll_down()
-        time.sleep(2)
     logger.log("Requesting a random card")
+    time.sleep(1)
     # clicking request button in bottom left
     click(x=86, y=564)
     
     request_random_card(logger)
     
-    return_to_clash_main_menu()
-
-
-def request_from_clash_main_menu(card_to_request, logger):
-    logger.log("Moving to clan chat page")
-    click(x=317, y=627)
-
-    time.sleep(1)
-    while not check_if_on_clan_chat_page():
-        click(x=317, y=627)
-        scroll_down()
-        time.sleep(2)
-    log = "requesting: " + str(card_to_request)
-    logger.log(log)
-    # clicking request button in bottom left
-    click(x=86, y=564)
-
-    # scroll till find card +click card
-    coords = scroll_to_request_card(card_to_request)
-    if coords == "quit":
-        return "quit"
-    if coords is not None:
-        click(x=coords[1], y=coords[0])
-        time.sleep(2)
-    # click request
-    coords = look_for_request_button()
-    if coords is not None:
-        click(x=coords[1], y=coords[0])
-        time.sleep(2)
-    else:
-        return "quit"
     return_to_clash_main_menu()
 
 
@@ -1923,3 +1888,56 @@ def scroll_till_find_inferno_tower():
             return "quit"
 
 # endregion
+
+
+
+#method to get to clan chat page
+def get_to_clan_chat_page(logger):
+    on_clan_page=False
+    logger.log("Getting to clan chat page.")
+    
+    loops=0
+    while not(on_clan_page):
+        loops=loops+1
+        time.sleep(1)
+        click(316,645)
+        time.sleep(3)
+        on_clan_page=check_if_on_clan_page()
+        if loops >20:
+            return "restart"
+    logger.log("Made it to clan chat page.")
+        
+        
+#method to check if on clan page
+def check_if_on_clan_page():
+    iar=numpy.asarray(screenshot())
+    pix_list=[
+        iar[555][152],
+        iar[578][150],
+        iar[572][211],
+    ]
+    color = [182,96,253]
+    
+    
+    for pix in pix_list:
+        if not(pixel_is_equal(pix,color,tol=50)):
+            return False
+    
+    return True
+        
+        
+#method to see if we can requset a card
+def check_if_can_request():
+    #starts on the clan chat page with the request button the in bottom left or not
+    iar=numpy.array(screenshot())
+    pix_list=[
+        iar[540][52],
+        iar[532][56],
+        iar[537][47],
+    ]
+    color=[45,66,100]
+    for pix in pix_list:
+        if not(pixel_is_equal(pix,color,tol=50)):
+            return False
+    return True
+    
