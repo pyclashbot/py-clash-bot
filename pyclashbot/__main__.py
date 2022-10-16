@@ -261,19 +261,23 @@ def post_fight_state(logger):
 
 def fighting_state(logger):
     logger.log("-----STATE=fighting-----")
-    time.sleep(7)
+    
+    for i in range(5):
+        logger.log(("Giving match a second to start. " + str(i)))
+        time.sleep(1)
+    
     fightloops = 0
     while (check_if_in_battle()) and (fightloops < 100):
         check_quit_key_press()
         log = f"Plays: {fightloops}"
         logger.log(log)
-        logger.log("Scanning field.")
-        enemy_troop_position = find_enemy_2()
-        if enemy_troop_position is not None:
-            logger.log(
-                f"New enemy position alg found enemy coord to be around {enemy_troop_position[0]},{enemy_troop_position[1]}")
-        logger.log("Choosing play.")
+        
+        #logger.log("Scanning field.")
+        enemy_troop_position = None
+
+        #fight alg with no enemy troop detection
         fight_with_deck_list(enemy_troop_position)
+        
         fightloops += 1
     logger.log("Battle must be finished")
     time.sleep(10)
@@ -284,7 +288,7 @@ def fighting_state(logger):
 def start_fight_state(logger):
     logger.log("-----STATE=start_fight-----")
     return_to_clash_main_menu()
-    if start_2v2(logger) == "quit":
+    if start_2v2(logger) == "restart":
         # if couldnt find quickmatch button
         logger.log("Had problems finding 2v2 quickmatch button.")
         return "restart"
