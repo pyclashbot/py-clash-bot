@@ -1,6 +1,7 @@
 from random import Random
 import time
 from random import Random
+import numpy
 
 import pyautogui
 
@@ -1936,6 +1937,14 @@ def check_if_can_request():
         iar[532][56],
         iar[537][47],
     ]
+    
+    #this section is to account for the possiblity of epic sunday which cahnges the request logo slightly
+    color_purple=[153,51,255]
+    for pix in pix_list:
+        if pixel_is_equal(pix,color_purple,tol=35):
+            return True
+    
+    
     color=[45,66,100]
     for pix in pix_list:
         if not(pixel_is_equal(pix,color,tol=50)):
