@@ -21,33 +21,39 @@ def start_1v1_ranked(logger):
 
 def start_2v2(logger):
     logger.log("Initiating 2v2 match from main menu")
+    
     logger.log("Clicking party mode")
     time.sleep(1)
-    party_button_coords = find_party_button()
-    if party_button_coords is None:
-        return "quit"
-    click(x=party_button_coords[1], y=party_button_coords[0])
-    logger.log("Scrolling until 2v2 button is found")
-    loops = 0
-    while find_2v2_quick_match_button() is None:
-        if loops > 20:
-            return"quit"
-        scroll_down()
-        time.sleep(0.05)
-        scroll_down()
-        time.sleep(3)
-        loops = loops + 1
-    logger.log("Clicking 2v2 quickmatch button")
-    time.sleep(1)
-    quick_match_button_coords = find_2v2_quick_match_button()
-    if quick_match_button_coords is None:
-        return "quit"
-    time.sleep(1)
-    click(x=quick_match_button_coords[1], y=quick_match_button_coords[0])
-    time.sleep(0.25)
+    click(284,449)
+    
+    find_and_click_2v2_quickmatch_button(logger)
+    
     check_for_reward_limit()
 
 
+#method to find and click the 2v2 quickmatch button in the party mode menu
+def find_and_click_2v2_quickmatch_button(logger):
+    #starts in the party mode
+    #ends when loading a match
+    logger.log("Finding and clicking 2v2 quickmatch button")
+    button_coords=[]
+    loops=0
+    #repeatedly scroll down until we find coords for the 2v2 quickmatch button
+    while button_coords==[]:
+        loops=loops+1
+        logger.log("Scrolling down")
+        check_quit_key_press()
+        time.sleep(1)
+        scroll_down()
+        button_coords=find_2v2_quick_match_button()
+        if loops>20:
+            return "restart"
+    #once we find the coords, click them
+    click(button_coords[0],button_coords[1],clicks=2,interval=0.25)
+    logger.log("Done queueing a 2v2 quickmatch")
+
+
+#method to find the 2v2 quickmatch button in the party mode menu
 def find_2v2_quick_match_button():
     current_image = screenshot()
     reference_folder = "2v2_quick_match"
@@ -56,7 +62,6 @@ def find_2v2_quick_match_button():
         "2.png",
         "3.png",
         "4.png",
-        "5.png",
     ]
 
     locations = find_references(
@@ -65,8 +70,11 @@ def find_2v2_quick_match_button():
         names=references,
         tolerance=0.97
     )
-    time.sleep(1)
-    return get_first_location(locations)
+    
+    coord= get_first_location(locations)
+    if coord is None: return None
+    return [coord[1]+200,coord[0]+50]
+
 
 
 def find_party_button():
