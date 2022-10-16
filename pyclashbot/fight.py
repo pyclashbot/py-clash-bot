@@ -26,7 +26,7 @@ def start_2v2(logger):
     time.sleep(1)
     click(284,449)
     
-    find_and_click_2v2_quickmatch_button(logger)
+    if find_and_click_2v2_quickmatch_button(logger)=="restart": return "restart"
     
     check_for_reward_limit()
 
