@@ -99,117 +99,64 @@ def upgrade_cards_from_main_2(logger):
     # get to card menu from main
     logger.log("Getting to card page")
     getto_card_page(logger)
-    for _ in range(2):
-        # region click_and_check_cards
-        # card1
-        click(84, 281)
+    coord_list=[
+        [84,281],
+        [169, 281],
+        [258, 281],
+        [346, 281],
+        [169, 403],
+        [258, 403],
+        [346, 403],
+        [78, 403],
+    ]
+
+    for coord in coord_list:
+        click(coord[0],coord[1])
         upgrade_given_card(logger)
-        # card2
-        click(169, 281)
+    
+    n = random.randint(1, 16)
+    while n > 0:
+        scroll_down_super_fast()
+        n -= 1
+        
+    for coord in coord_list:
+        click(coord[0],coord[1])
         upgrade_given_card(logger)
-        # card3
-        click(258, 281)
-        upgrade_given_card(logger)
-        # card4
-        click(346, 281)
-        upgrade_given_card(logger)
-        # card5
-        click(169, 403)
-        upgrade_given_card(logger)
-        # card6
-        click(258, 403)
-        upgrade_given_card(logger)
-        # card7
-        click(346, 403)
-        upgrade_given_card(logger)
-        # card8
-        click(78, 403)
-        upgrade_given_card(logger)
-        # endregion
-        # scroll
-        n = random.randint(1, 16)
-        while n > 0:
-            scroll_down_super_fast()
-            n -= 1
+    
+       
+       
 
 
 def upgrade_given_card(logger):
     upgrade_coords = look_for_upgrade_button()
     if upgrade_coords is not None:
+        #click first upgrade coord
         click(upgrade_coords[1], upgrade_coords[0])
-        time.sleep(0.2)
-    upgrade_coords = look_for_upgrade_button()
-    if upgrade_coords is not None:
-        click(upgrade_coords[1], upgrade_coords[0])
-        time.sleep(0.2)
-    confirm_upgrade_coords = look_for_upgrade_confirm_button()
-    if confirm_upgrade_coords is not None:
-        click(confirm_upgrade_coords[1], confirm_upgrade_coords[0])
-        time.sleep(0.2)
-    # skip through
-    logger.log("Skipping through screens.")
-    click(x=349, y=250)
-    click(x=20, y=540, clicks=5, interval=0.05)
+        time.sleep(2)
+        
+        #click second upgrade coord
+        click(232,610)
+        time.sleep(2)
+    
+    
+        #click third upgrade coord
+        click(240,531)
+        time.sleep(2)
+
+    
+        # skip through
+        logger.log("Skipping through screens.")
+        click(x=349, y=250)
+        click(x=20, y=540, clicks=5, interval=0.05)
 
 
 def look_for_upgrade_button():
     references = [
-        "e1 (1).png",
-        "e1 (2).png",
-        "e1 (3).png",
-        "e1 (4).png",
-        "e1 (5).png",
-        "e1 (6).png",
-        "e1 (7).png",
-        "e1 (8).png",
-        "e1 (9).png",
-        "e1 (10).png",
-        "e1 (11).png",
-        "e1 (12).png",
-        "e1 (13).png",
-        "e1 (14).png",
-        "e1 (15).png",
-        "e1 (16).png",
-        "e1 (17).png",
-        "e1 (18).png",
-        "e1 (19).png",
-        "e1 (20).png",
-        "e1 (21).png",
-        "e1 (22).png",
-        "e1 (23).png",
-        "e1 (24).png",
-        "e1 (25).png",
         "1.png",
         "2.png",
         "3.png",
         "4.png",
         "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        "13.png",
-        "14.png",
-        "15.png",
-        "16.png",
-        "17.png",
-        "18.png",
-        "19.png",
-        "20.png",
-        "21.png",
-        "22.png",
-        "23.png",
-        "24.png",
-        "25.png",
-        "26.png",
-        "27.png",
-        "28.png",
-        "29.png",
-        "30.png",
-        "31.png",
     ]
     locations = find_references(
         screenshot=screenshot(),
