@@ -278,7 +278,6 @@ def fighting_state(logger):
     logger.log("Battle must be finished")
     time.sleep(10)
     leave_end_battle_window(logger)
-    wait_for_clash_main_menu(logger)
     return "post_fight"
 
 

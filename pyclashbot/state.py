@@ -128,22 +128,25 @@ def check_if_on_clash_home():
 
 
 def check_if_in_battle():
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png"
-    ]
+    for _ in range(10):
+        references = [
+            "1.png",
+            "2.png",
+            "3.png",
+            "4.png",
+            "5.png"
+        ]
 
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="check_if_in_battle",
-        names=references,
-        tolerance=0.97
-    )
+        locations = find_references(
+            screenshot=screenshot(),
+            folder="check_if_in_battle",
+            names=references,
+            tolerance=0.97
+        )
 
-    return check_for_location(locations)
+        if check_for_location(locations): return True
+        time.sleep(1)
+    return False
 
 
 # endregion
@@ -203,31 +206,6 @@ def wait_for_clash_main_menu(logger):
 
 
 
-
-
-def wait_for_clash_main_menu3(logger):
-    n = 0
-    while not check_if_on_clash_main_menu():
-
-        check_quit_key_press()
-        # handle if stuck on trophy progression page
-        if check_if_on_trophy_progession_rewards_page():
-            logger.log(
-                "Bot appears to be stuck on trophy progression rewards menu. Closing that.")
-            click(212, 633)
-            time.sleep(0.5)
-        time.sleep(3)
-        logger.log(f"Waiting for clash main menu/{n}")
-        check_quit_key_press()
-        n = n + 1
-        if n > 20:
-            logger.log("Waiting longer than a minute for clash main menu")
-            return "quit"
-        if check_if_on_level_up_screen(logger):
-            click(208, 560)
-            time.sleep(2)
-
-        click(10, 170)
 
 
 def return_to_clash_main_menu():
@@ -383,25 +361,20 @@ def return_to_clash_main_menu():
 
 
 def check_if_on_trophy_progession_rewards_page():
-    current_image = screenshot()
-    reference_folder = "trophy_progression_rewards"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
+    iar=numpy.asarray(screenshot())
+    pix_list=[
+        iar[629][240],
+        iar[631][185],
+        iar[621][232],
     ]
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97
-    )
-    return any(location is not None for location in locations)
+    color=[78,175,255]
+    
+    #print(pix_list)
+    
+    for pix in pix_list:
+        if not(pixel_is_equal(pix,color,tol=35)):
+            return False
+    return True
 
 
 def check_if_in_a_clan_from_main(logger):
