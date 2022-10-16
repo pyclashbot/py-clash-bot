@@ -31,23 +31,31 @@ current_ssid = 0
 # orientate_memu()
 
 
+
+
+##############DONE FIXING
 # restart_state(logger,launcher_path)
 # clash_main_state(logger, current_ssid)
-# start_fight_state(logger)
 # upgrade_state(logger)
 # request_state(logger)
 
 
 
-
+##############STILL UNCHECKED
 # donate_state(logger)
-
-
 # card_mastery_collection_state(logger)
 # battlepass_state(logger)
 
 
 
+
+
+# start_fight_state(logger)
+
+
+
+start_fight_state(logger)
+fighting_state(logger)
 
 
 
