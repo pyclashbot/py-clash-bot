@@ -2,7 +2,6 @@ import sys
 
 import pyperclip
 import PySimpleGUI as sg
-from ahk import AHK
 
 from client import get_next_ssid, orientate_memu, orientate_memu_multi
 from configuration import load_user_config
