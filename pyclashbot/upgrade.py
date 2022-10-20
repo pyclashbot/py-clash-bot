@@ -1,309 +1,128 @@
+from ast import Str
+import numpy
 
-#from socket import send_fds
 import random
 import time
 
 import numpy
-# here for debugging
 import pyautogui
 
-from pyclashbot.client import (check_quit_key_press, click, refresh_screen,
-                               screenshot, scroll_down_fast,
-                               scroll_down_super_fast, scroll_up_fast)
-from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location, pixel_is_equal)
-from pyclashbot.state import (check_if_on_level_up_screen,
-                              return_to_clash_main_menu)
+from clashmain import check_if_on_clash_main_menu
+from client import (click, screenshot, scroll_down_fast,
+                    scroll_down_super_fast, scroll_up_fast)
+from image_rec import (check_for_location, find_references, get_first_location,
+                       pixel_is_equal)
+from client import show_image
 
 
-def upgrade_cards_from_main(logger):
-    # get to card menu from main
-    logger.log("Getting to card page")
-    getto_card_page(logger)
-    for loops in range(1, 6):
-        check_quit_key_press()
-        # check if loops is too many
-        if loops > 5:
-            logger.log("Found no upgrades. Returning")
-            return
-        # look for upgrade arrows
-        arrow_coords = find_upgradable_cards()
-        if arrow_coords is not None:
-            # if arrows found
-            logger.log("Found upgrade arrow.")
-            # click arrow
-            logger.log("Clicking upgrade arrow")
-            click(arrow_coords[1], arrow_coords[0])
-            time.sleep(0.5)
-            # click upgrade1
-            logger.log("Clicking first upgrade button")
-            upgrade_1_coords = look_for_upgrade_button()
-            if upgrade_1_coords is not None:
-                click(upgrade_1_coords[1], upgrade_1_coords[0])
-            else:
-                logger.log("Couldn't find upgrade1 button")
-            time.sleep(0.5)
-            # click upgrade2
-            logger.log("Clicking second upgrade button")
-            upgrade_2_coords = look_for_upgrade_button()
-            if upgrade_2_coords is not None:
-                click(upgrade_2_coords[1], upgrade_2_coords[0])
-            else:
-                logger.log("Couldn't find upgrade2 button")
-            time.sleep(0.5)
-            # click upgrade_confirm
-            logger.log("Clicking upgrade confirm button")
-            upgrade_confirm_coords = look_for_upgrade_confirm_button()
-            if upgrade_confirm_coords is not None:
-                click(upgrade_confirm_coords[1], upgrade_confirm_coords[0])
-            else:
-                logger.log("Couldn't find upgrade confirm button")
-            time.sleep(0.5)
-            # skip through
-            logger.log("Skipping through screens.")
-            click(x=349, y=250)
-            time.sleep(0.2)
-            click(x=20, y=540, clicks=5, interval=0.2)
-            time.sleep(0.2)
-            if check_if_on_level_up_screen(logger):
-                click(208, 560)
-                time.sleep(2)
-
-        else:
-            # if arrows not found
-            logger.log("No upgrades found yet.")
-        # scroll
-        n = random.randint(3, 7)
-        while n > 0:
-            scroll_down_fast()
-            time.sleep(0.1)
-            n -= 1
-        time.sleep(3)
+#Method for upgrading a given card
+def upgrade_card():
+    #Starts on the page of a card that you want to upgrade (after you 
+    #click upgrade in the card list on the card page on clash main menu)
+    
+    #Click upgrade for gold button
+    click(238,606)
     time.sleep(1)
-    return_to_clash_main_menu()
+    
+    #Click second upgrade for gold button
+    click(234,536)
     time.sleep(1)
-
-
-# TODO Rename this here and in `upgrade_cards_from_main`
-def _extracted_from_upgrade_cards_from_main_25(arg0, logger, arg2, arg3):
-    if arg0 is not None:
-        click(arg0[1], arg0[0])
-    else:
-        logger.log(arg2)
-    time.sleep(0.5)
-            # click upgrade2
-    logger.log(arg3)
-
-
-def upgrade_cards_from_main_2(logger):
-    # get to card menu from main
-    logger.log("Getting to card page")
-    getto_card_page(logger)
-    coord_list=[
-        [84,281],
-        [169, 281],
-        [258, 281],
-        [346, 281],
-        [169, 403],
-        [258, 403],
-        [346, 403],
-        [78, 403],
-    ]
-
-    for coord in coord_list:
-        click(coord[0],coord[1])
-        upgrade_given_card(logger)
     
-    n = random.randint(1, 16)
-    while n > 0:
-        scroll_down_super_fast()
-        n -= 1
+    #Click close to 'not enough gold' notification
+    click(346,252)
+    time.sleep(1)
+    
+    #Click dead space to close card page
+    for _ in range(5): click(26,518)
+
+#Method to upgrade the cards in your deck if they're available for upgrade and you have the gold
+def upgrade_current_cards(logger):
+    #Starts on the clash main card page looking at your main deck
+    #Ends in the same spot
+    
+    
+    #make list of coords of the 8 cards on display
+    card_coord_list=[
+        [86,278],
+        [174,278],
+        [260,278],
+        [328,278],
+        [86,400],
+        [174,400],
+        [260,400],
+        [328,400]
+    ]
+    #make list of coords of where the upgrade button will possibly appear for each 8 cards
+    upgrade_button_coords=[
+        [51,338],
+        [136,338],
+        [219,338],
+        [303,337],
+        [53,464],
+        [133,464],
+        [281,455],
+        [303,466],
         
-    for coord in coord_list:
-        click(coord[0],coord[1])
-        upgrade_given_card(logger)
-    
-       
-       
-
-
-def upgrade_given_card(logger):
-    upgrade_coords = look_for_upgrade_button()
-    if upgrade_coords is not None:
-        #click first upgrade coord
-        click(upgrade_coords[1], upgrade_coords[0])
-        time.sleep(2)
+    ]
         
-        #click second upgrade coord
-        click(232,610)
-        time.sleep(2)
+    for n in range(8):
+        card_coord=card_coord_list[n]
+        upgrade_button_coord=upgrade_button_coords[n]
+        
+        click(card_coord[0],card_coord[1])
+        time.sleep(1)
+
+ 
+        #check if upgrade button is there
+        pix=numpy.asarray(screenshot())[upgrade_button_coord[1]+10][upgrade_button_coord[0]+10]
+        #print(pix)
+        positive_color_list=[
+            [ 42, 172,  55],[ 96 ,217, 110],[ 65 ,224 , 80],[ 34 ,104 , 42]
+        ]
+        for color in positive_color_list:
+            if pixel_is_equal(pix,color,tol=30):
+                logger.log(str("Upgrade found for card index: "+str(n)))
+                click(upgrade_button_coord[0],upgrade_button_coord[1])
+                time.sleep(1)
+                upgrade_card()
+
+#Method to get to the clash royale main menu screen from the card page
+def get_to_clash_main_from_card_page(logger):
+    logger.log("Getting to clash main from card page")
+    click(250,630)
+    loops=0
     
-    
-        #click third upgrade coord
-        click(240,531)
-        time.sleep(2)
+    on_clash_main=check_if_on_clash_main_menu()
+    while not(on_clash_main):
+        loops+=1
+        if loops>15:
+            logger.log("Couldn't get to clash main from card page")
+            return "restart"
+        click(212,623)
+        time.sleep(1)
+        on_clash_main=check_if_on_clash_main_menu()
+    logger.log("On clash main")
 
-    
-        # skip through
-        logger.log("Skipping through screens.")
-        click(x=349, y=250)
-        click(x=20, y=540, clicks=5, interval=0.05)
-
-
-def look_for_upgrade_button():
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-    ]
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="upgrade_button",
-        names=references,
-        tolerance=0.97
-    )
-    return get_first_location(locations)
-
-
-def look_for_upgrade_confirm_button():
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-    ]
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="upgrade_confirm_button",
-        names=references,
-        tolerance=0.97
-    )
-    return get_first_location(locations)
-
-
-def find_upgradable_cards():
-    references = [
-        "r0.png",
-        "r1.png",
-        "r2.png",
-        "r3.png",
-        "r4.png",
-        "r5.png",
-        "r6.png",
-        "e0.png",
-        "e1.png",
-        "e2.png",
-        "e3.png",
-        "e4.png",
-        "0.png",
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        "13.png",
-        "14.png",
-        "15.png",
-        "16.png",
-        "17.png",
-        "18.png",
-        "19.png",
-        "20.png",
-        "21.png",
-        "22.png",
-        "23.png",
-        "24.png",
-        "25.png",
-        "26.png",
-        "27.png",
-        "28.png",
-        "29.png",
-        "30.png",
-        "31.png",
-        "32.png",
-        "33.png",
-        "34.png",
-        "35.png",
-        "36.png",
-        "37.png",
-        "38.png",
-        "39.png",
-        "40.png",
-        "41.png",
-        "42.png",
-        "43.png",
-        "44.png",
-        "45.png",
-        "46.png",
-        "47.png",
-        "48.png",
-        "49.png",
-        "50.png",
-        "51.png",
-        "52.png",
-        "53.png",
-        "54.png",
-    ]
-
-    region = [0, 0, 500, 700]
-    locations = find_references(
-        screenshot=screenshot(region),
-        folder="green_upgrade_button",
-        names=references,
-        tolerance=0.97
-    )
-    return next((location for location in locations if (location is not None) and (confirm_upgrade_arrow(location))), None)
-
-
-def confirm_upgrade_arrow(location):
-    print("confirm_upgrade_arrow recieved a coord to confirm")
-    # get location of center of arrow
-    x = location[1] + 5
-    y = location[0] + 3
-    print("Location: ", location)
-    print("Recieved coords: ", x, ",", y)
-
-    # get center pixel of arrow and check if green
-    region = [x, y, 5, 5]
-    ss = screenshot(region)
-    ss_iar = numpy.array(ss)
-    pix1 = ss_iar[1][1]
-    print(pix1)
-    sentinel = [145, 255, 90]
-    return bool(pixel_is_equal(pix1, sentinel, 20))
-
-
-def getto_card_page(logger):
+#Method to get to the card page on clash main from the clash main menu
+def get_to_card_page(logger):
     click(x=100, y=630)
     time.sleep(2)
     loops = 0
-    while not check_for_elixer_icon():
+    while not check_if_on_first_card_page():
         logger.log("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
         loops = loops + 1
         if loops > 10:
             logger.log("Couldn't make it to card page")
-            return"quit"
+            return"restart"
         time.sleep(0.2)
     scroll_up_fast()
     logger.log("Made it to card page")
     time.sleep(1)
 
-
-def check_for_elixer_icon():
+#Method to check if the elixer icon of your deck's AVG elixer when on the card page exists yet
+def check_if_on_first_card_page():
     references = [
         "1.png",
         "2.png",
@@ -326,7 +145,7 @@ def check_for_elixer_icon():
 
     return get_first_location(locations)
 
-
+#Method to find the card page logo in the icon list in the bottom of the screen when on clash main
 def find_card_page_logo():
     references = [
         "1.png",
@@ -341,3 +160,42 @@ def find_card_page_logo():
         tolerance=0.97
     )
     return check_for_location(locations)
+
+#Method to select the second deck of this account
+def select_second_deck(logger):
+    logger.log("Selecting deck number 2 for use.")
+    #get to card page
+    get_to_card_page(logger)
+    time.sleep(1)
+    
+    #click number 2
+    click(173,190)
+    time.sleep(1)
+    
+    #get to main menu from card page
+    get_to_clash_main_from_card_page(logger)
+    
+#Method to randomize deck number 2 of this account
+def randomize_and_select_deck_2(logger):
+    #get to card page
+    get_to_card_page(logger)
+    
+    #select deck 2
+    click(173,190)
+    time.sleep(1)
+    
+    #click deck options tab
+    click(339,165)
+    time.sleep(1)
+    
+    #click randomize button
+    click(253,173)
+    time.sleep(1)
+    
+    #click confirm
+    click(261,419)
+    time.sleep(1)
+    
+    #return to clash main
+    get_to_clash_main_from_card_page(logger)
+    
