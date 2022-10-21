@@ -3,11 +3,11 @@ import sys
 import pyperclip
 import PySimpleGUI as sg
 
-from client import get_next_ssid, orientate_memu, orientate_memu_multi
-from configuration import load_user_config
-from gui import show_donate_gui, show_help_gui
-from logger import Logger
-from states import (detect_state, state_clashmain, state_endfight, state_fight,
+from pyclashbot.client import get_next_ssid, orientate_memu, orientate_memu_multi
+from pyclashbot.configuration import load_user_config
+from pyclashbot.gui import show_donate_gui, show_help_gui
+from pyclashbot.logger import Logger
+from pyclashbot.states import (detect_state, state_clashmain, state_endfight, state_fight,
                     state_request, state_restart, state_startfight,
                     state_upgrade)
 
