@@ -41,8 +41,6 @@ build_exe_options = {
 
 # GUI applications require a different base on Windows
 base = None
-# if sys.platform == 'win32':
-#    base = 'Win32GUI'
 
 exe = Executable(
     script='pyclashbot\\__main__.py',
