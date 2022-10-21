@@ -4,9 +4,9 @@ from random import Random
 import numpy
 import pyautogui
 
-from clashmain import check_if_on_clash_main_menu
-from client import click, screenshot, scroll_down
-from image_rec import (check_for_location, find_references, get_first_location,
+from pyclashbot.clashmain import check_if_on_clash_main_menu
+from pyclashbot.client import click, screenshot, scroll_down
+from pyclashbot.image_rec import (check_for_location, find_references, get_first_location,
                        pixel_is_equal)
 
 
