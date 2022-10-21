@@ -70,6 +70,7 @@ def state_clashmain(logger,account_number,jobs):
     
     #Get to correct account
     if get_to_account(logger, account_number)=="restart":return "restart"
+    logger.add_account_switch()
     time.sleep(3)
     
     #Open chests

@@ -206,10 +206,11 @@ def open_chests(logger):
         time.sleep(1)
 
         if check_if_unlock_chest_button_exists():
-            print("Found unlock in chest", chest_index)
+            #print("Found unlock in chest", chest_index)
             time.sleep(0.5)
 
             logger.change_status(str(f"Unlocking chest {str(chest_index)}"))
+            logger.add_chest_unlocked()
             time.sleep(0.5)
             click(210, 465)
 
