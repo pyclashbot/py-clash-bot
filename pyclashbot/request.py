@@ -18,6 +18,7 @@ def request_random_card_from_clash_main(logger):
         return
     time.sleep(1)
     
+    logger.change_status("Requesting a card.")
     #getting to clan page
     if get_to_clan_page(logger)=="restart":
         return "restart"
@@ -66,7 +67,7 @@ def request_random_card(logger):
 
         if request_button_coord is not None:
             has_card_to_request=True
-            logger.change_status("Found a satisfactory card to request.")
+            #logger.change_status("Found a satisfactory card to request.")
             click(request_button_coord[1],request_button_coord[0])
 
 #Method to look for the request button in the list of clan interaction buttons on the clan page to see if we can request
@@ -154,7 +155,7 @@ def get_to_clash_main_from_request_page(logger):
         click(208,606)
         time.sleep(1)
         on_main=check_if_on_clash_main_menu()
-    logger.change_status("Made it to clash main from request page")
+    #logger.change_status("Made it to clash main from request page")
     
 #method to get to clan chat page from clash main
 def get_to_clan_page(logger):
@@ -173,7 +174,7 @@ def get_to_clan_page(logger):
         time.sleep(1)
         
         on_clan_chat_page=check_if_on_clan_page()
-    logger.change_status("Made it to clan page.")
+    #logger.change_status("Made it to clan page.")
 
 #Method to check if we're on the clan chat page
 def check_if_on_clan_page():
@@ -242,8 +243,10 @@ def check_if_in_a_clan(logger):
     #if pixels aren't equal return True (in a clan because there are two available pages instead of one)
     if not(pixel_is_equal(pixel_1,pixel_2,tol=25)):
         logger.change_status("You're in a clan")
+        time.sleep(1)
         return True
     logger.change_status("Not in a clan.")
+    time.sleep(1)
     return False
 
 

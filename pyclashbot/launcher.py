@@ -121,7 +121,7 @@ def wait_for_clash_logo_to_appear(logger):
         
         
         
-    logger.change_status("Found the clash logo.")
+    #logger.change_status("Found the clash logo.")
     
     
 #Method to check if memu loading background is present in the given moment
