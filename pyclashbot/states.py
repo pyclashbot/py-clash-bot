@@ -2,19 +2,19 @@
 
 import time
 
-from clashmain import (check_if_in_battle, get_to_account, open_chests,
+from pyclashbot.clashmain import (check_if_in_battle, get_to_account,
+                       handle_card_mastery_notification, open_chests,
                        start_2v2, wait_for_battle_start,
                        wait_for_clash_main_menu)
-from client import clear_log, click
-from fight import (check_if_end_screen_is_exit_bottom_left,
+from pyclashbot.client import clear_log, click
+from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
                    check_if_end_screen_is_ok_bottom_middle,
                    check_if_past_game_is_win, fight, leave_end_battle_window)
-from launcher import restart_and_open_clash
-from clashmain import handle_card_mastery_notification
-from request import (check_if_on_clan_page,
+from pyclashbot.launcher import restart_and_open_clash
+from pyclashbot.request import (check_if_on_clan_page,
                      get_to_clash_main_from_request_page,
                      request_random_card_from_clash_main)
-from upgrade import (check_if_on_first_card_page, get_to_card_page,
+from pyclashbot.upgrade import (check_if_on_first_card_page, get_to_card_page,
                      get_to_clash_main_from_card_page,
                      randomize_and_select_deck_2, upgrade_current_cards)
 

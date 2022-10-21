@@ -3,8 +3,8 @@ import time
 import numpy
 import pyautogui
 
-from client import click, screenshot, scroll_down
-from image_rec import (check_for_location, find_references, get_first_location,
+from pyclashbot.client import click, screenshot, scroll_down
+from pyclashbot.image_rec import (check_for_location, find_references, get_first_location,
                        pixel_is_equal)
 
 

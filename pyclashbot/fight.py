@@ -4,12 +4,12 @@ from ast import Str
 
 import numpy
 
-from card_detection import (get_card_group, get_card_images, get_play_coords,
+from pyclashbot.card_detection import (get_card_group, get_card_images, get_play_coords,
                             identify_card)
-from clashmain import (check_if_in_battle, check_if_on_clash_main_menu,
+from pyclashbot.clashmain import (check_if_in_battle, check_if_on_clash_main_menu,
                        wait_for_clash_main_menu)
-from client import click, screenshot
-from image_rec import pixel_is_equal
+from pyclashbot.client import click, screenshot
+from pyclashbot.image_rec import pixel_is_equal
 
 
 def fight(logger):
