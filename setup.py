@@ -40,7 +40,8 @@ setup(
         'tqdm',
         'requests',
         'matplotlib',
-        'PySimpleGUI'
+        'PySimpleGUI',
+        "ahk",
     ],
     packages=['pyclashbot'],
     include_package_data=True,
