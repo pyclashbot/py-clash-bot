@@ -138,7 +138,7 @@ def click(x,y,duration=1):
     speed=duration*10                                                             
     
     #Tolerance for timer comparisons
-    tol=0.2
+    tol=0.3
     
     #timer for mouse movement
     start = time.time()
