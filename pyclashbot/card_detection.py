@@ -16,9 +16,7 @@ def get_card_images():
     ]
     return card_screenshots
 
-
 #Method to check for a card in a given image 
-#intended for use during the battle but may work elsewhere??
 def check_for_card(image=None,card_name=""):
     folder_str="check_if_card_is_"+card_name
     
@@ -34,7 +32,6 @@ def check_for_card(image=None,card_name=""):
 
     return check_for_location(locations)
 
-
 #Method to make a reference array of a given size
 def make_reference_image_list(size):
     reference_image_list=[]
@@ -45,8 +42,7 @@ def make_reference_image_list(size):
         reference_image_list.append(image_name)
     
     return reference_image_list
-        
-        
+          
 #Method to return an list of 4 identified cards
 def identify_cards():
     #make return array
@@ -60,8 +56,7 @@ def identify_cards():
         card_list.append(identify_card(image))
     
     return card_list
-    
-    
+       
 #Method to identify a card given an image
 def identify_card(image):
     #make a list of cards the bot knows about
@@ -109,11 +104,7 @@ def identify_card(image):
         if check_for_card(image,card):
             return card
     return "unknown"
-
-
-
-
-    
+ 
 #Method to identify the card group of the given card
 def get_card_group(card_identification):
     #make lists of card groups
@@ -224,8 +215,6 @@ def get_card_group(card_identification):
         if card_identification in card_list:
             return card_list[0]
     return "regular"
-
-
 
 #Method to get a list of play coords for a given card group
 def get_play_coords(card_group):
