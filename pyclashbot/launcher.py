@@ -22,12 +22,12 @@ def restart_and_open_clash(logger,launcher_path):
     if len (pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) != 0: close_memu_multi()
     
     #Open the Memu Multi Manager
-    logger.log("Opening MEmu launcher")
+    logger.change_status("Opening MEmu launcher")
     subprocess.Popen(launcher_path)
     
     #WAIT 10 SECONDS
     for n in range(10):
-        logger.log(str("Giving Memu Multi time to load: " + str(n)))
+        logger.change_status(str("Giving Memu Multi time to load: " + str(n)))
         time.sleep(1)
         
         
@@ -36,7 +36,7 @@ def restart_and_open_clash(logger,launcher_path):
     time.sleep(3)
 
     #Start Memu Client
-    logger.log("Starting Memu client instance")
+    logger.change_status("Starting Memu client instance")
     click(556,141)
     time.sleep(3)
     check_quit_key_press()
@@ -58,7 +58,7 @@ def restart_and_open_clash(logger,launcher_path):
     
     #Wait for clash logo to appear
     if wait_for_clash_logo_to_appear(logger)=="restart":
-        logger.log("Waited too long for clash logo to appear. Restarting")
+        logger.change_status("Waited too long for clash logo to appear. Restarting")
         restart_and_open_clash(logger,launcher_path)
     time.sleep(3)
     
@@ -74,27 +74,27 @@ def restart_and_open_clash(logger,launcher_path):
     
 #Method to wait for memu loading background to disappear
 def wait_for_memu_loading_screen(logger):
-    logger.log("Waiting for Memu Client to load")
+    logger.change_status("Waiting for Memu Client to load")
     waiting=True
     n=0
     loops=0
     while waiting:
         loops+=1
         if loops>20:
-            logger.log("Waited too long for memu client to load, restarting")
+            logger.change_status("Waited too long for memu client to load, restarting")
             return "restart"
         n=n+1
         time.sleep(1)
-        logger.log(str("Waiting for memu Client to load: " + str(n)))
+        logger.change_status(str("Waiting for memu Client to load: " + str(n)))
         waiting=check_for_memu_loading_background()
     time.sleep(3)
-    logger.log("Done waiting for Memu Client to load.")
+    logger.change_status("Done waiting for Memu Client to load.")
     time.sleep(3)
     
 
 #Method for skipping the memu ads that popip up when you start memu
 def skip_ads(logger):
-    logger.log("Skipping ads")
+    logger.change_status("Skipping ads")
     for _ in range(4):
         click(445,600)
         time.sleep(1)
@@ -109,11 +109,11 @@ def wait_for_clash_logo_to_appear(logger):
     while waiting:
         loops+=1
         if loops>35:
-            logger.log("Waited too long for clash logo to appear, restarting")
+            logger.change_status("Waited too long for clash logo to appear, restarting")
             return "restart"
         n=n+1
         time.sleep(1)
-        logger.log(str("Waiting for clash logo to appaer: " + str(n)))
+        logger.change_status(str("Waiting for clash logo to appaer: " + str(n)))
         
         logo_coords=find_clash_app_logo()
         
@@ -121,7 +121,7 @@ def wait_for_clash_logo_to_appear(logger):
         
         
         
-    logger.log("Found the clash logo.")
+    logger.change_status("Found the clash logo.")
     
     
 #Method to check if memu loading background is present in the given moment
