@@ -32,7 +32,6 @@ def read_window(window: sg.Window):
 #Method for the main gui that starts the program
 def main_gui():
     out_text = "Matthew Miglio ~October 2022\n\n-------------------------------------------------------------------------------------\nPy-ClashBot can farm gold, chest, and card\nprogress by farming 2v2 matches with random teammates.\n-------------------------------------------------------------------------------------"
-
     sg.theme('Material2')
     # defining various things that are gonna be in the gui.
     layout = [
