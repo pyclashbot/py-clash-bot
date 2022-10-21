@@ -58,7 +58,7 @@ def detect_state(logger):
 def state_restart(logger,launcher_path):
     #Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
     #clear_log()
-    logger.change_status("STATE = RESTART")
+    logger.change_status("Restarting")
     
     if restart_and_open_clash(logger,launcher_path)=="restart": restart_and_open_clash(logger,launcher_path)
 
@@ -66,7 +66,7 @@ def state_restart(logger,launcher_path):
 def state_clashmain(logger,account_number,jobs):
     #Clashmain state gets to the correct account of the current state then opens their chests
     clear_log()
-    logger.change_status("STATE = CLASH MAIN")
+    logger.change_status("On clash main")
     
     #Get to correct account
     if get_to_account(logger, account_number)=="restart":return "restart"
@@ -80,7 +80,7 @@ def state_clashmain(logger,account_number,jobs):
 def state_startfight(logger):
     #Begins on clash main, ends in the beginning of a fight
     clear_log()
-    logger.change_status("STATE = START FIGHT")
+    logger.change_status("Starting a fight")
     
     #make a random deck 
     randomize_and_select_deck_2(logger)
@@ -95,7 +95,7 @@ def state_startfight(logger):
 def state_fight(logger):
     #Method that plays cards with certain logic until the fight is over then returns to the clash royale main screen
     clear_log()
-    logger.change_status("STATE = FIGHTING")
+    logger.change_status("Fighting")
     
     if fight(logger)=="restart":return "restart"
     
@@ -106,7 +106,7 @@ def state_endfight(logger):
     #Checks if the last battle was a win or loss then adds this to the logger tally
     #Starts and ends on the clash royale main menu
     clear_log()
-    logger.change_status("STATE = POST FIGHT")
+    logger.change_status("Post fight")
     
     check_if_past_game_is_win(logger)
     
@@ -114,7 +114,7 @@ def state_endfight(logger):
 def state_upgrade(logger):
     #Starts on the clash royale main menu and ends on the clash royale main menu
     clear_log()
-    logger.change_status("STATE = UPGRADE")
+    logger.change_status("Upgrading cards")
     
     handle_card_mastery_notification()
     
@@ -131,7 +131,7 @@ def state_upgrade(logger):
 def state_request(logger):
     #Request method goes to clan page, requests a random card if request is available, then returns to the clash royale main menu
     clear_log()
-    logger.change_status("STATE = REQUEST")
+    logger.change_status("Requesting card")
     
     time.sleep(1)
     handle_card_mastery_notification()
