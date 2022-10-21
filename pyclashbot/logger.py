@@ -100,13 +100,14 @@ class Logger:
         print("|-------------------------------------------------------")
         print("|       Cards played:       |",cards_played_str)
         print("|-------------------------------------------------------")
-        print("|       Cards upgraded:     |",cards_upgraded_str)
-        print("|-------------------------------------------------------")
         print("|      Account switches:    |",account_switches_str)
         print("|-------------------------------------------------------")
         print("|      Current status:      |",status_str)
         print("--------------------------------------------------------")
         
+        
+        
+
         
     def add_chest_unlocked(self):
         self.chests_unlocked += 1
