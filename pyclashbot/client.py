@@ -147,13 +147,7 @@ def click(x,y,duration=1):
     while True:
         if ahk.mouse_position == (x, y):
             break
-                      
-                      
-        # print(time.time() - start)              
-        # print(speed/10)
-        
-                      
-        
+ 
         if (time.time() - start) > (speed/10)+tol:                          
             pause()
             start = time.time()

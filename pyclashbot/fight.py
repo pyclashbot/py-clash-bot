@@ -23,7 +23,7 @@ def fight(logger):
         if wait_until_has_6_elixer(logger)=="restart": return "restart"
         
         logger.change_status("Playing card")
-        play_random_card(logger)
+        play_random_card()
         plays+=1
         logger.add_card_played()
         
@@ -159,7 +159,7 @@ def wait_until_has_6_elixer(logger):
             return
     
 #Method to play a random card
-def play_random_card(logger):
+def play_random_card():
     #Select which card we're to play
     n=random.randint(0,3)
     #logger.change_status(str("Selected card: "+str(n)))
