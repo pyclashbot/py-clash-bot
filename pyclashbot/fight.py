@@ -13,7 +13,7 @@ from image_rec import pixel_is_equal
 
 
 def fight(logger):
-    logger.log("Starting fight")
+    logger.change_status("Starting fight")
     in_battle=True
     plays=0
     
@@ -23,16 +23,16 @@ def fight(logger):
        
         play_random_card(logger)
         plays+=1
-        logger.log("Played card. Plays: "+str(plays))
+        logger.change_status("Played card. Plays: "+str(plays))
         
         in_battle=check_if_in_battle()
         
         if plays>100: 
-            logger.log("Made too many plays. Match is probably stuck. Ending match")
+            logger.change_status("Made too many plays. Match is probably stuck. Ending match")
             return "restart"
         
         
-    logger.log("Done fighting.")
+    logger.change_status("Done fighting.")
         
     
 #Method for finishing leaving a battle and returning to the clash royale main menu
@@ -117,14 +117,14 @@ def check_if_past_game_is_win(logger):
         if pixel_is_equal(pix, sentinel, 10):
             click(20, 507)
 
-            logger.log("Last game was a win. Incrementing win counter.")
+            logger.change_status("Last game was a win. Incrementing win counter.")
             logger.add_win()
             return True
     time.sleep(1)
     click(385, 507)
     click(20, 507)
     
-    logger.log("Last game was a loss. Incrementing loss counter.")
+    logger.change_status("Last game was a loss. Incrementing loss counter.")
     logger.add_loss()
     return False
     
@@ -149,7 +149,7 @@ def check_if_has_6_elixer():
 #Method to wait untili the bot has 6 expendable elixer
 def wait_until_has_6_elixer():
     has_6=check_if_has_6_elixer()
-    #logger.log("Waiting for 6 elixer")
+    #logger.change_status("Waiting for 6 elixer")
     loops=0
     while not(has_6):
         loops+=1
@@ -165,7 +165,7 @@ def wait_until_has_6_elixer():
 def play_random_card(logger):
     #Select which card we're to play
     n=random.randint(0,3)
-    #logger.log(str("Selected card: "+str(n)))
+    #logger.change_status(str("Selected card: "+str(n)))
     
     #Get an image of this card
     card_image=get_card_images()[n]
@@ -173,12 +173,12 @@ def play_random_card(logger):
     #Identify this card
     card_identification = identify_card(card_image)
     if card_identification is None: card_identification = "Unknown"
-    #logger.log(str("Identified card: "+card_identification))
+    #logger.change_status(str("Identified card: "+card_identification))
     
     #Get the card type of this identification
     card_type = get_card_group(card_identification)
     if card_type is None: card_type = "unknown"
-    #logger.log(str("Card type: "+card_type))
+    #logger.change_status(str("Card type: "+card_type))
     
     #Get the play coordinates of this card type
     play_coords_list=get_play_coords(card_type)

@@ -56,13 +56,12 @@ def upgrade_current_cards(logger):
     upgrade_button_coords=[
         [51,338],
         [136,338],
-        [219,338],
+        [283,338],
         [303,337],
         [53,464],
         [133,464],
-        [281,455],
+        [281,465],
         [303,466],
-        
     ]
         
     for n in range(8):
@@ -76,19 +75,26 @@ def upgrade_current_cards(logger):
         #check if upgrade button is there
         pix=numpy.asarray(screenshot())[upgrade_button_coord[1]+10][upgrade_button_coord[0]+10]
         #print(pix)
-        positive_color_list=[
+        if check_if_pixel_indicates_upgrade(pix):
+            logger.change_status(str("Upgrade found for card: "+str(n+1)))
+            click(upgrade_button_coord[0],upgrade_button_coord[1])
+            time.sleep(1)
+            upgrade_card()
+
+
+#Method to see if the given pixel color indicates an upgrade in that spot on the card page
+def check_if_pixel_indicates_upgrade(pixel):
+    positive_color_list=[
             [ 42, 172,  55],[ 96 ,217, 110],[ 65 ,224 , 80],[ 34 ,104 , 42]
-        ]
-        for color in positive_color_list:
-            if pixel_is_equal(pix,color,tol=30):
-                logger.log(str("Upgrade found for card index: "+str(n)))
-                click(upgrade_button_coord[0],upgrade_button_coord[1])
-                time.sleep(1)
-                upgrade_card()
+    ]
+    for color in positive_color_list:
+        if pixel_is_equal(pixel,color,tol=30): return True
+    return False
+
 
 #Method to get to the clash royale main menu screen from the card page
 def get_to_clash_main_from_card_page(logger):
-    logger.log("Getting to clash main from card page")
+    logger.change_status("Getting to clash main from card page")
     click(250,630)
     loops=0
     
@@ -96,12 +102,12 @@ def get_to_clash_main_from_card_page(logger):
     while not(on_clash_main):
         loops+=1
         if loops>15:
-            logger.log("Couldn't get to clash main from card page")
+            logger.change_status("Couldn't get to clash main from card page")
             return "restart"
         click(212,623)
         time.sleep(1)
         on_clash_main=check_if_on_clash_main_menu()
-    logger.log("On clash main")
+    logger.change_status("On clash main")
 
 #Method to get to the card page on clash main from the clash main menu
 def get_to_card_page(logger):
@@ -109,16 +115,16 @@ def get_to_card_page(logger):
     time.sleep(2)
     loops = 0
     while not check_if_on_first_card_page():
-        logger.log("Not elixer button. Moving pages")
+        logger.change_status("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
         loops = loops + 1
         if loops > 10:
-            logger.log("Couldn't make it to card page")
+            logger.change_status("Couldn't make it to card page")
             return"restart"
         time.sleep(0.2)
     scroll_up_fast()
-    logger.log("Made it to card page")
+    logger.change_status("Made it to card page")
     time.sleep(1)
 
 #Method to check if the elixer icon of your deck's AVG elixer when on the card page exists yet
@@ -163,7 +169,7 @@ def find_card_page_logo():
 
 #Method to select the second deck of this account
 def select_second_deck(logger):
-    logger.log("Selecting deck number 2 for use.")
+    logger.change_status("Selecting deck number 2 for use.")
     #get to card page
     get_to_card_page(logger)
     time.sleep(1)
