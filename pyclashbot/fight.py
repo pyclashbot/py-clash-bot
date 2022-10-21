@@ -75,10 +75,6 @@ def check_if_end_screen_is_ok_bottom_middle():
             return False
     return True
 
-
-
-
-
 #Method to check if the end screen is the one with the exit button in the bottom left
 def check_if_end_screen_is_exit_bottom_left():
     iar = numpy.asarray(screenshot())
@@ -93,9 +89,6 @@ def check_if_end_screen_is_exit_bottom_left():
         if not (pixel_is_equal(pix,color,tol=45)):
             return False
     return True
-
-
-
 
 #Method for opening the activity log from the clash royale main menu as to see past game outcomes
 def open_activity_log():

@@ -9,6 +9,7 @@ from joblib import Parallel, delayed
 from PIL import Image
 
 
+#Given a list of return locations, return the first one that is not None
 def get_first_location(locations: list[Union[list[int], None]], flip=False):
     """get the first location from a list of locations
 
@@ -21,7 +22,7 @@ def get_first_location(locations: list[Union[list[int], None]], flip=False):
     """
     return next(([location[1], location[0]] if flip else location for location in locations if location is not None), None)
 
-
+#Given a list of locations, check if one of the locations is not none
 def check_for_location(locations: list[Union[list[int], None]]):
     """check for a location
 
@@ -33,7 +34,7 @@ def check_for_location(locations: list[Union[list[int], None]]):
     """
     return any(location is not None for location in locations)
 
-
+#Find the location of a reference image in a screenshot
 def find_references(screenshot: Union[np.ndarray,
                                       Image.Image],
                     folder: str,
@@ -60,7 +61,7 @@ def find_references(screenshot: Union[np.ndarray,
                 return [result]
     return [None]
 
-
+#Find all locations of reference images in a screenshot
 def find_all_references(screenshot: Union[np.ndarray,
                                           Image.Image],
                         folder: str,
@@ -88,7 +89,7 @@ def find_all_references(screenshot: Union[np.ndarray,
             name,
             tolerance) for name in names)
 
-
+#Find all locations of reference images in a screenshot
 def find_reference(screenshot: Union[np.ndarray,
                                      Image.Image],
                    folder: str,
@@ -116,7 +117,7 @@ def find_reference(screenshot: Union[np.ndarray,
                 name)),
         tolerance)
 
-
+#Check if two pixels are equal with a tolerance
 def pixel_is_equal(pix1, pix2, tol):
     """check pixel equality
 
@@ -133,7 +134,7 @@ def pixel_is_equal(pix1, pix2, tol):
     diff_b = abs(pix1[2] - pix2[2])
     return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
-
+#Check if two images are equal with a tolerance
 def compare_images(image: Union[np.ndarray,
                                 Image.Image],
                    template: Union[np.ndarray,
