@@ -96,7 +96,7 @@ def get_to_account(logger,account_number):
         click(x=200, y=560)
 
     time.sleep(3)
-
+    logger.add_account_switch()
     if wait_for_clash_main_menu(logger) == "restart":
         return "restart"
 

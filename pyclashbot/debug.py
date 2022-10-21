@@ -131,4 +131,13 @@ logger.add_loss()
 time.sleep(1)
 logger.add_restart()
 time.sleep(1)
+logger.add_chest_unlocked()
+time.sleep(1)
+logger.add_card_played()
+time.sleep(1)
+logger.add_card_upgraded()
+time.sleep(1)
+logger.add_account_switch()
+time.sleep(1)
+
 
