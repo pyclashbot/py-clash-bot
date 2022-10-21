@@ -31,6 +31,7 @@ def request_random_card_from_clash_main(logger):
 
         # run request alg
         if request_random_card(logger)=="restart": return "restart"
+        logger.add_request()
         
     else:
         logger.change_status("Can't request a card right now.")
