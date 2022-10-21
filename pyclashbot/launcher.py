@@ -1,16 +1,15 @@
-from ast import Str
-import pygetwindow
-import time
 import subprocess
+import time
+from ast import Str
+
 import numpy
+import pygetwindow
 
-from client import check_quit_key_press, click, orientate_memu, orientate_memu_multi, screenshot
-from image_rec import check_for_location, find_reference, find_references
-from image_rec import get_first_location
-from image_rec import pixel_is_equal
-from clashmain import wait_for_clash_main_menu
-
-
+from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
+                    orientate_memu_multi, screenshot)
+from pyclashbot.image_rec import (check_for_location, find_reference, find_references,
+                       get_first_location, pixel_is_equal)
+from pyclashbot.clashmain import wait_for_clash_main_menu
 
 
 #Method for restarting Memu and MeMU Multi Manager, opening clash, and waiting for the clash main menu to appear.
