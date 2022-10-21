@@ -22,8 +22,8 @@ def fight(logger):
         
         if wait_until_has_6_elixer(logger)=="restart": return "restart"
         
-        logger.change_status("Playing card")
-        play_random_card()
+        
+        play_random_card(logger)
         plays+=1
         logger.add_card_played()
         
@@ -159,7 +159,7 @@ def wait_until_has_6_elixer(logger):
             return
     
 #Method to play a random card
-def play_random_card():
+def play_random_card(logger):
     #Select which card we're to play
     n=random.randint(0,3)
     #logger.change_status(str("Selected card: "+str(n)))
@@ -177,8 +177,12 @@ def play_random_card():
     if card_type is None: card_type = "unknown"
     #logger.change_status(str("Card type: "+card_type))
     
+    #Pick a side to play on
+    side=pick_a_lane()
+    logger.change_status(str("Playing card: "+str(n+1)+" on side: "+side))
+    
     #Get the play coordinates of this card type
-    play_coords_list=get_play_coords(card_type)
+    play_coords_list=get_play_coords(card_type,side)
 
     #Pick one of theses coords at random
     play_coord = random.choice(play_coords_list)
@@ -189,5 +193,108 @@ def play_random_card():
     if n==2: click(289,606)
     if n==3: click(355,605)
     
+    
+    
     #Click the location we're playing it at
     click(play_coord[0],play_coord[1])
+
+#Method for covering parts of a board image that may obstruct enemy detection
+def cover_board_image(iar):
+    #Cover left enemy tower
+    for x in range(101,147):
+        for y in range(154,215):
+            iar[y][x]=[0,0,0]
+    
+    #Cover enemy king tower
+    for x in range(156,266):
+        for y in range(81,185):
+            iar[y][x]=[0,0,0] 
+    
+    #Cover enemy right tower
+    for x in range(272,322):
+        for y in range(152,216):
+            iar[y][x]=[0,0,0] 
+            
+    #Cover left side
+    for x in range(70):
+        for y in range(700):
+            iar[y][x]=[0,0,0] 
+    
+    #Cover right side
+    for x in range(350,500):
+        for y in range(700):
+            iar[y][x]=[0,0,0] 
+    
+    #Cover bottom
+    for x in range(500):
+        for y in range(495,700):
+            iar[y][x]=[0,0,0] 
+    
+    #Cover top
+    for x in range(500):
+        for y in range(70):
+            iar[y][x]=[0,0,0] 
+            
+    #Cover river
+    for x in range(500):
+        for y in range(300,340):
+            iar[y][x]=[0,0,0] 
+            
+    #Cover friendly left tower
+    for x in range(101,148):
+        for y in range(401,452):
+            iar[y][x]=[0,0,0] 
+            
+    #Cover friendly right tower
+    for x in range(275,320):
+        for y in range(403,459):
+            iar[y][x]=[0,0,0] 
+            
+    #Cover friendly king tower
+    for x in range(152,269):
+        for y in range(442,500):
+            iar[y][x]=[0,0,0] 
+            
+    #Cover top again
+    for x in range(500):
+        for y in range(50,136):
+            iar[y][x]=[0,0,0] 
+
+
+    #return
+    return iar
+
+#Method for getting the left and right totals of enemies on the board
+def get_left_and_right_totals(iar):
+    left_lane_total=0
+    right_lane_total=0
+    
+    red=[212,45,43]
+    for x in range(500):
+        for y in range(700):
+            pixel=iar[y][x]
+            if (pixel_is_equal(pixel,red,tol=35)):
+                if x>250:
+                    right_lane_total+=1
+                if x<250:
+                    left_lane_total+=1
+                  
+    return left_lane_total,right_lane_total
+
+#Method for choosing a side to attack based on the number of enemies on each side
+def pick_a_lane():
+    #Either returns left right or random
+    iar=numpy.asarray(screenshot())
+    
+    covered_iar=cover_board_image(iar)
+
+    lane_ratio=get_left_and_right_totals(covered_iar)
+    
+    if (lane_ratio[0]<10)and(lane_ratio[1]<10):
+        return "random"
+    if lane_ratio[1]>lane_ratio[0]:
+        return "right"
+    return "left"
+
+
+    
