@@ -65,7 +65,7 @@ def state_restart(logger,launcher_path):
 #Method for the clash royale main menu state of the program
 def state_clashmain(logger,account_number,jobs):
     #Clashmain state gets to the correct account of the current state then opens their chests
-    clear_log()
+
     logger.change_status("On clash main")
     
     #Get to correct account
@@ -80,7 +80,7 @@ def state_clashmain(logger,account_number,jobs):
 #Method for the starting of a fight state of the program
 def state_startfight(logger):
     #Begins on clash main, ends in the beginning of a fight
-    clear_log()
+
     logger.change_status("Starting a fight")
     
     #make a random deck 
@@ -95,8 +95,9 @@ def state_startfight(logger):
 #Method for the state of the program when fighting
 def state_fight(logger):
     #Method that plays cards with certain logic until the fight is over then returns to the clash royale main screen
-    clear_log()
+
     logger.change_status("Fighting")
+    logger.add_fight()
     
     if fight(logger)=="restart":return "restart"
     
@@ -106,7 +107,7 @@ def state_fight(logger):
 def state_endfight(logger):
     #Checks if the last battle was a win or loss then adds this to the logger tally
     #Starts and ends on the clash royale main menu
-    clear_log()
+
     logger.change_status("Post fight")
     
     check_if_past_game_is_win(logger)
@@ -114,7 +115,7 @@ def state_endfight(logger):
 #Method for the state of the program when upgrading cards
 def state_upgrade(logger):
     #Starts on the clash royale main menu and ends on the clash royale main menu
-    clear_log()
+
     logger.change_status("Upgrading cards")
     
     handle_card_mastery_notification()
