@@ -82,7 +82,6 @@ def upgrade_current_cards(logger):
             upgrade_card()
             logger.add_card_upgraded()
 
-
 #Method to see if the given pixel color indicates an upgrade in that spot on the card page
 def check_if_pixel_indicates_upgrade(pixel):
     positive_color_list=[
@@ -91,7 +90,6 @@ def check_if_pixel_indicates_upgrade(pixel):
     for color in positive_color_list:
         if pixel_is_equal(pixel,color,tol=30): return True
     return False
-
 
 #Method to get to the clash royale main menu screen from the card page
 def get_to_clash_main_from_card_page(logger):
@@ -108,7 +106,6 @@ def get_to_clash_main_from_card_page(logger):
         click(212,623)
         time.sleep(1)
         on_clash_main=check_if_on_clash_main_menu()
-    #logger.change_status("On clash main")
 
 #Method to get to the card page on clash main from the clash main menu
 def get_to_card_page(logger):
