@@ -156,8 +156,7 @@ def get_to_clash_main_from_request_page(logger):
         click(208,606)
         time.sleep(1)
         on_main=check_if_on_clash_main_menu()
-    #logger.change_status("Made it to clash main from request page")
-    
+
 #method to get to clan chat page from clash main
 def get_to_clan_page(logger):
     click(312,629)
@@ -175,8 +174,7 @@ def get_to_clan_page(logger):
         time.sleep(1)
         
         on_clan_chat_page=check_if_on_clan_page()
-    #logger.change_status("Made it to clan page.")
-
+    
 #Method to check if we're on the clan chat page
 def check_if_on_clan_page():
     iar=numpy.asarray(screenshot())

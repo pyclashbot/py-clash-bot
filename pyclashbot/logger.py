@@ -8,6 +8,7 @@ class Logger:
     """Handles creating and reading logs
     """
 
+    #initialize logger obj
     def __init__(self):
         """Logger init
         """
@@ -26,7 +27,7 @@ class Logger:
         
         self.current_status = "Idle"
         
-
+    #Method to get current time as a readable string
     def make_timestamp(self):
         """creates a time stamp for log output
 
@@ -38,6 +39,7 @@ class Logger:
 
         return str(self.convert_int_to_time(output_time))
 
+    #Method to make the win/loss string
     def make_score_board(self):
         """creates scoreboard for log output
 
@@ -48,6 +50,7 @@ class Logger:
         wins_str = f"{str(self.wins)}W"
         return f"{wins_str}|{losses_str}"
 
+    #Method to convert int to readable time string
     def convert_int_to_time(self, seconds):
         """convert epoch to time
 
@@ -64,6 +67,7 @@ class Logger:
         seconds %= 60
         return "%d:%02d:%02d" % (hour, minutes, seconds)
 
+    #Method to clear previous log and write new log
     def log(self):
         clear_log()
         gap_string = "|"
@@ -105,52 +109,58 @@ class Logger:
         print("|      Current status:      |",status_str)
         print("--------------------------------------------------------")
         
-        
-        
-
-        
+    #Method to increment chest unlocks
     def add_chest_unlocked(self):
         self.chests_unlocked += 1
         self.log()
     
+    #Method to increment cards played
     def add_card_played(self):
         self.cards_played += 1
         self.log()
         
+    #Method to increment cards upgradeds
     def add_card_upgraded(self):
         self.cards_upgraded += 1
         self.log()
-        
+     
+    #Method to increment account_switchs
     def add_account_switch(self):
         self.account_switches += 1
         self.log()
-        
+     
+    #Method to increment wins
     def add_win(self):
         """add win to log
         """
         self.wins += 1
         self.log()
 
+    #Method to increment losses
     def add_loss(self):
         """add loss to log
         """
         self.losses += 1
         self.log()
 
+    #Method to increment fights
     def add_fight(self):
         """add fight to log
         """
         self.fights += 1
         self.log()
         
+    #Method to increment requests
     def add_request(self):
         self.requests += 1
         self.log()
         
+    #Method to increment restarts
     def add_restart(self):
         self.restarts += 1
         self.log()
         
+    #Method to update the bot's status
     def change_status(self,status):
         self.current_status=status
         self.log()
