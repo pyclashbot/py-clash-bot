@@ -80,6 +80,7 @@ def upgrade_current_cards(logger):
             click(upgrade_button_coord[0],upgrade_button_coord[1])
             time.sleep(1)
             upgrade_card()
+            logger.add_card_upgraded()
 
 
 #Method to see if the given pixel color indicates an upgrade in that spot on the card page
