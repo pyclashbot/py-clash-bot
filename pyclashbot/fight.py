@@ -53,10 +53,7 @@ def leave_end_battle_window(logger):
         return
     
     
-    
-    while True:
-        print("Found condition for ending thats not handled yet")
-        time.sleep(60)
+    if wait_for_clash_main_menu(logger)=="restart": return 'restart'
 
 #Method to check if the end screen is the one with the OK button in the middle
 def check_if_end_screen_is_ok_bottom_middle():
