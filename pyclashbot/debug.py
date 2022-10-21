@@ -1,4 +1,3 @@
-import pyautogui
 import os
 import random
 import time
@@ -7,20 +6,21 @@ from os.path import dirname, join
 
 import ahk
 import numpy
+import pyautogui
 from ahk import AHK
+from matplotlib import pyplot as plt
+from PIL import Image
 
 from client import (click, get_next_ssid, orientate_memu, orientate_memu_multi,
                     screenshot, scroll_down, show_image)
 from configuration import load_user_config
-from fight import leave_end_battle_window
+from fight import fight, leave_end_battle_window
 from image_rec import pixel_is_equal
 from logger import Logger
-from upgrade import check_if_pixel_indicates_upgrade
-from upgrade import upgrade_current_cards
-from states import state_request, state_upgrade
 from request import check_if_in_a_clan, request_random_card_from_clash_main
 from states import (state_clashmain, state_endfight, state_fight,
-                    state_startfight)
+                    state_request, state_startfight, state_upgrade)
+from upgrade import check_if_pixel_indicates_upgrade, upgrade_current_cards
 
 ahk = AHK()
 logger = Logger()
@@ -28,9 +28,9 @@ user_settings = load_user_config()
 launcher_path = user_settings["launcher_path"]
 
 
-orientate_memu_multi()
-orientate_memu()
-time.sleep(1)
+# orientate_memu_multi()
+# orientate_memu()
+# time.sleep(1)
 
 # show_image(screenshot())
 
@@ -111,3 +111,7 @@ def upgrade_card_coords_debug():
 
 
 
+
+
+    
+fight(logger)
