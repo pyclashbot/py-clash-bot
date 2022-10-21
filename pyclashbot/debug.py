@@ -11,16 +11,16 @@ from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from client import (click, get_next_ssid, orientate_memu, orientate_memu_multi,
+from pyclashbot.client import (click, get_next_ssid, orientate_memu, orientate_memu_multi,
                     screenshot, scroll_down, show_image)
-from configuration import load_user_config
-from fight import fight, leave_end_battle_window
-from image_rec import pixel_is_equal
-from logger import Logger
-from request import check_if_in_a_clan, request_random_card_from_clash_main
-from states import (state_clashmain, state_endfight, state_fight,
+from pyclashbot.configuration import load_user_config
+from pyclashbot.fight import fight, leave_end_battle_window
+from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.logger import Logger
+from pyclashbot.request import check_if_in_a_clan, request_random_card_from_clash_main
+from pyclashbot.states import (state_clashmain, state_endfight, state_fight,
                     state_request, state_startfight, state_upgrade)
-from upgrade import check_if_pixel_indicates_upgrade, upgrade_current_cards
+from pyclashbot.upgrade import check_if_pixel_indicates_upgrade, upgrade_current_cards
 
 ahk = AHK()
 logger = Logger()

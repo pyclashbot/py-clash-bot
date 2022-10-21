@@ -1,7 +1,7 @@
 import time
 from turtle import window_height
 
-from client import clear_log
+from pyclashbot.client import clear_log
 
 
 class Logger:
