@@ -98,6 +98,7 @@ def main_gui():
 def main(jobs,ssid_total):
     #Make logger, get launcherpath from %appdata/pyclashbot/config.json, initialize SSID as 1
     logger = Logger()
+    logger.log()
     user_settings = load_user_config()
     launcher_path = user_settings["launcher_path"]
     ssid=0

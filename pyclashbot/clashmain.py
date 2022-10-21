@@ -15,21 +15,23 @@ def wait_for_clash_main_menu(logger):
     loops=0
     while waiting:
         loops+=1
-        if loops>100:
-            logger.log("Waited too long for clash main menu to appear")
+        if loops>25:
+            logger.change_status("Waited too long for clash main menu to appear")
             return "restart"
         handle_puzzleroyale_popup(logger)
         n=n+1
-        logger.log(str("Waiting for clash main menu to appear: " + str(n)))
+        logger.change_status(str("Waiting for clash main menu to appear: " + str(n)))
         time.sleep(1)
         waiting=not(check_if_on_clash_main_menu())
+        click(32,364)
+        time.sleep(1)
     time.sleep(3)
-    logger.log("Done waiting for clash main menu to appear.")
+    logger.change_status("Done waiting for clash main menu to appear.")
         
 #Method to handle puzzleroyale popup
 def handle_puzzleroyale_popup(logger):
     if look_for_puzzleroyale_popup():
-        logger.log("Handling puzzle royale popup")
+        logger.change_status("Handling puzzle royale popup")
         click(366,121)
         time.sleep(3)
 
@@ -75,22 +77,22 @@ def get_to_account(logger,account_number):
     handle_gold_rush_event(logger)
     time.sleep(2)
 
-    logger.log("Opening settings")
+    logger.change_status("Opening settings")
     click(x=364, y=99)
     time.sleep(3)
 
-    logger.log("Clicking switch button")
+    logger.change_status("Clicking switch button")
     click(x=198, y=401)
     time.sleep(3)
 
     if account_number == 0:
-        logger.log("Clicking account 1")
+        logger.change_status("Clicking account 1")
         click(x=211, y=388)
     if account_number == 1:
-        logger.log("Clicking account 2")
+        logger.change_status("Clicking account 2")
         click(x=193, y=471)
     if account_number == 2:
-        logger.log("Clicking account 3")
+        logger.lchange_statusog("Clicking account 3")
         click(x=200, y=560)
 
     time.sleep(3)
@@ -130,7 +132,7 @@ def check_for_gold_rush_event():
 
 #Method to handle a gold rush event notification obstructing the bot
 def handle_gold_rush_event(logger):
-    logger.log(
+    logger.change_status(
         "Handling the possibility of a gold rush event notification obstructing the bot.")
     time.sleep(0.5)
     pyautogui.click(193, 465)
@@ -140,7 +142,7 @@ def handle_gold_rush_event(logger):
 
 #Method to handle a new challenge notification obstructing the bot
 def handle_new_challenge(logger):
-    logger.log(
+    logger.change_status(
         "Handling the possibility of a new challenge notification obstructing the bot.")
     time.sleep(0.5)
     click(376, 639)
@@ -153,7 +155,7 @@ def handle_new_challenge(logger):
 
 #Method to handle a special offer notification obstructing the bot
 def handle_special_offer(logger):
-    logger.log(
+    logger.change_status(
         "Handling the possibility of special offer notification obstructing the bot.")
     time.sleep(0.5)
     click(35, 633)
@@ -190,14 +192,14 @@ def open_chests(logger):
     #chest 4 coord (349 551)
     #dead space coord (20, 556)
     #check_if_unlock_chest_button_exists()
-    logger.log("Opening chests")
+    logger.change_status("Opening chests")
 
     chest_coord_list=[[78, 554],[162,549],[263,541],[349,551]]
 
     chest_index=0
     for chest_coord in chest_coord_list:
         chest_index=chest_index+1
-        logger.log(str("Checking chest slot "+str(chest_index)))
+        logger.change_status(str("Checking chest slot "+str(chest_index)))
         #click chest
         click(chest_coord[0],chest_coord[1])
         time.sleep(1)
@@ -206,12 +208,12 @@ def open_chests(logger):
             print("Found unlock in chest", chest_index)
             time.sleep(0.5)
 
-            logger.log(str(f"Unlocking chest {str(chest_index)}"))
+            logger.change_status(str(f"Unlocking chest {str(chest_index)}"))
             time.sleep(0.5)
             click(210, 465)
 
         else:
-            logger.log("Handling possibility of rewards screen")
+            logger.change_status("Handling possibility of rewards screen")
             for _ in range(10):
                 click(20,556)
             time.sleep(3)
@@ -251,9 +253,9 @@ def check_if_unlock_chest_button_exists():
 
 #Method to start a 2v2 quickmatch through the party mode through the clash main menu
 def start_2v2(logger):
-    logger.log("Initiating 2v2 match from main menu")
+    logger.change_status("Initiating 2v2 match from main menu")
     
-    logger.log("Clicking party mode")
+    logger.change_status("Clicking party mode")
     time.sleep(1)
     click(284,449)
     time.sleep(1)
@@ -266,14 +268,14 @@ def start_2v2(logger):
 def find_and_click_2v2_quickmatch_button(logger):
     #starts in the party mode
     #ends when loading a match
-    logger.log("Finding and clicking 2v2 quickmatch button")
+    logger.change_status("Finding and clicking 2v2 quickmatch button")
     #repeatedly scroll down until we find coords for the 2v2 quickmatch button
     coords = None
     loops=0
     while coords is None:
         loops+=1
         if loops>20:
-            logger.log("Could not find 2v2 quickmatch button, restarting")
+            logger.change_status("Could not find 2v2 quickmatch button, restarting")
             return "restart"
         scroll_down()
         time.sleep(1)
@@ -281,7 +283,7 @@ def find_and_click_2v2_quickmatch_button(logger):
     time.sleep(2)
     #once we find the coords, click them
     click(coords[0],coords[1])
-    logger.log("Done queueing a 2v2 quickmatch")
+    logger.change_status("Done queueing a 2v2 quickmatch")
 
 #Method to check for the reward limit popup notification and close it
 def check_for_reward_limit():
@@ -339,7 +341,7 @@ def find_2v2_quick_match_button():
 
 #Method to wait for a the loading sequence of a battle to finish
 def wait_for_battle_start(logger):
-    logger.log("Waiting for battle start. . .")
+    logger.change_status("Waiting for battle start. . .")
     in_battle = False
     loops = 0
 
@@ -349,7 +351,7 @@ def wait_for_battle_start(logger):
         time.sleep(0.25)
         loops += 1
         if loops > 120:
-            logger.log("Waited longer than 30 sec for a fight")
+            logger.change_status("Waited longer than 30 sec for a fight")
             return "restart"
 
 #Method to check if the bot is in a battle in the given moment
