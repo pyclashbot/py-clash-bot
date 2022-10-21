@@ -21,10 +21,11 @@ def fight(logger):
         #wait for 6 elixer
         
         if wait_until_has_6_elixer(logger)=="restart": return "restart"
-       
+        
+        logger.change_status("Playing card")
         play_random_card(logger)
         plays+=1
-        logger.change_status("Played card. Plays: "+str(plays))
+        logger.add_card_played()
         
         in_battle=check_if_in_battle()
         
