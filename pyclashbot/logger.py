@@ -70,7 +70,7 @@ class Logger:
     #Method to clear previous log and write new log
     def log(self):
         clear_log()
-        gap_string = "|"
+
         time_str = self.make_timestamp() 
         restarts_str = f"{str(self.restarts)}"
         requests_str=f"{str(self.requests)}"
@@ -78,7 +78,7 @@ class Logger:
         win_loss_str = self.make_score_board()
         chests_unlocked_str=f"{str(self.chests_unlocked)}"
         cards_played_str=f"{str(self.cards_played)}"
-        cards_upgraded_str=f"{str(self.cards_upgraded)}"
+
         account_switches_str=f"{str(self.account_switches)}"
         
         
