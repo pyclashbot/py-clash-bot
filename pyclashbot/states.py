@@ -10,6 +10,7 @@ from fight import (check_if_end_screen_is_exit_bottom_left,
                    check_if_end_screen_is_ok_bottom_middle,
                    check_if_past_game_is_win, fight, leave_end_battle_window)
 from launcher import restart_and_open_clash
+from clashmain import handle_card_mastery_notification
 from request import (check_if_on_clan_page,
                      get_to_clash_main_from_request_page,
                      request_random_card_from_clash_main)
@@ -115,6 +116,8 @@ def state_upgrade(logger):
     clear_log()
     logger.log("STATE = UPGRADE")
     
+    handle_card_mastery_notification()
+    
     #Get to card page
     if get_to_card_page(logger)== "restart": return "restart"
     
@@ -129,6 +132,10 @@ def state_request(logger):
     #Request method goes to clan page, requests a random card if request is available, then returns to the clash royale main menu
     clear_log()
     logger.log("STATE = REQUEST")
+    
+    time.sleep(1)
+    handle_card_mastery_notification()
+    time.sleep(1)
     
     if request_random_card_from_clash_main(logger)=="restart": return "restart"
 
