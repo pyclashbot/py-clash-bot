@@ -17,7 +17,15 @@ class Logger:
         self.fights = 0
         self.requests = 0
         self.restarts = 0
+        
+        self.chests_unlocked = 0
+        self.cards_played = 0
+        self.cards_upgraded = 0
+        self.account_switches = 0
+        
+        
         self.current_status = "Idle"
+        
 
     def make_timestamp(self):
         """creates a time stamp for log output
@@ -64,25 +72,58 @@ class Logger:
         requests_str=f"{str(self.requests)}"
         fights_str=f"{str(self.fights)}"
         win_loss_str = self.make_score_board()
+        chests_unlocked_str=f"{str(self.chests_unlocked)}"
+        cards_played_str=f"{str(self.cards_played)}"
+        cards_upgraded_str=f"{str(self.cards_upgraded)}"
+        account_switches_str=f"{str(self.account_switches)}"
+        
+        
+        
         status_str = self.current_status
         
-        print("-------------------------------------")
-        print("|  Program uptime:  | " + time_str)
-        print("|------------------------------------")
-        print("| Program restarts: | " + restarts_str)
-        print("|------------------------------------")
-        print("|     Requests:     |",requests_str)
-        print("|------------------------------------")
-        print("|      Fights:      |",fights_str)
-        print("|------------------------------------")
-        print("|     Win rate:     |",win_loss_str)
-        print("|------------------------------------")
-        print("|  Current status:  |",status_str)
-        print("-------------------------------------")
         
         
         
-
+        
+        print("--------------------------------------------------------")
+        print("|      Program uptime:      | " + time_str)
+        print("|-------------------------------------------------------")
+        print("|     Program restarts:     | " + restarts_str)
+        print("|-------------------------------------------------------")
+        print("|         Requests:         |",requests_str)
+        print("|-------------------------------------------------------")
+        print("|          Fights:          |",fights_str)
+        print("|-------------------------------------------------------")
+        print("|         Win rate:         |",win_loss_str)
+        print("|-------------------------------------------------------")
+        print("|      Chests unlocked:     |",chests_unlocked_str)
+        print("|-------------------------------------------------------")
+        print("|       Cards played:       |",cards_played_str)
+        print("|-------------------------------------------------------")
+        print("|       Cards upgraded:     |",cards_upgraded_str)
+        print("|-------------------------------------------------------")
+        print("|      Account switches:    |",account_switches_str)
+        print("|-------------------------------------------------------")
+        print("|      Current status:      |",status_str)
+        print("--------------------------------------------------------")
+        
+        
+    def add_chest_unlocked(self):
+        self.chests_unlocked += 1
+        self.log()
+    
+    def add_card_played(self):
+        self.cards_played += 1
+        self.log()
+        
+    def add_card_upgraded(self):
+        self.cards_upgraded += 1
+        self.log()
+        
+    def add_account_switch(self):
+        self.account_switches += 1
+        self.log()
+        
     def add_win(self):
         """add win to log
         """
