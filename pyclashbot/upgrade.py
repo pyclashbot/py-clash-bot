@@ -76,7 +76,7 @@ def upgrade_current_cards(logger):
         pix=numpy.asarray(screenshot())[upgrade_button_coord[1]+10][upgrade_button_coord[0]+10]
         #print(pix)
         if check_if_pixel_indicates_upgrade(pix):
-            logger.change_status(str("Upgrade found for card: "+str(n+1)))
+            logger.change_status(str("Upgrading card: "+str(n+1)))
             click(upgrade_button_coord[0],upgrade_button_coord[1])
             time.sleep(1)
             upgrade_card()
@@ -107,7 +107,7 @@ def get_to_clash_main_from_card_page(logger):
         click(212,623)
         time.sleep(1)
         on_clash_main=check_if_on_clash_main_menu()
-    logger.change_status("On clash main")
+    #logger.change_status("On clash main")
 
 #Method to get to the card page on clash main from the clash main menu
 def get_to_card_page(logger):
@@ -124,7 +124,7 @@ def get_to_card_page(logger):
             return"restart"
         time.sleep(0.2)
     scroll_up_fast()
-    logger.change_status("Made it to card page")
+    #logger.change_status("Made it to card page")
     time.sleep(1)
 
 #Method to check if the elixer icon of your deck's AVG elixer when on the card page exists yet
@@ -169,7 +169,7 @@ def find_card_page_logo():
 
 #Method to select the second deck of this account
 def select_second_deck(logger):
-    logger.change_status("Selecting deck number 2 for use.")
+    #logger.change_status("Selecting deck number 2 for use.")
     #get to card page
     get_to_card_page(logger)
     time.sleep(1)
@@ -183,6 +183,7 @@ def select_second_deck(logger):
     
 #Method to randomize deck number 2 of this account
 def randomize_and_select_deck_2(logger):
+    logger.change_status("Randomizing deck number 2")
     #get to card page
     get_to_card_page(logger)
     

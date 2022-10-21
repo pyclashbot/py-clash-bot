@@ -77,22 +77,22 @@ def get_to_account(logger,account_number):
     handle_gold_rush_event(logger)
     time.sleep(2)
 
-    logger.change_status("Opening settings")
+    logger.change_status(str("Switching accounts to account number " + str(account_number)))
     click(x=364, y=99)
     time.sleep(3)
 
-    logger.change_status("Clicking switch button")
+    #logger.change_status("Clicking switch button")
     click(x=198, y=401)
     time.sleep(3)
 
     if account_number == 0:
-        logger.change_status("Clicking account 1")
+        #logger.change_status("Clicking account 1")
         click(x=211, y=388)
     if account_number == 1:
-        logger.change_status("Clicking account 2")
+        #logger.change_status("Clicking account 2")
         click(x=193, y=471)
     if account_number == 2:
-        logger.lchange_statusog("Clicking account 3")
+        #logger.lchange_statusog("Clicking account 3")
         click(x=200, y=560)
 
     time.sleep(3)
@@ -150,6 +150,7 @@ def handle_new_challenge(logger):
     click(196, 633)
     time.sleep(0.5)
     if check_if_on_trophy_progession_rewards_page():
+        logger.change_status("Handling the possibility of trophy progession rewards page obstructing the bot.")
         click(212, 633)
         time.sleep(0.5)
 
@@ -213,7 +214,7 @@ def open_chests(logger):
             click(210, 465)
 
         else:
-            logger.change_status("Handling possibility of rewards screen")
+            #logger.change_status("Handling possibility of rewards screen")
             for _ in range(10):
                 click(20,556)
             time.sleep(3)
@@ -255,7 +256,7 @@ def check_if_unlock_chest_button_exists():
 def start_2v2(logger):
     logger.change_status("Initiating 2v2 match from main menu")
     
-    logger.change_status("Clicking party mode")
+    #logger.change_status("Clicking party mode")
     time.sleep(1)
     click(284,449)
     time.sleep(1)
@@ -268,7 +269,7 @@ def start_2v2(logger):
 def find_and_click_2v2_quickmatch_button(logger):
     #starts in the party mode
     #ends when loading a match
-    logger.change_status("Finding and clicking 2v2 quickmatch button")
+    #logger.change_status("Finding and clicking 2v2 quickmatch button")
     #repeatedly scroll down until we find coords for the 2v2 quickmatch button
     coords = None
     loops=0
@@ -350,6 +351,7 @@ def wait_for_battle_start(logger):
         click(100, 100)
         time.sleep(0.25)
         loops += 1
+        logger.change_status(str("Waiting for battle start... " + str(loops)))
         if loops > 120:
             logger.change_status("Waited longer than 30 sec for a fight")
             return "restart"
