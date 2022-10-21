@@ -70,8 +70,7 @@ def restart_and_open_clash(logger,launcher_path):
     if wait_for_clash_main_menu(logger) == "restart":
         restart_and_open_clash(logger,launcher_path)
     time.sleep(3)
-    
-    
+       
 #Method to wait for memu loading background to disappear
 def wait_for_memu_loading_screen(logger):
     logger.change_status("Waiting for Memu Client to load")
@@ -90,7 +89,6 @@ def wait_for_memu_loading_screen(logger):
     time.sleep(3)
     logger.change_status("Done waiting for Memu Client to load.")
     time.sleep(3)
-    
 
 #Method for skipping the memu ads that popip up when you start memu
 def skip_ads(logger):
@@ -99,8 +97,7 @@ def skip_ads(logger):
         click(445,600)
         time.sleep(1)
     time.sleep(3)
-    
-    
+      
 #Method for waiting for memu to finish loading and display the memu home menu
 def wait_for_clash_logo_to_appear(logger):
     n=0
@@ -118,12 +115,7 @@ def wait_for_clash_logo_to_appear(logger):
         logo_coords=find_clash_app_logo()
         
         if logo_coords is not None: waiting = False
-        
-        
-        
-    #logger.change_status("Found the clash logo.")
-    
-    
+         
 #Method to check if memu loading background is present in the given moment
 def check_for_memu_loading_background():
     check_quit_key_press()
@@ -146,7 +138,6 @@ def check_for_memu_loading_background():
     )
 
     return check_for_location(locations)
-
 
 #Method to find the coordinates of the clash app logo on the menu home screen
 def find_clash_app_logo():
@@ -172,7 +163,6 @@ def find_clash_app_logo():
 
     return get_first_location(locations)
 
-
 #Method to close memu
 def close_memu():
     try:
@@ -190,8 +180,7 @@ def close_memu():
         time.sleep(3)
     except:
         print("Couldnt close Memu using title (MEmu1)")
-    
-    
+       
 #Method to close memu multi
 def close_memu_multi():
     try:
