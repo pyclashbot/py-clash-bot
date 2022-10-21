@@ -33,7 +33,6 @@ setup(
         'opencv-python',
         'keyboard',
         'numpy',
-        'ahk',
         'pyautogui',
         'pygetwindow',
         'joblib',
