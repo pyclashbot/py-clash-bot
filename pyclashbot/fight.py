@@ -19,7 +19,8 @@ def fight(logger):
     
     while in_battle:
         #wait for 6 elixer
-        if wait_until_has_6_elixer()=="restart": return "restart"
+        
+        if wait_until_has_6_elixer(logger)=="restart": return "restart"
        
         play_random_card(logger)
         plays+=1
@@ -118,6 +119,7 @@ def check_if_past_game_is_win(logger):
             click(20, 507)
 
             logger.change_status("Last game was a win. Incrementing win counter.")
+            time.sleep(2)
             logger.add_win()
             return True
     time.sleep(1)
@@ -125,6 +127,7 @@ def check_if_past_game_is_win(logger):
     click(20, 507)
     
     logger.change_status("Last game was a loss. Incrementing loss counter.")
+    time.sleep(2)
     logger.add_loss()
     return False
     
@@ -147,9 +150,9 @@ def check_if_has_6_elixer():
     return True
 
 #Method to wait untili the bot has 6 expendable elixer
-def wait_until_has_6_elixer():
+def wait_until_has_6_elixer(logger):
     has_6=check_if_has_6_elixer()
-    #logger.change_status("Waiting for 6 elixer")
+    logger.change_status("Waiting for 6 elixer")
     loops=0
     while not(has_6):
         loops+=1
