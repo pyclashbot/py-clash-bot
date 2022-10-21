@@ -1,3 +1,4 @@
+import pyautogui
 import os
 import random
 import time
@@ -14,7 +15,9 @@ from configuration import load_user_config
 from fight import leave_end_battle_window
 from image_rec import pixel_is_equal
 from logger import Logger
-from pyclashbot.states import state_request
+from upgrade import check_if_pixel_indicates_upgrade
+from upgrade import upgrade_current_cards
+from states import state_request, state_upgrade
 from request import check_if_in_a_clan, request_random_card_from_clash_main
 from states import (state_clashmain, state_endfight, state_fight,
                     state_startfight)
@@ -25,21 +28,15 @@ user_settings = load_user_config()
 launcher_path = user_settings["launcher_path"]
 
 
-# orientate_memu_multi()
-# orientate_memu()
+orientate_memu_multi()
+orientate_memu()
 time.sleep(1)
 
 # show_image(screenshot())
 
 
-# state_fight(logger)
 
-# check_if_end_screen_is_ok_middle()
-
-
-
-
-def battle_end_debug_main():
+def battle_debug_main():
     #Make logger, get launcherpath from %appdata/pyclashbot/config.json, initialize SSID as 1
     logger = Logger()
     ssid=0
@@ -76,5 +73,62 @@ def battle_end_debug_main():
         ssid = get_next_ssid(ssid, ssid_total)
 
 
+def upgrade_card_coords_debug():
+    card_coord_list=[
+        [86,278],
+        [174,278],
+        [260,278],
+        [328,278],
+        [86,400],
+        [174,400],
+        [260,400],
+        [328,400]
+    ]
+    #make list of coords of where the upgrade button will possibly appear for each 8 cards
+    upgrade_button_coords=[
+        [51,338],
+        [136,338],
+        [280,341],
+        [303,337],
+        [53,464],
+        [133,464],
+        [281,465],
+        [303,466],
+    ]
+    for n in range(8):
+        card_coord=card_coord_list[n]
+        upgrade_coord=upgrade_button_coords[n]
+        
+        print("Moving to card number", n+1)
+        pyautogui.moveTo(card_coord[0],card_coord[1],duration=1)
+        time.sleep(1)
+        pyautogui.click()
+        time.sleep(1)
+        pyautogui.moveTo(upgrade_coord[0],upgrade_coord[1],duration=1)
+        time.sleep(1)
+        print(check_if_pixel_indicates_upgrade(numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
 
-state_request(logger)
+
+
+
+    
+logger.log()
+logger.change_status("First status")
+time.sleep(1)
+logger.change_status("2nd status")
+time.sleep(1)
+logger.change_status("3 status")
+time.sleep(1)
+logger.change_status("4 status")
+time.sleep(1)
+logger.add_fight()
+time.sleep(1)
+logger.add_request()
+time.sleep(1)
+logger.add_win()
+time.sleep(1)
+logger.add_loss()
+time.sleep(1)
+logger.add_restart()
+time.sleep(1)
+
