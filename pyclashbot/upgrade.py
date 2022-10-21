@@ -7,12 +7,12 @@ import time
 import numpy
 import pyautogui
 
-from clashmain import check_if_on_clash_main_menu
-from client import (click, screenshot, scroll_down_fast,
+from pyclashbot.clashmain import check_if_on_clash_main_menu
+from pyclashbot.client import (click, screenshot, scroll_down_fast,
                     scroll_down_super_fast, scroll_up_fast)
-from image_rec import (check_for_location, find_references, get_first_location,
+from pyclashbot.image_rec import (check_for_location, find_references, get_first_location,
                        pixel_is_equal)
-from client import show_image
+from pyclashbot.client import show_image
 
 
 #Method for upgrading a given card

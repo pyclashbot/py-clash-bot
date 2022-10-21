@@ -1,9 +1,8 @@
-from os.path import dirname, join
 import random
+from os.path import dirname, join
 
-
-from client import get_file_count, screenshot
-from image_rec import check_for_location, find_references
+from pyclashbot.client import get_file_count, screenshot
+from pyclashbot.image_rec import check_for_location, find_references
 
 
 #Method to get an array of images of the 4 cards

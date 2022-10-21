@@ -1,18 +1,14 @@
 import os
-import pyautogui
-from matplotlib import pyplot as plt
-from PIL import Image
-import numpy
 import sys
 import time
 
 import keyboard
-from ahk import AHK
-
-
+import numpy
+import pyautogui
 import pygetwindow
-
-
+from ahk import AHK
+from matplotlib import pyplot as plt
+from PIL import Image
 
 ahk = AHK()
 
