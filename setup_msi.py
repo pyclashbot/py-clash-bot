@@ -28,7 +28,7 @@ dependencies = [
     'tqdm',
     'requests',
     'matplotlib',
-    'AHK',
+    'ahk',
     'PySimpleGUI'
 ]
 
