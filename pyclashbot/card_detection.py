@@ -217,139 +217,154 @@ def get_card_group(card_identification):
     return "regular"
 
 #Method to get a list of play coords for a given card group
-def get_play_coords(card_group):
-    turret_cards_coords=[
-        [217,371],
-        [236,383]
-    ]
+def get_play_coords(card_group,side):
+    if side == "random":
+        n=random.randint(0,1)
+        if n ==0: side="left"
+        else: side="right"
     
-    spell_cards_coords=[
-        [132,210],
-        [136,161],
-        [314,173],
-        [312,210],
-    ]
     
-    hog_cards_coords=[
-        [94,335],
-        [147,339],
-        [293,334],
-        [344,330],
-    ]
+    left_turret_cards_coords=[[217,371]]
+    right_turret_cards_coords=[[236,383]]
     
-    spawner_cards_coords=[
-        [303,485],
-        [375,491],
-        [147,485],
-        [87,479],
-    ]
+    left_spell_cards_coords=[[132,210],
+        [136,161],]
+    right_spell_cards_coords=[[314,173],
+        [312,210],]
     
-    princess_cards_coords=[
-        [94,335],
-        [147,339],
-        [293,334],
-        [344,330],
-    ]
+    left_hog_cards_coords=[[94,335],
+        [147,339],]
+    right_hog_cards_coords=[[293,334],
+        [344,330],]
     
-    miner_cards_coords=[
-        [94,190],
+    left_spawner_cards_coords=[[147,485],
+        [87,479],]
+    right_spawner_cards_coords=[[303,485],
+        [375,491],]
+    
+    left_princess_cards_coords=[        [94,335],
+        [147,339],]
+    right_princess_cards_coords=[        [293,334],
+        [344,330],]
+    
+    left_miner_cards_coords=[[94,190],
         [140,210],
-        [155,184],
-        [310,210],
+        [155,184],]
+    right_miner_cards_coords=[[310,210],
         [342,188],
-        [285,188],
-    ]
+        [285,188],]
     
-    goblin_barrel_cards_coords=[
-        [135,192],
-        [308,192],
-    ]
+    left_goblin_barrel_cards_coords=[[135,192],]
+    right_goblin_barrel_cards_coords=[ [308,192],]
     
-    wall_breaker_cards_coords=[
+    left_wall_breaker_cards_coords=[[221,330],
         [221,330],
         [221,330],
+        [138,328],]
+    right_wall_breaker_cards_coords=[[221,330],
         [221,330],
-        [138,328],
-        [306,332],
-    ]
+        [221,330],
+        [306,332],]
     
-    friendly_spell_cards_coords=[
-        [134,398],
-        [315,405],
-    ]
+    left_friendly_spell_cards_coords=[[134,398],]
+    right_friendly_spell_cards_coords=[[315,405],]
     
-    xbow_cards_coords=[
-        [191,328],
-        [289,335],
-    ]
+    left_xbow_cards_coords=[[191,328],]
+    right_xbow_cards_coords=[[289,335],]
     
-    mortar_cards_coords=[
-        [289,335],
-        [179,332],
-    ]
+    left_mortar_cards_coords=[ [179,332],]
+    right_mortar_cards_coords=[[289,335],]
     
-    elixer_pump_cards_coords=[
-        [303,485],
-        [375,491],
-        [147,485],
-        [87,479],
-    ]
+    left_elixer_pump_cards_coords=[[147,485],
+        [87,479],]
+    right_elixer_pump_cards_coords=[[303,485],
+        [375,491],]
+
+
 
     if card_group=="turret_cards":
-        #print("Returning turret card coords")
-        return turret_cards_coords
-    
+        if side=="left":
+            return left_turret_cards_coords
+        if side=="right":
+            return right_turret_cards_coords
+        
     if card_group=="spell_cards":
-        #print("Returning spell card coords")
-        return spell_cards_coords
+        if side=="left":
+            return left_spell_cards_coords
+        if side=="right":
+            return right_spell_cards_coords
     
     if card_group=="hog_cards":
-        #print("Returning hog card coords")
-        return hog_cards_coords
-    
+        if side=="left":
+            return right_hog_cards_coords
+        if side=="right":
+            return left_hog_cards_coords
+        
     if card_group=="spawner_cards":
-        #print("Returning spawner card coords")
-        return spawner_cards_coords
+        if side=="left":
+            return left_spawner_cards_coords
+        if side=="right":
+            return right_spawner_cards_coords
     
     if card_group=="princess_cards":
-        #print("Returning princess card coords")
-        return princess_cards_coords
+        if side=="left":
+            return left_princess_cards_coords
+        if side=="right":
+            return right_princess_cards_coords
     
     if card_group=="miner_cards":
-        #print("Returning miner card coords")
-        return miner_cards_coords
-    
+        if side=="left":
+            return right_miner_cards_coords
+        if side=="right":
+            return left_miner_cards_coords
+        
     if card_group=="goblin_barrel_cards":
-        #print("Returning goblin barrel card coords")
-        return goblin_barrel_cards_coords
-    
+        if side=="left":
+            return right_goblin_barrel_cards_coords
+        if side=="right":
+            return left_goblin_barrel_cards_coords
+        
     if card_group=="wall_breaker_cards":
-        #print("Returning wall breaker card coords")
-        return wall_breaker_cards_coords
+        if side=="left":
+            return left_wall_breaker_cards_coords
+        if side=="right":
+            return right_wall_breaker_cards_coords
     
     if card_group=="friendly_spell_cards":
-        #print("Returning friendly spell card coords")
-        return friendly_spell_cards_coords
+        if side=="left":
+            return left_friendly_spell_cards_coords
+        if side=="right":
+            return right_friendly_spell_cards_coords
     
     if card_group=="xbow_cards":
-        #print("Returning xbow card coords")
-        return xbow_cards_coords
-    
+        if side=="left":
+            return right_xbow_cards_coords
+        if side=="right":
+            return left_xbow_cards_coords
+        
     if card_group=="mortar_cards":
-        #print("Returning mortar card coords")
-        return mortar_cards_coords
+        if side=="left":
+            return left_mortar_cards_coords
+        if side=="right":
+            return right_mortar_cards_coords
     
     if card_group=="elixer_pump_cards":
-        #print("Returning elixer pump card coords")
-        return elixer_pump_cards_coords
+        if side=="left":
+            return right_elixer_pump_cards_coords
+        if side=="right":
+            return left_elixer_pump_cards_coords
 
-    return [
-        [94,335],
-        [147,339],
-        [293,334],
-        [344,330],
-        [303,485],
-        [375,491],
-        [147,485],
-        [87,479],
-    ]
+    if side=="left":
+        return [
+            [94,335],
+            [147,339],
+            [147,485],
+            [87,479],
+        ]
+    if side=="right":   
+        return [     
+            [293,334],
+            [344,330],
+            [303,485],
+            [375,491],
+        ]
