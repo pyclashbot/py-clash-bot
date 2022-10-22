@@ -1,19 +1,19 @@
 import subprocess
 import time
-from ast import Str
 
-import numpy
 import pygetwindow
 
-from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
-                    orientate_memu_multi, screenshot)
-from pyclashbot.image_rec import (check_for_location, find_reference, find_references,
-                       get_first_location, pixel_is_equal)
 from pyclashbot.clashmain import wait_for_clash_main_menu
+from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
+                               orientate_memu_multi, screenshot)
+from pyclashbot.dependency import setup_memu
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location)
 
+launcher_path = setup_memu()  # setup memu, install if necessary
 
 #Method for restarting Memu and MeMU Multi Manager, opening clash, and waiting for the clash main menu to appear.
-def restart_and_open_clash(logger,launcher_path):
+def restart_and_open_clash(logger):
     #If Memu is running, close it
     if len (pygetwindow.getWindowsWithTitle("MEmu")) != 0: close_memu()
 
@@ -45,7 +45,7 @@ def restart_and_open_clash(logger,launcher_path):
     time.sleep(3)
 
     #Wait for Memu Client loading screen
-    if wait_for_memu_loading_screen(logger): restart_and_open_clash(logger,launcher_path)
+    if wait_for_memu_loading_screen(logger): restart_and_open_clash(logger)
     time.sleep(3)
 
 
@@ -58,7 +58,7 @@ def restart_and_open_clash(logger,launcher_path):
     #Wait for clash logo to appear
     if wait_for_clash_logo_to_appear(logger)=="restart":
         logger.change_status("Waited too long for clash logo to appear. Restarting")
-        restart_and_open_clash(logger,launcher_path)
+        restart_and_open_clash(logger)
     time.sleep(3)
 
     #Click the clash logo
@@ -68,7 +68,7 @@ def restart_and_open_clash(logger,launcher_path):
 
     #Wait for the clash main menu to appear
     if wait_for_clash_main_menu(logger) == "restart":
-        restart_and_open_clash(logger,launcher_path)
+        restart_and_open_clash(logger)
     time.sleep(3)
 
 #Method to wait for memu loading background to disappear
