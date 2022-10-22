@@ -10,7 +10,7 @@
 
 
 from os import environ, makedirs, pathsep
-from os.path import exists, expandvars, join, normpath
+from os.path import exists, expandvars, join, normpath, getsize
 from socket import gaierror
 from subprocess import call
 from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
@@ -26,18 +26,17 @@ top_level = join(expandvars("%appdata%"), module_name)
 # region Common
 
 
-def get_dependency_dict() -> dict[str, list[str] | None]:
-    """creates a dictionary of dependencies
+def get_download_size(url: str) -> int:
+    """gets the size of a download
 
-    Returns: dict[str, list[str] | None]: a dictionary of dependencies
+    Args:
+        url (str): url of item to download
+
+    Returns:
+        int: size of download in bytes
     """
-    dependency_dict = {
-        # "tesseract": get_tsrct_link(),
-        "ahk": get_ahk_link(),
-        "memu": get_memu_link(),
-    }
-
-    return dependency_dict
+    r = get(url, headers=None, stream=True)
+    return int(r.headers.get("content-length", 0))
 
 
 def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
@@ -57,28 +56,33 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
     """
     if not url.lower().startswith("http"):
         raise ValueError from None
-    if not exists(join(output_dir, file_name)):
-        # remove_previous_downloads(cache_dir)
+    # if file doesnt exist or has a different size that the one on the server
+    file_path = join(output_dir, file_name)
+    download_size = get_download_size(url)
+    if not exists(file_path) or download_size != getsize(file_path):
         try:
+            print(f"Downloading {file_name} from {url} ({download_size} bytes)")
             r = get(url, headers=None, stream=True)
             total_size_in_bytes = int(r.headers.get("content-length", 0))
             block_size = 1024  # 1 Kibibyte
-            progress_bar = tqdm(total=total_size_in_bytes, unit="iB", unit_scale=True)
-            with open(join(output_dir, file_name), "wb") as f:
+            progress_bar = tqdm(total=total_size_in_bytes,
+                                unit="iB", unit_scale=True)
+            with open(file_path, "wb") as f:
                 for data in r.iter_content(block_size):
                     progress_bar.update(len(data))
                     f.write(data)
             progress_bar.close()
             if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
                 raise ConnectionError
-            return join(output_dir, file_name)
+            print(f"Downloaded {file_name} to {file_path}")
+            return file_path
         except (ConnectionError, gaierror):
             print(
-                f"Connection error while trying to download {url} to {join(output_dir, file_name)}"
+                f"Connection error while trying to download {url} to {file_path}"
             )
             return None
     print(f"File already downloaded from {url}.")
-    return join(output_dir, file_name)
+    return file_path
 
 
 def make_cache() -> str:
@@ -102,33 +106,8 @@ def run_installer(path: str) -> bool:
     Returns:
         bool: if install was successful
     """
+    print(f"Running installer {path}, please follow the installation prompts.")
     return call(path, shell=False) == 0
-
-
-def install_from_dict(dependencies: dict[str, list[str] | None]) -> None:
-    """installs a list of dependencies from a supplied dictionary
-
-    Args:
-        dependencies (dict[str, list[str]  |  None]): a dictioinary of dependencies names and their url
-    """
-    cache_dir = make_cache()
-    for name, download_info in dependencies.items():
-        if download_info is not None:
-            file_url = download_info[0]
-            file_name = download_info[1]
-            print(f"Downloading {name} from {file_url} to {cache_dir}.")
-            installer_path = download_from_url(file_url, cache_dir, file_name)
-            if installer_path is not None:
-                print(f"Executing {installer_path}")
-                run_installer(installer_path)
-        else:
-            print(f"Download for {name} is not found.")
-
-
-def install_dependencies() -> None:
-    """install the defined dependencies"""
-    dependency_dict = get_dependency_dict()
-    install_from_dict(dependency_dict)
 
 
 # endregion
@@ -143,8 +122,7 @@ def get_ahk_link() -> list[str] | None:
     Returns:
         list[str] | None: returns a a list of strings as [url, name of file] or None if not found
     """
-    url = r"https://www.autohotkey.com/download/ahk-install.exe"
-    return [url, "ahk-install.exe"]
+    return [r"https://www.autohotkey.com/download/ahk-install.exe", "ahk-install.exe"]
 
 
 def get_ahk_path() -> str:
@@ -164,14 +142,23 @@ def get_ahk_path() -> str:
     return str(normpath(QueryValueEx(akey, "DisplayIcon")[0]))
 
 
+def install_ahk() -> None:
+    """installs ahk"""
+    ahk_link = get_ahk_link()
+    if ahk_link is not None:
+        ahk_installer_path = download_from_url(
+            ahk_link[0], make_cache(), ahk_link[1])
+        if ahk_installer_path is not None:
+            run_installer(ahk_installer_path)
+
+
 def setup_ahk() -> str:
     """sets up ahk environment variables"""
-    # add ahk to path
-    try:
-        ahk_dir = get_ahk_path()
-    except FileNotFoundError:
-        install_dependencies()
-        ahk_dir = get_ahk_path()
+    # install ahk if not found
+    if not check_ahk():
+        install_ahk()
+
+    ahk_dir = get_ahk_path()
     if ahk_dir != "":
         environ["PATH"] += pathsep + ahk_dir
     return ahk_dir
@@ -197,13 +184,12 @@ def check_ahk() -> bool:
 
 
 def get_memu_link() -> list[str] | None:
-    """retrieves the link to the latest tesseract download
+    """retrieves the link to the latest memu download
 
     Returns:
         list[str] | None: returns a a list of strings as [url, name of file] or None if not found
     """
-    url = r"https://dl.memuplay.com/download/MEmu-setup-abroad-sdk.exe"
-    return [url, "MEmu-setup-abroad-sdk.exe"]
+    return [r"https://dl.memuplay.com/download/MEmu-setup-abroad-sdk.exe", "MEmu-setup-abroad-sdk.exe"]
 
 
 def get_memu_path() -> str:
@@ -223,20 +209,14 @@ def get_memu_path() -> str:
     return str(join(normpath(QueryValueEx(akey, "InstallLocation")[0]), "Memu"))
 
 
-def setup_memu() -> str:
-    """define the environmental variables related to memu, install memu if neccessary"""
-    try:
-        memu_path = get_memu_path()
-    except FileNotFoundError:
-        install_dependencies()
-        memu_path = get_memu_path()
-    environ["MEMU_PATH"] = memu_path
-
-    # add memuc to path
-    memuc_path = join(memu_path, "memuc.exe")
-    environ["PATH"] += pathsep + memuc_path
-
-    return join(memu_path, "MemuConsole.exe")
+def install_memu() -> None:
+    """installs memu"""
+    memu_link = get_memu_link()
+    if memu_link is not None:
+        memu_installer_path = download_from_url(
+            memu_link[0], make_cache(), memu_link[1])
+        if memu_installer_path is not None:
+            run_installer(memu_installer_path)
 
 
 def check_memu() -> bool:
@@ -252,9 +232,27 @@ def check_memu() -> bool:
         return False
 
 
+def setup_memu() -> str:
+    """define the environmental variables related to memu, install memu if neccessary"""
+    # install memu if not found
+    if not check_memu():
+        install_memu()
+
+    # get memu path
+    memu_path = get_memu_path()
+
+    # setup environment variables
+    environ["MEMU_PATH"] = memu_path
+
+    # add memuc to path
+    memuc_path = join(memu_path, "memuc.exe")
+    environ["PATH"] += pathsep + memuc_path
+
+    # return the path to the memuconsole executable
+    return join(memu_path, "MemuConsole.exe")
+
+
 # endregion
-
-
 if __name__ == "__main__":
     # setup dependencies
     ahk_path_s = setup_ahk()
@@ -264,6 +262,3 @@ if __name__ == "__main__":
     print(f"AutoHotKey path: {ahk_path_s}")
     print(f"MEmu path: {memu_path_s}")
 
-    # check dependencies
-    print(f"AHK: {check_ahk()}")
-    print(f"MEMU: {check_memu()}")
