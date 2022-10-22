@@ -4,7 +4,6 @@ import PySimpleGUI as sg
 
 from pyclashbot.client import (get_next_ssid, orientate_memu,
                                orientate_memu_multi)
-from pyclashbot.dependency import setup_memu
 from pyclashbot.gui import show_donate_gui, show_help_gui
 from pyclashbot.logger import Logger
 from pyclashbot.states import (detect_state, state_clashmain, state_endfight,
@@ -133,7 +132,7 @@ class MainLoopThread(StoppableThread):
         state = detect_state(logger)
         while not self.shutdown_flag.is_set():
             if state == "restart":
-                state_restart(logger, launcher_path)
+                state_restart(logger)
                 state = "clashmain"
 
             elif state == "clashmain":
@@ -174,5 +173,5 @@ class MainLoopThread(StoppableThread):
 
         print(f"Thread #{self.ident} stopped") # doesnt print for some reason
 
-launcher_path = setup_memu()  # setup memu, install if necessary
+
 main_gui()
