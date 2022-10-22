@@ -39,8 +39,8 @@ build_exe_options = {
     ]}
 
 
-# GUI applications require a different base on Windows
-base = None
+# sepccify program as gui so it doesnt open a console (use console=True for debugging)
+base = "Win32GUI"
 
 exe = Executable(
     script='pyclashbot\\__main__.py',
