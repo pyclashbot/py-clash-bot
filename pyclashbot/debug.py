@@ -42,33 +42,30 @@ def battle_debug_main():
     ssid=0
     jobs=["Fight"]
     ssid_total=2
-    
+
     #Starting with restart state, the bot will pass itself between
     #states as it reads the screen and will ignore jobs not on the joblist
     state="clashmain"
     while True:
-        if state=="clashmain": 
+        if state=="clashmain":
             orientate_memu_multi()
             orientate_memu()
             if state_clashmain(logger=logger,account_number=ssid,jobs=jobs)=="restart": state="restart"
             else: state="startfight"
-        
-        if state=="startfight": 
-            if "Fight" not in jobs: state="upgrade"
+
+        if state=="startfight":
+            if "Fight" not in jobs:
+                state="upgrade"
             else:
-                if state_startfight(logger)=="restart": state="restart"
-                else: state="fighting"
-        
+                state = "restart" if state_startfight(logger)=="restart" else "fighting"
         if state=="fighting":
-            if state_fight(logger)=="restart": state="restart"
-            else: state="endfight"
-        
-        if state=="endfight": 
+            state = "restart" if state_fight(logger)=="restart" else "endfight"
+        if state=="endfight":
             state_endfight(logger)
             state="clashmain"
-        
-       
-    
+
+
+
         #increment SSID to run the next loop with the next account in the cycle
         ssid = get_next_ssid(ssid, ssid_total)
 
@@ -98,7 +95,7 @@ def upgrade_card_coords_debug():
     for n in range(8):
         card_coord=card_coord_list[n]
         upgrade_coord=upgrade_button_coords[n]
-        
+
         print("Moving to card number", n+1)
         pyautogui.moveTo(card_coord[0],card_coord[1],duration=1)
         time.sleep(1)
@@ -113,5 +110,5 @@ def upgrade_card_coords_debug():
 
 
 
-    
+
 fight(logger)
