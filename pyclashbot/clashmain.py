@@ -20,14 +20,14 @@ def wait_for_clash_main_menu(logger):
             return "restart"
         handle_puzzleroyale_popup(logger)
         n=n+1
-        logger.change_status(str("Waiting for clash main menu to appear: " + str(n)))
+        logger.change_status(f"Waiting for clash main menu to appear: {str(n)}")
         time.sleep(1)
         waiting=not(check_if_on_clash_main_menu())
         click(32,364)
         time.sleep(1)
     time.sleep(3)
     logger.change_status("Done waiting for clash main menu to appear.")
-        
+
 #Method to handle puzzleroyale popup
 def handle_puzzleroyale_popup(logger):
     if look_for_puzzleroyale_popup():
@@ -38,22 +38,16 @@ def handle_puzzleroyale_popup(logger):
 #Method to check for puzzleroyale popup
 def look_for_puzzleroyale_popup():
     iar=numpy.asarray(screenshot())
-    
+
     pix_list=[
         iar[173][102],
         iar[290][96],
         iar[154][312],
     ]
-    
-    color = [244,183,118]
-    
-    #print(pix_list)
-    
 
-    for pix in pix_list:
-        if not(pixel_is_equal(pix,color,tol=45)):
-            return False
-    return True
+    color = [244,183,118]
+
+    return all((pixel_is_equal(pix,color,tol=45)) for pix in pix_list)
 
 #Method to check if the clash main menu is on screen
 def check_if_on_clash_main_menu():
@@ -71,13 +65,14 @@ def check_if_on_clash_main_menu():
 
     for pix in yellow_pix_list:
         return bool((pixel_is_equal(pix,yellow_sentinel,tol=50)))
-    
+
 #Method to change account to the given account number using the supercell ID login screen in the options menu in the clash main menu
 def get_to_account(logger,account_number):
     handle_gold_rush_event(logger)
     time.sleep(2)
 
-    logger.change_status(str("Switching accounts to account number " + str(account_number)))
+    logger.change_status(f"Switching accounts to account number {str(account_number)}")
+
     click(x=364, y=99)
     time.sleep(3)
 
@@ -112,7 +107,7 @@ def get_to_account(logger,account_number):
     time.sleep(0.5)
     handle_card_mastery_notification()
     time.sleep(0.5)
-     
+
 #Method to see if a gold rush event is happening on the clash main menu
 def check_for_gold_rush_event():
     references = [
@@ -176,13 +171,8 @@ def check_if_on_trophy_progession_rewards_page():
         iar[621][232],
     ]
     color=[78,175,255]
-    
-    #print(pix_list)
-    
-    for pix in pix_list:
-        if not(pixel_is_equal(pix,color,tol=35)):
-            return False
-    return True
+
+    return all((pixel_is_equal(pix,color,tol=35)) for pix in pix_list)
 
 #Method to handle the chest unlocking on the clash main menu
 def open_chests(logger):
@@ -200,7 +190,7 @@ def open_chests(logger):
     chest_index=0
     for chest_coord in chest_coord_list:
         chest_index=chest_index+1
-        logger.change_status(str("Checking chest slot "+str(chest_index)))
+        logger.change_status(f"Checking chest slot {str(chest_index)}")
         #click chest
         click(chest_coord[0],chest_coord[1])
         time.sleep(1)
@@ -219,7 +209,7 @@ def open_chests(logger):
             for _ in range(10):
                 click(20,556)
             time.sleep(3)
-            
+
 
         #close chest menu
         click(20,556)
@@ -256,16 +246,16 @@ def check_if_unlock_chest_button_exists():
 #Method to start a 2v2 quickmatch through the party mode through the clash main menu
 def start_2v2(logger):
     logger.change_status("Initiating 2v2 match from main menu")
-    
+
     #logger.change_status("Clicking party mode")
     time.sleep(1)
     click(284,449)
     time.sleep(1)
-    
+
     if find_and_click_2v2_quickmatch_button(logger)=="restart": return "restart"
-    
+
     check_for_reward_limit()
-    
+
 #method to find and click the 2v2 quickmatch button in the party mode menu
 def find_and_click_2v2_quickmatch_button(logger):
     #starts in the party mode
@@ -336,10 +326,9 @@ def find_2v2_quick_match_button():
         names=references,
         tolerance=0.97
     )
-    
+
     coord= get_first_location(locations)
-    if coord is None: return None
-    return [coord[1]+200,coord[0]+50]
+    return None if coord is None else [coord[1]+200,coord[0]+50]
 
 #Method to wait for a the loading sequence of a battle to finish
 def wait_for_battle_start(logger):
@@ -347,12 +336,12 @@ def wait_for_battle_start(logger):
     in_battle = False
     loops = 0
 
-    while in_battle == False:
+    while not in_battle:
         if check_if_in_battle(): in_battle = True
         click(100, 100)
         time.sleep(0.25)
         loops += 1
-        logger.change_status(str("Waiting for battle start... " + str(loops)))
+        logger.change_status(str(f"Waiting for battle start... {loops}"))
         if loops > 120:
             logger.change_status("Waited longer than 30 sec for a fight")
             return "restart"
@@ -383,8 +372,7 @@ def check_if_in_battle():
 def handle_card_mastery_notification():
     click(107,623)
     time.sleep(1)
-    
+
     click(240,630)
     time.sleep(1)
-    
-    
+

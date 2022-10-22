@@ -16,20 +16,20 @@ from pyclashbot.clashmain import wait_for_clash_main_menu
 def restart_and_open_clash(logger,launcher_path):
     #If Memu is running, close it
     if len (pygetwindow.getWindowsWithTitle("MEmu")) != 0: close_memu()
-    
+
     #If MeMU Multi Manager is running, close it
     if len (pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) != 0: close_memu_multi()
-    
+
     #Open the Memu Multi Manager
     logger.change_status("Opening MEmu launcher")
     subprocess.Popen(launcher_path)
-    
+
     #WAIT 10 SECONDS
     for n in range(10):
-        logger.change_status(str("Giving Memu Multi time to load: " + str(n)))
+        logger.change_status(f"Giving Memu Multi time to load: {str(n)}")
         time.sleep(1)
-        
-        
+
+
     #Orientate the Memu Multi Manager
     orientate_memu_multi()
     time.sleep(3)
@@ -39,7 +39,7 @@ def restart_and_open_clash(logger,launcher_path):
     click(556,141)
     time.sleep(3)
     check_quit_key_press()
-   
+
     #orientate memu client
     orientate_memu()
     time.sleep(3)
@@ -47,29 +47,29 @@ def restart_and_open_clash(logger,launcher_path):
     #Wait for Memu Client loading screen
     if wait_for_memu_loading_screen(logger): restart_and_open_clash(logger,launcher_path)
     time.sleep(3)
-   
-    
-    
-    
+
+
+
+
     #Skip Memu ads
     if find_clash_app_logo() is None: skip_ads(logger)
     time.sleep(3)
-    
+
     #Wait for clash logo to appear
     if wait_for_clash_logo_to_appear(logger)=="restart":
         logger.change_status("Waited too long for clash logo to appear. Restarting")
         restart_and_open_clash(logger,launcher_path)
     time.sleep(3)
-    
+
     #Click the clash logo
     logo_coords=find_clash_app_logo()
     click(logo_coords[1],logo_coords[0])
-    
+
     #Wait for the clash main menu to appear
     if wait_for_clash_main_menu(logger) == "restart":
         restart_and_open_clash(logger,launcher_path)
     time.sleep(3)
-       
+
 #Method to wait for memu loading background to disappear
 def wait_for_memu_loading_screen(logger):
     logger.change_status("Waiting for Memu Client to load")
@@ -83,7 +83,7 @@ def wait_for_memu_loading_screen(logger):
             return "restart"
         n=n+1
         time.sleep(1)
-        logger.change_status(str("Waiting for memu Client to load: " + str(n)))
+        logger.change_status(f"Waiting for memu Client to load: {str(n)}")
         waiting=check_for_memu_loading_background()
     time.sleep(3)
     logger.change_status("Done waiting for Memu Client to load.")
@@ -96,7 +96,7 @@ def skip_ads(logger):
         click(445,600)
         time.sleep(1)
     time.sleep(3)
-      
+
 #Method for waiting for memu to finish loading and display the memu home menu
 def wait_for_clash_logo_to_appear(logger):
     n=0
@@ -109,12 +109,12 @@ def wait_for_clash_logo_to_appear(logger):
             return "restart"
         n=n+1
         time.sleep(1)
-        logger.change_status(str("Waiting for clash logo to appaer: " + str(n)))
-        
+        logger.change_status(f"Waiting for clash logo to appaer: {str(n)}")
+
         logo_coords=find_clash_app_logo()
-        
+
         if logo_coords is not None: waiting = False
-         
+
 #Method to check if memu loading background is present in the given moment
 def check_for_memu_loading_background():
     check_quit_key_press()
@@ -151,7 +151,7 @@ def find_clash_app_logo():
         "6.png",
         "7.png",
     ]
-    
+
 
     locations = find_references(
         screenshot=current_image,
@@ -171,7 +171,7 @@ def close_memu():
         time.sleep(3)
     except:
         print("Couldnt close Memu using title (MEmu)")
-    
+
     try:
         window=pygetwindow.getWindowsWithTitle("(MEmu1)")[0]
         window.close()
@@ -179,7 +179,7 @@ def close_memu():
         time.sleep(3)
     except:
         print("Couldnt close Memu using title (MEmu1)")
-       
+
 #Method to close memu multi
 def close_memu_multi():
     try:
@@ -189,4 +189,4 @@ def close_memu_multi():
         time.sleep(3)
     except:
         print("Couldnt close Memu Multi")
-        
+
