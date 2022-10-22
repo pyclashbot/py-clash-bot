@@ -63,7 +63,8 @@ def restart_and_open_clash(logger,launcher_path):
 
     #Click the clash logo
     logo_coords=find_clash_app_logo()
-    click(logo_coords[1],logo_coords[0])
+    if logo_coords is not None:
+        click(logo_coords[1],logo_coords[0])
 
     #Wait for the clash main menu to appear
     if wait_for_clash_main_menu(logger) == "restart":
