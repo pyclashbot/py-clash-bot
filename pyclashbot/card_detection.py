@@ -17,7 +17,7 @@ def get_card_images():
 # Method to check for a card in a given image
 
 
-def check_for_card(image=None, card_name=""):
+def check_for_card(image, card_name=""):
     folder_str = "check_if_card_is_"+card_name
 
     references = make_reference_image_list(get_file_count(
