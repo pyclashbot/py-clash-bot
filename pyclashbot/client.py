@@ -8,8 +8,10 @@ import pyautogui
 import pygetwindow
 from ahk import AHK
 from matplotlib import pyplot as plt
-from PIL import Image
 
+from pyclashbot.dependency import setup_ahk
+
+setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
 
 
