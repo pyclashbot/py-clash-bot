@@ -47,7 +47,7 @@ def scroll_down_super_fast():
 #Method for clearing the terminal
 def clear_log():
     os.system('cls||clear')
-    
+
 #Method for terminating the program upon key press
 def check_quit_key_press():
     if keyboard.is_pressed("space"):
@@ -65,13 +65,10 @@ def check_quit_key_press():
                 pressed = True
 
 #Method to return the amount of a files in a given directory
-def get_file_count(directory) :
-    count = 0
-    for root_dir, cur_dir, files in os.walk(directory):
-        count += len(files)
+def get_file_count(directory):
     #print('file count:', count)
-    return count
-        
+    return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
+
 #Method for orientating Memu client
 def orientate_memu():
     try:
@@ -107,7 +104,7 @@ def orientate_memu_multi():
         window_mimm.moveTo(0, 0)
     except:
         print("Couldnt orientate MIMM")
-        
+
 #Method to show a PIL image using matlibplot
 def show_image(image):
     plt.imshow(numpy.asarray(image))
@@ -120,10 +117,10 @@ def pause():
     print("Pausing the program. Press spacebar to continue")
     while waiting:
         time.sleep(1)
-        if keyboard.is_pressed("space"): 
+        if keyboard.is_pressed("space"):
             print("Space held - Resuming the program")
             waiting=False
-     
+
 #Method to compare the equality of two coords
 def compare_coords(coord1,coord2):
     return (coord1[0] == coord2[0] and coord1[1] == coord2[1])
@@ -131,27 +128,24 @@ def compare_coords(coord1,coord2):
 #Method for clicking a given coordinate
 def click(x,y,duration=1):
     #30 speed = 3 seconds
-    speed=duration*10                                                             
-    
+    speed=duration*10
+
     #Tolerance for timer comparisons
     tol=0.5
-    
+
     #timer for mouse movement
     start = time.time()
     ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
-    
-    while True:
-        if ahk.mouse_position == (x, y):
-            break
- 
-        if (time.time() - start) > (speed/10)+tol:                          
+
+    while ahk.mouse_position != (x, y):
+        if (time.time() - start) > (speed/10)+tol:
             pause()
             start = time.time()
             ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
-            
-            
+
+
     ahk.click()
-    
+
 #Method for scrolling down when interacting with a scrollable menu
 def scroll_down():
     origin = pyautogui.position()
