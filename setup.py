@@ -29,6 +29,7 @@ setup(
     url='https://matthewmiglio.github.io/py-clash-bot/',
     download_url='https://matthewmiglio.github.io/py-clash-bot/',
     install_requires=[
+        'Cx_Freeze',
         'pillow',
         'opencv-python',
         'keyboard',
