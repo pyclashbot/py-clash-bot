@@ -1,15 +1,15 @@
 import sys
 
-import pyperclip
 import PySimpleGUI as sg
 
-from pyclashbot.client import get_next_ssid, orientate_memu, orientate_memu_multi
-from pyclashbot.configuration import load_user_config
+from pyclashbot.client import (get_next_ssid, orientate_memu,
+                               orientate_memu_multi)
+from pyclashbot.dependency import setup_ahk, setup_memu
 from pyclashbot.gui import show_donate_gui, show_help_gui
 from pyclashbot.logger import Logger
-from pyclashbot.states import (detect_state, state_clashmain, state_endfight, state_fight,
-                    state_request, state_restart, state_startfight,
-                    state_upgrade)
+from pyclashbot.states import (detect_state, state_clashmain, state_endfight,
+                               state_fight, state_request, state_restart,
+                               state_startfight, state_upgrade)
 
 
 #Method to handle ending of the program
@@ -96,11 +96,9 @@ def main_gui():
     
 #main program
 def main(jobs,ssid_total):
-    #Make logger, get launcherpath from %appdata/pyclashbot/config.json, initialize SSID as 1
+    #Make logger, initialize SSID as 1
     logger = Logger()
     logger.log()
-    user_settings = load_user_config()
-    launcher_path = user_settings["launcher_path"]
     ssid=0
 
     #Starting with restart state, the bot will pass itself between
@@ -148,5 +146,6 @@ def main(jobs,ssid_total):
         ssid = get_next_ssid(ssid, ssid_total)
 
 
-
+setup_ahk() # setup autohotkey, install if necessary
+launcher_path = setup_memu() # setup memu, install if necessary
 main_gui()
