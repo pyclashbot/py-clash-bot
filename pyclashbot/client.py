@@ -20,8 +20,10 @@ def get_next_ssid(current_ssid,ssid_total):
     return 0 if (current_ssid + 1) == ssid_total else current_ssid + 1
 
 #Method to return a screenshot of a given region
-def screenshot(region=[0,0,500,700]):
-    return pyautogui.screenshot(region=region)
+def screenshot(region=None):
+    if region is None:
+        region = [0,0,500,700]
+    return pyautogui.screenshot(region=region)  # type: ignore
 
 #Method for scrolling up faster when interacting with a scrollable menu
 def scroll_up_fast():
