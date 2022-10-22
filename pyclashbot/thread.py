@@ -1,7 +1,6 @@
 import threading
 import time
 
-from dependency import setup_ahk, setup_memu
 
 
 class StoppableThread(threading.Thread):
