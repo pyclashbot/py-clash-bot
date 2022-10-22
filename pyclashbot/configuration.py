@@ -8,8 +8,6 @@ top_level = join(expandvars('%appdata%'), "py-ClashBot")
 config_file = join(top_level, 'config.json')
 
 default_config = {
-    # MEMU MULTI launcher path
-    "launcher_path": (r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe")
 }
 
 
