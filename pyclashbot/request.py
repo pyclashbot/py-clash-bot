@@ -17,25 +17,25 @@ def request_random_card_from_clash_main(logger):
         logger.change_status("Skipping request because we are not in a clan.")
         return
     time.sleep(1)
-    
+
     logger.change_status("Requesting a card.")
     #getting to clan page
     if get_to_clan_page(logger)=="restart":
         return "restart"
     time.sleep(1)
-    
+
     #Check if can request
-    if check_if_can_request():    
+    if check_if_can_request():
         # clicking request button in bottom left
         click(x=86, y=564)
 
         # run request alg
         if request_random_card(logger)=="restart": return "restart"
         logger.add_request()
-        
+
     else:
         logger.change_status("Can't request a card right now.")
-    
+
     #return to main
     if get_to_clash_main_from_request_page(logger)== "restart": return "restart"
 
@@ -165,20 +165,20 @@ def get_to_clan_page(logger):
     loops=0
     while not(on_clan_chat_page):
         loops+=1
-        if loops>25: 
+        if loops>25:
             logger.change_status("Could not get to clan page.")
             return "restart"
         click(278,631)
         time.sleep(1)
         scroll_down()
         time.sleep(1)
-        
+
         on_clan_chat_page=check_if_on_clan_page()
-    
+
 #Method to check if we're on the clan chat page
 def check_if_on_clan_page():
     iar=numpy.asarray(screenshot())
-    
+
     pix_list=[
         iar[570][216],
         iar[575][149],
@@ -186,10 +186,7 @@ def check_if_on_clan_page():
         iar[575][215],
     ]
     color=[183 , 105 ,253]
-    for pix in pix_list:
-        if not(pixel_is_equal(pix,color,tol=45)):
-            return False
-    return True
+    return all((pixel_is_equal(pix,color,tol=45)) for pix in pix_list)
 
 #Method to check if request is available
 def check_if_can_request():
@@ -201,44 +198,41 @@ def check_if_can_request():
         iar[536][47],
     ]
     color=[47, 69,105]
-    for pix in pix_list:
-        if not(pixel_is_equal(pix,color,tol=35)):
-            return False
-    return True
-    
-    
+    return all((pixel_is_equal(pix,color,tol=35)) for pix in pix_list)
+
+
 #Method to check if the current account has a clan
 def check_if_in_a_clan(logger):
     #starts and ends on clash main
     logger.change_status("Checking if in a clan.")
-    
+
     #click clan tab
     click(308,627)
     time.sleep(1)
-    
+
     #cycle through clan tab a few times
     for _ in range(3): click(280,623)
     time.sleep(1)
     scroll_down()
     time.sleep(1)
-    
+
     #get a pixel from this clan tab
     pixel_1=numpy.asarray(screenshot())[118][206]
     #print("pixel 1 is ",pixel_1)
-    
+
     #cycle tab again
     click(280,623)
     time.sleep(1)
-    
+
     #get second pixel
     pixel_2=numpy.asarray(screenshot())[118][206]
     #print("pixel 2 is ",pixel_2)
-    
+
     #get back to clash main
     get_to_clash_main_from_request_page(logger)
-    
-    
-    
+
+
+
     #if pixels aren't equal return True (in a clan because there are two available pages instead of one)
     if not(pixel_is_equal(pixel_1,pixel_2,tol=25)):
         logger.change_status("You're in a clan")
@@ -250,8 +244,7 @@ def check_if_in_a_clan(logger):
 
 
 
-    
-    
-    
-    
-    
+
+
+
+
