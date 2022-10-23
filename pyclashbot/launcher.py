@@ -5,7 +5,7 @@ import pygetwindow
 
 from pyclashbot.clashmain import wait_for_clash_main_menu
 from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
-                               orientate_memu_multi, screenshot)
+                               orientate_memu_multi, orientate_terminal, screenshot)
 from pyclashbot.dependency import setup_memu
 from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location)
@@ -20,6 +20,8 @@ def restart_and_open_clash(logger):
     #If MeMU Multi Manager is running, close it
     if len (pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) != 0: close_memu_multi()
 
+    orientate_terminal()
+    
     #Open the Memu Multi Manager
     logger.change_status("Opening MEmu launcher")
     subprocess.Popen(launcher_path)
