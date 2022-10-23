@@ -22,14 +22,18 @@ from pyclashbot.states import (state_clashmain, state_endfight, state_fight,
                     state_request, state_startfight, state_upgrade)
 from pyclashbot.upgrade import check_if_pixel_indicates_upgrade, upgrade_current_cards
 
+import pygetwindow
+
+
+
 ahk = AHK()
 logger = Logger()
-user_settings = load_user_config()
-launcher_path = user_settings["launcher_path"]
+#user_settings = load_user_config()
+#launcher_path = user_settings["launcher_path"]
 
 
-# orientate_memu_multi()
-# orientate_memu()
+orientate_memu_multi()
+orientate_memu()
 # time.sleep(1)
 
 # show_image(screenshot())
@@ -109,6 +113,3 @@ def upgrade_card_coords_debug():
 
 
 
-
-
-fight(logger)
