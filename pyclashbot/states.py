@@ -7,12 +7,13 @@ from pyclashbot.clashmain import (check_if_in_battle, get_to_account,
                                   open_chests, start_2v2,
                                   wait_for_battle_start,
                                   wait_for_clash_main_menu)
-from pyclashbot.client import clear_log, click
+from pyclashbot.client import clear_log, click, orientate_memu, orientate_memu_multi, orientate_terminal
 from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
                               check_if_end_screen_is_ok_bottom_middle,
                               check_if_past_game_is_win, fight,
                               leave_end_battle_window)
 from pyclashbot.launcher import restart_and_open_clash
+from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_on_clan_page,
                                 get_to_clash_main_from_request_page,
                                 request_random_card_from_clash_main)
@@ -23,7 +24,7 @@ from pyclashbot.upgrade import (check_if_on_first_card_page, get_to_card_page,
 
 
 # Method for detecting the state of the client in a given moment
-def detect_state(logger):
+def detect_state(logger):  # sourcery skip: extract-duplicate-method
     # if we're on clan page get back to clash main and return
     if check_if_on_clan_page():
         if get_to_clash_main_from_request_page(logger) == "restart":
@@ -60,6 +61,40 @@ def detect_state(logger):
 
     # if none of these conditions are met return "restart"
     return "restart"
+
+
+def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
+    if state == "clashmain":
+        orientate_memu_multi()
+        orientate_memu()
+        orientate_terminal()
+        return "restart" if state_clashmain(logger=logger, account_number=ssid, jobs=jobs) == "restart" else "startfight"
+
+    elif state == "startfight":
+        if "Fight" not in jobs:
+            return "upgrade"
+        else:
+            return "restart" if state_startfight(logger) == "restart" else "fighting"
+
+    elif state == "fighting":
+        return "restart" if state_fight(logger) == "restart" else "endfight"
+
+    elif state == "endfight":
+        state_endfight(logger)
+        return "upgrade"
+
+    elif state == "upgrade":
+        return "restart" if "Upgrade" in jobs and state_upgrade(logger) == "restart" else "request"
+
+    elif state == "request":
+        return "restart" if "Request" in jobs and state_request(logger) == "restart" else "clashmain"
+
+    elif state == "restart":
+        state_restart(logger)
+        return "clashmain"
+
+    return state
+
 
 # Method for the restart state of the program
 
