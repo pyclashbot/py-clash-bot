@@ -3,7 +3,7 @@ import sys
 import PySimpleGUI as sg
 
 from pyclashbot.client import (get_next_ssid, orientate_memu,
-                               orientate_memu_multi)
+                               orientate_memu_multi, orientate_terminal)
 from pyclashbot.gui import show_donate_gui, show_help_gui
 from pyclashbot.logger import Logger
 from pyclashbot.states import (detect_state, state_clashmain, state_endfight,
@@ -59,6 +59,7 @@ def main_gui():
         [sg.Output(size=(88,20), font=("Consolas 10"))]
     ]
     window = sg.Window('Py-ClashBot', layout)
+    
 
     thread = None
     # run the gui
@@ -121,6 +122,7 @@ class MainLoopThread(StoppableThread):
 
     def run(self):
         print(f"Thread #{self.ident} started")
+        
         jobs, ssid_total = self.args
 
         logger = Logger()
@@ -138,6 +140,7 @@ class MainLoopThread(StoppableThread):
             elif state == "clashmain":
                 orientate_memu_multi()
                 orientate_memu()
+                orientate_terminal()
                 if state_clashmain(logger=logger, account_number=ssid, jobs=jobs) == "restart":
                     state = "restart"
                 else:

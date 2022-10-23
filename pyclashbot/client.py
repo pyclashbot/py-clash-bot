@@ -157,3 +157,16 @@ def scroll_down():
     pyautogui.dragTo(x=215, y=300, button='left', duration=1)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
+
+
+#Method to orientate the terminal window alongside the memu client
+def orientate_terminal():
+    try:
+        window=pygetwindow.getWindowsWithTitle("Py-ClashBot")[0]
+        window.moveTo(725,0)
+    except:
+        print("Couldn't orientate terminal")
+    
+    
+    
+
