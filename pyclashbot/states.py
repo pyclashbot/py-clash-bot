@@ -100,6 +100,7 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
 def state_restart(logger):
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
     # clear_log()
+    orientate_terminal()
     logger.change_status("Restarting")
 
     if restart_and_open_clash(logger) == "restart":
