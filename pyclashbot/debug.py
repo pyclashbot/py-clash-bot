@@ -14,7 +14,7 @@ from PIL import Image
 from pyclashbot.client import (click, get_next_ssid, orientate_memu, orientate_memu_multi,
                     screenshot, scroll_down, show_image)
 from pyclashbot.configuration import load_user_config
-from pyclashbot.fight import fight, leave_end_battle_window
+from pyclashbot.fight import fight, leave_end_battle_window, pick_a_lane
 from pyclashbot.image_rec import pixel_is_equal
 from pyclashbot.logger import Logger
 from pyclashbot.request import check_if_in_a_clan, request_random_card_from_clash_main
@@ -32,8 +32,8 @@ logger = Logger()
 #launcher_path = user_settings["launcher_path"]
 
 
-orientate_memu_multi()
-orientate_memu()
+# orientate_memu_multi()
+# orientate_memu()
 # time.sleep(1)
 
 # show_image(screenshot())
@@ -111,5 +111,7 @@ def upgrade_card_coords_debug():
 
 
 
-
+while True:
+    side=pick_a_lane()
+    print(side)
 
