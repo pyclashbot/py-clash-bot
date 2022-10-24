@@ -17,7 +17,6 @@ from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
 
 from requests import get
 from requests.exceptions import ConnectionError
-from enlighten import get_manager
 
 module_name = "py-clash-bot"
 
@@ -63,19 +62,11 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
         try:
             print(
                 f"Downloading {file_name} from {url} ({download_size} bytes)")
-            open(file_path, 'w') # create file
-            r = get(url, headers=None, stream=True)
-            with get_manager().counter(
-                    color="green",
-                    total=download_size,
-                    unit="B",
-                    unit_scale=True,
-                    leave=False
-            ) as counter, open(file_path, "wb") as f:
+            r = get(url, headers=None, stream=True, allow_redirects=True)
+            with open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
-                        counter.update(len(chunk))
             print(f"Downloaded {file_name} to {file_path}")
             return file_path
         except (ConnectionError, gaierror):
