@@ -8,10 +8,10 @@
     "react-ga4": "^1",
     "react-helmet": "^6",
     "react-router-dom": "^6",
-    "react-scripts": "^5",
     "web-vitals": "^3"
   },
   "devDependencies": {
+    "react-scripts": "^5",
     "eslint": "^8",
     "eslint-config-google": "^0",
     "eslint-plugin-react": "^7",
