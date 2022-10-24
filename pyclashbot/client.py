@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import time
 
@@ -10,7 +11,6 @@ from ahk import AHK
 from matplotlib import pyplot as plt
 
 from pyclashbot.dependency import setup_ahk
-
 
 setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
@@ -69,7 +69,7 @@ def scroll_down_super_fast():
 
 def clear_log():
     """Method for clearing the terminal"""
-    os.system('cls||clear')
+    subprocess.call('cls||clear', shell=False)
 
 
 def check_quit_key_press():
