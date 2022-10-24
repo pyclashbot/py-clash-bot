@@ -62,8 +62,6 @@ def detect_state(logger):
     return "restart"
 
 # Method for the restart state of the program
-
-
 def state_restart(logger):
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
     # clear_log()
@@ -73,8 +71,6 @@ def state_restart(logger):
         restart_and_open_clash(logger)
 
 # Method for the clash royale main menu state of the program
-
-
 def state_clashmain(logger, account_number, jobs):
     # Clashmain state gets to the correct account of the current state then opens their chests
 
@@ -92,8 +88,6 @@ def state_clashmain(logger, account_number, jobs):
     time.sleep(3)
 
 # Method for the starting of a fight state of the program
-
-
 def state_startfight(logger):
     # Begins on clash main, ends in the beginning of a fight
 
@@ -111,8 +105,6 @@ def state_startfight(logger):
         return "restart"
 
 # Method for the state of the program when fighting
-
-
 def state_fight(logger):
     # Method that plays cards with certain logic until the fight is over then returns to the clash royale main screen
 
@@ -126,8 +118,6 @@ def state_fight(logger):
         return 'restart'
 
 # Method for the state of the program after a fight
-
-
 def state_endfight(logger):
     # Checks if the last battle was a win or loss then adds this to the logger tally
     # Starts and ends on the clash royale main menu
@@ -157,10 +147,10 @@ def state_upgrade(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
 
-# Method for the state of the program when requesting cards
 
 
 def state_request(logger):
+# Method for the state of the program when requesting cards
     # Request method goes to clan page, requests a random card if request is available, then returns to the clash royale main menu
     clear_log()
     logger.change_status("Requesting card")

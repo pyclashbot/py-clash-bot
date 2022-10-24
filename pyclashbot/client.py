@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 
 from pyclashbot.dependency import setup_ahk
 
+
 setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
 
@@ -169,4 +170,3 @@ def orientate_terminal():
     
     
     
-
