@@ -10,6 +10,7 @@ import pyautogui
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
+from pyclashbot.card_detection import get_card_group, get_card_images, identify_cards
 
 from pyclashbot.client import (click, get_next_ssid, orientate_memu, orientate_memu_multi,
                     screenshot, scroll_down, show_image)
@@ -110,8 +111,8 @@ def upgrade_card_coords_debug():
         print(check_if_pixel_indicates_upgrade(numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
 
 
-
-while True:
-    side=pick_a_lane()
-    print(side)
-
+def check_card_detection():
+    while True:
+        print(identify_cards())
+        
+check_card_detection()
