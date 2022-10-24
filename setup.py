@@ -37,7 +37,6 @@ setup(
         'pyautogui',
         'pygetwindow',
         'joblib',
-        'enlighten',
         'requests',
         'matplotlib',
         'PySimpleGUI',
