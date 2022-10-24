@@ -4,7 +4,6 @@ import Execution from './Execution';
 import Install from './Install';
 import React, {Component} from 'react';
 import NavToContributing from '../navigation/NavToContributing';
-import Configuration from './Configuration';
 
 /**
 * Component for project description
@@ -21,7 +20,6 @@ export default class ReadMe extends Component {
         <Install/>
         <MEmuDependency/>
         <Execution/>
-        <Configuration/>
         <NavToContributing/>
       </div>
     );
