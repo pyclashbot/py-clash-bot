@@ -26,7 +26,7 @@ top_level = join(expandvars("%appdata%"), module_name)
 # region Common
 
 
-def get_download_size(url: str) -> int:
+def get_download_size(url: str) -> int | None:
     """gets the size of a download
 
     Args:
@@ -36,7 +36,7 @@ def get_download_size(url: str) -> int:
         int: size of download in bytes
     """
     r = get(url, headers=None, stream=True)
-    return int(r.headers.get("content-length", 0))
+    return int(r.headers.get('Content-Length', '0')) or None
 
 
 def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
@@ -63,6 +63,7 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
         try:
             print(
                 f"Downloading {file_name} from {url} ({download_size} bytes)")
+            open(file_path, 'w') # create file
             r = get(url, headers=None, stream=True)
             with get_manager().counter(
                     color="green",
