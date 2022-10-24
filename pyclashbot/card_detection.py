@@ -42,8 +42,6 @@ def make_reference_image_list(size):
     return reference_image_list
 
 # Method to return an list of 4 identified cards
-
-
 def identify_cards():
     # make return array
     card_list = []
