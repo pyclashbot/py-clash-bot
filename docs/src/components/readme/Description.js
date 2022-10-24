@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import CodeFactorBadge from '../badge/CodeFactorBadge';
-import PyPiBadge from '../badge/PyPiBadge';
 import SourceBadge from '../badge/SourceBadge';
 import TestBadge from '../badge/TestBadge';
 import PythonVersionBadge from '../badge/PythonVersionBadge';
@@ -20,7 +19,6 @@ export default class Description extends Component {
         <h2>
           <SourceBadge />
           <PythonVersionBadge/>
-          <PyPiBadge />
           <TestBadge />
           <CodeFactorBadge />
         </h2>

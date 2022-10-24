@@ -6,16 +6,7 @@ A Clash Royale automation bot written in Python.
 
 ## Install
 
-Choose one of the install methods below
-
-#### a. Windows Install
-
 [Download the latest release](https://github.com/matthewmiglio/py-clash-bot/releases).
-
-#### b. Install with pip
-
-Enter the following into the command line:
-```pip install py-clash-bot```
 
 ## MEmu Dependency
 
@@ -37,15 +28,6 @@ Then start the emulator and install Clash Royale with the Google Play Store.
 
 It is reccomended to play Clash Royale in English mode.
 
-## Run py-clash-bot
-
-
-#### a. Installed on Windows
+## Run py-clash-bot on Windows
 
 Run the desktop shortcut the installer created.
-
-#### b. Installed with pip
-
-Enter `pyclashbot` in the command line.
-
-
