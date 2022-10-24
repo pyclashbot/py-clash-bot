@@ -265,7 +265,7 @@ def get_left_and_right_totals(iar):
 #Method for choosing a side to attack based on the number of enemies on each side
 def pick_a_lane():
     #Either returns left right or random
-    iar=numpy.asarray(screenshot())
+    iar=numpy.array(screenshot())
 
     covered_iar=cover_board_image(iar)
 
