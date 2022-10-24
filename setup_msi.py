@@ -25,7 +25,7 @@ dependencies = [
     'pyautogui',
     'pygetwindow',
     'joblib',
-    'tqdm',
+    'enlighten',
     'requests',
     'matplotlib',
     'ahk',
