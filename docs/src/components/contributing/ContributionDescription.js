@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import CodeFactorBadge from '../badge/CodeFactorBadge';
-import PyPiBadge from '../badge/PyPiBadge';
 import SourceBadge from '../badge/SourceBadge';
 import TestBadge from '../badge/TestBadge';
 
@@ -18,7 +17,6 @@ export default class ContributionDescription extends Component {
         <h1 className="mume-header" id="py-clash-bot">Contributing</h1>
         <h2>
           <SourceBadge />
-          <PyPiBadge />
           <TestBadge />
           <CodeFactorBadge />
         </h2>
