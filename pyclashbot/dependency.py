@@ -17,7 +17,7 @@ from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
 
 from requests import get
 from requests.exceptions import ConnectionError
-from tqdm import tqdm
+from enlighten import get_manager
 
 module_name = "py-clash-bot"
 
@@ -61,16 +61,25 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
     download_size = get_download_size(url)
     if not exists(file_path) or download_size != getsize(file_path):
         try:
-            print(f"Downloading {file_name} from {url} ({download_size} bytes)")
+            print(
+                f"Downloading {file_name} from {url} ({download_size} bytes)")
             r = get(url, headers=None, stream=True)
-            with tqdm.wrapattr(r.raw, "read", total=download_size) as r_raw:
-                with open(file_path, "wb") as f:
-                    for chunk in r_raw:
+            with get_manager().counter(
+                    color="green",
+                    total=download_size,
+                    unit="B",
+                    unit_scale=True,
+                    leave=False
+            ) as counter, open(file_path, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:
                         f.write(chunk)
+                        counter.update(len(chunk))
             print(f"Downloaded {file_name} to {file_path}")
             return file_path
         except (ConnectionError, gaierror):
-            print(f"Connection error while trying to download {url} to {file_path}")
+            print(
+                f"Connection error while trying to download {url} to {file_path}")
             return None
     print(f"File already downloaded from {url}.")
     return file_path
@@ -252,4 +261,3 @@ if __name__ == "__main__":
     # print the install paths
     print(f"AutoHotKey path: {ahk_path_s}")
     print(f"MEmu path: {memu_path_s}")
-
