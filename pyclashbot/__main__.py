@@ -2,13 +2,10 @@ import sys
 
 import PySimpleGUI as sg
 
-from pyclashbot.client import (get_next_ssid, orientate_memu,
-                               orientate_memu_multi, orientate_terminal)
+from pyclashbot.client import get_next_ssid
 from pyclashbot.gui import show_donate_gui, show_help_gui
 from pyclashbot.logger import Logger
-from pyclashbot.states import (detect_state, state_clashmain, state_endfight,
-                               state_fight, state_request, state_restart,
-                               state_startfight, state_upgrade)
+from pyclashbot.states import detect_state, state_tree
 from pyclashbot.thread import StoppableThread
 
 
@@ -55,11 +52,11 @@ def main_gui():
         [sg.Combo(['1', '2', '3', '4'], key='-SSID_IN-', default_value='1')],
         [sg.Text("-------------------------------------------------------------------------------------")],
         # bottons at bottom
-        [sg.Button('Start'), sg.Button('Stop', disabled=True), sg.Button('Help'), sg.Button('Donate')],
-        [sg.Output(size=(88,20), font=("Consolas 10"))]
+        [sg.Button('Start'), sg.Button('Stop', disabled=True),
+         sg.Button('Help'), sg.Button('Donate')],
+        [sg.Output(size=(88, 20), font=("Consolas 10"))]
     ]
     window = sg.Window('Py-ClashBot', layout)
-    
 
     thread = None
     # run the gui
@@ -106,7 +103,6 @@ def main_gui():
             # enable the start button after the thread is stopped
             window["Start"].update(disabled=False)
 
-
         elif event == 'Donate':
             show_donate_gui()
 
@@ -116,13 +112,15 @@ def main_gui():
     window.close()
 
 # main program
+
+
 class MainLoopThread(StoppableThread):
     def __init__(self, args, kwargs=None):
         super().__init__(args, kwargs)
 
     def run(self):
         print(f"Thread #{self.ident} started")
-        
+
         jobs, ssid_total = self.args
 
         logger = Logger()
@@ -133,48 +131,12 @@ class MainLoopThread(StoppableThread):
         # states as it reads the screen and will ignore jobs not on the joblist
         state = detect_state(logger)
         while not self.shutdown_flag.is_set():
-            if state == "restart":
-                state_restart(logger)
-                state = "clashmain"
-
-            elif state == "clashmain":
-                orientate_memu_multi()
-                orientate_memu()
-                orientate_terminal()
-                if state_clashmain(logger=logger, account_number=ssid, jobs=jobs) == "restart":
-                    state = "restart"
-                else:
-                    state = "startfight"
-
-            elif state == "startfight":
-                if "Fight" not in jobs:
-                    state = "upgrade"
-                else:
-                    state = "restart" if state_startfight(
-                        logger) == "restart" else "fighting"
-            elif state == "fighting":
-                state = "restart" if state_fight(
-                    logger) == "restart" else "endfight"
-            elif state == "endfight":
-                state_endfight(logger)
-                state = "upgrade"
-
-            elif state == "upgrade":
-                if "Upgrade" in jobs and state_upgrade(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "request"
-
-            elif state == "request":
-                if "Request" in jobs and state_request(logger) == "restart":
-                    state = "restart"
-                else:
-                    state = "clashmain"
-
+            # perform a state decision based on the current state and get the next state
+            state = state_tree(jobs, logger, ssid, state)
             # increment SSID to run the next loop with the next account in the cycle
             ssid = get_next_ssid(ssid, ssid_total)
 
-        print(f"Thread #{self.ident} stopped") # doesnt print for some reason
+        print(f"Thread #{self.ident} stopped")
 
 
 main_gui()
