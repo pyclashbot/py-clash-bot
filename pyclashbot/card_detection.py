@@ -15,8 +15,6 @@ def get_card_images():
     ]
 
 # Method to check for a card in a given image
-
-
 def check_for_card(image, card_name=""):
     folder_str = "check_if_card_is_"+card_name
 
@@ -33,8 +31,6 @@ def check_for_card(image, card_name=""):
     return check_for_location(locations)
 
 # Method to make a reference array of a given size
-
-
 def make_reference_image_list(size):
     reference_image_list = []
 
