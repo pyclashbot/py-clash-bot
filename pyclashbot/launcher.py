@@ -154,6 +154,12 @@ def find_clash_app_logo():
         "5.png",
         "6.png",
         "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        
+        
+        
     ]
 
 
