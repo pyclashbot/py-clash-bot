@@ -16,7 +16,7 @@ from pyclashbot.client import (click, get_next_ssid, orientate_memu,
                                orientate_memu_multi, screenshot, scroll_down,
                                show_image)
 from pyclashbot.configuration import load_user_config
-from pyclashbot.fight import fight, leave_end_battle_window, pick_a_lane
+from pyclashbot.fight import check_if_has_6_elixer, fight, leave_end_battle_window, pick_a_lane, wait_until_has_6_elixer
 from pyclashbot.image_rec import pixel_is_equal
 from pyclashbot.launcher import close_memu, close_memu_multi, find_clash_app_logo
 from pyclashbot.logger import Logger
@@ -128,9 +128,14 @@ def card_detection_debug():
 
 # find_and_click_2v2_quickmatch_button(logger)
 
-while True:
-    print(find_2v2_quick_match_button())
+# while True:
+#     print(find_2v2_quick_match_button())
 
+
+# wait_until_has_6_elixer()
+while True:
+    has_6 = check_if_has_6_elixer()
+    print(has_6)
 
 
     
