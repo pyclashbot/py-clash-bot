@@ -1,6 +1,7 @@
 import subprocess
 import time
 
+
 import pygetwindow
 
 from pyclashbot.clashmain import wait_for_clash_main_menu
@@ -12,6 +13,21 @@ from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location)
 
 launcher_path = setup_memu()  # setup memu, install if necessary
+
+
+#Method to wait for a given window name to appear
+def wait_for_window(logger,window_name):
+    while True:
+        if pygetwindow.getWindowsWithTitle(window_name):
+            break
+        else:
+            logger.change_status(str("Waiting for " + window_name + " to appear"))
+            time.sleep(0.5)
+    logger.change_status(str("Done waiting for " + window_name))
+
+
+
+
 
 
 def restart_and_open_clash(logger):
@@ -31,10 +47,9 @@ def restart_and_open_clash(logger):
     logger.change_status("Opening MEmu launcher")
     subprocess.Popen(launcher_path)
 
-    # WAIT 10 SECONDS
-    for n in range(10):
-        logger.change_status(f"Giving Memu Multi time to load: {str(n)}")
-        time.sleep(1)
+    #Wait for memu to load
+    wait_for_window(logger,window_name="Multiple Instance Manager")
+    time.sleep(3)
 
     # Orientate the Memu Multi Manager
     orientate_memu_multi()
