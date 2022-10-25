@@ -120,8 +120,10 @@ def upgrade_card_coords_debug():
 
 
 def card_detection_debug():
+    n=0
     while True:
-        print("----------------------")
+        n+=1
+        print(n,"----------------------")
         print(identify_cards())
 
 
