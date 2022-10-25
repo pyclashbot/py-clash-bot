@@ -123,6 +123,4 @@ def card_detection_debug():
 
 
 
-while True:
-    coods=find_clash_app_logo()
-    print(coods)
+
