@@ -16,6 +16,7 @@ from pyclashbot.client import (click, get_next_ssid, orientate_memu,
 from pyclashbot.configuration import load_user_config
 from pyclashbot.fight import fight, leave_end_battle_window, pick_a_lane
 from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.launcher import find_clash_app_logo
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_in_a_clan,
                                 request_random_card_from_clash_main)
@@ -108,8 +109,11 @@ def upgrade_card_coords_debug():
         print(check_if_pixel_indicates_upgrade(numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
 
 
-def check_card_detection():
+def card_detection_debug():
     while True:
         print(identify_cards())
 
-check_card_detection()
+
+while True:
+    coods=find_clash_app_logo()
+    print(coods)
