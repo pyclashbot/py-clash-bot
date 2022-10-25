@@ -7,7 +7,8 @@ from pyclashbot.clashmain import (check_if_in_battle, get_to_account,
                                   open_chests, start_2v2,
                                   wait_for_battle_start,
                                   wait_for_clash_main_menu)
-from pyclashbot.client import clear_log, click, orientate_memu, orientate_memu_multi, orientate_terminal
+from pyclashbot.client import (click, orientate_memu, orientate_memu_multi,
+                               orientate_terminal)
 from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
                               check_if_end_screen_is_ok_bottom_middle,
                               check_if_past_game_is_win, fight,
@@ -107,6 +108,8 @@ def state_restart(logger):
         restart_and_open_clash(logger)
 
 # Method for the clash royale main menu state of the program
+
+
 def state_clashmain(logger, account_number, jobs):
     # Clashmain state gets to the correct account of the current state then opens their chests
 
@@ -124,6 +127,8 @@ def state_clashmain(logger, account_number, jobs):
     time.sleep(3)
 
 # Method for the starting of a fight state of the program
+
+
 def state_startfight(logger):
     # Begins on clash main, ends in the beginning of a fight
 
@@ -141,6 +146,8 @@ def state_startfight(logger):
         return "restart"
 
 # Method for the state of the program when fighting
+
+
 def state_fight(logger):
     # Method that plays cards with certain logic until the fight is over then returns to the clash royale main screen
 
@@ -154,6 +161,8 @@ def state_fight(logger):
         return 'restart'
 
 # Method for the state of the program after a fight
+
+
 def state_endfight(logger):
     # Checks if the last battle was a win or loss then adds this to the logger tally
     # Starts and ends on the clash royale main menu
@@ -184,11 +193,9 @@ def state_upgrade(logger):
         return "restart"
 
 
-
 def state_request(logger):
-# Method for the state of the program when requesting cards
+    # Method for the state of the program when requesting cards
     # Request method goes to clan page, requests a random card if request is available, then returns to the clash royale main menu
-    clear_log()
     logger.change_status("Requesting card")
 
     time.sleep(1)
