@@ -36,9 +36,9 @@ def fight(logger):
     logger.change_status("Done fighting.")
 
 
-# Method for finishing leaving a battle and returning to the clash royale main menu
 def leave_end_battle_window(logger):
-
+    # Method for finishing leaving a battle and returning to the clash royale
+    # main menu
     # if end screen condition 1 (exit in bottom left)
     if check_if_end_screen_is_exit_bottom_left():
         click(79, 625)
@@ -58,10 +58,10 @@ def leave_end_battle_window(logger):
     if wait_for_clash_main_menu(logger) == "restart":
         return 'restart'
 
-# Method to check if the end screen is the one with the OK button in the middle
-
 
 def check_if_end_screen_is_ok_bottom_middle():
+    # Method to check if the end screen is the one with the OK button in the
+    # middle
     iar = numpy.asarray(screenshot())
     # (210,589)
     pix_list = [
@@ -74,10 +74,10 @@ def check_if_end_screen_is_ok_bottom_middle():
     color = [78, 175, 255]
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
-# Method to check if the end screen is the one with the exit button in the bottom left
-
 
 def check_if_end_screen_is_exit_bottom_left():
+    # Method to check if the end screen is the one with the exit button in the
+    # bottom left
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[638][57],
@@ -88,20 +88,20 @@ def check_if_end_screen_is_exit_bottom_left():
     color = [87, 186, 255]
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
-# Method for opening the activity log from the clash royale main menu as to see past game outcomes
-
 
 def open_activity_log():
+    # Method for opening the activity log from the clash royale main menu as
+    # to see past game outcomes
     click(x=360, y=99)
     time.sleep(1)
 
     click(x=255, y=75)
     time.sleep(1)
 
-# Method for reading the actiivty log to check if the previous game was a win or loss
-
 
 def check_if_past_game_is_win(logger):
+    # Method for reading the actiivty log to check if the previous game was a
+    # win or loss
     open_activity_log()
     iar = numpy.asarray(screenshot())
 
@@ -133,10 +133,10 @@ def _extracted_from_check_if_past_game_is_win_12(logger, arg1):
     logger.change_status(arg1)
     time.sleep(2)
 
-# Method to see if the bot has 6 expendable elixer in the given moment during a battle
-
 
 def check_if_has_6_elixer():
+    # Method to see if the bot has 6 expendable elixer in the given moment
+    # during a battle
     iar = numpy.asarray(screenshot())
     pix_list = [
         # iar[643][258],
@@ -147,10 +147,10 @@ def check_if_has_6_elixer():
 
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
-# Method to wait untili the bot has 6 expendable elixer
-
 
 def wait_until_has_6_elixer(logger):
+    # Method to wait untili the bot has 6 expendable elixer
+
     has_6 = check_if_has_6_elixer()
     logger.change_status("Waiting for 6 elixer")
     loops = 0
@@ -164,10 +164,10 @@ def wait_until_has_6_elixer(logger):
         if check_if_in_battle() == False:
             return
 
-# Method to play a random card
-
 
 def play_random_card(logger):
+    # Method to play a random card
+
     # Select which card we're to play
     n = random.randint(0, 3)
     #logger.change_status(str("Selected card: "+str(n)))
@@ -209,10 +209,11 @@ def play_random_card(logger):
     # Click the location we're playing it at
     click(play_coord[0], play_coord[1])
 
-# Method for covering parts of a board image that may obstruct enemy detection
-
 
 def cover_board_image(iar):
+    # Method for covering parts of a board image that may obstruct enemy
+    # detection
+
     # Cover left enemy tower
     for x, y in itertools.product(range(101, 147), range(154, 215)):
         iar[y][x] = [0, 0, 0]
@@ -264,10 +265,10 @@ def cover_board_image(iar):
     # return
     return iar
 
-# Method for getting the left and right totals of enemies on the board
-
 
 def get_left_and_right_totals(iar):
+    # Method for getting the left and right totals of enemies on the board
+
     left_lane_total = 0
     right_lane_total = 0
 
@@ -282,10 +283,10 @@ def get_left_and_right_totals(iar):
 
     return left_lane_total, right_lane_total
 
-# Method for choosing a side to attack based on the number of enemies on each side
-
 
 def pick_a_lane():
+    # Method for choosing a side to attack based on the number of enemies on
+    # each side
     # Either returns left right or random
     iar = numpy.array(screenshot())
 

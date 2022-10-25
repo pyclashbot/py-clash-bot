@@ -37,7 +37,7 @@ def validate_types(user_config: dict[str, Any]) -> dict[str, Any]:
     user_keys = set(user_config)
     for key in user_keys:
         # overwrite with defualt if types are not the same
-        if type(user_config[key]) is not type(default_config[key]):
+        if not isinstance(user_config[key], type(default_config[key])):
             print(
                 "WARNING: Invalid values in user config. Overwriting invalid values with defaults")
             user_config[key] = default_config[key]
