@@ -50,18 +50,10 @@ def make_reference_image_list(size):
 
 
 def identify_cards():
-    # Method to return an list of 4 identified cards
-    # make return array
-    card_list = []
-
     # get card images
     card_images = get_card_images()
 
-    # fill out return array
-    for image in card_images:
-        card_list.append(identify_card(image))
-
-    return card_list
+    return [identify_card(image) for image in card_images]
 
 
 def identify_card(image):
@@ -107,10 +99,7 @@ def identify_card(image):
         "zap",
     ]
 
-    for card in card_list:
-        if check_for_card(image, card):
-            return card
-    return "unknown"
+    return next((card for card in card_list if check_for_card(image, card)), "unknown")
 
 
 def get_card_group(card_identification):
@@ -219,10 +208,7 @@ def get_card_group(card_identification):
         elixer_pump_cards,
     ]
 
-    for card_list in card_list_list:
-        if card_identification in card_list:
-            return card_list[0]
-    return "regular"
+    return next((card_list[0] for card_list in card_list_list if card_identification in card_list), "regular")
 
 
 def get_play_coords(card_group, side):
