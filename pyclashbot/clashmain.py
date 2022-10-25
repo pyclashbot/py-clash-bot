@@ -4,8 +4,8 @@ import numpy
 import pyautogui
 
 from pyclashbot.client import click, screenshot, scroll_down
-from pyclashbot.image_rec import (check_for_location, find_references, get_first_location,
-                       pixel_is_equal)
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location, pixel_is_equal)
 
 
 #Method for waiting for the clash main menu to appear after loading

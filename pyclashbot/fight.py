@@ -1,90 +1,96 @@
 import itertools
 import random
 import time
-from ast import Str
 
 import numpy
 
-from pyclashbot.card_detection import (get_card_group, get_card_images, get_play_coords,
-                            identify_card)
-from pyclashbot.clashmain import (check_if_in_battle, check_if_on_clash_main_menu,
-                       wait_for_clash_main_menu)
+from pyclashbot.card_detection import (get_card_group, get_card_images,
+                                       get_play_coords, identify_card)
+from pyclashbot.clashmain import check_if_in_battle, wait_for_clash_main_menu
 from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import pixel_is_equal
 
 
 def fight(logger):
     logger.change_status("Starting fight")
-    in_battle=True
-    plays=0
+    in_battle = True
+    plays = 0
 
     while in_battle:
-        #wait for 6 elixer
+        # wait for 6 elixer
 
-        if wait_until_has_6_elixer(logger)=="restart": return "restart"
-
-
-        play_random_card(logger)
-        plays+=1
-        logger.add_card_played()
-
-        in_battle=check_if_in_battle()
-
-        if plays>100:
-            logger.change_status("Made too many plays. Match is probably stuck. Ending match")
+        if wait_until_has_6_elixer(logger) == "restart":
             return "restart"
 
+        play_random_card(logger)
+        plays += 1
+        logger.add_card_played()
+
+        in_battle = check_if_in_battle()
+
+        if plays > 100:
+            logger.change_status(
+                "Made too many plays. Match is probably stuck. Ending match")
+            return "restart"
 
     logger.change_status("Done fighting.")
 
 
-#Method for finishing leaving a battle and returning to the clash royale main menu
+# Method for finishing leaving a battle and returning to the clash royale main menu
 def leave_end_battle_window(logger):
 
-    #if end screen condition 1 (exit in bottom left)
+    # if end screen condition 1 (exit in bottom left)
     if check_if_end_screen_is_exit_bottom_left():
-        click(79,625)
+        click(79, 625)
         time.sleep(1)
-        if wait_for_clash_main_menu(logger)=="restart":return "restart"
+        if wait_for_clash_main_menu(logger) == "restart":
+            return "restart"
         return
 
-    #if end screen condition 2 (OK in bottom middle)
+    # if end screen condition 2 (OK in bottom middle)
     if check_if_end_screen_is_ok_bottom_middle():
-        click(206,594)
+        click(206, 594)
         time.sleep(1)
-        if wait_for_clash_main_menu(logger)=="restart":return "restart"
+        if wait_for_clash_main_menu(logger) == "restart":
+            return "restart"
         return
 
+    if wait_for_clash_main_menu(logger) == "restart":
+        return 'restart'
 
-    if wait_for_clash_main_menu(logger)=="restart": return 'restart'
+# Method to check if the end screen is the one with the OK button in the middle
 
-#Method to check if the end screen is the one with the OK button in the middle
+
 def check_if_end_screen_is_ok_bottom_middle():
     iar = numpy.asarray(screenshot())
-    #(210,589)
-    pix_list=[
+    # (210,589)
+    pix_list = [
         iar[591][234],
         iar[595][178],
         iar[588][192],
         iar[591][233],
 
     ]
-    color=[ 78, 175 ,255]
-    return all((pixel_is_equal(pix,color,tol=45)) for pix in pix_list)
+    color = [78, 175, 255]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
-#Method to check if the end screen is the one with the exit button in the bottom left
+# Method to check if the end screen is the one with the exit button in the bottom left
+
+
 def check_if_end_screen_is_exit_bottom_left():
     iar = numpy.asarray(screenshot())
-    pix_list=[
+    pix_list = [
         iar[638][57],
         iar[640][110],
         iar[622][59],
         iar[621][110],
     ]
-    color=[87, 186 ,255]
-    return all((pixel_is_equal(pix,color,tol=45)) for pix in pix_list)
+    color = [87, 186, 255]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
-#Method for opening the activity log from the clash royale main menu as to see past game outcomes
+# Method for opening the activity log from the clash royale main menu as to see past game outcomes
+
+
 def open_activity_log():
     click(x=360, y=99)
     time.sleep(1)
@@ -92,7 +98,9 @@ def open_activity_log():
     click(x=255, y=75)
     time.sleep(1)
 
-#Method for reading the actiivty log to check if the previous game was a win or loss
+# Method for reading the actiivty log to check if the previous game was a win or loss
+
+
 def check_if_past_game_is_win(logger):
     open_activity_log()
     iar = numpy.asarray(screenshot())
@@ -104,13 +112,15 @@ def check_if_past_game_is_win(logger):
         sentinel[1] = 204
         sentinel[2] = 255
         if pixel_is_equal(pix, sentinel, 10):
-            _extracted_from_check_if_past_game_is_win_12(logger, "Last game was a win. Incrementing win counter.")
+            _extracted_from_check_if_past_game_is_win_12(
+                logger, "Last game was a win. Incrementing win counter.")
 
             logger.add_win()
             return True
     time.sleep(1)
     click(385, 507)
-    _extracted_from_check_if_past_game_is_win_12(logger, "Last game was a loss. Incrementing loss counter.")
+    _extracted_from_check_if_past_game_is_win_12(
+        logger, "Last game was a loss. Incrementing loss counter.")
 
     logger.add_loss()
     return False
@@ -123,156 +133,166 @@ def _extracted_from_check_if_past_game_is_win_12(logger, arg1):
     logger.change_status(arg1)
     time.sleep(2)
 
-#Method to see if the bot has 6 expendable elixer in the given moment during a battle
+# Method to see if the bot has 6 expendable elixer in the given moment during a battle
+
+
 def check_if_has_6_elixer():
-    iar=numpy.asarray(screenshot())
-    pix_list=[
-        #iar[643][258],
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        # iar[643][258],
         iar[648][272],
         iar[649][257],
     ]
-    color=[208,34,214]
+    color = [208, 34, 214]
+
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+
+# Method to wait untili the bot has 6 expendable elixer
 
 
-    return all((pixel_is_equal(pix,color,tol=45)) for pix in pix_list)
-
-#Method to wait untili the bot has 6 expendable elixer
 def wait_until_has_6_elixer(logger):
-    has_6=check_if_has_6_elixer()
+    has_6 = check_if_has_6_elixer()
     logger.change_status("Waiting for 6 elixer")
-    loops=0
-    while not(has_6):
-        loops+=1
-        if loops>250:
+    loops = 0
+    while not (has_6):
+        loops += 1
+        if loops > 250:
             print("Waited too long for 6 elixer")
             return "restart"
         time.sleep(0.1)
-        has_6=check_if_has_6_elixer()
-        if check_if_in_battle()==False:
+        has_6 = check_if_has_6_elixer()
+        if check_if_in_battle() == False:
             return
 
-#Method to play a random card
+# Method to play a random card
+
+
 def play_random_card(logger):
-    #Select which card we're to play
-    n=random.randint(0,3)
+    # Select which card we're to play
+    n = random.randint(0, 3)
     #logger.change_status(str("Selected card: "+str(n)))
 
-    #Get an image of this card
-    card_image=get_card_images()[n]
+    # Get an image of this card
+    card_image = get_card_images()[n]
 
-    #Identify this card
+    # Identify this card
     card_identification = identify_card(card_image)
-    if card_identification is None: card_identification = "Unknown"
+    if card_identification is None:
+        card_identification = "Unknown"
     #logger.change_status(str("Identified card: "+card_identification))
 
-    #Get the card type of this identification
+    # Get the card type of this identification
     card_type = get_card_group(card_identification)
-    if card_type is None: card_type = "unknown"
+    if card_type is None:
+        card_type = "unknown"
     #logger.change_status(str("Card type: "+card_type))
 
-    #Pick a side to play on
-    side=pick_a_lane()
+    # Pick a side to play on
+    side = pick_a_lane()
     logger.change_status(f"Playing card: {str(n + 1)} on side: {side}")
 
-    #Get the play coordinates of this card type
-    play_coords_list=get_play_coords(card_type,side)
+    # Get the play coordinates of this card type
+    play_coords_list = get_play_coords(card_type, side)
 
-    #Pick one of theses coords at random
+    # Pick one of theses coords at random
     play_coord = random.choice(play_coords_list)
 
-    #Click the card we're playing
+    # Click the card we're playing
     if n == 0:
-        click(152,607)
+        click(152, 607)
     elif n == 1:
-        click(222,602)
+        click(222, 602)
     elif n == 2:
-        click(289,606)
+        click(289, 606)
     elif n == 3:
-        click(355,605)
-    #Click the location we're playing it at
-    click(play_coord[0],play_coord[1])
+        click(355, 605)
+    # Click the location we're playing it at
+    click(play_coord[0], play_coord[1])
 
-#Method for covering parts of a board image that may obstruct enemy detection
+# Method for covering parts of a board image that may obstruct enemy detection
+
+
 def cover_board_image(iar):
-    #Cover left enemy tower
-    for x, y in itertools.product(range(101,147), range(154,215)):
-        iar[y][x]=[0,0,0]
+    # Cover left enemy tower
+    for x, y in itertools.product(range(101, 147), range(154, 215)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover enemy king tower
-    for x, y in itertools.product(range(156,266), range(81,185)):
-        iar[y][x]=[0,0,0]
+    # Cover enemy king tower
+    for x, y in itertools.product(range(156, 266), range(81, 185)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover enemy right tower
-    for x, y in itertools.product(range(272,322), range(152,216)):
-        iar[y][x]=[0,0,0]
+    # Cover enemy right tower
+    for x, y in itertools.product(range(272, 322), range(152, 216)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover left side
+    # Cover left side
     for x, y in itertools.product(range(70), range(700)):
-        iar[y][x]=[0,0,0]
+        iar[y][x] = [0, 0, 0]
 
-    #Cover right side
-    for x, y in itertools.product(range(350,500), range(700)):
-        iar[y][x]=[0,0,0]
+    # Cover right side
+    for x, y in itertools.product(range(350, 500), range(700)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover bottom
-    for x, y in itertools.product(range(500), range(495,700)):
-        iar[y][x]=[0,0,0]
+    # Cover bottom
+    for x, y in itertools.product(range(500), range(495, 700)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover top
+    # Cover top
     for x, y in itertools.product(range(500), range(70)):
-        iar[y][x]=[0,0,0]
+        iar[y][x] = [0, 0, 0]
 
-    #Cover river
-    for x, y in itertools.product(range(500), range(300,340)):
-        iar[y][x]=[0,0,0]
+    # Cover river
+    for x, y in itertools.product(range(500), range(300, 340)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover friendly left tower
-    for x, y in itertools.product(range(101,148), range(401,452)):
-        iar[y][x]=[0,0,0]
+    # Cover friendly left tower
+    for x, y in itertools.product(range(101, 148), range(401, 452)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover friendly right tower
-    for x, y in itertools.product(range(275,320), range(403,459)):
-        iar[y][x]=[0,0,0]
+    # Cover friendly right tower
+    for x, y in itertools.product(range(275, 320), range(403, 459)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover friendly king tower
-    for x, y in itertools.product(range(152,269), range(442,500)):
-        iar[y][x]=[0,0,0]
+    # Cover friendly king tower
+    for x, y in itertools.product(range(152, 269), range(442, 500)):
+        iar[y][x] = [0, 0, 0]
 
-    #Cover top again
-    for x, y in itertools.product(range(500), range(50,136)):
-        iar[y][x]=[0,0,0]
+    # Cover top again
+    for x, y in itertools.product(range(500), range(50, 136)):
+        iar[y][x] = [0, 0, 0]
 
-
-    #return
+    # return
     return iar
 
-#Method for getting the left and right totals of enemies on the board
+# Method for getting the left and right totals of enemies on the board
+
+
 def get_left_and_right_totals(iar):
-    left_lane_total=0
-    right_lane_total=0
+    left_lane_total = 0
+    right_lane_total = 0
 
-    red=[212,45,43]
+    red = [212, 45, 43]
     for x, y in itertools.product(range(500), range(700)):
-        pixel=iar[y][x]
-        if (pixel_is_equal(pixel,red,tol=35)):
-            if x>250:
-                right_lane_total+=1
-            if x<250:
-                left_lane_total+=1
+        pixel = iar[y][x]
+        if (pixel_is_equal(pixel, red, tol=35)):
+            if x > 250:
+                right_lane_total += 1
+            if x < 250:
+                left_lane_total += 1
 
-    return left_lane_total,right_lane_total
+    return left_lane_total, right_lane_total
 
-#Method for choosing a side to attack based on the number of enemies on each side
+# Method for choosing a side to attack based on the number of enemies on each side
+
+
 def pick_a_lane():
-    #Either returns left right or random
-    iar=numpy.array(screenshot())
+    # Either returns left right or random
+    iar = numpy.array(screenshot())
 
-    covered_iar=cover_board_image(iar)
+    covered_iar = cover_board_image(iar)
 
-    lane_ratio=get_left_and_right_totals(covered_iar)
+    lane_ratio = get_left_and_right_totals(covered_iar)
 
-    if (lane_ratio[0]<10)and(lane_ratio[1]<10):
+    if (lane_ratio[0] < 10) and (lane_ratio[1] < 10):
         return "random"
-    return "right" if lane_ratio[1]>lane_ratio[0] else "left"
-
-
+    return "right" if lane_ratio[1] > lane_ratio[0] else "left"

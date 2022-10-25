@@ -10,7 +10,7 @@
 
 
 from os import environ, makedirs, pathsep
-from os.path import exists, expandvars, join, normpath, getsize
+from os.path import exists, expandvars, getsize, join, normpath
 from socket import gaierror
 from subprocess import call
 from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
