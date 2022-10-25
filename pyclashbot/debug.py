@@ -1,31 +1,28 @@
-import os
-import random
-import time
-from itertools import count
-from os.path import dirname, join
 
-import ahk
+import time
+
 import numpy
 import pyautogui
+import pygetwindow
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
-from pyclashbot.card_detection import get_card_group, get_card_images, identify_cards
 
-from pyclashbot.client import (click, get_next_ssid, orientate_memu, orientate_memu_multi,
-                    screenshot, scroll_down, show_image)
+from pyclashbot.card_detection import (get_card_group, get_card_images,
+                                       identify_cards)
+from pyclashbot.client import (click, get_next_ssid, orientate_memu,
+                               orientate_memu_multi, screenshot, scroll_down,
+                               show_image)
 from pyclashbot.configuration import load_user_config
 from pyclashbot.fight import fight, leave_end_battle_window, pick_a_lane
 from pyclashbot.image_rec import pixel_is_equal
 from pyclashbot.logger import Logger
-from pyclashbot.request import check_if_in_a_clan, request_random_card_from_clash_main
+from pyclashbot.request import (check_if_in_a_clan,
+                                request_random_card_from_clash_main)
 from pyclashbot.states import (state_clashmain, state_endfight, state_fight,
-                    state_request, state_startfight, state_upgrade)
-from pyclashbot.upgrade import check_if_pixel_indicates_upgrade, upgrade_current_cards
-
-import pygetwindow
-
-
+                               state_request, state_startfight, state_upgrade)
+from pyclashbot.upgrade import (check_if_pixel_indicates_upgrade,
+                                upgrade_current_cards)
 
 ahk = AHK()
 logger = Logger()
@@ -114,5 +111,5 @@ def upgrade_card_coords_debug():
 def check_card_detection():
     while True:
         print(identify_cards())
-        
+
 check_card_detection()
