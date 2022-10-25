@@ -38,80 +38,89 @@ logger = Logger()
 # show_image(screenshot())
 
 
-
 def battle_debug_main():
-    #Make logger, get launcherpath from %appdata/pyclashbot/config.json, initialize SSID as 1
+    # Make logger, get launcherpath from %appdata/pyclashbot/config.json,
+    # initialize SSID as 1
     logger = Logger()
-    ssid=0
-    jobs=["Fight"]
-    ssid_total=2
+    ssid = 0
+    jobs = ["Fight"]
+    ssid_total = 2
 
-    #Starting with restart state, the bot will pass itself between
-    #states as it reads the screen and will ignore jobs not on the joblist
-    state="clashmain"
+    # Starting with restart state, the bot will pass itself between
+    # states as it reads the screen and will ignore jobs not on the joblist
+    state = "clashmain"
     while True:
-        if state=="clashmain":
+        if state == "clashmain":
             orientate_memu_multi()
             orientate_memu()
-            if state_clashmain(logger=logger,account_number=ssid,jobs=jobs)=="restart": state="restart"
-            else: state="startfight"
-
-        if state=="startfight":
-            if "Fight" not in jobs:
-                state="upgrade"
+            if state_clashmain(
+                    logger=logger,
+                    account_number=ssid,
+                    jobs=jobs) == "restart":
+                state = "restart"
             else:
-                state = "restart" if state_startfight(logger)=="restart" else "fighting"
-        if state=="fighting":
-            state = "restart" if state_fight(logger)=="restart" else "endfight"
-        if state=="endfight":
+                state = "startfight"
+
+        if state == "startfight":
+            if "Fight" not in jobs:
+                state = "upgrade"
+            else:
+                state = "restart" if state_startfight(
+                    logger) == "restart" else "fighting"
+        if state == "fighting":
+            state = "restart" if state_fight(
+                logger) == "restart" else "endfight"
+        if state == "endfight":
             state_endfight(logger)
-            state="clashmain"
+            state = "clashmain"
 
-
-
-        #increment SSID to run the next loop with the next account in the cycle
+        # increment SSID to run the next loop with the next account in the
+        # cycle
         ssid = get_next_ssid(ssid, ssid_total)
 
 
 def upgrade_card_coords_debug():
-    card_coord_list=[
-        [86,278],
-        [174,278],
-        [260,278],
-        [328,278],
-        [86,400],
-        [174,400],
-        [260,400],
-        [328,400]
+    card_coord_list = [
+        [86, 278],
+        [174, 278],
+        [260, 278],
+        [328, 278],
+        [86, 400],
+        [174, 400],
+        [260, 400],
+        [328, 400]
     ]
-    #make list of coords of where the upgrade button will possibly appear for each 8 cards
-    upgrade_button_coords=[
-        [51,338],
-        [136,338],
-        [280,341],
-        [303,337],
-        [53,464],
-        [133,464],
-        [281,465],
-        [303,466],
+    # make list of coords of where the upgrade button will possibly appear for
+    # each 8 cards
+    upgrade_button_coords = [
+        [51, 338],
+        [136, 338],
+        [280, 341],
+        [303, 337],
+        [53, 464],
+        [133, 464],
+        [281, 465],
+        [303, 466],
     ]
     for n in range(8):
-        card_coord=card_coord_list[n]
-        upgrade_coord=upgrade_button_coords[n]
+        card_coord = card_coord_list[n]
+        upgrade_coord = upgrade_button_coords[n]
 
-        print("Moving to card number", n+1)
-        pyautogui.moveTo(card_coord[0],card_coord[1],duration=1)
+        print("Moving to card number", n + 1)
+        pyautogui.moveTo(card_coord[0], card_coord[1], duration=1)
         time.sleep(1)
         pyautogui.click()
         time.sleep(1)
-        pyautogui.moveTo(upgrade_coord[0],upgrade_coord[1],duration=1)
+        pyautogui.moveTo(upgrade_coord[0], upgrade_coord[1], duration=1)
         time.sleep(1)
-        print(check_if_pixel_indicates_upgrade(numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
+        print(check_if_pixel_indicates_upgrade(numpy.asarray(
+            screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
 
 
 def card_detection_debug():
     while True:
         print(identify_cards())
+
 
 
 while True:

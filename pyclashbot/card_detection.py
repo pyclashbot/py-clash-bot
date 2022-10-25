@@ -5,8 +5,9 @@ from pyclashbot.client import get_file_count, screenshot
 from pyclashbot.image_rec import check_for_location, find_references
 
 
-# Method to get an array of images of the 4 cards
 def get_card_images():
+    # Method to get an array of images of the 4 cards
+
     return [
         screenshot(region=[124, 571, 60, 74]),
         screenshot(region=[193, 571, 59, 74]),
@@ -14,12 +15,17 @@ def get_card_images():
         screenshot(region=[330, 571, 60, 74])
     ]
 
-# Method to check for a card in a given image
-def check_for_card(image, card_name=""):
-    folder_str = "check_if_card_is_"+card_name
 
-    references = make_reference_image_list(get_file_count(
-        join(dirname(__file__), "reference_images", "check_if_card_is_"+card_name)))
+def check_for_card(image, card_name=""):
+    # Method to check for a card in a given image
+    folder_str = f"check_if_card_is_{card_name}"
+
+    references = make_reference_image_list(
+        get_file_count(
+            join(
+                dirname(__file__),
+                "reference_images",
+                f"check_if_card_is_{card_name}")))
 
     locations = find_references(
         screenshot=image,
@@ -30,35 +36,28 @@ def check_for_card(image, card_name=""):
 
     return check_for_location(locations)
 
-# Method to make a reference array of a given size
+
 def make_reference_image_list(size):
+    # Method to make a reference array of a given size
     reference_image_list = []
 
     for n in range(size):
-        n = n+1
-        image_name = str(n)+'.png'
+        n = n + 1
+        image_name = f'{n}.png'
         reference_image_list.append(image_name)
 
     return reference_image_list
 
-# Method to return an list of 4 identified cards
-def identify_cards():
-    # make return array
-    card_list = []
 
+def identify_cards():
     # get card images
     card_images = get_card_images()
 
-    # fill out return array
-    for image in card_images:
-        card_list.append(identify_card(image))
-
-    return card_list
-
-# Method to identify a card given an image
+    return [identify_card(image) for image in card_images]
 
 
 def identify_card(image):
+    # Method to identify a card given an image
     # make a list of cards the bot knows about
     card_list = [
         "arrows",
@@ -100,15 +99,11 @@ def identify_card(image):
         "zap",
     ]
 
-    for card in card_list:
-        if check_for_card(image, card):
-            return card
-    return "unknown"
-
-# Method to identify the card group of the given card
+    return next((card for card in card_list if check_for_card(image, card)), "unknown")
 
 
 def get_card_group(card_identification):
+    # Method to identify the card group of the given card
     # make lists of card groups
     turret_cards = [
         "turret_cards",
@@ -213,15 +208,12 @@ def get_card_group(card_identification):
         elixer_pump_cards,
     ]
 
-    for card_list in card_list_list:
-        if card_identification in card_list:
-            return card_list[0]
-    return "regular"
-
-# Method to get a list of play coords for a given card group
+    return next((card_list[0] for card_list in card_list_list if card_identification in card_list), "regular")
 
 
 def get_play_coords(card_group, side):
+    # Method to get a list of play coords for a given card group
+
     if side == "random":
         n = random.randint(0, 1)
         if n == 0:
