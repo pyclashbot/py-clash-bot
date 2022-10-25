@@ -1,3 +1,4 @@
+import random
 import time
 
 import numpy
@@ -20,6 +21,7 @@ def wait_for_clash_main_menu(logger):
                 "Waited too long for clash main menu to appear")
             return "restart"
         handle_puzzleroyale_popup(logger)
+        if random.randint(1, 2) == 1: click(206,629)
         n = n + 1
         logger.change_status(
             f"Waiting for clash main menu to appear: {str(n)}")
