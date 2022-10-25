@@ -16,10 +16,10 @@ def get_card_images():
 
 # Method to check for a card in a given image
 def check_for_card(image, card_name=""):
-    folder_str = "check_if_card_is_"+card_name
+    folder_str = f"check_if_card_is_{card_name}"
 
-    references = make_reference_image_list(get_file_count(
-        join(dirname(__file__), "reference_images", "check_if_card_is_"+card_name)))
+    references = make_reference_image_list(get_file_count(join(dirname(__file__), "reference_images", f"check_if_card_is_{card_name}")))
+
 
     locations = find_references(
         screenshot=image,
@@ -36,7 +36,7 @@ def make_reference_image_list(size):
 
     for n in range(size):
         n = n+1
-        image_name = str(n)+'.png'
+        image_name = f'{n}.png'
         reference_image_list.append(image_name)
 
     return reference_image_list
