@@ -143,9 +143,17 @@ def check_if_has_6_elixer():
         iar[648][272],
         iar[649][257],
     ]
-    color = [208, 34, 214]
+    color_list=[
+        [208, 34, 214],[245,175,250]
+    ]
+    
+    #print(pix_list)
 
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+    for color in color_list:
+        for pix in pix_list:
+            if pixel_is_equal(pix, color, tol=45):
+                return True
+    return False
 
 
 def wait_until_has_6_elixer(logger):
