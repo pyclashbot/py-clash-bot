@@ -207,32 +207,39 @@ def find_clash_app_logo():
 
 def close_memu():
     # Method to close memu
+    memu_name_list=[
+        "MEmu",
+        "(MEmu)"
 
-    try:
-        window = pygetwindow.getWindowsWithTitle("(MEmu)")[0]
-        window.close()
-        print("Closed Memu")
-        time.sleep(3)
-    except BaseException:
-        print("Couldnt close Memu using title (MEmu)")
-
-    try:
-        window = pygetwindow.getWindowsWithTitle("(MEmu1)")[0]
-        window.close()
-        print("Closed Memu")
-        time.sleep(3)
-    except BaseException:
-        print("Couldnt close Memu using title (MEmu1)")
+    ]
+    
+    for name in memu_name_list:
+        try:
+            window = pygetwindow.getWindowsWithTitle(name)[0]
+            window.close()
+            print("Closed Memu")
+            return
+            time.sleep(3)
+        except BaseException:
+            print("Couldnt close Memu using title ",name)
+    
 
 
 def close_memu_multi():
     # Method to close memu multi
+    mmim_name_list=[
+        "Multiple Instance Manager"
+    ]
+    
+    
+    for name in mmim_name_list:
+        try:
+            window = pygetwindow.getWindowsWithTitle(name)[0]
+            window.close()
+            print("Closed MMIM")
+            return
+            time.sleep(3)
+        except BaseException:
+            print("Couldnt close MMIM using title ",name)
+    
 
-    try:
-        window = pygetwindow.getWindowsWithTitle(
-            "Multiple Instance Manager")[0]
-        window.close()
-        print("Closed Memu Multi")
-        time.sleep(3)
-    except BaseException:
-        print("Couldnt close Memu Multi")
