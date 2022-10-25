@@ -166,7 +166,7 @@ def click(x, y, duration=1):
         duration (int, optional): Duration of the click. Defaults to 1.
     """
     # 30 speed = 3 seconds
-    speed = duration*10
+    speed = duration * 10
 
     # Tolerance for timer comparisons
     tol = 0.5
@@ -176,7 +176,7 @@ def click(x, y, duration=1):
     ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
 
     while ahk.mouse_position != (x, y):
-        if (time.time() - start) > (duration)+tol:
+        if (time.time() - start) > (duration) + tol:
             start = time.time()
             ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
     ahk.click()
