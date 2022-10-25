@@ -99,7 +99,7 @@ def main_gui():
         if event == 'Start':
             thread = start_button_event(window, values)
 
-        elif event == "Stop" and thread is not None:
+        elif event == 'Stop' and thread is not None:
             stop_button_event(window, thread)
 
         elif event == 'Donate':
@@ -130,9 +130,11 @@ class MainLoopThread(StoppableThread):
         # states as it reads the screen and will ignore jobs not on the joblist
         state = detect_state(logger)
         while not self.shutdown_flag.is_set():
-            # perform a state decision based on the current state and get the next state
+            # perform a state decision based on the current state and get the
+            # next state
             state = state_tree(jobs, logger, ssid, state)
-            # increment SSID to run the next loop with the next account in the cycle
+            # increment SSID to run the next loop with the next account in the
+            # cycle
             ssid = get_next_ssid(ssid, ssid_total)
 
         print(f"Thread #{self.ident} stopped")
