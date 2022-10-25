@@ -21,7 +21,7 @@ def wait_for_clash_main_menu(logger):
                 "Waited too long for clash main menu to appear")
             return "restart"
         handle_puzzleroyale_popup(logger)
-        if random.randint(1, 2) == 1: click(206,629)
+        if random.randint(1, 2) == 1: click(206,639)
         n = n + 1
         logger.change_status(
             f"Waiting for clash main menu to appear: {str(n)}")
@@ -350,7 +350,13 @@ def find_2v2_quick_match_button():
         "11.png",
         "12.png",
         "13.png",
-        
+        "14.png",
+        "15.png",
+        "16.png",
+        "17.png",
+        "18.png",
+        "19.png",
+          
     ]
 
     locations = find_references(
