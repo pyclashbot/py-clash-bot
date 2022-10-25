@@ -37,7 +37,7 @@ logger = Logger()
 # orientate_memu()
 # time.sleep(1)
 
-show_image(screenshot())
+# show_image(screenshot())
 
 
 def battle_debug_main():
@@ -128,8 +128,8 @@ def card_detection_debug():
 
 # find_and_click_2v2_quickmatch_button(logger)
 
-# while True:
-#     print(find_2v2_quick_match_button())
+while True:
+    print(find_2v2_quick_match_button())
 
 
 
