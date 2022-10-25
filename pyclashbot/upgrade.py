@@ -8,8 +8,9 @@ from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location, pixel_is_equal)
 
 
-# Method for upgrading a given card
 def upgrade_card():
+    # Method for upgrading a given card
+
     # Starts on the page of a card that you want to upgrade (after you
     # click upgrade in the card list on the card page on clash main menu)
 
@@ -29,10 +30,10 @@ def upgrade_card():
     for _ in range(5):
         click(26, 518)
 
-# Method to upgrade the cards in your deck if they're available for upgrade and you have the gold
-
 
 def upgrade_current_cards(logger):
+    # Method to upgrade the cards in your deck if they're available for
+    # upgrade and you have the gold
     # Starts on the clash main card page looking at your main deck
     # Ends in the same spot
 
@@ -47,7 +48,8 @@ def upgrade_current_cards(logger):
         [260, 400],
         [328, 400]
     ]
-    # make list of coords of where the upgrade button will possibly appear for each 8 cards
+    # make list of coords of where the upgrade button will possibly appear for
+    # each 8 cards
     upgrade_button_coords = [
         [51, 338],
         [136, 338],
@@ -68,7 +70,7 @@ def upgrade_current_cards(logger):
 
         # check if upgrade button is there
         pix = numpy.asarray(screenshot())[
-            upgrade_button_coord[1]+10][upgrade_button_coord[0]+10]
+            upgrade_button_coord[1] + 10][upgrade_button_coord[0] + 10]
         # print(pix)
         if check_if_pixel_indicates_upgrade(pix):
             logger.change_status(f"Upgrading card: {str(n + 1)}")
@@ -77,19 +79,20 @@ def upgrade_current_cards(logger):
             upgrade_card()
             logger.add_card_upgraded()
 
-# Method to see if the given pixel color indicates an upgrade in that spot on the card page
-
 
 def check_if_pixel_indicates_upgrade(pixel):
+    # Method to see if the given pixel color indicates an upgrade in that spot
+    # on the card page
     positive_color_list = [
-        [42, 172,  55], [96, 217, 110], [65, 224, 80], [34, 104, 42]
+        [42, 172, 55], [96, 217, 110], [65, 224, 80], [34, 104, 42]
     ]
-    return any(pixel_is_equal(pixel, color, tol=30) for color in positive_color_list)
-
-# Method to get to the clash royale main menu screen from the card page
+    return any(pixel_is_equal(pixel, color, tol=30)
+               for color in positive_color_list)
 
 
 def get_to_clash_main_from_card_page(logger):
+    # Method to get to the clash royale main menu screen from the card page
+
     logger.change_status("Getting to clash main from card page")
     click(250, 630)
     loops = 0
@@ -104,10 +107,10 @@ def get_to_clash_main_from_card_page(logger):
         time.sleep(1)
         on_clash_main = check_if_on_clash_main_menu()
 
-# Method to get to the card page on clash main from the clash main menu
-
 
 def get_to_card_page(logger):
+    # Method to get to the card page on clash main from the clash main menu
+
     click(x=100, y=630)
     time.sleep(2)
     loops = 0
@@ -124,10 +127,10 @@ def get_to_card_page(logger):
     #logger.change_status("Made it to card page")
     time.sleep(1)
 
-# Method to check if the elixer icon of your deck's AVG elixer when on the card page exists yet
-
 
 def check_if_on_first_card_page():
+    # Method to check if the elixer icon of your deck's AVG elixer when on the
+    # card page exists yet
     references = [
         "1.png",
         "2.png",
@@ -150,10 +153,10 @@ def check_if_on_first_card_page():
 
     return get_first_location(locations)
 
-# Method to find the card page logo in the icon list in the bottom of the screen when on clash main
-
 
 def find_card_page_logo():
+    # Method to find the card page logo in the icon list in the bottom of the
+    # screen when on clash main
     references = [
         "1.png",
         "2.png",
@@ -168,10 +171,10 @@ def find_card_page_logo():
     )
     return check_for_location(locations)
 
-# Method to select the second deck of this account
-
 
 def select_second_deck(logger):
+    # Method to select the second deck of this account
+
     #logger.change_status("Selecting deck number 2 for use.")
     # get to card page
     get_to_card_page(logger)
@@ -184,10 +187,10 @@ def select_second_deck(logger):
     # get to main menu from card page
     get_to_clash_main_from_card_page(logger)
 
-# Method to randomize deck number 2 of this account
-
 
 def randomize_and_select_deck_2(logger):
+    # Method to randomize deck number 2 of this account
+
     logger.change_status("Randomizing deck number 2")
     # get to card page
     get_to_card_page(logger)
