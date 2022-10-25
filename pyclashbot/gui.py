@@ -4,8 +4,10 @@ import pyperclip
 import PySimpleGUI as sg
 
 
-#Method for the secondary popup help gui for when the help button is pressed
 def show_help_gui():
+    # Method for the secondary popup help gui for when the help button is
+    # pressed
+
     out_text = "" + "Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
 
     out_text += "To emulate the game, Download and install MEmu.\n"
@@ -28,8 +30,10 @@ def show_help_gui():
             break
     window.close()
 
-#Method for the secondary popup donate gui for when the donate button is pressed
+
 def show_donate_gui():
+    # Method for the secondary popup donate gui for when the donate button is
+    # pressed
     sg.theme('Material2')
     layout = [
         [sg.Text('Paypal donate link: \n\nhttps://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD'),
@@ -50,21 +54,23 @@ def show_donate_gui():
 
     window.close()
 
-#Method for reading the attributes of the window
+
 def read_window(window: sg.Window):
+    # Method for reading the attributes of the window
+
     read_result = window.read()
     if read_result is None:
         print("Window not found")
         end_loop()
     return read_result
 
-#Method to handle ending of the program
+
 def end_loop():
+    # Method to handle ending of the program
+
     print("Press ctrl-c to close the program.")
     try:
         while True:
             pass
     except KeyboardInterrupt:
         sys.exit()
-
-
