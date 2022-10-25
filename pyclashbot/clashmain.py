@@ -347,6 +347,8 @@ def find_2v2_quick_match_button():
         "10.png",
         "11.png",
         "12.png",
+        "13.png",
+        
     ]
 
     locations = find_references(
