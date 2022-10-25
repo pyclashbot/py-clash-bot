@@ -2,7 +2,6 @@ import threading
 import time
 
 
-
 class StoppableThread(threading.Thread):
     def __init__(self, args, kwargs=None):
         self.args = args
