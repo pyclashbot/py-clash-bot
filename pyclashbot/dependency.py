@@ -114,7 +114,9 @@ def get_ahk_link() -> list[str] | None:
     Returns:
         list[str] | None: returns a a list of strings as [url, name of file] or None if not found
     """
-    return [r"https://www.autohotkey.com/download/ahk-install.exe", "ahk-install.exe"]
+    return [
+        r"https://www.autohotkey.com/download/ahk-install.exe",
+        "ahk-install.exe"]
 
 
 def get_ahk_path() -> str:
@@ -181,7 +183,9 @@ def get_memu_link() -> list[str] | None:
     Returns:
         list[str] | None: returns a a list of strings as [url, name of file] or None if not found
     """
-    return [r"https://dl.memuplay.com/download/MEmu-setup-abroad-sdk.exe", "MEmu-setup-abroad-sdk.exe"]
+    return [
+        r"https://dl.memuplay.com/download/MEmu-setup-abroad-sdk.exe",
+        "MEmu-setup-abroad-sdk.exe"]
 
 
 def get_memu_path() -> str:
@@ -198,7 +202,13 @@ def get_memu_path() -> str:
         akey = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\MEmu"
         areg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
         akey = OpenKey(areg, akey)
-    return str(join(normpath(QueryValueEx(akey, "InstallLocation")[0]), "Memu"))
+    return str(
+        join(
+            normpath(
+                QueryValueEx(
+                    akey,
+                    "InstallLocation")[0]),
+            "Memu"))
 
 
 def install_memu() -> None:
