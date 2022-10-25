@@ -10,6 +10,7 @@ from PIL import Image
 
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        identify_cards)
+from pyclashbot.clashmain import find_2v2_quick_match_button, find_and_click_2v2_quickmatch_button
 from pyclashbot.client import (click, get_next_ssid, orientate_memu,
                                orientate_memu_multi, screenshot, scroll_down,
                                show_image)
@@ -124,5 +125,7 @@ def card_detection_debug():
 
 
 
-close_memu()
-close_memu_multi()
+# find_and_click_2v2_quickmatch_button(logger)
+
+while True:
+    print(find_2v2_quick_match_button())
