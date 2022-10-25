@@ -9,27 +9,55 @@ from pyclashbot.states import detect_state, state_tree
 from pyclashbot.thread import StoppableThread
 
 
-# Method to handle ending of the program
-def end_loop():
-    print("Press ctrl-c to close the program.")
-    try:
-        while True:
-            pass
-    except KeyboardInterrupt:
-        sys.exit()
-
-
 # Method for reading the attributes of the window
 def read_window(window: sg.Window):
     read_result = window.read()
     if read_result is None:
         print("Window not found")
-        end_loop()
+        sys.exit()
     return read_result
 
 
-# Method for the main gui that starts the program
+def start_button_event(window, values):
+    # get job list
+    jobs = []
+    if values["-Open-Chests-in-"]:
+        jobs.append("Open Chests")
+    if values["-Fight-in-"]:
+        jobs.append("Fight")
+    if values["-Requesting-in-"]:
+        jobs.append("Request")
+    if values["-Upgrade_cards-in-"]:
+        jobs.append("Upgrade")
+    if not jobs:
+        print("At least one job must be selected")
+        return None
+    # disable the start button after it is pressed
+    window["Start"].update(disabled=True)
+    # prepare arguments for main thread
+    args = (jobs, int(values["-SSID_IN-"]))
+    # create thread
+    thread = MainLoopThread(args)
+    # start thread
+    thread.start()
+    # enable the stop button after the thread is started
+    window["Stop"].update(disabled=False)
+    return thread
+
+
+def stop_button_event(window, thread):
+    # disable the stop button after it is pressed
+    window["Stop"].update(disabled=True)
+    # send the shutdown flag to the thread
+    thread.shutdown_flag.set()
+    # wait for the thread to close
+    thread.join()
+    # enable the start button after the thread is stopped
+    window["Start"].update(disabled=False)
+
+
 def main_gui():
+    # Method for the main gui that starts the program
     out_text = "Matthew Miglio ~October 2022\n\n-------------------------------------------------------------------------------------\nPy-ClashBot can farm gold, chest, and card\nprogress by farming 2v2 matches with random teammates.\n-------------------------------------------------------------------------------------"
     sg.theme('Material2')
     # defining various things that are gonna be in the gui.
@@ -69,39 +97,10 @@ def main_gui():
 
         # If start button
         if event == 'Start':
-            # get job list
-            jobs = []
-            if values["-Open-Chests-in-"]:
-                jobs.append("Open Chests")
-            if values["-Fight-in-"]:
-                jobs.append("Fight")
-            if values["-Requesting-in-"]:
-                jobs.append("Request")
-            if values["-Upgrade_cards-in-"]:
-                jobs.append("Upgrade")
-            if not jobs:
-                print("At least one job must be selected")
-                continue
-            # disable the start button after it is pressed
-            window["Start"].update(disabled=True)
-            # prepare arguments for main thread
-            args = (jobs, int(values["-SSID_IN-"]))
-            # create thread
-            thread = MainLoopThread(args)
-            # start thread
-            thread.start()
-            # enable the stop button after the thread is started
-            window["Stop"].update(disabled=False)
+            thread = start_button_event(window, values)
 
-        elif event == "Stop" and thread is not None:
-            # disable the stop button after it is pressed
-            window["Stop"].update(disabled=True)
-            # send the shutdown flag to the thread
-            thread.shutdown_flag.set()
-            # wait for the thread to close
-            thread.join()
-            # enable the start button after the thread is stopped
-            window["Start"].update(disabled=False)
+        elif event == 'Stop' and thread is not None:
+            stop_button_event(window, thread)
 
         elif event == 'Donate':
             show_donate_gui()
@@ -131,9 +130,11 @@ class MainLoopThread(StoppableThread):
         # states as it reads the screen and will ignore jobs not on the joblist
         state = detect_state(logger)
         while not self.shutdown_flag.is_set():
-            # perform a state decision based on the current state and get the next state
+            # perform a state decision based on the current state and get the
+            # next state
             state = state_tree(jobs, logger, ssid, state)
-            # increment SSID to run the next loop with the next account in the cycle
+            # increment SSID to run the next loop with the next account in the
+            # cycle
             ssid = get_next_ssid(ssid, ssid_total)
 
         print(f"Thread #{self.ident} stopped")
