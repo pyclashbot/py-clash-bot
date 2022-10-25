@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 import time
 
@@ -65,11 +64,6 @@ def scroll_down_super_fast():
     pyautogui.moveTo(x=215, y=400)
     pyautogui.dragTo(x=215, y=300, button='left', duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
-
-
-def clear_log():
-    """Method for clearing the terminal"""
-    subprocess.call('cls||clear', shell=False)
 
 
 def check_quit_key_press():
@@ -148,18 +142,6 @@ def show_image(image):
     """
     plt.imshow(numpy.array(image))
     plt.show()
-
-
-def pause():
-    """ Method to wait for the user to press spacebar """
-    waiting = True
-    clear_log()
-    print("Pausing the program. Press spacebar to continue")
-    while waiting:
-        time.sleep(1)
-        if keyboard.is_pressed("space"):
-            print("Space held - Resuming the program")
-            waiting = False
 
 
 def compare_coords(coord1, coord2):
