@@ -22,8 +22,4 @@ class StoppableThread(threading.Thread):
             print(f"Doing job... {self.args}")
 
         # ... Clean shutdown code here ...
-        print(f"Thread #{self.ident} stopped") # doesnt print for some reason
-
-
-
-
+        print(f"Thread #{self.ident} stopped")  # doesnt print for some reason
