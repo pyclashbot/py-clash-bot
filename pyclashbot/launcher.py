@@ -5,7 +5,8 @@ import pygetwindow
 
 from pyclashbot.clashmain import wait_for_clash_main_menu
 from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
-                               orientate_memu_multi, orientate_terminal, screenshot)
+                               orientate_memu_multi, orientate_terminal,
+                               screenshot)
 from pyclashbot.dependency import setup_memu
 from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location)
