@@ -121,21 +121,10 @@ def upgrade_card_coords_debug():
 
 def card_detection_debug():
     while True:
+        print("----------------------")
         print(identify_cards())
 
 
 
 
-# find_and_click_2v2_quickmatch_button(logger)
-
-# while True:
-#     print(find_2v2_quick_match_button())
-
-
-# wait_until_has_6_elixer()
-while True:
-    has_6 = check_if_has_6_elixer()
-    print(has_6)
-
-
-    
+card_detection_debug()
