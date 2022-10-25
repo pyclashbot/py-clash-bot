@@ -10,8 +10,8 @@ from pyclashbot.image_rec import (find_references, get_first_location,
                                   pixel_is_equal)
 
 
-# Method to request a random card if request is available
 def request_random_card_from_clash_main(logger):
+    # Method to request a random card if request is available
     logger.change_status("Checking if we can request a card.")
     if not (check_if_in_a_clan(logger)):
         logger.change_status("Skipping request because we are not in a clan.")
@@ -41,10 +41,9 @@ def request_random_card_from_clash_main(logger):
     if get_to_clash_main_from_request_page(logger) == "restart":
         return "restart"
 
-# method to request a random card
-
 
 def request_random_card(logger):
+    # method to request a random card
     # starts on the request screen (the one with a bunch of pictures of the cards)
     # ends back on the clash main menu
     logger.change_status("Requesting a random card.")
@@ -53,7 +52,7 @@ def request_random_card(logger):
     n = Random().randint(0, 500)
     pyautogui.moveTo(203, 552)
     time.sleep(0.33)
-    pyautogui.dragTo(203, 552-n, 0.33)
+    pyautogui.dragTo(203, 552 - n, 0.33)
 
     logger.change_status("Looking for card to request.")
     has_card_to_request = False
@@ -75,10 +74,11 @@ def request_random_card(logger):
             #logger.change_status("Found a satisfactory card to request.")
             click(request_button_coord[1], request_button_coord[0])
 
-# Method to look for the request button in the list of clan interaction buttons on the clan page to see if we can request
-
 
 def look_for_request_button():
+    # Method to look for the request button in the list of clan interaction
+    # buttons on the clan page to see if we can request
+
     references = [
         "1.png",
         "2.png",
@@ -147,10 +147,9 @@ def look_for_request_button():
     )
     return get_first_location(locations)
 
-# Method to return to clash main menu from request page
-
 
 def get_to_clash_main_from_request_page(logger):
+    # Method to return to clash main menu from request page
     logger.change_status("Getting to clash main from request page")
     click(172, 612)
     time.sleep(1)
@@ -166,10 +165,10 @@ def get_to_clash_main_from_request_page(logger):
         time.sleep(1)
         on_main = check_if_on_clash_main_menu()
 
-# method to get to clan chat page from clash main
-
 
 def get_to_clan_page(logger):
+    # method to get to clan chat page from clash main
+
     click(312, 629)
     on_clan_chat_page = check_if_on_clan_page()
     logger.change_status("Getting to clan page.")
@@ -186,10 +185,10 @@ def get_to_clan_page(logger):
 
         on_clan_chat_page = check_if_on_clan_page()
 
-# Method to check if we're on the clan chat page
-
 
 def check_if_on_clan_page():
+    # Method to check if we're on the clan chat page
+
     iar = numpy.asarray(screenshot())
 
     pix_list = [
@@ -201,10 +200,10 @@ def check_if_on_clan_page():
     color = [183, 105, 253]
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
-# Method to check if request is available
-
 
 def check_if_can_request():
+    # Method to check if request is available
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[536][50],
@@ -216,8 +215,9 @@ def check_if_can_request():
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
 
-# Method to check if the current account has a clan
 def check_if_in_a_clan(logger):
+    # Method to check if the current account has a clan
+
     # starts and ends on clash main
     logger.change_status("Checking if in a clan.")
 
@@ -247,7 +247,8 @@ def check_if_in_a_clan(logger):
     # get back to clash main
     get_to_clash_main_from_request_page(logger)
 
-    # if pixels aren't equal return True (in a clan because there are two available pages instead of one)
+    # if pixels aren't equal return True (in a clan because there are two
+    # available pages instead of one)
     if not (pixel_is_equal(pixel_1, pixel_2, tol=25)):
         logger.change_status("You're in a clan")
         time.sleep(1)
