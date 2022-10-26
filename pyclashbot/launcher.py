@@ -15,16 +15,12 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 launcher_path = setup_memu()  # setup memu, install if necessary
 
 
-#Method to wait for a given window name to appear
-def wait_for_window(logger,window_name):
+def wait_for_window(logger, window_name):
+    # Method to wait for a given window name to appear
     while not pygetwindow.getWindowsWithTitle(window_name):
         logger.change_status(f"Waiting for {window_name} to appear")
         time.sleep(0.5)
     logger.change_status(f"Done waiting for {window_name}")
-
-
-
-
 
 
 def restart_and_open_clash(logger):
@@ -44,8 +40,8 @@ def restart_and_open_clash(logger):
     logger.change_status("Opening MEmu launcher")
     subprocess.Popen(launcher_path)
 
-    #Wait for memu to load
-    wait_for_window(logger,window_name="Multiple Instance Manager")
+    # Wait for memu to load
+    wait_for_window(logger, window_name="Multiple Instance Manager")
     time.sleep(3)
 
     # Orientate the Memu Multi Manager
@@ -204,7 +200,7 @@ def find_clash_app_logo():
 
 def close_memu():
     # Method to close memu
-    memu_name_list=[
+    memu_name_list = [
         "MEmu",
         "(MEmu)"
 
@@ -217,16 +213,14 @@ def close_memu():
             print("Closed Memu")
             return
         except BaseException:
-            print("Couldnt close Memu using title ",name)
-
+            print("Couldnt close Memu using title ", name)
 
 
 def close_memu_multi():
     # Method to close memu multi
-    mmim_name_list=[
+    mmim_name_list = [
         "Multiple Instance Manager"
     ]
-
 
     for name in mmim_name_list:
         try:
@@ -235,6 +229,4 @@ def close_memu_multi():
             print("Closed MMIM")
             return
         except BaseException:
-            print("Couldnt close MMIM using title ",name)
-
-
+            print("Couldnt close MMIM using title ", name)
