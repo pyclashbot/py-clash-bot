@@ -1,6 +1,7 @@
 
 
 import time
+from typing import Literal
 
 from pyclashbot.clashmain import (check_if_in_battle, get_to_account,
                                   handle_card_mastery_notification,
@@ -70,41 +71,30 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
         orientate_memu_multi()
         orientate_memu()
         orientate_terminal()
-        return "restart" if state_clashmain(
-            logger=logger,
-            account_number=ssid,
-            jobs=jobs) == "restart" else "startfight"
+        return state_clashmain(logger=logger, account_number=ssid, jobs=jobs)
 
     elif state == "startfight":
-        if "Fight" not in jobs:
-            return "upgrade"
-        else:
-            return "restart" if state_startfight(
-                logger) == "restart" else "fighting"
+        return state_startfight(logger) if "Fight" in jobs else "upgrade"
 
     elif state == "fighting":
-        return "restart" if state_fight(logger) == "restart" else "endfight"
+        return state_fight(logger)
 
     elif state == "endfight":
-        state_endfight(logger)
-        return "upgrade"
+        return state_endfight(logger)
 
     elif state == "upgrade":
-        return "restart" if "Upgrade" in jobs and state_upgrade(
-            logger) == "restart" else "request"
+        return state_upgrade(logger) if "Upgrade" in jobs else "request"
 
     elif state == "request":
-        return "restart" if "Request" in jobs and state_request(
-            logger) == "restart" else "clashmain"
+        return state_request(logger) if "Request" in jobs else "clashmain"
 
     elif state == "restart":
-        state_restart(logger)
-        return "clashmain"
+        return state_restart(logger)
 
     return state
 
 
-def state_restart(logger):
+def state_restart(logger) -> Literal['clashmain']:
     # Method for the restart state of the program
 
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
@@ -114,9 +104,10 @@ def state_restart(logger):
 
     if restart_and_open_clash(logger) == "restart":
         restart_and_open_clash(logger)
+    return "clashmain"
 
 
-def state_clashmain(logger, account_number, jobs):
+def state_clashmain(logger, account_number, jobs) -> Literal['restart', 'startfight']:
     # Method for the clash royale main menu state of the program
 
     # Clashmain state gets to the correct account of the current state then
@@ -134,9 +125,10 @@ def state_clashmain(logger, account_number, jobs):
     if "Open Chests" in jobs:
         open_chests(logger)
     time.sleep(3)
+    return "startfight"
 
 
-def state_startfight(logger):
+def state_startfight(logger) -> Literal['restart', 'fighting']:
     # Method for the starting of a fight state of the program
 
     # Begins on clash main, ends in the beginning of a fight
@@ -147,15 +139,12 @@ def state_startfight(logger):
     randomize_and_select_deck_2(logger)
 
     # Start 2v2 quickmatch
-    if start_2v2(logger) == "restart":
+    if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":
         return "restart"
-
-    # Wait for battle to start
-    if wait_for_battle_start(logger) == "restart":
-        return "restart"
+    return "fighting"
 
 
-def state_fight(logger):
+def state_fight(logger) -> Literal['restart', 'endfight']:
     # Method for the state of the program when fighting
 
     # Method that plays cards with certain logic until the fight is over then
@@ -169,9 +158,10 @@ def state_fight(logger):
 
     if leave_end_battle_window(logger) == "restart":
         return 'restart'
+    return "endfight"
 
 
-def state_endfight(logger):
+def state_endfight(logger) -> Literal['upgrade']:
     # Method for the state of the program after a fight
 
     # Checks if the last battle was a win or loss then adds this to the logger tally
@@ -180,9 +170,10 @@ def state_endfight(logger):
     logger.change_status("Post fight")
 
     check_if_past_game_is_win(logger)
+    return "upgrade"
 
 
-def state_upgrade(logger):
+def state_upgrade(logger) -> Literal['restart', 'request']:
     # Method for the state of the program when upgrading cards
 
     # Starts on the clash royale main menu and ends on the clash royale main
@@ -203,8 +194,10 @@ def state_upgrade(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
 
+    return "request"
 
-def state_request(logger):
+
+def state_request(logger) -> Literal['restart', 'clashmain']:
     # Method for the state of the program when requesting cards
     # Request method goes to clan page, requests a random card if request is
     # available, then returns to the clash royale main menu
@@ -216,3 +209,5 @@ def state_request(logger):
 
     if request_random_card_from_clash_main(logger) == "restart":
         return "restart"
+
+    return "clashmain"
