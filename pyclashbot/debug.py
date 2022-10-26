@@ -1,4 +1,5 @@
 
+import random
 import time
 
 import numpy
@@ -10,12 +11,14 @@ from PIL import Image
 
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        identify_cards)
+from pyclashbot.clashmain import find_2v2_quick_match_button, find_and_click_2v2_quickmatch_button
 from pyclashbot.client import (click, get_next_ssid, orientate_memu,
                                orientate_memu_multi, screenshot, scroll_down,
                                show_image)
 from pyclashbot.configuration import load_user_config
-from pyclashbot.fight import fight, leave_end_battle_window, pick_a_lane
+from pyclashbot.fight import check_if_has_6_elixer, fight, leave_end_battle_window, pick_a_lane, wait_until_has_6_elixer
 from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.launcher import close_memu, close_memu_multi, find_clash_app_logo
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_in_a_clan,
                                 request_random_card_from_clash_main)
@@ -116,9 +119,14 @@ def upgrade_card_coords_debug():
             screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
 
 
-def check_card_detection():
+def card_detection_debug():
+    n=0
     while True:
+        n+=1
+        print(n,"----------------------")
         print(identify_cards())
 
 
-check_card_detection()
+
+
+card_detection_debug()
