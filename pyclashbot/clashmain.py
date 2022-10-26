@@ -43,7 +43,7 @@ def handle_puzzleroyale_popup(logger):
 
 def look_for_puzzleroyale_popup():
     # Method to check for puzzleroyale popup
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
 
     pix_list = [
         iar[173][102],
@@ -58,7 +58,7 @@ def look_for_puzzleroyale_popup():
 
 def check_if_on_clash_main_menu():
     # Method to check if the clash main menu is on screen
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
 
     blue_pix_list = [iar[447][390], iar[391][37]]
     yellow_pix_list = [iar[427][98], iar[468][97], iar[472][192]]
@@ -183,7 +183,7 @@ def handle_special_offer(logger):
 def check_if_on_trophy_progession_rewards_page():
     # Method to check if the bot is on the trophy progression rewards page in
     # the given moment
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
     pix_list = [
         iar[629][240],
         iar[631][185],
@@ -356,7 +356,7 @@ def find_2v2_quick_match_button():
         "17.png",
         "18.png",
         "19.png",
-          
+
     ]
 
     locations = find_references(
