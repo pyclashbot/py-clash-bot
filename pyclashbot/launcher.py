@@ -17,13 +17,10 @@ launcher_path = setup_memu()  # setup memu, install if necessary
 
 #Method to wait for a given window name to appear
 def wait_for_window(logger,window_name):
-    while True:
-        if pygetwindow.getWindowsWithTitle(window_name):
-            break
-        else:
-            logger.change_status(str("Waiting for " + window_name + " to appear"))
-            time.sleep(0.5)
-    logger.change_status(str("Done waiting for " + window_name))
+    while not pygetwindow.getWindowsWithTitle(window_name):
+        logger.change_status(f"Waiting for {window_name} to appear")
+        time.sleep(0.5)
+    logger.change_status(f"Done waiting for {window_name}")
 
 
 
@@ -190,9 +187,9 @@ def find_clash_app_logo():
         "8.png",
         "9.png",
         "10.png",
-        
-        
-        
+
+
+
     ]
 
     locations = find_references(
@@ -212,17 +209,16 @@ def close_memu():
         "(MEmu)"
 
     ]
-    
+
     for name in memu_name_list:
         try:
             window = pygetwindow.getWindowsWithTitle(name)[0]
             window.close()
             print("Closed Memu")
             return
-            time.sleep(3)
         except BaseException:
             print("Couldnt close Memu using title ",name)
-    
+
 
 
 def close_memu_multi():
@@ -230,16 +226,15 @@ def close_memu_multi():
     mmim_name_list=[
         "Multiple Instance Manager"
     ]
-    
-    
+
+
     for name in mmim_name_list:
         try:
             window = pygetwindow.getWindowsWithTitle(name)[0]
             window.close()
             print("Closed MMIM")
             return
-            time.sleep(3)
         except BaseException:
             print("Couldnt close MMIM using title ",name)
-    
+
 

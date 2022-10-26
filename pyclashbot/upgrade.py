@@ -69,7 +69,7 @@ def upgrade_current_cards(logger):
         time.sleep(1)
 
         # check if upgrade button is there
-        pix = numpy.asarray(screenshot())[
+        pix = numpy.array(screenshot())[
             upgrade_button_coord[1] + 10][upgrade_button_coord[0] + 10]
         # print(pix)
         if check_if_pixel_indicates_upgrade(pix):
