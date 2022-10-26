@@ -20,7 +20,8 @@ class Logger:
         self.cards_upgraded = 0
         self.account_switches = 0
 
-        self.current_status = "Idle"
+        self.current_status = "Starting"
+        self.buffer = ""
 
     def make_timestamp(self):
         """creates a time stamp for log output
@@ -62,35 +63,83 @@ class Logger:
     def log(self):
         """log to console"""
 
-        time_str = self.make_timestamp()
-        restarts_str = f"{str(self.restarts)}"
-        requests_str = f"{str(self.requests)}"
-        fights_str = f"{str(self.fights)}"
-        win_loss_str = self.make_score_board()
-        chests_unlocked_str = f"{str(self.chests_unlocked)}"
-        cards_played_str = f"{str(self.cards_played)}"
-        account_switches_str = f"{str(self.account_switches)}"
-        status_str = self.current_status
+        self.add_row(
+            "-----------------------------------------------------------------------------------")
+        self.add_row(f"|      Program uptime:      | {self.make_timestamp()}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|     Program restarts:     | {self.restarts}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|         Requests:         | {self.requests}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|          Fights:          | {self.fights}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(
+            f"|         Win rate:         | {self.make_score_board()}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|      Chests unlocked:     | {self.chests_unlocked}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|       Cards played:       | {self.cards_played}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|      Account switches:    | {self.account_switches}")
+        self.add_row(
+            "|----------------------------------------------------------------------------------")
+        self.add_row(f"|      Current status:      | {self.current_status}")
+        self.add_row(
+            "-----------------------------------------------------------------------------------")
+        self.print_buffer()
 
-        print("-----------------------------------------------------------------------------------")
-        print(f"|      Program uptime:      | {time_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|     Program restarts:     | {restarts_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|         Requests:         | {requests_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|          Fights:          | {fights_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|         Win rate:         | {win_loss_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|      Chests unlocked:     | {chests_unlocked_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|       Cards played:       | {cards_played_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|      Account switches:    | {account_switches_str}")
-        print("|----------------------------------------------------------------------------------")
-        print(f"|      Current status:      | {status_str}")
-        print("-----------------------------------------------------------------------------------")
+    def line_wrap(self, line: str, width: int) -> str:
+        """wrap line to width
+
+        Args:
+            line (str): line to wrap
+            width (int): width to wrap line to
+
+        Returns:
+            str: wrapped line
+        """
+
+        new_line = '\n|                           | '
+
+        # split line into words
+        words = line.split(' ')
+
+        # wrap line
+        wrapped_line = ''
+        current_line = ''
+        for word in words:
+            if len(current_line) + len(word) < width:
+                current_line += f'{word} '
+            else:
+                wrapped_line += current_line + new_line
+                current_line = f'{word} '
+
+        # add last line
+        wrapped_line += current_line
+
+        return wrapped_line
+
+    def add_row(self, row: str) -> None:
+        """add row to log
+
+        Args:
+            row (str): row to add to log
+        """
+        if row is not None:
+            row = self.line_wrap(row, 85)
+            self.buffer += row + "\n"
+
+    def print_buffer(self):
+        """print log buffer"""
+        print(self.buffer)
+        self.buffer = ""  # clear buffer
 
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
