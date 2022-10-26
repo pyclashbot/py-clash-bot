@@ -189,7 +189,7 @@ def get_to_clan_page(logger):
 def check_if_on_clan_page():
     # Method to check if we're on the clan chat page
 
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
 
     pix_list = [
         iar[570][216],
@@ -204,7 +204,7 @@ def check_if_on_clan_page():
 def check_if_can_request():
     # Method to check if request is available
 
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
     pix_list = [
         iar[536][50],
         iar[542][56],
@@ -233,7 +233,7 @@ def check_if_in_a_clan(logger):
     time.sleep(1)
 
     # get a pixel from this clan tab
-    pixel_1 = numpy.asarray(screenshot())[118][206]
+    pixel_1 = numpy.array(screenshot())[118][206]
     #print("pixel 1 is ",pixel_1)
 
     # cycle tab again
@@ -241,7 +241,7 @@ def check_if_in_a_clan(logger):
     time.sleep(1)
 
     # get second pixel
-    pixel_2 = numpy.asarray(screenshot())[118][206]
+    pixel_2 = numpy.array(screenshot())[118][206]
     #print("pixel 2 is ",pixel_2)
 
     # get back to clash main

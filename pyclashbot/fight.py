@@ -62,7 +62,7 @@ def leave_end_battle_window(logger):
 def check_if_end_screen_is_ok_bottom_middle():
     # Method to check if the end screen is the one with the OK button in the
     # middle
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
     # (210,589)
     pix_list = [
         iar[591][234],
@@ -78,7 +78,7 @@ def check_if_end_screen_is_ok_bottom_middle():
 def check_if_end_screen_is_exit_bottom_left():
     # Method to check if the end screen is the one with the exit button in the
     # bottom left
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
     pix_list = [
         iar[638][57],
         iar[640][110],
@@ -103,7 +103,7 @@ def check_if_past_game_is_win(logger):
     # Method for reading the actiivty log to check if the previous game was a
     # win or loss
     open_activity_log()
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
 
     for n in range(40, 130):
         pix = iar[191][n]
@@ -137,7 +137,7 @@ def _extracted_from_check_if_past_game_is_win_12(logger, arg1):
 def check_if_has_6_elixer():
     # Method to see if the bot has 6 expendable elixer in the given moment
     # during a battle
-    iar = numpy.asarray(screenshot())
+    iar = numpy.array(screenshot())
     pix_list = [
         # iar[643][258],
         iar[648][272],
@@ -146,14 +146,8 @@ def check_if_has_6_elixer():
     color_list=[
         [208, 34, 214],[245,175,250]
     ]
-    
-    #print(pix_list)
 
-    for color in color_list:
-        for pix in pix_list:
-            if pixel_is_equal(pix, color, tol=45):
-                return True
-    return False
+    return any(pixel_is_equal(pix, color, tol=45) for color, pix in itertools.product(color_list, pix_list))
 
 
 def wait_until_has_6_elixer(logger):
