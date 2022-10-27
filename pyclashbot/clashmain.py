@@ -60,15 +60,15 @@ def check_if_on_clash_main_menu():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    color_yellow=[255,186,0]
+    color_yellow=[255,186,63]
     yellow_pix_list=[
         iar[455][175],
-        iar[417][255],
+        #iar[417][255],
         iar[415][225],
         iar[460][178],
     ]
     for pix in yellow_pix_list:
-        if not pixel_is_equal(pix,color_yellow,tol=35):
+        if not pixel_is_equal(pix,color_yellow,tol=65):
             return False
     
     color_blue=[11,66,113]
@@ -79,8 +79,14 @@ def check_if_on_clash_main_menu():
         iar[301][20],
     ]
     for pix in blue_pix_list:
-        if not pixel_is_equal(pix,color_blue,tol=35):
+        if not pixel_is_equal(pix,color_blue,tol=65):
             return False
+    
+    
+
+    
+    
+    
     
     return True
 
@@ -94,12 +100,11 @@ def get_to_account(logger, account_number):
     logger.change_status(
         f"Switching accounts to account number {str(account_number)}")
 
+    #open settings
     click(x=364, y=99)
-    time.sleep(3)
 
-    #logger.change_status("Clicking switch button")
-    click(x=198, y=401)
-    time.sleep(3)
+    #click switch accounts
+    click(200,460)
 
     if account_number == 0:
         #logger.change_status("Clicking account 1")
