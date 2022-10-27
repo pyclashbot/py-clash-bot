@@ -11,7 +11,8 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 
 def wait_for_clash_main_menu(logger):
     # Method for waiting for the clash main menu to appear after loading
-    waiting = True
+    time.sleep(5)
+    waiting = not (check_if_on_clash_main_menu())
     n = 0
     loops = 0
     while waiting:
@@ -60,34 +61,34 @@ def check_if_on_clash_main_menu():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    color_yellow=[255,186,63]
+    color_yellow=[255,188,0]
     yellow_pix_list=[
-        iar[455][175],
-        #iar[417][255],
-        iar[415][225],
-        iar[460][178],
+        iar[421][217],
+        #iar[419][126],
+        #iar[468][128],
+        iar[466][219],
     ]
-    for pix in yellow_pix_list:
-        if not pixel_is_equal(pix,color_yellow,tol=65):
-            return False
     
-    color_blue=[11,66,113]
+    color_blue=[12,72,120]
     blue_pix_list=[
-        iar[296][13],
-        iar[313][7],
-        iar[281][9],
-        iar[301][20],
+        iar[353][15],
+        iar[421][11],
+        iar[474][11],
+        iar[358][9],
     ]
-    for pix in blue_pix_list:
-        if not pixel_is_equal(pix,color_blue,tol=65):
+    
+    for pix in yellow_pix_list:
+        if not(pixel_is_equal(pix,color_yellow,tol=70)): 
+            # print("Yellow fail")
+            # for pix in yellow_pix_list: print(pix[0],pix[1],pix[2])
             return False
     
-    
+    for pix in blue_pix_list:
+        if not(pixel_is_equal(pix,color_blue,tol=70)): 
+            # print("Blue fail")
+            # for pix in blue_pix_list: print(pix[0],pix[1],pix[2])
+            return False
 
-    
-    
-    
-    
     return True
 
 
