@@ -1,9 +1,14 @@
+import random
 import time
+from os.path import dirname, join
 
 import numpy
 
+from pyclashbot.card_detection import make_reference_image_list
 from pyclashbot.clashmain import check_if_on_clash_main_menu
-from pyclashbot.client import click, screenshot, scroll_up_fast
+from pyclashbot.client import (click, get_file_count, screenshot,
+                               scroll_down_super_fast, scroll_up_fast,
+                               scroll_up_super_fast)
 from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location, pixel_is_equal)
 
@@ -199,17 +204,112 @@ def randomize_and_select_deck_2(logger):
     click(173, 190)
     time.sleep(1)
 
-    # click deck options tab
-    click(339, 165)
-    time.sleep(1)
-
-    # click randomize button
-    click(253, 173)
-    time.sleep(1)
-
-    # click confirm
-    click(261, 419)
-    time.sleep(1)
+    #randomize this deck
+    randomize_current_deck()
 
     # return to clash main
     get_to_clash_main_from_card_page(logger)
+
+
+
+def randomize_current_deck():
+    card_coord_list=[
+        [75,271],
+        [162,277],
+        [250,267],
+        [337,267],
+        [77,400],
+        [174,398],
+        [250,411],
+        [325,404],
+    ]
+    
+    for card_coord in card_coord_list:
+        replace_card_in_deck(card_coord=card_coord)
+    
+
+def replace_card_in_deck(card_coord=[]):
+    if card_coord==[]:return
+    
+    #scroll down a random amount
+    scrolls=random.randint(4,15)
+    while (scrolls>0)and(check_if_can_still_scroll()):
+        scroll_down_super_fast()
+    scroll_up_super_fast()
+
+    time.sleep(0.22)
+    
+    #get a random card from this screen to use
+    while find_use_card_button() == None:
+        click(x=random.randint(81,356),y=random.randint(120,485))
+        time.sleep(0.22)
+        
+    use_card_button_coord=find_use_card_button()
+    click(use_card_button_coord[0],use_card_button_coord[1])
+    
+    #select the card coord in the deck that we're replacing with the random card
+    click(card_coord[0],card_coord[1])
+    time.sleep(0.22)
+    
+
+def find_use_card_button():
+    current_image = screenshot()
+    reference_folder = "find_use_card_button"
+    
+    
+    references = make_reference_image_list(
+        get_file_count(
+            join(
+                dirname(__file__),
+                "reference_images",
+                "find_use_card_button")))
+    
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.9
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1] , coord[0]]
+
+
+def check_if_can_still_scroll():
+    iar=numpy.asarray(screenshot())
+    pix_list_1=[
+        iar[559][83],
+        iar[559][170],
+        iar[559][250],
+        iar[559][340],
+    ]
+    pix_list_1_truth=True
+    for pix in pix_list_1:
+        if not(check_if_pixel_is_grey(pix)): pix_list_1_truth = False
+
+    pix_list_2=[
+        iar[495][83],
+        iar[495][172],
+        iar[495][259],
+        iar[495][342],
+    ]
+    pix_list_2_truth=True
+    for pix in pix_list_2:
+        if not(check_if_pixel_is_grey(pix)): pix_list_2_truth = False
+
+    
+    if (not(pix_list_2_truth))and(not(pix_list_1_truth)):return True
+    return False
+    
+    
+def check_if_pixel_is_grey(pixel):
+    r=pixel[0]
+    g=pixel[1]
+    b=pixel[2]
+    
+    if (abs(r-g) > 10) or (abs(r-b) > 10) or (abs(g-b) > 10):
+        return False
+    return True
+    
+
