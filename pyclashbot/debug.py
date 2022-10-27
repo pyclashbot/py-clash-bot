@@ -15,9 +15,9 @@ from PIL import Image
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        identify_cards,
                                        make_reference_image_list)
-from pyclashbot.clashmain import (find_2v2_quick_match_button,
+from pyclashbot.clashmain import (check_if_on_clash_main_menu, find_2v2_quick_match_button,
                                   find_and_click_2v2_quickmatch_button,
-                                  start_2v2)
+                                  start_2v2, wait_for_clash_main_menu)
 from pyclashbot.client import (click, get_file_count, get_next_ssid,
                                orientate_memu, orientate_memu_multi,
                                screenshot, scroll_down, scroll_down_fast,
@@ -144,5 +144,36 @@ def request_debug():
     state_request(logger)
     
 
+def check_if_on_clash_main_menu():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
 
+    color_yellow=[255,186,0]
+    yellow_pix_list=[
+        iar[455][175],
+        iar[417][255],
+        iar[415][225],
+        iar[460][178],
+    ]
+    for pix in yellow_pix_list:
+        if not pixel_is_equal(pix,color_yellow,tol=35):
+            return False
+    
+    color_blue=[11,66,113]
+    blue_pix_list=[
+        iar[296][13],
+        iar[313][7],
+        iar[281][9],
+        iar[301][20],
+    ]
+    for pix in blue_pix_list:
+        if not pixel_is_equal(pix,color_blue,tol=35):
+            return False
+    
+    return True
+    
 
+# wait_for_clash_main_menu(logger)
+
+while True:
+    print(check_if_on_clash_main_menu2())
