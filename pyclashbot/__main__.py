@@ -67,11 +67,11 @@ def main_gui():
         # first checkboxes
         [sg.Text("Select which jobs youd like the bot to do:")],
         [
-            sg.Checkbox('Open chests', default=False, key="-Open-Chests-in-"),
-            sg.Checkbox('Fight', default=False, key="-Fight-in-"),
-            sg.Checkbox('Random Requesting', default=False,
+            sg.Checkbox('Open chests', default=True, key="-Open-Chests-in-"),
+            sg.Checkbox('Fight', default=True, key="-Fight-in-"),
+            sg.Checkbox('Random Requesting', default=True,
                         key="-Requesting-in-"),
-            sg.Checkbox('Upgrade cards', default=False,
+            sg.Checkbox('Upgrade cards', default=True,
                         key="-Upgrade_cards-in-"),
 
         ],
