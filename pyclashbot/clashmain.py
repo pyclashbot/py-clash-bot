@@ -271,9 +271,10 @@ def start_2v2(logger):
     # clash main menu
     logger.change_status("Initiating 2v2 match from main menu")
 
-    #logger.change_status("Clicking party mode")
+    #getting to party tab
+    click(365,108)
     time.sleep(1)
-    click(284, 449)
+    click(263,248)
     time.sleep(1)
 
     if find_and_click_2v2_quickmatch_button(logger) == "restart":
