@@ -1,6 +1,9 @@
 
+from dataclasses import replace
 import random
+from re import S
 import time
+from os.path import dirname, join
 
 import numpy
 import pyautogui
@@ -10,15 +13,23 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 from pyclashbot.card_detection import (get_card_group, get_card_images,
-                                       identify_cards)
-from pyclashbot.clashmain import find_2v2_quick_match_button, find_and_click_2v2_quickmatch_button
-from pyclashbot.client import (click, get_next_ssid, orientate_memu,
-                               orientate_memu_multi, screenshot, scroll_down,
-                               show_image)
+                                       identify_cards,
+                                       make_reference_image_list)
+from pyclashbot.clashmain import (find_2v2_quick_match_button,
+                                  find_and_click_2v2_quickmatch_button,
+                                  start_2v2)
+from pyclashbot.client import (click, get_file_count, get_next_ssid,
+                               orientate_memu, orientate_memu_multi,
+                               screenshot, scroll_down, scroll_down_fast,
+                               scroll_down_super_fast, scroll_up_fast, scroll_up_super_fast, show_image)
 from pyclashbot.configuration import load_user_config
-from pyclashbot.fight import check_if_has_6_elixer, fight, leave_end_battle_window, pick_a_lane, wait_until_has_6_elixer
-from pyclashbot.image_rec import pixel_is_equal
-from pyclashbot.launcher import close_memu, close_memu_multi, find_clash_app_logo
+from pyclashbot.fight import (check_if_has_6_elixer, fight,
+                              leave_end_battle_window, pick_a_lane,
+                              wait_until_has_6_elixer)
+from pyclashbot.image_rec import (find_references, get_first_location,
+                                  pixel_is_equal)
+from pyclashbot.launcher import (close_memu, close_memu_multi,
+                                 find_clash_app_logo)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_in_a_clan,
                                 request_random_card_from_clash_main)
@@ -127,6 +138,11 @@ def card_detection_debug():
         print(identify_cards())
 
 
+def request_debug():
+    #starts on clash main and ends on clash main
+    #should request if you can, should do nothing if you cant
+    state_request(logger)
+    
 
 
-card_detection_debug()
+
