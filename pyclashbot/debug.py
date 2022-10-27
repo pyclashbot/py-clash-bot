@@ -146,7 +146,5 @@ def request_debug():
 
 
 
-# get_to_account(logger=logger, account_number=3)
-
-
-print(check_if_on_clash_main_menu())
+while True:
+    print(check_if_on_clash_main_menu())
