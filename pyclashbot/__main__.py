@@ -1,4 +1,5 @@
 import sys
+from typing import Union
 
 import PySimpleGUI as sg
 
@@ -29,19 +30,27 @@ def start_button_event(window, values):
         jobs.append("Request")
     if values["-Upgrade_cards-in-"]:
         jobs.append("Upgrade")
-    if not jobs:
+    elif not jobs:
         print("At least one job must be selected")
         return None
+
+    # get amount of accounts
+    acc_count = int(values["-SSID_IN-"])
+
+    # prepare arguments for main thread
+    args = (jobs, acc_count)
+
     # disable the start button after it is pressed
     window["Start"].update(disabled=True)
-    # prepare arguments for main thread
-    args = (jobs, int(values["-SSID_IN-"]))
+
     # create thread
     thread = MainLoopThread(args)
     # start thread
     thread.start()
+
     # enable the stop button after the thread is started
     window["Stop"].update(disabled=False)
+
     return thread
 
 
@@ -97,7 +106,7 @@ def main_gui():
     ]
     window = sg.Window("Py-ClashBot", layout)
 
-    thread = None
+    thread: Union[MainLoopThread, None] = None
     # run the gui
     while True:
         event, values = read_window(window)
@@ -133,6 +142,7 @@ class MainLoopThread(StoppableThread):
         super().__init__(args, kwargs)
 
     def run(self):
+        # parse thread args
         jobs, ssid_total = self.args
 
         logger = Logger()
