@@ -10,6 +10,7 @@ from pyclashbot.clashmain import (check_if_in_battle, get_to_account,
                                   wait_for_clash_main_menu)
 from pyclashbot.client import (click, orientate_memu, orientate_memu_multi,
                                orientate_terminal)
+from pyclashbot.deck import randomize_and_select_deck_2
 from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
                               check_if_end_screen_is_ok_bottom_middle,
                               check_if_past_game_is_win, fight,
@@ -21,7 +22,7 @@ from pyclashbot.request import (check_if_on_clan_page,
                                 request_random_card_from_clash_main)
 from pyclashbot.upgrade import (check_if_on_first_card_page, get_to_card_page,
                                 get_to_clash_main_from_card_page,
-                                randomize_and_select_deck_2,
+                                
                                 upgrade_current_cards)
 
 
