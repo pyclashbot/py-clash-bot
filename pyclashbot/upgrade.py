@@ -120,7 +120,7 @@ def get_to_card_page(logger):
     time.sleep(2)
     loops = 0
     while not check_if_on_first_card_page():
-        logger.change_status("Not elixer button. Moving pages")
+        #logger.change_status("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
         loops = loops + 1
@@ -147,6 +147,9 @@ def check_if_on_first_card_page():
         "8.png",
         "9.png",
         "10.png",
+        "11.png",
+        "12.png",
+        
     ]
 
     locations = find_references(
