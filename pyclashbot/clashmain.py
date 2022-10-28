@@ -11,7 +11,8 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 
 def wait_for_clash_main_menu(logger):
     # Method for waiting for the clash main menu to appear after loading
-    waiting = True
+    time.sleep(5)
+    waiting = not (check_if_on_clash_main_menu())
     n = 0
     loops = 0
     while waiting:
@@ -60,17 +61,35 @@ def check_if_on_clash_main_menu():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    blue_pix_list = [iar[447][390], iar[391][37]]
-    yellow_pix_list = [iar[427][98], iar[468][97], iar[472][192]]
-    blue_sentinel = [22, 70, 159]
-    yellow_sentinel = [255, 187, 0]
-
+    color_yellow=[255,188,0]
+    yellow_pix_list=[
+        iar[421][217],
+        #iar[419][126],
+        #iar[468][128],
+        iar[466][219],
+    ]
+    
+    color_blue=[12,72,120]
+    blue_pix_list=[
+        iar[353][15],
+        iar[421][11],
+        iar[474][11],
+        iar[358][9],
+    ]
+    
+    for pix in yellow_pix_list:
+        if not(pixel_is_equal(pix,color_yellow,tol=70)): 
+            # print("Yellow fail")
+            # for pix in yellow_pix_list: print(pix[0],pix[1],pix[2])
+            return False
+    
     for pix in blue_pix_list:
-        if not (pixel_is_equal(pix, blue_sentinel, tol=50)):
+        if not(pixel_is_equal(pix,color_blue,tol=70)): 
+            # print("Blue fail")
+            # for pix in blue_pix_list: print(pix[0],pix[1],pix[2])
             return False
 
-    for pix in yellow_pix_list:
-        return bool((pixel_is_equal(pix, yellow_sentinel, tol=50)))
+    return True
 
 
 def get_to_account(logger, account_number):
@@ -82,12 +101,11 @@ def get_to_account(logger, account_number):
     logger.change_status(
         f"Switching accounts to account number {str(account_number)}")
 
+    #open settings
     click(x=364, y=99)
-    time.sleep(3)
 
-    #logger.change_status("Clicking switch button")
-    click(x=198, y=401)
-    time.sleep(3)
+    #click switch accounts
+    click(200,460)
 
     if account_number == 0:
         #logger.change_status("Clicking account 1")
@@ -271,9 +289,10 @@ def start_2v2(logger):
     # clash main menu
     logger.change_status("Initiating 2v2 match from main menu")
 
-    #logger.change_status("Clicking party mode")
+    #getting to party tab
+    click(365,108)
     time.sleep(1)
-    click(284, 449)
+    click(263,248)
     time.sleep(1)
 
     if find_and_click_2v2_quickmatch_button(logger) == "restart":
