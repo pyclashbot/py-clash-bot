@@ -223,14 +223,14 @@ def randomize_current_deck():
         [250,411],
         [325,404],
     ]
-    
+
     for card_coord in card_coord_list:
         replace_card_in_deck(card_coord=card_coord)
-    
+
 
 def replace_card_in_deck(card_coord=[]):
     if card_coord==[]:return
-    
+
     #scroll down a random amount
     scrolls=random.randint(4,15)
     while (scrolls>0)and(check_if_can_still_scroll()):
@@ -238,32 +238,34 @@ def replace_card_in_deck(card_coord=[]):
     scroll_up_super_fast()
 
     time.sleep(0.22)
-    
+
     #get a random card from this screen to use
-    while find_use_card_button() == None:
+    use_card_button_coord=find_use_card_button()
+
+    while use_card_button_coord is None:
         click(x=random.randint(81,356),y=random.randint(120,485))
         time.sleep(0.22)
-        
-    use_card_button_coord=find_use_card_button()
+        use_card_button_coord=find_use_card_button()
+
     click(use_card_button_coord[0],use_card_button_coord[1])
-    
+
     #select the card coord in the deck that we're replacing with the random card
     click(card_coord[0],card_coord[1])
     time.sleep(0.22)
-    
+
 
 def find_use_card_button():
     current_image = screenshot()
     reference_folder = "find_use_card_button"
-    
-    
+
+
     references = make_reference_image_list(
         get_file_count(
             join(
                 dirname(__file__),
                 "reference_images",
                 "find_use_card_button")))
-    
+
 
     locations = find_references(
         screenshot=current_image,
@@ -298,18 +300,15 @@ def check_if_can_still_scroll():
     for pix in pix_list_2:
         if not(check_if_pixel_is_grey(pix)): pix_list_2_truth = False
 
-    
-    if (not(pix_list_2_truth))and(not(pix_list_1_truth)):return True
-    return False
-    
-    
+
+    return not(pix_list_2_truth) and not(pix_list_1_truth)
+
+
 def check_if_pixel_is_grey(pixel):
     r=pixel[0]
     g=pixel[1]
     b=pixel[2]
-    
-    if (abs(r-g) > 10) or (abs(r-b) > 10) or (abs(g-b) > 10):
-        return False
-    return True
-    
+
+    return abs(r-g) <= 10 and abs(r-b) <= 10 and abs(g-b) <= 10
+
 
