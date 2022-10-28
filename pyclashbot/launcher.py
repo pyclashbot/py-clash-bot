@@ -84,6 +84,9 @@ def restart_and_open_clash(logger):
     if wait_for_clash_main_menu(logger) == "restart":
         restart_and_open_clash(logger)
     time.sleep(3)
+    
+    #increment restart counter
+    logger.add_restart()
 
 
 def wait_for_memu_loading_screen(logger):

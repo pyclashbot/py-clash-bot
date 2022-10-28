@@ -35,7 +35,7 @@ from pyclashbot.request import (check_if_in_a_clan,
                                 request_random_card_from_clash_main)
 from pyclashbot.states import (state_clashmain, state_endfight, state_fight,
                                state_request, state_startfight, state_upgrade)
-from pyclashbot.upgrade import (check_if_on_first_card_page, check_if_pixel_indicates_upgrade,
+from pyclashbot.upgrade import (check_if_can_still_scroll, check_if_on_first_card_page, check_if_pixel_indicates_upgrade, randomize_and_select_deck_2,
                                 upgrade_current_cards)
 
 ahk = AHK()
@@ -147,3 +147,6 @@ def request_debug():
 
 
 
+    
+    
+randomize_and_select_deck_2(logger)
