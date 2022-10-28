@@ -58,6 +58,21 @@ def scroll_down_fast():
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
+def make_reference_image_list(size):
+    # Method to make a reference array of a given size
+    reference_image_list = []
+
+    for n in range(size):
+        n = n + 1
+        image_name = f'{n}.png'
+        reference_image_list.append(image_name)
+
+    return reference_image_list
+
+
+
+
+
 def scroll_down_super_fast():
     """ Method for scrolling down even faster when interacting with a scrollable menu """
     origin = pyautogui.position()
