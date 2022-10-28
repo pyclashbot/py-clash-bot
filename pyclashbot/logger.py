@@ -63,36 +63,28 @@ class Logger:
     def log(self):
         """log to console"""
 
-        self.add_row(
-            "-----------------------------------------------------------------------------------")
+        line_with_leftside="|----------------------------------------------------------------------------------"
+        line="-----------------------------------------------------------------------------------"
+
+        self.add_row(line)
         self.add_row(f"|      Program uptime:      | {self.make_timestamp()}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
         self.add_row(f"|     Program restarts:     | {self.restarts}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
         self.add_row(f"|         Requests:         | {self.requests}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
         self.add_row(f"|          Fights:          | {self.fights}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
-        self.add_row(
-            f"|         Win rate:         | {self.make_score_board()}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
+        self.add_row(f"|         Win rate:         | {self.make_score_board()}")
+        self.add_row(line_with_leftside)
         self.add_row(f"|      Chests unlocked:     | {self.chests_unlocked}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
         self.add_row(f"|       Cards played:       | {self.cards_played}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
         self.add_row(f"|      Account switches:    | {self.account_switches}")
-        self.add_row(
-            "|----------------------------------------------------------------------------------")
+        self.add_row(line_with_leftside)
         self.add_row(f"|      Current status:      | {self.current_status}")
-        self.add_row(
-            "-----------------------------------------------------------------------------------")
+        self.add_row(line)
         self.print_buffer()
 
     def line_wrap(self, line: str, width: int) -> str:
