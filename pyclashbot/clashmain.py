@@ -68,7 +68,7 @@ def check_if_on_clash_main_menu():
         #iar[468][128],
         iar[466][219],
     ]
-    
+
     color_blue=[12,72,120]
     blue_pix_list=[
         iar[353][15],
@@ -76,20 +76,14 @@ def check_if_on_clash_main_menu():
         iar[474][11],
         iar[358][9],
     ]
-    
+
     for pix in yellow_pix_list:
-        if not(pixel_is_equal(pix,color_yellow,tol=70)): 
+        if not(pixel_is_equal(pix,color_yellow,tol=70)):
             # print("Yellow fail")
             # for pix in yellow_pix_list: print(pix[0],pix[1],pix[2])
             return False
-    
-    for pix in blue_pix_list:
-        if not(pixel_is_equal(pix,color_blue,tol=70)): 
-            # print("Blue fail")
-            # for pix in blue_pix_list: print(pix[0],pix[1],pix[2])
-            return False
 
-    return True
+    return all((pixel_is_equal(pix,color_blue,tol=70)) for pix in blue_pix_list)
 
 
 def get_to_account(logger, account_number):
