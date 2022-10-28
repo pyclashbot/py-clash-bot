@@ -216,6 +216,10 @@ def randomize_and_select_deck_2(logger):
 
 
 def randomize_current_deck():
+    #figure out how much you can scroll down in your card list
+    max_scrolls=count_scrolls_in_card_page()
+    
+    
     card_coord_list=[
         [75,271],
         [162,277],
@@ -228,17 +232,18 @@ def randomize_current_deck():
     ]
 
     for card_coord in card_coord_list:
-        replace_card_in_deck(card_coord=card_coord)
+        replace_card_in_deck(card_coord=card_coord, max_scrolls=max_scrolls)
 
 
-def replace_card_in_deck(card_coord=[]):
+def replace_card_in_deck(card_coord=[],max_scrolls=4):
     if card_coord==[]:return
 
     #scroll down a random amount
-    scrolls=random.randint(4,15)
+    scrolls=random.randint(2,max_scrolls)
     while (scrolls>0)and(check_if_can_still_scroll()):
         scroll_down_super_fast()
-    scroll_up_super_fast()
+        scrolls-=1
+    #scroll_up_super_fast()
 
     time.sleep(0.22)
 
@@ -289,9 +294,7 @@ def check_if_can_still_scroll():
         iar[559][250],
         iar[559][340],
     ]
-    pix_list_1_truth=True
-    for pix in pix_list_1:
-        if not(check_if_pixel_is_grey(pix)): pix_list_1_truth = False
+    
 
     pix_list_2=[
         iar[495][83],
@@ -299,12 +302,35 @@ def check_if_can_still_scroll():
         iar[495][259],
         iar[495][342],
     ]
+    
+
+    #blue check truth indicates that we've reached the base of the card list
+    color_blue=[14,68,118]    
+    all_pix_list=pix_list_2+pix_list_1
+    blue_check_truth=True
+    for pix in all_pix_list:
+        if not(pixel_is_equal(pix,color_blue,tol=45)): blue_check_truth=False
+        
+    #pix list 1 truth indicates whether or not this row of pixels are all greyscale
+    pix_list_1_truth=True
+    for pix in pix_list_1:
+        if not(check_if_pixel_is_grey(pix)): pix_list_1_truth = False
+        
+    #pix list 2 truth indicates whether or not this row of pixels are all greyscale
     pix_list_2_truth=True
     for pix in pix_list_2:
-        if not(check_if_pixel_is_grey(pix)): pix_list_2_truth = False
-
-
-    return not(pix_list_2_truth) and not(pix_list_1_truth)
+        if not(): pix_list_2_truth = False
+    
+    if blue_check_truth:
+        #print("Blue fail")
+        return False
+    
+    if pix_list_1_truth or pix_list_2_truth: 
+        #print("Grey fail")
+        return False
+    
+    return True
+    
 
 
 def check_if_pixel_is_grey(pixel):
@@ -315,3 +341,17 @@ def check_if_pixel_is_grey(pixel):
     return abs(r-g) <= 10 and abs(r-b) <= 10 and abs(g-b) <= 10
 
 
+def count_scrolls_in_card_page():
+    #Count scrolls
+    count=0
+    while check_if_can_still_scroll():
+        scroll_down_super_fast()
+        count+=1
+    
+    #get back to top of page
+    click(240,621)
+    click(111,629)
+    time.sleep(1)
+    
+    if count<4: return count
+    else: return count-1
