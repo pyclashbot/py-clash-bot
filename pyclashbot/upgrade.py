@@ -13,12 +13,72 @@ from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location, pixel_is_equal)
 
 
-def upgrade_card():
-    # Method for upgrading a given card
+def check_if_card_is_upgradable(card_coord=[],upgrade_coord=[]):
+    #click card
+    click(card_coord[0],card_coord[1])
+    time.sleep(0.2)
+    
+    #check upgrade coord
+    upgrade_color=[107,235,118]
+    pixel=numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
+    
+    if pixel_is_equal(pixel,upgrade_color,tol=35):
+        return True
+    return False
 
-    # Starts on the page of a card that you want to upgrade (after you
-    # click upgrade in the card list on the card page on clash main menu)
 
+def check_for_upgradable_cards():
+    card_coord_list=[
+        [94,277],
+        [179,277],
+        [255,277],
+        [338,277],
+        [94,406],
+        [179,406],
+        [255,406],
+        [338,406],
+    ]
+    upgrade_coord_list=[
+        [48,345],
+        [132,345],
+        [215,345],
+        [367,343],
+        [50,467],
+        [198,467],
+        [283,468],
+        [365,465],
+    ]
+    card_upgrade_list=[]
+    for card_index in range(8):
+        card_coord=card_coord_list[card_index]
+        upgrade_coord=upgrade_coord_list[card_index]
+        if check_if_card_is_upgradable(card_coord=card_coord,upgrade_coord=upgrade_coord):
+            card_upgrade_list.append("Upgrade")
+        else:
+            card_upgrade_list.append("No upgrade")
+    return card_upgrade_list
+
+
+def upgrade_card(card_index):
+    card_coord_list=[
+        [81,337],
+        [169,339],
+        [253,338],
+        [330,337],
+        [81,464],
+        [164,468],
+        [248,466],
+        [334,468],
+    ]
+    
+    #Click the given card
+    card_coord=card_coord_list[card_index]
+    click(card_coord[0],card_coord[1])
+    time.sleep(0.2)
+    
+    #Click the upgrade button below the card
+    click(card_coord[0],card_coord[1])
+    
     # Click upgrade for gold button
     click(238, 606)
     time.sleep(1)
@@ -34,66 +94,24 @@ def upgrade_card():
     # Click dead space to close card page
     for _ in range(5):
         click(26, 518)
+    
 
+def upgrade_current_cards():
+    print("Getting list")
+    upgradable_cards_list=check_for_upgradable_cards()
+    print("Here is list: ",upgradable_cards_list)
 
-def upgrade_current_cards(logger):
-    # Method to upgrade the cards in your deck if they're available for
-    # upgrade and you have the gold
-    # Starts on the clash main card page looking at your main deck
-    # Ends in the same spot
-
-    # make list of coords of the 8 cards on display
-    card_coord_list = [
-        [86, 278],
-        [174, 278],
-        [260, 278],
-        [328, 278],
-        [86, 400],
-        [174, 400],
-        [260, 400],
-        [328, 400]
-    ]
-    # make list of coords of where the upgrade button will possibly appear for
-    # each 8 cards
-    upgrade_button_coords = [
-        [51, 338],
-        [136, 338],
-        [283, 338],
-        [303, 337],
-        [53, 464],
-        [133, 464],
-        [281, 465],
-        [303, 466],
-    ]
-
-    for n in range(8):
-        card_coord = card_coord_list[n]
-        upgrade_button_coord = upgrade_button_coords[n]
-
-        click(card_coord[0], card_coord[1])
-        time.sleep(1)
-
-        # check if upgrade button is there
-        pix = numpy.array(screenshot())[
-            upgrade_button_coord[1] + 10][upgrade_button_coord[0] + 10]
-        # print(pix)
-        if check_if_pixel_indicates_upgrade(pix):
-            logger.change_status(f"Upgrading card: {str(n + 1)}")
-            click(upgrade_button_coord[0], upgrade_button_coord[1])
-            time.sleep(1)
-            upgrade_card()
-            logger.add_card_upgraded()
-
-
-def check_if_pixel_indicates_upgrade(pixel):
-    # Method to see if the given pixel color indicates an upgrade in that spot
-    # on the card page
-    positive_color_list = [
-        [42, 172, 55], [96, 217, 110], [65, 224, 80], [34, 104, 42]
-    ]
-    return any(pixel_is_equal(pixel, color, tol=30)
-               for color in positive_color_list)
-
+    print("Upgrading through cards")
+    index=0
+    for card in upgradable_cards_list:
+        print("Index is ",index," and card is ",card)
+        if card == "Upgrade":         
+            print("upgrading")
+            upgrade_card(index)
+        else:
+            print("Not upgrading")
+        index+=1
+    
 
 def get_to_clash_main_from_card_page(logger):
     # Method to get to the clash royale main menu screen from the card page
@@ -180,178 +198,3 @@ def find_card_page_logo():
     return check_for_location(locations)
 
 
-def select_second_deck(logger):
-    # Method to select the second deck of this account
-
-    #logger.change_status("Selecting deck number 2 for use.")
-    # get to card page
-    get_to_card_page(logger)
-    time.sleep(1)
-
-    # click number 2
-    click(173, 190)
-    time.sleep(1)
-
-    # get to main menu from card page
-    get_to_clash_main_from_card_page(logger)
-
-
-def randomize_and_select_deck_2(logger):
-    # Method to randomize deck number 2 of this account
-
-    logger.change_status("Randomizing deck number 2")
-    # get to card page
-    get_to_card_page(logger)
-
-    # select deck 2
-    click(173, 190)
-    time.sleep(1)
-
-    #randomize this deck
-    randomize_current_deck()
-
-    # return to clash main
-    get_to_clash_main_from_card_page(logger)
-
-
-
-def randomize_current_deck():
-    #figure out how much you can scroll down in your card list
-    max_scrolls=count_scrolls_in_card_page()
-    
-    
-    card_coord_list=[
-        [75,271],
-        [162,277],
-        [250,267],
-        [337,267],
-        [77,400],
-        [174,398],
-        [250,411],
-        [325,404],
-    ]
-
-    for card_coord in card_coord_list:
-        replace_card_in_deck(card_coord=card_coord, max_scrolls=max_scrolls)
-
-
-def replace_card_in_deck(card_coord=[],max_scrolls=4):
-    if card_coord==[]:return
-
-    #scroll down a random amount
-    scrolls=random.randint(2,max_scrolls)
-    while (scrolls>0)and(check_if_can_still_scroll()):
-        scroll_down_super_fast()
-        scrolls-=1
-    #scroll_up_super_fast()
-
-    time.sleep(0.22)
-
-    #get a random card from this screen to use
-    use_card_button_coord=find_use_card_button()
-
-    while use_card_button_coord is None:
-        click(x=random.randint(81,356),y=random.randint(120,485))
-        time.sleep(0.22)
-        use_card_button_coord=find_use_card_button()
-
-    click(use_card_button_coord[0],use_card_button_coord[1])
-
-    #select the card coord in the deck that we're replacing with the random card
-    click(card_coord[0],card_coord[1])
-    time.sleep(0.22)
-
-
-def find_use_card_button():
-    current_image = screenshot()
-    reference_folder = "find_use_card_button"
-
-
-    references = make_reference_image_list(
-        get_file_count(
-            join(
-                dirname(__file__),
-                "reference_images",
-                "find_use_card_button")))
-
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.9
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1] , coord[0]]
-
-
-def check_if_can_still_scroll():
-    iar=numpy.asarray(screenshot())
-    pix_list_1=[
-        iar[559][83],
-        iar[559][170],
-        iar[559][250],
-        iar[559][340],
-    ]
-    
-
-    pix_list_2=[
-        iar[495][83],
-        iar[495][172],
-        iar[495][259],
-        iar[495][342],
-    ]
-    
-
-    #blue check truth indicates that we've reached the base of the card list
-    color_blue=[14,68,118]    
-    all_pix_list=pix_list_2+pix_list_1
-    blue_check_truth=True
-    for pix in all_pix_list:
-        if not(pixel_is_equal(pix,color_blue,tol=45)): blue_check_truth=False
-        
-    #pix list 1 truth indicates whether or not this row of pixels are all greyscale
-    pix_list_1_truth=True
-    for pix in pix_list_1:
-        if not(check_if_pixel_is_grey(pix)): pix_list_1_truth = False
-        
-    #pix list 2 truth indicates whether or not this row of pixels are all greyscale
-    pix_list_2_truth=True
-    for pix in pix_list_2:
-        if not(): pix_list_2_truth = False
-    
-    if blue_check_truth:
-        #print("Blue fail")
-        return False
-    
-    if pix_list_1_truth or pix_list_2_truth: 
-        #print("Grey fail")
-        return False
-    
-    return True
-    
-
-
-def check_if_pixel_is_grey(pixel):
-    r=pixel[0]
-    g=pixel[1]
-    b=pixel[2]
-
-    return abs(r-g) <= 10 and abs(r-b) <= 10 and abs(g-b) <= 10
-
-
-def count_scrolls_in_card_page():
-    #Count scrolls
-    count=0
-    while check_if_can_still_scroll():
-        scroll_down_super_fast()
-        count+=1
-    
-    #get back to top of page
-    click(240,621)
-    click(111,629)
-    time.sleep(1)
-    
-    if count<4: return count
-    else: return count-1

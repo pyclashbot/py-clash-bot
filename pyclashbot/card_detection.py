@@ -1,8 +1,11 @@
+import time
 import random
 from os.path import dirname, join
 
-from pyclashbot.client import get_file_count, screenshot
+from pyclashbot.client import click, get_file_count, make_reference_image_list, screenshot
+from pyclashbot.deck import get_to_card_page
 from pyclashbot.image_rec import check_for_location, find_references
+from pyclashbot.upgrade import get_to_clash_main_from_card_page
 
 
 def get_card_images():
@@ -35,18 +38,6 @@ def check_for_card(image, card_name=""):
     )
 
     return check_for_location(locations)
-
-
-def make_reference_image_list(size):
-    # Method to make a reference array of a given size
-    reference_image_list = []
-
-    for n in range(size):
-        n = n + 1
-        image_name = f'{n}.png'
-        reference_image_list.append(image_name)
-
-    return reference_image_list
 
 
 def identify_cards():
@@ -356,3 +347,22 @@ def get_play_coords(card_group, side):
             [303, 485],
             [375, 491],
         ]
+
+
+
+def select_second_deck(logger):
+    # Method to select the second deck of this account
+
+    #logger.change_status("Selecting deck number 2 for use.")
+    # get to card page
+    get_to_card_page(logger)
+    time.sleep(1)
+
+    # click number 2
+    click(173, 190)
+    time.sleep(1)
+
+    # get to main menu from card page
+    get_to_clash_main_from_card_page(logger)
+
+

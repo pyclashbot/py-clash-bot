@@ -1,9 +1,9 @@
 
-from dataclasses import replace
 import random
-from re import S
 import time
+from dataclasses import replace
 from os.path import dirname, join
+from re import S
 
 import numpy
 import pyautogui
@@ -15,13 +15,16 @@ from PIL import Image
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        identify_cards,
                                        make_reference_image_list)
-from pyclashbot.clashmain import (check_if_on_clash_main_menu, find_2v2_quick_match_button,
-                                  find_and_click_2v2_quickmatch_button, get_to_account,
-                                  start_2v2, wait_for_clash_main_menu)
+from pyclashbot.clashmain import (check_if_on_clash_main_menu,
+                                  find_2v2_quick_match_button,
+                                  find_and_click_2v2_quickmatch_button,
+                                  get_to_account, start_2v2,
+                                  wait_for_clash_main_menu)
 from pyclashbot.client import (click, get_file_count, get_next_ssid,
                                orientate_memu, orientate_memu_multi,
                                screenshot, scroll_down, scroll_down_fast,
-                               scroll_down_super_fast, scroll_up_fast, scroll_up_super_fast, show_image)
+                               scroll_down_super_fast, scroll_up_fast,
+                               scroll_up_super_fast, show_image)
 from pyclashbot.configuration import load_user_config
 from pyclashbot.fight import (check_if_has_6_elixer, fight,
                               leave_end_battle_window, pick_a_lane,
@@ -35,8 +38,6 @@ from pyclashbot.request import (check_if_in_a_clan,
                                 request_random_card_from_clash_main)
 from pyclashbot.states import (state_clashmain, state_endfight, state_fight,
                                state_request, state_startfight, state_upgrade)
-from pyclashbot.upgrade import (check_if_can_still_scroll, check_if_on_first_card_page, check_if_pixel_indicates_upgrade, randomize_and_select_deck_2,
-                                upgrade_current_cards)
 
 ahk = AHK()
 logger = Logger()
@@ -146,7 +147,9 @@ def request_debug():
 
 
 
+# n=0
+# for card in check_for_upgradable_cards(): 
+#     n+=1
+#     print(n,card)
 
-    
-    
-randomize_and_select_deck_2(logger)
+upgrade_current_cards()
