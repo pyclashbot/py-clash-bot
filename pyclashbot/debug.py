@@ -127,7 +127,7 @@ def upgrade_card_coords_debug():
         pyautogui.moveTo(upgrade_coord[0], upgrade_coord[1], duration=1)
         time.sleep(1)
         print(check_if_pixel_indicates_upgrade(numpy.asarray(
-            screenshot())[upgrade_coord[1]][upgrade_coord[0]]))
+            screenshot()[upgrade_coord[1]][upgrade_coord[0]])))
 
 
 def card_detection_debug():
@@ -142,6 +142,8 @@ def request_debug():
     #starts on clash main and ends on clash main
     #should request if you can, should do nothing if you cant
     state_request(logger)
-    
+
+
+
 
 
