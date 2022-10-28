@@ -216,11 +216,7 @@ def get_play_coords(card_group, side):
 
     if side == "random":
         n = random.randint(0, 1)
-        if n == 0:
-            side = "left"
-        else:
-            side = "right"
-
+        side = "left" if n == 0 else "right"
     left_turret_cards_coords = [[217, 371]]
     right_turret_cards_coords = [[236, 383]]
 
@@ -272,82 +268,79 @@ def get_play_coords(card_group, side):
     left_mortar_cards_coords = [[179, 332], ]
     right_mortar_cards_coords = [[289, 335], ]
 
-    left_elixer_pump_cards_coords = [[147, 485],
-                                     [87, 479], ]
-    right_elixer_pump_cards_coords = [[303, 485],
-                                      [375, 491], ]
-
-    if card_group == "turret_cards":
+    if card_group == "elixer_pump_cards":
         if side == "left":
-            return left_turret_cards_coords
-        if side == "right":
-            return right_turret_cards_coords
+            return [[303, 485], [375, 491],]
 
-    if card_group == "spell_cards":
-        if side == "left":
-            return left_spell_cards_coords
         if side == "right":
-            return right_spell_cards_coords
+            return [[147, 485], [87, 479],]
 
-    if card_group == "hog_cards":
-        if side == "left":
-            return right_hog_cards_coords
-        if side == "right":
-            return left_hog_cards_coords
 
-    if card_group == "spawner_cards":
-        if side == "left":
-            return left_spawner_cards_coords
-        if side == "right":
-            return right_spawner_cards_coords
-
-    if card_group == "princess_cards":
-        if side == "left":
-            return left_princess_cards_coords
-        if side == "right":
-            return right_princess_cards_coords
-
-    if card_group == "miner_cards":
-        if side == "left":
-            return right_miner_cards_coords
-        if side == "right":
-            return left_miner_cards_coords
-
-    if card_group == "goblin_barrel_cards":
-        if side == "left":
-            return right_goblin_barrel_cards_coords
-        if side == "right":
-            return left_goblin_barrel_cards_coords
-
-    if card_group == "wall_breaker_cards":
-        if side == "left":
-            return left_wall_breaker_cards_coords
-        if side == "right":
-            return right_wall_breaker_cards_coords
-
-    if card_group == "friendly_spell_cards":
+    elif card_group == "friendly_spell_cards":
         if side == "left":
             return left_friendly_spell_cards_coords
         if side == "right":
             return right_friendly_spell_cards_coords
 
-    if card_group == "xbow_cards":
+    elif card_group == "goblin_barrel_cards":
         if side == "left":
-            return right_xbow_cards_coords
+            return right_goblin_barrel_cards_coords
         if side == "right":
-            return left_xbow_cards_coords
+            return left_goblin_barrel_cards_coords
 
-    if card_group == "mortar_cards":
+    elif card_group == "hog_cards":
+        if side == "left":
+            return right_hog_cards_coords
+        if side == "right":
+            return left_hog_cards_coords
+
+    elif card_group == "miner_cards":
+        if side == "left":
+            return right_miner_cards_coords
+        if side == "right":
+            return left_miner_cards_coords
+
+    elif card_group == "mortar_cards":
         if side == "left":
             return left_mortar_cards_coords
         if side == "right":
             return right_mortar_cards_coords
 
-    if card_group == "elixer_pump_cards":
+    elif card_group == "princess_cards":
         if side == "left":
-            return right_elixer_pump_cards_coords
+            return left_princess_cards_coords
         if side == "right":
-            return left_elixer_pump_cards_coords
+            return right_princess_cards_coords
+
+    elif card_group == "spawner_cards":
+        if side == "left":
+            return left_spawner_cards_coords
+        if side == "right":
+            return right_spawner_cards_coords
+
+    elif card_group == "spell_cards":
+        if side == "left":
+            return left_spell_cards_coords
+        if side == "right":
+            return right_spell_cards_coords
+
+    elif card_group == "turret_cards":
+        if side == "left":
+            return left_turret_cards_coords
+        if side == "right":
+            return right_turret_cards_coords
+
+    elif card_group == "wall_breaker_cards":
+        if side == "left":
+            return left_wall_breaker_cards_coords
+        if side == "right":
+            return right_wall_breaker_cards_coords
+
+    elif card_group == "xbow_cards":
+        if side == "left":
+            return right_xbow_cards_coords
+        if side == "right":
+            return left_xbow_cards_coords
 
     if side == "left":
         return [
