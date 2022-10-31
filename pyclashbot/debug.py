@@ -15,7 +15,7 @@ from PIL import Image
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        identify_cards,
                                        make_reference_image_list)
-from pyclashbot.clashmain import (check_if_on_clash_main_menu,
+from pyclashbot.clashmain import (check_for_blue_background_on_main, check_for_gem_logo_on_main, check_if_on_clash_main_menu,
                                   find_2v2_quick_match_button,
                                   find_and_click_2v2_quickmatch_button,
                                   get_to_account, start_2v2,
@@ -145,11 +145,7 @@ def request_debug():
     state_request(logger)
 
 
+wait_for_clash_main_menu(logger)
 
 
-# n=0
-# for card in check_for_upgradable_cards(): 
-#     n+=1
-#     print(n,card)
-
-upgrade_current_cards()
+print(check_if_on_clash_main_menu())
