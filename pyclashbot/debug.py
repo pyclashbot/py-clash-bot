@@ -148,4 +148,4 @@ def request_debug():
 wait_for_clash_main_menu(logger)
 
 
-print(check_if_on_clash_main_menu())
+# print(check_if_on_clash_main_menu())
