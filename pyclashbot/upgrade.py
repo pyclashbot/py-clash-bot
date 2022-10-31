@@ -5,7 +5,7 @@ from os.path import dirname, join
 import numpy
 
 from pyclashbot.card_detection import make_reference_image_list
-from pyclashbot.clashmain import check_if_on_clash_main_menu
+from pyclashbot.clashmain import check_for_gem_logo_on_main
 from pyclashbot.client import (click, get_file_count, screenshot,
                                scroll_down_super_fast, scroll_up_fast,
                                scroll_up_super_fast)
@@ -120,7 +120,7 @@ def get_to_clash_main_from_card_page(logger):
     click(250, 630)
     loops = 0
 
-    on_clash_main = check_if_on_clash_main_menu()
+    on_clash_main = check_for_gem_logo_on_main()
     while not (on_clash_main):
         loops += 1
         if loops > 15:
@@ -128,7 +128,7 @@ def get_to_clash_main_from_card_page(logger):
             return "restart"
         click(212, 623)
         time.sleep(1)
-        on_clash_main = check_if_on_clash_main_menu()
+        on_clash_main = check_for_gem_logo_on_main()
 
 
 def get_to_card_page(logger):
