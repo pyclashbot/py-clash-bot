@@ -10,32 +10,40 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 
 
 def wait_for_clash_main_menu(logger):
-    # Method for waiting for the clash main menu to appear after loading
-    time.sleep(5)
-    
-    waiting = not (check_if_on_clash_main_menu())
-    loops = 0
+    logger.change_status("Waiting for clash main menu")
+    waiting=not check_if_on_clash_main_menu()
+
     while waiting:
-        loops += 1
-        if loops > 25:
-            logger.change_status(
-                "Waited too long for clash main menu to appear")
-            return "restart"
-        
-        handle_puzzleroyale_popup(logger)
-       
-        if random.randint(1, 2) == 1: click(206,639)
+        #wait 1 sec
         time.sleep(1)
         
+        #click dead space
+        click(32, 364)
+
+        #check if stuck on trophy progression page
+        if check_if_stuck_on_trophy_progression_page():
+            time.sleep(1)
+            click(210,621)
+            
+        #check if still waiting
+        waiting= not(check_if_on_clash_main_menu())
         
-        if random.randint(1, 2) == 1: click(32, 364)
-        time.sleep(1)
+    logger.change_status("Done waiting for clash main menu")
         
-        waiting = not (check_if_on_clash_main_menu())
-        
-        
-    time.sleep(3)
-    logger.change_status("Done waiting for clash main menu to appear.")
+def check_if_stuck_on_trophy_progression_page():
+    iar=numpy.asarray(screenshot())
+    color=[85,177,255]
+    pix_list=[
+        iar[620][225],
+        iar[625][230],
+        iar[630][238],
+        iar[635][245],
+    ]
+    for pix in pix_list: 
+        if not pixel_is_equal(pix,color,tol=45):return False
+    return True
+
+
 
 
 def handle_puzzleroyale_popup(logger):
@@ -66,10 +74,9 @@ def check_for_gem_logo_on_main():
     iar = numpy.array(screenshot())
 
     pix_list=[
-        iar[48][427],
-        iar[56][431],
-        iar[49][421],
-        iar[48][434],
+        iar[64][403],
+        iar[67][406],
+        iar[70][408],
     ]
     color=[75,180,35]
     
@@ -103,8 +110,10 @@ def check_for_blue_background_on_main():
     
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
+        #print("Gem logo not found")
         return False
     if not check_for_blue_background_on_main():
+        #print("Blue background not found")
         return False
     
     return True
