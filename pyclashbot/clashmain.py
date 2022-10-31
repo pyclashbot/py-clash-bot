@@ -57,33 +57,53 @@ def look_for_puzzleroyale_popup():
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
 
-def check_if_on_clash_main_menu():
+def check_for_gem_logo_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    color_yellow=[255,188,0]
-    yellow_pix_list=[
-        iar[421][217],
-        #iar[419][126],
-        #iar[468][128],
-        iar[466][219],
+    pix_list=[
+        iar[48][427],
+        iar[56][431],
+        iar[49][421],
+        iar[48][434],
     ]
-
-    color_blue=[12,72,120]
-    blue_pix_list=[
-        iar[353][15],
-        iar[421][11],
-        iar[474][11],
-        iar[358][9],
-    ]
-
-    for pix in yellow_pix_list:
-        if not(pixel_is_equal(pix,color_yellow,tol=70)):
-            # print("Yellow fail")
-            # for pix in yellow_pix_list: print(pix[0],pix[1],pix[2])
+    color=[75,180,35]
+    
+    #for pix in pix_list:print(pix)
+    
+    for pix in pix_list:
+        if not pixel_is_equal(pix, color, tol=45):
             return False
+        return True
+    
+    
+def check_for_blue_background_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
 
-    return all((pixel_is_equal(pix,color_blue,tol=70)) for pix in blue_pix_list)
+    pix_list=[
+        iar[350][3],
+        iar[360][6],
+        iar[368][7],
+        iar[372][9],
+    ]
+    color=[9,69,119]
+    
+    #for pix in pix_list:print(pix)
+    
+    for pix in pix_list:
+        if not pixel_is_equal(pix, color, tol=45):
+            return False
+        return True
+
+    
+def check_if_on_clash_main_menu():
+    if not check_for_gem_logo_on_main():
+        return False
+    if not check_for_blue_background_on_main():
+        return False
+    
+    return True
 
 
 def get_to_account(logger, account_number):

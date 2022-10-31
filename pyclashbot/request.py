@@ -4,7 +4,7 @@ from random import Random
 import numpy
 import pyautogui
 
-from pyclashbot.clashmain import check_if_on_clash_main_menu
+from pyclashbot.clashmain import check_for_gem_logo_on_main
 from pyclashbot.client import click, screenshot, scroll_down
 from pyclashbot.image_rec import (find_references, get_first_location,
                                   pixel_is_equal)
@@ -153,7 +153,7 @@ def get_to_clash_main_from_request_page(logger):
     logger.change_status("Getting to clash main from request page")
     click(172, 612)
     time.sleep(1)
-    on_main = check_if_on_clash_main_menu()
+    on_main = check_for_gem_logo_on_main()
     loops = 0
     while not (on_main):
         loops += 1
@@ -163,7 +163,7 @@ def get_to_clash_main_from_request_page(logger):
             return "restart"
         click(208, 606)
         time.sleep(1)
-        on_main = check_if_on_clash_main_menu()
+        on_main = check_for_gem_logo_on_main()
 
 
 def get_to_clan_page(logger):
