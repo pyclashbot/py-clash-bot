@@ -145,7 +145,11 @@ def request_debug():
     state_request(logger)
 
 
-wait_for_clash_main_menu(logger)
 
 
-# print(check_if_on_clash_main_menu())
+
+wait_for_clash_main_menu(logger=logger)
+
+
+
+
