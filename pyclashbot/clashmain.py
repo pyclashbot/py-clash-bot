@@ -12,8 +12,8 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 def wait_for_clash_main_menu(logger):
     # Method for waiting for the clash main menu to appear after loading
     time.sleep(5)
+    
     waiting = not (check_if_on_clash_main_menu())
-    n = 0
     loops = 0
     while waiting:
         loops += 1
@@ -21,15 +21,19 @@ def wait_for_clash_main_menu(logger):
             logger.change_status(
                 "Waited too long for clash main menu to appear")
             return "restart"
+        
         handle_puzzleroyale_popup(logger)
+       
         if random.randint(1, 2) == 1: click(206,639)
-        n = n + 1
-        logger.change_status(
-            f"Waiting for clash main menu to appear: {str(n)}")
         time.sleep(1)
+        
+        
+        if random.randint(1, 2) == 1: click(32, 364)
+        time.sleep(1)
+        
         waiting = not (check_if_on_clash_main_menu())
-        click(32, 364)
-        time.sleep(1)
+        
+        
     time.sleep(3)
     logger.change_status("Done waiting for clash main menu to appear.")
 
