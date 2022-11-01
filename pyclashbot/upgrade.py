@@ -59,7 +59,7 @@ def check_for_upgradable_cards():
     return card_upgrade_list
 
 
-def upgrade_card(card_index):
+def upgrade_card(logger,card_index):
     card_coord_list=[
         [81,337],
         [169,339],
@@ -72,47 +72,69 @@ def upgrade_card(card_index):
     ]
     
     #Click the given card
+    print("Clicking card")
     card_coord=card_coord_list[card_index]
     click(card_coord[0],card_coord[1])
-    time.sleep(0.2)
+    time.sleep(3)
     
     #Click the upgrade button below the card
+    print("Clicking upgrade button below the card")
     click(card_coord[0],card_coord[1])
+    time.sleep(3)
     
     # Click upgrade for gold button
+    print("Clicking stagnant upgrade button #1")
     click(238, 606)
-    time.sleep(1)
+    time.sleep(3)
 
+    #Check for second upgrade for gold button
+    print("Checking for stagnant upgrade button #2")
+    if check_for_final_upgrade_button():
+        logger.add_card_upgraded()
+        print("Found stagnant upgrade button #2")
+    else:
+        print("Didn't find stagnant upgrade button #2")
+    time.sleep(3)
+    
     # Click second upgrade for gold button
+    print("Clicking stagnant upgrade button #2")
     click(234, 536)
-    time.sleep(1)
+    time.sleep(3)
 
     # Click close to 'not enough gold' notification
+    print("Closing 'not enough gold' notification")
     click(346, 252)
-    time.sleep(1)
+    time.sleep(3)
 
     # Click dead space to close card page
+    print("Closing card pages")
     for _ in range(5):
         click(26, 518)
     
+    
+def check_for_final_upgrade_button():
+    iar=numpy.asarray(screenshot())
+    color=[56,228,72]
+    pix_list=[
+        iar[540][200],
+        iar[547][204],
+        iar[555][208],
+        iar[560][212],
+    ]
+    for pix in pix_list:
+        if not pixel_is_equal(pix,color,tol=45):
+            return False
+    return True
 
-def upgrade_current_cards():
-    print("Getting list")
+def upgrade_current_cards(logger):
     upgradable_cards_list=check_for_upgradable_cards()
-    print("Here is list: ",upgradable_cards_list)
 
-    print("Upgrading through cards")
     index=0
     for card in upgradable_cards_list:
-        print("Index is ",index," and card is ",card)
         if card == "Upgrade":         
-            print("upgrading")
-            upgrade_card(index)
-        else:
-            print("Not upgrading")
+            upgrade_card(logger,index)
         index+=1
     
-
 def get_to_clash_main_from_card_page(logger):
     # Method to get to the clash royale main menu screen from the card page
 
