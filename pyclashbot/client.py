@@ -70,9 +70,6 @@ def make_reference_image_list(size):
     return reference_image_list
 
 
-
-
-
 def scroll_down_super_fast():
     """ Method for scrolling down even faster when interacting with a scrollable menu """
     origin = pyautogui.position()
@@ -80,13 +77,13 @@ def scroll_down_super_fast():
     pyautogui.dragTo(x=215, y=300, button='left', duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
+
 def scroll_up_super_fast():
     """ Method for scrolling down even faster when interacting with a scrollable menu """
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=300)
     pyautogui.dragTo(x=215, y=400, button='left', duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
-
 
 
 def check_quit_key_press():
