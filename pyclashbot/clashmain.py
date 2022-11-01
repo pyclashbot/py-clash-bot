@@ -184,6 +184,7 @@ def get_to_account(logger, account_number):
 
     #open settings
     click(x=364, y=99)
+    time.sleep(1)
 
     #click switch accounts
     click(200,460)
@@ -199,7 +200,8 @@ def get_to_account(logger, account_number):
         #logger.lchange_statusog("Clicking account 3")
         click(x=200, y=560)
 
-    time.sleep(3)
+
+    time.sleep(7)
     logger.add_account_switch()
     if wait_for_clash_main_menu(logger) == "restart":
         return "restart"
