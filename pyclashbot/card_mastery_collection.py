@@ -54,7 +54,7 @@ def collect_card_mastery_rewards(logger):
     logger.change_status("There are card mastery rewards to collect!")
     
     #if made it to here, increment mastery reward collection counter
-    #logger.add_card_mastery_reward_collection()
+    logger.add_card_mastery_reward_collection()
     
     #get to card page
     if get_to_card_page(logger)== "restart": return "restart"
