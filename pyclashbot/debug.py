@@ -26,7 +26,7 @@ from pyclashbot.client import (click, get_file_count, get_next_ssid,
                                scroll_down_super_fast, scroll_up_fast,
                                scroll_up_super_fast, show_image)
 from pyclashbot.configuration import load_user_config
-from pyclashbot.deck import check_if_can_still_scroll
+from pyclashbot.deck import check_if_can_still_scroll, find_use_card_button
 from pyclashbot.fight import (check_if_has_6_elixer, fight,
                               leave_end_battle_window, pick_a_lane,
                               wait_until_has_6_elixer)
@@ -112,3 +112,13 @@ def request_debug():
 
 
 
+
+# while True:
+#     print(check_if_on_clash_main_menu())
+
+
+# while True:
+#     print(find_use_card_button())
+
+
+get_to_account(logger=logger, account_number=0)
