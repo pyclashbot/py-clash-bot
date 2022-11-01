@@ -126,6 +126,7 @@ def check_for_final_upgrade_button():
             return False
     return True
 
+
 def upgrade_current_cards(logger):
     upgradable_cards_list=check_for_upgradable_cards()
 
@@ -134,6 +135,7 @@ def upgrade_current_cards(logger):
         if card == "Upgrade":         
             upgrade_card(logger,index)
         index+=1
+    
     
 def get_to_clash_main_from_card_page(logger):
     # Method to get to the clash royale main menu screen from the card page
