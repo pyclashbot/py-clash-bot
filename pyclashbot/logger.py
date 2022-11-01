@@ -18,8 +18,11 @@ class Logger:
         self.cards_played = 0
         self.cards_upgraded = 0
         self.account_switches = 0
-        
         self.cards_upgraded=0
+        
+        self.card_mastery_reward_collections=0
+        
+        
 
         self.current_status = "Starting"
         self.buffer = ""
@@ -68,23 +71,25 @@ class Logger:
         line="-----------------------------------------------------------------------------------"
 
         self.add_row(line)
-        self.add_row(f"|      Program uptime:      | {self.make_timestamp()}")
+        self.add_row(f"|           Program uptime:           | {self.make_timestamp()}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|     Program restarts:     | {self.restarts}")
+        self.add_row(f"|          Program restarts:          | {self.restarts}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|         Requests:         | {self.requests}")
+        self.add_row(f"|              Requests:              | {self.requests}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|          Fights:          | {self.fights}")
+        self.add_row(f"|               Fights:               | {self.fights}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|         Win rate:         | {self.make_win_loss_str()}")
+        self.add_row(f"|              Win rate:              | {self.make_win_loss_str()}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|      Chests unlocked:     | {self.chests_unlocked}")
+        self.add_row(f"|           Chests unlocked:          | {self.chests_unlocked}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|       Cards played:       | {self.cards_played}")
+        self.add_row(f"|            Cards played:            | {self.cards_played}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|       Cards upgraded:     | {self.cards_upgraded}")
+        self.add_row(f"|            Cards upgraded:          | {self.cards_upgraded}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|      Account switches:    | {self.account_switches}")
+        self.add_row(f"|           Account switches:         | {self.account_switches}")
+        self.add_row(line_with_leftside)
+        self.add_row(f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}")
         self.add_row(line_with_leftside)
         self.add_row(f"|      Current status:      | {self.current_status}")
         self.add_row(line)
@@ -135,6 +140,10 @@ class Logger:
         """print log buffer"""
         print(self.buffer)
         self.buffer = ""  # clear buffer
+
+    def add_card_mastery_reward_collection(self):
+        self.card_mastery_reward_collections=self.card_mastery_reward_collections+1
+        self.log()      
 
     def add_chest_unlocked(self):
         """add chest unlocked to log"""

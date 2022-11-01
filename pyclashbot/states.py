@@ -2,8 +2,9 @@
 
 import time
 from typing import Literal
+from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
 
-from pyclashbot.clashmain import (check_if_in_battle, get_to_account,
+from pyclashbot.clashmain import (check_if_in_battle, check_if_on_first_card_page, get_to_account, get_to_card_page,
                                   handle_card_mastery_notification,
                                   open_chests, start_2v2,
                                   wait_for_battle_start,
@@ -20,7 +21,7 @@ from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_on_clan_page,
                                 get_to_clash_main_from_request_page,
                                 request_random_card_from_clash_main)
-from pyclashbot.upgrade import (check_if_on_first_card_page, get_to_card_page,
+from pyclashbot.upgrade import (
                                 get_to_clash_main_from_card_page,
                                 
                                 upgrade_current_cards)
@@ -91,8 +92,19 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
 
     elif state == "restart":
         return state_restart(logger)
+    
+    elif state== "card_mastery_collection":
+        return state_card_mastery_collection(logger)
 
     return state
+
+
+def state_card_mastery_collection(logger) -> Literal['restart','request']:
+    #Method for the card mastery collection state of the program
+    
+    #card_mastery_collection state starts on clash main and ends on clash main
+    if collect_card_mastery_rewards(logger)=="restart": return "restart"
+    return "request"
 
 
 def state_restart(logger) -> Literal['clashmain']:
@@ -174,7 +186,7 @@ def state_endfight(logger) -> Literal['upgrade']:
     return "upgrade"
 
 
-def state_upgrade(logger) -> Literal['restart', 'request']:
+def state_upgrade(logger) -> Literal['restart', 'card_mastery_collection']:
     # Method for the state of the program when upgrading cards
 
     # Starts on the clash royale main menu and ends on the clash royale main
