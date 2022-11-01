@@ -169,6 +169,7 @@ def check_if_on_clash_main_menu():
 def get_to_account(logger, account_number):
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
+    # Account number is ints 0-3 for the first 4 accounts
     handle_gold_rush_event(logger)
     time.sleep(2)
 
@@ -180,6 +181,7 @@ def get_to_account(logger, account_number):
 
     #click switch accounts
     click(200,460)
+    time.sleep(1)
 
     if account_number == 0:
         #logger.change_status("Clicking account 1")
