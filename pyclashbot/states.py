@@ -76,7 +76,9 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
         return state_clashmain(logger=logger, account_number=ssid, jobs=jobs)
 
     elif state == "startfight":
-        return state_startfight(logger) if "Fight" in jobs else "upgrade"
+        random_deck_bool=False
+        if "Randomize Deck" in jobs: random_deck_bool=True
+        return state_startfight(logger,random_deck=random_deck_bool) if "Fight" in jobs else "upgrade"
 
     elif state == "fighting":
         return state_fight(logger)
@@ -141,7 +143,7 @@ def state_clashmain(logger, account_number, jobs) -> Literal['restart', 'startfi
     return "startfight"
 
 
-def state_startfight(logger) -> Literal['restart', 'fighting']:
+def state_startfight(logger,random_deck=True) -> Literal['restart', 'fighting']:
     # Method for the starting of a fight state of the program
 
     # Begins on clash main, ends in the beginning of a fight
@@ -149,7 +151,7 @@ def state_startfight(logger) -> Literal['restart', 'fighting']:
     logger.change_status("Starting a fight")
 
     # make a random deck
-    randomize_and_select_deck_2(logger)
+    if random_deck: randomize_and_select_deck_2(logger)
 
     # Start 2v2 quickmatch
     if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":
