@@ -1,0 +1,41 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "pyclashbot"
+version = "v0.0.0"
+description = "Automated Clash Royale"
+readme = "README.md"
+authors = ["Matthew Miglio",
+           "Martin Miglio <code@martinmiglio.dev>"]
+homepage = "matthewmiglio.github.io/py-clash-bot"
+repository = "github.com/matthewmiglio/py-clash-bot"
+documentation = "matthewmiglio.github.io/py-clash-bot"
+
+classifiers = [
+    "Intended Audience :: End Users/Desktop",
+    "Environment :: Win32 (MS Windows)",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Games/Entertainment"
+]
+keywords = ["clash royale", "bot", "automation"]
+include = ["README.md", "pyclashbot/reference_images/**/*.png"]
+
+[tool.poetry.dependencies]
+Cx_Freeze = "^6.8"
+python = "^3.10"
+pillow = "^9.3.0"
+opencv-python = "4.6.0.66"
+keyboard = "^0.13.0"
+numpy = "^1.23.0"
+pyautogui = "^0.9.0"
+pygetwindow = "^0.0.9"
+joblib = "^1.2.0"
+requests = "^2.28.0"
+matplotlib = "^3.6.0"
+PySimpleGUI = "^4.60.0"
+ahk = "^0.14.0"

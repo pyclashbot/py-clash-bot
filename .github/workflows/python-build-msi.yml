@@ -17,11 +17,10 @@ jobs:
         include:
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: python setup_msi.py bdist_msi
+            CMD_BUILD: python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
             OUT_FILE_NAME: py-clash-bot.msi
     steps:
       - uses: actions/checkout@v1
-      - uses: little-core-labs/get-git-tag@v3.0.1
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
         with:
