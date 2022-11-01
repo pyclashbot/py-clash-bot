@@ -189,7 +189,7 @@ def state_upgrade(logger) -> Literal['restart', 'request']:
         return "restart"
 
     # Upgrade user cards
-    upgrade_current_cards()
+    upgrade_current_cards(logger)
 
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
