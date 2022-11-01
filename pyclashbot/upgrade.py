@@ -72,42 +72,27 @@ def upgrade_card(logger,card_index):
     ]
     
     #Click the given card
-    print("Clicking card")
     card_coord=card_coord_list[card_index]
     click(card_coord[0],card_coord[1])
-    time.sleep(3)
     
     #Click the upgrade button below the card
-    print("Clicking upgrade button below the card")
     click(card_coord[0],card_coord[1])
-    time.sleep(3)
     
     # Click upgrade for gold button
-    print("Clicking stagnant upgrade button #1")
     click(238, 606)
-    time.sleep(3)
+    time.sleep(1)
 
     #Check for second upgrade for gold button
-    print("Checking for stagnant upgrade button #2")
     if check_for_final_upgrade_button():
         logger.add_card_upgraded()
-        print("Found stagnant upgrade button #2")
-    else:
-        print("Didn't find stagnant upgrade button #2")
-    time.sleep(3)
     
     # Click second upgrade for gold button
-    print("Clicking stagnant upgrade button #2")
     click(234, 536)
-    time.sleep(3)
 
     # Click close to 'not enough gold' notification
-    print("Closing 'not enough gold' notification")
     click(346, 252)
-    time.sleep(3)
 
     # Click dead space to close card page
-    print("Closing card pages")
     for _ in range(5):
         click(26, 518)
     
