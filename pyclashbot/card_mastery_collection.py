@@ -120,4 +120,3 @@ def get_to_clash_main_from_card_page(logger):
 
 
 
-collect_card_mastery_rewards(logger=Logger())

@@ -96,7 +96,7 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
         return state_restart(logger)
     
     elif state== "card_mastery_collection":
-        return state_card_mastery_collection(logger)
+        return state_card_mastery_collection(logger) if "card mastery collection" in jobs else "request"
 
     return state
 
