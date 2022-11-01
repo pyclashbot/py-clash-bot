@@ -186,12 +186,14 @@ def check_for_friends_logo_on_main():
         iar[123][272],
         iar[116][266],
         iar[107][266],
-        
     ]
-    color=[255,244,255]
+    color=[177, 228, 252]
     
-    #for pix in pix_list:print(pix)
+    #debug prints
+    # print("Color is: ",color,"\nPixels are:")
+    # for pix in pix_list:print(pix)
     
+    #pixel check
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=65):
             return False
@@ -230,6 +232,7 @@ def get_to_account(logger, account_number):
 
     #open settings
     click(x=364, y=99)
+    time.sleep(1)
 
     #click switch accounts
     click(200,460)
@@ -245,7 +248,8 @@ def get_to_account(logger, account_number):
         #logger.lchange_statusog("Clicking account 3")
         click(x=200, y=560)
 
-    time.sleep(3)
+
+    time.sleep(7)
     logger.add_account_switch()
     if wait_for_clash_main_menu(logger) == "restart":
         return "restart"
@@ -446,7 +450,7 @@ def find_and_click_2v2_quickmatch_button(logger):
         scroll_down()
         time.sleep(1)
         coords = find_2v2_quick_match_button()
-    time.sleep(2)
+    time.sleep(0.33)
     # once we find the coords, click them
     click(coords[0], coords[1])
     logger.change_status("Done queueing a 2v2 quickmatch")

@@ -136,7 +136,7 @@ def replace_card_in_deck(card_coord=[],max_scrolls=4):
     if card_coord==[]:return
 
     #scroll down a random amount
-    scrolls=random.randint(2,max_scrolls)
+    scrolls=random.randint(3,max_scrolls)
     while (scrolls>0)and(check_if_can_still_scroll()):
         scroll_down_super_fast()
         scrolls-=1
