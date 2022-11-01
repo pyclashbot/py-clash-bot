@@ -154,5 +154,8 @@ def request_debug():
 #     print(check_if_on_clash_main_menu())
 
 
-while True:
-    print(find_use_card_button())
+# while True:
+#     print(find_use_card_button())
+
+
+get_to_account(logger=logger, account_number=0)
