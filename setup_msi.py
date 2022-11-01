@@ -1,13 +1,6 @@
-import os
-
 from cx_Freeze import Executable, setup
 
-# get github workflow env vars
-try:
-    version = os.environ['GIT_TAG_NAME']
-except KeyError:
-    print('Defaulting to v0.0.0')
-    version = 'v0.0.0'
+version = 'v0.0.0'
 
 product_name = 'py-clash-bot'
 
