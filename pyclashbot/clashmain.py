@@ -4,7 +4,7 @@ import time
 import numpy
 import pyautogui
 
-from pyclashbot.client import click, screenshot, scroll_down
+from pyclashbot.client import click, screenshot, scroll_down, scroll_up_fast
 from pyclashbot.image_rec import (check_for_location, find_references,
                                   get_first_location, pixel_is_equal)
 
@@ -43,6 +43,53 @@ def check_if_stuck_on_trophy_progression_page():
         if not pixel_is_equal(pix,color,tol=45):return False
     return True
 
+
+def get_to_card_page(logger):
+    # Method to get to the card page on clash main from the clash main menu
+    click(x=100, y=630)
+    time.sleep(2)
+    loops = 0
+    while not check_if_on_first_card_page():
+        #logger.change_status("Not elixer button. Moving pages")
+        time.sleep(1)
+        click(x=100, y=630)
+        loops = loops + 1
+        if loops > 10:
+            logger.change_status("Couldn't make it to card page")
+            return "restart"
+        time.sleep(0.2)
+    scroll_up_fast()
+    #logger.change_status("Made it to card page")
+    time.sleep(1)
+
+
+def check_if_on_first_card_page():
+    # Method to check if the elixer icon of your deck's AVG elixer when on the
+    # card page exists yet
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        "10.png",
+        "11.png",
+        "12.png",
+        
+    ]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="card_page_elixer_icon",
+        names=references,
+        tolerance=0.97
+    )
+
+    return get_first_location(locations)
 
 
 
@@ -121,10 +168,11 @@ def check_for_gold_logo_on_main():
     ]
     color=[201,177,56]
     
-    #for pix in pix_list:print(pix)
+    # print("Color is : ",color),"\nPixels are:"
+    # for pix in pix_list:print(pix)
     
     for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=65):
+        if not pixel_is_equal(pix, color, tol=85):
             return False
         return True  
     
@@ -152,15 +200,19 @@ def check_for_friends_logo_on_main():
     
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
+        #print("gem logo fail")
         return False
     
     if not check_for_blue_background_on_main():
+        #print("blue background fail")
         return False
     
     if not check_for_gold_logo_on_main():
+        #print("gold logo fail")
         return False
     
     if not check_for_friends_logo_on_main():
+        #print("friends logo fail")
         return False
     
     return True
