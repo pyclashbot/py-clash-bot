@@ -9,11 +9,5 @@ class CompileTest(unittest.TestCase):
         if system() == 'Windows':
             sandbox.run_setup('setup_msi.py', ['bdist_msi'])
 
-    def test_wheel_dist_compile(self):
-        sandbox.run_setup('setup.py', ['bdist_wheel'])
-
-    def test_source_dist_compile(self):
-        sandbox.run_setup('setup.py', ['sdist'])
-
 if __name__ == '__main__':
     unittest.main()
