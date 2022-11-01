@@ -30,6 +30,8 @@ def start_button_event(window, values):
         jobs.append("Request")
     if values["-Upgrade_cards-in-"]:
         jobs.append("Upgrade")
+    if values["-Random-Decks-in-"]:
+        jobs.append("Randomize Deck")
     elif not jobs:
         print("At least one job must be selected")
         return None
@@ -80,8 +82,8 @@ def main_gui():
             sg.Checkbox('Fight', default=True, key="-Fight-in-"),
             sg.Checkbox('Random Requesting', default=True,
                         key="-Requesting-in-"),
-            sg.Checkbox('Upgrade cards', default=True,
-                        key="-Upgrade_cards-in-"),
+            sg.Checkbox('Upgrade cards', default=True,key="-Upgrade_cards-in-"),
+            sg.Checkbox('Random decks', default=True,key="-Random-Decks-in-"),
         ],
         # dropdown for amount of accounts
         [
