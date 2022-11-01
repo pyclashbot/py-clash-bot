@@ -17,9 +17,9 @@ launcher_path = setup_memu()  # setup memu, install if necessary
 
 def wait_for_window(logger, window_name):
     # Method to wait for a given window name to appear
+    logger.change_status(f"Waiting for {window_name} to appear")
     while not pygetwindow.getWindowsWithTitle(window_name):
-        logger.change_status(f"Waiting for {window_name} to appear")
-        time.sleep(0.5)
+        pass
     logger.change_status(f"Done waiting for {window_name}")
 
 
@@ -28,11 +28,11 @@ def restart_and_open_clash(logger):
     # waiting for the clash main menu to appear.
     # If Memu is running, close it
     if len(pygetwindow.getWindowsWithTitle("MEmu")) != 0:
-        close_memu()
+        close_memu(logger)
 
     # If MeMU Multi Manager is running, close it
     if len(pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) != 0:
-        close_memu_multi()
+        close_memu_multi(logger)
 
     orientate_terminal()
 
@@ -40,23 +40,21 @@ def restart_and_open_clash(logger):
     logger.change_status("Opening MEmu launcher")
     subprocess.Popen(launcher_path)
 
-    # Wait for memu to load
+    # Wait for memu multi to load
     wait_for_window(logger, window_name="Multiple Instance Manager")
-    time.sleep(3)
 
     # Orientate the Memu Multi Manager
     orientate_memu_multi()
-    time.sleep(3)
 
     # Start Memu Client
     logger.change_status("Starting Memu client instance")
     click(556, 141)
-    time.sleep(3)
-    check_quit_key_press()
+    
+    # Wait for memu to load
+    wait_for_window(logger, window_name="Memu")
 
     # orientate memu client
     orientate_memu()
-    time.sleep(3)
 
     # Wait for Memu Client loading screen
     if wait_for_memu_loading_screen(logger):
@@ -81,6 +79,7 @@ def restart_and_open_clash(logger):
         click(logo_coords[1], logo_coords[0])
 
     # Wait for the clash main menu to appear
+    orientate_memu()
     if wait_for_clash_main_menu(logger) == "restart":
         restart_and_open_clash(logger)
     time.sleep(3)
@@ -201,7 +200,7 @@ def find_clash_app_logo():
     return get_first_location(locations)
 
 
-def close_memu():
+def close_memu(logger):
     # Method to close memu
     memu_name_list = [
         "MEmu",
@@ -213,13 +212,12 @@ def close_memu():
         try:
             window = pygetwindow.getWindowsWithTitle(name)[0]
             window.close()
-            print("Closed Memu")
-            return
+            logger.change_status("Closed Memu")
         except BaseException:
-            print("Couldnt close Memu using title ", name)
+            logger.change_status("Couldn't close Memu")
+    time.sleep(3)
 
-
-def close_memu_multi():
+def close_memu_multi(logger):
     # Method to close memu multi
     mmim_name_list = [
         "Multiple Instance Manager"
@@ -229,7 +227,8 @@ def close_memu_multi():
         try:
             window = pygetwindow.getWindowsWithTitle(name)[0]
             window.close()
-            print("Closed MMIM")
-            return
+            logger.change_status("Closed MMIM")
+
         except BaseException:
-            print("Couldnt close MMIM using title ", name)
+            logger.change_status("Couldnt close MMIM using title ", name)
+    time.sleep(3)

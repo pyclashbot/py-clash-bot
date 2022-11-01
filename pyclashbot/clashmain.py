@@ -11,7 +11,7 @@ from pyclashbot.image_rec import (check_for_location, find_references,
 
 def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
-    waiting=not check_if_on_clash_main_menu()
+    waiting=not (check_if_on_clash_main_menu())
 
     while waiting:
         #wait 1 sec
@@ -108,12 +108,59 @@ def check_for_blue_background_on_main():
         return True
 
     
+def check_for_gold_logo_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
+
+    pix_list=[
+        iar[61][300],
+        iar[64][303],
+        iar[67][307],
+        iar[70][310],
+        
+    ]
+    color=[201,177,56]
+    
+    #for pix in pix_list:print(pix)
+    
+    for pix in pix_list:
+        if not pixel_is_equal(pix, color, tol=65):
+            return False
+        return True  
+    
+    
+def check_for_friends_logo_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
+
+    pix_list=[
+        iar[123][262],
+        iar[123][272],
+        iar[116][266],
+        iar[107][266],
+        
+    ]
+    color=[255,244,255]
+    
+    #for pix in pix_list:print(pix)
+    
+    for pix in pix_list:
+        if not pixel_is_equal(pix, color, tol=65):
+            return False
+        return True  
+    
+    
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
-        #print("Gem logo not found")
         return False
+    
     if not check_for_blue_background_on_main():
-        #print("Blue background not found")
+        return False
+    
+    if not check_for_gold_logo_on_main():
+        return False
+    
+    if not check_for_friends_logo_on_main():
         return False
     
     return True
