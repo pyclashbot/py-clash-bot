@@ -154,19 +154,19 @@ def check_for_friends_logo_on_main():
     
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
-        print("gem logo fail")
+        #print("gem logo fail")
         return False
     
     if not check_for_blue_background_on_main():
-        print("blue background fail")
+        #print("blue background fail")
         return False
     
     if not check_for_gold_logo_on_main():
-        print("gold logo fail")
+        #print("gold logo fail")
         return False
     
     if not check_for_friends_logo_on_main():
-        print("friends logo fail")
+        #print("friends logo fail")
         return False
     
     return True
