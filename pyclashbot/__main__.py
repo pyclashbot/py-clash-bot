@@ -139,8 +139,6 @@ def main_gui():
     window.close()
 
 
-
-
 class MainLoopThread(StoppableThread):
     def __init__(self, args, kwargs=None):
         super().__init__(args, kwargs)
