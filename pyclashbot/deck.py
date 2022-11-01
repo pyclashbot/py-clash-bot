@@ -200,22 +200,29 @@ def check_if_can_still_scroll():
         iar[495][342],
     ]
     
+    #casting to int because numpy arrays are weird
+    pix_list_1_as_int=[]
+    for pix in pix_list_1: pix_list_1_as_int.append([int(pix[0]),int(pix[1]),int(pix[2])])
+    
+    pix_list_2_as_int=[]
+    for pix in pix_list_2: pix_list_2_as_int.append([int(pix[0]),int(pix[1]),int(pix[2])])
+    
 
     #blue check truth indicates that we've reached the base of the card list
     color_blue=[14,68,118]    
-    all_pix_list=pix_list_2+pix_list_1
+    all_pix_list=pix_list_2_as_int+pix_list_1_as_int
     blue_check_truth=True
     for pix in all_pix_list:
         if not(pixel_is_equal(pix,color_blue,tol=45)): blue_check_truth=False
         
     #pix list 1 truth indicates whether or not this row of pixels are all greyscale
     pix_list_1_truth=True
-    for pix in pix_list_1:
+    for pix in pix_list_1_as_int:
         if not(check_if_pixel_is_grey(pix)): pix_list_1_truth = False
         
     #pix list 2 truth indicates whether or not this row of pixels are all greyscale
     pix_list_2_truth=True
-    for pix in pix_list_2:
+    for pix in pix_list_2_as_int:
         if not(check_if_pixel_is_grey(pix)): pix_list_2_truth = False
     
     if blue_check_truth:
