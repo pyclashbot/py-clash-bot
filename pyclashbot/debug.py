@@ -150,7 +150,4 @@ def request_debug():
 
 
 
-# get_to_account(logger, account_number=0)
-
-while True:
-    print(check_if_can_still_scroll())
+upgrade_current_cards(logger)
