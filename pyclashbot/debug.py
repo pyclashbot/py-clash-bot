@@ -18,7 +18,7 @@ from pyclashbot.card_detection import (get_card_group, get_card_images,
 from pyclashbot.clashmain import (check_for_blue_background_on_main, check_for_friends_logo_on_main, check_for_gem_logo_on_main, check_for_gold_logo_on_main, check_if_on_clash_main_menu,
                                   find_2v2_quick_match_button,
                                   find_and_click_2v2_quickmatch_button,
-                                  get_to_account, start_2v2,
+                                  get_to_account, get_to_card_page, start_2v2,
                                   wait_for_clash_main_menu)
 from pyclashbot.client import (click, get_file_count, get_next_ssid,
                                orientate_memu, orientate_memu_multi,
@@ -52,6 +52,7 @@ logger = Logger()
 # time.sleep(1)
 
 # show_image(screenshot())
+
 
 
 def battle_debug_main():
@@ -95,44 +96,6 @@ def battle_debug_main():
         ssid = get_next_ssid(ssid, ssid_total)
 
 
-def upgrade_card_coords_debug():
-    card_coord_list = [
-        [86, 278],
-        [174, 278],
-        [260, 278],
-        [328, 278],
-        [86, 400],
-        [174, 400],
-        [260, 400],
-        [328, 400]
-    ]
-    # make list of coords of where the upgrade button will possibly appear for
-    # each 8 cards
-    upgrade_button_coords = [
-        [51, 338],
-        [136, 338],
-        [280, 341],
-        [303, 337],
-        [53, 464],
-        [133, 464],
-        [281, 465],
-        [303, 466],
-    ]
-    for n in range(8):
-        card_coord = card_coord_list[n]
-        upgrade_coord = upgrade_button_coords[n]
-
-        print("Moving to card number", n + 1)
-        pyautogui.moveTo(card_coord[0], card_coord[1], duration=1)
-        time.sleep(1)
-        pyautogui.click()
-        time.sleep(1)
-        pyautogui.moveTo(upgrade_coord[0], upgrade_coord[1], duration=1)
-        time.sleep(1)
-        print(check_if_pixel_indicates_upgrade(numpy.asarray(
-            screenshot()[upgrade_coord[1]][upgrade_coord[0]])))
-
-
 def card_detection_debug():
     n=0
     while True:
@@ -149,5 +112,3 @@ def request_debug():
 
 
 
-
-upgrade_current_cards(logger)

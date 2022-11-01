@@ -140,55 +140,6 @@ def get_to_clash_main_from_card_page(logger):
         on_clash_main = check_for_gem_logo_on_main()
 
 
-def get_to_card_page(logger):
-    # Method to get to the card page on clash main from the clash main menu
-
-    click(x=100, y=630)
-    time.sleep(2)
-    loops = 0
-    while not check_if_on_first_card_page():
-        #logger.change_status("Not elixer button. Moving pages")
-        time.sleep(1)
-        click(x=100, y=630)
-        loops = loops + 1
-        if loops > 10:
-            logger.change_status("Couldn't make it to card page")
-            return "restart"
-        time.sleep(0.2)
-    scroll_up_fast()
-    #logger.change_status("Made it to card page")
-    time.sleep(1)
-
-
-def check_if_on_first_card_page():
-    # Method to check if the elixer icon of your deck's AVG elixer when on the
-    # card page exists yet
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        
-    ]
-
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="card_page_elixer_icon",
-        names=references,
-        tolerance=0.97
-    )
-
-    return get_first_location(locations)
-
-
 def find_card_page_logo():
     # Method to find the card page logo in the icon list in the bottom of the
     # screen when on clash main
