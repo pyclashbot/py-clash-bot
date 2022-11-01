@@ -51,7 +51,7 @@ logger = Logger()
 # orientate_memu()
 # time.sleep(1)
 
-# show_image(screenshot())
+show_image(screenshot())
 
 
 def battle_debug_main():
@@ -150,4 +150,9 @@ def request_debug():
 
 
 
-upgrade_current_cards(logger)
+while True:
+    print(check_if_on_clash_main_menu())
+
+
+# while True:
+#     print(check_for_friends_logo_on_main())
