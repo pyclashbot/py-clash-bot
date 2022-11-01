@@ -128,13 +128,15 @@ def main_gui():
         elif event == "Help":
             show_help_gui()
 
-    window.close()
-
     # shut down the thread if it is still running
     if thread is not None:
         thread.shutdown_flag.set()
         # wait for the thread to close
         thread.join()
+
+    window.close()
+
+
 
 
 class MainLoopThread(StoppableThread):

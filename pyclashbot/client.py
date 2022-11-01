@@ -70,9 +70,6 @@ def make_reference_image_list(size):
     return reference_image_list
 
 
-
-
-
 def scroll_down_super_fast():
     """ Method for scrolling down even faster when interacting with a scrollable menu """
     origin = pyautogui.position()
@@ -80,13 +77,13 @@ def scroll_down_super_fast():
     pyautogui.dragTo(x=215, y=300, button='left', duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
+
 def scroll_up_super_fast():
     """ Method for scrolling down even faster when interacting with a scrollable menu """
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=300)
     pyautogui.dragTo(x=215, y=400, button='left', duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
-
 
 
 def check_quit_key_press():
@@ -180,16 +177,27 @@ def compare_coords(coord1, coord2):
     return (coord1[0] == coord2[0] and coord1[1] == coord2[1])
 
 
-def click(x, y, duration=1):
+class MouseMoveException(Exception):
+    """ Exception for when the mouse moves unexpectedly """
+
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
+def click(x, y, duration=1, max_attempts=3):
     """  Method for clicking a given coordinate
 
     Args:
         x (int): X coordinate
         y (int): Y coordinate
         duration (int, optional): Duration of the click. Defaults to 1.
+        max_attempts (int, optional): Maximum amount of attempts to click the given coordinate. Defaults to 3. Set to less than 1 for infinite attempts.
     """
-    # 30 speed = 3 seconds
-    speed = duration * 10
+    duration = min(10, duration)  # 10 seconds max (ahk limitation)
+    speed = duration * 10  # speed for ahk (0-100)
 
     # Tolerance for timer comparisons
     tol = 0.5
@@ -198,11 +206,17 @@ def click(x, y, duration=1):
     start = time.time()
     ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
 
+    attempts = 0
+
     while ahk.mouse_position != (x, y):
-        if (time.time() - start) > (duration) + tol:
+        if max_attempts > 0 and attempts > max_attempts:
+            raise MouseMoveException(
+                "Couldnt move mouse to given coordinates, aborting")
+        if time.time() - start > duration + tol:
             start = time.time()
-            time.sleep(5)
+            time.sleep(duration + tol)
             ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
+            attempts += 1
     ahk.click()
 
 
