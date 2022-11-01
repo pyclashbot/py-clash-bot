@@ -82,7 +82,7 @@ class Logger:
         self.add_row(line_with_leftside)
         self.add_row(f"|       Cards played:       | {self.cards_played}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|       Cards upgraded:       | {self.cards_upgraded}")
+        self.add_row(f"|       Cards upgraded:     | {self.cards_upgraded}")
         self.add_row(line_with_leftside)
         self.add_row(f"|      Account switches:    | {self.account_switches}")
         self.add_row(line_with_leftside)
