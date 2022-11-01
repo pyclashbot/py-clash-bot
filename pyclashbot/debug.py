@@ -15,7 +15,7 @@ from PIL import Image
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        identify_cards,
                                        make_reference_image_list)
-from pyclashbot.clashmain import (check_for_blue_background_on_main, check_for_gem_logo_on_main, check_if_on_clash_main_menu,
+from pyclashbot.clashmain import (check_for_blue_background_on_main, check_for_friends_logo_on_main, check_for_gem_logo_on_main, check_for_gold_logo_on_main, check_if_on_clash_main_menu,
                                   find_2v2_quick_match_button,
                                   find_and_click_2v2_quickmatch_button,
                                   get_to_account, start_2v2,
@@ -32,12 +32,13 @@ from pyclashbot.fight import (check_if_has_6_elixer, fight,
 from pyclashbot.image_rec import (find_references, get_first_location,
                                   pixel_is_equal)
 from pyclashbot.launcher import (close_memu, close_memu_multi,
-                                 find_clash_app_logo)
+                                 find_clash_app_logo, restart_and_open_clash)
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_in_a_clan,
                                 request_random_card_from_clash_main)
 from pyclashbot.states import (state_clashmain, state_endfight, state_fight,
                                state_request, state_startfight, state_upgrade)
+from pyclashbot.upgrade import upgrade_current_cards
 
 ahk = AHK()
 logger = Logger()
@@ -148,8 +149,8 @@ def request_debug():
 
 
 
-wait_for_clash_main_menu(logger=logger)
 
-
-
-
+upgrade_current_cards(logger)
+for n in range(10):
+    time.sleep(1)
+    print(n)

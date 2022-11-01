@@ -14,11 +14,12 @@ class Logger:
         self.fights = 0
         self.requests = 0
         self.restarts = 0
-
         self.chests_unlocked = 0
         self.cards_played = 0
         self.cards_upgraded = 0
         self.account_switches = 0
+        
+        self.cards_upgraded=0
 
         self.current_status = "Starting"
         self.buffer = ""
@@ -32,9 +33,9 @@ class Logger:
         output_time = time.time() - self.start_time
         output_time = int(output_time)
 
-        return str(self.convert_int_to_time(output_time))
+        return str(self.make_time_str(output_time))
 
-    def make_score_board(self):
+    def make_win_loss_str(self):
         """creates scoreboard for log output
 
         Returns:
@@ -44,7 +45,7 @@ class Logger:
         wins_str = f"{str(self.wins)}W"
         return f"{wins_str}|{losses_str}"
 
-    def convert_int_to_time(self, seconds):
+    def make_time_str(self, seconds):
         """convert epoch to time
 
         Args:
@@ -75,11 +76,13 @@ class Logger:
         self.add_row(line_with_leftside)
         self.add_row(f"|          Fights:          | {self.fights}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|         Win rate:         | {self.make_score_board()}")
+        self.add_row(f"|         Win rate:         | {self.make_win_loss_str()}")
         self.add_row(line_with_leftside)
         self.add_row(f"|      Chests unlocked:     | {self.chests_unlocked}")
         self.add_row(line_with_leftside)
         self.add_row(f"|       Cards played:       | {self.cards_played}")
+        self.add_row(line_with_leftside)
+        self.add_row(f"|       Cards upgraded:       | {self.cards_upgraded}")
         self.add_row(line_with_leftside)
         self.add_row(f"|      Account switches:    | {self.account_switches}")
         self.add_row(line_with_leftside)
@@ -136,6 +139,11 @@ class Logger:
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
         self.chests_unlocked += 1
+        self.log()
+
+    def add_card_upgraded(self):
+        """add chest unlocked to log"""
+        self.cards_upgraded += 1
         self.log()
 
     def add_card_played(self):
