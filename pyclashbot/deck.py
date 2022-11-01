@@ -226,11 +226,9 @@ def check_if_can_still_scroll():
         if not(check_if_pixel_is_grey(pix)): pix_list_2_truth = False
     
     if blue_check_truth:
-        #print("Blue fail")
         return False
     
     if pix_list_1_truth or pix_list_2_truth: 
-        #print("Grey fail")
         return False
     
     return True
