@@ -234,7 +234,6 @@ def check_if_in_a_clan(logger):
 
     # get a pixel from this clan tab
     pixel_1 = numpy.array(screenshot())[118][206]
-    #print("pixel 1 is ",pixel_1)
 
     # cycle tab again
     click(280, 623)
@@ -242,7 +241,6 @@ def check_if_in_a_clan(logger):
 
     # get second pixel
     pixel_2 = numpy.array(screenshot())[118][206]
-    #print("pixel 2 is ",pixel_2)
 
     # get back to clash main
     get_to_clash_main_from_request_page(logger)
