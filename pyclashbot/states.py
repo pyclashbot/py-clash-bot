@@ -69,6 +69,7 @@ def detect_state(logger):
 
 
 def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
+    print(state)
     if state == "clashmain":
         orientate_memu_multi()
         orientate_memu()
@@ -87,7 +88,7 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
         return state_endfight(logger)
 
     elif state == "upgrade":
-        return state_upgrade(logger) if "Upgrade" in jobs else "request"
+        return state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
 
     elif state == "request":
         return state_request(logger) if "Request" in jobs else "clashmain"
@@ -188,7 +189,7 @@ def state_endfight(logger) -> Literal['upgrade']:
     return "upgrade"
 
 
-def state_upgrade(logger) -> Literal['restart', 'card_mastery_collection']:
+def state_upgrade(logger) -> Literal['restart', 'card mastery collection']:
     # Method for the state of the program when upgrading cards
 
     # Starts on the clash royale main menu and ends on the clash royale main
@@ -209,7 +210,7 @@ def state_upgrade(logger) -> Literal['restart', 'card_mastery_collection']:
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
 
-    return "request"
+    return "card mastery collection"
 
 
 def state_request(logger) -> Literal['restart', 'clashmain']:
