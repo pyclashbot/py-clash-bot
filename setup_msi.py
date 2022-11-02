@@ -1,8 +1,12 @@
 from cx_Freeze import Executable, setup
-
-version = 'v0.0.0'
+import sys
 
 product_name = 'py-clash-bot'
+
+try:
+    version = sys.argv[sys.argv.index('--target-version') + 1]
+except ValueError:
+    version = 'dev'
 
 bdist_msi_options = {
     'upgrade_code': '{494bebef-6fc5-42e5-98c8-d0b2e339750e}',
@@ -43,7 +47,6 @@ exe = Executable(
 
 setup(
     name=product_name,
-    version=version.replace('v', ''),
     description='Automated Clash Royale',
     executables=[exe],
     options={
