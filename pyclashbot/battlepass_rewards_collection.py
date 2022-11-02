@@ -52,6 +52,7 @@ def collect_battlepass_rewards(logger):
     
     loops=0
     while check_if_has_battlepass_rewards():
+        
         if loops>15: return "restart"
         loops+=1
         
@@ -68,5 +69,9 @@ def collect_battlepass_rewards(logger):
         #close battlepass to reset UI
         click(210,630)
         time.sleep(1)
+        
+        logger.add_battlepass_rewards_collection()
+        
+        
     logger.change_status("Done collecting battlepass rewards.")
     return "clashmain"
