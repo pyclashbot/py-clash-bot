@@ -11,6 +11,7 @@ from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
 from pyclashbot.battlepass_rewards_collection import check_for_battlepass_reward_pixels, check_if_has_battlepass_rewards, collect_battlepass_rewards
+from pyclashbot.clashmain import check_if_in_battle, check_if_in_battle_with_delay
 from pyclashbot.client import screenshot, show_image
 
 
@@ -21,6 +22,7 @@ from pyclashbot.level_up_reward_collection import (
     collect_level_up_rewards,
 )
 from pyclashbot.logger import Logger
+from pyclashbot.war import check_if_has_a_deck_for_this_war_battle, check_if_on_war_page, click_war_icon, get_to_war_page_from_main, find_battle_icon_on_war_page, handle_war_attacks
 
 
 ahk = AHK()
@@ -35,4 +37,5 @@ logger = Logger()
 
 # show_image(screenshot())
 
-collect_battlepass_rewards()
+
+handle_war_attacks(logger)
