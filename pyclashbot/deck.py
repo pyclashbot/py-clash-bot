@@ -152,7 +152,8 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
 
     # scroll down a random amount
     loops = 0
-    scrolls = random.randint(3, max_scrolls)
+    if max_scrolls<=3: scrolls=3
+    else:scrolls = random.randint(3, max_scrolls)
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         scrolls -= 1
