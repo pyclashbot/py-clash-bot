@@ -352,11 +352,9 @@ def handle_gold_rush_event(logger):
     logger.change_status(
         "Handling the possibility of a gold rush event notification obstructing the bot."
     )
-    time.sleep(0.5)
-    pyautogui.click(193, 465)
-    time.sleep(0.5)
-    pyautogui.click(193, 465)
-    time.sleep(0.5)
+    click(193, 465)
+    click(193, 465)
+
 
 
 def handle_new_challenge(logger):
@@ -365,17 +363,17 @@ def handle_new_challenge(logger):
     logger.change_status(
         "Handling the possibility of a new challenge notification obstructing the bot."
     )
-    time.sleep(0.5)
+
     click(376, 639)
-    time.sleep(0.5)
+
     click(196, 633)
-    time.sleep(0.5)
+
     if check_if_on_trophy_progession_rewards_page():
         logger.change_status(
             "Handling the possibility of trophy progession rewards page obstructing the bot."
         )
         click(212, 633)
-        time.sleep(0.5)
+
 
 
 def handle_special_offer(logger):
@@ -384,11 +382,11 @@ def handle_special_offer(logger):
     logger.change_status(
         "Handling the possibility of special offer notification obstructing the bot."
     )
-    time.sleep(0.5)
+
     click(35, 633)
-    time.sleep(0.5)
+
     click(242, 633)
-    time.sleep(0.5)
+
     if check_if_on_trophy_progession_rewards_page():
         click(212, 633)
         time.sleep(0.5)
