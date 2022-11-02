@@ -11,8 +11,9 @@ from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
 from pyclashbot.battlepass_rewards_collection import check_for_battlepass_reward_pixels, check_if_has_battlepass_rewards, collect_battlepass_rewards
-from pyclashbot.clashmain import check_if_in_battle, check_if_in_battle_with_delay, check_if_unlock_chest_button_exists
-from pyclashbot.client import screenshot, show_image
+from pyclashbot.clashmain import check_if_in_battle, check_if_in_battle_with_delay, check_if_on_clash_main_menu, check_if_unlock_chest_button_exists
+from pyclashbot.client import orientate_memu, orientate_memu_multi, screenshot, show_image
+from pyclashbot.launcher import check_for_memu_loading_background, wait_for_memu_loading_screen
 
 
 
@@ -42,4 +43,7 @@ logger = Logger()
 
 # get_to_war_page_from_main()
 
-print(check_if_on_war_page())
+# print(check_if_on_war_page())
+
+while True:
+    print(check_for_memu_loading_background())
