@@ -534,7 +534,7 @@ def wait_for_battle_start(logger):
     loops = 0
 
     while not in_battle:
-        if check_if_in_battle():
+        if check_if_in_battle_with_delay():
             in_battle = True
         click(100, 100)
         time.sleep(0.25)
@@ -545,7 +545,7 @@ def wait_for_battle_start(logger):
             return "restart"
 
 
-def check_if_in_battle():
+def check_if_in_battle_with_delay():
     # Method to check if the bot is in a battle in the given moment
 
     for _ in range(10):
@@ -568,6 +568,29 @@ def check_if_in_battle():
             return True
         time.sleep(1)
     return False
+
+
+def check_if_in_battle():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png"
+    ]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="check_if_in_battle",
+        names=references,
+        tolerance=0.97
+    )
+
+    if check_for_location(locations):
+        return True
+    return False
+
+
 
 
 def handle_card_mastery_notification():

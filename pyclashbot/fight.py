@@ -6,7 +6,7 @@ import numpy
 
 from pyclashbot.card_detection import (get_card_group, get_card_images,
                                        get_play_coords, identify_card)
-from pyclashbot.clashmain import check_if_in_battle, wait_for_clash_main_menu
+from pyclashbot.clashmain import check_if_in_battle, check_if_in_battle_with_delay, wait_for_clash_main_menu
 from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import pixel_is_equal
 
@@ -17,8 +17,6 @@ def fight(logger):
     plays = 0
 
     while in_battle:
-        # wait for 6 elixer
-
         if wait_until_has_6_elixer(logger) == "restart":
             return "restart"
 
@@ -26,7 +24,7 @@ def fight(logger):
         plays += 1
         logger.add_card_played()
 
-        in_battle = check_if_in_battle()
+        in_battle = check_if_in_battle_with_delay()
 
         if plays > 100:
             logger.change_status(
@@ -157,6 +155,7 @@ def wait_until_has_6_elixer(logger):
     logger.change_status("Waiting for 6 elixer")
     loops = 0
     while not (has_6):
+        print("l")
         loops += 1
         if loops > 250:
             logger.change_status("Waited too long to get to 6 elixer. Restarting.")
