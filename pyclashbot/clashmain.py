@@ -137,7 +137,6 @@ def check_for_gem_logo_on_main():
     ]
     color = [75, 180, 35]
 
-    # for pix in pix_list:print(pix)
 
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=45):
@@ -157,7 +156,7 @@ def check_for_blue_background_on_main():
     ]
     color = [9, 69, 119]
 
-    # for pix in pix_list:print(pix)
+
 
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=45):
@@ -177,8 +176,6 @@ def check_for_gold_logo_on_main():
     ]
     color = [201, 177, 56]
 
-    # print("Color is : ",color),"\nPixels are:"
-    # for pix in pix_list:print(pix)
 
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=85):
@@ -198,9 +195,7 @@ def check_for_friends_logo_on_main():
     ]
     color = [177, 228, 252]
 
-    # debug prints
-    # print("Color is: ",color,"\nPixels are:")
-    # for pix in pix_list:print(pix)
+
 
     # pixel check
     for pix in pix_list:
@@ -211,19 +206,19 @@ def check_for_friends_logo_on_main():
 
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
-        # print("gem logo fail")
+
         return False
 
     if not check_for_blue_background_on_main():
-        # print("blue background fail")
+
         return False
 
     if not check_for_gold_logo_on_main():
-        # print("gold logo fail")
+
         return False
 
     if not check_for_friends_logo_on_main():
-        # print("friends logo fail")
+
         return False
 
     return True
@@ -378,7 +373,7 @@ def open_chests(logger):
         time.sleep(1)
 
         if check_if_unlock_chest_button_exists():
-            # print("Found unlock in chest", chest_index)
+
             time.sleep(0.5)
 
             logger.change_status(str(f"Unlocking chest {str(chest_index)}"))
