@@ -17,8 +17,10 @@ class Logger:
         self.cards_upgraded = 0
         self.account_switches = 0
         self.cards_upgraded = 0
-
         self.card_mastery_reward_collections = 0
+        self.battlepass_rewards_collections = 0
+        self.level_up_chest_collections = 0
+        self.war_battles_fought = 0
 
         self.current_status = "Starting"
         self.buffer = ""
@@ -75,9 +77,7 @@ class Logger:
         self.add_row(line_with_leftside)
         self.add_row(f"|               Fights:               | {self.fights}")
         self.add_row(line_with_leftside)
-        self.add_row(
-            f"|              Win rate:              | {self.make_win_loss_str()}"
-        )
+        self.add_row(f"|              Win rate:              | {self.make_win_loss_str()}")
         self.add_row(line_with_leftside)
         self.add_row(f"|           Chests unlocked:          | {self.chests_unlocked}")
         self.add_row(line_with_leftside)
@@ -87,10 +87,15 @@ class Logger:
         self.add_row(line_with_leftside)
         self.add_row(f"|           Account switches:         | {self.account_switches}")
         self.add_row(line_with_leftside)
-        self.add_row(
-            f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}"
-        )
+        self.add_row(f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}")
         self.add_row(line_with_leftside)
+        self.add_row(f"|    Battlepass Reward Collections    | {self.battlepass_rewards_collections}")
+        self.add_row(line_with_leftside)
+        self.add_row(f"|     Level Up Reward Collections     | {self.level_up_chest_collections}")
+        self.add_row(line_with_leftside)
+        self.add_row(f"|          War Battles Fought         | {self.war_battles_fought}")
+        self.add_row(line_with_leftside)
+        
         self.add_row(f"|      Current status:      | {self.current_status}")
         self.add_row(line)
         self.print_buffer()
@@ -140,6 +145,24 @@ class Logger:
         """print log buffer"""
         print(self.buffer)
         self.buffer = ""  # clear buffer
+
+
+    def add_battlepass_rewards_collection(self):
+        """add battlepass rewards collection to log"""
+        self.battlepass_rewards_collections += 1
+        self.log()
+        
+    def add_level_up_chest_collection(self):
+        """add level up chest collection to log"""
+        self.level_up_chest_collections += 1
+        self.log()
+        
+    def add_war_battle_fought(self):
+        """add war battle fought to log"""
+        self.war_battles_fought += 1
+        self.log()
+
+
 
     def add_card_mastery_reward_collection(self):
         self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
