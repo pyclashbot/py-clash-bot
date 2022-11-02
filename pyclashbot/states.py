@@ -77,9 +77,7 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
         return state_clashmain(logger=logger, account_number=ssid, jobs=jobs)
 
     elif state == "startfight":
-        random_deck_bool=False
-        if "Randomize Deck" in jobs: random_deck_bool=True
-        return state_startfight(logger,random_deck=random_deck_bool) if "Fight" in jobs else "upgrade"
+        return state_startfight(logger,random_deck="Randomize Deck" in jobs) if "Fight" in jobs else "upgrade"
 
     elif state == "fighting":
         return state_fight(logger)
