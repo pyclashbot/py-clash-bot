@@ -22,6 +22,8 @@ def check_if_card_is_upgradable(card_coord=[],upgrade_coord=[]):
     upgrade_color=[107,235,118]
     pixel=numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
     
+    #print(pixel)
+
     if pixel_is_equal(pixel,upgrade_color,tol=35):
         return True
     return False
@@ -45,7 +47,7 @@ def check_for_upgradable_cards():
         [367,343],
         [50,467],
         [198,467],
-        [283,468],
+        [226,471],
         [365,465],
     ]
     card_upgrade_list=[]
@@ -56,6 +58,7 @@ def check_for_upgradable_cards():
             card_upgrade_list.append("Upgrade")
         else:
             card_upgrade_list.append("No upgrade")
+            time.sleep(0.5)
     return card_upgrade_list
 
 
@@ -81,9 +84,9 @@ def upgrade_card(logger,card_index):
     
     # Click upgrade for gold button
     upgrade_for_gold_button = find_first_upgrade_for_gold_button()
-    if upgrade_for_gold_button=="restart":return"restart"
-    click(upgrade_for_gold_button[1],upgrade_for_gold_button[0])
-    time.sleep(1)
+    if upgrade_for_gold_button is not None:
+        click(upgrade_for_gold_button[1],upgrade_for_gold_button[0])
+        time.sleep(1)
 
     #Check for second upgrade for gold button
     if check_for_final_upgrade_button():
@@ -91,8 +94,8 @@ def upgrade_card(logger,card_index):
     
     # Click confirm upgrade for gold button
     confirm_upgrade_button = find_confirm_upgrade_for_gold_button()
-    if confirm_upgrade_button=="restart":return"restart"
-    click(confirm_upgrade_button[1],confirm_upgrade_button[0])
+    if confirm_upgrade_button is not None:
+        click(confirm_upgrade_button[1],confirm_upgrade_button[0])
 
     # Click close to 'not enough gold' notification
     click(346, 252)
