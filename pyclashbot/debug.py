@@ -61,7 +61,7 @@ from pyclashbot.launcher import (
     restart_and_open_clash,
 )
 from pyclashbot.logger import Logger
-from pyclashbot.request import check_if_in_a_clan, request_random_card_from_clash_main
+from pyclashbot.request import check_if_in_a_clan, count_request_scrolls, request_random_card_from_clash_main
 from pyclashbot.states import (
     state_clashmain,
     state_endfight,
@@ -140,4 +140,4 @@ def request_debug():
     state_request(logger)
 
 
-get_to_account(logger,account_number=0)
+request_random_card_from_clash_main(logger)
