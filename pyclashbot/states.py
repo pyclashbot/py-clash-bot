@@ -1,5 +1,6 @@
 import time
 from typing import Literal
+from pyclashbot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
 
 from pyclashbot.clashmain import (
@@ -140,11 +141,23 @@ def state_tree(
         state = (
             state_level_up_reward_collection(logger)
             if "level up reward collection" in jobs
+            else "battlepass reward collection"
+        )
+
+    elif state == "battlepass reward collection":
+        state = (
+            state_battlepass_collection(logger)
+            if "battlepass reward collection" in jobs
             else "clashmain"
         )
 
     return (state, ssid)
 
+
+def state_battlepass_collection(logger) -> Literal["restart", "clashmain"]:
+    if collect_battlepass_rewards(logger) == "restart":
+        return "restart"
+    return "battlepass reward collection"
 
 def state_level_up_reward_collection(logger) -> Literal["restart", "clashmain"]:
     # Method for level up reward collection state of the program
@@ -152,7 +165,7 @@ def state_level_up_reward_collection(logger) -> Literal["restart", "clashmain"]:
     # state_level_up_reward_collection state starts on clash main and ends on clash main
     if collect_level_up_rewards(logger) == "restart":
         return "restart"
-    return "clashmain"
+    return "battlepass reward collection"
 
 
 def state_card_mastery_collection(logger) -> Literal["restart", "request"]:

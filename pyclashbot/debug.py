@@ -10,7 +10,7 @@ import pygetwindow
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
-from pyclashbot.battlepass_rewards_collection import check_for_battlepass_reward_pixels, check_if_has_battlepass_rewards
+from pyclashbot.battlepass_rewards_collection import check_for_battlepass_reward_pixels, check_if_has_battlepass_rewards, collect_battlepass_rewards
 from pyclashbot.client import screenshot, show_image
 
 
@@ -35,5 +35,4 @@ logger = Logger()
 
 # show_image(screenshot())
 
-while True:
-    print(check_if_has_battlepass_rewards())
+collect_battlepass_rewards()

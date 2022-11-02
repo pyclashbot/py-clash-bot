@@ -45,7 +45,7 @@ def collect_level_up_rewards(logger):
         # return when no more rewards to collect
         if not check_if_has_level_up_rewards():
             logger.change_status("No more level up rewards to collect.")
-            return "clashmain"
+            return "battlepass reward collection"
 
         # click level up reward logo in top left
         click(17, 65)
