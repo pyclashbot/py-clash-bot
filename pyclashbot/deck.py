@@ -174,7 +174,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
         click(20, 440)
         click(x=random.randint(81, 356), y=random.randint(120, 485))
         time.sleep(0.22)
-    
+
         time.sleep(1)
         use_card_button_coord = find_use_card_button()
 
@@ -223,11 +223,11 @@ def check_if_can_still_scroll_in_card_page():
     ]
 
     print("L1:")
-    for pix in pix_list_1: print(pix)
+    for pix in pix_list_1:
+        print(pix)
     print("L2:")
-    for pix in pix_list_2: print(pix)
-    
-
+    for pix in pix_list_2:
+        print(pix)
 
     # casting to int because numpy arrays are weird
     pix_list_1_as_int = []
@@ -238,16 +238,14 @@ def check_if_can_still_scroll_in_card_page():
     for pix in pix_list_2:
         pix_list_2_as_int.append([int(pix[0]), int(pix[1]), int(pix[2])])
 
-
-    #Purple check indicates that we CAN scroll, so return true of purple check
-    purple_check= True
-    color_purple=[ 34 , 68 ,137]
+    # Purple check indicates that we CAN scroll, so return true of purple check
+    purple_check = True
+    color_purple = [34, 68, 137]
     for pix in pix_list_1_as_int:
-        if not pixel_is_equal(pix,color_purple,tol=15):
-            purple_check=False
-    if purple_check: 
+        if not pixel_is_equal(pix, color_purple, tol=15):
+            purple_check = False
+    if purple_check:
         return True
-
 
     # blue check truth indicates that we've reached the base of the card list
     color_blue = [14, 68, 118]
@@ -270,11 +268,11 @@ def check_if_can_still_scroll_in_card_page():
             pix_list_2_truth = False
 
     if blue_check_truth:
-        #print("TESTSETSET")
+        # print("TESTSETSET")
         return False
 
     if pix_list_1_truth or pix_list_2_truth:
-        #print("`11111111`")
+        # print("`11111111`")
         return False
 
     return True
@@ -285,10 +283,10 @@ def check_if_pixel_is_grey(pixel):
     g = pixel[1]
     b = pixel[2]
 
-    #pixel to ignore
-    ignore_pixel=[41,40,47]
+    # pixel to ignore
+    ignore_pixel = [41, 40, 47]
 
-    if pixel_is_equal(ignore_pixel,pixel,tol=10):
+    if pixel_is_equal(ignore_pixel, pixel, tol=10):
         return False
 
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
