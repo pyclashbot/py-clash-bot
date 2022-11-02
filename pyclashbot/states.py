@@ -1,9 +1,10 @@
 import time
 from typing import Literal
+from pyclashbot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
 
 from pyclashbot.clashmain import (
-    check_if_in_battle,
+    check_if_in_battle_with_delay,
     check_if_on_first_card_page,
     get_to_account,
     get_to_card_page,
@@ -36,6 +37,7 @@ from pyclashbot.request import (
     request_random_card_from_clash_main,
 )
 from pyclashbot.upgrade import get_to_clash_main_from_card_page, upgrade_current_cards
+from pyclashbot.war import handle_war_attacks
 
 
 def detect_state(logger):
@@ -56,7 +58,7 @@ def detect_state(logger):
         return "clashmain"
 
     # if we're in battle return fighting
-    if check_if_in_battle():
+    if check_if_in_battle_with_delay():
         return "fighting"
 
     # if we're on end fight screen condition 1 (exit in bottom left)
@@ -80,7 +82,7 @@ def detect_state(logger):
 
 
 def state_tree(
-    jobs: list[str], logger: Logger, ssid_max:int, ssid: int, state: str
+    jobs: list[str], logger: Logger, ssid_max: int, ssid: int, state: str
 ) -> tuple[str, int]:
     """
     Method for the state tree of the program
@@ -120,6 +122,7 @@ def state_tree(
         state = (
             state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
         )
+
     elif state == "request":
         state = (
             state_request(logger) if "Request" in jobs else "level up reward collection"
@@ -139,19 +142,47 @@ def state_tree(
         state = (
             state_level_up_reward_collection(logger)
             if "level up reward collection" in jobs
+            else "battlepass reward collection"
+        )
+
+    elif state == "battlepass reward collection":
+        state = (
+            state_battlepass_collection(logger)
+            if "battlepass reward collection" in jobs
+            else "war"
+        )
+        
+    elif state == "war":
+        state = (
+            state_war(logger)
+            if "war" in jobs
             else "clashmain"
         )
+        
+    
 
     return (state, ssid)
 
 
-def state_level_up_reward_collection(logger) -> Literal["restart", "request"]:
+def state_war(logger) -> Literal["restart", "clashmain"]:
+    if handle_war_attacks(logger) == "restart":
+        return "restart"
+    
+    return "clashmain"
+
+def state_battlepass_collection(logger) -> Literal["restart", "war"]:
+    if collect_battlepass_rewards(logger) == "restart":
+        return "restart"
+    return "war"
+
+
+def state_level_up_reward_collection(logger) -> Literal["restart", "battlepass reward collection"]:
     # Method for level up reward collection state of the program
 
     # state_level_up_reward_collection state starts on clash main and ends on clash main
     if collect_level_up_rewards(logger) == "restart":
         return "restart"
-    return "request"
+    return "battlepass reward collection"
 
 
 def state_card_mastery_collection(logger) -> Literal["restart", "request"]:
@@ -206,7 +237,7 @@ def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]
 
     # make a random deck
     if random_deck:
-        randomize_and_select_deck_2(logger)
+        if randomize_and_select_deck_2(logger)=="restart": return "restart"
 
     # Start 2v2 quickmatch
     if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":

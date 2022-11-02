@@ -35,6 +35,10 @@ def start_button_event(logger:Logger, window, values):
         jobs.append("card mastery collection")
     if values["-Level-Up-Reward-Collection-in-"]:
         jobs.append("level up reward collection")
+    if values["-Battlepass-Reward-Collection-in-"]:
+        jobs.append("battlepass reward collection")
+    if values["-War-Participation-in-"]:
+        jobs.append("war")
     elif not jobs:
         print("At least one job must be selected")
         return None
@@ -72,7 +76,7 @@ def stop_button_event(window, thread):
 
 def main_gui():
     # Method for the main gui that starts the program
-    out_text = "Matthew Miglio ~October 2022\n\n-------------------------------------------------------------------------------------\nPy-ClashBot can farm gold, chest, and card\nprogress by farming 2v2 matches with random teammates.\n-------------------------------------------------------------------------------------"
+    out_text = "Matthew Miglio ~October 2022\n\n-------------------------------------------------------------------------------------\nPy-ClashBot can farm gold, chests, and card\nprogress by farming 2v2 matches with random teammates.\n-------------------------------------------------------------------------------------"
     sg.theme("Material2")
     # defining various things that are gonna be in the gui.
     layout = [
@@ -85,6 +89,8 @@ def main_gui():
             sg.Checkbox("Fight", default=True, key="-Fight-in-"),
             sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
             sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
+            sg.Checkbox("War Participation", default=True, key="-War-Participation-in-"),
+            
         ],
         [
             sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
@@ -93,11 +99,8 @@ def main_gui():
                 default=True,
                 key="-Card-Mastery-Collection-in-",
             ),
-            sg.Checkbox(
-                "Level Up Reward Collection",
-                default=True,
-                key="-Level-Up-Reward-Collection-in-",
-            ),
+            sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-",),
+            sg.Checkbox("Battlepass Reward Collection",default=True,key="-Battlepass-Reward-Collection-in-",),
         ],
         # dropdown for amount of accounts
         [
@@ -118,7 +121,7 @@ def main_gui():
             sg.Button("Help"),
             sg.Button("Donate"),
         ],
-        [sg.Output(size=(100, 30), font=("Consolas 10"))],
+        [sg.Output(size=(100, 31), font=("Consolas 10"))],
     ]
     window = sg.Window("Py-ClashBot", layout)
 
@@ -175,7 +178,6 @@ class MainLoopThread(StoppableThread):
         while not self.shutdown_flag.is_set():
             # perform state transition
             (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
-
 
 
 if __name__ == "__main__":

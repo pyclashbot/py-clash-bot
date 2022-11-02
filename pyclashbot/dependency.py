@@ -35,7 +35,7 @@ def get_download_size(url: str) -> int | None:
         int: size of download in bytes
     """
     r = get(url, headers=None, stream=True)
-    return int(r.headers.get('Content-Length', '0')) or None
+    return int(r.headers.get("Content-Length", "0")) or None
 
 
 def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
@@ -60,8 +60,7 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
     download_size = get_download_size(url)
     if not exists(file_path) or download_size != getsize(file_path):
         try:
-            print(
-                f"Downloading {file_name} from {url} ({download_size} bytes)")
+            print(f"Downloading {file_name} from {url} ({download_size} bytes)")
             r = get(url, headers=None, stream=True, allow_redirects=True)
             with open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024):
@@ -70,8 +69,7 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
             print(f"Downloaded {file_name} to {file_path}")
             return file_path
         except (ConnectionError, gaierror):
-            print(
-                f"Connection error while trying to download {url} to {file_path}")
+            print(f"Connection error while trying to download {url} to {file_path}")
             return None
     print(f"File already downloaded from {url}.")
     return file_path
@@ -114,9 +112,7 @@ def get_ahk_link() -> list[str] | None:
     Returns:
         list[str] | None: returns a a list of strings as [url, name of file] or None if not found
     """
-    return [
-        r"https://www.autohotkey.com/download/ahk-install.exe",
-        "ahk-install.exe"]
+    return [r"https://www.autohotkey.com/download/ahk-install.exe", "ahk-install.exe"]
 
 
 def get_ahk_path() -> str:
@@ -140,8 +136,7 @@ def install_ahk() -> None:
     """installs ahk"""
     ahk_link = get_ahk_link()
     if ahk_link is not None:
-        ahk_installer_path = download_from_url(
-            ahk_link[0], make_cache(), ahk_link[1])
+        ahk_installer_path = download_from_url(ahk_link[0], make_cache(), ahk_link[1])
         if ahk_installer_path is not None:
             run_installer(ahk_installer_path)
 
@@ -185,7 +180,8 @@ def get_memu_link() -> list[str] | None:
     """
     return [
         r"https://dl.memuplay.com/download/MEmu-setup-abroad-sdk.exe",
-        "MEmu-setup-abroad-sdk.exe"]
+        "MEmu-setup-abroad-sdk.exe",
+    ]
 
 
 def get_memu_path() -> str:
@@ -202,13 +198,7 @@ def get_memu_path() -> str:
         akey = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\MEmu"
         areg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
         akey = OpenKey(areg, akey)
-    return str(
-        join(
-            normpath(
-                QueryValueEx(
-                    akey,
-                    "InstallLocation")[0]),
-            "Memu"))
+    return str(join(normpath(QueryValueEx(akey, "InstallLocation")[0]), "Memu"))
 
 
 def install_memu() -> None:
@@ -216,7 +206,8 @@ def install_memu() -> None:
     memu_link = get_memu_link()
     if memu_link is not None:
         memu_installer_path = download_from_url(
-            memu_link[0], make_cache(), memu_link[1])
+            memu_link[0], make_cache(), memu_link[1]
+        )
         if memu_installer_path is not None:
             run_installer(memu_installer_path)
 
