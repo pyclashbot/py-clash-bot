@@ -157,6 +157,8 @@ def replace_card_in_deck(card_coord=[],max_scrolls=4):
         if loops>25: return "restart"
         click(x=random.randint(81,356),y=random.randint(120,485))
         time.sleep(0.22)
+        click(20,440)
+        time.sleep(1)
         use_card_button_coord=find_use_card_button()
 
     click(use_card_button_coord[0],use_card_button_coord[1])
