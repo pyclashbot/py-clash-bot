@@ -144,7 +144,3 @@ def request_debug():
     state_request(logger)
 
 
-
-upgrade_current_cards(logger)
-
-
