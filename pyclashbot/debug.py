@@ -61,6 +61,7 @@ from pyclashbot.launcher import (
     find_clash_app_logo,
     restart_and_open_clash,
 )
+from pyclashbot.level_up_reward_collection import check_for_level_up_reward_pixels, check_if_has_level_up_rewards, collect_level_up_rewards
 from pyclashbot.logger import Logger
 from pyclashbot.request import check_if_in_a_clan, count_maximum_request_scrolls, request_random_card_from_clash_main
 from pyclashbot.states import (
@@ -141,4 +142,4 @@ def request_debug():
     state_request(logger)
 
 
-collect_card_mastery_rewards(logger)
+collect_level_up_rewards(logger)
