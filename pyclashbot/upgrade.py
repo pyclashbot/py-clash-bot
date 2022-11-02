@@ -31,7 +31,7 @@ def check_if_card_is_upgradable(card_coord=[], upgrade_coord=[]):
     upgrade_color = [107, 235, 118]
     pixel = numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
 
-    # print(pixel)
+
 
     if pixel_is_equal(pixel, upgrade_color, tol=35):
         return True
