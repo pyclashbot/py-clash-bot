@@ -91,4 +91,4 @@ logger = Logger()
 
 
 
-print(check_for_memu_loading_background())
+wait_until_has_6_elixer(logger)
