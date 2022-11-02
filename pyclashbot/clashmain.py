@@ -244,14 +244,14 @@ def get_to_account(logger, account_number):
     time.sleep(1)
 
     if account_number == 0:
-        #logger.change_status("Clicking account 1")
-        click(x=211, y=388)
+        click(225,390)
     if account_number == 1:
-        #logger.change_status("Clicking account 2")
-        click(x=193, y=471)
+        click(210,470)
     if account_number == 2:
-        #logger.lchange_statusog("Clicking account 3")
-        click(x=200, y=560)
+        click(220,550)
+    if account_number == 2:
+        click(225,625)
+    
         
 
 
