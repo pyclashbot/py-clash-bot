@@ -4,11 +4,10 @@ from os import makedirs
 from os.path import exists, expandvars, isdir, join
 from typing import Any
 
-top_level = join(expandvars('%appdata%'), "py-ClashBot")
-config_file = join(top_level, 'config.json')
+top_level = join(expandvars("%appdata%"), "py-ClashBot")
+config_file = join(top_level, "config.json")
 
-default_config = {
-}
+default_config = {}
 
 
 def validate_keys(user_config: dict[str, Any]) -> dict[str, Any]:
@@ -19,7 +18,9 @@ def validate_keys(user_config: dict[str, Any]) -> dict[str, Any]:
     if default_keys == user_keys:
         return user_config
 
-    print("WARNING: Invalid keys in user config. Overwriting invalid keys with defaults")
+    print(
+        "WARNING: Invalid keys in user config. Overwriting invalid keys with defaults"
+    )
     invalid_keys = user_keys - default_keys
     for key in invalid_keys:  # delete invalid keys
         del user_config[key]
@@ -39,7 +40,8 @@ def validate_types(user_config: dict[str, Any]) -> dict[str, Any]:
         # overwrite with defualt if types are not the same
         if not isinstance(user_config[key], type(default_config[key])):
             print(
-                "WARNING: Invalid values in user config. Overwriting invalid values with defaults")
+                "WARNING: Invalid values in user config. Overwriting invalid values with defaults"
+            )
             user_config[key] = default_config[key]
 
     write_config_file(user_config)
@@ -52,7 +54,7 @@ def validate_user_config(user_config: dict[str, Any]) -> dict[str, Any]:
 
 def load_user_config() -> dict[str, Any]:
     try:
-        return validate_user_config(json.load(open(config_file, 'r')))
+        return validate_user_config(json.load(open(config_file, "r")))
     except json.JSONDecodeError:
         print("User config file could not be loaded, is it misconfigured?")
         sys.exit()
@@ -68,7 +70,9 @@ def create_config_file() -> None:
     if not exists(config_file):
         write_config_file(default_config)
         print("Created config file for the bot @ appdata/py-ClashBot/")
-        print("Since this is the first time you are running the bot, please edit the config file then restart the bot.")
+        print(
+            "Since this is the first time you are running the bot, please edit the config file then restart the bot."
+        )
 
 
 def write_config_file(config) -> None:
