@@ -74,7 +74,7 @@ from pyclashbot.states import (
     state_startfight,
     state_upgrade,
 )
-from pyclashbot.upgrade import upgrade_current_cards
+from pyclashbot.upgrade import check_for_final_upgrade_button, find_confirm_upgrade_for_gold_button, find_first_upgrade_for_gold_button, upgrade_current_cards
 
 ahk = AHK()
 logger = Logger()
@@ -144,9 +144,7 @@ def request_debug():
     state_request(logger)
 
 
-# wait_for_memu_loading_screen(logger)
+
+upgrade_current_cards(logger)
 
 
-orientate_memu()
-while True:
-    print(check_for_memu_loading_background())
