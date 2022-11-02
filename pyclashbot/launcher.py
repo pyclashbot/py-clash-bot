@@ -10,7 +10,10 @@ from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
                                screenshot)
 from pyclashbot.dependency import setup_memu
 from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location)
+                                  get_first_location, pixel_is_equal)
+
+
+import numpy
 
 launcher_path = setup_memu()  # setup memu, install if necessary
 
@@ -145,8 +148,9 @@ def wait_for_clash_logo_to_appear(logger):
 
 def check_for_memu_loading_background():
     # Method to check if memu loading background is present in the given moment
+    #Using 2 methods
 
-    check_quit_key_press()
+    #Method 1 image recognition
     current_image = screenshot()
     reference_folder = "memu_loading_background"
     references = [
@@ -155,7 +159,11 @@ def check_for_memu_loading_background():
         "3.png",
         "4.png",
         "5.png",
-        "5.png",
+        "6.png",
+        "7.png",
+        "8.png",
+        "9.png",
+        
     ]
 
     locations = find_references(
@@ -165,7 +173,38 @@ def check_for_memu_loading_background():
         tolerance=0.99
     )
 
-    return check_for_location(locations)
+    if check_for_location(locations): return True
+
+
+    #Method 2 pixel comparison
+    iar=numpy.asarray(current_image)
+    pix_list=[
+        iar[120][120],
+        iar[200][200],
+        iar[350][50],
+        iar[220][150],
+    ]
+    sentinel_pix_list=[
+        [76 ,78 ,84],
+        [18 ,23 ,28],
+        [19 ,13 ,10],
+        [23 ,40 ,48],
+    ]
+    pixel_check=True
+    for index in range(4): 
+        current_pixel=pix_list[index]
+        sentinel_pixel=sentinel_pix_list[index]
+        if not pixel_is_equal(current_pixel,sentinel_pixel,tol=35):
+            pixel_check=False
+    if pixel_check: return True
+
+    #Method 3 pixel comparison #2 (checks if all pixels are black)
+    for pix in pix_list:
+        if not pixel_is_equal(pix,[0,0,0],tol=30):
+            return True
+
+
+    return False
 
 
 def find_clash_app_logo():
@@ -216,6 +255,7 @@ def close_memu(logger):
         except BaseException:
             logger.change_status("Couldn't close Memu")
     time.sleep(3)
+
 
 def close_memu_multi(logger):
     # Method to close memu multi
