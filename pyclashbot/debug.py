@@ -46,7 +46,7 @@ from pyclashbot.client import (
     show_image,
 )
 from pyclashbot.configuration import load_user_config
-from pyclashbot.deck import check_if_can_still_scroll, find_use_card_button
+from pyclashbot.deck import check_if_can_still_scroll_in_card_page, find_use_card_button
 from pyclashbot.fight import (
     check_if_has_6_elixer,
     fight,
@@ -90,5 +90,9 @@ logger = Logger()
 
 
 
-
-wait_until_has_6_elixer(logger)
+while True:
+    print(check_if_can_still_scroll_in_card_page())
+    
+    
+    
+# print(check_if_can_still_scroll_in_card_page())
