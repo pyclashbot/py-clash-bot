@@ -37,6 +37,7 @@ from pyclashbot.request import (
     request_random_card_from_clash_main,
 )
 from pyclashbot.upgrade import get_to_clash_main_from_card_page, upgrade_current_cards
+from pyclashbot.war import handle_war_attacks
 
 
 def detect_state(logger):
@@ -148,18 +149,34 @@ def state_tree(
         state = (
             state_battlepass_collection(logger)
             if "battlepass reward collection" in jobs
+            else "war"
+        )
+        
+    elif state == "war":
+        state = (
+            state_war(logger)
+            if "war" in jobs
             else "clashmain"
         )
+        
+    
 
     return (state, ssid)
 
 
-def state_battlepass_collection(logger) -> Literal["restart", "clashmain"]:
+def state_war(logger) -> Literal["restart", "clashmain"]:
+    if handle_war_attacks(logger) == "restart":
+        return "restart"
+    
+    return "clashmain"
+
+def state_battlepass_collection(logger) -> Literal["restart", "war"]:
     if collect_battlepass_rewards(logger) == "restart":
         return "restart"
-    return "battlepass reward collection"
+    return "war"
 
-def state_level_up_reward_collection(logger) -> Literal["restart", "clashmain"]:
+
+def state_level_up_reward_collection(logger) -> Literal["restart", "battlepass reward collection"]:
     # Method for level up reward collection state of the program
 
     # state_level_up_reward_collection state starts on clash main and ends on clash main

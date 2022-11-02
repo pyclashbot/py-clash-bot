@@ -126,6 +126,65 @@ def look_for_puzzleroyale_popup():
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
 
+def check_if_in_a_clan(logger):
+    # Method to check if the current account has a clan
+
+    # starts and ends on clash main
+    logger.change_status("Checking if in a clan.")
+
+    # click clan tab
+    click(308, 627)
+    time.sleep(1)
+
+    # cycle through clan tab a few times
+    for _ in range(3):
+        click(280, 623)
+    time.sleep(1)
+    scroll_down()
+    time.sleep(1)
+
+    # get a pixel from this clan tab
+    pixel_1 = numpy.array(screenshot())[118][206]
+
+    # cycle tab again
+    click(280, 623)
+    time.sleep(1)
+
+    # get second pixel
+    pixel_2 = numpy.array(screenshot())[118][206]
+
+    # get back to clash main
+    get_to_clash_main_from_clan_page(logger)
+
+    # if pixels aren't equal return True (in a clan because there are two
+    # available pages instead of one)
+    if not (pixel_is_equal(pixel_1, pixel_2, tol=25)):
+        logger.change_status("You're in a clan")
+        time.sleep(1)
+        return True
+    logger.change_status("Not in a clan.")
+    time.sleep(1)
+    return False
+
+
+def get_to_clash_main_from_clan_page(logger):
+    # Method to return to clash main menu from request page
+    click(172, 612)
+    time.sleep(1)
+    on_main = check_for_gem_logo_on_main()
+    loops = 0
+    while not (on_main):
+        loops += 1
+        if loops > 25:
+            logger.change_status("Could not get to clash main from request page.")
+            return "restart"
+        click(208, 606)
+        time.sleep(1)
+        on_main = check_for_gem_logo_on_main()
+
+
+
+
 def check_for_gem_logo_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
@@ -537,7 +596,7 @@ def wait_for_battle_start(logger):
 def check_if_in_battle_with_delay():
     # Method to check if the bot is in a battle in the given moment
 
-    for _ in range(10):
+    for _ in range(5):
         references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
         locations = find_references(
