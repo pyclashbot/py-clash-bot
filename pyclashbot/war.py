@@ -183,10 +183,10 @@ def check_if_loading_war_battle():
 
 def wait_for_war_battle_loading(logger):
     logger.change_status("Waiting for war battle loading")
-    looops=0
+    loops=0
     while check_if_loading_war_battle():
         loops+=1
-        if loops>50: return "restart"
+        if loops>100: return "restart"
         time.sleep(0.5)
     time.sleep(4)
     logger.change_status("Done waiting for battle to load.")
