@@ -146,13 +146,13 @@ def state_tree(
     return (state, ssid)
 
 
-def state_level_up_reward_collection(logger) -> Literal["restart", "request"]:
+def state_level_up_reward_collection(logger) -> Literal["restart", "clashmain"]:
     # Method for level up reward collection state of the program
 
     # state_level_up_reward_collection state starts on clash main and ends on clash main
     if collect_level_up_rewards(logger) == "restart":
         return "restart"
-    return "request"
+    return "clashmain"
 
 
 def state_card_mastery_collection(logger) -> Literal["restart", "request"]:
