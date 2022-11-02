@@ -24,6 +24,7 @@ def check_for_level_up_reward_pixels():
     return True
 
 
+
 def check_if_has_level_up_rewards():
     timer=0
     while not(check_for_level_up_reward_pixels()):
@@ -44,7 +45,7 @@ def collect_level_up_rewards(logger):
         #return when no more rewards to collect
         if not check_if_has_level_up_rewards(): 
             logger.change_status("No more level up rewards to collect.")
-            return
+            return "clashmain"
         
         #click level up reward logo in top left
         click(17,65)
