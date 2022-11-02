@@ -56,10 +56,12 @@ from pyclashbot.fight import (
 )
 from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 from pyclashbot.launcher import (
+    check_for_memu_loading_background,
     close_memu,
     close_memu_multi,
     find_clash_app_logo,
     restart_and_open_clash,
+    wait_for_memu_loading_screen,
 )
 from pyclashbot.level_up_reward_collection import check_for_level_up_reward_pixels, check_if_has_level_up_rewards, collect_level_up_rewards
 from pyclashbot.logger import Logger
@@ -142,4 +144,9 @@ def request_debug():
     state_request(logger)
 
 
-collect_level_up_rewards(logger)
+# wait_for_memu_loading_screen(logger)
+
+
+orientate_memu()
+while True:
+    print(check_for_memu_loading_background())
