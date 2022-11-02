@@ -4,7 +4,7 @@ import time
 
 import numpy
 
-from pyclashbot.clashmain import check_if_in_a_clan, check_if_in_battle_with_delay
+from pyclashbot.clashmain import check_if_in_a_clan, check_if_in_battle_with_delay, get_to_clash_main_from_clan_page
 from pyclashbot.client import click, get_file_count, make_reference_image_list, screenshot, scroll_down_super_fast, scroll_up_super_fast
 from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
@@ -39,13 +39,18 @@ def handle_war_attacks(logger):
     click(280,445)
     
     #wait for the match to load
-    wait_for_war_battle_loading(logger)
+    if wait_for_war_battle_loading(logger) == "restart": return"restart"
     
     #fight for the duration of the war match (losses do not matter)
-    fight_war_battle(logger)
+    if fight_war_battle(logger)=="restart":return "restart"
     
     #exit battle
+    logger.change_status("Exiting war battle")
     click(215,585)
+    time.sleep(10)
+
+    #get to clash main
+    get_to_clash_main_from_clan_page(logger)
 
 
 
@@ -60,7 +65,8 @@ def fight_war_battle(logger):
         click(random.randint(125,355),585)
         
         #click random placement
-        click(random.randint(70,355),random.randint(320,490) )
+        click(random.randint(70,355),random.randint(320,490))
+    time.sleep(7)
 
 
 def make_a_random_deck_for_this_war_battle():
@@ -177,7 +183,10 @@ def check_if_loading_war_battle():
 
 def wait_for_war_battle_loading(logger):
     logger.change_status("Waiting for war battle loading")
+    looops=0
     while check_if_loading_war_battle():
+        loops+=1
+        if loops>50: return "restart"
         time.sleep(0.5)
     time.sleep(4)
     logger.change_status("Done waiting for battle to load.")
