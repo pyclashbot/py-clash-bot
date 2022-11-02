@@ -122,7 +122,7 @@ def main_gui():
             sg.Button("Help"),
             sg.Button("Donate"),
         ],
-        [sg.Output(size=(100, 26), font=("Consolas 10"))],
+        [sg.Output(size=(100, 31), font=("Consolas 10"))],
     ]
     window = sg.Window("Py-ClashBot", layout)
 
