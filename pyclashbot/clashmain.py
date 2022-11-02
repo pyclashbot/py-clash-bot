@@ -4,7 +4,7 @@ import time
 import numpy
 import pyautogui
 
-from pyclashbot.client import click, screenshot, scroll_down, scroll_up_fast
+from pyclashbot.client import click, orientate_memu, screenshot, scroll_down, scroll_up_fast
 from pyclashbot.image_rec import (
     check_for_location,
     find_references,
@@ -14,6 +14,7 @@ from pyclashbot.image_rec import (
 
 
 def wait_for_clash_main_menu(logger):
+    orientate_memu()
     logger.change_status("Waiting for clash main menu")
     waiting = not (check_if_on_clash_main_menu())
 
@@ -354,7 +355,6 @@ def handle_gold_rush_event(logger):
     click(193, 465)
 
 
-
 def handle_new_challenge(logger):
     # Method to handle a new challenge notification obstructing the bot
 
@@ -371,7 +371,6 @@ def handle_new_challenge(logger):
             "Handling the possibility of trophy progession rewards page obstructing the bot."
         )
         click(212, 633)
-
 
 
 def handle_special_offer(logger):
