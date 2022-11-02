@@ -61,15 +61,19 @@ def collect_card_mastery_rewards(logger):
     
     #click mastery reward button
     click(257,505)
+    time.sleep(1)
     
     #click topleft most card in card mastery reward list
     click(104,224)
+    time.sleep(1)
     
     #click all reward regions
-    for coord in reward_coords: click(coord[0],coord[1])
+    for coord in reward_coords: 
+        click(coord[0],coord[1])
+        time.sleep(1)
     
     #click dead space
-    for _ in range(5): click(20,400)
+    for _ in range(8): click(20,400)
     
     #get back to clash main
     if get_to_clash_main_from_card_page(logger)=="restart": return "restart"
