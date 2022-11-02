@@ -107,7 +107,6 @@ def wait_for_memu_loading_screen(logger):
 
     loops = 0
     while waiting:
-        print("waiting")
         loops += 1
         if loops > 20:
             logger.change_status("Waited too long for memu client to load, restarting")
