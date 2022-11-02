@@ -17,6 +17,7 @@ from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
                               check_if_past_game_is_win, fight,
                               leave_end_battle_window)
 from pyclashbot.launcher import restart_and_open_clash
+from pyclashbot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_on_clan_page,
                                 get_to_clash_main_from_clan_page,
@@ -88,7 +89,7 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
         return state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
 
     elif state == "request":
-        return state_request(logger) if "Request" in jobs else "clashmain"
+        return state_request(logger) if "Request" in jobs else "level up reward collection"
 
     elif state == "restart":
         return state_restart(logger)
@@ -96,7 +97,19 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
     elif state== "card mastery collection":
         return state_card_mastery_collection(logger) if "card mastery collection" in jobs else "request"
 
+    elif state=="level up reward collection":
+        return state_level_up_reward_collection(logger) if "level up reward collection" in jobs else "clashmain"
+
+
     return state
+
+
+def state_level_up_reward_collection(logger) -> Literal['restart', 'clashmain']:
+    #Method for level up reward collection state of the program
+    
+    #state_level_up_reward_collection state starts on clash main and ends on clash main
+    if collect_level_up_rewards(logger)=="restart": return "restart"
+    return "request"
 
 
 def state_card_mastery_collection(logger) -> Literal['restart','request']:
@@ -223,4 +236,4 @@ def state_request(logger) -> Literal['restart', 'clashmain']:
     if request_random_card_from_clash_main(logger) == "restart":
         return "restart"
 
-    return "clashmain"
+    return "level up reward collection"

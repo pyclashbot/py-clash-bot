@@ -34,6 +34,8 @@ def start_button_event(window, values):
         jobs.append("Randomize Deck")
     if values["-Card-Mastery-Collection-in-"]:
         jobs.append("card mastery collection")
+    if values["-Level-Up-Reward-Collection-in-"]:
+        jobs.append("level up reward collection")
     elif not jobs:
         print("At least one job must be selected")
         return None
@@ -85,11 +87,9 @@ def main_gui():
             sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
             sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
             sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
-            sg.Checkbox(
-                "Card Mastery Collection",
-                default=True,
-                key="-Card-Mastery-Collection-in-",
-            ),
+            sg.Checkbox("Card Mastery Collection",default=True,key="-Card-Mastery-Collection-in-"),
+            sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-"),
+            
         ],
         # dropdown for amount of accounts
         [
