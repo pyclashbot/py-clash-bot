@@ -237,7 +237,7 @@ def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]
 
     # make a random deck
     if random_deck:
-        randomize_and_select_deck_2(logger)
+        if randomize_and_select_deck_2(logger)=="restart": return "restart"
 
     # Start 2v2 quickmatch
     if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":
