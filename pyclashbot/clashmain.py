@@ -169,7 +169,6 @@ def check_for_gold_logo_on_main():
         iar[64][303],
         iar[67][307],
         iar[70][310],
-        
     ]
     color=[201,177,56]
     
