@@ -100,8 +100,6 @@ def check_if_can_collect_card_mastery_rewards(logger):
     
 
 
-
-
 def get_to_clash_main_from_card_page(logger):
     #logger.change_status("Getting to Clash main menu from card page")
     
@@ -119,7 +117,7 @@ def get_to_clash_main_from_card_page(logger):
         click(212,637)
         time.sleep(1)
         
-    #logger.change_status("Made it to Clash main menu from card page")
+    
 
 
 
