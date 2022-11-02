@@ -12,7 +12,6 @@ def check_for_level_up_reward_pixels():
     
     pix_list=[
         iar[58][7],
-        iar[73][9],
         iar[70][9],
     ]
     color=[255,173,20]
