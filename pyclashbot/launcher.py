@@ -173,7 +173,9 @@ def check_for_memu_loading_background():
         tolerance=0.99
     )
 
-    if check_for_location(locations): return True
+    if check_for_location(locations): 
+        #print("Image rec positive")
+        return True
 
 
     #Method 2 pixel comparison
@@ -196,13 +198,18 @@ def check_for_memu_loading_background():
         sentinel_pixel=sentinel_pix_list[index]
         if not pixel_is_equal(current_pixel,sentinel_pixel,tol=35):
             pixel_check=False
-    if pixel_check: return True
+    if pixel_check: 
+        #print("Pixel check 1 positive")
+        return True
 
     #Method 3 pixel comparison #2 (checks if all pixels are black)
+    pixel_check_2=True
     for pix in pix_list:
         if not pixel_is_equal(pix,[0,0,0],tol=30):
-            return True
-
+            pixel_check_2=False
+    if pixel_check_2: 
+        #print("Pixel check 2 positive")
+        return True
 
     return False
 

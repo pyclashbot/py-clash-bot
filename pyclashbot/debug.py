@@ -91,4 +91,4 @@ logger = Logger()
 
 
 
-upgrade_current_cards(logger)
+print(check_for_memu_loading_background())
