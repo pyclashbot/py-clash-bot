@@ -89,8 +89,16 @@ def main_gui():
         ],
         [
             sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
-            sg.Checkbox("Card Mastery Collection",default=True,key="-Card-Mastery-Collection-in-"),
-            sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-"),
+            sg.Checkbox(
+                "Card Mastery Collection",
+                default=True,
+                key="-Card-Mastery-Collection-in-",
+            ),
+            sg.Checkbox(
+                "Level Up Reward Collection",
+                default=True,
+                key="-Level-Up-Reward-Collection-in-",
+            ),
         ],
         # dropdown for amount of accounts
         [
@@ -149,22 +157,24 @@ def main_gui():
 class MainLoopThread(StoppableThread):
     def __init__(self, args, kwargs=None):
         super().__init__(args, kwargs)
+        self.logger = Logger()
+        self.logger.log()
 
     def run(self):
         # parse thread args
-        jobs, ssid_total = self.args
+        jobs, ssid_max = self.args
 
-        logger = Logger()
-        logger.log()
+        # start ssid at 0
         ssid = 0
 
         # detect initial state
-        state = detect_state(logger)
+        state = detect_state(self.logger)
+
+        # loop until shutdown flag is set
         while not self.shutdown_flag.is_set():
-            # enter state tree
-            state = state_tree(jobs, logger, ssid, state)
-            # get next account ssid
-            ssid = get_next_ssid(ssid, ssid_total)
+            # perform state transition
+            (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
+
 
 
 if __name__ == "__main__":
