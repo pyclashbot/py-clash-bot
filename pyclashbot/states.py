@@ -3,7 +3,7 @@ from typing import Literal
 from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
 
 from pyclashbot.clashmain import (
-    check_if_in_battle,
+    check_if_in_battle_with_delay,
     check_if_on_first_card_page,
     get_to_account,
     get_to_card_page,
@@ -56,7 +56,7 @@ def detect_state(logger):
         return "clashmain"
 
     # if we're in battle return fighting
-    if check_if_in_battle():
+    if check_if_in_battle_with_delay():
         return "fighting"
 
     # if we're on end fight screen condition 1 (exit in bottom left)
