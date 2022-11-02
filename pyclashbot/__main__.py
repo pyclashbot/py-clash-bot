@@ -80,14 +80,16 @@ def main_gui():
         # first checkboxes
         [sg.Text("Select which jobs youd like the bot to do:")],
         [
-            sg.Checkbox('Open chests', default=True, key="-Open-Chests-in-"),
-            sg.Checkbox('Fight', default=True, key="-Fight-in-"),
-            sg.Checkbox('Random Requesting', default=True,
-                        key="-Requesting-in-"),
-            sg.Checkbox('Upgrade cards', default=True,key="-Upgrade_cards-in-"),
-            sg.Checkbox('Random decks', default=True,key="-Random-Decks-in-"),
-            sg.Checkbox('Card Mastery Collection', default=True,key="-Card-Mastery-Collection-in-"),
-            
+            sg.Checkbox("Open chests", default=True, key="-Open-Chests-in-"),
+            sg.Checkbox("Fight", default=True, key="-Fight-in-"),
+            sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
+            sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
+            sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
+            sg.Checkbox(
+                "Card Mastery Collection",
+                default=True,
+                key="-Card-Mastery-Collection-in-",
+            ),
         ],
         # dropdown for amount of accounts
         [

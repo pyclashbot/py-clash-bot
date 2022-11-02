@@ -47,7 +47,7 @@ def collect_card_mastery_rewards(logger):
     #if there are no rewards then return
     if not has_rewards: 
         logger.change_status("No card mastery rewards to collect. Returning to clash main.")
-        get_to_clash_main_from_card_page(logger)
+        if get_to_clash_main_from_card_page(logger)=="restart": return "restart"
         return
     
     #otherwise there are rewards to collect so continue
@@ -72,7 +72,7 @@ def collect_card_mastery_rewards(logger):
     for _ in range(5): click(20,400)
     
     #get back to clash main
-    get_to_clash_main_from_card_page(logger)
+    if get_to_clash_main_from_card_page(logger)=="restart": return "restart"
 
 
 
