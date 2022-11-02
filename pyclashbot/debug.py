@@ -17,6 +17,7 @@ from pyclashbot.card_detection import (
     identify_cards,
     make_reference_image_list,
 )
+from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
 from pyclashbot.clashmain import (
     check_for_blue_background_on_main,
     check_for_friends_logo_on_main,
@@ -140,4 +141,4 @@ def request_debug():
     state_request(logger)
 
 
-request_random_card_from_clash_main(logger)
+collect_card_mastery_rewards(logger)
