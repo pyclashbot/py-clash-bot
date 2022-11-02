@@ -19,8 +19,14 @@ def get_first_location(locations: list[Union[list[int], None]], flip=False):
     Returns:
         list[int]: location
     """
-    return next(([location[1], location[0]]
-                if flip else location for location in locations if location is not None), None)
+    return next(
+        (
+            [location[1], location[0]] if flip else location
+            for location in locations
+            if location is not None
+        ),
+        None,
+    )
 
 
 def check_for_location(locations: list[Union[list[int], None]]):
@@ -35,11 +41,12 @@ def check_for_location(locations: list[Union[list[int], None]]):
     return any(location is not None for location in locations)
 
 
-def find_references(screenshot: Union[np.ndarray,
-                                      Image.Image],
-                    folder: str,
-                    names: list[str],
-                    tolerance=0.97) -> list[Union[list[int], None]]:
+def find_references(
+    screenshot: Union[np.ndarray, Image.Image],
+    folder: str,
+    names: list[str],
+    tolerance=0.97,
+) -> list[Union[list[int], None]]:
     """find reference images in a screenshot
 
     Args:
@@ -53,8 +60,10 @@ def find_references(screenshot: Union[np.ndarray,
     """
     num_cores = multiprocessing.cpu_count()
     with ThreadPoolExecutor(num_cores) as ex:
-        futures = [ex.submit(find_reference, screenshot,
-                             folder, name, tolerance) for name in names]
+        futures = [
+            ex.submit(find_reference, screenshot, folder, name, tolerance)
+            for name in names
+        ]
         for future in as_completed(futures):
             result = future.result()
             if result is not None:
@@ -62,11 +71,12 @@ def find_references(screenshot: Union[np.ndarray,
     return [None]
 
 
-def find_all_references(screenshot: Union[np.ndarray,
-                                          Image.Image],
-                        folder: str,
-                        names: list[str],
-                        tolerance=0.97) -> list[Union[list[int], None]] | None:
+def find_all_references(
+    screenshot: Union[np.ndarray, Image.Image],
+    folder: str,
+    names: list[str],
+    tolerance=0.97,
+) -> list[Union[list[int], None]] | None:
     """find all reference images in a screenshot
 
     Args:
@@ -80,21 +90,14 @@ def find_all_references(screenshot: Union[np.ndarray,
     """
     num_cores = multiprocessing.cpu_count()
 
-    return Parallel(
-        n_jobs=num_cores,
-        prefer="threads")(
-        delayed(find_reference)(
-            screenshot,
-            folder,
-            name,
-            tolerance) for name in names)
+    return Parallel(n_jobs=num_cores, prefer="threads")(
+        delayed(find_reference)(screenshot, folder, name, tolerance) for name in names
+    )
 
 
-def find_reference(screenshot: Union[np.ndarray,
-                                     Image.Image],
-                   folder: str,
-                   name: str,
-                   tolerance=0.97):
+def find_reference(
+    screenshot: Union[np.ndarray, Image.Image], folder: str, name: str, tolerance=0.97
+):
     """find a reference image in a screenshot
 
     Args:
@@ -109,13 +112,8 @@ def find_reference(screenshot: Union[np.ndarray,
     top_level = dirname(__file__)
     reference_folder = join(top_level, "reference_images")
     return compare_images(
-        screenshot,
-        Image.open(
-            join(
-                reference_folder,
-                folder,
-                name)),
-        tolerance)
+        screenshot, Image.open(join(reference_folder, folder, name)), tolerance
+    )
 
 
 def pixel_is_equal(pix1, pix2, tol):
@@ -135,11 +133,11 @@ def pixel_is_equal(pix1, pix2, tol):
     return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
 
-def compare_images(image: Union[np.ndarray,
-                                Image.Image],
-                   template: Union[np.ndarray,
-                                   Image.Image],
-                   threshold=0.8):
+def compare_images(
+    image: Union[np.ndarray, Image.Image],
+    template: Union[np.ndarray, Image.Image],
+    threshold=0.8,
+):
     """detects pixel location of a template in an image
     Args:
         image (Union[np.ndarray, Image.Image]): image to find template within
