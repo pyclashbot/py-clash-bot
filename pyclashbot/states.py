@@ -19,7 +19,7 @@ from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
 from pyclashbot.launcher import restart_and_open_clash
 from pyclashbot.logger import Logger
 from pyclashbot.request import (check_if_on_clan_page,
-                                get_to_clash_main_from_request_page,
+                                get_to_clash_main_from_clan_page,
                                 request_random_card_from_clash_main)
 from pyclashbot.upgrade import (
                                 get_to_clash_main_from_card_page,
@@ -32,7 +32,7 @@ def detect_state(logger):
     # sourcery skip: extract-duplicate-method
     # if we're on clan page get back to clash main and return
     if check_if_on_clan_page():
-        if get_to_clash_main_from_request_page(logger) == "restart":
+        if get_to_clash_main_from_clan_page(logger) == "restart":
             return "restart"
         time.sleep(1)
         return "clashmain"
