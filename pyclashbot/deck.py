@@ -106,7 +106,7 @@ def randomize_and_select_deck_2(logger):
     time.sleep(1)
 
     #randomize this deck
-    randomize_current_deck()
+    if randomize_current_deck()=="restart": return "restart"
 
     # return to clash main
     get_to_clash_main_from_card_page(logger)
@@ -115,6 +115,7 @@ def randomize_and_select_deck_2(logger):
 def randomize_current_deck():
     #figure out how much you can scroll down in your card list
     max_scrolls=count_scrolls_in_card_page()
+    if max_scrolls=="restart": return 'restart'
     
     
     card_coord_list=[
@@ -128,18 +129,21 @@ def randomize_current_deck():
         [325,404],
     ]
 
-    for card_coord in card_coord_list:
-        replace_card_in_deck(card_coord=card_coord, max_scrolls=max_scrolls)
+    for card_coord in card_coord_list: 
+        if replace_card_in_deck(card_coord=card_coord, max_scrolls=max_scrolls)=="restart": return "restart"
 
 
 def replace_card_in_deck(card_coord=[],max_scrolls=4):
     if card_coord==[]:return
 
     #scroll down a random amount
+    loops=0
     scrolls=random.randint(3,max_scrolls)
     while (scrolls>0)and(check_if_can_still_scroll()):
         scroll_down_super_fast()
         scrolls-=1
+        loops+=1
+        if loops>25:return "restart"
     #scroll_up_super_fast()
 
     time.sleep(0.22)
@@ -147,7 +151,10 @@ def replace_card_in_deck(card_coord=[],max_scrolls=4):
     #get a random card from this screen to use
     use_card_button_coord=find_use_card_button()
 
+    loops=0
     while use_card_button_coord is None:
+        loops+=1
+        if loops>25: return "restart"
         click(x=random.randint(81,356),y=random.randint(120,485))
         time.sleep(0.22)
         use_card_button_coord=find_use_card_button()
@@ -245,7 +252,10 @@ def check_if_pixel_is_grey(pixel):
 def count_scrolls_in_card_page():
     #Count scrolls
     count=0
+    loops=0
     while check_if_can_still_scroll():
+        loops+=1
+        if loops>40: return "restart"
         scroll_down_super_fast()
         count+=1
     
