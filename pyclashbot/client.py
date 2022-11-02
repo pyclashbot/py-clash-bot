@@ -112,7 +112,7 @@ def get_file_count(directory):
     Returns:
         int: Amount of files in the given directory
     """
-    # print('file count:', count)
+
     return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
 
 
