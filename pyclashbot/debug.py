@@ -63,9 +63,17 @@ from pyclashbot.launcher import (
     restart_and_open_clash,
     wait_for_memu_loading_screen,
 )
-from pyclashbot.level_up_reward_collection import check_for_level_up_reward_pixels, check_if_has_level_up_rewards, collect_level_up_rewards
+from pyclashbot.level_up_reward_collection import (
+    check_for_level_up_reward_pixels,
+    check_if_has_level_up_rewards,
+    collect_level_up_rewards,
+)
 from pyclashbot.logger import Logger
-from pyclashbot.request import check_if_in_a_clan, count_maximum_request_scrolls, request_random_card_from_clash_main
+from pyclashbot.request import (
+    check_if_in_a_clan,
+    count_maximum_request_scrolls,
+    request_random_card_from_clash_main,
+)
 from pyclashbot.states import (
     state_clashmain,
     state_endfight,
@@ -74,7 +82,14 @@ from pyclashbot.states import (
     state_startfight,
     state_upgrade,
 )
-from pyclashbot.upgrade import check_for_final_upgrade_button, check_for_upgradable_cards, check_if_card_is_upgradable, find_confirm_upgrade_for_gold_button, find_first_upgrade_for_gold_button, upgrade_current_cards
+from pyclashbot.upgrade import (
+    check_for_final_upgrade_button,
+    check_for_upgradable_cards,
+    check_if_card_is_upgradable,
+    find_confirm_upgrade_for_gold_button,
+    find_first_upgrade_for_gold_button,
+    upgrade_current_cards,
+)
 
 ahk = AHK()
 logger = Logger()
