@@ -86,10 +86,11 @@ def main_gui():
             sg.Checkbox("Fight", default=True, key="-Fight-in-"),
             sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
             sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
+        ],
+        [
             sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
             sg.Checkbox("Card Mastery Collection",default=True,key="-Card-Mastery-Collection-in-"),
             sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-"),
-            
         ],
         # dropdown for amount of accounts
         [
