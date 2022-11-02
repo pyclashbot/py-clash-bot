@@ -176,6 +176,5 @@ class MainLoopThread(StoppableThread):
             (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
 
 
-
 if __name__ == "__main__":
     main_gui()
