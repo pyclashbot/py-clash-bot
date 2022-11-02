@@ -48,6 +48,8 @@ def handle_war_attacks(logger):
     logger.change_status("Exiting war battle")
     click(215,585)
     time.sleep(10)
+    
+    logger.add_war_battle_fought()
 
     #get to clash main
     get_to_clash_main_from_clan_page(logger)

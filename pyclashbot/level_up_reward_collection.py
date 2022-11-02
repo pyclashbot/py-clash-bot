@@ -56,3 +56,5 @@ def collect_level_up_rewards(logger):
         # skip through rewards
         for _ in range(20):
             click(20, 450)
+            
+        logger.add_level_up_chest_collection()
