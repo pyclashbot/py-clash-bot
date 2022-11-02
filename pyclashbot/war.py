@@ -83,6 +83,7 @@ def fight_war_battle(logger):
 
         # click random placement
         click(random.randint(70, 355), random.randint(320, 490))
+        time.sleep(2)
     time.sleep(15)
 
 
@@ -105,7 +106,7 @@ def check_if_on_war_page():
     ]
     color = [232, 225, 236]
     for pix in pix_list:
-        print(pix[0], pix[1], pix[2])
+
         if not pixel_is_equal(pix, color, tol=45):
             return False
     return True
