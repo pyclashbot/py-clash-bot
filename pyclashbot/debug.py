@@ -90,9 +90,7 @@ logger = Logger()
 
 
 
+ 
+    
 while True:
-    print(check_if_can_still_scroll_in_card_page())
-    
-    
-    
-# print(check_if_can_still_scroll_in_card_page())
+    print(check_if_has_level_up_rewards())
