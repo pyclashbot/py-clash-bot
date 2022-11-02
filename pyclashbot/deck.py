@@ -153,7 +153,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
     # scroll down a random amount
     loops = 0
     scrolls = random.randint(3, max_scrolls)
-    while (scrolls > 0) and (check_if_can_still_scroll()):
+    while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         scrolls -= 1
         loops += 1
@@ -206,7 +206,7 @@ def find_use_card_button():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def check_if_can_still_scroll():
+def check_if_can_still_scroll_in_card_page():
     iar = numpy.asarray(screenshot())
     pix_list_1 = [
         iar[559][83],
@@ -222,6 +222,13 @@ def check_if_can_still_scroll():
         iar[495][342],
     ]
 
+    print("L1:")
+    for pix in pix_list_1: print(pix)
+    print("L2:")
+    for pix in pix_list_2: print(pix)
+    
+
+
     # casting to int because numpy arrays are weird
     pix_list_1_as_int = []
     for pix in pix_list_1:
@@ -230,6 +237,17 @@ def check_if_can_still_scroll():
     pix_list_2_as_int = []
     for pix in pix_list_2:
         pix_list_2_as_int.append([int(pix[0]), int(pix[1]), int(pix[2])])
+
+
+    #Purple check indicates that we CAN scroll, so return true of purple check
+    purple_check= True
+    color_purple=[ 34 , 68 ,137]
+    for pix in pix_list_1_as_int:
+        if not pixel_is_equal(pix,color_purple,tol=15):
+            purple_check=False
+    if purple_check: 
+        return True
+
 
     # blue check truth indicates that we've reached the base of the card list
     color_blue = [14, 68, 118]
@@ -252,9 +270,11 @@ def check_if_can_still_scroll():
             pix_list_2_truth = False
 
     if blue_check_truth:
+        #print("TESTSETSET")
         return False
 
     if pix_list_1_truth or pix_list_2_truth:
+        #print("`11111111`")
         return False
 
     return True
@@ -265,6 +285,12 @@ def check_if_pixel_is_grey(pixel):
     g = pixel[1]
     b = pixel[2]
 
+    #pixel to ignore
+    ignore_pixel=[41,40,47]
+
+    if pixel_is_equal(ignore_pixel,pixel,tol=10):
+        return False
+
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
 
 
@@ -272,7 +298,7 @@ def count_scrolls_in_card_page():
     # Count scrolls
     count = 0
     loops = 0
-    while check_if_can_still_scroll():
+    while check_if_can_still_scroll_in_card_page():
         loops += 1
         if loops > 40:
             return "restart"
