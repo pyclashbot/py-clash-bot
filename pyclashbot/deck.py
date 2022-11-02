@@ -222,12 +222,7 @@ def check_if_can_still_scroll_in_card_page():
         iar[495][342],
     ]
 
-    print("L1:")
-    for pix in pix_list_1:
-        print(pix)
-    print("L2:")
-    for pix in pix_list_2:
-        print(pix)
+
 
     # casting to int because numpy arrays are weird
     pix_list_1_as_int = []
@@ -268,11 +263,11 @@ def check_if_can_still_scroll_in_card_page():
             pix_list_2_truth = False
 
     if blue_check_truth:
-        # print("TESTSETSET")
+
         return False
 
     if pix_list_1_truth or pix_list_2_truth:
-        # print("`11111111`")
+
         return False
 
     return True

@@ -16,7 +16,7 @@ def check_for_level_up_reward_pixels():
     ]
     color = [255, 173, 20]
 
-    # for pix in pix_list: print(pix[0],pix[1],pix[2])
+
 
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=65):
@@ -27,7 +27,7 @@ def check_for_level_up_reward_pixels():
 def check_if_has_level_up_rewards():
     timer = 0
     while not (check_for_level_up_reward_pixels()):
-        # print(timer)
+
         if timer > 0.36:
             return False
         timer += 0.02
