@@ -104,16 +104,17 @@ def wait_for_memu_loading_screen(logger):
 
     logger.change_status("Waiting for Memu Client to load")
     waiting = True
-    n = 0
+
     loops = 0
     while waiting:
+        print("waiting")
         loops += 1
         if loops > 20:
             logger.change_status("Waited too long for memu client to load, restarting")
             return "restart"
-        n = n + 1
+
         time.sleep(1)
-        logger.change_status(f"Waiting for memu Client to load: {str(n)}")
+
         waiting = check_for_memu_loading_background()
     time.sleep(3)
     logger.change_status("Done waiting for Memu Client to load.")
@@ -169,6 +170,11 @@ def check_for_memu_loading_background():
         "7.png",
         "8.png",
         "9.png",
+        "10.png",
+        "11.png",
+        "12.png",
+        "13.png",
+        
     ]
 
     locations = find_references(
