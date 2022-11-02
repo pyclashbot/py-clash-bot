@@ -140,12 +140,4 @@ def request_debug():
     state_request(logger)
 
 
-# while True:
-#     print(check_if_on_clash_main_menu())
-
-
-# while True:
-#     print(find_use_card_button())
-
-
-get_to_account(logger=logger, account_number=0)
+get_to_account(logger,account_number=0)
