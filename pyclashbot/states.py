@@ -120,6 +120,7 @@ def state_tree(
         state = (
             state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
         )
+        
     elif state == "request":
         state = (
             state_request(logger) if "Request" in jobs else "level up reward collection"
