@@ -69,7 +69,6 @@ def detect_state(logger):
 
 
 def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
-    print(state)
     if state == "clashmain":
         orientate_memu_multi()
         orientate_memu()
@@ -94,7 +93,7 @@ def state_tree(jobs: list[str], logger: Logger, ssid: int, state: str) -> str:
     elif state == "restart":
         return state_restart(logger)
     
-    elif state== "card_mastery_collection":
+    elif state== "card mastery collection":
         return state_card_mastery_collection(logger) if "card mastery collection" in jobs else "request"
 
     return state
