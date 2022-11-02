@@ -166,7 +166,6 @@ def wait_until_has_6_elixer(logger):
     logger.change_status("Waiting for 6 elixer")
     loops = 0
     while not (has_6):
-        print("l")
         loops += 1
         if loops > 250:
             logger.change_status("Waited too long to get to 6 elixer. Restarting.")
