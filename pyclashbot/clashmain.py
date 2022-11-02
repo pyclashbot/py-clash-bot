@@ -62,7 +62,7 @@ def get_to_card_page(logger):
         if loops > 10:
             logger.change_status("Couldn't make it to card page")
             return "restart"
-        time.sleep(0.2)
+        time.sleep(1)
     scroll_up_fast()
     #logger.change_status("Made it to card page")
     time.sleep(1)
