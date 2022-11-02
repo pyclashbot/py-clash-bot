@@ -6,8 +6,7 @@ import pyautogui
 
 from pyclashbot.clashmain import check_for_gem_logo_on_main
 from pyclashbot.client import click, screenshot, scroll_down, scroll_down_super_fast
-from pyclashbot.image_rec import (find_references, get_first_location,
-                                  pixel_is_equal)
+from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def request_random_card_from_clash_main(logger):
@@ -26,17 +25,17 @@ def request_random_card_from_clash_main(logger):
 
     # Check if can request
     if check_if_can_request(logger):
-        #count scrolls
-        maximum_scrolls=count_request_scrolls(logger)
-        
-        #get to clan page
+        # count scrolls
+        maximum_scrolls = count_request_scrolls(logger)
+
+        # get to clan page
         get_to_clan_page(logger)
-        
+
         # clicking request button in bottom left
         click(x=86, y=564)
 
         # run request alg
-        if request_random_card(logger,maximum_scrolls=maximum_scrolls) == "restart":
+        if request_random_card(logger, maximum_scrolls=maximum_scrolls) == "restart":
             return "restart"
         logger.add_request()
 
@@ -48,15 +47,15 @@ def request_random_card_from_clash_main(logger):
         return "restart"
 
 
-def request_random_card(logger,maximum_scrolls=10):
+def request_random_card(logger, maximum_scrolls=10):
     # method to request a random card
     # starts on the request screen (the one with a bunch of pictures of the cards)
     # ends back on the clash main menu
     logger.change_status("Requesting a random card.")
 
     # scroll down for randomness
-    for _ in range(0,maximum_scrolls): scroll_down_super_fast()
-
+    for _ in range(0, maximum_scrolls):
+        scroll_down_super_fast()
 
     logger.change_status("Looking for card to request.")
     has_card_to_request = False
@@ -146,7 +145,7 @@ def look_for_request_button():
         screenshot=screenshot(),
         folder="request_button",
         names=references,
-        tolerance=0.97
+        tolerance=0.97,
     )
     return get_first_location(locations)
 
@@ -160,8 +159,7 @@ def get_to_clash_main_from_clan_page(logger):
     while not (on_main):
         loops += 1
         if loops > 25:
-            logger.change_status(
-                "Could not get to clash main from request page.")
+            logger.change_status("Could not get to clash main from request page.")
             return "restart"
         click(208, 606)
         time.sleep(1)
@@ -202,9 +200,9 @@ def check_if_on_clan_page():
 
 
 def check_if_can_request(logger):
-    #Get to clan page
+    # Get to clan page
     get_to_clan_page(logger)
-    
+
     # Method to check if request is available
     iar = numpy.array(screenshot())
     pix_list = [
@@ -214,10 +212,10 @@ def check_if_can_request(logger):
         iar[536][47],
     ]
     color = [47, 69, 105]
-    
-    #get back to clash main
+
+    # get back to clash main
     get_to_clash_main_from_clan_page(logger)
-    
+
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
 
@@ -264,42 +262,43 @@ def check_if_in_a_clan(logger):
 
 def count_request_scrolls(logger):
     logger.change_status("Counting maximum request scrolls for the random scroling.")
-    
-    #get to clan page
-    if get_to_clan_page(logger)=="restart": return "restart"
-    
-    #get to request page
-    click(90,570)
-    
-    #count scrolls
-    scrolls=0
-    
-    #loop until reach the bottom of card request list
+
+    # get to clan page
+    if get_to_clan_page(logger) == "restart":
+        return "restart"
+
+    # get to request page
+    click(90, 570)
+
+    # count scrolls
+    scrolls = 0
+
+    # loop until reach the bottom of card request list
     while check_if_can_still_scroll_in_request_page():
         scroll_down_super_fast()
-        scrolls+=1
-    
-    #click deadspace
-    for _ in range(5):  click(20,400)
-    
-    #return to clash main
+        scrolls += 1
+
+    # click deadspace
+    for _ in range(5):
+        click(20, 400)
+
+    # return to clash main
     get_to_clash_main_from_clan_page(logger)
-    
+
     return scrolls
 
 
 def check_if_can_still_scroll_in_request_page():
-    iar=numpy.asarray(screenshot())
-    pix_list=[
+    iar = numpy.asarray(screenshot())
+    pix_list = [
         iar[575][85],
         iar[575][165],
         iar[575][275],
         iar[575][350],
     ]
-    color=[222,235,241]
-    
+    color = [222, 235, 241]
+
     for pix in pix_list:
-        if not pixel_is_equal(pix,color,tol=45): return True
+        if not pixel_is_equal(pix, color, tol=45):
+            return True
     return False
-
-
