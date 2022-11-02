@@ -13,7 +13,12 @@ def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
     waiting=not (check_if_on_clash_main_menu())
 
+    loops=0
     while waiting:
+        #loop count
+        loops+=1
+        if loops>25: return "restart"
+        
         #wait 1 sec
         time.sleep(1)
         
