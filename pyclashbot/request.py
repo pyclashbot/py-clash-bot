@@ -5,45 +5,56 @@ from random import Random
 import numpy
 import pyautogui
 
-from pyclashbot.clashmain import check_for_gem_logo_on_main, handle_card_mastery_notification
-from pyclashbot.client import click, screenshot, scroll_down, scroll_down_super_fast, scroll_up_super_fast
+from pyclashbot.clashmain import (
+    check_if_in_a_clan,
+    get_to_clash_main_from_clan_page,
+    handle_card_mastery_notification,
+)
+from pyclashbot.client import (
+    click,
+    screenshot,
+    scroll_down,
+    scroll_down_super_fast,
+    scroll_up_super_fast,
+)
 from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def request_random_card_from_clash_main(logger):
     # Method to request a random card if request is available
-    #Starts on clash main ends on clash main
-    
-    #handle card mastery notification because it coveres the request button
+    # Starts on clash main ends on clash main
+
+    # handle card mastery notification because it coveres the request button
     handle_card_mastery_notification()
-    
-    
-    #Return if not in clan (starts on main, ends on main)
+
+    # Return if not in clan (starts on main, ends on main)
     logger.change_status("Checking if you're in a clan.")
     if not (check_if_in_a_clan(logger)):
         logger.change_status("Skipping request because we are not in a clan.")
-        if get_to_clash_main_from_clan_page(logger) == "restart":return "restart"
+        if get_to_clash_main_from_clan_page(logger) == "restart":
+            return "restart"
     time.sleep(1)
-    
-    #Return if request is not available (Starts on main, ends on clan page)
+
+    # Return if request is not available (Starts on main, ends on clan page)
     logger.change_status("Checking if request is available.")
     if not check_if_can_request(logger):
         logger.change_status("Request isn't available.")
-        if get_to_clash_main_from_clan_page(logger) == "restart": return "restart"
-        return 
-    
-    #Click request button (getting to page of requestable cards)
-    click(75,565)
+        if get_to_clash_main_from_clan_page(logger) == "restart":
+            return "restart"
+        return
+
+    # Click request button (getting to page of requestable cards)
+    click(75, 565)
     time.sleep(1)
-    
-    #Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
-    maximum_scrolls=count_maximum_request_scrolls(logger)
-    
-    #request a random card (starts on requestable cards page, ends on clan chat page)
+
+    # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
+    maximum_scrolls = count_maximum_request_scrolls(logger)
+
+    # request a random card (starts on requestable cards page, ends on clan chat page)
     request_random_card(logger, maximum_scrolls=maximum_scrolls)
-    
-    #get back to clash main
-    get_to_clash_main_from_clan_page(logger)
+
+    # get back to clash main
+    if get_to_clash_main_from_clan_page(logger)=="restart": return "restart"
 
 
 def request_random_card(logger, maximum_scrolls=10):
@@ -53,7 +64,8 @@ def request_random_card(logger, maximum_scrolls=10):
     logger.change_status("Requesting a random card.")
 
     # scroll down for randomness
-    for _ in range(0, maximum_scrolls): scroll_down_super_fast()
+    for _ in range(0, maximum_scrolls):
+        scroll_down_super_fast()
 
     logger.change_status("Looking for card to request.")
     has_card_to_request = False
@@ -148,21 +160,6 @@ def look_for_request_button():
     return get_first_location(locations)
 
 
-def get_to_clash_main_from_clan_page(logger):
-    # Method to return to clash main menu from request page
-    click(172, 612)
-    time.sleep(1)
-    on_main = check_for_gem_logo_on_main()
-    loops = 0
-    while not (on_main):
-        loops += 1
-        if loops > 25:
-            logger.change_status("Could not get to clash main from request page.")
-            return "restart"
-        click(208, 606)
-        time.sleep(1)
-        on_main = check_for_gem_logo_on_main()
-
 
 def get_to_clan_page(logger):
     # method to get to clan chat page from clash main
@@ -211,54 +208,14 @@ def check_if_can_request(logger):
     ]
     color = [47, 69, 105]
 
-
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
 
-def check_if_in_a_clan(logger):
-    # Method to check if the current account has a clan
-
-    # starts and ends on clash main
-    logger.change_status("Checking if in a clan.")
-
-    # click clan tab
-    click(308, 627)
-    time.sleep(1)
-
-    # cycle through clan tab a few times
-    for _ in range(3):
-        click(280, 623)
-    time.sleep(1)
-    scroll_down()
-    time.sleep(1)
-
-    # get a pixel from this clan tab
-    pixel_1 = numpy.array(screenshot())[118][206]
-
-    # cycle tab again
-    click(280, 623)
-    time.sleep(1)
-
-    # get second pixel
-    pixel_2 = numpy.array(screenshot())[118][206]
-
-    # get back to clash main
-    get_to_clash_main_from_clan_page(logger)
-
-    # if pixels aren't equal return True (in a clan because there are two
-    # available pages instead of one)
-    if not (pixel_is_equal(pixel_1, pixel_2, tol=25)):
-        logger.change_status("You're in a clan")
-        time.sleep(1)
-        return True
-    logger.change_status("Not in a clan.")
-    time.sleep(1)
-    return False
 
 
 def count_maximum_request_scrolls(logger):
     logger.change_status("Counting maximum request scrolls for the random scroling.")
-    
+
     # count scrolls
     scrolls = 0
 
@@ -267,7 +224,8 @@ def count_maximum_request_scrolls(logger):
         scroll_down_super_fast()
         scrolls += 1
 
-    for _ in range(10): scroll_up_super_fast()
+    for _ in range(10):
+        scroll_up_super_fast()
 
     return scrolls
 
