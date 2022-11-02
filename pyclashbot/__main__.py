@@ -36,6 +36,8 @@ def start_button_event(window, values):
         jobs.append("card mastery collection")
     if values["-Level-Up-Reward-Collection-in-"]:
         jobs.append("level up reward collection")
+    if values["-Battlepass-Reward-Collection-in-"]:
+        jobs.append("battlepass reward collection")
     elif not jobs:
         print("At least one job must be selected")
         return None
@@ -94,11 +96,8 @@ def main_gui():
                 default=True,
                 key="-Card-Mastery-Collection-in-",
             ),
-            sg.Checkbox(
-                "Level Up Reward Collection",
-                default=True,
-                key="-Level-Up-Reward-Collection-in-",
-            ),
+            sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-",),
+            sg.Checkbox("Battlepass Reward Collection",default=True,key="-Battlepass-Reward-Collection-in-",),
         ],
         # dropdown for amount of accounts
         [
