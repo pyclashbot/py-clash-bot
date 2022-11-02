@@ -28,7 +28,9 @@ def request_random_card_from_clash_main(logger):
     #Return if request is not available (Starts on main, ends on clan page)
     logger.change_status("Checking if request is available.")
     if not check_if_can_request(logger):
+        logger.change_status("Request isn't available.")
         if get_to_clash_main_from_clan_page(logger) == "restart": return "restart"
+        return 
     
     #Click request button (getting to page of requestable cards)
     click(75,565)
