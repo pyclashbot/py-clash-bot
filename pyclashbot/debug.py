@@ -74,7 +74,7 @@ from pyclashbot.states import (
     state_startfight,
     state_upgrade,
 )
-from pyclashbot.upgrade import check_for_final_upgrade_button, find_confirm_upgrade_for_gold_button, find_first_upgrade_for_gold_button, upgrade_current_cards
+from pyclashbot.upgrade import check_for_final_upgrade_button, check_for_upgradable_cards, check_if_card_is_upgradable, find_confirm_upgrade_for_gold_button, find_first_upgrade_for_gold_button, upgrade_current_cards
 
 ahk = AHK()
 logger = Logger()
@@ -89,58 +89,6 @@ logger = Logger()
 # show_image(screenshot())
 
 
-def battle_debug_main():
-    # Make logger, get launcherpath from %appdata/pyclashbot/config.json,
-    # initialize SSID as 1
-    logger = Logger()
-    ssid = 0
-    jobs = ["Fight"]
-    ssid_total = 2
-
-    # Starting with restart state, the bot will pass itself between
-    # states as it reads the screen and will ignore jobs not on the joblist
-    state = "clashmain"
-    while True:
-        if state == "clashmain":
-            orientate_memu_multi()
-            orientate_memu()
-            if (
-                state_clashmain(logger=logger, account_number=ssid, jobs=jobs)
-                == "restart"
-            ):
-                state = "restart"
-            else:
-                state = "startfight"
-
-        if state == "startfight":
-            if "Fight" not in jobs:
-                state = "upgrade"
-            else:
-                state = (
-                    "restart" if state_startfight(logger) == "restart" else "fighting"
-                )
-        if state == "fighting":
-            state = "restart" if state_fight(logger) == "restart" else "endfight"
-        if state == "endfight":
-            state_endfight(logger)
-            state = "clashmain"
-
-        # increment SSID to run the next loop with the next account in the
-        # cycle
-        ssid = get_next_ssid(ssid, ssid_total)
 
 
-def card_detection_debug():
-    n = 0
-    while True:
-        n += 1
-        print(n, "----------------------")
-        print(identify_cards())
-
-
-def request_debug():
-    # starts on clash main and ends on clash main
-    # should request if you can, should do nothing if you cant
-    state_request(logger)
-
-
+upgrade_current_cards(logger)
