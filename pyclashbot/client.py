@@ -16,7 +16,7 @@ ahk = AHK()
 
 
 def get_next_ssid(current_ssid, ssid_total):
-    """ Method to cycle through a list of ints (1 -> 2 -> 3 -> 1 -> 2 -> 3 -> ...)
+    """Method to cycle through a list of ints (1 -> 2 -> 3 -> 1 -> 2 -> 3 -> ...)
 
     Args:
         current_ssid (int): Current SSID
@@ -29,7 +29,7 @@ def get_next_ssid(current_ssid, ssid_total):
 
 
 def screenshot(region=None):
-    """ Method to return a screenshot of a given region
+    """Method to return a screenshot of a given region
 
     Args:
         region (tuple, optional): Region to take a screenshot of. Defaults to None.
@@ -42,52 +42,52 @@ def screenshot(region=None):
     return pyautogui.screenshot(region=region)  # type: ignore
 
 
-def scroll_up_fast():
-    """ Method for scrolling up faster when interacting with a scrollable menu """
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=300)
-    pyautogui.dragTo(x=215, y=350, button='left', duration=0.5)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
-
-
-def scroll_down_fast():
-    """ Method for scrolling down faster when interacting with a scrollable menu """
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=350)
-    pyautogui.dragTo(x=215, y=300, button='left', duration=0.5)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
-
-
 def make_reference_image_list(size):
     # Method to make a reference array of a given size
     reference_image_list = []
 
     for n in range(size):
         n = n + 1
-        image_name = f'{n}.png'
+        image_name = f"{n}.png"
         reference_image_list.append(image_name)
 
     return reference_image_list
 
 
+def scroll_up_fast():
+    """Method for scrolling up faster when interacting with a scrollable menu"""
+    origin = pyautogui.position()
+    pyautogui.moveTo(x=215, y=300)
+    pyautogui.dragTo(x=215, y=350, button="left", duration=0.5)
+    pyautogui.moveTo(x=origin[0], y=origin[1])
+
+
+def scroll_down_fast():
+    """Method for scrolling down faster when interacting with a scrollable menu"""
+    origin = pyautogui.position()
+    pyautogui.moveTo(x=215, y=350)
+    pyautogui.dragTo(x=215, y=300, button="left", duration=0.5)
+    pyautogui.moveTo(x=origin[0], y=origin[1])
+
+
 def scroll_down_super_fast():
-    """ Method for scrolling down even faster when interacting with a scrollable menu """
+    """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=400)
-    pyautogui.dragTo(x=215, y=300, button='left', duration=0.2)
+    pyautogui.dragTo(x=215, y=300, button="left", duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
 def scroll_up_super_fast():
-    """ Method for scrolling down even faster when interacting with a scrollable menu """
+    """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=300)
-    pyautogui.dragTo(x=215, y=400, button='left', duration=0.2)
+    pyautogui.dragTo(x=215, y=400, button="left", duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
 def check_quit_key_press():
-    """  Method for terminating the program upon key press"""
+    """Method for terminating the program upon key press"""
     if keyboard.is_pressed("space"):
         print("Space is held. Quitting the program")
         sys.exit()
@@ -104,7 +104,7 @@ def check_quit_key_press():
 
 
 def get_file_count(directory):
-    """ Method to return the amount of a files in a given directory
+    """Method to return the amount of a files in a given directory
 
     Args:
         directory (str): Directory to count files in
@@ -117,9 +117,9 @@ def get_file_count(directory):
 
 
 def orientate_memu():
-    """ Method for orientating Memu client """
+    """Method for orientating Memu client"""
     try:
-        window_memu = pygetwindow.getWindowsWithTitle('MEmu')[0]
+        window_memu = pygetwindow.getWindowsWithTitle("MEmu")[0]
         window_memu.minimize()
         window_memu.restore()
         time.sleep(0.2)
@@ -137,13 +137,14 @@ def orientate_memu():
 
 
 def orientate_memu_multi():
-    """ Method for orientating the Memu Multi Manager """
+    """Method for orientating the Memu Multi Manager"""
     try:
         try:
-            window_mimm = pygetwindow.getWindowsWithTitle(
-                'Multiple Instance Manager')[0]
+            window_mimm = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")[
+                0
+            ]
         except Exception:
-            window_mimm = pygetwindow.getWindowsWithTitle('Multi-MEmu')[0]
+            window_mimm = pygetwindow.getWindowsWithTitle("Multi-MEmu")[0]
 
         window_mimm.minimize()
         window_mimm.restore()
@@ -155,7 +156,7 @@ def orientate_memu_multi():
 
 
 def show_image(image):
-    """ Method to show a PIL image using matlibplot
+    """Method to show a PIL image using matlibplot
 
     Args:
         image (PIL.Image): Image to show
@@ -165,7 +166,7 @@ def show_image(image):
 
 
 def compare_coords(coord1, coord2):
-    """  Method to compare the equality of two coords
+    """Method to compare the equality of two coords
 
     Args:
         coord1 (tuple): First coord
@@ -174,11 +175,11 @@ def compare_coords(coord1, coord2):
     Returns:
         bool: True if the coords are equal, False otherwise
     """
-    return (coord1[0] == coord2[0] and coord1[1] == coord2[1])
+    return coord1[0] == coord2[0] and coord1[1] == coord2[1]
 
 
 class MouseMoveException(Exception):
-    """ Exception for when the mouse moves unexpectedly """
+    """Exception for when the mouse moves unexpectedly"""
 
     def __init__(self, message):
         self.message = message
@@ -188,7 +189,7 @@ class MouseMoveException(Exception):
 
 
 def click(x, y, duration=1, max_attempts=3):
-    """  Method for clicking a given coordinate
+    """Method for clicking a given coordinate
 
     Args:
         x (int): X coordinate
@@ -211,7 +212,8 @@ def click(x, y, duration=1, max_attempts=3):
     while ahk.mouse_position != (x, y):
         if max_attempts > 0 and attempts > max_attempts:
             raise MouseMoveException(
-                "Couldnt move mouse to given coordinates, aborting")
+                "Couldnt move mouse to given coordinates, aborting"
+            )
         if time.time() - start > duration + tol:
             start = time.time()
             time.sleep(duration + tol)
@@ -221,15 +223,15 @@ def click(x, y, duration=1, max_attempts=3):
 
 
 def scroll_down():
-    """  Method for scrolling down when interacting with a scrollable menu """
+    """Method for scrolling down when interacting with a scrollable menu"""
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=350)
-    pyautogui.dragTo(x=215, y=300, button='left', duration=1)
+    pyautogui.dragTo(x=215, y=300, button="left", duration=1)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
 def orientate_terminal():
-    """ Method for orientating the terminal """
+    """Method for orientating the terminal"""
     try:
         window = pygetwindow.getWindowsWithTitle("Py-ClashBot")[0]
         window.moveTo(725, 0)
