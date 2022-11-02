@@ -4,9 +4,17 @@ import time
 
 import numpy
 
-from pyclashbot.card_detection import (get_card_group, get_card_images,
-                                       get_play_coords, identify_card)
-from pyclashbot.clashmain import check_if_in_battle, check_if_in_battle_with_delay, wait_for_clash_main_menu
+from pyclashbot.card_detection import (
+    get_card_group,
+    get_card_images,
+    get_play_coords,
+    identify_card,
+)
+from pyclashbot.clashmain import (
+    check_if_in_battle,
+    check_if_in_battle_with_delay,
+    wait_for_clash_main_menu,
+)
 from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import pixel_is_equal
 
@@ -28,7 +36,8 @@ def fight(logger):
 
         if plays > 100:
             logger.change_status(
-                "Made too many plays. Match is probably stuck. Ending match")
+                "Made too many plays. Match is probably stuck. Ending match"
+            )
             return "restart"
 
     logger.change_status("Done fighting.")
@@ -54,7 +63,7 @@ def leave_end_battle_window(logger):
         return
 
     if wait_for_clash_main_menu(logger) == "restart":
-        return 'restart'
+        return "restart"
 
 
 def check_if_end_screen_is_ok_bottom_middle():
@@ -67,7 +76,6 @@ def check_if_end_screen_is_ok_bottom_middle():
         iar[595][178],
         iar[588][192],
         iar[591][233],
-
     ]
     color = [78, 175, 255]
     return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
@@ -111,14 +119,16 @@ def check_if_past_game_is_win(logger):
         sentinel[2] = 255
         if pixel_is_equal(pix, sentinel, 10):
             _extracted_from_check_if_past_game_is_win_12(
-                logger, "Last game was a win. Incrementing win counter.")
+                logger, "Last game was a win. Incrementing win counter."
+            )
 
             logger.add_win()
             return True
     time.sleep(1)
     click(385, 507)
     _extracted_from_check_if_past_game_is_win_12(
-        logger, "Last game was a loss. Incrementing loss counter.")
+        logger, "Last game was a loss. Incrementing loss counter."
+    )
 
     logger.add_loss()
     return False
@@ -141,11 +151,12 @@ def check_if_has_6_elixer():
         iar[648][272],
         iar[649][257],
     ]
-    color_list=[
-        [208, 34, 214],[245,175,250]
-    ]
+    color_list = [[208, 34, 214], [245, 175, 250]]
 
-    return any(pixel_is_equal(pix, color, tol=45) for color, pix in itertools.product(color_list, pix_list))
+    return any(
+        pixel_is_equal(pix, color, tol=45)
+        for color, pix in itertools.product(color_list, pix_list)
+    )
 
 
 def wait_until_has_6_elixer(logger):
@@ -171,7 +182,7 @@ def play_random_card(logger):
 
     # Select which card we're to play
     n = random.randint(0, 3)
-    #logger.change_status(str("Selected card: "+str(n)))
+    # logger.change_status(str("Selected card: "+str(n)))
 
     # Get an image of this card
     card_image = get_card_images()[n]
@@ -180,13 +191,13 @@ def play_random_card(logger):
     card_identification = identify_card(card_image)
     if card_identification is None:
         card_identification = "Unknown"
-    #logger.change_status(str("Identified card: "+card_identification))
+    # logger.change_status(str("Identified card: "+card_identification))
 
     # Get the card type of this identification
     card_type = get_card_group(card_identification)
     if card_type is None:
         card_type = "unknown"
-    #logger.change_status(str("Card type: "+card_type))
+    # logger.change_status(str("Card type: "+card_type))
 
     # Pick a side to play on
     side = pick_a_lane()
@@ -276,7 +287,7 @@ def get_left_and_right_totals(iar):
     red = [212, 45, 43]
     for x, y in itertools.product(range(500), range(700)):
         pixel = iar[y][x]
-        if (pixel_is_equal(pixel, red, tol=35)):
+        if pixel_is_equal(pixel, red, tol=35):
             if x > 250:
                 right_lane_total += 1
             if x < 250:
