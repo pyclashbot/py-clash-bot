@@ -88,11 +88,10 @@ def check_if_on_war_page():
     pix_list = [
         iar[73][43],
         iar[83][43],
-        iar[93][43],
-        iar[100][43],
     ]
     color = [232, 225, 236]
     for pix in pix_list:
+        print(pix[0],pix[1],pix[2])
         if not pixel_is_equal(pix, color, tol=45):
             return False
     return True

@@ -183,8 +183,6 @@ def get_to_clash_main_from_clan_page(logger):
         on_main = check_for_gem_logo_on_main()
 
 
-
-
 def check_for_gem_logo_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
@@ -466,6 +464,7 @@ def check_if_unlock_chest_button_exists():
         "9.png",
         "10.png",
         "11.png",
+        "12.png",
     ]
 
     locations = find_references(
