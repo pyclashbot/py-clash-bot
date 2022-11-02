@@ -5,47 +5,54 @@ import numpy
 import pyautogui
 
 from pyclashbot.client import click, screenshot, scroll_down, scroll_up_fast
-from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location, pixel_is_equal)
+from pyclashbot.image_rec import (
+    check_for_location,
+    find_references,
+    get_first_location,
+    pixel_is_equal,
+)
 
 
 def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
-    waiting=not (check_if_on_clash_main_menu())
+    waiting = not (check_if_on_clash_main_menu())
 
-    loops=0
+    loops = 0
     while waiting:
-        #loop count
-        loops+=1
-        if loops>25: return "restart"
-        
-        #wait 1 sec
+        # loop count
+        loops += 1
+        if loops > 25:
+            return "restart"
+
+        # wait 1 sec
         time.sleep(1)
-        
-        #click dead space
+
+        # click dead space
         click(32, 364)
 
-        #check if stuck on trophy progression page
+        # check if stuck on trophy progression page
         if check_if_stuck_on_trophy_progression_page():
             time.sleep(1)
-            click(210,621)
-            
-        #check if still waiting
-        waiting= not(check_if_on_clash_main_menu())
-        
+            click(210, 621)
+
+        # check if still waiting
+        waiting = not (check_if_on_clash_main_menu())
+
     logger.change_status("Done waiting for clash main menu")
-        
+
+
 def check_if_stuck_on_trophy_progression_page():
-    iar=numpy.asarray(screenshot())
-    color=[85,177,255]
-    pix_list=[
+    iar = numpy.asarray(screenshot())
+    color = [85, 177, 255]
+    pix_list = [
         iar[620][225],
         iar[625][230],
         iar[630][238],
         iar[635][245],
     ]
-    for pix in pix_list: 
-        if not pixel_is_equal(pix,color,tol=45):return False
+    for pix in pix_list:
+        if not pixel_is_equal(pix, color, tol=45):
+            return False
     return True
 
 
@@ -55,7 +62,7 @@ def get_to_card_page(logger):
     time.sleep(2)
     loops = 0
     while not check_if_on_first_card_page():
-        #logger.change_status("Not elixer button. Moving pages")
+        # logger.change_status("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
         loops = loops + 1
@@ -64,7 +71,7 @@ def get_to_card_page(logger):
             return "restart"
         time.sleep(1)
     scroll_up_fast()
-    #logger.change_status("Made it to card page")
+    # logger.change_status("Made it to card page")
     time.sleep(1)
 
 
@@ -84,18 +91,16 @@ def check_if_on_first_card_page():
         "10.png",
         "11.png",
         "12.png",
-        
     ]
 
     locations = find_references(
         screenshot=screenshot(),
         folder="card_page_elixer_icon",
         names=references,
-        tolerance=0.97
+        tolerance=0.97,
     )
 
     return get_first_location(locations)
-
 
 
 def handle_puzzleroyale_popup(logger):
@@ -125,102 +130,102 @@ def check_for_gem_logo_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    pix_list=[
+    pix_list = [
         iar[64][403],
         iar[67][406],
         iar[70][408],
     ]
-    color=[75,180,35]
-    
-    #for pix in pix_list:print(pix)
-    
+    color = [75, 180, 35]
+
+    # for pix in pix_list:print(pix)
+
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=45):
             return False
         return True
-    
-    
+
+
 def check_for_blue_background_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    pix_list=[
+    pix_list = [
         iar[350][3],
         iar[360][6],
         iar[368][7],
         iar[372][9],
     ]
-    color=[9,69,119]
-    
-    #for pix in pix_list:print(pix)
-    
+    color = [9, 69, 119]
+
+    # for pix in pix_list:print(pix)
+
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=45):
             return False
         return True
 
-    
+
 def check_for_gold_logo_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    pix_list=[
+    pix_list = [
         iar[61][300],
         iar[64][303],
         iar[67][307],
         iar[70][310],
     ]
-    color=[201,177,56]
-    
+    color = [201, 177, 56]
+
     # print("Color is : ",color),"\nPixels are:"
     # for pix in pix_list:print(pix)
-    
+
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=85):
             return False
-        return True  
-    
-    
+        return True
+
+
 def check_for_friends_logo_on_main():
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
-    pix_list=[
+    pix_list = [
         iar[123][262],
         iar[123][272],
         iar[116][266],
         iar[107][266],
     ]
-    color=[177, 228, 252]
-    
-    #debug prints
+    color = [177, 228, 252]
+
+    # debug prints
     # print("Color is: ",color,"\nPixels are:")
     # for pix in pix_list:print(pix)
-    
-    #pixel check
+
+    # pixel check
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=65):
             return False
-        return True  
-    
-    
+        return True
+
+
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
-        #print("gem logo fail")
+        # print("gem logo fail")
         return False
-    
+
     if not check_for_blue_background_on_main():
-        #print("blue background fail")
+        # print("blue background fail")
         return False
-    
+
     if not check_for_gold_logo_on_main():
-        #print("gold logo fail")
+        # print("gold logo fail")
         return False
-    
+
     if not check_for_friends_logo_on_main():
-        #print("friends logo fail")
+        # print("friends logo fail")
         return False
-    
+
     return True
 
 
@@ -231,28 +236,24 @@ def get_to_account(logger, account_number):
     handle_gold_rush_event(logger)
     time.sleep(2)
 
-    logger.change_status(
-        f"Switching accounts to account number {str(account_number)}")
+    logger.change_status(f"Switching accounts to account number {str(account_number)}")
 
-    #open settings
+    # open settings
     click(x=364, y=99)
     time.sleep(1)
 
-    #click switch accounts
-    click(200,460)
+    # click switch accounts
+    click(200, 460)
     time.sleep(1)
 
     if account_number == 0:
-        click(225,390)
+        click(225, 390)
     if account_number == 1:
-        click(210,470)
+        click(210, 470)
     if account_number == 2:
-        click(220,550)
+        click(220, 550)
     if account_number == 2:
-        click(225,625)
-    
-        
-
+        click(225, 625)
 
     time.sleep(7)
     logger.add_account_switch()
@@ -285,7 +286,7 @@ def check_for_gold_rush_event():
         screenshot=screenshot(),
         folder="gold_rush_event",
         names=references,
-        tolerance=0.97
+        tolerance=0.97,
     )
     loc = get_first_location(locations)
     return loc is not None
@@ -295,7 +296,8 @@ def handle_gold_rush_event(logger):
     # Method to handle a gold rush event notification obstructing the bot
 
     logger.change_status(
-        "Handling the possibility of a gold rush event notification obstructing the bot.")
+        "Handling the possibility of a gold rush event notification obstructing the bot."
+    )
     time.sleep(0.5)
     pyautogui.click(193, 465)
     time.sleep(0.5)
@@ -307,7 +309,8 @@ def handle_new_challenge(logger):
     # Method to handle a new challenge notification obstructing the bot
 
     logger.change_status(
-        "Handling the possibility of a new challenge notification obstructing the bot.")
+        "Handling the possibility of a new challenge notification obstructing the bot."
+    )
     time.sleep(0.5)
     click(376, 639)
     time.sleep(0.5)
@@ -315,7 +318,8 @@ def handle_new_challenge(logger):
     time.sleep(0.5)
     if check_if_on_trophy_progession_rewards_page():
         logger.change_status(
-            "Handling the possibility of trophy progession rewards page obstructing the bot.")
+            "Handling the possibility of trophy progession rewards page obstructing the bot."
+        )
         click(212, 633)
         time.sleep(0.5)
 
@@ -324,7 +328,8 @@ def handle_special_offer(logger):
     # Method to handle a special offer notification obstructing the bot
 
     logger.change_status(
-        "Handling the possibility of special offer notification obstructing the bot.")
+        "Handling the possibility of special offer notification obstructing the bot."
+    )
     time.sleep(0.5)
     click(35, 633)
     time.sleep(0.5)
@@ -347,6 +352,7 @@ def check_if_on_trophy_progession_rewards_page():
     color = [78, 175, 255]
 
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
+
 
 # Method to handle the chest unlocking on the clash main menu
 
@@ -372,7 +378,7 @@ def open_chests(logger):
         time.sleep(1)
 
         if check_if_unlock_chest_button_exists():
-            #print("Found unlock in chest", chest_index)
+            # print("Found unlock in chest", chest_index)
             time.sleep(0.5)
 
             logger.change_status(str(f"Unlocking chest {str(chest_index)}"))
@@ -381,7 +387,7 @@ def open_chests(logger):
             click(210, 465)
 
         else:
-            #logger.change_status("Handling possibility of rewards screen")
+            # logger.change_status("Handling possibility of rewards screen")
             for _ in range(10):
                 click(20, 556)
             time.sleep(3)
@@ -408,14 +414,13 @@ def check_if_unlock_chest_button_exists():
         "9.png",
         "10.png",
         "11.png",
-
     ]
 
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
         names=references,
-        tolerance=0.90
+        tolerance=0.90,
     )
 
     return any(location is not None for location in locations)
@@ -426,10 +431,10 @@ def start_2v2(logger):
     # clash main menu
     logger.change_status("Initiating 2v2 match from main menu")
 
-    #getting to party tab
-    click(365,108)
+    # getting to party tab
+    click(365, 108)
     time.sleep(1)
-    click(263,248)
+    click(263, 248)
     time.sleep(1)
 
     if find_and_click_2v2_quickmatch_button(logger) == "restart":
@@ -442,15 +447,14 @@ def find_and_click_2v2_quickmatch_button(logger):
     # method to find and click the 2v2 quickmatch button in the party mode menu
     # starts in the party mode
     # ends when loading a match
-    #logger.change_status("Finding and clicking 2v2 quickmatch button")
+    # logger.change_status("Finding and clicking 2v2 quickmatch button")
     # repeatedly scroll down until we find coords for the 2v2 quickmatch button
     coords = None
     loops = 0
     while coords is None:
         loops += 1
         if loops > 20:
-            logger.change_status(
-                "Could not find 2v2 quickmatch button, restarting")
+            logger.change_status("Could not find 2v2 quickmatch button, restarting")
             return "restart"
         scroll_down()
         time.sleep(1)
@@ -464,19 +468,10 @@ def find_and_click_2v2_quickmatch_button(logger):
 def check_for_reward_limit():
     # Method to check for the reward limit popup notification and close it
 
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png"
-    ]
+    references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
     locations = find_references(
-        screenshot=screenshot(),
-        folder="reward_limit",
-        names=references,
-        tolerance=0.97
+        screenshot=screenshot(), folder="reward_limit", names=references, tolerance=0.97
     )
 
     for location in locations:
@@ -512,14 +507,13 @@ def find_2v2_quick_match_button():
         "17.png",
         "18.png",
         "19.png",
-
     ]
 
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
         names=references,
-        tolerance=0.97
+        tolerance=0.97,
     )
 
     coord = get_first_location(locations)
@@ -549,19 +543,13 @@ def check_if_in_battle_with_delay():
     # Method to check if the bot is in a battle in the given moment
 
     for _ in range(10):
-        references = [
-            "1.png",
-            "2.png",
-            "3.png",
-            "4.png",
-            "5.png"
-        ]
+        references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
         locations = find_references(
             screenshot=screenshot(),
             folder="check_if_in_battle",
             names=references,
-            tolerance=0.97
+            tolerance=0.97,
         )
 
         if check_for_location(locations):
@@ -571,26 +559,18 @@ def check_if_in_battle_with_delay():
 
 
 def check_if_in_battle():
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png"
-    ]
+    references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
     locations = find_references(
         screenshot=screenshot(),
         folder="check_if_in_battle",
         names=references,
-        tolerance=0.97
+        tolerance=0.97,
     )
 
     if check_for_location(locations):
         return True
     return False
-
-
 
 
 def handle_card_mastery_notification():

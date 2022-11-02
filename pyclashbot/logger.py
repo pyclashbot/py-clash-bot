@@ -2,12 +2,10 @@ import time
 
 
 class Logger:
-    """Handles creating and reading logs
-    """
+    """Handles creating and reading logs"""
 
     def __init__(self):
-        """Logger init
-        """
+        """Logger init"""
         self.start_time = time.time()
         self.wins = 0
         self.losses = 0
@@ -18,11 +16,9 @@ class Logger:
         self.cards_played = 0
         self.cards_upgraded = 0
         self.account_switches = 0
-        self.cards_upgraded=0
-        
-        self.card_mastery_reward_collections=0
-        
-        
+        self.cards_upgraded = 0
+
+        self.card_mastery_reward_collections = 0
 
         self.current_status = "Starting"
         self.buffer = ""
@@ -67,8 +63,8 @@ class Logger:
     def log(self):
         """log to console"""
 
-        line_with_leftside="|----------------------------------------------------------------------------------"
-        line="-----------------------------------------------------------------------------------"
+        line_with_leftside = "|----------------------------------------------------------------------------------"
+        line = "-----------------------------------------------------------------------------------"
 
         self.add_row(line)
         self.add_row(f"|           Program uptime:           | {self.make_timestamp()}")
@@ -79,7 +75,9 @@ class Logger:
         self.add_row(line_with_leftside)
         self.add_row(f"|               Fights:               | {self.fights}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|              Win rate:              | {self.make_win_loss_str()}")
+        self.add_row(
+            f"|              Win rate:              | {self.make_win_loss_str()}"
+        )
         self.add_row(line_with_leftside)
         self.add_row(f"|           Chests unlocked:          | {self.chests_unlocked}")
         self.add_row(line_with_leftside)
@@ -89,7 +87,9 @@ class Logger:
         self.add_row(line_with_leftside)
         self.add_row(f"|           Account switches:         | {self.account_switches}")
         self.add_row(line_with_leftside)
-        self.add_row(f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}")
+        self.add_row(
+            f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}"
+        )
         self.add_row(line_with_leftside)
         self.add_row(f"|      Current status:      | {self.current_status}")
         self.add_row(line)
@@ -106,20 +106,20 @@ class Logger:
             str: wrapped line
         """
 
-        new_line = '\n|                           | '
+        new_line = "\n|                           | "
 
         # split line into words
-        words = line.split(' ')
+        words = line.split(" ")
 
         # wrap line
-        wrapped_line = ''
-        current_line = ''
+        wrapped_line = ""
+        current_line = ""
         for word in words:
             if len(current_line) + len(word) < width:
-                current_line += f'{word} '
+                current_line += f"{word} "
             else:
                 wrapped_line += current_line + new_line
-                current_line = f'{word} '
+                current_line = f"{word} "
 
         # add last line
         wrapped_line += current_line
@@ -142,8 +142,8 @@ class Logger:
         self.buffer = ""  # clear buffer
 
     def add_card_mastery_reward_collection(self):
-        self.card_mastery_reward_collections=self.card_mastery_reward_collections+1
-        self.log()      
+        self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
+        self.log()
 
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
@@ -171,20 +171,17 @@ class Logger:
         self.log()
 
     def add_win(self):
-        """add win to log
-        """
+        """add win to log"""
         self.wins += 1
         self.log()
 
     def add_loss(self):
-        """add loss to log
-        """
+        """add loss to log"""
         self.losses += 1
         self.log()
 
     def add_fight(self):
-        """add fight to log
-        """
+        """add fight to log"""
         self.fights += 1
         self.log()
 

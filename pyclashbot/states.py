@@ -80,7 +80,7 @@ def detect_state(logger):
 
 
 def state_tree(
-    jobs: list[str], logger: Logger, ssid_max:int, ssid: int, state: str
+    jobs: list[str], logger: Logger, ssid_max: int, ssid: int, state: str
 ) -> tuple[str, int]:
     """
     Method for the state tree of the program
@@ -120,7 +120,7 @@ def state_tree(
         state = (
             state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
         )
-        
+
     elif state == "request":
         state = (
             state_request(logger) if "Request" in jobs else "level up reward collection"

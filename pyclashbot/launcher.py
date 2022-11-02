@@ -5,12 +5,21 @@ import time
 import pygetwindow
 
 from pyclashbot.clashmain import wait_for_clash_main_menu
-from pyclashbot.client import (check_quit_key_press, click, orientate_memu,
-                               orientate_memu_multi, orientate_terminal,
-                               screenshot)
+from pyclashbot.client import (
+    check_quit_key_press,
+    click,
+    orientate_memu,
+    orientate_memu_multi,
+    orientate_terminal,
+    screenshot,
+)
 from pyclashbot.dependency import setup_memu
-from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location, pixel_is_equal)
+from pyclashbot.image_rec import (
+    check_for_location,
+    find_references,
+    get_first_location,
+    pixel_is_equal,
+)
 
 
 import numpy
@@ -52,7 +61,7 @@ def restart_and_open_clash(logger):
     # Start Memu Client
     logger.change_status("Starting Memu client instance")
     click(556, 141)
-    
+
     # Wait for memu to load
     wait_for_window(logger, window_name="Memu")
 
@@ -71,8 +80,7 @@ def restart_and_open_clash(logger):
 
     # Wait for clash logo to appear
     if wait_for_clash_logo_to_appear(logger) == "restart":
-        logger.change_status(
-            "Waited too long for clash logo to appear. Restarting")
+        logger.change_status("Waited too long for clash logo to appear. Restarting")
         restart_and_open_clash(logger)
     time.sleep(3)
 
@@ -86,8 +94,8 @@ def restart_and_open_clash(logger):
     if wait_for_clash_main_menu(logger) == "restart":
         restart_and_open_clash(logger)
     time.sleep(3)
-    
-    #increment restart counter
+
+    # increment restart counter
     logger.add_restart()
 
 
@@ -101,8 +109,7 @@ def wait_for_memu_loading_screen(logger):
     while waiting:
         loops += 1
         if loops > 20:
-            logger.change_status(
-                "Waited too long for memu client to load, restarting")
+            logger.change_status("Waited too long for memu client to load, restarting")
             return "restart"
         n = n + 1
         time.sleep(1)
@@ -133,8 +140,7 @@ def wait_for_clash_logo_to_appear(logger):
     while waiting:
         loops += 1
         if loops > 35:
-            logger.change_status(
-                "Waited too long for clash logo to appear, restarting")
+            logger.change_status("Waited too long for clash logo to appear, restarting")
             return "restart"
         n = n + 1
         time.sleep(1)
@@ -148,9 +154,9 @@ def wait_for_clash_logo_to_appear(logger):
 
 def check_for_memu_loading_background():
     # Method to check if memu loading background is present in the given moment
-    #Using 2 methods
+    # Using 2 methods
 
-    #Method 1 image recognition
+    # Method 1 image recognition
     current_image = screenshot()
     reference_folder = "memu_loading_background"
     references = [
@@ -163,52 +169,50 @@ def check_for_memu_loading_background():
         "7.png",
         "8.png",
         "9.png",
-        
     ]
 
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
         names=references,
-        tolerance=0.99
+        tolerance=0.99,
     )
 
-    if check_for_location(locations): 
-        #print("Image rec positive")
+    if check_for_location(locations):
+        # print("Image rec positive")
         return True
 
-
-    #Method 2 pixel comparison
-    iar=numpy.asarray(current_image)
-    pix_list=[
+    # Method 2 pixel comparison
+    iar = numpy.asarray(current_image)
+    pix_list = [
         iar[120][120],
         iar[200][200],
         iar[350][50],
         iar[220][150],
     ]
-    sentinel_pix_list=[
-        [76 ,78 ,84],
-        [18 ,23 ,28],
-        [19 ,13 ,10],
-        [23 ,40 ,48],
+    sentinel_pix_list = [
+        [76, 78, 84],
+        [18, 23, 28],
+        [19, 13, 10],
+        [23, 40, 48],
     ]
-    pixel_check=True
-    for index in range(4): 
-        current_pixel=pix_list[index]
-        sentinel_pixel=sentinel_pix_list[index]
-        if not pixel_is_equal(current_pixel,sentinel_pixel,tol=35):
-            pixel_check=False
-    if pixel_check: 
-        #print("Pixel check 1 positive")
+    pixel_check = True
+    for index in range(4):
+        current_pixel = pix_list[index]
+        sentinel_pixel = sentinel_pix_list[index]
+        if not pixel_is_equal(current_pixel, sentinel_pixel, tol=35):
+            pixel_check = False
+    if pixel_check:
+        # print("Pixel check 1 positive")
         return True
 
-    #Method 3 pixel comparison #2 (checks if all pixels are black)
-    pixel_check_2=True
+    # Method 3 pixel comparison #2 (checks if all pixels are black)
+    pixel_check_2 = True
     for pix in pix_list:
-        if not pixel_is_equal(pix,[0,0,0],tol=30):
-            pixel_check_2=False
-    if pixel_check_2: 
-        #print("Pixel check 2 positive")
+        if not pixel_is_equal(pix, [0, 0, 0], tol=30):
+            pixel_check_2 = False
+    if pixel_check_2:
+        # print("Pixel check 2 positive")
         return True
 
     return False
@@ -231,16 +235,13 @@ def find_clash_app_logo():
         "8.png",
         "9.png",
         "10.png",
-
-
-
     ]
 
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
         names=references,
-        tolerance=0.99
+        tolerance=0.99,
     )
 
     return get_first_location(locations)
@@ -248,11 +249,7 @@ def find_clash_app_logo():
 
 def close_memu(logger):
     # Method to close memu
-    memu_name_list = [
-        "MEmu",
-        "(MEmu)"
-
-    ]
+    memu_name_list = ["MEmu", "(MEmu)"]
 
     for name in memu_name_list:
         try:
@@ -266,9 +263,7 @@ def close_memu(logger):
 
 def close_memu_multi(logger):
     # Method to close memu multi
-    mmim_name_list = [
-        "Multiple Instance Manager"
-    ]
+    mmim_name_list = ["Multiple Instance Manager"]
 
     for name in mmim_name_list:
         try:
