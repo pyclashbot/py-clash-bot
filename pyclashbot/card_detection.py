@@ -2,10 +2,14 @@ import time
 import random
 from os.path import dirname, join
 
-from pyclashbot.client import click, get_file_count, make_reference_image_list, screenshot
+from pyclashbot.client import (
+    click,
+    get_file_count,
+    make_reference_image_list,
+    screenshot,
+)
 
 from pyclashbot.image_rec import check_for_location, find_references
-
 
 
 def get_card_images():
@@ -15,7 +19,7 @@ def get_card_images():
         screenshot(region=[124, 571, 60, 74]),
         screenshot(region=[193, 571, 59, 74]),
         screenshot(region=[261, 571, 60, 74]),
-        screenshot(region=[330, 571, 60, 74])
+        screenshot(region=[330, 571, 60, 74]),
     ]
 
 
@@ -25,16 +29,12 @@ def check_for_card(image, card_name=""):
 
     references = make_reference_image_list(
         get_file_count(
-            join(
-                dirname(__file__),
-                "reference_images",
-                f"check_if_card_is_{card_name}")))
+            join(dirname(__file__), "reference_images", f"check_if_card_is_{card_name}")
+        )
+    )
 
     locations = find_references(
-        screenshot=image,
-        folder=folder_str,
-        names=references,
-        tolerance=0.97
+        screenshot=image, folder=folder_str, names=references, tolerance=0.97
     )
 
     return check_for_location(locations)
@@ -134,8 +134,6 @@ def get_card_group(card_identification):
         "tombstone",
         "barbhut",
         "furnace",
-
-
     ]
 
     princess_cards = [
@@ -199,7 +197,14 @@ def get_card_group(card_identification):
         elixer_pump_cards,
     ]
 
-    return next((card_list[0] for card_list in card_list_list if card_identification in card_list), "regular")
+    return next(
+        (
+            card_list[0]
+            for card_list in card_list_list
+            if card_identification in card_list
+        ),
+        "regular",
+    )
 
 
 def get_play_coords(card_group, side):
@@ -211,61 +216,106 @@ def get_play_coords(card_group, side):
     left_turret_cards_coords = [[217, 371]]
     right_turret_cards_coords = [[236, 383]]
 
-    left_spell_cards_coords = [[132, 210],
-                               [136, 161], ]
-    right_spell_cards_coords = [[314, 173],
-                                [312, 210], ]
+    left_spell_cards_coords = [
+        [132, 210],
+        [136, 161],
+    ]
+    right_spell_cards_coords = [
+        [314, 173],
+        [312, 210],
+    ]
 
-    left_hog_cards_coords = [[94, 335],
-                             [147, 339], ]
-    right_hog_cards_coords = [[293, 334],
-                              [344, 330], ]
+    left_hog_cards_coords = [
+        [94, 335],
+        [147, 339],
+    ]
+    right_hog_cards_coords = [
+        [293, 334],
+        [344, 330],
+    ]
 
-    left_spawner_cards_coords = [[147, 485],
-                                 [87, 479], ]
-    right_spawner_cards_coords = [[303, 485],
-                                  [375, 491], ]
+    left_spawner_cards_coords = [
+        [147, 485],
+        [87, 479],
+    ]
+    right_spawner_cards_coords = [
+        [303, 485],
+        [375, 491],
+    ]
 
-    left_princess_cards_coords = [[94, 335],
-                                  [147, 339], ]
-    right_princess_cards_coords = [[293, 334],
-                                   [344, 330], ]
+    left_princess_cards_coords = [
+        [94, 335],
+        [147, 339],
+    ]
+    right_princess_cards_coords = [
+        [293, 334],
+        [344, 330],
+    ]
 
-    left_miner_cards_coords = [[94, 190],
-                               [140, 210],
-                               [155, 184], ]
-    right_miner_cards_coords = [[310, 210],
-                                [342, 188],
-                                [285, 188], ]
+    left_miner_cards_coords = [
+        [94, 190],
+        [140, 210],
+        [155, 184],
+    ]
+    right_miner_cards_coords = [
+        [310, 210],
+        [342, 188],
+        [285, 188],
+    ]
 
-    left_goblin_barrel_cards_coords = [[135, 192], ]
-    right_goblin_barrel_cards_coords = [[308, 192], ]
+    left_goblin_barrel_cards_coords = [
+        [135, 192],
+    ]
+    right_goblin_barrel_cards_coords = [
+        [308, 192],
+    ]
 
-    left_wall_breaker_cards_coords = [[221, 330],
-                                      [221, 330],
-                                      [221, 330],
-                                      [138, 328], ]
-    right_wall_breaker_cards_coords = [[221, 330],
-                                       [221, 330],
-                                       [221, 330],
-                                       [306, 332], ]
+    left_wall_breaker_cards_coords = [
+        [221, 330],
+        [221, 330],
+        [221, 330],
+        [138, 328],
+    ]
+    right_wall_breaker_cards_coords = [
+        [221, 330],
+        [221, 330],
+        [221, 330],
+        [306, 332],
+    ]
 
-    left_friendly_spell_cards_coords = [[134, 398], ]
-    right_friendly_spell_cards_coords = [[315, 405], ]
+    left_friendly_spell_cards_coords = [
+        [134, 398],
+    ]
+    right_friendly_spell_cards_coords = [
+        [315, 405],
+    ]
 
-    left_xbow_cards_coords = [[191, 328], ]
-    right_xbow_cards_coords = [[289, 335], ]
+    left_xbow_cards_coords = [
+        [191, 328],
+    ]
+    right_xbow_cards_coords = [
+        [289, 335],
+    ]
 
-    left_mortar_cards_coords = [[179, 332], ]
-    right_mortar_cards_coords = [[289, 335], ]
+    left_mortar_cards_coords = [
+        [179, 332],
+    ]
+    right_mortar_cards_coords = [
+        [289, 335],
+    ]
 
     if card_group == "elixer_pump_cards":
         if side == "left":
-            return [[303, 485], [375, 491],]
+            return [
+                [303, 485],
+                [375, 491],
+            ]
 
         if side == "right":
-            return [[147, 485], [87, 479],]
-
+            return [
+                [147, 485],
+                [87, 479],
+            ]
 
     elif card_group == "friendly_spell_cards":
         if side == "left":
@@ -349,11 +399,10 @@ def get_play_coords(card_group, side):
         ]
 
 
-
 def select_second_deck(logger):
     # Method to select the second deck of this account
 
-    #logger.change_status("Selecting deck number 2 for use.")
+    # logger.change_status("Selecting deck number 2 for use.")
     # get to card page
     get_to_card_page(logger)
     time.sleep(1)
@@ -364,5 +413,3 @@ def select_second_deck(logger):
 
     # get to main menu from card page
     get_to_clash_main_from_card_page(logger)
-
-
