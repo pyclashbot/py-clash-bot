@@ -31,7 +31,6 @@ def request_random_card_from_clash_main(logger):
         logger.change_status("Skipping request because we are not in a clan.")
         if get_to_clash_main_from_clan_page(logger) == "restart":
             return "restart"
-    time.sleep(1)
 
     # Return if request is not available (Starts on main, ends on clan page)
     logger.change_status("Checking if request is available.")
@@ -69,6 +68,7 @@ def request_random_card(logger, maximum_scrolls=10):
     for _ in range(maximum_scrolls):
         scroll_down_super_fast()
 
+    # click random cards in the card list until a request button appears.
     logger.change_status("Looking for card to request.")
     has_card_to_request = False
     loops = 0
@@ -79,14 +79,20 @@ def request_random_card(logger, maximum_scrolls=10):
             return "restart"
         # click random coord in region of card selection
         click(Random().randint(72, 343), Random().randint(264, 570))
-        time.sleep(3)
+        time.sleep(1)
 
         # check if request button appears
         request_button_coord = look_for_request_button()
 
         if request_button_coord is not None:
+            # change loop bool to exit loop
             has_card_to_request = True
+
+            # click request buutton
             click(request_button_coord[1], request_button_coord[0])
+
+            # increment request counter
+            logger.add_request()
 
 
 def look_for_request_button():
