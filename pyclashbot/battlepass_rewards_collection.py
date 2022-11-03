@@ -1,10 +1,8 @@
 import time
 
-
-from pyclashbot.client import click, screenshot
-
 import numpy
 
+from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import pixel_is_equal
 
 
@@ -20,10 +18,7 @@ def check_for_battlepass_reward_pixels():
     ]
     color = [240, 180, 20]
 
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 def check_if_has_battlepass_rewards():
@@ -39,39 +34,38 @@ def check_if_has_battlepass_rewards():
 
 def collect_battlepass_rewards(logger):
     logger.change_status("Collecting battlepass rewards.")
-    chest_locations=[
-        [300,280],
-        [300,340],
-        [300,380],
-        [300,430],
-        [300,480],
-        [300,540],
+    chest_locations = [
+        [300, 280],
+        [300, 340],
+        [300, 380],
+        [300, 430],
+        [300, 480],
+        [300, 540],
     ]
-    
-    
-    
-    loops=0
+
+    loops = 0
     while check_if_has_battlepass_rewards():
-        
-        if loops>15: return "restart"
-        loops+=1
-        
+
+        if loops > 15:
+            return "restart"
+        loops += 1
+
         # click battlepass
-        click(315,165)
+        click(315, 165)
 
         # click chest locations
-        for coord in chest_locations: click(coord[0],coord[1])
+        for coord in chest_locations:
+            click(coord[0], coord[1])
 
         # click deadspace
         for _ in range(15):
             click(20, 440)
 
-        #close battlepass to reset UI
-        click(210,630)
+        # close battlepass to reset UI
+        click(210, 630)
         time.sleep(1)
-        
+
         logger.add_battlepass_rewards_collection()
-        
-        
+
     logger.change_status("Done collecting battlepass rewards.")
     return "clashmain"
