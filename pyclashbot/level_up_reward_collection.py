@@ -41,7 +41,11 @@ def collect_level_up_rewards(logger):
 
     # starts and ends on clash main
     logger.change_status("Collecting level up rewards.")
+    loops=0
     while True:
+        loops+=1
+        if loops>20:return "restart"
+        
         # return when no more rewards to collect
         if not check_if_has_level_up_rewards():
             logger.change_status("No more level up rewards to collect.")
