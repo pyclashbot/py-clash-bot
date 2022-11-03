@@ -49,9 +49,10 @@ def request_random_card_from_clash_main(logger):
 
     # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
     maximum_scrolls = count_maximum_request_scrolls(logger)
+    if maximum_scrolls=="restart":return "restart"
 
     # request a random card (starts on requestable cards page, ends on clan chat page)
-    request_random_card(logger, maximum_scrolls=maximum_scrolls)
+    if request_random_card(logger, maximum_scrolls=maximum_scrolls)=="restart":return "restart"
 
     # get back to clash main
     if get_to_clash_main_from_clan_page(logger)=="restart": return "restart"
@@ -196,7 +197,7 @@ def check_if_on_clan_page():
 
 def check_if_can_request(logger):
     # Get to clan page
-    get_to_clan_page(logger)
+    if get_to_clan_page(logger)=="restart":return "restart"
 
     # Method to check if request is available
     iar = numpy.array(screenshot())
@@ -219,8 +220,11 @@ def count_maximum_request_scrolls(logger):
     # count scrolls
     scrolls = 0
 
+    loops=0
     # loop until reach the bottom of card request list
     while check_if_can_still_scroll_in_request_page():
+        loops+=1
+        if loops>35:return "restart"
         scroll_down_super_fast()
         scrolls += 1
 

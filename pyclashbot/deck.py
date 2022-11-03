@@ -91,7 +91,7 @@ def select_second_deck(logger):
 
     # logger.change_status("Selecting deck number 2 for use.")
     # get to card page
-    get_to_card_page(logger)
+    if get_to_card_page(logger)=="restart":return "restart"
     time.sleep(1)
 
     # click number 2
@@ -99,7 +99,7 @@ def select_second_deck(logger):
     time.sleep(1)
 
     # get to main menu from card page
-    get_to_clash_main_from_card_page(logger)
+    if get_to_clash_main_from_card_page(logger)=="restart":return "restart"
 
 
 def randomize_and_select_deck_2(logger):
@@ -107,7 +107,7 @@ def randomize_and_select_deck_2(logger):
 
     logger.change_status("Randomizing deck number 2")
     # get to card page
-    get_to_card_page(logger)
+    if get_to_card_page(logger)=="restart":return 'restart'
 
     # select deck 2
     click(173, 190)
@@ -118,7 +118,7 @@ def randomize_and_select_deck_2(logger):
         return "restart"
 
     # return to clash main
-    get_to_clash_main_from_card_page(logger)
+    if get_to_clash_main_from_card_page(logger)=="restart":return "restart"
 
 
 def randomize_current_deck():
