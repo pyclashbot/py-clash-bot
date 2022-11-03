@@ -173,7 +173,7 @@ def check_for_memu_loading_background():
         "11.png",
         "12.png",
         "13.png",
-        
+
     ]
 
     locations = find_references(
@@ -216,11 +216,7 @@ def check_for_memu_loading_background():
     for pix in pix_list:
         if not pixel_is_equal(pix, [0, 0, 0], tol=30):
             pixel_check_2 = False
-    if pixel_check_2:
-
-        return True
-
-    return False
+    return bool(pixel_check_2)
 
 
 def find_clash_app_logo():

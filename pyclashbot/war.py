@@ -1,23 +1,17 @@
-from os.path import dirname, join
 import random
 import time
+from os.path import dirname, join
 
 import numpy
 
-from pyclashbot.clashmain import (
-    check_if_in_a_clan,
-    check_if_in_battle_with_delay,
-    get_to_clash_main_from_clan_page,
-)
-from pyclashbot.client import (
-    click,
-    get_file_count,
-    make_reference_image_list,
-    screenshot,
-    scroll_down_super_fast,
-    scroll_up_super_fast,
-)
-from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
+from pyclashbot.clashmain import (check_if_in_a_clan,
+                                  check_if_in_battle_with_delay,
+                                  get_to_clash_main_from_clan_page)
+from pyclashbot.client import (click, get_file_count,
+                               make_reference_image_list, screenshot,
+                               scroll_down_super_fast, scroll_up_super_fast)
+from pyclashbot.image_rec import (find_references, get_first_location,
+                                  pixel_is_equal)
 
 
 def handle_war_attacks(logger):
@@ -105,11 +99,7 @@ def check_if_on_war_page():
         iar[83][43],
     ]
     color = [232, 225, 236]
-    for pix in pix_list:
-
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 def get_to_war_page_from_main():
@@ -176,10 +166,7 @@ def check_if_has_a_deck_for_this_war_battle():
         iar[441][300],
     ]
     color = [254, 199, 79]
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 def check_if_loading_war_battle():
@@ -191,10 +178,7 @@ def check_if_loading_war_battle():
         iar[446][270],
     ]
     color = [251, 98, 100]
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 def wait_for_war_battle_loading(logger):
