@@ -25,6 +25,8 @@ from pyclashbot.client import (
     orientate_memu,
     orientate_memu_multi,
     screenshot,
+    scroll_down,
+    scroll_down_super_fast,
     show_image,
 )
 from pyclashbot.deck import check_if_mimimum_scroll_case, count_scrolls_in_card_page, look_for_card_collection_icon_on_card_page, randomize_current_deck
@@ -74,3 +76,4 @@ logger = Logger()
 
 
 randomize_current_deck()
+
