@@ -371,14 +371,14 @@ if __name__ == "__main__":
         if event == sg.WIN_CLOSED:
             break
         if event == "Start":
-            window["current_status"].update("Starting")
+            window["current_status"].update("Starting") # type: ignore
             for key in disable_keys:
                 window[key].update(disabled=True)
             running = True
             window["Stop"].update(disabled=False)
 
         if event == "Stop":
-            window["current_status"].update("Stopping")
+            window["current_status"].update("Stopping") # type: ignore
             running = False
             for key in disable_keys:
                 window[key].update(disabled=False)
