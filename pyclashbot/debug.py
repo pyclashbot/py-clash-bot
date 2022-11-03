@@ -70,8 +70,11 @@ logger = Logger(console_log=True)
 
 
 
-
 # count_scrolls_in_card_page()
 
 
-request_random_card_from_clash_main(logger)
+# collect_battlepass_rewards(logger)
+
+print("start")
+
+print("End")
