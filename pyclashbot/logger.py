@@ -1,16 +1,36 @@
 import time
 from queue import Queue
-from typing import Any
+from typing import Any, Union
 
 
 class Logger:
-    """Handles creating and reading logs"""
+    """Class for logging. Allows for cross-thread, console and file logging.
 
-    def __init__(self, queue: Queue, console_log: bool = True):
-        """Logger init"""
-        self.queue = queue
+    Args:
+        queue (Union[Queue, None], optional): Queue for threaded communication. Defaults to None.
+        console_log (bool, optional): Enable console logging. Defaults to False.
+        file_log (bool, optional): Enable file logging. Defaults to True.
+    """
 
-        # immutanle variables
+    def __init__(
+        self,
+        queue: Union[Queue, None] = None,
+        console_log: bool = False,
+        file_log: bool = True,
+    ):
+
+        # track enabled log types
+        self.console_log = console_log
+        self.file_log = file_log
+
+        # open log file
+        if file_log:
+            self._log_file = open("log.txt", "w")
+
+        # queue for threaded communication
+        self._queue = Queue() if queue is None else queue
+
+        # immutable statistics
         self.start_time = time.time()
 
         # mutable statistics
@@ -29,16 +49,21 @@ class Logger:
         self.war_battles_fought = 0
         self.current_status = "Idle"
 
-        # track if console log is enabled
-        self.console_log = console_log
-
         # print buffer for console
-        self.buffer = ""
+        self.console_buffer = ""
 
+        # write initial values to queue
         self._update_queue()
+
+    def __del__(self):
+        if self.file_log:
+            self._log_file.close()
 
     def _update_queue(self):
         """updates the queue with a dictionary of mutable statistics"""
+        if self._queue is None:
+            return
+
         statistics: dict[str, Any] = {
             "wins": self.wins,
             "losses": self.losses,
@@ -55,7 +80,7 @@ class Logger:
             "war_battles_fought": self.war_battles_fought,
             "current_status": self.current_status,
         }
-        self.queue.put(statistics)
+        self._queue.put(statistics)
 
     def make_timestamp(self):
         """creates a time stamp for log output
@@ -94,7 +119,7 @@ class Logger:
         seconds %= 60
         return "%d:%02d:%02d" % (hour, minutes, seconds)
 
-    def log(self):
+    def log_to_console(self):
         """log to console"""
 
         line_with_leftside = "|----------------------------------------------------------------------------------"
@@ -142,6 +167,15 @@ class Logger:
         self.add_row(line)
         self.print_buffer()
 
+    def log_to_file(self):
+        """log to file"""
+
+        # log to file
+        self._log_file.write(self.console_buffer)
+
+        # clear buffer
+        self.console_buffer = ""
+
     def line_wrap(self, line: str, width: int) -> str:
         """wrap line to width
 
@@ -181,101 +215,101 @@ class Logger:
         """
         if row is not None:
             row = self.line_wrap(row, 85)
-            self.buffer += row + "\n"
+            self.console_buffer += row + "\n"
 
     def print_buffer(self):
         """print log buffer"""
-        print(self.buffer)
-        self.buffer = ""  # clear buffer
+        print(self.console_buffer)
+        self.console_buffer = ""  # clear buffer
 
     def add_battlepass_rewards_collection(self):
         """add battlepass rewards collection to log"""
         self.battlepass_rewards_collections += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_level_up_chest_collection(self):
         """add level up chest collection to log"""
         self.level_up_chest_collections += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_war_battle_fought(self):
         """add war battle fought to log"""
         self.war_battles_fought += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_card_mastery_reward_collection(self):
         self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
         self.chests_unlocked += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_card_played(self):
         """add card played to log"""
         self.cards_played += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_card_upgraded(self):
         """add card upgraded to log"""
         self.cards_upgraded += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_account_switch(self):
         """add account switch to log"""
         self.account_switches += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_win(self):
         """add win to log"""
         self.wins += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_loss(self):
         """add loss to log"""
         self.losses += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_fight(self):
         """add fight to log"""
         self.fights += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_request(self):
         """add request to log"""
         self.requests += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def add_restart(self):
         """add restart to log"""
         self.restarts += 1
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
 
     def change_status(self, status):
@@ -286,5 +320,5 @@ class Logger:
         """
         self.current_status = status
         if self.console_log:
-            self.log()
+            self.log_to_console()
         self._update_queue()
