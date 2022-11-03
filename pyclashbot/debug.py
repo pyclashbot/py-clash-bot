@@ -58,10 +58,7 @@ from pyclashbot.war import (
 
 
 ahk = AHK()
-logger = Logger()
-# user_settings = load_user_config()
-# launcher_path = user_settings["launcher_path"]
-
+logger = Logger(console_log=True)
 
 # orientate_memu_multi()
 # orientate_memu()

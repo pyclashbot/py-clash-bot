@@ -12,11 +12,7 @@ class Logger:
         file_log (bool, optional): Enable file logging. Defaults to True.
     """
 
-    def __init__(
-        self,
-        queue: Union[Queue, None] = None,
-        console_log: bool = False,
-        file_log: bool = True,
+    def __init__(self,queue: Union[Queue, None] = None,console_log: bool = False,file_log: bool = True,
     ):
 
         # track enabled log types
