@@ -1,23 +1,15 @@
-import random
 import time
 from random import Random
 
 import numpy
-import pyautogui
 
-from pyclashbot.clashmain import (
-    check_if_in_a_clan,
-    get_to_clash_main_from_clan_page,
-    handle_card_mastery_notification,
-)
-from pyclashbot.client import (
-    click,
-    screenshot,
-    scroll_down,
-    scroll_down_super_fast,
-    scroll_up_super_fast,
-)
-from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
+from pyclashbot.clashmain import (check_if_in_a_clan,
+                                  get_to_clash_main_from_clan_page,
+                                  handle_card_mastery_notification)
+from pyclashbot.client import (click, screenshot, scroll_down,
+                               scroll_down_super_fast, scroll_up_super_fast)
+from pyclashbot.image_rec import (find_references, get_first_location,
+                                  pixel_is_equal)
 
 
 def request_random_card_from_clash_main(logger):
@@ -54,7 +46,8 @@ def request_random_card_from_clash_main(logger):
     request_random_card(logger, maximum_scrolls=maximum_scrolls)
 
     # get back to clash main
-    if get_to_clash_main_from_clan_page(logger)=="restart": return "restart"
+    if get_to_clash_main_from_clan_page(logger) == "restart":
+        return "restart"
 
 
 def request_random_card(logger, maximum_scrolls=10):
@@ -64,7 +57,7 @@ def request_random_card(logger, maximum_scrolls=10):
     logger.change_status("Requesting a random card.")
 
     # scroll down for randomness
-    for _ in range(0, maximum_scrolls):
+    for _ in range(maximum_scrolls):
         scroll_down_super_fast()
 
     logger.change_status("Looking for card to request.")
@@ -160,7 +153,6 @@ def look_for_request_button():
     return get_first_location(locations)
 
 
-
 def get_to_clan_page(logger):
     # method to get to clan chat page from clash main
     click(312, 629)
@@ -211,8 +203,6 @@ def check_if_can_request(logger):
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
 
-
-
 def count_maximum_request_scrolls(logger):
     logger.change_status("Counting maximum request scrolls for the random scroling.")
 
@@ -240,7 +230,4 @@ def check_if_can_still_scroll_in_request_page():
     ]
     color = [222, 235, 241]
 
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return True
-    return False
+    return any(not pixel_is_equal(pix, color, tol=45) for pix in pix_list)

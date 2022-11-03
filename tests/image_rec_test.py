@@ -2,6 +2,7 @@ import timeit
 import unittest
 
 from PIL import Image
+
 from pyclashbot.image_rec import compare_images
 
 
@@ -37,14 +38,16 @@ class ImageRecTest(unittest.TestCase):
         threshold = None
 
         for i in range(granularity):
-            threshold = i / \
-                granularity if compare_images(
-                    ss, tp, i/granularity) is not None else None
+            threshold = (
+                i / granularity
+                if compare_images(ss, tp, i / granularity) is not None
+                else None
+            )
         print(f"Detected threshold for {tp_path} in {ss_path} @ {threshold}")
         self.assertTrue(threshold is not None)
 
     def test_compare_speed(self):
-        testcode = '''
+        testcode = """
 def test():
     from pyclashbot.image_rec import compare_images
     from PIL import Image
@@ -53,9 +56,12 @@ def test():
     ss = Image.open(ss_path)
     tp = Image.open(tp_path)
     compare_images(ss, tp)
-        '''
+        """
         count = 5000000
-        print(f"{timeit.timeit(testcode, number=count)} seconds for {count} image compares")
+        print(
+            f"{timeit.timeit(testcode, number=count)} seconds for {count} image compares"
+        )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
