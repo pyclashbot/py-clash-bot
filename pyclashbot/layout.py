@@ -364,17 +364,33 @@ if __name__ == "__main__":
 
     window = sg.Window("Statistics", layout)
 
+    running = False
+
     while True:
         event, values = window.read(timeout=100)  # type: ignore
         if event == sg.WIN_CLOSED:
             break
+        if event == "Start":
+            window["current_status"].update("Starting")
+            for key in disable_keys:
+                window[key].update(disabled=True)
+            running = True
+            window["Stop"].update(disabled=False)
 
-        # change some of the statistics
-        statistics["wins"] += 1
-        statistics["losses"] += 1
-        statistics["fights"] += 1
-        statistics["war_battles_fought"] += 1
-        statistics["requests"] += 1
+        if event == "Stop":
+            window["current_status"].update("Stopping")
+            running = False
+            for key in disable_keys:
+                window[key].update(disabled=False)
+            window["Stop"].update(disabled=True)
+
+        if running:
+            # change some of the statistics
+            statistics["wins"] += 1
+            statistics["losses"] += 1
+            statistics["fights"] += 1
+            statistics["war_battles_fought"] += 1
+            statistics["requests"] += 1
 
         # update the statistics
         window["wins"].update(statistics["wins"])
