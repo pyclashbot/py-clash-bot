@@ -45,4 +45,7 @@ logger = Logger()
 
 # print(check_if_on_war_page())
 
-fight_war_battle(logger)
+# fight_war_battle(logger)
+
+
+print(check_if_has_a_deck_for_this_war_battle())
