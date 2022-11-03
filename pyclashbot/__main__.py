@@ -1,15 +1,14 @@
-from queue import LifoQueue, Queue
 import sys
-import time
-from typing import Union, Any
+import webbrowser
+from queue import LifoQueue, Queue
+from typing import Any, Union
 
 import PySimpleGUI as sg
 
-from pyclashbot.gui import show_donate_gui, show_help_gui
+from pyclashbot.layout import disable_keys, layout, show_help_gui
 from pyclashbot.logger import Logger
 from pyclashbot.states import detect_state, state_tree
 from pyclashbot.thread import StoppableThread
-from pyclashbot.layout import layout, disable_keys
 
 
 def read_window(window: sg.Window):
@@ -123,10 +122,13 @@ def main_gui():
             )  # reset the logger after thread has been stopped
 
         elif event == "Donate":
-            show_donate_gui()
+            webbrowser.open("https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD")
 
         elif event == "Help":
             show_help_gui()
+
+        elif event == "issues-link":
+            webbrowser.open("https://github.com/matthewmiglio/py-clash-bot/issues/new/choose")
 
         # update the statistics in the gui
         if not statistics_q.empty():
