@@ -16,6 +16,7 @@ from pyclashbot.battlepass_rewards_collection import (
     collect_battlepass_rewards,
 )
 from pyclashbot.clashmain import (
+    check_if_in_a_clan,
     check_if_in_battle,
     check_if_in_battle_with_delay,
     check_if_on_clash_main_menu,
@@ -25,6 +26,8 @@ from pyclashbot.client import (
     orientate_memu,
     orientate_memu_multi,
     screenshot,
+    scroll_down,
+    scroll_down_super_fast,
     show_image,
 )
 from pyclashbot.deck import check_if_mimimum_scroll_case, count_scrolls_in_card_page, look_for_card_collection_icon_on_card_page, randomize_current_deck
@@ -40,6 +43,7 @@ from pyclashbot.level_up_reward_collection import (
     collect_level_up_rewards,
 )
 from pyclashbot.logger import Logger
+from pyclashbot.request import check_if_can_request, request_random_card_from_clash_main
 from pyclashbot.upgrade import (
     find_confirm_upgrade_for_gold_button,
     find_first_upgrade_for_gold_button,
@@ -56,10 +60,7 @@ from pyclashbot.war import (
 
 
 ahk = AHK()
-logger = Logger()
-# user_settings = load_user_config()
-# launcher_path = user_settings["launcher_path"]
-
+logger = Logger(console_log=True)
 
 # orientate_memu_multi()
 # orientate_memu()
@@ -69,8 +70,11 @@ logger = Logger()
 
 
 
-
 # count_scrolls_in_card_page()
 
 
-randomize_current_deck()
+# collect_battlepass_rewards(logger)
+
+print("start")
+
+print("End")
