@@ -162,6 +162,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
     #get random scroll amount in this range
     scrolls=random.randint(scroll_range[0],scroll_range[1])
     
+    #scroll random amount
     loops=0
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
@@ -182,10 +183,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
         if loops > 25:
             return "restart"
         click(20, 440)
-        coord=look_for_card_collection_icon_on_card_page()
-        if coord == None:x_low_bound=100
-        else:x_low_bound=coord[0]
-        click(x=random.randint(x_low_bound, 365), y=random.randint(120, 485))
+        click(x=random.randint(60, 365), y=random.randint(380, 550))
         time.sleep(0.22)
 
         time.sleep(1)
@@ -196,6 +194,9 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
     # select the card coord in the deck that we're replacing with the random card
     click(card_coord[0], card_coord[1])
     time.sleep(0.22)
+    
+    #change the card collection filter so increase randomness
+    click(320,575)
 
 
 def find_use_card_button():
@@ -312,7 +313,7 @@ def count_scrolls_in_card_page():
     click(111, 629)
     time.sleep(1)
 
-    return count if count < 4 else count - 1
+    return count if count < 4 else count - 2
 
 
 def look_for_card_collection_icon_on_card_page():
@@ -342,18 +343,19 @@ def check_if_mimimum_scroll_case():
     
     iar=numpy.asarray(screenshot())
     
-    color=[115,65,170]
+    color=[159, 53 ,237]
     
     pix_list=[
-        iar[540][150],
-        iar[545][225],
-        iar[555][265],
-        iar[565][365],
+        iar[558][200],
+        iar[558][220],
+        iar[558][245],
+        iar[558][270],
     ]
+    #for pix in pix_list: print(pix[0],pix[1],pix[2])
     
     truth=False
     for pix in pix_list: 
-        if not pixel_is_equal(color,pix,tol=85):
+        if not pixel_is_equal(color,pix,tol=60):
             scroll_up_super_fast()
             truth=True
     
