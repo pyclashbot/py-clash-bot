@@ -1,9 +1,11 @@
 import sys
-from typing import Union, Any
+import webbrowser
+from queue import LifoQueue, Queue
+from typing import Any, Union
 
 import PySimpleGUI as sg
 
-from pyclashbot.gui import show_donate_gui, show_help_gui
+from pyclashbot.layout import disable_keys, layout, show_help_gui
 from pyclashbot.logger import Logger
 from pyclashbot.states import detect_state, state_tree
 from pyclashbot.thread import StoppableThread
@@ -11,7 +13,8 @@ from pyclashbot.thread import StoppableThread
 
 def read_window(window: sg.Window):
     # Method for reading the attributes of the window
-    read_result = window.read()
+    # have a timeout so the output can be updated when no events are happening
+    read_result = window.read(timeout=100)  # ms
     if read_result is None:
         print("Window not found")
         sys.exit()
@@ -57,8 +60,9 @@ def start_button_event(logger: Logger, window, values):
     # prepare arguments for main thread
     args = (jobs, acc_count)
 
-    # disable the start button after it is pressed
-    window["Start"].update(disabled=True)
+    # disable the start button and configuration after the thread is started
+    for key in disable_keys:
+        window[key].update(disabled=True)
 
     # create thread
     thread = MainLoopThread(logger, args)
@@ -78,72 +82,21 @@ def stop_button_event(window, thread):
     thread.shutdown_flag.set()
     # wait for the thread to close
     thread.join()
-    # enable the start button after the thread is stopped
-    window["Start"].update(disabled=False)
+    # enable the start button and configuration after the thread is stopped
+    for key in disable_keys:
+        window[key].update(disabled=False)
 
 
 def main_gui():
     # Method for the main gui that starts the program
-    out_text = "Matthew Miglio ~October 2022\n\n-------------------------------------------------------------------------------------\nPy-ClashBot can farm gold, chests, and card\nprogress by farming 2v2 matches with random teammates.\n-------------------------------------------------------------------------------------"
-    sg.theme("Material2")
+
     # defining various things that are gonna be in the gui.
-    layout = [
-        # first text lines
-        [sg.Text(out_text)],
-        # first checkboxes
-        [sg.Text("Select which jobs youd like the bot to do:")],
-        [
-            sg.Checkbox("Open chests", default=True, key="-Open-Chests-in-"),
-            sg.Checkbox("Fight", default=True, key="-Fight-in-"),
-            sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
-            sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
-            sg.Checkbox(
-                "War Participation", default=True, key="-War-Participation-in-"
-            ),
-        ],
-        [
-            sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
-            sg.Checkbox(
-                "Card Mastery Collection",
-                default=True,
-                key="-Card-Mastery-Collection-in-",
-            ),
-            sg.Checkbox(
-                "Level Up Reward Collection",
-                default=True,
-                key="-Level-Up-Reward-Collection-in-",
-            ),
-            sg.Checkbox(
-                "Battlepass Reward Collection",
-                default=True,
-                key="-Battlepass-Reward-Collection-in-",
-            ),
-        ],
-        # dropdown for amount of accounts
-        [
-            sg.Text(
-                "-------------------------------------------------------------------------------------\nChoose how many accounts you'd like to simultaneously farm:"
-            )
-        ],
-        [sg.Combo(["1", "2", "3", "4"], key="-SSID_IN-", default_value="1")],
-        [
-            sg.Text(
-                "-------------------------------------------------------------------------------------"
-            )
-        ],
-        # bottons at bottom
-        [
-            sg.Button("Start"),
-            sg.Button("Stop", disabled=True),
-            sg.Button("Help"),
-            sg.Button("Donate"),
-        ],
-        [sg.Output(size=(100, 31), font=("Consolas 10"))],
-    ]
+
     window = sg.Window("Py-ClashBot", layout)
 
     thread: Union[MainLoopThread, None] = None
-    logger = Logger()
+    statistics_q = LifoQueue()
+    logger = Logger(statistics_q, console_log=True)
     # run the gui
     while True:
         event: str
@@ -157,17 +110,33 @@ def main_gui():
 
         # If start button
         if event == "Start":
+            logger.change_status("Starting")
             thread = start_button_event(logger, window, values)
 
         elif event == "Stop" and thread is not None:
+            logger.change_status("Stopping")
             stop_button_event(window, thread)
-            logger = Logger()  # reset the logger after thread has been stopped
+            statistics_q = Queue()
+            logger = Logger(
+                statistics_q, console_log=True
+            )  # reset the logger after thread has been stopped
 
         elif event == "Donate":
-            show_donate_gui()
+            webbrowser.open("https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD")
 
         elif event == "Help":
             show_help_gui()
+
+        elif event == "issues-link":
+            webbrowser.open("https://github.com/matthewmiglio/py-clash-bot/issues/new/choose")
+
+        # update the statistics in the gui
+        if not statistics_q.empty():
+            # read the statistics from the logger
+            statistics = statistics_q.get()
+
+            for stat in statistics:
+                window[stat].update(statistics[stat])
 
     # shut down the thread if it is still running
     if thread is not None:
@@ -182,7 +151,6 @@ class MainLoopThread(StoppableThread):
     def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
         self.logger = logger
-        self.logger.log()
 
     def run(self):
         # parse thread args
