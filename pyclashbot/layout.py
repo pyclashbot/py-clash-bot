@@ -7,18 +7,14 @@ def show_help_gui():
     # Method for the secondary popup help gui for when the help button is
     # pressed
 
-    out_text = (
-        ""
-        + "Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
-    )
+    out_text = """Py-ClashBot is a bot that can be used to automate the process of playing
+Clash Royale. It can be used to farm gold, upgrade cards, and much more.
 
-    out_text += "To emulate the game, Download and install MEmu.\n"
-    out_text += "It is reccomended to install the emulator in Enligsh mode.\n\n"
-    out_text += "Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
+To start the bot, select the jobs you want to run, set the number of accounts you want to use, and click start.
 
-    out_text += "Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
+To stop the bot, click the stop button.
 
-    out_text += "It is reccomended to play Clash Royale in English mode.\n"
+Click the 'Issues?' link to report any issues you may have with the bot."""
 
     sg.theme("Material2")
     layout = [
@@ -288,7 +284,7 @@ jobs_checklist = [
             scrollable=True,
             vertical_scroll_only=True,
             expand_x=True,
-            size=(None, 80),
+            size=(None, 90),
         )
     ],
 ]
@@ -316,7 +312,7 @@ controls = [
 
 description = [
     [
-        sg.Text("Matthew Miglio\nOctober 2022\n", size=(13, None)),
+        sg.Text("Matthew Miglio\nMartin Miglio\nOctober 2022\n", size=(13, None)),
     ],
     [
         sg.Text(
