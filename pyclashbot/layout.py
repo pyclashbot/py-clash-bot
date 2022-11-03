@@ -2,6 +2,40 @@ import PySimpleGUI as sg
 
 sg.theme("SystemDefaultForReal")
 
+
+def show_help_gui():
+    # Method for the secondary popup help gui for when the help button is
+    # pressed
+
+    out_text = (
+        ""
+        + "Make sure to check out the website @https://matthewmiglio.github.io/py-clash-bot/?utm_source=github.com\nor the github @https://github.com/matthewmiglio/py-clash-bot\n\n"
+    )
+
+    out_text += "To emulate the game, Download and install MEmu.\n"
+    out_text += "It is reccomended to install the emulator in Enligsh mode.\n\n"
+    out_text += "Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match that in the Readme.\n"
+
+    out_text += "Then start the emulator and install Clash Royale with the Google Play Store.\n\n"
+
+    out_text += "It is reccomended to play Clash Royale in English mode.\n"
+
+    sg.theme("Material2")
+    layout = [
+        [sg.Text(out_text)],
+        [sg.Button("Exit")],
+    ]
+    window = sg.Window("PY-TarkBot", layout)
+    while True:
+        read = window.read()
+        if read is None:
+            break
+        event, values = read
+        if event in [sg.WIN_CLOSED, "Exit"]:
+            break
+    window.close()
+
+
 battle_stats_title = [
     [
         sg.Text("Wins: "),
@@ -282,8 +316,15 @@ controls = [
 
 description = [
     [
+        sg.Text("Matthew Miglio\nOctober 2022\n", size=(13, None)),
+    ],
+    [
         sg.Text(
-            "Matthew Miglio\nOctober 2022\n\nAutomated\nClash Royale", size=(13, None)
+            "Issues?",
+            key="issues-link",
+            enable_events=True,
+            tooltip="https://github.com/matthewmiglio/py-clash-bot/issues/new/choose",
+            text_color="blue",
         ),
     ],
 ]
@@ -340,8 +381,11 @@ disable_keys = [
     "-Battlepass-Reward-Collection-in-",
 ]
 
+
+# a dummy test function to simulate the bot running
 if __name__ == "__main__":
     import time
+    import webbrowser
     from typing import Any
 
     # some sample statistics
@@ -370,19 +414,29 @@ if __name__ == "__main__":
         event, values = window.read(timeout=100)  # type: ignore
         if event == sg.WIN_CLOSED:
             break
-        if event == "Start":
-            window["current_status"].update("Starting") # type: ignore
+        elif event == "Start":
+            window["current_status"].update("Starting")  # type: ignore
             for key in disable_keys:
                 window[key].update(disabled=True)
             running = True
             window["Stop"].update(disabled=False)
 
-        if event == "Stop":
-            window["current_status"].update("Stopping") # type: ignore
+        elif event == "Stop":
+            window["current_status"].update("Stopping")  # type: ignore
             running = False
             for key in disable_keys:
                 window[key].update(disabled=False)
             window["Stop"].update(disabled=True)
+
+        elif event == "Donate":
+            webbrowser.open(
+                "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
+            )
+
+        elif event == "issues-link":
+            webbrowser.open(
+                "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
+            )
 
         if running:
             # change some of the statistics
