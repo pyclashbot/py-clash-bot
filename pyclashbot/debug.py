@@ -27,6 +27,7 @@ from pyclashbot.client import (
     screenshot,
     show_image,
 )
+from pyclashbot.deck import check_if_mimimum_scroll_case, count_scrolls_in_card_page, look_for_card_collection_icon_on_card_page, randomize_current_deck
 from pyclashbot.launcher import (
     check_for_memu_loading_background,
     wait_for_memu_loading_screen,
@@ -62,15 +63,14 @@ logger = Logger()
 
 # orientate_memu_multi()
 # orientate_memu()
-
-
 # show_image(screenshot())
 
 
-# get_to_war_page_from_main()
 
-# print(check_if_on_war_page())
 
-# fight_war_battle(logger)
 
-handle_war_attacks(logger)
+
+# count_scrolls_in_card_page()
+
+
+randomize_current_deck()
