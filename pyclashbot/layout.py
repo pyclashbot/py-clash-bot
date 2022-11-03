@@ -1,8 +1,5 @@
 import PySimpleGUI as sg
 
-
-# a simple gui to display the statistics
-
 sg.theme("SystemDefaultForReal")
 
 battle_stats_title = [
@@ -294,7 +291,6 @@ description = [
 layout = [
     [
         sg.Frame(layout=jobs_checklist, title="Jobs"),
-        sg.VSeparator(),
         sg.Frame(layout=controls, title="Controls"),
     ],
     [
@@ -302,7 +298,6 @@ layout = [
             layout=battle_stats,
             title="Battle Stats",
         ),
-        sg.VSeparator(),
         sg.Frame(
             layout=progress_stats,
             title="Progress Stats",
@@ -313,7 +308,6 @@ layout = [
             layout=collections_stats,
             title="Collection Stats",
         ),
-        sg.VSeparator(),
         sg.Frame(
             layout=description,
             title="Info",
