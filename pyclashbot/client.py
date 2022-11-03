@@ -73,22 +73,6 @@ def scroll_up_super_fast():
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
-def check_quit_key_press():
-    """Method for terminating the program upon key press"""
-    if keyboard.is_pressed("space"):
-        print("Space is held. Quitting the program")
-        sys.exit()
-    if keyboard.is_pressed("pause"):
-        print("Pausing program until pause is held again")
-        time.sleep(5)
-        pressed = False
-        while not (pressed):
-            time.sleep(0.05)
-            if keyboard.is_pressed("pause"):
-                print("Pause held again. Resuming program.")
-                time.sleep(3)
-                pressed = True
-
 
 def get_file_count(directory):
     """Method to return the amount of a files in a given directory
