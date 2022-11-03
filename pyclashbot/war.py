@@ -166,7 +166,6 @@ def check_if_has_a_deck_for_this_war_battle():
     ]
     color = [254, 199, 79]
     
-    for pix in pix_list: print(pix[0],pix[1],pix[2])
 
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
