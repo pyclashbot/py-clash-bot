@@ -16,6 +16,7 @@ from pyclashbot.battlepass_rewards_collection import (
     collect_battlepass_rewards,
 )
 from pyclashbot.clashmain import (
+    check_if_in_a_clan,
     check_if_in_battle,
     check_if_in_battle_with_delay,
     check_if_on_clash_main_menu,
@@ -72,5 +73,4 @@ logger = Logger(console_log=True)
 # count_scrolls_in_card_page()
 
 
-randomize_current_deck()
-
+check_if_in_a_clan(logger)
