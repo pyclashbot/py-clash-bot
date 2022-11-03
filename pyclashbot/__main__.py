@@ -18,7 +18,7 @@ def read_window(window: sg.Window):
     return read_result
 
 
-def start_button_event(logger:Logger, window, values):
+def start_button_event(logger: Logger, window, values):
     # get job list
     jobs = []
     if values["-Open-Chests-in-"]:
@@ -89,8 +89,9 @@ def main_gui():
             sg.Checkbox("Fight", default=True, key="-Fight-in-"),
             sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
             sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
-            sg.Checkbox("War Participation", default=True, key="-War-Participation-in-"),
-            
+            sg.Checkbox(
+                "War Participation", default=True, key="-War-Participation-in-"
+            ),
         ],
         [
             sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
@@ -99,8 +100,16 @@ def main_gui():
                 default=True,
                 key="-Card-Mastery-Collection-in-",
             ),
-            sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-",),
-            sg.Checkbox("Battlepass Reward Collection",default=True,key="-Battlepass-Reward-Collection-in-",),
+            sg.Checkbox(
+                "Level Up Reward Collection",
+                default=True,
+                key="-Level-Up-Reward-Collection-in-",
+            ),
+            sg.Checkbox(
+                "Battlepass Reward Collection",
+                default=True,
+                key="-Battlepass-Reward-Collection-in-",
+            ),
         ],
         # dropdown for amount of accounts
         [
@@ -141,7 +150,7 @@ def main_gui():
 
         elif event == "Stop" and thread is not None:
             stop_button_event(window, thread)
-            logger = Logger() # reset the logger after thread has been stopped
+            logger = Logger()  # reset the logger after thread has been stopped
 
         elif event == "Donate":
             show_donate_gui()
@@ -159,7 +168,7 @@ def main_gui():
 
 
 class MainLoopThread(StoppableThread):
-    def __init__(self, logger:Logger, args, kwargs=None):
+    def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
         self.logger = logger
         self.logger.log()
