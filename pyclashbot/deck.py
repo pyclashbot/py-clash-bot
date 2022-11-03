@@ -152,8 +152,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
 
     # scroll down a random amount
     loops = 0
-    if max_scrolls<=3: scrolls=3
-    else:scrolls = random.randint(3, max_scrolls)
+    scrolls = 3 if max_scrolls<=3 else random.randint(3, max_scrolls)
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         scrolls -= 1
@@ -226,13 +225,9 @@ def check_if_can_still_scroll_in_card_page():
 
 
     # casting to int because numpy arrays are weird
-    pix_list_1_as_int = []
-    for pix in pix_list_1:
-        pix_list_1_as_int.append([int(pix[0]), int(pix[1]), int(pix[2])])
+    pix_list_1_as_int = [[int(pix[0]), int(pix[1]), int(pix[2])] for pix in pix_list_1]
 
-    pix_list_2_as_int = []
-    for pix in pix_list_2:
-        pix_list_2_as_int.append([int(pix[0]), int(pix[1]), int(pix[2])])
+    pix_list_2_as_int = [[int(pix[0]), int(pix[1]), int(pix[2])] for pix in pix_list_2]
 
     # Purple check indicates that we CAN scroll, so return true of purple check
     purple_check = True
@@ -304,7 +299,4 @@ def count_scrolls_in_card_page():
     click(111, 629)
     time.sleep(1)
 
-    if count < 4:
-        return count
-    else:
-        return count - 1
+    return count if count < 4 else count - 1

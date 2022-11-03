@@ -3,7 +3,6 @@ from typing import Union
 
 import PySimpleGUI as sg
 
-from pyclashbot.client import get_next_ssid
 from pyclashbot.gui import show_donate_gui, show_help_gui
 from pyclashbot.logger import Logger
 from pyclashbot.states import detect_state, state_tree
@@ -19,7 +18,7 @@ def read_window(window: sg.Window):
     return read_result
 
 
-def start_button_event(window, values):
+def start_button_event(logger: Logger, window, values):
     # get job list
     jobs = []
     if values["-Open-Chests-in-"]:
@@ -54,7 +53,7 @@ def start_button_event(window, values):
     window["Start"].update(disabled=True)
 
     # create thread
-    thread = MainLoopThread(args)
+    thread = MainLoopThread(logger, args)
     # start thread
     thread.start()
 
@@ -90,8 +89,9 @@ def main_gui():
             sg.Checkbox("Fight", default=True, key="-Fight-in-"),
             sg.Checkbox("Random Requesting", default=True, key="-Requesting-in-"),
             sg.Checkbox("Upgrade cards", default=True, key="-Upgrade_cards-in-"),
-            sg.Checkbox("War Participation", default=True, key="-War-Participation-in-"),
-            
+            sg.Checkbox(
+                "War Participation", default=True, key="-War-Participation-in-"
+            ),
         ],
         [
             sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
@@ -100,8 +100,16 @@ def main_gui():
                 default=True,
                 key="-Card-Mastery-Collection-in-",
             ),
-            sg.Checkbox("Level Up Reward Collection",default=True,key="-Level-Up-Reward-Collection-in-",),
-            sg.Checkbox("Battlepass Reward Collection",default=True,key="-Battlepass-Reward-Collection-in-",),
+            sg.Checkbox(
+                "Level Up Reward Collection",
+                default=True,
+                key="-Level-Up-Reward-Collection-in-",
+            ),
+            sg.Checkbox(
+                "Battlepass Reward Collection",
+                default=True,
+                key="-Battlepass-Reward-Collection-in-",
+            ),
         ],
         # dropdown for amount of accounts
         [
@@ -127,6 +135,7 @@ def main_gui():
     window = sg.Window("Py-ClashBot", layout)
 
     thread: Union[MainLoopThread, None] = None
+    logger = Logger()
     # run the gui
     while True:
         event, values = read_window(window)
@@ -137,10 +146,11 @@ def main_gui():
 
         # If start button
         if event == "Start":
-            thread = start_button_event(window, values)
+            thread = start_button_event(logger, window, values)
 
         elif event == "Stop" and thread is not None:
             stop_button_event(window, thread)
+            logger = Logger()  # reset the logger after thread has been stopped
 
         elif event == "Donate":
             show_donate_gui()
@@ -158,9 +168,9 @@ def main_gui():
 
 
 class MainLoopThread(StoppableThread):
-    def __init__(self, args, kwargs=None):
+    def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
-        self.logger = Logger()
+        self.logger = logger
         self.logger.log()
 
     def run(self):
