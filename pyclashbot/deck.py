@@ -91,7 +91,8 @@ def select_second_deck(logger):
 
     # logger.change_status("Selecting deck number 2 for use.")
     # get to card page
-    if get_to_card_page(logger)=="restart":return "restart"
+    if get_to_card_page(logger) == "restart":
+        return "restart"
     time.sleep(1)
 
     # click number 2
@@ -99,7 +100,8 @@ def select_second_deck(logger):
     time.sleep(1)
 
     # get to main menu from card page
-    if get_to_clash_main_from_card_page(logger)=="restart":return "restart"
+    if get_to_clash_main_from_card_page(logger) == "restart":
+        return "restart"
 
 
 def randomize_and_select_deck_2(logger):
@@ -107,7 +109,8 @@ def randomize_and_select_deck_2(logger):
 
     logger.change_status("Randomizing deck number 2")
     # get to card page
-    if get_to_card_page(logger)=="restart":return 'restart'
+    if get_to_card_page(logger) == "restart":
+        return "restart"
 
     # select deck 2
     click(173, 190)
@@ -118,7 +121,8 @@ def randomize_and_select_deck_2(logger):
         return "restart"
 
     # return to clash main
-    if get_to_clash_main_from_card_page(logger)=="restart":return "restart"
+    if get_to_clash_main_from_card_page(logger) == "restart":
+        return "restart"
 
 
 def randomize_current_deck():
@@ -152,7 +156,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
 
     # scroll down a random amount
     loops = 0
-    scrolls = 3 if max_scrolls<=3 else random.randint(3, max_scrolls)
+    scrolls = 3 if max_scrolls <= 3 else random.randint(3, max_scrolls)
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         scrolls -= 1
@@ -221,8 +225,6 @@ def check_if_can_still_scroll_in_card_page():
         iar[495][259],
         iar[495][342],
     ]
-
-
 
     # casting to int because numpy arrays are weird
     pix_list_1_as_int = [[int(pix[0]), int(pix[1]), int(pix[2])] for pix in pix_list_1]
