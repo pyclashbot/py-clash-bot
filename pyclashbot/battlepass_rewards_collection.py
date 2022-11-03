@@ -6,6 +6,11 @@ from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import pixel_is_equal
 
 
+from ahk import AHK
+
+ahk = AHK()
+
+
 def check_for_battlepass_reward_pixels():
     # starts and ends on clash main
     iar = numpy.asarray(screenshot())
@@ -55,11 +60,13 @@ def collect_battlepass_rewards(logger):
 
         # click chest locations
         for coord in chest_locations:
-            click(coord[0], coord[1])
+            ahk.click(coord[0], coord[1])
+            time.sleep(0.1)
 
         # click deadspace
         for _ in range(15):
-            click(20, 440)
+            ahk.click(20, 440)
+            time.sleep(0.1)
 
         # close battlepass to reset UI
         click(210, 630)
