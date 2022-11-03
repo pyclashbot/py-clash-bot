@@ -43,6 +43,15 @@ def handle_war_attacks(logger):
         logger.change_status("Making a random deck for this war battle.")
         make_a_random_deck_for_this_war_battle()
 
+    #sometimes the player lacks the cards to make a complete deck at this point
+    #if you STILL done have a deck, return to main
+    if not check_if_has_a_deck_for_this_war_battle():
+        logger.change_status("Not enough cards to complete this deck. Returning.")
+        for _ in range(5): click(20,440)
+        get_to_clash_main_from_clan_page(logger)
+        return
+
+
     # click start battle
     click(280, 445)
 
