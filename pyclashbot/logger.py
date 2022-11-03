@@ -1,12 +1,19 @@
 import time
+from queue import Queue
+from typing import Any
 
 
 class Logger:
     """Handles creating and reading logs"""
 
-    def __init__(self):
+    def __init__(self, queue: Queue, console_log: bool = True):
         """Logger init"""
+        self.queue = queue
+
+        # immutanle variables
         self.start_time = time.time()
+
+        # mutable statistics
         self.wins = 0
         self.losses = 0
         self.fights = 0
@@ -16,14 +23,39 @@ class Logger:
         self.cards_played = 0
         self.cards_upgraded = 0
         self.account_switches = 0
-        self.cards_upgraded = 0
         self.card_mastery_reward_collections = 0
         self.battlepass_rewards_collections = 0
         self.level_up_chest_collections = 0
         self.war_battles_fought = 0
+        self.current_status = "Idle"
 
-        self.current_status = "Starting"
+        # track if console log is enabled
+        self.console_log = console_log
+
+        # print buffer for console
         self.buffer = ""
+
+        self._update_queue()
+
+    def _update_queue(self):
+        """updates the queue with a dictionary of mutable statistics"""
+        statistics: dict[str, Any] = {
+            "wins": self.wins,
+            "losses": self.losses,
+            "fights": self.fights,
+            "requests": self.requests,
+            "restarts": self.restarts,
+            "chests_unlocked": self.chests_unlocked,
+            "cards_played": self.cards_played,
+            "cards_upgraded": self.cards_upgraded,
+            "account_switches": self.account_switches,
+            "card_mastery_reward_collections": self.card_mastery_reward_collections,
+            "battlepass_rewards_collections": self.battlepass_rewards_collections,
+            "level_up_chest_collections": self.level_up_chest_collections,
+            "war_battles_fought": self.war_battles_fought,
+            "current_status": self.current_status,
+        }
+        self.queue.put(statistics)
 
     def make_timestamp(self):
         """creates a time stamp for log output
@@ -159,66 +191,92 @@ class Logger:
     def add_battlepass_rewards_collection(self):
         """add battlepass rewards collection to log"""
         self.battlepass_rewards_collections += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_level_up_chest_collection(self):
         """add level up chest collection to log"""
         self.level_up_chest_collections += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_war_battle_fought(self):
         """add war battle fought to log"""
         self.war_battles_fought += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_card_mastery_reward_collection(self):
         self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
         self.chests_unlocked += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_card_played(self):
         """add card played to log"""
         self.cards_played += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_card_upgraded(self):
         """add card upgraded to log"""
         self.cards_upgraded += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_account_switch(self):
         """add account switch to log"""
         self.account_switches += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_win(self):
         """add win to log"""
         self.wins += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_loss(self):
         """add loss to log"""
         self.losses += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_fight(self):
         """add fight to log"""
         self.fights += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_request(self):
         """add request to log"""
         self.requests += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def add_restart(self):
         """add restart to log"""
         self.restarts += 1
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
 
     def change_status(self, status):
         """change status of bot in log
@@ -227,4 +285,6 @@ class Logger:
             status (str): status of bot
         """
         self.current_status = status
-        self.log()
+        if self.console_log:
+            self.log()
+        self._update_queue()
