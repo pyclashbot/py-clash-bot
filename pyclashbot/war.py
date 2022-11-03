@@ -4,14 +4,20 @@ from os.path import dirname, join
 
 import numpy
 
-from pyclashbot.clashmain import (check_if_in_a_clan,
-                                  check_if_in_battle_with_delay,
-                                  get_to_clash_main_from_clan_page)
-from pyclashbot.client import (click, get_file_count,
-                               make_reference_image_list, screenshot,
-                               scroll_down_super_fast, scroll_up_super_fast)
-from pyclashbot.image_rec import (find_references, get_first_location,
-                                  pixel_is_equal)
+from pyclashbot.clashmain import (
+    check_if_in_a_clan,
+    check_if_in_battle_with_delay,
+    get_to_clash_main_from_clan_page,
+)
+from pyclashbot.client import (
+    click,
+    get_file_count,
+    make_reference_image_list,
+    screenshot,
+    scroll_down_super_fast,
+    scroll_up_super_fast,
+)
+from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def handle_war_attacks(logger):
@@ -43,14 +49,14 @@ def handle_war_attacks(logger):
         logger.change_status("Making a random deck for this war battle.")
         make_a_random_deck_for_this_war_battle()
 
-    #sometimes the player lacks the cards to make a complete deck at this point
-    #if you STILL done have a deck, return to main
+    # sometimes the player lacks the cards to make a complete deck at this point
+    # if you STILL done have a deck, return to main
     if not check_if_has_a_deck_for_this_war_battle():
         logger.change_status("Not enough cards to complete this deck. Returning.")
-        for _ in range(5): click(20,440)
+        for _ in range(5):
+            click(20, 440)
         get_to_clash_main_from_clan_page(logger)
         return
-
 
     # click start battle
     click(280, 445)
@@ -71,7 +77,8 @@ def handle_war_attacks(logger):
     logger.add_war_battle_fought()
 
     # get to clash main
-    if get_to_clash_main_from_clan_page(logger)=="restart":return "restart"
+    if get_to_clash_main_from_clan_page(logger) == "restart":
+        return "restart"
 
 
 def fight_war_battle(logger):
@@ -178,7 +185,6 @@ def check_if_has_a_deck_for_this_war_battle():
         iar[441][300],
     ]
     color = [254, 199, 79]
-    
 
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
