@@ -1,12 +1,20 @@
-
 import time
 
 import numpy
 
-from pyclashbot.client import (click, orientate_memu, screenshot, scroll_down,
-                               scroll_up_fast)
-from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location, pixel_is_equal)
+from pyclashbot.client import (
+    click,
+    orientate_memu,
+    screenshot,
+    scroll_down,
+    scroll_up_fast,
+)
+from pyclashbot.image_rec import (
+    check_for_location,
+    find_references,
+    get_first_location,
+    pixel_is_equal,
+)
 
 
 def wait_for_clash_main_menu(logger):
