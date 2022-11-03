@@ -15,18 +15,6 @@ setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
 
 
-def get_next_ssid(current_ssid, ssid_total):
-    """Method to cycle through a list of ints (1 -> 2 -> 3 -> 1 -> 2 -> 3 -> ...)
-
-    Args:
-        current_ssid (int): Current SSID
-        ssid_total (int): Total number of SSIDs
-
-    Returns:
-        int: Next SSID
-    """
-    return 0 if (current_ssid + 1) == ssid_total else current_ssid + 1
-
 
 def screenshot(region=None):
     """Method to return a screenshot of a given region

@@ -1,16 +1,12 @@
-import random
+
 import time
 
 import numpy
-import pyautogui
 
-from pyclashbot.client import click, orientate_memu, screenshot, scroll_down, scroll_up_fast
-from pyclashbot.image_rec import (
-    check_for_location,
-    find_references,
-    get_first_location,
-    pixel_is_equal,
-)
+from pyclashbot.client import (click, orientate_memu, screenshot, scroll_down,
+                               scroll_up_fast)
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location, pixel_is_equal)
 
 
 def wait_for_clash_main_menu(logger):
@@ -51,10 +47,7 @@ def check_if_stuck_on_trophy_progression_page():
         iar[630][238],
         iar[635][245],
     ]
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 def get_to_card_page(logger):
@@ -195,11 +188,8 @@ def check_for_gem_logo_on_main():
     ]
     color = [75, 180, 35]
 
-
     for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-        return True
+        return bool(pixel_is_equal(pix, color, tol=45))
 
 
 def check_for_blue_background_on_main():
@@ -214,12 +204,8 @@ def check_for_blue_background_on_main():
     ]
     color = [9, 69, 119]
 
-
-
     for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            return False
-        return True
+        return bool(pixel_is_equal(pix, color, tol=45))
 
 
 def check_for_gold_logo_on_main():
@@ -234,11 +220,8 @@ def check_for_gold_logo_on_main():
     ]
     color = [201, 177, 56]
 
-
     for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=85):
-            return False
-        return True
+        return bool(pixel_is_equal(pix, color, tol=85))
 
 
 def check_for_friends_logo_on_main():
@@ -253,13 +236,9 @@ def check_for_friends_logo_on_main():
     ]
     color = [177, 228, 252]
 
-
-
     # pixel check
     for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=65):
-            return False
-        return True
+        return bool(pixel_is_equal(pix, color, tol=65))
 
 
 def check_if_on_clash_main_menu():
@@ -618,9 +597,7 @@ def check_if_in_battle():
         tolerance=0.97,
     )
 
-    if check_for_location(locations):
-        return True
-    return False
+    return bool(check_for_location(locations))
 
 
 def handle_card_mastery_notification():
