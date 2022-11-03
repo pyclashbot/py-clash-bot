@@ -41,6 +41,7 @@ def fight(logger):
             return "restart"
 
     logger.change_status("Done fighting.")
+    time.sleep(5)
 
 
 def leave_end_battle_window(logger):
