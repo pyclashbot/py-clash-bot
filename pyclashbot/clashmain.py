@@ -613,7 +613,7 @@ def handle_card_mastery_notification():
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
-    time.sleep(1)
+
 
     click(240, 630)
-    time.sleep(1)
+
