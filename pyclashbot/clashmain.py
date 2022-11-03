@@ -136,12 +136,10 @@ def check_if_in_a_clan(logger):
 
     # click clan tab
     click(308, 627)
-    time.sleep(1)
 
     # cycle through clan tab a few times
-    for _ in range(3):
+    for _ in range(5):
         click(280, 623)
-    time.sleep(1)
     scroll_down()
     time.sleep(1)
 
@@ -155,17 +153,12 @@ def check_if_in_a_clan(logger):
     # get second pixel
     pixel_2 = numpy.array(screenshot())[118][206]
 
-    # get back to clash main
-    get_to_clash_main_from_clan_page(logger)
-
     # if pixels aren't equal return True (in a clan because there are two
     # available pages instead of one)
     if not (pixel_is_equal(pixel_1, pixel_2, tol=25)):
         logger.change_status("You're in a clan")
-        time.sleep(1)
         return True
     logger.change_status("Not in a clan.")
-    time.sleep(1)
     return False
 
 
@@ -613,7 +606,7 @@ def handle_card_mastery_notification():
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
-    time.sleep(1)
+
 
     click(240, 630)
-    time.sleep(1)
+
