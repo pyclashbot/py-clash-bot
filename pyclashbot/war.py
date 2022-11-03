@@ -31,6 +31,7 @@ def handle_war_attacks(logger):
     # click a war battle
     if click_war_icon() == "failed":
         logger.change_status("Couldn't find a war battle. Returning.")
+        time.sleep(1)
         return "clashmain"
 
     # click deadspace to get rid of the pop up
@@ -84,12 +85,15 @@ def fight_war_battle(logger):
 def make_a_random_deck_for_this_war_battle():
     # Click edit deck
     click(155, 450)
+    time.sleep(1)
 
     # click random deck button
     click(265, 495)
+    time.sleep(1)
 
     # click close
     click(205, 95)
+    time.sleep(1)
 
 
 def check_if_on_war_page():
