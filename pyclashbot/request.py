@@ -69,6 +69,7 @@ def request_random_card(logger, maximum_scrolls=10):
     for _ in range(maximum_scrolls):
         scroll_down_super_fast()
 
+    # click random cards in the card list until a request button appears.
     logger.change_status("Looking for card to request.")
     has_card_to_request = False
     loops = 0
@@ -85,8 +86,14 @@ def request_random_card(logger, maximum_scrolls=10):
         request_button_coord = look_for_request_button()
 
         if request_button_coord is not None:
+            # change loop bool to exit loop
             has_card_to_request = True
+
+            # click request buutton
             click(request_button_coord[1], request_button_coord[0])
+
+            # increment request counter
+            logger.add_request()
 
 
 def look_for_request_button():
