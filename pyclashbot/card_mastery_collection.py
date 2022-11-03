@@ -1,11 +1,10 @@
-import numpy
 import time
 
+import numpy
 
 from pyclashbot.clashmain import check_if_on_clash_main_menu, get_to_card_page
 from pyclashbot.client import click, screenshot
 from pyclashbot.image_rec import pixel_is_equal
-from pyclashbot.logger import Logger
 
 
 def collect_card_mastery_rewards(logger):
@@ -77,13 +76,9 @@ def check_if_can_collect_card_mastery_rewards(logger):
     if get_to_card_page(logger) == "restart":
         return "restart"
 
-    # check if color appears
-    has_rewards = False
     pixel = numpy.asarray(screenshot())[499][239]
 
-    if pixel_is_equal(pixel, [255, 166, 13], tol=45):
-        has_rewards = True
-
+    has_rewards = bool(pixel_is_equal(pixel, [255, 166, 13], tol=45))
     # return to cash main
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
