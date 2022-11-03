@@ -16,6 +16,10 @@ from pyclashbot.image_rec import (
     pixel_is_equal,
 )
 
+from ahk import AHK
+
+ahk = AHK()
+
 
 def wait_for_clash_main_menu(logger):
     orientate_memu()
@@ -407,23 +411,17 @@ def open_chests(logger):
         time.sleep(1)
 
         if check_if_unlock_chest_button_exists():
-
-            time.sleep(0.5)
-
             logger.change_status(str(f"Unlocking chest {str(chest_index)}"))
             logger.add_chest_unlocked()
-            time.sleep(0.5)
             click(210, 465)
-
         else:
             # logger.change_status("Handling possibility of rewards screen")
             for _ in range(10):
-                click(20, 556)
-            time.sleep(3)
+                ahk.click(20, 556)
+                time.sleep(0.33)
 
         # close chest menu
         click(20, 556)
-        time.sleep(0.33)
 
 
 def check_if_unlock_chest_button_exists():
@@ -607,6 +605,4 @@ def handle_card_mastery_notification():
     # obstructing the bot
     click(107, 623)
 
-
     click(240, 630)
-
