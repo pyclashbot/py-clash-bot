@@ -1,5 +1,5 @@
 import sys
-from typing import Union
+from typing import Union, Any
 
 import PySimpleGUI as sg
 
@@ -18,8 +18,7 @@ def read_window(window: sg.Window):
     return read_result
 
 
-def start_button_event(logger: Logger, window, values):
-    # get job list
+def read_job_list(values: dict[str, Any]) -> list[str]:
     jobs = []
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
@@ -39,7 +38,16 @@ def start_button_event(logger: Logger, window, values):
         jobs.append("battlepass reward collection")
     if values["-War-Participation-in-"]:
         jobs.append("war")
-    elif not jobs:
+
+    return jobs
+
+
+def start_button_event(logger: Logger, window, values):
+    # get job list
+    jobs = read_job_list(values)
+
+    # check if at least one job is selected
+    if len(jobs) == 0:
         print("At least one job must be selected")
         return None
 
@@ -138,6 +146,9 @@ def main_gui():
     logger = Logger()
     # run the gui
     while True:
+        event: str
+        values: dict
+
         event, values = read_window(window)
 
         # if window close or exit button click
