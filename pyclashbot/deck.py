@@ -8,8 +8,10 @@ from pyclashbot.client import (
     get_file_count,
     make_reference_image_list,
     screenshot,
+    scroll_down,
     scroll_down_super_fast,
     scroll_up_fast,
+    scroll_up_super_fast,
 )
 from pyclashbot.image_rec import (
     check_for_location,
@@ -155,8 +157,12 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
         return
 
     # scroll down a random amount
-    loops = 0
-    scrolls = 3 if max_scrolls <= 3 else random.randint(3, max_scrolls)
+    scroll_range=calculate_scroll_range(max_scrolls)
+    
+    #get random scroll amount in this range
+    scrolls=random.randint(scroll_range[0],scroll_range[1])
+    
+    loops=0
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         scrolls -= 1
@@ -176,7 +182,10 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
         if loops > 25:
             return "restart"
         click(20, 440)
-        click(x=random.randint(81, 356), y=random.randint(120, 485))
+        coord=look_for_card_collection_icon_on_card_page()
+        if coord == None:x_low_bound=100
+        else:x_low_bound=coord[0]
+        click(x=random.randint(x_low_bound, 365), y=random.randint(120, 485))
         time.sleep(0.22)
 
         time.sleep(1)
@@ -286,6 +295,8 @@ def check_if_pixel_is_grey(pixel):
 
 
 def count_scrolls_in_card_page():
+    if check_if_mimimum_scroll_case(): return 0
+    
     # Count scrolls
     count = 0
     loops = 0
@@ -302,3 +313,56 @@ def count_scrolls_in_card_page():
     time.sleep(1)
 
     return count if count < 4 else count - 1
+
+
+def look_for_card_collection_icon_on_card_page():
+    current_image = screenshot()
+    reference_folder = "card_collection_icon"
+
+    references = make_reference_image_list(
+        get_file_count(
+            join(dirname(__file__), "reference_images", "card_collection_icon")
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.9,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+def check_if_mimimum_scroll_case():
+    scroll_down()
+    time.sleep(1)
+    
+    iar=numpy.asarray(screenshot())
+    
+    color=[115,65,170]
+    
+    pix_list=[
+        iar[540][150],
+        iar[545][225],
+        iar[555][265],
+        iar[565][365],
+    ]
+    
+    truth=False
+    for pix in pix_list: 
+        if not pixel_is_equal(color,pix,tol=85):
+            scroll_up_super_fast()
+            truth=True
+    
+    scroll_up_super_fast()
+    return truth
+
+
+
+
+def calculate_scroll_range(max_scrolls):
+    if max_scrolls==0: return [1,1]
+    else: return [3,max_scrolls]
