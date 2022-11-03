@@ -69,7 +69,7 @@ def restart_and_open_clash(logger):
     orientate_memu()
 
     # Wait for Memu Client loading screen
-    if wait_for_memu_loading_screen(logger)=="restart":
+    if wait_for_memu_loading_screen(logger) == "restart":
         return restart_and_open_clash(logger)
     time.sleep(3)
 
@@ -173,7 +173,6 @@ def check_for_memu_loading_background():
         "11.png",
         "12.png",
         "13.png",
-
     ]
 
     locations = find_references(

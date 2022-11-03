@@ -15,7 +15,6 @@ setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
 
 
-
 def screenshot(region=None):
     """Method to return a screenshot of a given region
 

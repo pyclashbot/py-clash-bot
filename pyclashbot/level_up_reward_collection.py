@@ -16,8 +16,6 @@ def check_for_level_up_reward_pixels():
     ]
     color = [255, 173, 20]
 
-
-
     return all(pixel_is_equal(pix, color, tol=65) for pix in pix_list)
 
 
@@ -38,11 +36,12 @@ def collect_level_up_rewards(logger):
 
     # starts and ends on clash main
     logger.change_status("Collecting level up rewards.")
-    loops=0
+    loops = 0
     while True:
-        loops+=1
-        if loops>20:return "restart"
-        
+        loops += 1
+        if loops > 20:
+            return "restart"
+
         # return when no more rewards to collect
         if not check_if_has_level_up_rewards():
             logger.change_status("No more level up rewards to collect.")
