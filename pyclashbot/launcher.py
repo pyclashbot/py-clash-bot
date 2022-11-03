@@ -69,8 +69,8 @@ def restart_and_open_clash(logger):
     orientate_memu()
 
     # Wait for Memu Client loading screen
-    if wait_for_memu_loading_screen(logger):
-        restart_and_open_clash(logger)
+    if wait_for_memu_loading_screen(logger)=="restart":
+        return restart_and_open_clash(logger)
     time.sleep(3)
 
     # Skip Memu ads
@@ -107,7 +107,6 @@ def wait_for_memu_loading_screen(logger):
 
     loops = 0
     while waiting:
-        print("waiting")
         loops += 1
         if loops > 20:
             logger.change_status("Waited too long for memu client to load, restarting")
@@ -174,7 +173,7 @@ def check_for_memu_loading_background():
         "11.png",
         "12.png",
         "13.png",
-        
+
     ]
 
     locations = find_references(
@@ -217,11 +216,7 @@ def check_for_memu_loading_background():
     for pix in pix_list:
         if not pixel_is_equal(pix, [0, 0, 0], tol=30):
             pixel_check_2 = False
-    if pixel_check_2:
-
-        return True
-
-    return False
+    return bool(pixel_check_2)
 
 
 def find_clash_app_logo():

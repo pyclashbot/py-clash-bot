@@ -1,42 +1,30 @@
 import time
 from typing import Literal
+
 from pyclashbot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
-
-from pyclashbot.clashmain import (
-    check_if_in_battle_with_delay,
-    check_if_on_first_card_page,
-    get_to_account,
-    get_to_card_page,
-    handle_card_mastery_notification,
-    open_chests,
-    start_2v2,
-    wait_for_battle_start,
-    wait_for_clash_main_menu,
-)
-from pyclashbot.client import (
-    click,
-    orientate_memu,
-    orientate_memu_multi,
-    orientate_terminal,
-)
+from pyclashbot.clashmain import (check_if_in_battle_with_delay,
+                                  check_if_on_first_card_page, get_to_account,
+                                  get_to_card_page,
+                                  handle_card_mastery_notification,
+                                  open_chests, start_2v2,
+                                  wait_for_battle_start,
+                                  wait_for_clash_main_menu)
+from pyclashbot.client import (click, orientate_memu, orientate_memu_multi,
+                               orientate_terminal)
 from pyclashbot.deck import randomize_and_select_deck_2
-from pyclashbot.fight import (
-    check_if_end_screen_is_exit_bottom_left,
-    check_if_end_screen_is_ok_bottom_middle,
-    check_if_past_game_is_win,
-    fight,
-    leave_end_battle_window,
-)
+from pyclashbot.fight import (check_if_end_screen_is_exit_bottom_left,
+                              check_if_end_screen_is_ok_bottom_middle,
+                              check_if_past_game_is_win, fight,
+                              leave_end_battle_window)
 from pyclashbot.launcher import restart_and_open_clash
 from pyclashbot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.logger import Logger
-from pyclashbot.request import (
-    check_if_on_clan_page,
-    get_to_clash_main_from_clan_page,
-    request_random_card_from_clash_main,
-)
-from pyclashbot.upgrade import get_to_clash_main_from_card_page, upgrade_current_cards
+from pyclashbot.request import (check_if_on_clan_page,
+                                get_to_clash_main_from_clan_page,
+                                request_random_card_from_clash_main)
+from pyclashbot.upgrade import (get_to_clash_main_from_card_page,
+                                upgrade_current_cards)
 from pyclashbot.war import handle_war_attacks
 
 
@@ -151,32 +139,24 @@ def state_tree(
             if "battlepass reward collection" in jobs
             else "war"
         )
-        
+
     elif state == "war":
-        state = (
-            state_war(logger)
-            if "war" in jobs
-            else "clashmain"
-        )
-        
-    
+        state = state_war(logger) if "war" in jobs else "clashmain"
 
     return (state, ssid)
 
 
 def state_war(logger) -> Literal["restart", "clashmain"]:
-    if handle_war_attacks(logger) == "restart":
-        return "restart"
-    
-    return "clashmain"
+    return "restart" if handle_war_attacks(logger) == "restart" else "clashmain"
+
 
 def state_battlepass_collection(logger) -> Literal["restart", "war"]:
-    if collect_battlepass_rewards(logger) == "restart":
-        return "restart"
-    return "war"
+    return "restart" if collect_battlepass_rewards(logger) == "restart" else "war"
 
 
-def state_level_up_reward_collection(logger) -> Literal["restart", "battlepass reward collection"]:
+def state_level_up_reward_collection(
+    logger,
+) -> Literal["restart", "battlepass reward collection"]:
     # Method for level up reward collection state of the program
 
     # state_level_up_reward_collection state starts on clash main and ends on clash main
@@ -236,9 +216,8 @@ def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]
     logger.change_status("Starting a fight")
 
     # make a random deck
-    if random_deck:
-        if randomize_and_select_deck_2(logger)=="restart": return "restart"
-
+    if random_deck and randomize_and_select_deck_2(logger) == "restart":
+        return "restart"
     # Start 2v2 quickmatch
     if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":
         return "restart"
