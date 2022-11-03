@@ -67,7 +67,7 @@ def handle_war_attacks(logger):
     logger.add_war_battle_fought()
 
     # get to clash main
-    get_to_clash_main_from_clan_page(logger)
+    if get_to_clash_main_from_clan_page(logger)=="restart":return "restart"
 
 
 def fight_war_battle(logger):
