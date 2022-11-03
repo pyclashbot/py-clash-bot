@@ -351,7 +351,7 @@ def check_if_mimimum_scroll_case():
         iar[558][245],
         iar[558][270],
     ]
-    for pix in pix_list: print(pix[0],pix[1],pix[2])
+    #for pix in pix_list: print(pix[0],pix[1],pix[2])
     
     truth=False
     for pix in pix_list: 
