@@ -1,14 +1,9 @@
-import time
 import random
+import time
 from os.path import dirname, join
 
-from pyclashbot.client import (
-    click,
-    get_file_count,
-    make_reference_image_list,
-    screenshot,
-)
-
+from pyclashbot.client import (click, get_file_count,
+                               make_reference_image_list, screenshot)
 from pyclashbot.image_rec import check_for_location, find_references
 
 

@@ -1,4 +1,3 @@
-import random
 import time
 from os.path import dirname, join
 
@@ -6,20 +5,9 @@ import numpy
 
 from pyclashbot.card_detection import make_reference_image_list
 from pyclashbot.clashmain import check_for_gem_logo_on_main
-from pyclashbot.client import (
-    click,
-    get_file_count,
-    screenshot,
-    scroll_down_super_fast,
-    scroll_up_fast,
-    scroll_up_super_fast,
-)
-from pyclashbot.image_rec import (
-    check_for_location,
-    find_references,
-    get_first_location,
-    pixel_is_equal,
-)
+from pyclashbot.client import click, get_file_count, screenshot
+from pyclashbot.image_rec import (check_for_location, find_references,
+                                  get_first_location, pixel_is_equal)
 
 
 def check_if_card_is_upgradable(card_coord=[], upgrade_coord=[]):
@@ -31,11 +19,7 @@ def check_if_card_is_upgradable(card_coord=[], upgrade_coord=[]):
     upgrade_color = [107, 235, 118]
     pixel = numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
 
-
-
-    if pixel_is_equal(pixel, upgrade_color, tol=35):
-        return True
-    return False
+    return bool(pixel_is_equal(pixel, upgrade_color, tol=35))
 
 
 def check_for_upgradable_cards():
@@ -189,11 +173,9 @@ def check_for_final_upgrade_button():
 def upgrade_current_cards(logger):
     upgradable_cards_list = check_for_upgradable_cards()
 
-    index = 0
-    for card in upgradable_cards_list:
+    for index, card in enumerate(upgradable_cards_list):
         if card == "Upgrade":
             upgrade_card(logger, index)
-        index += 1
 
 
 def get_to_clash_main_from_card_page(logger):

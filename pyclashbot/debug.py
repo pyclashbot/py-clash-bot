@@ -24,7 +24,7 @@ from pyclashbot.level_up_reward_collection import (
 )
 from pyclashbot.logger import Logger
 from pyclashbot.upgrade import find_confirm_upgrade_for_gold_button, find_first_upgrade_for_gold_button
-from pyclashbot.war import check_if_has_a_deck_for_this_war_battle, check_if_on_war_page, click_war_icon, get_to_war_page_from_main, find_battle_icon_on_war_page, handle_war_attacks
+from pyclashbot.war import check_if_has_a_deck_for_this_war_battle, check_if_on_war_page, click_war_icon, fight_war_battle, get_to_war_page_from_main, find_battle_icon_on_war_page, handle_war_attacks
 
 
 ahk = AHK()
@@ -45,5 +45,6 @@ logger = Logger()
 
 # print(check_if_on_war_page())
 
-while True:
-    print(check_for_memu_loading_background())
+# fight_war_battle(logger)
+
+handle_war_attacks(logger)
