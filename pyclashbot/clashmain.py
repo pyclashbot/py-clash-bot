@@ -153,9 +153,6 @@ def check_if_in_a_clan(logger):
     # get second pixel
     pixel_2 = numpy.array(screenshot())[118][206]
 
-    # get back to clash main
-    get_to_clash_main_from_clan_page(logger)
-
     # if pixels aren't equal return True (in a clan because there are two
     # available pages instead of one)
     if not (pixel_is_equal(pixel_1, pixel_2, tol=25)):
