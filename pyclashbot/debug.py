@@ -43,6 +43,7 @@ from pyclashbot.level_up_reward_collection import (
     collect_level_up_rewards,
 )
 from pyclashbot.logger import Logger
+from pyclashbot.request import check_if_can_request, request_random_card_from_clash_main
 from pyclashbot.upgrade import (
     find_confirm_upgrade_for_gold_button,
     find_first_upgrade_for_gold_button,
@@ -73,4 +74,4 @@ logger = Logger(console_log=True)
 # count_scrolls_in_card_page()
 
 
-check_if_in_a_clan(logger)
+request_random_card_from_clash_main(logger)
