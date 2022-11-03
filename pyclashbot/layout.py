@@ -428,6 +428,9 @@ if __name__ == "__main__":
                 window[key].update(disabled=False)
             window["Stop"].update(disabled=True)
 
+        elif event == "Help":
+            show_help_gui()
+
         elif event == "Donate":
             webbrowser.open(
                 "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
