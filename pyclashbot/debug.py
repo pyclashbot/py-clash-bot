@@ -21,6 +21,7 @@ from pyclashbot.clashmain import (
     check_if_in_battle_with_delay,
     check_if_on_clash_main_menu,
     check_if_unlock_chest_button_exists,
+    open_chests,
 )
 from pyclashbot.client import (
     orientate_memu,
@@ -76,5 +77,5 @@ logger = Logger(console_log=True)
 # collect_battlepass_rewards(logger)
 
 print("start")
-
+open_chests(logger)
 print("End")
