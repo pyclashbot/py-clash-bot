@@ -293,12 +293,8 @@ def state_request(logger) -> Literal["restart", "level up reward collection"]:
     # Method for the state of the program when requesting cards
     # Request method goes to clan page, requests a random card if request is
     # available, then returns to the clash royale main menu
+    
     logger.change_status("Requesting card")
-
-    time.sleep(1)
-    handle_card_mastery_notification()
-    time.sleep(1)
-
     if request_random_card_from_clash_main(logger) == "restart":
         return "restart"
 
