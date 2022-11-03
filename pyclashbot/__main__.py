@@ -1,6 +1,6 @@
 import sys
 import webbrowser
-from queue import LifoQueue, Queue
+from queue import LifoQueue
 from typing import Any, Union
 
 import PySimpleGUI as sg
@@ -106,6 +106,11 @@ def main_gui():
 
         # if window close or exit button click
         if event in [sg.WIN_CLOSED, "Exit"]:
+            # shut down the thread if it is still running
+            if thread is not None:
+                thread.shutdown_flag.set()
+                # wait for the thread to close
+                thread.join()
             break
 
         # If start button
@@ -116,7 +121,7 @@ def main_gui():
         elif event == "Stop" and thread is not None:
             logger.change_status("Stopping")
             stop_button_event(window, thread)
-            statistics_q = Queue()
+            statistics_q = LifoQueue()
             logger = Logger(
                 statistics_q, console_log=True
             )  # reset the logger after thread has been stopped
