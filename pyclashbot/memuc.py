@@ -2,6 +2,8 @@ import time
 from typing import Any
 from pymemuc import PyMemuc
 
+# see https://pymemuc.readthedocs.io/ for more info
+
 pmc = PyMemuc()
 
 # stop all running vms
