@@ -90,7 +90,7 @@ def get_file_count(directory):
 def orientate_memu():
     """Method for orientating Memu client"""
     try:
-        window_memu = pygetwindow.getWindowsWithTitle("MEmu")[0]
+        window_memu = pygetwindow.getWindowsWithTitle("(pyclashbot)")[0]
         window_memu.minimize()
         window_memu.restore()
         time.sleep(0.2)
@@ -105,25 +105,6 @@ def orientate_memu():
             print("Had trouble resizing MEmu window")
     except Exception:
         print("Couldnt orientate MEmu")
-
-
-def orientate_memu_multi():
-    """Method for orientating the Memu Multi Manager"""
-    try:
-        try:
-            window_mimm = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")[
-                0
-            ]
-        except Exception:
-            window_mimm = pygetwindow.getWindowsWithTitle("Multi-MEmu")[0]
-
-        window_mimm.minimize()
-        window_mimm.restore()
-        # window_mimm.moveTo(200, 200)
-        time.sleep(0.2)
-        window_mimm.moveTo(0, 0)
-    except Exception:
-        print("Couldnt orientate MIMM")
 
 
 def show_image(image):
