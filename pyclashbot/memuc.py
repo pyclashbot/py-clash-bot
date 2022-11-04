@@ -8,7 +8,6 @@ pmc = PyMemuc()
 pmc.stop_all_vm()
 
 # get list of vms on machine
-
 vms:list[dict[str,Any]] = pmc.list_vm_info() # type: ignore
 
 # find vm named pyclashbot
