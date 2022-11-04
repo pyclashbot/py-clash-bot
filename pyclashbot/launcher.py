@@ -1,83 +1,93 @@
-import subprocess
+import sys
 import time
 
-import numpy
-import pygetwindow
+from pymemuc import PyMemuc
 
 from pyclashbot.clashmain import wait_for_clash_main_menu
-from pyclashbot.client import (click, orientate_memu, orientate_memu_multi,
-                               orientate_terminal, screenshot)
+from pyclashbot.client import orientate_terminal,  orientate_memu
 from pyclashbot.dependency import setup_memu
-from pyclashbot.image_rec import (check_for_location, find_references,
-                                  get_first_location, pixel_is_equal)
 
 launcher_path = setup_memu()  # setup memu, install if necessary
+pmc = PyMemuc()
 
 
-def wait_for_window(logger, window_name):
-    # Method to wait for a given window name to appear
-    logger.change_status(f"Waiting for {window_name} to appear")
-    while not pygetwindow.getWindowsWithTitle(window_name):
-        pass
-    logger.change_status(f"Done waiting for {window_name}")
+
+def configure_vm(logger, vm_index):
+    logger.change_status("Configuring VM")
+    pmc.set_configuration_vm("is_customed_resolution", "1", vm_index=vm_index)
+    pmc.set_configuration_vm("resolution_width", "460", vm_index=vm_index)
+    pmc.set_configuration_vm("resolution_height", "680", vm_index=vm_index)
+    pmc.set_configuration_vm("vbox_dpi", "160", vm_index=vm_index)
+    pmc.set_configuration_vm(
+        "start_window_mode", "1", vm_index=vm_index
+    )  # set to remember window location
+
+
+def create_vm(logger):
+    # create a vm named pyclashbot
+    logger.change_status("VM not found, creating VM...")
+    vm_index = pmc.create_vm()
+    configure_vm(logger, vm_index)
+    # rename the vm to pyclashbot
+    pmc.rename_vm(vm_index, new_name="pyclashbot")
+    logger.change_status("VM created")
+
+    # alert user that they need to install clash royale
+    logger.change_status(
+        "Please install clash royale in the new VM and restart the bot"
+    )
+    sys.exit()
+
+
+def check_for_vm(logger):
+    # get list of vms on machine
+    vms: list[dict[str, Any]] = pmc.list_vm_info()  # type: ignore
+
+    # find vm named pyclashbot
+    found = any(vm["title"] == "pyclashbot" for vm in vms)
+
+    if not found:
+        vm_index = create_vm(logger)
+    else:
+        # find the index of the vm named pyclashbot
+        vm_index = next(vm["index"] for vm in vms if vm["title"] == "pyclashbot")
+
+    return vm_index
+
+
+def start_vm(logger):
+    # Method for starting the memu client
+    logger.change_status("Starting Memu Client")
+    vm_index = check_for_vm(logger)
+    configure_vm(logger, vm_index)
+    logger.change_status("Starting VM...")
+    pmc.start_vm(vm_index=vm_index)
+    logger.change_status("VM Started")
+    return vm_index
 
 
 def restart_and_open_clash(logger):
-    # Method for restarting Memu and MeMU Multi Manager, opening clash, and
+    # Method for restarting Memu, opening clash, and
     # waiting for the clash main menu to appear.
-    # If Memu is running, close it
-    if len(pygetwindow.getWindowsWithTitle("MEmu")) != 0:
-        close_memu(logger)
 
-    # If MeMU Multi Manager is running, close it
-    if len(pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) != 0:
-        close_memu_multi(logger)
+    # get list of running vms on machine
+    vms: list[dict[str, Any]] = pmc.list_vm_info(running=True)  # type: ignore
+
+    # stop any vms named pyclashbot
+    for vm in vms:
+        if vm["title"] == "pyclashbot":
+            pmc.stop_vm(vm["index"])
 
     orientate_terminal()
 
     # Open the Memu Multi Manager
     logger.change_status("Opening MEmu launcher")
-    subprocess.Popen(launcher_path)
-
-    # Wait for memu multi to load
-    wait_for_window(logger, window_name="Multiple Instance Manager")
-
-    # Orientate the Memu Multi Manager
-    orientate_memu_multi()
-
-    # Start Memu Client
-    logger.change_status("Starting Memu client instance")
-    click(556, 141)
-
-    # Wait for memu to load
-    wait_for_window(logger, window_name="Memu")
-
-    # orientate memu client
+    vm_index = start_vm(logger)
+    time.sleep(10)
     orientate_memu()
+    skip_ads(logger, vm_index)
+    start_clash_royale(logger, vm_index)
 
-    # Wait for Memu Client loading screen
-    if wait_for_memu_loading_screen(logger) == "restart":
-        return restart_and_open_clash(logger)
-    time.sleep(3)
-
-    # Skip Memu ads
-    if find_clash_app_logo() is None:
-        skip_ads(logger)
-    time.sleep(3)
-
-    # Wait for clash logo to appear
-    if wait_for_clash_logo_to_appear(logger) == "restart":
-        logger.change_status("Waited too long for clash logo to appear. Restarting")
-        restart_and_open_clash(logger)
-    time.sleep(3)
-
-    # Click the clash logo
-    logo_coords = find_clash_app_logo()
-    if logo_coords is not None:
-        click(logo_coords[1], logo_coords[0])
-
-    # Wait for the clash main menu to appear
-    orientate_memu()
     if wait_for_clash_main_menu(logger) == "restart":
         restart_and_open_clash(logger)
     time.sleep(3)
@@ -86,178 +96,39 @@ def restart_and_open_clash(logger):
     logger.add_restart()
 
 
-def wait_for_memu_loading_screen(logger):
-    # Method to wait for memu loading background to disappear
+def start_clash_royale(logger, vm_index):
+    # using pymemuc check if clash royale is installed
 
-    logger.change_status("Waiting for Memu Client to load")
-    waiting = True
+    apk_base_name = "com.supercell.clashroyale"
 
-    loops = 0
-    while waiting:
-        loops += 1
-        if loops > 20:
-            logger.change_status("Waited too long for memu client to load, restarting")
-            return "restart"
+    # get list of installed apps
+    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
 
-        time.sleep(1)
+    # check list of installed apps for names containing base name
+    found = [app for app in installed_apps if apk_base_name in app]
 
-        waiting = check_for_memu_loading_background()
-    time.sleep(3)
-    logger.change_status("Done waiting for Memu Client to load.")
-    time.sleep(3)
+    if len(found) == 0:
+        # notify user that clash royale is not installed
+        logger.change_status(
+            "Clash royale is not installed. Please install it and restart the bot"
+        )
+        sys.exit()
+
+    # start clash royale
+    pmc.start_app_vm(found[0], vm_index)
 
 
-def skip_ads(logger):
+def skip_ads(logger, vm_index):
     # Method for skipping the memu ads that popip up when you start memu
 
     logger.change_status("Skipping ads")
     for _ in range(4):
-        click(445, 600)
+        pmc.trigger_keystroke_vm("home", vm_index=vm_index)
         time.sleep(1)
-    time.sleep(3)
 
 
-def wait_for_clash_logo_to_appear(logger):
-    # Method for waiting for memu to finish loading and display the memu home
-    # menu
-
-    n = 0
-    waiting = True
-    loops = 0
-    while waiting:
-        loops += 1
-        if loops > 35:
-            logger.change_status("Waited too long for clash logo to appear, restarting")
-            return "restart"
-        n = n + 1
-        time.sleep(1)
-        logger.change_status(f"Waiting for clash logo to appaer: {str(n)}")
-
-        logo_coords = find_clash_app_logo()
-
-        if logo_coords is not None:
-            waiting = False
-
-
-def check_for_memu_loading_background():
-    # Method to check if memu loading background is present in the given moment
-    # Using 2 methods
-
-    # Method 1 image recognition
-    current_image = screenshot()
-    reference_folder = "memu_loading_background"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        "13.png",
-    ]
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.99,
-    )
-
-    if check_for_location(locations):
-
-        return True
-
-    # Method 2 pixel comparison
-    iar = numpy.asarray(current_image)
-    pix_list = [
-        iar[120][120],
-        iar[200][200],
-        iar[350][50],
-        iar[220][150],
-    ]
-    sentinel_pix_list = [
-        [76, 78, 84],
-        [18, 23, 28],
-        [19, 13, 10],
-        [23, 40, 48],
-    ]
-    pixel_check = True
-    for index in range(4):
-        current_pixel = pix_list[index]
-        sentinel_pixel = sentinel_pix_list[index]
-        if not pixel_is_equal(current_pixel, sentinel_pixel, tol=35):
-            pixel_check = False
-    if pixel_check:
-
-        return True
-
-    # Method 3 pixel comparison #2 (checks if all pixels are black)
-    pixel_check_2 = True
-    for pix in pix_list:
-        if not pixel_is_equal(pix, [0, 0, 0], tol=30):
-            pixel_check_2 = False
-    return bool(pixel_check_2)
-
-
-def find_clash_app_logo():
-    # Method to find the coordinates of the clash app logo on the menu home
-    # screen
-
-    current_image = screenshot()
-    reference_folder = "logo"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-    ]
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.99,
-    )
-
-    return get_first_location(locations)
-
-
-def close_memu(logger):
+def close_vm(logger, vm_index):
     # Method to close memu
-    memu_name_list = ["MEmu", "(MEmu)"]
-
-    for name in memu_name_list:
-        try:
-            window = pygetwindow.getWindowsWithTitle(name)[0]
-            window.close()
-            logger.change_status("Closed Memu")
-        except BaseException:
-            logger.change_status("Couldn't close Memu")
-    time.sleep(3)
-
-
-def close_memu_multi(logger):
-    # Method to close memu multi
-    mmim_name_list = ["Multiple Instance Manager"]
-
-    for name in mmim_name_list:
-        try:
-            window = pygetwindow.getWindowsWithTitle(name)[0]
-            window.close()
-            logger.change_status("Closed MMIM")
-
-        except BaseException:
-            logger.change_status("Couldnt close MMIM using title ", name)
-    time.sleep(3)
+    logger.change_status("Closing VM")
+    pmc.stop_vm(vm_index)
+    logger.change_status("VM closed")

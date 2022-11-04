@@ -9,6 +9,7 @@ from pyclashbot.clashmain import (
     get_to_account,
     get_to_card_page,
     handle_card_mastery_notification,
+    handle_gold_rush_event,
     open_chests,
     start_2v2,
     wait_for_battle_start,
@@ -16,8 +17,6 @@ from pyclashbot.clashmain import (
 )
 from pyclashbot.client import (
     click,
-    orientate_memu,
-    orientate_memu_multi,
     orientate_terminal,
 )
 from pyclashbot.deck import randomize_and_select_deck_2
@@ -97,10 +96,10 @@ def state_tree(
         tuple[str, int]: Tuple of the next state and the next session ID
     """
     if state == "clashmain":
-        orientate_memu_multi()
-        orientate_memu()
-        orientate_terminal()
-        state = state_clashmain(logger=logger, account_number=ssid, jobs=jobs)
+
+        state = state_clashmain(
+            logger=logger, ssid_max=ssid_max, account_number=ssid, jobs=jobs
+        )
 
         # Increment account number, loop back to 0 if it's ssid_max
         ssid = ssid + 1 if ssid < ssid_max else 0
@@ -199,16 +198,19 @@ def state_restart(logger) -> Literal["clashmain"]:
     return "clashmain"
 
 
-def state_clashmain(logger, account_number, jobs) -> Literal["restart", "startfight"]:
+def state_clashmain(
+    logger, ssid_max, account_number, jobs
+) -> Literal["restart", "startfight"]:
     # Method for the clash royale main menu state of the program
 
     # Clashmain state gets to the correct account of the current state then
     # opens their chests
 
     logger.change_status("On clash main")
+    handle_gold_rush_event(logger)
 
-    # Get to correct account
-    if get_to_account(logger, account_number) == "restart":
+    # Get to correct account if more than one account is being used
+    if ssid_max <= 1 and get_to_account(logger, account_number) == "restart":
         return "restart"
 
     time.sleep(3)
@@ -293,7 +295,7 @@ def state_request(logger) -> Literal["restart", "level up reward collection"]:
     # Method for the state of the program when requesting cards
     # Request method goes to clan page, requests a random card if request is
     # available, then returns to the clash royale main menu
-    
+
     logger.change_status("Requesting card")
     if request_random_card_from_clash_main(logger) == "restart":
         return "restart"
