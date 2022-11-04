@@ -22,7 +22,6 @@ ahk = AHK()
 
 
 def wait_for_clash_main_menu(logger):
-    orientate_memu()
     logger.change_status("Waiting for clash main menu")
     waiting = not (check_if_on_clash_main_menu())
 
@@ -270,7 +269,7 @@ def get_to_account(logger, account_number):
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
     # Account number is ints 0-3 for the first 4 accounts
-    handle_gold_rush_event(logger)
+    
     time.sleep(2)
 
     logger.change_status(f"Switching accounts to account number {str(account_number)}")
