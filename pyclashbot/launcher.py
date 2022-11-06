@@ -4,12 +4,12 @@ import time
 from pymemuc import PyMemuc
 
 from pyclashbot.clashmain import wait_for_clash_main_menu
-from pyclashbot.client import orientate_terminal,  orientate_memu
+from pyclashbot.client import orientate_memu, orientate_terminal
 from pyclashbot.dependency import setup_memu
+from pyclashbot.layout import show_clash_royale_setup_gui
 
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc()
-
 
 
 def configure_vm(logger, vm_index):
@@ -27,16 +27,11 @@ def create_vm(logger):
     # create a vm named pyclashbot
     logger.change_status("VM not found, creating VM...")
     vm_index = pmc.create_vm()
-    configure_vm(logger, vm_index)
+    # configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
     pmc.rename_vm(vm_index, new_name="pyclashbot")
     logger.change_status("VM created")
-
-    # alert user that they need to install clash royale
-    logger.change_status(
-        "Please install clash royale in the new VM and restart the bot"
-    )
-    sys.exit()
+    return vm_index
 
 
 def check_for_vm(logger):
@@ -48,6 +43,13 @@ def check_for_vm(logger):
 
     if not found:
         vm_index = create_vm(logger)
+        # logger.change_status("Starting VM...")
+        # pmc.start_vm(vm_index=vm_index)
+        # # alert user that they need to install clash royale
+        # logger.change_status(
+        #     "Please install clash royale in the new VM and restart the bot"
+        # )
+        # sys.exit()
     else:
         # find the index of the vm named pyclashbot
         vm_index = next(vm["index"] for vm in vms if vm["title"] == "pyclashbot")
@@ -97,8 +99,9 @@ def restart_and_open_clash(logger):
 
 
 def start_clash_royale(logger, vm_index):
-    # using pymemuc check if clash royale is installed
+    logger.change_status("Finding Clash Royale...")
 
+    # using pymemuc check if clash royale is installed
     apk_base_name = "com.supercell.clashroyale"
 
     # get list of installed apps
@@ -107,15 +110,16 @@ def start_clash_royale(logger, vm_index):
     # check list of installed apps for names containing base name
     found = [app for app in installed_apps if apk_base_name in app]
 
-    if len(found) == 0:
-        # notify user that clash royale is not installed
+    if not found:
+        # notify user that clash royale is not installed, program will exit
         logger.change_status(
-            "Clash royale is not installed. Please install it and restart the bot"
+            "Clash royale is not installed. Please install it and restart"
         )
-        sys.exit()
+        show_clash_royale_setup_gui()
 
     # start clash royale
-    pmc.start_app_vm(found[0], vm_index)
+    pmc.start_app_vm(apk_base_name, vm_index)
+    logger.change_status("Clash Royale started")
 
 
 def skip_ads(logger, vm_index):
