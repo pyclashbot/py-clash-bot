@@ -127,13 +127,17 @@ def main_gui():
             )  # reset the logger after thread has been stopped
 
         elif event == "Donate":
-            webbrowser.open("https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD")
+            webbrowser.open(
+                "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
+            )
 
         elif event == "Help":
             show_help_gui()
 
         elif event == "issues-link":
-            webbrowser.open("https://github.com/matthewmiglio/py-clash-bot/issues/new/choose")
+            webbrowser.open(
+                "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
+            )
 
         # update the statistics in the gui
         if not statistics_q.empty():
@@ -158,19 +162,23 @@ class MainLoopThread(StoppableThread):
         self.logger = logger
 
     def run(self):
-        # parse thread args
-        jobs, ssid_max = self.args
+        try:
+            # parse thread args
+            jobs, ssid_max = self.args
 
-        # start ssid at 0
-        ssid = 0
+            # start ssid at 0
+            ssid = 0
 
-        # detect initial state
-        state = detect_state(self.logger)
+            # detect initial state
+            state = detect_state(self.logger)
 
-        # loop until shutdown flag is set
-        while not self.shutdown_flag.is_set():
-            # perform state transition
-            (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
+            # loop until shutdown flag is set
+            while not self.shutdown_flag.is_set():
+                # perform state transition
+                (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
+        except Exception as e:
+            self.logger.error(str(e))
+            self.logger.error("An error occurred. Please report this issue.")
 
 
 if __name__ == "__main__":
