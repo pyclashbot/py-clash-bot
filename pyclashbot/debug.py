@@ -46,9 +46,6 @@ from pyclashbot.war import (check_if_has_a_deck_for_this_war_battle,
 ahk = AHK()
 logger = Logger(console_log=True)
 
-# orientate_memu_multi()
-# orientate_memu()
-# show_image(screenshot())
 
 def gui_debug():
     from pyclashbot.layout import disable_keys, layout, show_help_gui
@@ -126,6 +123,7 @@ def gui_debug():
         window["requests"].update(statistics["requests"])
 
         time.sleep(1)
+
 
 
 
