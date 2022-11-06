@@ -1,11 +1,15 @@
 import time
-from os.path import expandvars, join
+from os import makedirs
+from os.path import exists, expandvars, join
 from queue import Queue
 from typing import Any, Union
 
 module_name = "py-clash-bot"
 
 top_level = join(expandvars("%appdata%"), module_name)
+
+if not exists(top_level):
+    makedirs(top_level)
 
 
 class Logger:
