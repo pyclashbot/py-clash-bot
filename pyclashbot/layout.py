@@ -1,6 +1,28 @@
+import sys
+
 import PySimpleGUI as sg
 
 sg.theme("SystemDefaultForReal")
+
+
+def show_clash_royale_setup_gui():
+    # a method to notify the user that clashroayle is not installed or setup
+
+    out_text = """Clash Royale is not installed or setup.\nPlease install Clash Royale, finish the in-game tutorial\nand login before using this bot."""
+
+    layout = [
+        [sg.Text(out_text)],
+    ]
+    window = sg.Window("Clash Royale Not Setup!", layout)
+    while True:
+        read = window.read()
+        if read is None:
+            break
+        event, values = read
+        if event in [sg.WIN_CLOSED]:
+            break
+    window.close()
+    sys.exit(0)
 
 
 def show_help_gui():
@@ -20,7 +42,7 @@ Click the 'Issues?' link to report any issues you may have with the bot."""
         [sg.Text(out_text)],
         [sg.Button("Exit")],
     ]
-    window = sg.Window("PY-TarkBot", layout)
+    window = sg.Window("Help", layout)
     while True:
         read = window.read()
         if read is None:
