@@ -96,62 +96,70 @@ class Logger:
         }
         self._queue.put(statistics)
 
-    def log_to_console(self):
+    def log_to_console(self, fancy: bool = False):
         """log to console"""
+        if fancy:
+            line_with_leftside = "|----------------------------------------------------------------------------------"
+            line = "-----------------------------------------------------------------------------------"
 
-        line_with_leftside = "|----------------------------------------------------------------------------------"
-        line = "-----------------------------------------------------------------------------------"
+            self.console_add_row(line)
+            self.console_add_row(
+                f"|           Program uptime:           | {self.make_timestamp()}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|          Program restarts:          | {self.restarts}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|              Requests:              | {self.requests}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|               Fights:               | {self.fights}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|              Win rate:              | {self.make_win_loss_str()}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|           Chests unlocked:          | {self.chests_unlocked}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|            Cards played:            | {self.cards_played}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|            Cards upgraded:          | {self.cards_upgraded}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|           Account switches:         | {self.account_switches}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|    Battlepass Reward Collections    | {self.battlepass_rewards_collections}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|     Level Up Reward Collections     | {self.level_up_chest_collections}"
+            )
+            self.console_add_row(line_with_leftside)
+            self.console_add_row(
+                f"|          War Battles Fought         | {self.war_battles_fought}"
+            )
+            self.console_add_row(line_with_leftside)
 
-        self.console_add_row(line)
-        self.console_add_row(
-            f"|           Program uptime:           | {self.make_timestamp()}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(f"|          Program restarts:          | {self.restarts}")
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(f"|              Requests:              | {self.requests}")
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(f"|               Fights:               | {self.fights}")
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|              Win rate:              | {self.make_win_loss_str()}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|           Chests unlocked:          | {self.chests_unlocked}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|            Cards played:            | {self.cards_played}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|            Cards upgraded:          | {self.cards_upgraded}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|           Account switches:         | {self.account_switches}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|    Battlepass Reward Collections    | {self.battlepass_rewards_collections}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|     Level Up Reward Collections     | {self.level_up_chest_collections}"
-        )
-        self.console_add_row(line_with_leftside)
-        self.console_add_row(
-            f"|          War Battles Fought         | {self.war_battles_fought}"
-        )
-        self.console_add_row(line_with_leftside)
-
-        self.console_add_row(f"|      Current status:      | {self.current_status}")
-        self.console_add_row(line)
+            self.console_add_row(f"|      Current status:      | {self.current_status}")
+            self.console_add_row(line)
+        else:
+            self.console_add_row(f"{self.make_timestamp()} | {self.current_status}")
         self.print_buffer()
 
     def log_to_file(self):
@@ -198,7 +206,7 @@ class Logger:
             message (str): error message
         """
         self.change_status(f"ERROR: {message}")
-        #self._update_log()
+        # self._update_log()
 
     def line_wrap(self, line: str, width: int) -> str:
         """wrap line to width
