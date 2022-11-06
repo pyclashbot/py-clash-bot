@@ -8,9 +8,6 @@ module_name = "py-clash-bot"
 
 top_level = join(expandvars("%appdata%"), module_name)
 
-if not exists(top_level):
-    makedirs(top_level)
-
 
 class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
@@ -39,6 +36,8 @@ class Logger:
         self.file_buffer = ""
         # open log file
         if file_log:
+            if not exists(top_level):
+                makedirs(top_level)
             self._log_file = open(join(top_level, "log.txt"), "w")
 
         # queue for threaded communication
