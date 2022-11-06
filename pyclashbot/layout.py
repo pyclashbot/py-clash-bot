@@ -16,7 +16,6 @@ To stop the bot, click the stop button.
 
 Click the 'Issues?' link to report any issues you may have with the bot."""
 
-    sg.theme("Material2")
     layout = [
         [sg.Text(out_text)],
         [sg.Button("Exit")],
@@ -352,10 +351,11 @@ layout = [
     ],
     [
         sg.Text("Current Status: "),
-        sg.Text(
-            "idle",
+        sg.InputText(
+            "Idle",
             key="current_status",
-            relief=sg.RELIEF_SUNKEN,
+            use_readonly_for_disable=True,
+            disabled=True,
             text_color="blue",
             size=(40, 1),
         ),
