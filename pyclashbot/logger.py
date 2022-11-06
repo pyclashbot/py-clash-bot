@@ -162,6 +162,8 @@ class Logger:
         # log to file
         self._log_file.write(self.file_buffer)
 
+        self._log_file.flush()
+
         # clear buffer
         self.file_buffer = ""
 
@@ -196,7 +198,7 @@ class Logger:
             message (str): error message
         """
         self.change_status(f"ERROR: {message}")
-        self._update_log()
+        #self._update_log()
 
     def line_wrap(self, line: str, width: int) -> str:
         """wrap line to width
