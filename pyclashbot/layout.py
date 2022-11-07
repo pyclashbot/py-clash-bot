@@ -255,19 +255,35 @@ jobs_checklist = [
         sg.Column(
             [
                 [
-                    sg.Checkbox("Open chests", default=True, key="-Open-Chests-in-"),
-                ],
-                [
-                    sg.Checkbox("Fight", default=True, key="-Fight-in-"),
-                ],
-                [
                     sg.Checkbox(
-                        "Random Requesting", default=True, key="-Requesting-in-"
+                        "Open chests",
+                        default=True,
+                        key="-Open-Chests-in-",
+                        enable_events=True,
                     ),
                 ],
                 [
                     sg.Checkbox(
-                        "Upgrade cards", default=True, key="-Upgrade_cards-in-"
+                        "Fight",
+                        default=True,
+                        key="-Fight-in-",
+                        enable_events=True,
+                    ),
+                ],
+                [
+                    sg.Checkbox(
+                        "Random Requesting",
+                        default=True,
+                        key="-Requesting-in-",
+                        enable_events=True,
+                    ),
+                ],
+                [
+                    sg.Checkbox(
+                        "Upgrade cards",
+                        default=True,
+                        key="-Upgrade_cards-in-",
+                        enable_events=True,
                     ),
                 ],
                 [
@@ -275,16 +291,23 @@ jobs_checklist = [
                         "War Participation",
                         default=True,
                         key="-War-Participation-in-",
+                        enable_events=True,
                     ),
                 ],
                 [
-                    sg.Checkbox("Random decks", default=True, key="-Random-Decks-in-"),
+                    sg.Checkbox(
+                        "Random decks",
+                        default=True,
+                        key="-Random-Decks-in-",
+                        enable_events=True,
+                    ),
                 ],
                 [
                     sg.Checkbox(
                         "Card Mastery Collection",
                         default=True,
                         key="-Card-Mastery-Collection-in-",
+                        enable_events=True,
                     ),
                 ],
                 [
@@ -292,6 +315,7 @@ jobs_checklist = [
                         "Level Up Reward Collection",
                         default=True,
                         key="-Level-Up-Reward-Collection-in-",
+                        enable_events=True,
                     ),
                 ],
                 [
@@ -299,6 +323,7 @@ jobs_checklist = [
                         "Battlepass Reward Collection",
                         default=True,
                         key="-Battlepass-Reward-Collection-in-",
+                        enable_events=True,
                     ),
                 ],
             ],
@@ -320,7 +345,12 @@ controls = [
                 ],
                 [
                     sg.Text("# of Accounts: "),
-                    sg.Combo(["1", "2", "3", "4"], key="-SSID_IN-", default_value="1"),
+                    sg.Combo(
+                        ["1", "2", "3", "4"],
+                        key="-SSID_IN-",
+                        default_value="1",
+                        enable_events=True,
+                    ),
                 ],
                 [
                     sg.Button("Help"),
@@ -384,9 +414,8 @@ layout = [
     ],
 ]
 
-# list of button and checkbox keys to disable when the bot is running
-disable_keys = [
-    "Start",
+# a list of all the keys that contain user configuration
+user_config_keys = [
     "-SSID_IN-",
     "-Open-Chests-in-",
     "-Fight-in-",
@@ -398,6 +427,9 @@ disable_keys = [
     "-Level-Up-Reward-Collection-in-",
     "-Battlepass-Reward-Collection-in-",
 ]
+
+# list of button and checkbox keys to disable when the bot is running
+disable_keys = user_config_keys + ["Start"]
 
 
 # a dummy test function to simulate the bot running
