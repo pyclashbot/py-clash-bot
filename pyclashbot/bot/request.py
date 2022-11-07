@@ -3,19 +3,19 @@ from random import Random
 
 import numpy
 
-from pyclashbot.clashmain import (
+from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
     get_to_clash_main_from_clan_page,
     handle_card_mastery_notification,
 )
-from pyclashbot.client import (
+from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
+from pyclashbot.memu import (
     click,
     screenshot,
     scroll_down,
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def request_random_card_from_clash_main(logger):

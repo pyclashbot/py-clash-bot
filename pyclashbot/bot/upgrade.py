@@ -3,15 +3,15 @@ from os.path import dirname, join
 
 import numpy
 
-from pyclashbot.card_detection import make_reference_image_list
-from pyclashbot.clashmain import check_for_gem_logo_on_main
-from pyclashbot.client import click, get_file_count, screenshot
-from pyclashbot.image_rec import (
+from pyclashbot.bot.clashmain import check_for_gem_logo_on_main
+from pyclashbot.detection import (
     check_for_location,
     find_references,
     get_first_location,
     pixel_is_equal,
 )
+from pyclashbot.memu import click, get_file_count, screenshot
+from pyclashbot.memu.client import make_reference_image_list
 
 
 def check_if_card_is_upgradable(card_coord=[], upgrade_coord=[]):
