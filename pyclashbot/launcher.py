@@ -41,20 +41,11 @@ def check_for_vm(logger):
     # find vm named pyclashbot
     found = any(vm["title"] == "pyclashbot" for vm in vms)
 
-    if not found:
-        vm_index = create_vm(logger)
-        # logger.change_status("Starting VM...")
-        # pmc.start_vm(vm_index=vm_index)
-        # # alert user that they need to install clash royale
-        # logger.change_status(
-        #     "Please install clash royale in the new VM and restart the bot"
-        # )
-        # sys.exit()
-    else:
-        # find the index of the vm named pyclashbot
-        vm_index = next(vm["index"] for vm in vms if vm["title"] == "pyclashbot")
-
-    return vm_index
+    return (
+        next(vm["index"] for vm in vms if vm["title"] == "pyclashbot")
+        if found
+        else create_vm(logger)
+    )
 
 
 def start_vm(logger):
