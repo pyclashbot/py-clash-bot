@@ -2,9 +2,9 @@ import time
 
 import numpy
 
-from pyclashbot.clashmain import check_if_on_clash_main_menu, get_to_card_page
-from pyclashbot.client import click, screenshot
-from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.bot.clashmain import check_if_on_clash_main_menu, get_to_card_page
+from pyclashbot.detection import pixel_is_equal
+from pyclashbot.memu import click, screenshot
 
 
 def collect_card_mastery_rewards(logger):

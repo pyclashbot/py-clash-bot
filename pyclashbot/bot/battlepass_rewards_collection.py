@@ -1,12 +1,10 @@
 import time
 
 import numpy
-
-from pyclashbot.client import click, screenshot
-from pyclashbot.image_rec import pixel_is_equal
-
-
 from ahk import AHK
+
+from pyclashbot.detection import pixel_is_equal
+from pyclashbot.memu import click, screenshot
 
 ahk = AHK()
 
