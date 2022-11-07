@@ -1,7 +1,8 @@
-import numpy
 import random
 import time
 from os.path import dirname, join
+
+import numpy
 
 from pyclashbot.client import (
     click,
@@ -157,13 +158,13 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
         return
 
     # scroll down a random amount
-    scroll_range=calculate_scroll_range(max_scrolls)
-    
-    #get random scroll amount in this range
-    scrolls=random.randint(scroll_range[0],scroll_range[1])
-    
-    #scroll random amount
-    loops=0
+    scroll_range = calculate_scroll_range(max_scrolls)
+
+    # get random scroll amount in this range
+    scrolls = random.randint(scroll_range[0], scroll_range[1])
+
+    # scroll random amount
+    loops = 0
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         scrolls -= 1
@@ -194,9 +195,9 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
     # select the card coord in the deck that we're replacing with the random card
     click(card_coord[0], card_coord[1])
     time.sleep(0.22)
-    
-    #change the card collection filter so increase randomness
-    click(320,575)
+
+    # change the card collection filter so increase randomness
+    click(320, 575)
 
 
 def find_use_card_button():
@@ -274,11 +275,7 @@ def check_if_can_still_scroll_in_card_page():
 
         return False
 
-    if pix_list_1_truth or pix_list_2_truth:
-
-        return False
-
-    return True
+    return not pix_list_1_truth and not pix_list_2_truth
 
 
 def check_if_pixel_is_grey(pixel):
@@ -296,8 +293,9 @@ def check_if_pixel_is_grey(pixel):
 
 
 def count_scrolls_in_card_page():
-    if check_if_mimimum_scroll_case(): return 0
-    
+    if check_if_mimimum_scroll_case():
+        return 0
+
     # Count scrolls
     count = 0
     loops = 0
@@ -340,31 +338,28 @@ def look_for_card_collection_icon_on_card_page():
 def check_if_mimimum_scroll_case():
     scroll_down()
     time.sleep(1)
-    
-    iar=numpy.asarray(screenshot())
-    
-    color=[159, 53 ,237]
-    
-    pix_list=[
+
+    iar = numpy.asarray(screenshot())
+
+    color = [159, 53, 237]
+
+    pix_list = [
         iar[558][200],
         iar[558][220],
         iar[558][245],
         iar[558][270],
     ]
-    #for pix in pix_list: print(pix[0],pix[1],pix[2])
-    
-    truth=False
-    for pix in pix_list: 
-        if not pixel_is_equal(color,pix,tol=60):
+    # for pix in pix_list: print(pix[0],pix[1],pix[2])
+
+    truth = False
+    for pix in pix_list:
+        if not pixel_is_equal(color, pix, tol=60):
             scroll_up_super_fast()
-            truth=True
-    
+            truth = True
+
     scroll_up_super_fast()
     return truth
 
 
-
-
 def calculate_scroll_range(max_scrolls):
-    if max_scrolls==0: return [1,1]
-    else: return [3,max_scrolls]
+    return [1, 1] if max_scrolls == 0 else [3, max_scrolls]
