@@ -204,9 +204,9 @@ class MainLoopThread(StoppableThread):
             while not self.shutdown_flag.is_set():
                 # perform state transition
                 (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
+            # we don't want the thread to crash the interface so we catch all exceptions and log
             self.logger.error(str(e))
-            self.logger.error("An error occurred. Please report this issue.")
 
 
 if __name__ == "__main__":

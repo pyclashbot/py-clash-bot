@@ -105,6 +105,7 @@ def select_second_deck(logger):
     # get to main menu from card page
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
+    return None
 
 
 def randomize_and_select_deck_2(logger):
@@ -126,6 +127,7 @@ def randomize_and_select_deck_2(logger):
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
+    return None
 
 
 def randomize_current_deck():
@@ -145,17 +147,22 @@ def randomize_current_deck():
         [325, 404],
     ]
 
-    for card_coord in card_coord_list:
-        if (
-            replace_card_in_deck(card_coord=card_coord, max_scrolls=max_scrolls)
+    return next(
+        (
+            "restart"
+            for card_coord in card_coord_list
+            if replace_card_in_deck(card_coord=card_coord, max_scrolls=max_scrolls)
             == "restart"
-        ):
-            return "restart"
+        ),
+        None,
+    )
 
 
-def replace_card_in_deck(card_coord=[], max_scrolls=4):
+def replace_card_in_deck(card_coord=None, max_scrolls=4):
+    if card_coord is None:
+        card_coord = []
     if card_coord == []:
-        return
+        return None
 
     # scroll down a random amount
     scroll_range = calculate_scroll_range(max_scrolls)
@@ -198,6 +205,7 @@ def replace_card_in_deck(card_coord=[], max_scrolls=4):
 
     # change the card collection filter so increase randomness
     click(320, 575)
+    return None
 
 
 def find_use_card_button():
@@ -256,19 +264,19 @@ def check_if_can_still_scroll_in_card_page():
     all_pix_list = pix_list_2_as_int + pix_list_1_as_int
     blue_check_truth = True
     for pix in all_pix_list:
-        if not (pixel_is_equal(pix, color_blue, tol=45)):
+        if not pixel_is_equal(pix, color_blue, tol=45):
             blue_check_truth = False
 
     # pix list 1 truth indicates whether or not this row of pixels are all greyscale
     pix_list_1_truth = True
     for pix in pix_list_1_as_int:
-        if not (check_if_pixel_is_grey(pix)):
+        if not check_if_pixel_is_grey(pix):
             pix_list_1_truth = False
 
     # pix list 2 truth indicates whether or not this row of pixels are all greyscale
     pix_list_2_truth = True
     for pix in pix_list_2_as_int:
-        if not (check_if_pixel_is_grey(pix)):
+        if not check_if_pixel_is_grey(pix):
             pix_list_2_truth = False
 
     if blue_check_truth:

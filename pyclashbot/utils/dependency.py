@@ -16,11 +16,11 @@ from subprocess import call
 from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
 
 from requests import get
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
-module_name = "py-clash-bot"
+MODULE_NAME = "py-clash-bot"
 
-top_level = join(expandvars("%appdata%"), module_name)
+top_level = join(expandvars("%appdata%"), MODULE_NAME)
 
 # region Common
 
@@ -34,7 +34,7 @@ def get_download_size(url: str) -> int | None:
     Returns:
         int: size of download in bytes
     """
-    r = get(url, headers=None, stream=True)
+    r = get(url, headers=None, stream=True, timeout=10)
     return int(r.headers.get("Content-Length", "0")) or None
 
 
@@ -61,14 +61,14 @@ def download_from_url(url: str, output_dir: str, file_name: str) -> str | None:
     if not exists(file_path) or download_size != getsize(file_path):
         try:
             print(f"Downloading {file_name} from {url} ({download_size} bytes)")
-            r = get(url, headers=None, stream=True, allow_redirects=True)
+            r = get(url, headers=None, stream=True, allow_redirects=True, timeout=10)
             with open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
             print(f"Downloaded {file_name} to {file_path}")
             return file_path
-        except (ConnectionError, gaierror):
+        except (RequestsConnectionError, gaierror):
             print(f"Connection error while trying to download {url} to {file_path}")
             return None
     print(f"File already downloaded from {url}.")

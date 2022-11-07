@@ -35,7 +35,7 @@ def collect_card_mastery_rewards(logger):
         )
         if get_to_clash_main_from_card_page(logger) == "restart":
             return "restart"
-        return
+        return None
 
     # otherwise there are rewards to collect so continue
     logger.change_status("There are card mastery rewards to collect!")
@@ -68,6 +68,8 @@ def collect_card_mastery_rewards(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
 
+    return None
+
 
 def check_if_can_collect_card_mastery_rewards(logger):
     # starts clash main , checks if there are mastery rewards, then returns to clash main
@@ -94,7 +96,7 @@ def get_to_clash_main_from_card_page(logger):
     time.sleep(1)
 
     loops = 0
-    while not (check_if_on_clash_main_menu()):
+    while not check_if_on_clash_main_menu():
         if loops > 15:
             logger.change_status("Couldn't get to Clash main menu from card page")
             return "restart"
