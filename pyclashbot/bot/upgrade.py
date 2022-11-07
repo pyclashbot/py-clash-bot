@@ -14,7 +14,11 @@ from pyclashbot.memu import click, get_file_count, screenshot
 from pyclashbot.memu.client import make_reference_image_list
 
 
-def check_if_card_is_upgradable(card_coord=[], upgrade_coord=[]):
+def check_if_card_is_upgradable(card_coord=None, upgrade_coord=None):
+    if card_coord is None:
+        card_coord = []
+    if upgrade_coord is None:
+        upgrade_coord = []
     # click card
     click(card_coord[0], card_coord[1])
     time.sleep(0.2)
@@ -144,7 +148,7 @@ def find_confirm_upgrade_for_gold_button():
     return get_first_location(locations)
 
 
-def check_for_final_upgrade_button():
+def check_for_final_upgrade_button() -> bool:
     iar = numpy.asarray(screenshot())
     color = [56, 228, 72]
     pix_list = [
@@ -170,8 +174,7 @@ def check_for_final_upgrade_button():
     for pix in pix_list:
         if not pixel_is_equal(pix, color, tol=45):
             check_2 = False
-    if check_2:
-        return True
+    return bool(check_2)
 
 
 def upgrade_current_cards(logger):
@@ -190,7 +193,7 @@ def get_to_clash_main_from_card_page(logger):
     loops = 0
 
     on_clash_main = check_for_gem_logo_on_main()
-    while not (on_clash_main):
+    while not on_clash_main:
         loops += 1
         if loops > 15:
             logger.change_status("Couldn't get to clash main from card page")
