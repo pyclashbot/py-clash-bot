@@ -15,29 +15,8 @@ from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from pyclashbot.bot import (check_if_can_request,
-                            check_if_has_a_deck_for_this_war_battle,
-                            check_if_in_a_clan, check_if_in_battle,
-                            check_if_in_battle_with_delay,
-                            check_if_mimimum_scroll_case,
-                            check_if_on_clash_main_menu, check_if_on_war_page,
-                            check_if_unlock_chest_button_exists,
-                            click_war_icon, count_scrolls_in_card_page,
-                            fight_war_battle, find_battle_icon_on_war_page,
-                            find_confirm_upgrade_for_gold_button,
-                            find_first_upgrade_for_gold_button,
-                            get_to_war_page_from_main, handle_war_attacks,
-                            look_for_card_collection_icon_on_card_page,
-                            open_chests, randomize_current_deck,
-                            request_random_card_from_clash_main)
-from pyclashbot.collection import (check_for_battlepass_reward_pixels,
-                                   check_for_level_up_reward_pixels,
-                                   check_if_has_battlepass_rewards,
-                                   check_if_has_level_up_rewards,
-                                   collect_battlepass_rewards,
-                                   collect_level_up_rewards)
 from pyclashbot.memu import (orientate_memu, orientate_terminal, screenshot,
-                             scroll_down, scroll_down_super_fast, show_image)
+                             scroll_down, scroll_down_super_fast)
 from pyclashbot.utils import Logger
 
 ahk = AHK()
@@ -46,9 +25,9 @@ logger = Logger(console_log=True)
 
 def gui_debug():
     from pyclashbot.layout import disable_keys, layout, show_help_gui
-    
 
-    
+
+
     sg.theme("SystemDefaultForReal")
     # some sample statistics
     statistics: dict[str, Any] = {
