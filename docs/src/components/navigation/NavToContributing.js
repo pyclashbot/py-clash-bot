@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 /**
-* Component for NavToContributing
-*/
+ * Component for NavToContributing
+ */
 export default class NavToContributing extends Component {
   /**
    * react render override
@@ -11,8 +11,8 @@ export default class NavToContributing extends Component {
    */
   render() {
     return (
-      <div className='nav'>
-        <Link to='/contributing' >Go to contributing page</Link>
+      <div className="nav">
+        <Link to="/contributing">Go to contributing page</Link>
       </div>
     );
   }

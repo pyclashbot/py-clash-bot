@@ -1,13 +1,12 @@
-import React, {Component} from 'react';
-import {releaseLinkEvent} from '../../GoogleAnalytics';
+import React, { Component } from "react";
+import { releaseLinkEvent } from "../../GoogleAnalytics";
 
-
-const apiUrl = 'https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest';
-
+const apiUrl =
+  "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest";
 
 /**
-* Component for latest release download link
-*/
+ * Component for latest release download link
+ */
 export default class ReleaseLink extends Component {
   /**
    * constructor to set states
@@ -24,10 +23,10 @@ export default class ReleaseLink extends Component {
    */
   getLatestReleaseInfo() {
     fetch(apiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          this.setState({release_url: data.assets[0].browser_download_url});
-        });
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ release_url: data.assets[0].browser_download_url });
+      });
   }
   /**
    * on mount get release info
@@ -41,14 +40,16 @@ export default class ReleaseLink extends Component {
    */
   render() {
     return (
-      <p><a
-        className='download'
-        href={this.state.release_url}
-        onClick={() => releaseLinkEvent()}
-        rel="preconnect"
-      >
-                Download the latest release
-      </a></p>
+      <p>
+        <a
+          className="download"
+          href={this.state.release_url}
+          onClick={() => releaseLinkEvent()}
+          rel="preconnect"
+        >
+          Download the latest release
+        </a>
+      </p>
     );
   }
 }
