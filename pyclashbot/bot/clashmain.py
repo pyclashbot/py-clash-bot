@@ -3,8 +3,12 @@ import time
 import numpy
 from ahk import AHK
 
-from pyclashbot.detection import (check_for_location, find_references,
-                                  get_first_location, pixel_is_equal)
+from pyclashbot.detection import (
+    check_for_location,
+    find_references,
+    get_first_location,
+    pixel_is_equal,
+)
 from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
 
 ahk = AHK()
