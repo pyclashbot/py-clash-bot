@@ -26,7 +26,7 @@ def check_for_battlepass_reward_pixels():
 
 def check_if_has_battlepass_rewards():
     timer = 0
-    while not (check_for_battlepass_reward_pixels()):
+    while not check_for_battlepass_reward_pixels():
 
         if timer > 0.36:
             return False

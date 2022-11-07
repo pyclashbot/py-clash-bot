@@ -53,7 +53,7 @@ def leave_end_battle_window(logger):
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
             return "restart"
-        return
+        return None
 
     # if end screen condition 2 (OK in bottom middle)
     if check_if_end_screen_is_ok_bottom_middle():
@@ -61,10 +61,11 @@ def leave_end_battle_window(logger):
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
             return "restart"
-        return
+        return None
 
     if wait_for_clash_main_menu(logger) == "restart":
         return "restart"
+    return None
 
 
 def check_if_end_screen_is_ok_bottom_middle():
@@ -166,15 +167,15 @@ def wait_until_has_6_elixer(logger):
     has_6 = check_if_has_6_elixer()
     logger.change_status("Waiting for 6 elixer")
     loops = 0
-    while not (has_6):
+    while not has_6:
         loops += 1
         if loops > 250:
             logger.change_status("Waited too long to get to 6 elixer. Restarting.")
             return "restart"
         time.sleep(0.1)
         has_6 = check_if_has_6_elixer()
-        if check_if_in_battle() == False:
-            return
+        if not check_if_in_battle():
+            return None
 
 
 def play_random_card(logger):

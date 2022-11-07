@@ -56,7 +56,7 @@ def handle_war_attacks(logger):
         for _ in range(5):
             click(20, 440)
         get_to_clash_main_from_clan_page(logger)
-        return
+        return None
 
     # click start battle
     click(280, 445)
@@ -79,6 +79,7 @@ def handle_war_attacks(logger):
     # get to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
         return "restart"
+    return None
 
 
 def fight_war_battle(logger):
@@ -124,7 +125,7 @@ def check_if_on_war_page():
 
 def get_to_war_page_from_main():
     if check_if_on_war_page():
-        return
+        return None
 
     click(315, 635)
     click(315, 635)
@@ -136,6 +137,7 @@ def get_to_war_page_from_main():
             return "restart"
         click(280, 620)
         time.sleep(1)
+    return None
 
 
 def find_battle_icon_on_war_page():

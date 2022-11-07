@@ -393,6 +393,7 @@ def get_play_coords(card_group, side):
             [303, 485],
             [375, 491],
         ]
+    return None
 
 
 def select_second_deck(logger):

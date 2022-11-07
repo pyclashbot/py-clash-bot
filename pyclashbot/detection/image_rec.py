@@ -156,11 +156,15 @@ def compare_images(
     template = np.array(template)
 
     # Convert image colors
-    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    template_gray = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # pylint: disable=no-member
+    template_gray = cv2.cvtColor(
+        template, cv2.COLOR_RGB2GRAY
+    )  # pylint: disable=no-member
 
     # Perform match operations.
-    res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+    res = cv2.matchTemplate(
+        img_gray, template_gray, cv2.TM_CCOEFF_NORMED
+    )  # pylint: disable=no-member
 
     # Store the coordinates of matched area in a numpy array
     loc = np.where(res >= threshold)  # type: ignore

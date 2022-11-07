@@ -8,20 +8,22 @@ sg.theme("SystemDefaultForReal")
 def show_clash_royale_setup_gui():
     # a method to notify the user that clashroayle is not installed or setup
 
-    out_text = """Clash Royale is not installed or setup.\nPlease install Clash Royale, finish the in-game tutorial\nand login before using this bot."""
+    out_text = """Clash Royale is not installed or setup.
+Please install Clash Royale, finish the in-game tutorial
+and login before using this bot."""
 
-    layout = [
+    _layout = [
         [sg.Text(out_text)],
     ]
-    window = sg.Window("Clash Royale Not Setup!", layout)
+    _window = sg.Window("Clash Royale Not Setup!", _layout)
     while True:
-        read = window.read()
+        read = _window.read()
         if read is None:
             break
-        event, values = read
-        if event in [sg.WIN_CLOSED]:
+        _event, _ = read
+        if _event in [sg.WIN_CLOSED]:
             break
-    window.close()
+    _window.close()
     sys.exit(0)
 
 
@@ -32,25 +34,25 @@ def show_help_gui():
     out_text = """Py-ClashBot is a bot that can be used to automate the process of playing
 Clash Royale. It can be used to farm gold, upgrade cards, and much more.
 
-To start the bot, select the jobs you want to run, set the number of accounts you want to use, and click start.
+To start, select the jobs you want to run, set the number of accounts to use, and click start.
 
 To stop the bot, click the stop button.
 
 Click the 'Issues?' link to report any issues you may have with the bot."""
 
-    layout = [
+    _layout = [
         [sg.Text(out_text)],
         [sg.Button("Exit")],
     ]
-    window = sg.Window("Help", layout)
+    _window = sg.Window("Help", _layout)
     while True:
-        read = window.read()
+        read = _window.read()
         if read is None:
             break
-        event, values = read
-        if event in [sg.WIN_CLOSED, "Exit"]:
+        _event, _ = read
+        if _event in [sg.WIN_CLOSED, "Exit"]:
             break
-    window.close()
+    _window.close()
 
 
 battle_stats_title = [
@@ -458,22 +460,22 @@ if __name__ == "__main__":
 
     window = sg.Window("Statistics", layout)
 
-    running = False
+    running = False  # pylint: disable=invalid-name
 
     while True:
         event, values = window.read(timeout=100)  # type: ignore
         if event == sg.WIN_CLOSED:
             break
-        elif event == "Start":
+        if event == "Start":
             window["current_status"].update("Starting")  # type: ignore
             for key in disable_keys:
                 window[key].update(disabled=True)
-            running = True
+            running = True  # pylint: disable=invalid-name
             window["Stop"].update(disabled=False)
 
         elif event == "Stop":
             window["current_status"].update("Stopping")  # type: ignore
-            running = False
+            running = False  # pylint: disable=invalid-name
             for key in disable_keys:
                 window[key].update(disabled=False)
             window["Stop"].update(disabled=True)
@@ -483,7 +485,11 @@ if __name__ == "__main__":
 
         elif event == "Donate":
             webbrowser.open(
-                "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
+                "https://www.paypal.com/donate/"
+                + "?business=YE72ZEB3KWGVY"
+                + "&no_recurring=0"
+                + "&item_name=Support+my+projects%21"
+                + "&currency_code=USD"
             )
 
         elif event == "issues-link":

@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 from pymemuc import PyMemuc
 
