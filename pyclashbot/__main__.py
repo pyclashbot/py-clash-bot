@@ -6,13 +6,11 @@ from typing import Any, Union
 import PySimpleGUI as sg
 
 from pyclashbot.bot import detect_state, state_tree
-from pyclashbot.layout import disable_keys, layout, show_help_gui, user_config_keys
-from pyclashbot.utils import (
-    Logger,
-    StoppableThread,
-    cache_user_settings,
-    read_user_settings,
-)
+from pyclashbot.layout import (disable_keys, layout, show_help_gui,
+                               user_config_keys)
+from pyclashbot.utils import (Logger, StoppableThread, cache_user_settings,
+                              read_user_settings)
+from pyclashbot.utils.caching import check_user_settings
 
 
 def read_window(window: sg.Window):
@@ -47,6 +45,24 @@ def read_job_list(values: dict[str, Any]) -> list[str]:
         jobs.append("war")
 
     return jobs
+
+
+def save_current_settings(values):
+    # read the currently selected values for each key in user_coinfig_keys
+    user_settings = {key: values[key] for key in user_config_keys if key in values}
+    # cache the user settings
+    cache_user_settings(user_settings)
+
+
+def load_last_settings(window):
+    if check_user_settings():
+        read_window(window)  # read the window to edit the layout
+        user_settings = read_user_settings()
+        if user_settings is not None:
+            for key in user_config_keys:
+                if key in user_settings:
+                    window[key].update(user_settings[key])
+        window.refresh()  # refresh the window to update the layout
 
 
 def start_button_event(logger: Logger, window, values):
@@ -92,22 +108,19 @@ def stop_button_event(window, thread):
 
 
 def main_gui():
+    # enable/disable console logging
+    console_log = True
+
     # create the window
     window = sg.Window("Py-ClashBot", layout)
 
     # read the user settings from the cache and update the keys in the layout
-    read_window(window)
-    user_settings = read_user_settings()
-    if user_settings is not None:
-        for key in user_config_keys:
-            if key in user_settings:
-                window[key].update(user_settings[key])
-    window.refresh()
+    load_last_settings(window)
 
     # track worker thread, communication queue and logger
     thread: Union[MainLoopThread, None] = None
     statistics_q = Queue()
-    logger = Logger(statistics_q, console_log=True)
+    logger = Logger(statistics_q, console_log=console_log)
 
     # run the gui
     while True:
@@ -132,17 +145,11 @@ def main_gui():
             logger.change_status("Stopping")
             stop_button_event(window, thread)
             statistics_q = Queue()
-            logger = Logger(
-                statistics_q, console_log=True
-            )  # reset the logger after thread has been stopped
+            # reset the logger after thread has been stopped
+            logger = Logger(statistics_q, console_log=console_log)
 
         elif event in user_config_keys:
-            # read the currently selected values for each key in user_coinfig_keys
-            user_settings = {
-                key: values[key] for key in user_config_keys if key in values
-            }
-            # cache the user settings
-            cache_user_settings(user_settings)
+            save_current_settings(values)
 
         elif event == "Donate":
             webbrowser.open(
