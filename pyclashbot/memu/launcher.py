@@ -1,9 +1,8 @@
-import sys
 import time
 
 from pymemuc import PyMemuc
 
-from pyclashbot.layout import show_clash_royale_setup_gui
+from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.memu import orientate_memu, orientate_terminal
 from pyclashbot.utils import setup_memu
 
