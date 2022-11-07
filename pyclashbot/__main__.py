@@ -1,11 +1,12 @@
 import sys
 import webbrowser
-from queue import LifoQueue
+from queue import Queue
 from typing import Any, Union
 
 import PySimpleGUI as sg
 
-from pyclashbot.layout import disable_keys, layout, show_help_gui
+from pyclashbot.caching import cache_user_settings, read_user_settings
+from pyclashbot.layout import disable_keys, layout, show_help_gui, user_config_keys
 from pyclashbot.logger import Logger
 from pyclashbot.states import detect_state, state_tree
 from pyclashbot.thread import StoppableThread
@@ -88,15 +89,23 @@ def stop_button_event(window, thread):
 
 
 def main_gui():
-    # Method for the main gui that starts the program
-
-    # defining various things that are gonna be in the gui.
-
+    # create the window
     window = sg.Window("Py-ClashBot", layout)
 
+    # read the user settings from the cache and update the keys in the layout
+    read_window(window)
+    user_settings = read_user_settings()
+    if user_settings is not None:
+        for key in user_config_keys:
+            if key in user_settings:
+                window[key].update(user_settings[key])
+    window.refresh()
+
+    # track worker thread, communication queue and logger
     thread: Union[MainLoopThread, None] = None
-    statistics_q = LifoQueue()
+    statistics_q = Queue()
     logger = Logger(statistics_q, console_log=True)
+
     # run the gui
     while True:
         event: str
@@ -104,7 +113,6 @@ def main_gui():
 
         event, values = read_window(window)
 
-        # if window close or exit button click
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
             if thread is not None:
@@ -113,7 +121,6 @@ def main_gui():
                 thread.join()
             break
 
-        # If start button
         if event == "Start":
             logger.change_status("Starting")
             thread = start_button_event(logger, window, values)
@@ -121,10 +128,18 @@ def main_gui():
         elif event == "Stop" and thread is not None:
             logger.change_status("Stopping")
             stop_button_event(window, thread)
-            statistics_q = LifoQueue()
+            statistics_q = Queue()
             logger = Logger(
                 statistics_q, console_log=True
             )  # reset the logger after thread has been stopped
+
+        elif event in user_config_keys:
+            # read the currently selected values for each key in user_coinfig_keys
+            user_settings = {
+                key: values[key] for key in user_config_keys if key in values
+            }
+            # cache the user settings
+            cache_user_settings(user_settings)
 
         elif event == "Donate":
             webbrowser.open(
