@@ -27,7 +27,7 @@ def request_random_card_from_clash_main(logger):
 
     # Return if not in clan (starts on main, ends on main)
     logger.change_status("Checking if you're in a clan.")
-    if not (check_if_in_a_clan(logger)):
+    if not check_if_in_a_clan(logger):
         logger.change_status("Skipping request because we are not in a clan.")
         if get_to_clash_main_from_clan_page(logger) == "restart":
             return "restart"
@@ -38,7 +38,7 @@ def request_random_card_from_clash_main(logger):
         logger.change_status("Request isn't available.")
         if get_to_clash_main_from_clan_page(logger) == "restart":
             return "restart"
-        return
+        return None
 
     # Click request button (getting to page of requestable cards)
     click(75, 565)
@@ -56,6 +56,7 @@ def request_random_card_from_clash_main(logger):
     # get back to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
         return "restart"
+    return None
 
 
 def request_random_card(logger, maximum_scrolls=10):
@@ -72,7 +73,7 @@ def request_random_card(logger, maximum_scrolls=10):
     logger.change_status("Looking for card to request.")
     has_card_to_request = False
     loops = 0
-    while not (has_card_to_request):
+    while not has_card_to_request:
         loops += 1
         if loops > 25:
             logger.change_status("Could not find a card to request.")
@@ -173,7 +174,7 @@ def get_to_clan_page(logger):
     click(312, 629)
     on_clan_chat_page = check_if_on_clan_page()
     loops = 0
-    while not (on_clan_chat_page):
+    while not on_clan_chat_page:
         loops += 1
         if loops > 25:
             logger.change_status("Could not get to clan page.")
