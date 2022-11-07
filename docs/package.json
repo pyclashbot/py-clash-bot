@@ -11,11 +11,11 @@
     "web-vitals": "^3"
   },
   "devDependencies": {
-    "react-scripts": "^5",
     "eslint": "^8",
     "eslint-config-google": "^0",
-    "eslint-plugin-react": "^7",
-    "gh-pages": "^4"
+    "eslint-plugin-react": "^7.31.10",
+    "gh-pages": "^4",
+    "react-scripts": "^5"
   },
   "scripts": {
     "start": "react-scripts start",
