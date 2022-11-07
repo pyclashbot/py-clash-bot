@@ -15,8 +15,13 @@ from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from pyclashbot.memu import (orientate_memu, orientate_terminal, screenshot,
-                             scroll_down, scroll_down_super_fast)
+from pyclashbot.memu import (
+    orientate_memu,
+    orientate_terminal,
+    screenshot,
+    scroll_down,
+    scroll_down_super_fast,
+)
 from pyclashbot.utils import Logger
 
 ahk = AHK()
