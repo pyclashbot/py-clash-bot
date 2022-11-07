@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import CodeFactorBadge from '../badge/CodeFactorBadge';
-import SourceBadge from '../badge/SourceBadge';
-import TestBadge from '../badge/TestBadge';
+import React, { Component } from "react";
+import CodeFactorBadge from "../badge/CodeFactorBadge";
+import SourceBadge from "../badge/SourceBadge";
+import TestBadge from "../badge/TestBadge";
 
 /**
-* Component for project description
-*/
+ * Component for project description
+ */
 export default class Description extends Component {
   /**
    * react render override
@@ -13,8 +13,10 @@ export default class Description extends Component {
    */
   render() {
     return (
-      <div className='description'>
-        <h1 className="mume-header" id="py-clash-bot">py-clash-bot</h1>
+      <div className="description">
+        <h1 className="mume-header" id="py-clash-bot">
+          py-clash-bot
+        </h1>
         <h2>
           <SourceBadge />
           <TestBadge />

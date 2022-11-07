@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {testBadgeEvent} from '../../GoogleAnalytics';
+import React, { Component } from "react";
+import { testBadgeEvent } from "../../GoogleAnalytics";
 
 /**
-* Component for latest release download link
-*/
+ * Component for latest release download link
+ */
 export default class TestBadge extends Component {
   /**
    * react render override
@@ -11,11 +11,15 @@ export default class TestBadge extends Component {
    */
   render() {
     return (
-      <a href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml" rel="nofollow" onClick={() => testBadgeEvent()}>
+      <a
+        href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml"
+        rel="nofollow"
+        onClick={() => testBadgeEvent()}
+      >
         <img
           src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg"
           alt="GitHub Python tests badge"
-          style={{marginRight: '3px'}}
+          style={{ marginRight: "3px" }}
           content="no-cache, no-store, must-revalidate"
           rel="preconnect"
           height="20"
