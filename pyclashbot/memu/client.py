@@ -159,7 +159,7 @@ def click(x, y, duration=1, max_attempts=3):
     attempts = 0
 
     while ahk.mouse_position != (x, y):
-        if max_attempts > 0 and attempts > max_attempts:
+        if attempts > max_attempts > 0:
             raise MouseMoveException(
                 "Couldnt move mouse to given coordinates, aborting"
             )

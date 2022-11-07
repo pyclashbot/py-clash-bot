@@ -16,7 +16,7 @@ ahk = AHK()
 
 def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
-    waiting = not (check_if_on_clash_main_menu())
+    waiting = not check_if_on_clash_main_menu()
 
     loops = 0
     while waiting:
@@ -37,7 +37,7 @@ def wait_for_clash_main_menu(logger):
             click(210, 621)
 
         # check if still waiting
-        waiting = not (check_if_on_clash_main_menu())
+        waiting = not check_if_on_clash_main_menu()
 
     logger.change_status("Done waiting for clash main menu")
 
@@ -151,7 +151,7 @@ def check_if_in_a_clan(logger):
 
     # if pixels aren't equal return True (in a clan because there are two
     # available pages instead of one)
-    if not (pixel_is_equal(pixel_1, pixel_2, tol=25)):
+    if not pixel_is_equal(pixel_1, pixel_2, tol=25):
         logger.change_status("You're in a clan")
         return True
     logger.change_status("Not in a clan.")
@@ -164,7 +164,7 @@ def get_to_clash_main_from_clan_page(logger):
     time.sleep(1)
     on_main = check_for_gem_logo_on_main()
     loops = 0
-    while not (on_main):
+    while not on_main:
         loops += 1
         if loops > 25:
             logger.change_status("Could not get to clash main from request page.")
@@ -293,6 +293,7 @@ def get_to_account(logger, account_number):
     time.sleep(0.5)
     handle_card_mastery_notification()
     time.sleep(0.5)
+    return None
 
 
 def check_for_gold_rush_event():
@@ -454,6 +455,7 @@ def start_2v2(logger):
         return "restart"
 
     check_for_reward_limit()
+    return None
 
 
 def find_and_click_2v2_quickmatch_button(logger):
