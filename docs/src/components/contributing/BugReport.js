@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { bugReportEvent, featureRequestEvent } from "../../GoogleAnalytics";
+import React, {Component} from 'react';
+import {bugReportEvent, featureRequestEvent} from '../../GoogleAnalytics';
 
 /**
  * Component for bug report
@@ -14,7 +14,7 @@ export default class BugReport extends Component {
       <div className="dependencies">
         <h2>Bug Report and Feature Request</h2>
         <p>
-          Open a bug report{" "}
+          Open a bug report{' '}
           <a
             href="https://github.com/matthewmiglio/py-clash-bot/issues/new?template=bug_report.md"
             rel="nofollow"
@@ -22,7 +22,7 @@ export default class BugReport extends Component {
           >
             here
           </a>
-          . Open a feature request{" "}
+          . Open a feature request{' '}
           <a
             href="https://github.com/matthewmiglio/py-clash-bot/issues/new?template=feature_request.md"
             rel="nofollow"

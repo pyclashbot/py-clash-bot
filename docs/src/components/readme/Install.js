@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import ReleaseDownloadCount from "../release/ReleaseDownloadCount";
-import ReleaseLink from "../release/ReleaseLink";
-import ReleaseUpdate from "../release/ReleaseUpdate";
+import React, {Component} from 'react';
+import ReleaseDownloadCount from '../release/ReleaseDownloadCount';
+import ReleaseLink from '../release/ReleaseLink';
+import ReleaseUpdate from '../release/ReleaseUpdate';
 
 /**
  * Component for install instructions
