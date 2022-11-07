@@ -1,7 +1,7 @@
-import { Component } from "react";
+import {Component} from 'react';
 
 const apiUrl =
-  "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest";
+  'https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest';
 
 /**
  * Component for release download count
@@ -22,14 +22,14 @@ export default class ReleaseDownloadCount extends Component {
    */
   getLatestReleaseInfo() {
     fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        let downloadCount = 0;
-        for (const element of data.assets) {
-          downloadCount += element.download_count;
-        }
-        this.setState({ download_count: downloadCount });
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          let downloadCount = 0;
+          for (const element of data.assets) {
+            downloadCount += element.download_count;
+          }
+          this.setState({download_count: downloadCount});
+        });
   }
   /**
    * on mount get release info

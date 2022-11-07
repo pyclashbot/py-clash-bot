@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import CodeFactorBadge from "../badge/CodeFactorBadge";
-import SourceBadge from "../badge/SourceBadge";
-import TestBadge from "../badge/TestBadge";
+import React, {Component} from 'react';
+import CodeFactorBadge from '../badge/CodeFactorBadge';
+import SourceBadge from '../badge/SourceBadge';
+import TestBadge from '../badge/TestBadge';
 
 /**
  * Component for Contribution description
