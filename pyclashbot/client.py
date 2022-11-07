@@ -73,7 +73,6 @@ def scroll_up_super_fast():
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
-
 def get_file_count(directory):
     """Method to return the amount of a files in a given directory
 
