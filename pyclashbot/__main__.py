@@ -6,10 +6,13 @@ from typing import Any, Union
 import PySimpleGUI as sg
 
 from pyclashbot.bot import detect_state, state_tree
-from pyclashbot.layout import (disable_keys, layout, show_help_gui,
-                               user_config_keys)
-from pyclashbot.utils import (Logger, StoppableThread, cache_user_settings,
-                              read_user_settings)
+from pyclashbot.interface import disable_keys, layout, show_help_gui, user_config_keys
+from pyclashbot.utils import (
+    Logger,
+    StoppableThread,
+    cache_user_settings,
+    read_user_settings,
+)
 from pyclashbot.utils.caching import check_user_settings
 
 
