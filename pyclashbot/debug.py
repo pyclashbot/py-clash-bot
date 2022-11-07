@@ -77,7 +77,11 @@ def gui_debug():
 
         elif event == "Donate":
             webbrowser.open(
-                "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
+                "https://www.paypal.com/donate/"
+                + "?business=YE72ZEB3KWGVY"
+                + "&no_recurring=0"
+                + "&item_name=Support+my+projects%21"
+                + "&currency_code=USD"
             )
 
         elif event == "issues-link":

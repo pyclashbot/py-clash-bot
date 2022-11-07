@@ -4,9 +4,9 @@ from os.path import exists, expandvars, join
 from queue import Queue
 from typing import Any, Union
 
-module_name = "py-clash-bot"
+MODULE_NAME = "py-clash-bot"
 
-top_level = join(expandvars("%appdata%"), module_name)
+top_level = join(expandvars("%appdata%"), MODULE_NAME)
 
 
 class Logger:
@@ -38,7 +38,9 @@ class Logger:
         if file_log:
             if not exists(top_level):
                 makedirs(top_level)
-            self._log_file = open(join(top_level, "log.txt"), "w")
+            self._log_file = open(
+                join(top_level, "log.txt"), "w", encoding="utf-8"
+            )  # noqa
 
         # queue for threaded communication
         self._queue = Queue() if queue is None else queue
@@ -277,7 +279,7 @@ class Logger:
         seconds %= 3600
         minutes = seconds // 60
         seconds %= 60
-        return "%d:%02d:%02d" % (hour, minutes, seconds)
+        return f"{hour}:{minutes:02}:{seconds:02}"
 
     def add_battlepass_rewards_collection(self):
         """add battlepass rewards collection to log"""
