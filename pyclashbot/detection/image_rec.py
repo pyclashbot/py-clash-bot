@@ -1,6 +1,6 @@
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from os.path import dirname, join, abspath, pardir
+from os.path import abspath, dirname, join
 from typing import Union
 
 import cv2
@@ -110,7 +110,7 @@ def find_reference(
         Union[list[int], None]: coordinate location
     """
     top_level = dirname(__file__)
-    reference_folder = abspath(join(top_level,pardir, "reference_images"))
+    reference_folder = abspath(join(top_level, "reference_images"))
     return compare_images(
         screenshot, Image.open(join(reference_folder, folder, name)), tolerance
     )

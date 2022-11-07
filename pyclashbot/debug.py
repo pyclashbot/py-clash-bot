@@ -24,9 +24,7 @@ logger = Logger(console_log=True)
 
 
 def gui_debug():
-    from pyclashbot.layout import disable_keys, layout, show_help_gui
-
-
+    from pyclashbot.interface import disable_keys, layout, show_help_gui
 
     sg.theme("SystemDefaultForReal")
     # some sample statistics
@@ -99,10 +97,6 @@ def gui_debug():
         window["requests"].update(statistics["requests"])
 
         time.sleep(1)
-
-
-
-
 
 
 gui_debug()
