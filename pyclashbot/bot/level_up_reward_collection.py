@@ -1,9 +1,10 @@
 import time
-import numpy
-from pyclashbot.clashmain import check_if_on_clash_main_menu
 
-from pyclashbot.client import click, screenshot
-from pyclashbot.image_rec import pixel_is_equal
+import numpy
+
+from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
+from pyclashbot.detection import pixel_is_equal
+from pyclashbot.memu import click, screenshot
 
 
 def check_for_level_up_reward_pixels():
