@@ -1,10 +1,10 @@
-import ReactGA from 'react-ga4';
+import ReactGA from "react-ga4";
 
 /**
  * Initialize google analytics with tracking ID and settings
  */
 export function initializeGA() {
-  ReactGA.initialize('G-Y7520HNKMG');
+  ReactGA.initialize("G-Y7520HNKMG");
 }
 
 /**
@@ -13,14 +13,14 @@ export function initializeGA() {
  */
 export function pageChange(page) {
   ReactGA.send({
-    hitType: 'pageview',
+    hitType: "pageview",
     page: window.location.pathname + window.location.search,
   });
-  const devQuery = '?utm_source=dev&utm_medium=dev';
+  const devQuery = "?utm_source=dev&utm_medium=dev";
   if (
-    window.location.href.split('/').pop() !== devQuery &&
+    window.location.href.split("/").pop() !== devQuery &&
     // eslint-disable-next-line no-undef
-    (!process.env.NODE_ENV || process.env.NODE_ENV === 'development')
+    (!process.env.NODE_ENV || process.env.NODE_ENV === "development")
   ) {
     window.location.href = page + devQuery;
   }
@@ -31,7 +31,7 @@ export function pageChange(page) {
  */
 export function sourceBadgeEvent() {
   ReactGA.event({
-    category: 'User',
+    category: "User",
     action: `Clicked source badge`,
   });
 }
@@ -41,7 +41,7 @@ export function sourceBadgeEvent() {
  */
 export function memuDownloadEvent() {
   ReactGA.event({
-    category: 'User',
+    category: "User",
     action: `Clicked memu download`,
   });
 }
@@ -51,7 +51,7 @@ export function memuDownloadEvent() {
  */
 export function testBadgeEvent() {
   ReactGA.event({
-    category: 'User',
+    category: "User",
     action: `Clicked test badge`,
   });
 }
@@ -61,7 +61,7 @@ export function testBadgeEvent() {
  */
 export function pypiBadgeEvent() {
   ReactGA.event({
-    category: 'User',
+    category: "User",
     action: `Clicked pypi badge`,
   });
 }
@@ -71,7 +71,7 @@ export function pypiBadgeEvent() {
  */
 export function pythonVersionBadgeEvent() {
   ReactGA.event({
-    category: 'User',
+    category: "User",
     action: `Clicked python version badge`,
   });
 }
@@ -81,7 +81,7 @@ export function pythonVersionBadgeEvent() {
  */
 export function codeFactorBadgeEvent() {
   ReactGA.event({
-    category: 'User',
+    category: "User",
     action: `Clicked codefactor badge`,
   });
 }
@@ -91,8 +91,8 @@ export function codeFactorBadgeEvent() {
  */
 export function releaseLinkEvent() {
   ReactGA.event({
-    category: 'User',
-    action: 'Clicked release download link',
+    category: "User",
+    action: "Clicked release download link",
   });
 }
 
@@ -101,8 +101,8 @@ export function releaseLinkEvent() {
  */
 export function bugReportEvent() {
   ReactGA.event({
-    category: 'User',
-    action: 'Clicked bug report link',
+    category: "User",
+    action: "Clicked bug report link",
   });
 }
 
@@ -111,7 +111,7 @@ export function bugReportEvent() {
  */
 export function featureRequestEvent() {
   ReactGA.event({
-    category: 'User',
-    action: 'Clicked feature request link',
+    category: "User",
+    action: "Clicked feature request link",
   });
 }
