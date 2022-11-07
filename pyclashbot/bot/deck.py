@@ -4,7 +4,14 @@ from os.path import dirname, join
 
 import numpy
 
-from pyclashbot.client import (
+from pyclashbot.bot.upgrade import get_to_clash_main_from_card_page
+from pyclashbot.detection import (
+    check_for_location,
+    find_references,
+    get_first_location,
+    pixel_is_equal,
+)
+from pyclashbot.memu import (
     click,
     get_file_count,
     make_reference_image_list,
@@ -14,13 +21,6 @@ from pyclashbot.client import (
     scroll_up_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.image_rec import (
-    check_for_location,
-    find_references,
-    get_first_location,
-    pixel_is_equal,
-)
-from pyclashbot.upgrade import get_to_clash_main_from_card_page
 
 
 def get_to_card_page(logger):

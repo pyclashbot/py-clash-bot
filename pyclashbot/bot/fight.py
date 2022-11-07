@@ -4,22 +4,22 @@ import time
 
 import numpy
 
-from pyclashbot.card_detection import (
+from pyclashbot.bot.card_detection import (
     get_card_group,
     get_card_images,
     get_play_coords,
     identify_card,
 )
-from pyclashbot.clashmain import (
+from pyclashbot.bot.clashmain import (
     check_if_in_battle,
     check_if_in_battle_with_delay,
     wait_for_clash_main_menu,
 )
-from pyclashbot.client import click, screenshot
-from pyclashbot.image_rec import pixel_is_equal
+from pyclashbot.detection import pixel_is_equal
+from pyclashbot.memu import click, screenshot
 
 
-def fight(logger):
+def do_fight(logger):
     logger.change_status("Starting fight")
     in_battle = True
     plays = 0

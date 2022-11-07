@@ -4,12 +4,13 @@ from os.path import dirname, join
 
 import numpy
 
-from pyclashbot.clashmain import (
+from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
     check_if_in_battle_with_delay,
     get_to_clash_main_from_clan_page,
 )
-from pyclashbot.client import (
+from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
+from pyclashbot.memu import (
     click,
     get_file_count,
     make_reference_image_list,
@@ -17,7 +18,6 @@ from pyclashbot.client import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.image_rec import find_references, get_first_location, pixel_is_equal
 
 
 def handle_war_attacks(logger):

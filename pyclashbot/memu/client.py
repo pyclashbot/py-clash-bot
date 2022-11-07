@@ -1,15 +1,13 @@
 import os
-import sys
 import time
 
-import keyboard
 import numpy
 import pyautogui
 import pygetwindow
 from ahk import AHK
 from matplotlib import pyplot as plt
 
-from pyclashbot.dependency import setup_ahk
+from pyclashbot.utils import setup_ahk
 
 setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
