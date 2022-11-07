@@ -22,11 +22,13 @@ def _cache_data(data, file_name) -> None:
 def _load_data(file_name) -> Any | None:
     # a method to load data from the disk using pickle
     file_path = join(top_level, file_name)
-    if exists(file_path):
-        with open(file_path, "rb") as f:
-            return pickle.load(f)
-    else:
+    if not exists(file_path):
         return None
+    with open(file_path, "rb") as f:
+        try:
+            return pickle.load(f)
+        except pickle.UnpicklingError:
+            return None
 
 
 def cache_user_settings(data: dict[str, Any] | None) -> None:
