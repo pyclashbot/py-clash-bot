@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import CodeFactorBadge from "../badge/CodeFactorBadge";
 import SourceBadge from "../badge/SourceBadge";
 import TestBadge from "../badge/TestBadge";

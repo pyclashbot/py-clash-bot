@@ -1,4 +1,4 @@
-import { Component } from "react";
+import {Component} from "react";
 
 const apiUrl =
   "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest";
@@ -34,7 +34,7 @@ export default class ReleaseUpdate extends Component {
         let hoursAgo = (dateDiff / oneHour).toFixed();
         hoursAgo = `${hoursAgo} ${hoursAgo == 1 ? "hour" : "hours"} ago`;
         const timeAgo = dateDiff < oneDay ? hoursAgo : daysAgo;
-        this.setState({ last_updated: timeAgo });
+        this.setState({last_updated: timeAgo});
       });
   }
   /**

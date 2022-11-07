@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { releaseLinkEvent } from "../../GoogleAnalytics";
+import React, {Component} from "react";
+import {releaseLinkEvent} from "../../GoogleAnalytics";
 
 const apiUrl =
   "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest";
@@ -25,7 +25,7 @@ export default class ReleaseLink extends Component {
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        this.setState({ release_url: data.assets[0].browser_download_url });
+        this.setState({release_url: data.assets[0].browser_download_url});
       });
   }
   /**

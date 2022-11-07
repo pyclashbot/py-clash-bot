@@ -1,4 +1,4 @@
-import { Component } from "react";
+import {Component} from "react";
 
 const apiUrl =
   "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest";
@@ -28,7 +28,7 @@ export default class ReleaseDownloadCount extends Component {
         for (const element of data.assets) {
           downloadCount += element.download_count;
         }
-        this.setState({ download_count: downloadCount });
+        this.setState({download_count: downloadCount});
       });
   }
   /**

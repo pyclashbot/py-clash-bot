@@ -2,7 +2,7 @@ import MEmuDependency from "./MEmuDependency";
 import Description from "./Description";
 import Execution from "./Execution";
 import Install from "./Install";
-import React, { Component } from "react";
+import React, {Component} from "react";
 import NavToContributing from "../navigation/NavToContributing";
 
 /**

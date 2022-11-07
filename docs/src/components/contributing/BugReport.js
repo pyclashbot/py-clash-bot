@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { bugReportEvent, featureRequestEvent } from "../../GoogleAnalytics";
+import React, {Component} from "react";
+import {bugReportEvent, featureRequestEvent} from "../../GoogleAnalytics";
 
 /**
  * Component for bug report
