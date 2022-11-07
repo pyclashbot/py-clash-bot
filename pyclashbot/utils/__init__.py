@@ -1,7 +1,8 @@
+from .caching import (_cache_data, _load_data, cache_user_settings,
+                      check_user_settings, read_user_settings)
+from .dependency import setup_ahk, setup_memu
 from .logger import Logger
 from .thread import StoppableThread
-from .dependency import setup_memu, setup_ahk
-from .caching import read_user_settings, cache_user_settings
 
 __all__ = [
     "Logger",
@@ -10,4 +11,7 @@ __all__ = [
     "setup_ahk",
     "read_user_settings",
     "cache_user_settings",
+    "check_user_settings",
+    "_cache_data",
+    "_load_data",
 ]
