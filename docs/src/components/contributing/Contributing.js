@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import ContributionDescription from "./ContributionDescription";
-import DevInstall from "./DevInstall";
-import BugReport from "./BugReport";
-import NavToReadme from "../navigation/NavToReadme";
+import React, {Component} from 'react';
+import ContributionDescription from './ContributionDescription';
+import DevInstall from './DevInstall';
+import BugReport from './BugReport';
+import NavToReadme from '../navigation/NavToReadme';
 
 /**
  * Component for project description
