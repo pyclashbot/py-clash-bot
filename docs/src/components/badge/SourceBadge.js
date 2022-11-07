@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import SourceBadgeSVG from "../../assets/source_badge.svg";
-import { sourceBadgeEvent } from "../../GoogleAnalytics";
+import React, {Component} from 'react';
+import SourceBadgeSVG from '../../assets/source_badge.svg';
+import {sourceBadgeEvent} from '../../GoogleAnalytics';
 
 /**
  * Component for latest release download link
