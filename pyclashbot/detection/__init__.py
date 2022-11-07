@@ -3,6 +3,7 @@ from .image_rec import (
     find_references,
     get_first_location,
     pixel_is_equal,
+    compare_images,
 )
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "find_references",
     "get_first_location",
     "pixel_is_equal",
+    "compare_images",
 ]
