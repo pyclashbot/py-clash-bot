@@ -3,10 +3,9 @@ import time
 
 from pymemuc import PyMemuc
 
-from pyclashbot.clashmain import wait_for_clash_main_menu
-from pyclashbot.client import orientate_memu, orientate_terminal
-from pyclashbot.dependency import setup_memu
 from pyclashbot.layout import show_clash_royale_setup_gui
+from pyclashbot.memu import orientate_memu, orientate_terminal
+from pyclashbot.utils import setup_memu
 
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc()
@@ -81,8 +80,6 @@ def restart_and_open_clash(logger):
     skip_ads(logger, vm_index)
     start_clash_royale(logger, vm_index)
 
-    if wait_for_clash_main_menu(logger) == "restart":
-        restart_and_open_clash(logger)
     time.sleep(3)
 
     # increment restart counter

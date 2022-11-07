@@ -2,13 +2,10 @@ import random
 import time
 from os.path import dirname, join
 
-from pyclashbot.client import (
-    click,
-    get_file_count,
-    make_reference_image_list,
-    screenshot,
-)
-from pyclashbot.image_rec import check_for_location, find_references
+from pyclashbot.bot.clashmain import get_to_card_page
+from pyclashbot.bot.upgrade import get_to_clash_main_from_card_page
+from pyclashbot.detection import check_for_location, find_references
+from pyclashbot.memu import click, get_file_count, make_reference_image_list, screenshot
 
 
 def get_card_images():

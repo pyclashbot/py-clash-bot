@@ -1,39 +1,30 @@
 import time
 from typing import Literal
 
-from pyclashbot.battlepass_rewards_collection import collect_battlepass_rewards
-from pyclashbot.card_mastery_collection import collect_card_mastery_rewards
-from pyclashbot.clashmain import (
-    check_if_in_battle_with_delay,
-    check_if_on_first_card_page,
-    get_to_account,
-    get_to_card_page,
-    handle_card_mastery_notification,
-    handle_gold_rush_event,
-    open_chests,
-    start_2v2,
-    wait_for_battle_start,
-    wait_for_clash_main_menu,
-)
-from pyclashbot.client import click, orientate_terminal
-from pyclashbot.deck import randomize_and_select_deck_2
-from pyclashbot.fight import (
-    check_if_end_screen_is_exit_bottom_left,
-    check_if_end_screen_is_ok_bottom_middle,
-    check_if_past_game_is_win,
-    fight,
-    leave_end_battle_window,
-)
-from pyclashbot.launcher import restart_and_open_clash
-from pyclashbot.level_up_reward_collection import collect_level_up_rewards
-from pyclashbot.logger import Logger
-from pyclashbot.request import (
-    check_if_on_clan_page,
-    get_to_clash_main_from_clan_page,
-    request_random_card_from_clash_main,
-)
-from pyclashbot.upgrade import get_to_clash_main_from_card_page, upgrade_current_cards
-from pyclashbot.war import handle_war_attacks
+from pyclashbot.bot.battlepass_rewards_collection import \
+    collect_battlepass_rewards
+from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
+from pyclashbot.bot.clashmain import (check_if_in_battle_with_delay,
+                                      check_if_on_first_card_page,
+                                      get_to_account, get_to_card_page,
+                                      get_to_clash_main_from_clan_page,
+                                      handle_card_mastery_notification,
+                                      handle_gold_rush_event, open_chests,
+                                      start_2v2, wait_for_battle_start,
+                                      wait_for_clash_main_menu)
+from pyclashbot.bot.deck import randomize_and_select_deck_2
+from pyclashbot.bot.fight import (check_if_end_screen_is_exit_bottom_left,
+                                  check_if_end_screen_is_ok_bottom_middle,
+                                  check_if_past_game_is_win, do_fight,
+                                  leave_end_battle_window)
+from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
+from pyclashbot.bot.request import (check_if_on_clan_page,
+                                    request_random_card_from_clash_main)
+from pyclashbot.bot.upgrade import (get_to_clash_main_from_card_page,
+                                    upgrade_current_cards)
+from pyclashbot.bot.war import handle_war_attacks
+from pyclashbot.memu import click, orientate_terminal, restart_and_open_clash
+from pyclashbot.utils import Logger
 
 
 def detect_state(logger):
@@ -244,7 +235,7 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
     logger.change_status("Fighting")
     logger.add_fight()
 
-    if fight(logger) == "restart":
+    if do_fight(logger) == "restart":
         return "restart"
 
     if leave_end_battle_window(logger) == "restart":
