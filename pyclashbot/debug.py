@@ -18,7 +18,10 @@ from pyclashbot.bot.clashmain import (
     check_for_friends_logo_on_main,
     check_if_on_clash_main_menu,
 )
-from pyclashbot.bot.deck import find_use_card_button
+from pyclashbot.bot.deck import (
+    find_use_card_button,
+    look_for_card_collection_icon_on_card_page,
+)
 
 from pyclashbot.memu import (
     orientate_memu,
@@ -126,7 +129,11 @@ def memu_debug(logger):
         print(check_if_on_clash_main_menu())
 
 
-# memu_debug(logger)
+def reference_image_debug():
+    path = dirname(__file__)[:-3]
+    path = join(path, "detection", "reference_images")
+    print(path)
 
 
-print(references)
+# reference_image_debug()
+look_for_card_collection_icon_on_card_page()
