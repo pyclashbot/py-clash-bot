@@ -383,6 +383,7 @@ def handle_gold_rush_event(logger):
         "Handling the possibility of a gold rush event notification obstructing the bot."
     )
     click(193, 465)
+    time.sleep(0.1)
     click(193, 465)
 
 

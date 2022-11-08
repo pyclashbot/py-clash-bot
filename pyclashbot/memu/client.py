@@ -91,26 +91,6 @@ def get_file_count(folder):
     return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
 
 
-def orientate_memu():
-    """Method for orientating Memu client"""
-    try:
-        window_memu = pygetwindow.getWindowsWithTitle("(pyclashbot)")[0]
-        window_memu.minimize()
-        window_memu.restore()
-        time.sleep(0.2)
-        try:
-            window_memu.moveTo(0, 0)
-        except pygetwindow.PyGetWindowException:
-            print("Had trouble moving MEmu window.")
-        time.sleep(0.2)
-        try:
-            window_memu.resizeTo(460, 680)
-        except pygetwindow.PyGetWindowException:
-            print("Had trouble resizing MEmu window")
-    except Exception:
-        print("Couldnt orientate MEmu")
-
-
 def show_image(image):
     """Method to show a PIL image using matlibplot
 
