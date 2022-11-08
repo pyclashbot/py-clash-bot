@@ -24,7 +24,7 @@ def check_if_card_is_upgradable(card_coord=None, upgrade_coord=None):
     time.sleep(0.2)
 
     # check upgrade coord
-    upgrade_color = [107, 235, 118]
+    upgrade_color = [107, 233, 118]
     pixel = numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
 
     return bool(pixel_is_equal(pixel, upgrade_color, tol=35))
@@ -42,15 +42,16 @@ def check_for_upgradable_cards():
         [338, 406],
     ]
     upgrade_coord_list = [
-        [48, 345],
-        [132, 345],
-        [215, 345],
-        [367, 343],
-        [50, 467],
-        [198, 467],
-        [226, 471],
-        [365, 465],
+        [47, 338],
+        [133, 338],
+        [221, 338],
+        [307, 337],
+        [47, 471],
+        [133, 471],
+        [221, 470],
+        [309, 471],
     ]
+
     card_upgrade_list = []
     for card_index in range(8):
         card_coord = card_coord_list[card_index]
