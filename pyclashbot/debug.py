@@ -42,7 +42,12 @@ from pyclashbot.bot.deck import (
 )
 from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels
 from pyclashbot.bot.request import request_random_card_from_clash_main
-from pyclashbot.bot.upgrade import upgrade_current_cards
+from pyclashbot.bot.upgrade import (
+    check_for_upgradable_cards,
+    find_confirm_upgrade_for_gold_button,
+    find_first_upgrade_for_gold_button,
+    upgrade_current_cards,
+)
 from pyclashbot.bot.war import (
     check_if_has_a_deck_for_this_war_battle,
     click_war_icon,
@@ -183,13 +188,14 @@ def main_debug():
     # randomize_and_select_deck_2(logger)
     # request_random_card_from_clash_main(logger)
     # print(check_for_level_up_reward_pixels())
-    handle_war_attacks(logger)
+    # handle_war_attacks(logger)
     # upgrade_current_cards(logger)
     pass
 
 
-# main_debug()
+main_debug()
 
-# make_a_random_deck_for_this_war_battle()
 
-print(check_if_has_a_deck_for_this_war_battle())
+# print(find_confirm_upgrade_for_gold_button())
+
+# print(find_first_upgrade_for_gold_button())
