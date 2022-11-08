@@ -14,6 +14,11 @@ import PySimpleGUI as sg
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
+from pyclashbot.bot.clashmain import (
+    check_for_friends_logo_on_main,
+    check_if_on_clash_main_menu,
+)
+from pyclashbot.bot.deck import find_use_card_button
 
 from pyclashbot.memu import (
     orientate_memu,
@@ -22,10 +27,16 @@ from pyclashbot.memu import (
     scroll_down,
     scroll_down_super_fast,
 )
+from pyclashbot.memu.client import get_file_count, make_reference_image_list, show_image
+from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
 ahk = AHK()
 logger = Logger(console_log=True)
+
+
+# show_image(screenshot())
+# orientate_memu()
 
 
 def gui_debug():
@@ -108,4 +119,14 @@ def gui_debug():
         time.sleep(1)
 
 
-gui_debug()
+def memu_debug(logger):
+    logger.change_status("Starting memu debug")
+    start_vm(logger)
+    while True:
+        print(check_if_on_clash_main_menu())
+
+
+# memu_debug(logger)
+
+
+print(references)
