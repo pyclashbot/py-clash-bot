@@ -12,9 +12,16 @@ def check_for_level_up_reward_pixels():
     iar = numpy.asarray(screenshot())
 
     pix_list = [
-        iar[58][7],
-        iar[70][9],
+        iar[48][9],
+        iar[46][21],
+        iar[47][12],
+        iar[61][13],
+        iar[62][23],
+        iar[54][26],
     ]
+
+    # for pix in pix_list: print(pix[0],pix[1],pix[2])
+
     color = [255, 173, 20]
 
     return all(pixel_is_equal(pix, color, tol=65) for pix in pix_list)
