@@ -23,6 +23,7 @@ def configure_vm(logger, vm_index):
         "start_window_mode", "1", vm_index=vm_index
     )  # remember resolution
     pmc.set_configuration_vm("enable_audio", "0")
+    pmc.set_configuration_vm("fps", "5")  # drop fps way low
 
 
 def create_vm(logger):
