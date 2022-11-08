@@ -14,13 +14,19 @@ import PySimpleGUI as sg
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
-from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
+from pyclashbot.bot.battlepass_rewards_collection import (
+    check_for_battlepass_reward_pixels,
+    check_if_has_battlepass_rewards,
+    collect_battlepass_rewards,
+)
 from pyclashbot.bot.card_mastery_collection import (
     check_if_can_collect_card_mastery_rewards,
     collect_card_mastery_rewards,
 )
 from pyclashbot.bot.clashmain import (
     check_for_friends_logo_on_main,
+    check_for_gem_logo_on_main,
+    check_for_gold_logo_on_main,
     check_for_war_loot_menu,
     check_if_in_a_clan,
     check_if_in_battle_with_delay,
@@ -41,7 +47,10 @@ from pyclashbot.bot.deck import (
     randomize_and_select_deck_2,
 )
 from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels
-from pyclashbot.bot.request import request_random_card_from_clash_main
+from pyclashbot.bot.request import (
+    look_for_request_button,
+    request_random_card_from_clash_main,
+)
 from pyclashbot.bot.upgrade import (
     check_for_upgradable_cards,
     find_confirm_upgrade_for_gold_button,
@@ -77,7 +86,7 @@ ahk = AHK()
 logger = Logger(console_log=True)
 
 
-# show_image(screenshot())
+show_image(screenshot())
 # orientate_memu()
 
 
@@ -165,7 +174,7 @@ def memu_debug(logger):
     logger.change_status("Starting memu debug")
     start_vm(logger)
     while True:
-        print(check_if_on_clash_main_menu())
+        pass
 
 
 def reference_image_debug():
@@ -175,27 +184,26 @@ def reference_image_debug():
 
 
 def main_debug():
+    # print(check_if_on_clash_main_menu())
     # collect_battlepass_rewards(logger)
     # collect_card_mastery_rewards(logger)
     # print(check_if_stuck_on_trophy_progression_page())
     # print(check_if_on_first_card_page())
     # get_to_account(logger, 0)
     # start_2v2(logger)
-    # print(check_if_on_clash_main_menu())
     # print(check_if_in_a_clan(logger))
-    # print(check_if_in_battle_with_delay())
-    # print(check_if_on_first_card_page())
     # randomize_and_select_deck_2(logger)
-    # request_random_card_from_clash_main(logger)
+    request_random_card_from_clash_main(logger)
     # print(check_for_level_up_reward_pixels())
     # handle_war_attacks(logger)
     # upgrade_current_cards(logger)
+    # print(check_if_in_battle_with_delay())
     pass
 
 
-main_debug()
+# main_debug()
+
+# print(get_file_count("request_button"))
 
 
-# print(find_confirm_upgrade_for_gold_button())
-
-# print(find_first_upgrade_for_gold_button())
+print(look_for_request_button())

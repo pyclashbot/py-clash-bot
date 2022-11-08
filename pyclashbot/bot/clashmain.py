@@ -10,6 +10,7 @@ from pyclashbot.detection import (
     pixel_is_equal,
 )
 from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
+from pyclashbot.memu.client import print_pix_list
 
 ahk = AHK()
 
@@ -182,11 +183,13 @@ def check_for_gem_logo_on_main():
     iar = numpy.array(screenshot())
 
     pix_list = [
-        iar[64][403],
-        iar[67][406],
-        iar[70][408],
+        iar[46][402],
+        iar[52][403],
+        iar[48][410],
     ]
     color = [75, 180, 35]
+
+    # print_pix_list(pix_list)
 
     for pix in pix_list:
         return bool(pixel_is_equal(pix, color, tol=45))
@@ -213,12 +216,14 @@ def check_for_gold_logo_on_main():
     iar = numpy.array(screenshot())
 
     pix_list = [
-        iar[61][300],
-        iar[64][303],
-        iar[67][307],
-        iar[70][310],
+        iar[48][299],
+        iar[52][300],
+        iar[44][302],
+        iar[49][297],
     ]
     color = [201, 177, 56]
+
+    # print_pix_list(pix_list)
 
     for pix in pix_list:
         return bool(pixel_is_equal(pix, color, tol=85))
@@ -229,12 +234,15 @@ def check_for_friends_logo_on_main():
     iar = numpy.array(screenshot())
 
     pix_list = [
-        iar[116][266],
+        iar[90][269],
+        iar[105][265],
+        iar[103][272],
+        iar[89][270],
         iar[107][266],
     ]
     color = [177, 228, 252]
 
-    # for pix in pix_list: print(pix[0],pix[1],pix[2])
+    # print_pix_list(pix_list)
 
     # pixel check
     for pix in pix_list:
@@ -244,19 +252,19 @@ def check_for_friends_logo_on_main():
 
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
-        # print("gem fail")
+        print("gem fail")
         return False
 
     if not check_for_blue_background_on_main():
-        # print("blue fail")
+        print("blue fail")
         return False
 
     if not check_for_friends_logo_on_main():
-        # print("friends logo")
+        print("friends logo")
         return False
 
     if not check_for_gold_logo_on_main():
-        # print("gold logo")
+        print("gold logo")
         return False
     return True
 
