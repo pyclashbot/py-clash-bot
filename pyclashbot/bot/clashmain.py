@@ -10,7 +10,6 @@ from pyclashbot.detection import (
     pixel_is_equal,
 )
 from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
-from pyclashbot.memu.client import print_pix_list
 
 ahk = AHK()
 
@@ -668,10 +667,7 @@ def check_for_war_loot_menu():
     ]
     color = [255, 190, 48]
 
-    for pix in pix_list:
-        if not pixel_is_equal(color, pix, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(color, pix, tol=45) for pix in pix_list)
 
 
 def handle_war_loot_menu():

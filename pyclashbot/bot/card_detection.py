@@ -1,6 +1,5 @@
 import random
 import time
-from os.path import dirname, join
 
 from pyclashbot.bot.clashmain import get_to_card_page
 from pyclashbot.bot.upgrade import get_to_clash_main_from_card_page

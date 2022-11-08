@@ -1,5 +1,4 @@
 import time
-from os.path import dirname, join
 
 import numpy
 
