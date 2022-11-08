@@ -79,7 +79,7 @@ from pyclashbot.memu.client import (
     make_reference_image_list,
     show_image,
 )
-from pyclashbot.memu.launcher import start_vm
+from pyclashbot.memu.launcher import move_window_to_top_left, start_vm
 from pyclashbot.utils import Logger
 
 ahk = AHK()
@@ -217,3 +217,6 @@ def main_debug():
 # for _ in range(11):scroll_down_super_fast()
 
 # randomize_and_select_deck_2()
+
+
+move_window_to_top_left("pyclashbot")
