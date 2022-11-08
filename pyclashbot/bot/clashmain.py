@@ -226,12 +226,12 @@ def check_for_friends_logo_on_main():
     iar = numpy.array(screenshot())
 
     pix_list = [
-        iar[123][262],
-        iar[123][272],
         iar[116][266],
         iar[107][266],
     ]
     color = [177, 228, 252]
+
+    # for pix in pix_list: print(pix[0],pix[1],pix[2])
 
     # pixel check
     for pix in pix_list:
@@ -241,14 +241,21 @@ def check_for_friends_logo_on_main():
 
 def check_if_on_clash_main_menu():
     if not check_for_gem_logo_on_main():
-
+        # print("gem fail")
         return False
 
     if not check_for_blue_background_on_main():
-
+        # print("blue fail")
         return False
 
-    return check_for_friends_logo_on_main() if check_for_gold_logo_on_main() else False
+    if not check_for_friends_logo_on_main():
+        # print("friends logo")
+        return False
+
+    if not check_for_gold_logo_on_main():
+        # print("gold logo")
+        return False
+    return True
 
 
 def get_to_account(logger, account_number):
