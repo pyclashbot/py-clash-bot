@@ -46,11 +46,14 @@ def check_if_stuck_on_trophy_progression_page():
     iar = numpy.asarray(screenshot())
     color = [85, 177, 255]
     pix_list = [
-        iar[620][225],
+        # iar[620][225],
         iar[625][230],
         iar[630][238],
         iar[635][245],
     ]
+
+    # for pix in pix_list:print(pix[0],pix[1],pix[2])
+
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
@@ -74,7 +77,7 @@ def get_to_card_page(logger):
 
 
 def check_if_on_first_card_page():
-    # Method to check if the elixer icon of your deck's AVG elixer when on the
+    # Method to check if the elixer icon of your deck's AVG elixer exists when on the
     # card page exists yet
     references = [
         "1.png",
@@ -98,7 +101,7 @@ def check_if_on_first_card_page():
         tolerance=0.97,
     )
 
-    return get_first_location(locations)
+    return check_for_location(locations)
 
 
 def handle_puzzleroyale_popup(logger):
@@ -276,13 +279,13 @@ def get_to_account(logger, account_number):
     time.sleep(1)
 
     if account_number == 0:
-        click(225, 390)
+        click(155, 350)
     if account_number == 1:
-        click(210, 470)
+        click(190, 420)
     if account_number == 2:
-        click(220, 550)
-    if account_number == 2:
-        click(225, 625)
+        click(230, 510)
+    if account_number == 3:
+        click(230, 595)
 
     time.sleep(7)
     logger.add_account_switch()
@@ -526,6 +529,9 @@ def find_2v2_quick_match_button():
         "17.png",
         "18.png",
         "19.png",
+        "20.png",
+        "21.png",
+        "22.png",
     ]
 
     locations = find_references(

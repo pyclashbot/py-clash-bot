@@ -82,7 +82,7 @@ def check_if_can_collect_card_mastery_rewards(logger):
     has_rewards = False
     while time.time() - start_time < 3:
         pixel = numpy.asarray(screenshot())[499][239]
-        print(pixel)
+        # print(pixel)
         if bool(pixel_is_equal(pixel, [255, 166, 13], tol=45)):
             has_rewards = True
 
