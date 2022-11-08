@@ -25,12 +25,7 @@ def check_for_card(image, card_name=""):
 
     references = make_reference_image_list(
         get_file_count(
-            join(
-                dirname(__file__),
-                "detection",
-                "reference_images",
-                f"check_if_card_is_{card_name}",
-            )
+            f"check_if_card_is_{card_name}",
         )
     )
 

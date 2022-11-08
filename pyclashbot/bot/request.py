@@ -17,6 +17,7 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
+from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
 
 def request_random_card_from_clash_main(logger):
@@ -101,66 +102,12 @@ def look_for_request_button():
     # Method to look for the request button in the list of clan interaction
     # buttons on the clan page to see if we can request
 
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        "13.png",
-        "14.png",
-        "15.png",
-        "16.png",
-        "17.png",
-        "18.png",
-        "19.png",
-        "20.png",
-        "21.png",
-        "ifhy_1.png",
-        "ifhy_2.png",
-        "ifhy_3.png",
-        "ifhy_4.png",
-        "ifhy_5.png",
-        "ifhy_6.png",
-        "ifhy_7.png",
-        "ifhy_8.png",
-        "iuyfgh_1.png",
-        "iuyfgh_2.png",
-        "iuyfgh_3.png",
-        "iuyfgh_4.png",
-        "iuyfgh_5.png",
-        "iuyfgh_6.png",
-        "iuyfgh_7.png",
-        "iuyfgh_8.png",
-        "royal_guards_1.png",
-        "royal_guards_2.png",
-        "royal_guards_3.png",
-        "royal_guards_4.png",
-        "royal_guards_5.png",
-        "royal_guards_6.png",
-        "royal_guards_7.png",
-        "royal_guards_8.png",
-        "telotet_1.png",
-        "telotet_2.png",
-        "telotet_3.png",
-        "telotet_4.png",
-        "telotet_5.png",
-        "telotet_6.png",
-        "telotet_7.png",
-        "telotet_8.png",
-        "22.png",
-        "23.png",
-        "24.png",
-        "25.png",
-        "26.png",
-    ]
+    references = make_reference_image_list(
+        get_file_count(
+            "request_button",
+        )
+    )
+
     locations = find_references(
         screenshot=screenshot(),
         folder="request_button",

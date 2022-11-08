@@ -1,5 +1,6 @@
 import os
 import time
+from os.path import dirname, join
 
 import numpy
 import pyautogui
@@ -11,6 +12,11 @@ from pyclashbot.utils import setup_ahk
 
 setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
+
+
+def print_pix_list(pix_list):
+    for pix in pix_list:
+        print(pix[0], pix[1], pix[2])
 
 
 def screenshot(region=None):
@@ -71,7 +77,7 @@ def scroll_up_super_fast():
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
-def get_file_count(directory):
+def get_file_count(folder):
     """Method to return the amount of a files in a given directory
 
     Args:
@@ -80,6 +86,9 @@ def get_file_count(directory):
     Returns:
         int: Amount of files in the given directory
     """
+    directory = join(dirname(__file__)[:-4], "detection", "reference_images", folder)
+
+    print(directory)
 
     return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
 
