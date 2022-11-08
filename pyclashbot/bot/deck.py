@@ -214,7 +214,12 @@ def find_use_card_button():
 
     references = make_reference_image_list(
         get_file_count(
-            join(dirname(__file__), "reference_images", "find_use_card_button")
+            join(
+                dirname(__file__),
+                "detection",
+                "reference_images",
+                "find_use_card_button",
+            )
         )
     )
 
@@ -328,7 +333,12 @@ def look_for_card_collection_icon_on_card_page():
 
     references = make_reference_image_list(
         get_file_count(
-            join(dirname(__file__), "reference_images", "card_collection_icon")
+            join(
+                dirname(__file__),
+                "detection",
+                "reference_images",
+                "card_collection_icon",
+            )
         )
     )
 
