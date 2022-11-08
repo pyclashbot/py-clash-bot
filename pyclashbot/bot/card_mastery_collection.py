@@ -78,9 +78,14 @@ def check_if_can_collect_card_mastery_rewards(logger):
     if get_to_card_page(logger) == "restart":
         return "restart"
 
-    pixel = numpy.asarray(screenshot())[499][239]
+    start_time = time.time()
+    has_rewards = False
+    while time.time() - start_time < 3:
+        pixel = numpy.asarray(screenshot())[499][239]
+        print(pixel)
+        if bool(pixel_is_equal(pixel, [255, 166, 13], tol=45)):
+            has_rewards = True
 
-    has_rewards = bool(pixel_is_equal(pixel, [255, 166, 13], tol=45))
     # return to cash main
     if get_to_clash_main_from_card_page(logger) == "restart":
         return "restart"
