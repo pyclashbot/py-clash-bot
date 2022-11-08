@@ -44,9 +44,11 @@ from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import (
+    check_if_has_a_deck_for_this_war_battle,
     click_war_icon,
     find_battle_icon_on_war_page,
     handle_war_attacks,
+    make_a_random_deck_for_this_war_battle,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
 
@@ -188,7 +190,6 @@ def main_debug():
 
 # main_debug()
 
+# make_a_random_deck_for_this_war_battle()
 
-# click_war_icon()
-
-print(find_battle_icon_on_war_page())
+print(check_if_has_a_deck_for_this_war_battle())
