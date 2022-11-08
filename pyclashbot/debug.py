@@ -201,7 +201,7 @@ def main_debug():
     pass
 
 
-# main_debug()
+main_debug()
 
 # print(get_file_count("request_button"))
 
