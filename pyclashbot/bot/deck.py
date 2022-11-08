@@ -223,8 +223,6 @@ def find_use_card_button():
         )
     )
 
-    print(references)
-
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
@@ -309,6 +307,7 @@ def check_if_pixel_is_grey(pixel):
 
 def count_scrolls_in_card_page():
     if check_if_mimimum_scroll_case():
+        # print("Yes minimum scroll case")
         return 0
 
     # Count scrolls
@@ -351,19 +350,20 @@ def look_for_card_collection_icon_on_card_page():
 
 def check_if_mimimum_scroll_case():
     scroll_down()
-    time.sleep(1)
+    time.sleep(2)
 
     iar = numpy.asarray(screenshot())
 
-    color = [159, 53, 237]
+    color = [59, 39, 110]
 
     pix_list = [
-        iar[558][200],
-        iar[558][220],
-        iar[558][245],
-        iar[558][270],
+        iar[565][320],
+        iar[575][325],
+        iar[585][345],
+        iar[595][365],
     ]
-    # for pix in pix_list: print(pix[0],pix[1],pix[2])
+
+    # for pix in pix_list:print(pix[0],pix[1],pix[2])
 
     truth = False
     for pix in pix_list:
