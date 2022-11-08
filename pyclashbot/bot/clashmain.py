@@ -380,9 +380,6 @@ def check_if_on_trophy_progession_rewards_page():
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
 
-# Method to handle the chest unlocking on the clash main menu
-
-
 def open_chests(logger):
     # unlock coord (210, 455)
     # chest 1 coord (78, 554)
