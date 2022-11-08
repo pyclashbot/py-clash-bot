@@ -43,7 +43,11 @@ from pyclashbot.bot.deck import (
 from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
-from pyclashbot.bot.war import handle_war_attacks
+from pyclashbot.bot.war import (
+    click_war_icon,
+    find_battle_icon_on_war_page,
+    handle_war_attacks,
+)
 from pyclashbot.detection.image_rec import pixel_is_equal
 
 from pyclashbot.memu import (
@@ -175,11 +179,16 @@ def main_debug():
     # print(check_if_in_battle_with_delay())
     # print(check_if_on_first_card_page())
     # randomize_and_select_deck_2(logger)
-    request_random_card_from_clash_main(logger)
+    # request_random_card_from_clash_main(logger)
     # print(check_for_level_up_reward_pixels())
-    # handle_war_attacks(logger)
+    handle_war_attacks(logger)
     # upgrade_current_cards(logger)
     pass
 
 
 # main_debug()
+
+
+# click_war_icon()
+
+print(find_battle_icon_on_war_page())
