@@ -146,7 +146,12 @@ def find_battle_icon_on_war_page():
 
     references = make_reference_image_list(
         get_file_count(
-            join(dirname(__file__), "reference_images", "look_for_battle_on_war_page")
+            join(
+                dirname(__file__),
+                "detection",
+                "reference_images",
+                "look_for_battle_on_war_page",
+            )
         )
     )
 
