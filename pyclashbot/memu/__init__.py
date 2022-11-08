@@ -7,7 +7,6 @@ from .client import (
     scroll_down_super_fast,
     scroll_up_fast,
     scroll_up_super_fast,
-    orientate_memu,
     orientate_terminal,
 )
 
@@ -22,7 +21,6 @@ __all__ = [
     "scroll_down_super_fast",
     "scroll_up_fast",
     "scroll_up_super_fast",
-    "orientate_memu",
     "orientate_terminal",
     "restart_and_open_clash",
 ]

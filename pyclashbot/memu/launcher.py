@@ -4,7 +4,7 @@ from typing import Any
 from pymemuc import PyMemuc
 
 from pyclashbot.interface import show_clash_royale_setup_gui
-from pyclashbot.memu import orientate_memu, orientate_terminal
+from pyclashbot.memu import orientate_terminal
 from pyclashbot.utils import setup_memu
 
 launcher_path = setup_memu()  # setup memu, install if necessary
@@ -70,13 +70,13 @@ def restart_and_open_clash(logger):
         if vm["title"] == "pyclashbot":
             pmc.stop_vm(vm["index"])
 
-    orientate_terminal()
+    # orientate_terminal()
 
     # Open the Memu Multi Manager
     logger.change_status("Opening MEmu launcher")
     vm_index = start_vm(logger)
     time.sleep(10)
-    orientate_memu()
+
     skip_ads(logger, vm_index)
     start_clash_royale(logger, vm_index)
 
