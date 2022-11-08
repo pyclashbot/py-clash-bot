@@ -5,6 +5,7 @@ from ahk import AHK
 
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
+from pyclashbot.memu.client import print_pix_list
 
 ahk = AHK()
 
@@ -14,12 +15,12 @@ def check_for_battlepass_reward_pixels():
     iar = numpy.asarray(screenshot())
 
     pix_list = [
-        iar[156][263],
-        iar[188][264],
-        iar[191][355],
-        iar[157][354],
+        iar[130][366],
+        iar[135][373],
     ]
     color = [240, 180, 20]
+
+    # print_pix_list(pix_list)
 
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
