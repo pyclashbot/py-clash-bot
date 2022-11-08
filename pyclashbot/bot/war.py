@@ -187,11 +187,14 @@ def click_war_icon():
 def check_if_has_a_deck_for_this_war_battle():
     iar = numpy.asarray(screenshot())
     pix_list = [
-        iar[435][250],
+        # iar[435][250],
         iar[437][275],
         iar[441][300],
     ]
     color = [254, 199, 79]
+
+    for pix in pix_list:
+        print(pix[0], pix[1], pix[2])
 
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
