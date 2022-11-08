@@ -21,6 +21,7 @@ from pyclashbot.bot.card_mastery_collection import (
 )
 from pyclashbot.bot.clashmain import (
     check_for_friends_logo_on_main,
+    check_for_war_loot_menu,
     check_if_in_a_clan,
     check_if_in_battle_with_delay,
     check_if_on_clash_main_menu,
@@ -28,6 +29,7 @@ from pyclashbot.bot.clashmain import (
     check_if_stuck_on_trophy_progression_page,
     find_2v2_quick_match_button,
     get_to_account,
+    handle_war_loot_menu,
     start_2v2,
 )
 from pyclashbot.bot.deck import (
@@ -42,6 +44,7 @@ from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import handle_war_attacks
+from pyclashbot.detection.image_rec import pixel_is_equal
 
 from pyclashbot.memu import (
     orientate_memu,
@@ -50,7 +53,12 @@ from pyclashbot.memu import (
     scroll_down,
     scroll_down_super_fast,
 )
-from pyclashbot.memu.client import get_file_count, make_reference_image_list, show_image
+from pyclashbot.memu.client import (
+    click,
+    get_file_count,
+    make_reference_image_list,
+    show_image,
+)
 from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
@@ -161,21 +169,17 @@ def main_debug():
     # print(check_if_stuck_on_trophy_progression_page())
     # print(check_if_on_first_card_page())
     # get_to_account(logger, 0)
-    start_2v2(logger)
-    # check_if_on_clash_main_menu()
-    # check_if_in_a_clan(logger)
-    # check_if_in_battle_with_delay()
-    # check_if_on_first_card_page()
+    # start_2v2(logger)
+    # print(check_if_on_clash_main_menu())
+    # print(check_if_in_a_clan(logger))
+    # print(check_if_in_battle_with_delay())
+    # print(check_if_on_first_card_page())
     # randomize_and_select_deck_2(logger)
-    # request_random_card_from_clash_main(logger)
-    # check_for_level_up_reward_pixels()
+    request_random_card_from_clash_main(logger)
+    # print(check_for_level_up_reward_pixels())
     # handle_war_attacks(logger)
     # upgrade_current_cards(logger)
+    pass
 
 
 # main_debug()
-
-# start_2v2(logger)
-
-while True:
-    print(find_2v2_quick_match_button())
