@@ -35,6 +35,7 @@ from pyclashbot.bot.clashmain import (
     check_if_stuck_on_trophy_progression_page,
     find_2v2_quick_match_button,
     get_to_account,
+    handle_gold_rush_event,
     handle_war_loot_menu,
     start_2v2,
 )
@@ -67,7 +68,6 @@ from pyclashbot.bot.war import (
 from pyclashbot.detection.image_rec import pixel_is_equal
 
 from pyclashbot.memu import (
-    orientate_memu,
     orientate_terminal,
     screenshot,
     scroll_down,
@@ -86,8 +86,7 @@ ahk = AHK()
 logger = Logger(console_log=True)
 
 
-show_image(screenshot())
-# orientate_memu()
+# show_image(screenshot())
 
 
 def gui_debug():
@@ -173,6 +172,12 @@ def gui_debug():
 def memu_debug(logger):
     logger.change_status("Starting memu debug")
     start_vm(logger)
+
+    for n in range(20):
+        time.sleep(1)
+        print(20 - n)
+
+    handle_gold_rush_event(logger)
     while True:
         pass
 
@@ -184,7 +189,7 @@ def reference_image_debug():
 
 
 def main_debug():
-    # print(check_if_on_clash_main_menu())
+    print(check_if_on_clash_main_menu())
     # collect_battlepass_rewards(logger)
     # collect_card_mastery_rewards(logger)
     # print(check_if_stuck_on_trophy_progression_page())
@@ -201,12 +206,13 @@ def main_debug():
     pass
 
 
-main_debug()
+# main_debug()
 
 # print(get_file_count("request_button"))
 
-
 # print(look_for_request_button())
 
-
 # print(check_for_upgradable_cards())
+
+
+memu_debug(logger)
