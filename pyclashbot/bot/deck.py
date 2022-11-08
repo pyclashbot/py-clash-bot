@@ -215,13 +215,15 @@ def find_use_card_button():
     references = make_reference_image_list(
         get_file_count(
             join(
-                dirname(__file__),
+                dirname(__file__)[:-3],
                 "detection",
                 "reference_images",
-                "find_use_card_button",
+                "card_collection_icon",
             )
         )
     )
+
+    print(references)
 
     locations = find_references(
         screenshot=current_image,
@@ -331,16 +333,10 @@ def look_for_card_collection_icon_on_card_page():
     current_image = screenshot()
     reference_folder = "card_collection_icon"
 
-    references = make_reference_image_list(
-        get_file_count(
-            join(
-                dirname(__file__),
-                "detection",
-                "reference_images",
-                "card_collection_icon",
-            )
-        )
+    path = join(
+        dirname(__file__)[:-3], "detection", "reference_images", "card_collection_icon"
     )
+    references = make_reference_image_list(get_file_count(path))
 
     locations = find_references(
         screenshot=current_image,

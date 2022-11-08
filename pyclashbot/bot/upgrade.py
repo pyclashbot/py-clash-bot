@@ -113,13 +113,14 @@ def find_first_upgrade_for_gold_button():
     references = make_reference_image_list(
         get_file_count(
             join(
-                dirname(__file__),
+                dirname(__file__)[:-3],
                 "detection",
                 "reference_images",
-                "find_first_upgrade_for_gold_button",
+                "card_collection_icon",
             )
         )
     )
+
     locations = find_references(
         screenshot=screenshot(),
         folder="find_first_upgrade_for_gold_button",
@@ -134,13 +135,14 @@ def find_confirm_upgrade_for_gold_button():
     references = make_reference_image_list(
         get_file_count(
             join(
-                dirname(__file__),
+                dirname(__file__)[:-3],
                 "detection",
                 "reference_images",
-                "find_confirm_upgrade_for_gold_button",
+                "card_collection_icon",
             )
         )
     )
+
     locations = find_references(
         screenshot=screenshot(),
         folder="find_confirm_upgrade_for_gold_button",
