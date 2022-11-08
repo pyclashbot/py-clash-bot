@@ -114,6 +114,7 @@ def find_first_upgrade_for_gold_button():
         get_file_count(
             join(
                 dirname(__file__),
+                "detection",
                 "reference_images",
                 "find_first_upgrade_for_gold_button",
             )
@@ -134,6 +135,7 @@ def find_confirm_upgrade_for_gold_button():
         get_file_count(
             join(
                 dirname(__file__),
+                "detection",
                 "reference_images",
                 "find_confirm_upgrade_for_gold_button",
             )
