@@ -5,6 +5,7 @@ import numpy
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
+from pyclashbot.memu.client import print_pix_list
 
 
 def check_for_level_up_reward_pixels():
@@ -12,15 +13,12 @@ def check_for_level_up_reward_pixels():
     iar = numpy.asarray(screenshot())
 
     pix_list = [
-        iar[48][9],
-        iar[46][21],
-        iar[47][12],
-        iar[61][13],
-        iar[62][23],
-        iar[54][26],
+        iar[54][24],
+        iar[53][9],
+        iar[54][19],
     ]
 
-    # for pix in pix_list: print(pix[0],pix[1],pix[2])
+    print_pix_list(pix_list)
 
     color = [255, 173, 20]
 
