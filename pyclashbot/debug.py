@@ -19,6 +19,9 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
 )
 from pyclashbot.bot.deck import (
+    check_if_can_still_scroll_in_card_page,
+    check_if_mimimum_scroll_case,
+    count_scrolls_in_card_page,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
 )
@@ -135,5 +138,10 @@ def reference_image_debug():
     print(path)
 
 
-# reference_image_debug()
-look_for_card_collection_icon_on_card_page()
+print(count_scrolls_in_card_page())
+
+# print(check_if_mimimum_scroll_case())
+
+
+# scroll_down()
+time.sleep(2)
