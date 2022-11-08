@@ -26,7 +26,6 @@ from pyclashbot.bot.fight import (
 )
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.request import (
-    check_if_on_clan_page,
     request_random_card_from_clash_main,
 )
 from pyclashbot.bot.upgrade import (
