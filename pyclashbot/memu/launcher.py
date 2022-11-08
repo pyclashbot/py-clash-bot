@@ -1,3 +1,4 @@
+import pygetwindow
 import time
 from typing import Any
 
@@ -22,8 +23,8 @@ def configure_vm(logger, vm_index):
     pmc.set_configuration_vm(
         "start_window_mode", "1", vm_index=vm_index
     )  # remember resolution
-    pmc.set_configuration_vm("enable_audio", "0")
-    pmc.set_configuration_vm("fps", "5")  # drop fps way low
+    pmc.set_configuration_vm("enable_audio", "0", vm_index=vm_index)
+    pmc.set_configuration_vm("fps", "5", vm_index=vm_index)  # drop fps way low
 
 
 def create_vm(logger):
@@ -59,6 +60,8 @@ def start_vm(logger):
     logger.change_status("Starting VM...")
     pmc.start_vm(vm_index=vm_index)
     logger.change_status("VM Started")
+    move_window_to_top_left("pyclashbot")
+
     return vm_index
 
 
@@ -128,3 +131,15 @@ def close_vm(logger, vm_index):
     logger.change_status("Closing VM")
     pmc.stop_vm(vm_index)
     logger.change_status("VM closed")
+
+
+# method to move a given window to the top left of the screen
+def move_window_to_top_left(window_name):
+    # print("Moving", window_name, "to top left")
+    try:
+        window = pygetwindow.getWindowsWithTitle(window_name)[0]
+    except:
+        print("Window not found")
+        return
+    # print(window)
+    window.moveTo(0, 0)
