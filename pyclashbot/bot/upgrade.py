@@ -113,12 +113,7 @@ def find_first_upgrade_for_gold_button():
     # Method to find the first upgrade for gold button in the card page
     references = make_reference_image_list(
         get_file_count(
-            join(
-                dirname(__file__)[:-3],
-                "detection",
-                "reference_images",
-                "card_collection_icon",
-            )
+            "card_collection_icon",
         )
     )
 
@@ -135,12 +130,7 @@ def find_confirm_upgrade_for_gold_button():
     # Method to find the first upgrade for gold button in the card page
     references = make_reference_image_list(
         get_file_count(
-            join(
-                dirname(__file__)[:-3],
-                "detection",
-                "reference_images",
-                "card_collection_icon",
-            )
+            "card_collection_icon",
         )
     )
 
