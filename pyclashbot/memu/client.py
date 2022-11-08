@@ -88,8 +88,6 @@ def get_file_count(folder):
     """
     directory = join(dirname(__file__)[:-4], "detection", "reference_images", folder)
 
-    print(directory)
-
     return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
 
 
