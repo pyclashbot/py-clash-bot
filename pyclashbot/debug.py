@@ -193,7 +193,7 @@ def main_debug():
     # start_2v2(logger)
     # print(check_if_in_a_clan(logger))
     # randomize_and_select_deck_2(logger)
-    request_random_card_from_clash_main(logger)
+    # request_random_card_from_clash_main(logger)
     # print(check_for_level_up_reward_pixels())
     # handle_war_attacks(logger)
     # upgrade_current_cards(logger)
@@ -206,4 +206,7 @@ main_debug()
 # print(get_file_count("request_button"))
 
 
-print(look_for_request_button())
+# print(look_for_request_button())
+
+
+# print(check_for_upgradable_cards())
