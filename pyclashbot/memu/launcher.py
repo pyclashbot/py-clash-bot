@@ -13,13 +13,16 @@ pmc = PyMemuc()
 
 def configure_vm(logger, vm_index):
     logger.change_status("Configuring VM")
-    pmc.set_configuration_vm("is_customed_resolution", "1", vm_index=vm_index)
+    pmc.set_configuration_vm(
+        "is_customed_resolution", "1", vm_index=vm_index
+    )  # yes custom res
     pmc.set_configuration_vm("resolution_width", "419", vm_index=vm_index)
-    pmc.set_configuration_vm("resolution_height", "633", vm_index=vm_index)
-    pmc.set_configuration_vm("vbox_dpi", "160", vm_index=vm_index)
+    pmc.set_configuration_vm("resolution_height", "633", vm_index=vm_index)  # res
+    pmc.set_configuration_vm("vbox_dpi", "160", vm_index=vm_index)  # dpi
     pmc.set_configuration_vm(
         "start_window_mode", "1", vm_index=vm_index
-    )  # set to remember window location
+    )  # remember resolution
+    pmc.set_configuration_vm("enable_audio", "0")
 
 
 def create_vm(logger):
