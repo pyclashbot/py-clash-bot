@@ -14,9 +14,20 @@ import PySimpleGUI as sg
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
+from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
+from pyclashbot.bot.card_mastery_collection import (
+    check_if_can_collect_card_mastery_rewards,
+    collect_card_mastery_rewards,
+)
 from pyclashbot.bot.clashmain import (
     check_for_friends_logo_on_main,
+    check_if_in_a_clan,
+    check_if_in_battle_with_delay,
     check_if_on_clash_main_menu,
+    check_if_on_first_card_page,
+    check_if_stuck_on_trophy_progression_page,
+    get_to_account,
+    start_2v2,
 )
 from pyclashbot.bot.deck import (
     check_if_can_still_scroll_in_card_page,
@@ -24,7 +35,12 @@ from pyclashbot.bot.deck import (
     count_scrolls_in_card_page,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
+    randomize_and_select_deck_2,
 )
+from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels
+from pyclashbot.bot.request import request_random_card_from_clash_main
+from pyclashbot.bot.upgrade import upgrade_current_cards
+from pyclashbot.bot.war import handle_war_attacks
 
 from pyclashbot.memu import (
     orientate_memu,
@@ -138,10 +154,24 @@ def reference_image_debug():
     print(path)
 
 
-print(count_scrolls_in_card_page())
+def main_debug():
+    # collect_battlepass_rewards(logger)
+    collect_card_mastery_rewards(logger)
+    # check_if_stuck_on_trophy_progression_page()
+    # check_if_on_first_card_page()
+    # get_to_account(logger, 1)
+    # start_2v2(logger)
+    # check_if_on_clash_main_menu()
+    # check_if_in_a_clan(logger)
+    # check_if_in_battle_with_delay()
+    # check_if_on_first_card_page()
+    # randomize_and_select_deck_2(logger)
+    # request_random_card_from_clash_main(logger)
+    # check_for_level_up_reward_pixels()
+    # handle_war_attacks(logger)
+    # upgrade_current_cards(logger)
 
-# print(check_if_mimimum_scroll_case())
 
+# main_debug()
 
-# scroll_down()
-time.sleep(2)
+print(check_if_can_collect_card_mastery_rewards(logger))
