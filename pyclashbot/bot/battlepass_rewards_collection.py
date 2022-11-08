@@ -5,7 +5,6 @@ from ahk import AHK
 
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
-from pyclashbot.memu.client import print_pix_list
 
 ahk = AHK()
 
