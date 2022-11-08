@@ -5,6 +5,7 @@ import numpy
 
 from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
+    get_to_clan_page,
     get_to_clash_main_from_clan_page,
     handle_card_mastery_notification,
 )
@@ -80,7 +81,7 @@ def request_random_card(logger, maximum_scrolls=10):
             return "restart"
         # click random coord in region of card selection
         click(Random().randint(72, 343), Random().randint(264, 570))
-        time.sleep(1)
+        time.sleep(2)
 
         # check if request button appears
         request_button_coord = look_for_request_button()
@@ -167,39 +168,6 @@ def look_for_request_button():
         tolerance=0.97,
     )
     return get_first_location(locations)
-
-
-def get_to_clan_page(logger):
-    # method to get to clan chat page from clash main
-    click(312, 629)
-    on_clan_chat_page = check_if_on_clan_page()
-    loops = 0
-    while not on_clan_chat_page:
-        loops += 1
-        if loops > 25:
-            logger.change_status("Could not get to clan page.")
-            return "restart"
-        click(278, 631)
-        time.sleep(1)
-        scroll_down()
-        time.sleep(1)
-
-        on_clan_chat_page = check_if_on_clan_page()
-
-
-def check_if_on_clan_page():
-    # Method to check if we're on the clan chat page
-
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[570][216],
-        iar[575][149],
-        iar[557][150],
-        iar[575][215],
-    ]
-    color = [183, 105, 253]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
 
 
 def check_if_can_request(logger):
