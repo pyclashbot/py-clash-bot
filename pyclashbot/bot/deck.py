@@ -293,7 +293,10 @@ def count_scrolls_in_card_page():
     click(111, 629)
     time.sleep(1)
 
-    return count if count < 4 else count - 2
+    if count == 0:
+        return 0
+    else:
+        return count - 1
 
 
 def look_for_card_collection_icon_on_card_page():
