@@ -146,12 +146,7 @@ def find_battle_icon_on_war_page():
 
     references = make_reference_image_list(
         get_file_count(
-            join(
-                dirname(__file__)[:-3],
-                "detection",
-                "reference_images",
-                "card_collection_icon",
-            )
+            "card_collection_icon",
         )
     )
 
