@@ -5,6 +5,7 @@ from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewa
 from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
 from pyclashbot.bot.clashmain import (
     check_if_in_battle_with_delay,
+    check_if_on_clan_page,
     check_if_on_first_card_page,
     get_to_account,
     get_to_card_page,
