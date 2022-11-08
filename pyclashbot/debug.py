@@ -173,14 +173,6 @@ def memu_debug(logger):
     logger.change_status("Starting memu debug")
     start_vm(logger)
 
-    for n in range(20):
-        time.sleep(1)
-        print(20 - n)
-
-    handle_gold_rush_event(logger)
-    while True:
-        pass
-
 
 def reference_image_debug():
     path = dirname(__file__)[:-3]
@@ -215,4 +207,13 @@ def main_debug():
 # print(check_for_upgradable_cards())
 
 
-memu_debug(logger)
+# memu_debug(logger)
+
+
+# print(count_scrolls_in_card_page())
+
+# print(check_if_mimimum_scroll_case())
+
+# for _ in range(11):scroll_down_super_fast()
+
+# randomize_and_select_deck_2()
