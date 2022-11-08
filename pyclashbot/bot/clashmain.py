@@ -261,6 +261,49 @@ def check_if_on_clash_main_menu():
     return True
 
 
+def check_if_on_clan_page():
+    # Method to check if we're on the clan chat page
+
+    iar = numpy.array(screenshot())
+
+    pix_list = [
+        iar[570][216],
+        iar[575][149],
+        iar[557][150],
+        iar[575][215],
+    ]
+    color = [183, 105, 253]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+
+
+def get_to_clan_page(logger):
+    # method to get to clan chat page from clash main
+    click(312, 629)
+    on_clan_chat_page = check_if_on_clan_page()
+    loops = 0
+    while not on_clan_chat_page:
+        # handle war chest popup
+        if check_for_war_loot_menu():
+            handle_war_loot_menu()
+
+        # handling infinite loop
+        loops += 1
+        if loops > 25:
+            logger.change_status("Could not get to clan page.")
+            return "restart"
+
+        # cycle page
+        click(278, 631)
+        time.sleep(1)
+
+        # scroll down because page wont cycle otherwise idk why. dumb game
+        scroll_down()
+        time.sleep(1)
+
+        # update on_clan_chat_page
+        on_clan_chat_page = check_if_on_clan_page()
+
+
 def get_to_account(logger, account_number):
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
@@ -603,3 +646,36 @@ def handle_card_mastery_notification():
     click(107, 623)
 
     click(240, 630)
+
+
+def check_for_war_loot_menu():
+    iar = numpy.asarray(screenshot())
+
+    pix_list = [
+        iar[414][210],
+        iar[418][217],
+        iar[423][227],
+        iar[427][237],
+    ]
+    color = [255, 190, 48]
+
+    for pix in pix_list:
+        if not pixel_is_equal(color, pix, tol=45):
+            return False
+    return True
+
+
+def handle_war_loot_menu():
+    # open chest
+    click(205, 410)
+
+    # click dead space to skip thru chest
+    for _ in range(15):
+        click(20, 440)
+        time.sleep(0.1)
+
+    # click OK
+    click(215, 550)
+    time.sleep(0.5)
+
+    scroll_down()
