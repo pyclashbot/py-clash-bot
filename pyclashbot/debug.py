@@ -26,6 +26,7 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
     check_if_on_first_card_page,
     check_if_stuck_on_trophy_progression_page,
+    find_2v2_quick_match_button,
     get_to_account,
     start_2v2,
 )
@@ -156,11 +157,11 @@ def reference_image_debug():
 
 def main_debug():
     # collect_battlepass_rewards(logger)
-    collect_card_mastery_rewards(logger)
-    # check_if_stuck_on_trophy_progression_page()
-    # check_if_on_first_card_page()
-    # get_to_account(logger, 1)
-    # start_2v2(logger)
+    # collect_card_mastery_rewards(logger)
+    # print(check_if_stuck_on_trophy_progression_page())
+    # print(check_if_on_first_card_page())
+    # get_to_account(logger, 0)
+    start_2v2(logger)
     # check_if_on_clash_main_menu()
     # check_if_in_a_clan(logger)
     # check_if_in_battle_with_delay()
@@ -174,4 +175,7 @@ def main_debug():
 
 # main_debug()
 
-print(check_if_can_collect_card_mastery_rewards(logger))
+# start_2v2(logger)
+
+while True:
+    print(find_2v2_quick_match_button())
