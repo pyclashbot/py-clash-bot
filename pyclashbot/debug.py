@@ -1,4 +1,5 @@
 import random
+import this
 import sys
 import time
 import webbrowser
