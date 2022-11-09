@@ -2,8 +2,8 @@ import random
 import time
 
 import numpy
-from pyclashbot.bot.clashmain import check_if_on_first_card_page
 
+from pyclashbot.bot.clashmain import check_if_on_first_card_page
 from pyclashbot.bot.upgrade import get_to_clash_main_from_card_page
 from pyclashbot.detection import (
     check_for_location,
