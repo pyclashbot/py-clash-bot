@@ -1,5 +1,4 @@
 import random
-import this
 import sys
 import time
 import webbrowser
@@ -15,6 +14,7 @@ import PySimpleGUI as sg
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
+
 from pyclashbot.bot.battlepass_rewards_collection import (
     check_for_battlepass_reward_pixels,
     check_if_has_battlepass_rewards,
@@ -67,7 +67,6 @@ from pyclashbot.bot.war import (
     make_a_random_deck_for_this_war_battle,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-
 from pyclashbot.memu import (
     orientate_terminal,
     screenshot,
