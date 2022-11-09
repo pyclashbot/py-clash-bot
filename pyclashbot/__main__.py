@@ -1,12 +1,17 @@
 import sys
 import webbrowser
 from queue import Queue
-from typing import Any, Union
+from typing import Union
 
 import PySimpleGUI as sg
 
 from pyclashbot.bot import detect_state, state_tree
-from pyclashbot.interface import disable_keys, layout, show_help_gui, user_config_keys
+from pyclashbot.interface import (
+    disable_keys,
+    main_layout,
+    show_help_gui,
+    user_config_keys,
+)
 from pyclashbot.utils import (
     Logger,
     StoppableThread,
@@ -16,17 +21,19 @@ from pyclashbot.utils import (
 from pyclashbot.utils.caching import check_user_settings
 
 
-def read_window(window: sg.Window):
+def read_window(
+    window: sg.Window, timeout: int = 10
+) -> tuple[str, dict[str, Union[str, int]]]:
     # Method for reading the attributes of the window
     # have a timeout so the output can be updated when no events are happening
-    read_result = window.read(timeout=100)  # ms
+    read_result = window.read(timeout=timeout)  # ms
     if read_result is None:
         print("Window not found")
         sys.exit()
     return read_result
 
 
-def read_job_list(values: dict[str, Any]) -> list[str]:
+def read_job_list(values: dict[str, Union[str, int]]) -> list[str]:
     jobs = []
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
@@ -69,27 +76,22 @@ def load_last_settings(window):
 
 
 def start_button_event(logger: Logger, window, values):
-    # get job list
+    logger.change_status("Starting")
+
+    for key in disable_keys:
+        window[key].update(disabled=True)
+
     jobs = read_job_list(values)
 
     # check if at least one job is selected
     if len(jobs) == 0:
-        print("At least one job must be selected")
+        logger.change_status("At least one job must be selected")
         return None
 
-    # get amount of accounts
+    # setup thread and start it
     acc_count = int(values["-SSID_IN-"])
-
-    # prepare arguments for main thread
     args = (jobs, acc_count)
-
-    # disable the start button and configuration after the thread is started
-    for key in disable_keys:
-        window[key].update(disabled=True)
-
-    # create thread
-    thread = MainLoopThread(logger, args)
-    # start thread
+    thread = WorkerThread(logger, args)
     thread.start()
 
     # enable the stop button after the thread is started
@@ -98,57 +100,58 @@ def start_button_event(logger: Logger, window, values):
     return thread
 
 
-def stop_button_event(window, thread):
-    # disable the stop button after it is pressed
+def stop_button_event(logger: Logger, window, thread):
+    logger.change_status("Stopping")
     window["Stop"].update(disabled=True)
-    # send the shutdown flag to the thread
-    thread.shutdown_flag.set()
-    # wait for the thread to close
-    thread.join()
+    shutdown_thread(thread)  # send the shutdown flag to the thread
     # enable the start button and configuration after the thread is stopped
     for key in disable_keys:
         window[key].update(disabled=False)
 
 
+def shutdown_thread(thread):
+    if thread is not None:
+        thread.shutdown_flag.set()
+        # wait for the thread to close
+        thread.join()
+
+
+def update_layout(window: sg.Window, statistics_q: Queue[dict[str, Union[str, int]]]):
+    # update the statistics in the gui
+    if not statistics_q.empty():
+        # read the statistics from the logger
+        for stat, val in statistics_q.get().items():
+            window[stat].update(val)  # type: ignore
+
+
 def main_gui():
-    # enable/disable console logging
-    console_log = True
+    console_log = True  # enable/disable console logging
 
-    # create the window
-    window = sg.Window("Py-ClashBot", layout)
+    window = sg.Window("Py-ClashBot", main_layout)
 
-    # read the user settings from the cache and update the keys in the layout
     load_last_settings(window)
 
     # track worker thread, communication queue and logger
-    thread: Union[MainLoopThread, None] = None
-    statistics_q = Queue()
+    thread: Union[WorkerThread, None] = None
+    statistics_q: Queue[dict[str, Union[str, int]]] = Queue()
     logger = Logger(statistics_q, console_log=console_log)
 
     # run the gui
     while True:
-        event: str
-        values: dict
-
-        event, values = read_window(window)
+        event, values = read_window(window, timeout=10)
 
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
-            if thread is not None:
-                thread.shutdown_flag.set()
-                # wait for the thread to close
-                thread.join()
+            shutdown_thread(thread)
             break
 
         if event == "Start":
-            logger.change_status("Starting")
             thread = start_button_event(logger, window, values)
 
         elif event == "Stop" and thread is not None:
-            logger.change_status("Stopping")
-            stop_button_event(window, thread)
+            stop_button_event(logger, window, thread)
+            # reset the logger and communication queue after thread has been stopped
             statistics_q = Queue()
-            # reset the logger after thread has been stopped
             logger = Logger(statistics_q, console_log=console_log)
 
         elif event in user_config_keys:
@@ -156,7 +159,11 @@ def main_gui():
 
         elif event == "Donate":
             webbrowser.open(
-                "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
+                "https://www.paypal.com/donate/"
+                + "?business=YE72ZEB3KWGVY"
+                + "&no_recurring=0"
+                + "&item_name=Support+my+projects%21"
+                + "&currency_code=USD"
             )
 
         elif event == "Help":
@@ -167,37 +174,23 @@ def main_gui():
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
             )
 
-        # update the statistics in the gui
-        if not statistics_q.empty():
-            # read the statistics from the logger
-            statistics = statistics_q.get()
-
-            for stat in statistics:
-                window[stat].update(statistics[stat])
+        update_layout(window, statistics_q)
 
     # shut down the thread if it is still running
-    if thread is not None:
-        thread.shutdown_flag.set()
-        # wait for the thread to close
-        thread.join()
+    shutdown_thread(thread)
 
     window.close()
 
 
-class MainLoopThread(StoppableThread):
+class WorkerThread(StoppableThread):
     def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
         self.logger = logger
 
     def run(self):
         try:
-            # parse thread args
-            jobs, ssid_max = self.args
-
-            # start ssid at 0
-            ssid = 0
-
-            # detect initial state
+            jobs, ssid_max = self.args  # parse thread args
+            ssid = 0  # start ssid at 0
             state = detect_state(self.logger)
 
             # loop until shutdown flag is set

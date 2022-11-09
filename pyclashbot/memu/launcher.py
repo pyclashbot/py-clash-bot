@@ -1,11 +1,9 @@
-import pygetwindow
 import time
 from typing import Any
 
 from pymemuc import PyMemuc
 
 from pyclashbot.interface import show_clash_royale_setup_gui
-from pyclashbot.memu import orientate_terminal
 from pyclashbot.utils import setup_memu
 
 launcher_path = setup_memu()  # setup memu, install if necessary
@@ -22,7 +20,9 @@ def configure_vm(logger, vm_index):
     pmc.set_configuration_vm("vbox_dpi", "160", vm_index=vm_index)  # dpi
     pmc.set_configuration_vm(
         "start_window_mode", "1", vm_index=vm_index
-    )  # remember resolution
+    )  # remember position
+    pmc.set_configuration_vm("win_x", "0", vm_index=vm_index)
+    pmc.set_configuration_vm("win_y", "0", vm_index=vm_index)
     pmc.set_configuration_vm("enable_audio", "0", vm_index=vm_index)
     pmc.set_configuration_vm("fps", "30", vm_index=vm_index)
 
@@ -60,7 +60,8 @@ def start_vm(logger):
     logger.change_status("Starting VM...")
     pmc.start_vm(vm_index=vm_index)
     logger.change_status("VM Started")
-    move_window_to_top_left("pyclashbot")
+    # move_window_to_top_left("pyclashbot")
+
     return vm_index
 
 
@@ -133,12 +134,12 @@ def close_vm(logger, vm_index):
 
 
 # method to move a given window to the top left of the screen
-def move_window_to_top_left(window_name):
-    # print("Moving", window_name, "to top left")
-    try:
-        window = pygetwindow.getWindowsWithTitle(window_name)[0]
-    except:
-        print("Window not found")
-        return
-    # print(window)
-    window.moveTo(0, 0)
+# def move_window_to_top_left(window_name):
+#     # print("Moving", window_name, "to top left")
+#     try:
+#         window = pygetwindow.getWindowsWithTitle(window_name)[0]
+#     except:
+#         print("Window not found")
+#         return
+#     # print(window)
+#     window.moveTo(0, 0)
