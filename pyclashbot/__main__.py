@@ -74,6 +74,7 @@ def load_last_settings(window):
 
 
 def start_button_event(logger: Logger, window, values):
+    logger.change_status("Starting")
     # get job list
     jobs = read_job_list(values)
 
@@ -103,16 +104,22 @@ def start_button_event(logger: Logger, window, values):
     return thread
 
 
-def stop_button_event(window, thread):
+def stop_button_event(logger: Logger, window, thread):
+    logger.change_status("Stopping")
     # disable the stop button after it is pressed
     window["Stop"].update(disabled=True)
     # send the shutdown flag to the thread
-    thread.shutdown_flag.set()
-    # wait for the thread to close
-    thread.join()
+    shutdown_thread(thread)
     # enable the start button and configuration after the thread is stopped
     for key in disable_keys:
         window[key].update(disabled=False)
+
+
+def shutdown_thread(thread):
+    if thread is not None:
+        thread.shutdown_flag.set()
+        # wait for the thread to close
+        thread.join()
 
 
 def main_gui():
@@ -139,21 +146,16 @@ def main_gui():
 
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
-            if thread is not None:
-                thread.shutdown_flag.set()
-                # wait for the thread to close
-                thread.join()
+            shutdown_thread(thread)
             break
 
         if event == "Start":
-            logger.change_status("Starting")
             thread = start_button_event(logger, window, values)
 
         elif event == "Stop" and thread is not None:
-            logger.change_status("Stopping")
-            stop_button_event(window, thread)
+            stop_button_event(logger, window, thread)
+            # reset the logger and communication queue after thread has been stopped
             statistics_q = Queue()
-            # reset the logger after thread has been stopped
             logger = Logger(statistics_q, console_log=console_log)
 
         elif event in user_config_keys:
@@ -161,7 +163,11 @@ def main_gui():
 
         elif event == "Donate":
             webbrowser.open(
-                "https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD"
+                "https://www.paypal.com/donate/"
+                + "?business=YE72ZEB3KWGVY"
+                + "&no_recurring=0"
+                + "&item_name=Support+my+projects%21"
+                + "&currency_code=USD"
             )
 
         elif event == "Help":
@@ -176,15 +182,11 @@ def main_gui():
         if not statistics_q.empty():
             # read the statistics from the logger
             statistics = statistics_q.get()
-
             for stat in statistics:
                 window[stat].update(statistics[stat])
 
     # shut down the thread if it is still running
-    if thread is not None:
-        thread.shutdown_flag.set()
-        # wait for the thread to close
-        thread.join()
+    shutdown_thread(thread)
 
     window.close()
 
