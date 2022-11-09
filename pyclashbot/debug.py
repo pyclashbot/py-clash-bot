@@ -90,7 +90,7 @@ logger = Logger(console_log=True)
 
 
 def gui_debug():
-    from pyclashbot.interface import disable_keys, layout, show_help_gui
+    from pyclashbot.interface import disable_keys, main_layout, show_help_gui
 
     sg.theme("SystemDefaultForReal")
     # some sample statistics
@@ -111,7 +111,7 @@ def gui_debug():
         "current_status": "Starting",
     }
 
-    window = sg.Window("Py-ClashBot", layout)
+    window = sg.Window("Py-ClashBot", main_layout)
 
     running = False
 
