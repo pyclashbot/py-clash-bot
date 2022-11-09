@@ -11,10 +11,10 @@ def get_card_images():
     # Method to get an array of images of the 4 cards
 
     return [
-        screenshot(region=[124, 571, 60, 74]),
-        screenshot(region=[193, 571, 59, 74]),
-        screenshot(region=[261, 571, 60, 74]),
-        screenshot(region=[330, 571, 60, 74]),
+        screenshot(region=[105, 550, 70, 90]),
+        screenshot(region=[177, 550, 70, 90]),
+        screenshot(region=[245, 550, 70, 90]),
+        screenshot(region=[311, 550, 70, 90]),
     ]
 
 
