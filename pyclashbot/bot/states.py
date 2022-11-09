@@ -26,9 +26,7 @@ from pyclashbot.bot.fight import (
     leave_end_battle_window,
 )
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
-from pyclashbot.bot.request import (
-    request_random_card_from_clash_main,
-)
+from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import (
     get_to_clash_main_from_card_page,
     upgrade_current_cards,
