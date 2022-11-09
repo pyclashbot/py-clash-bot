@@ -6,7 +6,12 @@ from typing import Any, Union
 import PySimpleGUI as sg
 
 from pyclashbot.bot import detect_state, state_tree
-from pyclashbot.interface import disable_keys, layout, show_help_gui, user_config_keys
+from pyclashbot.interface import (
+    disable_keys,
+    main_layout,
+    show_help_gui,
+    user_config_keys,
+)
 from pyclashbot.utils import (
     Logger,
     StoppableThread,
@@ -88,7 +93,7 @@ def start_button_event(logger: Logger, window, values):
         window[key].update(disabled=True)
 
     # create thread
-    thread = MainLoopThread(logger, args)
+    thread = WorkerThread(logger, args)
     # start thread
     thread.start()
 
@@ -115,13 +120,13 @@ def main_gui():
     console_log = True
 
     # create the window
-    window = sg.Window("Py-ClashBot", layout)
+    window = sg.Window("Py-ClashBot", main_layout)
 
     # read the user settings from the cache and update the keys in the layout
     load_last_settings(window)
 
     # track worker thread, communication queue and logger
-    thread: Union[MainLoopThread, None] = None
+    thread: Union[WorkerThread, None] = None
     statistics_q = Queue()
     logger = Logger(statistics_q, console_log=console_log)
 
@@ -184,7 +189,7 @@ def main_gui():
     window.close()
 
 
-class MainLoopThread(StoppableThread):
+class WorkerThread(StoppableThread):
     def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
         self.logger = logger
