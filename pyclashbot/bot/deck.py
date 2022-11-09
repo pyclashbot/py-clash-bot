@@ -1,6 +1,5 @@
 import random
 import time
-from os.path import dirname, join
 
 import numpy
 from pyclashbot.bot.clashmain import check_if_on_first_card_page
@@ -293,10 +292,7 @@ def count_scrolls_in_card_page():
     click(111, 629)
     time.sleep(1)
 
-    if count == 0:
-        return 0
-    else:
-        return count - 1
+    return 0 if count == 0 else count - 1
 
 
 def look_for_card_collection_icon_on_card_page():
