@@ -200,23 +200,5 @@ def main_debug():
 
 # main_debug()
 
-# print(get_file_count("request_button"))
 
-# print(look_for_request_button())
-
-# print(check_for_upgradable_cards())
-
-
-# memu_debug(logger)
-
-
-# print(count_scrolls_in_card_page())
-
-# print(check_if_mimimum_scroll_case())
-
-# for _ in range(11):scroll_down_super_fast()
-
-# randomize_and_select_deck_2()
-
-
-move_window_to_top_left("pyclashbot")
+memu_debug(logger)
