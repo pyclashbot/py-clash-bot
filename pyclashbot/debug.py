@@ -40,6 +40,7 @@ from pyclashbot.bot.clashmain import (
     handle_gold_rush_event,
     handle_war_loot_menu,
     start_2v2,
+    wait_for_battle_start,
 )
 from pyclashbot.bot.deck import (
     check_if_can_still_scroll_in_card_page,
@@ -56,6 +57,7 @@ from pyclashbot.bot.request import (
     look_for_request_button,
     request_random_card_from_clash_main,
 )
+from pyclashbot.bot.states import state_fight
 from pyclashbot.bot.upgrade import (
     check_for_upgradable_cards,
     find_confirm_upgrade_for_gold_button,
@@ -205,12 +207,13 @@ def main_debug():
     pass
 
 
-# memu_debug(logger)
+def fight_debug():
+    if not check_if_on_clash_main_menu():
+        print("youre not on main dude.")
+        return
+    start_2v2(logger)
+    wait_for_battle_start(logger)
+    state_fight(logger)
 
-while True:
-    print(identify_cards())
 
-
-# card_images = get_card_images()
-# for image in card_images:
-#     show_image(image)
+fight_debug()
