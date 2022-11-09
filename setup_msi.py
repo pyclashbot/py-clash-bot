@@ -1,5 +1,6 @@
-from cx_Freeze import Executable, setup
 import sys
+
+from cx_Freeze import Executable, setup
 
 product_name = "py-clash-bot"
 
