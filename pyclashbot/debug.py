@@ -1,4 +1,5 @@
 import random
+import this
 import sys
 import time
 import webbrowser
@@ -79,7 +80,7 @@ from pyclashbot.memu.client import (
     make_reference_image_list,
     show_image,
 )
-from pyclashbot.memu.launcher import move_window_to_top_left, start_vm
+from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
 ahk = AHK()
@@ -90,7 +91,7 @@ logger = Logger(console_log=True)
 
 
 def gui_debug():
-    from pyclashbot.interface import disable_keys, layout, show_help_gui
+    from pyclashbot.interface import disable_keys, main_layout, show_help_gui
 
     sg.theme("SystemDefaultForReal")
     # some sample statistics
@@ -111,7 +112,7 @@ def gui_debug():
         "current_status": "Starting",
     }
 
-    window = sg.Window("Py-ClashBot", layout)
+    window = sg.Window("Py-ClashBot", main_layout)
 
     running = False
 
@@ -195,7 +196,6 @@ def main_debug():
     # handle_war_attacks(logger)
     # upgrade_current_cards(logger)
     # print(check_if_in_battle_with_delay())
-    pass
 
 
 # main_debug()
