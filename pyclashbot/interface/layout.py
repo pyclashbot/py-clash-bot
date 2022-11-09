@@ -378,7 +378,7 @@ description = [
     ],
 ]
 
-layout = [
+main_layout = [
     [
         sg.Frame(layout=jobs_checklist, title="Jobs"),
         sg.Frame(layout=controls, title="Controls"),
@@ -458,7 +458,7 @@ if __name__ == "__main__":
         "current_status": "Starting",
     }
 
-    window = sg.Window("Statistics", layout)
+    window = sg.Window("Statistics", main_layout)
 
     running = False  # pylint: disable=invalid-name
 
