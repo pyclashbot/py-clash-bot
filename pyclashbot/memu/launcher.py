@@ -12,19 +12,23 @@ pmc = PyMemuc()
 
 def configure_vm(logger, vm_index):
     logger.change_status("Configuring VM")
-    pmc.set_configuration_vm(
-        "is_customed_resolution", "1", vm_index=vm_index
-    )  # yes custom res
-    pmc.set_configuration_vm("resolution_width", "419", vm_index=vm_index)
-    pmc.set_configuration_vm("resolution_height", "633", vm_index=vm_index)  # res
-    pmc.set_configuration_vm("vbox_dpi", "160", vm_index=vm_index)  # dpi
-    pmc.set_configuration_vm(
-        "start_window_mode", "1", vm_index=vm_index
-    )  # remember position
-    pmc.set_configuration_vm("win_x", "0", vm_index=vm_index)
-    pmc.set_configuration_vm("win_y", "0", vm_index=vm_index)
-    pmc.set_configuration_vm("enable_audio", "0", vm_index=vm_index)
-    pmc.set_configuration_vm("fps", "30", vm_index=vm_index)
+
+    # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
+
+    configuration: dict[str, str] = {
+        "start_window_mode": "1",  # remember position
+        "win_x": "0",
+        "win_y": "0",
+        "is_customed_resolution": "1",
+        "resolution_width": "419",
+        "resolution_height": "633",
+        "vbox_dpi": "160",
+        "fps": "30",
+        "enable_audio": "0",
+    }
+
+    for key, value in configuration.items():
+        pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
 
 def create_vm(logger):
