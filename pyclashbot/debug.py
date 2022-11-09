@@ -20,6 +20,7 @@ from pyclashbot.bot.battlepass_rewards_collection import (
     check_if_has_battlepass_rewards,
     collect_battlepass_rewards,
 )
+from pyclashbot.bot.card_detection import identify_cards
 from pyclashbot.bot.card_mastery_collection import (
     check_if_can_collect_card_mastery_rewards,
     collect_card_mastery_rewards,
@@ -204,23 +205,7 @@ def main_debug():
     pass
 
 
+# memu_debug(logger)
+
 while True:
-    randomize_and_select_deck_2(logger)
-
-
-# scroll_down()
-
-
-# while True:
-#     print(check_if_pixels_indicate_minimum_scroll_case_with_delay())
-
-# while True:
-#     print(check_if_can_still_scroll_in_card_page())
-#     #time.sleep(0.33)
-
-# while True:
-#     print(count_scrolls_in_card_page())
-#     time.sleep(3)
-
-
-# for _ in range(13): scroll_down_super_fast()
+    identify_cards()
