@@ -2,6 +2,7 @@ import time
 from typing import Any
 
 from pymemuc import PyMemuc
+from pyclashbot.bot.clashmain import wait_for_clash_main_menu
 
 from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.utils import setup_memu
@@ -91,7 +92,7 @@ def restart_and_open_clash(logger):
     skip_ads(logger, vm_index)
     start_clash_royale(logger, vm_index)
 
-    time.sleep(3)
+    wait_for_clash_main_menu(logger)
 
     # increment restart counter
     logger.add_restart()
