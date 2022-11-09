@@ -285,10 +285,6 @@ def check_if_can_still_scroll_in_card_page():
     pix_list_1_ID = identify_pix_list(pix_list_1_as_int)
     pix_list_2_ID = identify_pix_list(pix_list_2_as_int)
 
-    # print(pix_list_1_ID)
-    # print(pix_list_2_ID)
-    # print("---------")
-
     if pix_list_1_ID == "fail" and pix_list_2_ID == "fail":
         return False
     return True
