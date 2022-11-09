@@ -5,3 +5,4 @@ disable=
     C0116, # missing-function-docstring
     C0301, # line-too-long
     C0103, # invalid-name
+ignore=debug.py
