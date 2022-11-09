@@ -24,7 +24,7 @@ def configure_vm(logger, vm_index):
         "start_window_mode", "1", vm_index=vm_index
     )  # remember resolution
     pmc.set_configuration_vm("enable_audio", "0", vm_index=vm_index)
-    pmc.set_configuration_vm("fps", "5", vm_index=vm_index)  # drop fps way low
+    pmc.set_configuration_vm("fps", "30", vm_index=vm_index)
 
 
 def create_vm(logger):
@@ -61,7 +61,6 @@ def start_vm(logger):
     pmc.start_vm(vm_index=vm_index)
     logger.change_status("VM Started")
     move_window_to_top_left("pyclashbot")
-
     return vm_index
 
 
