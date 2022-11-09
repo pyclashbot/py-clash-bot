@@ -13,7 +13,6 @@ from pyclashbot.detection import find_references, get_first_location, pixel_is_e
 from pyclashbot.memu import (
     click,
     screenshot,
-    scroll_down,
     scroll_down_super_fast,
     scroll_up_super_fast,
 )

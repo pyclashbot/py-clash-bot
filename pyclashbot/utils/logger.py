@@ -2,7 +2,7 @@ import time
 from os import makedirs
 from os.path import exists, expandvars, join
 from queue import Queue
-from typing import Any, Union
+from typing import Union
 
 MODULE_NAME = "py-clash-bot"
 
@@ -20,7 +20,7 @@ class Logger:
 
     def __init__(
         self,
-        queue: Union[Queue, None] = None,
+        queue: Union[Queue[dict[str, Union[str, int]]], None] = None,
         console_log: bool = False,
         file_log: bool = True,
     ):
@@ -43,7 +43,9 @@ class Logger:
             )  # noqa
 
         # queue for threaded communication
-        self._queue = Queue() if queue is None else queue
+        self._queue: Queue[dict[str, Union[str, int]]] = (
+            Queue() if queue is None else queue
+        )
 
         # immutable statistics
         self.start_time = time.time()
@@ -83,7 +85,7 @@ class Logger:
         if self._queue is None:
             return
 
-        statistics: dict[str, Any] = {
+        statistics: dict[str, Union[str, int]] = {
             "wins": self.wins,
             "losses": self.losses,
             "fights": self.fights,
