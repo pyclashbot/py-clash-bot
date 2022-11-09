@@ -21,10 +21,10 @@ from pyclashbot.utils import (
 from pyclashbot.utils.caching import check_user_settings
 
 
-def read_window(window: sg.Window):
+def read_window(window: sg.Window, timeout: int = 10) -> tuple[str, dict[str, Any]]:
     # Method for reading the attributes of the window
     # have a timeout so the output can be updated when no events are happening
-    read_result = window.read(timeout=100)  # ms
+    read_result = window.read(timeout=timeout)  # ms
     if read_result is None:
         print("Window not found")
         sys.exit()
@@ -142,7 +142,7 @@ def main_gui():
         event: str
         values: dict
 
-        event, values = read_window(window)
+        event, values = read_window(window, timeout=10)
 
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
