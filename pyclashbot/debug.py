@@ -1,5 +1,4 @@
 import random
-import this
 import sys
 import time
 import webbrowser
@@ -15,6 +14,7 @@ import PySimpleGUI as sg
 from ahk import AHK
 from matplotlib import pyplot as plt
 from PIL import Image
+
 from pyclashbot.bot.battlepass_rewards_collection import (
     check_for_battlepass_reward_pixels,
     check_if_has_battlepass_rewards,
@@ -43,6 +43,8 @@ from pyclashbot.bot.clashmain import (
 from pyclashbot.bot.deck import (
     check_if_can_still_scroll_in_card_page,
     check_if_mimimum_scroll_case,
+    check_if_pixels_indicate_minimum_scroll_case,
+    check_if_pixels_indicate_minimum_scroll_case_with_delay,
     count_scrolls_in_card_page,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
@@ -66,8 +68,11 @@ from pyclashbot.bot.war import (
     handle_war_attacks,
     make_a_random_deck_for_this_war_battle,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
-
+from pyclashbot.detection.image_rec import (
+    find_references,
+    get_first_location,
+    pixel_is_equal,
+)
 from pyclashbot.memu import (
     orientate_terminal,
     screenshot,
@@ -196,9 +201,26 @@ def main_debug():
     # handle_war_attacks(logger)
     # upgrade_current_cards(logger)
     # print(check_if_in_battle_with_delay())
+    pass
 
 
-# main_debug()
+while True:
+    randomize_and_select_deck_2(logger)
 
 
-memu_debug(logger)
+# scroll_down()
+
+
+# while True:
+#     print(check_if_pixels_indicate_minimum_scroll_case_with_delay())
+
+# while True:
+#     print(check_if_can_still_scroll_in_card_page())
+#     #time.sleep(0.33)
+
+# while True:
+#     print(count_scrolls_in_card_page())
+#     time.sleep(3)
+
+
+# for _ in range(13): scroll_down_super_fast()
