@@ -20,7 +20,7 @@ from pyclashbot.bot.battlepass_rewards_collection import (
     check_if_has_battlepass_rewards,
     collect_battlepass_rewards,
 )
-from pyclashbot.bot.card_detection import identify_cards
+from pyclashbot.bot.card_detection import get_card_images, identify_cards
 from pyclashbot.bot.card_mastery_collection import (
     check_if_can_collect_card_mastery_rewards,
     collect_card_mastery_rewards,
@@ -208,4 +208,9 @@ def main_debug():
 # memu_debug(logger)
 
 while True:
-    identify_cards()
+    print(identify_cards())
+
+
+# card_images = get_card_images()
+# for image in card_images:
+#     show_image(image)
