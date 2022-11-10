@@ -18,7 +18,7 @@ def check_for_level_up_reward_pixels():
         iar[54][19],
     ]
 
-    print_pix_list(pix_list)
+    #print_pix_list(pix_list)
 
     color = [255, 173, 20]
 
@@ -54,7 +54,8 @@ def collect_level_up_rewards(logger):
             return "battlepass reward collection"
 
         # click level up reward logo in top left
-        click(17, 65)
+        click(17,48)
+        time.sleep(1)
 
         # click chest
         click(135, 160)
@@ -62,5 +63,6 @@ def collect_level_up_rewards(logger):
         # skip through rewards
         for _ in range(20):
             click(20, 450)
+            time.sleep(0.33)
 
         logger.add_level_up_chest_collection()

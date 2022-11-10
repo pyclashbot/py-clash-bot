@@ -136,9 +136,14 @@ def check_if_in_a_clan(logger):
     # click clan tab
     click(308, 627)
 
+    # handle war chest popup
+    if check_for_war_loot_menu(): handle_war_loot_menu()
+
     # cycle through clan tab a few times
     for _ in range(5):
         click(280, 623)
+        time.sleep(0.33)
+        if check_for_war_loot_menu(): handle_war_loot_menu()
     scroll_down()
     time.sleep(1)
 
@@ -148,6 +153,7 @@ def check_if_in_a_clan(logger):
     # cycle tab again
     click(280, 623)
     time.sleep(1)
+
 
     # get second pixel
     pixel_2 = numpy.array(screenshot())[118][206]
@@ -172,7 +178,7 @@ def get_to_clash_main_from_clan_page(logger):
         if loops > 25:
             logger.change_status("Could not get to clash main from request page.")
             return "restart"
-        click(208, 606)
+        click(208, 636)
         time.sleep(1)
         on_main = check_for_gem_logo_on_main()
 
@@ -486,6 +492,10 @@ def check_if_unlock_chest_button_exists():
         "10.png",
         "11.png",
         "12.png",
+        "13.png",
+        "14.png",
+        "15.png",
+        "16.png",
     ]
 
     locations = find_references(
