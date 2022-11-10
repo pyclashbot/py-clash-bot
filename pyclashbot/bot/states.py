@@ -205,6 +205,7 @@ def state_clashmain(
 
     logger.change_status("On clash main")
     handle_gold_rush_event(logger)
+    handle_card_mastery_notification()
 
     # Get to correct account if more than one account is being used
     if ssid_max > 1 and get_to_account(logger, account_number) == "restart":
