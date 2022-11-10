@@ -17,6 +17,7 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
+from pyclashbot.memu.client import print_pix_list
 
 
 def handle_war_attacks(logger):
@@ -59,6 +60,7 @@ def handle_war_attacks(logger):
 
     # click start battle
     click(280, 445)
+    time.sleep(5)
 
     # wait for the match to load
     if wait_for_war_battle_loading(logger) == "restart":
@@ -91,11 +93,13 @@ def fight_war_battle(logger):
 
         # click random card
         click(random.randint(125, 355), 585)
+        time.sleep(1)
 
         # click random placement
         click(random.randint(70, 355), random.randint(320, 490))
-        time.sleep(2)
-    time.sleep(15)
+        time.sleep(1)
+
+    time.sleep(9)
 
 
 def make_a_random_deck_for_this_war_battle():
@@ -128,6 +132,7 @@ def get_to_war_page_from_main():
 
     click(315, 635)
     click(315, 635)
+    time.sleep(2)
 
     loops = 0
     while not check_if_on_war_page():
@@ -201,7 +206,10 @@ def check_if_loading_war_battle():
         iar[442][245],
         iar[446][270],
     ]
-    color = [251, 98, 100]
+
+    #print_pix_list(pix_list)
+
+    color = [249, 99, 99]
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 

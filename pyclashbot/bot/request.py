@@ -30,10 +30,14 @@ def request_random_card_from_clash_main(logger):
     logger.change_status("Checking if you're in a clan.")
     if not check_if_in_a_clan(logger):
         logger.change_status("Skipping request because we are not in a clan.")
-        if get_to_clash_main_from_clan_page(logger) == "restart":
-            return "restart"
+        if get_to_clash_main_from_clan_page(logger) == "restart": return "restart"
+        return None
+    else: 
+        if get_to_clash_main_from_clan_page(logger) == "restart": return "restart"
+        time.sleep(1)
 
     # Return if request is not available (Starts on main, ends on clan page)
+    time.sleep(1)
     logger.change_status("Checking if request is available.")
     if not check_if_can_request(logger):
         logger.change_status("Request isn't available.")
@@ -120,6 +124,7 @@ def check_if_can_request(logger):
     # Get to clan page
     if get_to_clan_page(logger) == "restart":
         return "restart"
+    time.sleep(1)
 
     # Method to check if request is available
     iar = numpy.array(screenshot())
