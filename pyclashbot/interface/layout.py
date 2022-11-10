@@ -95,7 +95,7 @@ battle_stats_values = [
     [
         sg.Text(
             "0",
-            key="restarts",
+            key="cards_played",
             relief=sg.RELIEF_SUNKEN,
             text_color="blue",
             size=(5, 1),
@@ -168,15 +168,6 @@ progress_stats_values = [
     [
         sg.Text(
             "0",
-            key="cards_played",
-            relief=sg.RELIEF_SUNKEN,
-            text_color="blue",
-            size=(5, 1),
-        ),
-    ],
-    [
-        sg.Text(
-            "0",
             key="cards_upgraded",
             relief=sg.RELIEF_SUNKEN,
             text_color="blue",
@@ -187,6 +178,15 @@ progress_stats_values = [
         sg.Text(
             "0",
             key="account_switches",
+            relief=sg.RELIEF_SUNKEN,
+            text_color="blue",
+            size=(5, 1),
+        ),
+    ],
+    [
+        sg.Text(
+            "0",
+            key="restarts",
             relief=sg.RELIEF_SUNKEN,
             text_color="blue",
             size=(5, 1),
