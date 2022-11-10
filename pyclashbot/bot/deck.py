@@ -37,7 +37,7 @@ def get_to_card_page(logger):
         loops = loops + 1
         if loops > 10:
             logger.change_status("Couldn't make it to card page")
-
+            print("12")
             return "restart"
         time.sleep(0.2)
     scroll_up_fast()
@@ -69,7 +69,7 @@ def select_second_deck(logger):
     # logger.change_status("Selecting deck number 2 for use.")
     # get to card page
     if get_to_card_page(logger) == "restart":
-
+        print("1")
         return "restart"
     time.sleep(1)
 
@@ -79,7 +79,7 @@ def select_second_deck(logger):
 
     # get to main menu from card page
     if get_to_clash_main_from_card_page(logger) == "restart":
-
+        print("2")
         return "restart"
     return None
 
@@ -90,7 +90,7 @@ def randomize_and_select_deck_2(logger):
     logger.change_status("Randomizing deck number 2")
     # get to card page
     if get_to_card_page(logger) == "restart":
-
+        print("3")
         return "restart"
 
     # select deck 2
@@ -100,12 +100,12 @@ def randomize_and_select_deck_2(logger):
 
     # randomize this deck
     if randomize_current_deck() == "restart":
-
+        print("4")
         return "restart"
 
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
-
+        print("5")
         return "restart"
     return None
 
@@ -114,7 +114,7 @@ def randomize_current_deck():
     # figure out how much you can scroll down in your card list
     max_scrolls = count_scrolls_in_card_page()
     if max_scrolls == "restart":
-
+        print("6")
         return "restart"
 
     card_coord_list = [
@@ -130,7 +130,7 @@ def randomize_current_deck():
 
     for card_coord in card_coord_list:
         if replace_card_in_deck(card_to_replace_coord=card_coord, max_scrolls=max_scrolls)== "restart":
-
+            print("7")
             return "restart"
 
 
@@ -151,7 +151,7 @@ def replace_card_in_deck(card_to_replace_coord, max_scrolls):
         scrolls -= 1
         loops += 1
         if loops > 35:
-
+            print("8")
             return "restart"
 
     use_card_button_coord = None
@@ -159,7 +159,7 @@ def replace_card_in_deck(card_to_replace_coord, max_scrolls):
         # find a random card on this page
         replacement_card_coord = find_random_card_coord()
         if replacement_card_coord == "restart":
-
+            print("9")
             return "restart"
         click(replacement_card_coord[0], replacement_card_coord[1])
         time.sleep(1)
@@ -209,7 +209,7 @@ def find_random_card_coord():
     while not has_card:
         loops += 1
         if loops > 35:
-
+            print("10")
             return "restart"
 
         # pick a random region
@@ -345,7 +345,7 @@ def count_scrolls_in_card_page():
     while check_if_can_still_scroll_in_card_page():
         loops += 1
         if loops > 40:
-
+            print("11")
             return "restart"
         scroll_down_super_fast()
         count += 1
@@ -355,7 +355,7 @@ def count_scrolls_in_card_page():
     click(111, 629)
     time.sleep(1)
 
-    return 0 if count == 0 else count - 2
+    return 0 if count == 0 else count - 3
 
 
 def look_for_card_collection_icon_on_card_page():
