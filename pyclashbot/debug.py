@@ -3,11 +3,16 @@ import sys
 import time
 import webbrowser
 from dataclasses import replace
+import os
 from os.path import dirname, join
 from re import S
 from typing import Any
 
+
+
+
 import numpy
+
 import pyautogui
 import pygetwindow
 import PySimpleGUI as sg
@@ -35,10 +40,14 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
     check_if_on_first_card_page,
     check_if_stuck_on_trophy_progression_page,
+    check_if_unlock_chest_button_exists,
     find_2v2_quick_match_button,
     get_to_account,
+    get_to_clan_page,
+    get_to_clash_main_from_clan_page,
     handle_gold_rush_event,
     handle_war_loot_menu,
+    open_chests,
     start_2v2,
     wait_for_battle_start,
 )
@@ -52,8 +61,9 @@ from pyclashbot.bot.deck import (
     look_for_card_collection_icon_on_card_page,
     randomize_and_select_deck_2,
 )
-from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels
+from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels, check_if_has_level_up_rewards, collect_level_up_rewards
 from pyclashbot.bot.request import (
+    check_if_can_request,
     look_for_request_button,
     request_random_card_from_clash_main,
 )
@@ -66,10 +76,14 @@ from pyclashbot.bot.upgrade import (
 )
 from pyclashbot.bot.war import (
     check_if_has_a_deck_for_this_war_battle,
+    check_if_loading_war_battle,
     click_war_icon,
+    fight_war_battle,
     find_battle_icon_on_war_page,
+    get_to_war_page_from_main,
     handle_war_attacks,
     make_a_random_deck_for_this_war_battle,
+    wait_for_war_battle_loading,
 )
 from pyclashbot.detection.image_rec import (
     find_references,
@@ -95,7 +109,10 @@ ahk = AHK()
 logger = Logger(console_log=True)
 
 
+
+
 # show_image(screenshot())
+
 
 
 def gui_debug():
@@ -190,19 +207,21 @@ def reference_image_debug():
 
 
 def main_debug():
-    print(check_if_on_clash_main_menu())
-    # collect_battlepass_rewards(logger)
-    # collect_card_mastery_rewards(logger)
-    # print(check_if_stuck_on_trophy_progression_page())
-    # print(check_if_on_first_card_page())
-    # get_to_account(logger, 0)
-    # start_2v2(logger)
-    # print(check_if_in_a_clan(logger))
-    # randomize_and_select_deck_2(logger)
-    # request_random_card_from_clash_main(logger)
-    # print(check_for_level_up_reward_pixels())
-    # handle_war_attacks(logger)
-    # upgrade_current_cards(logger)
+    #print(check_if_on_clash_main_menu())
+    #open_chests(logger)
+    #collect_battlepass_rewards(logger)
+    #collect_card_mastery_rewards(logger)
+    #print(check_if_stuck_on_trophy_progression_page())
+    #print(check_if_on_first_card_page())
+    #get_to_account(logger, 0)
+    #start_2v2(logger)
+    #print(check_if_in_a_clan(logger))
+    #randomize_and_select_deck_2(logger)
+    #request_random_card_from_clash_main(logger)
+    #print(check_if_has_level_up_rewards())
+    #collect_level_up_rewards(logger)
+    #handle_war_attacks(logger)
+    #upgrade_current_cards(logger)
     # print(check_if_in_battle_with_delay())
     pass
 
@@ -216,4 +235,6 @@ def fight_debug():
     state_fight(logger)
 
 
-fight_debug()
+
+
+main_debug()

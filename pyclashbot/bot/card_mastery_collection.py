@@ -61,8 +61,9 @@ def collect_card_mastery_rewards(logger):
         time.sleep(1)
 
     # click dead space
-    for _ in range(8):
+    for _ in range(12):
         click(20, 400)
+        time.sleep(0.1)
 
     # get back to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
