@@ -106,6 +106,7 @@ def upgrade_card(logger, card_index):
     # Click dead space to close card page
     for _ in range(5):
         click(26, 518)
+        time.sleep(0.33)
 
 
 def find_first_upgrade_for_gold_button():
@@ -172,6 +173,7 @@ def check_for_final_upgrade_button() -> bool:
 
 
 def upgrade_current_cards(logger):
+    logger.change_status("Upgrading your current deck...")
     upgradable_cards_list = check_for_upgradable_cards()
 
     for index, card in enumerate(upgradable_cards_list):
