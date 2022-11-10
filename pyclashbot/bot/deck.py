@@ -33,6 +33,7 @@ def get_to_card_page(logger):
         # logger.change_status("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
+        time.sleep(1)
         loops = loops + 1
         if loops > 10:
             logger.change_status("Couldn't make it to card page")
