@@ -18,7 +18,7 @@ def check_for_level_up_reward_pixels():
         iar[54][19],
     ]
 
-    #print_pix_list(pix_list)
+    # print_pix_list(pix_list)
 
     color = [255, 173, 20]
 
@@ -46,6 +46,9 @@ def collect_level_up_rewards(logger):
     while True:
         loops += 1
         if loops > 20:
+            logger.change_status(
+                "Looped through level up reward collection too many times"
+            )
             return "restart"
 
         # return when no more rewards to collect
@@ -54,7 +57,7 @@ def collect_level_up_rewards(logger):
             return "battlepass reward collection"
 
         # click level up reward logo in top left
-        click(17,48)
+        click(17, 48)
         time.sleep(1)
 
         # click chest

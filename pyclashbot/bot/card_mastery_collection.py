@@ -26,6 +26,7 @@ def collect_card_mastery_rewards(logger):
 
     # if reward to collect check fails return restart
     if has_rewards == "restart":
+        logger.change_status("Failed when checking if has card mastery rewards")
         return "restart"
 
     # if there are no rewards then return
@@ -34,6 +35,9 @@ def collect_card_mastery_rewards(logger):
             "No card mastery rewards to collect. Returning to clash main."
         )
         if get_to_clash_main_from_card_page(logger) == "restart":
+            logger.change_status(
+                "Failed to get to main from card page after collecting card mastery rewards."
+            )
             return "restart"
         return None
 
@@ -45,6 +49,9 @@ def collect_card_mastery_rewards(logger):
 
     # get to card page
     if get_to_card_page(logger) == "restart":
+        logger.change_status(
+            "Failed to get to card page while collecting card mastery rewards"
+        )
         return "restart"
 
     # click mastery reward button
@@ -67,6 +74,9 @@ def collect_card_mastery_rewards(logger):
 
     # get back to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status(
+            "failed getting back to clash main from card page after collecting card mastery rewards"
+        )
         return "restart"
 
     return None
@@ -77,6 +87,9 @@ def check_if_can_collect_card_mastery_rewards(logger):
 
     # get to card page
     if get_to_card_page(logger) == "restart":
+        logger.change_status(
+            "Failed to get to card page while collecting card mastery rewards"
+        )
         return "restart"
 
     start_time = time.time()
@@ -89,6 +102,9 @@ def check_if_can_collect_card_mastery_rewards(logger):
 
     # return to cash main
     if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status(
+            "Failed to get to main from card page while collecting card mastery rewards"
+        )
         return "restart"
 
     return has_rewards
