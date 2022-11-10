@@ -19,6 +19,11 @@ def print_pix_list(pix_list):
         print(pix[0], pix[1], pix[2])
 
 
+# method to minimize a given window name
+def minimize_window(window_name):
+    ahk.minimize_window(window_name)
+
+
 def screenshot(region=None):
     """Method to return a screenshot of a given region
 
