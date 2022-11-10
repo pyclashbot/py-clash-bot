@@ -1,6 +1,11 @@
 import time
 from typing import Any
 
+
+
+import os
+os.environ["PYTHON_ENV"] = "development"
+
 from pymemuc import PyMemuc
 
 from pyclashbot.bot.clashmain import wait_for_clash_main_menu
