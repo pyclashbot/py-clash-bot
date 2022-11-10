@@ -67,6 +67,7 @@ def select_second_deck(logger):
     # logger.change_status("Selecting deck number 2 for use.")
     # get to card page
     if get_to_card_page(logger) == "restart":
+        logger.change_status("Failed getting to card page")
         return "restart"
     time.sleep(1)
 
@@ -76,6 +77,7 @@ def select_second_deck(logger):
 
     # get to main menu from card page
     if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status("Failed getting to clash main from card page")
         return "restart"
     return None
 
@@ -86,6 +88,7 @@ def randomize_and_select_deck_2(logger):
     logger.change_status("Randomizing deck number 2")
     # get to card page
     if get_to_card_page(logger) == "restart":
+        logger.change_status("Failed getting to card page from clash main")
         return "restart"
 
     # select deck 2
@@ -94,19 +97,22 @@ def randomize_and_select_deck_2(logger):
     time.sleep(1)
 
     # randomize this deck
-    if randomize_current_deck() == "restart":
+    if randomize_current_deck(logger) == "restart":
+        logger.change_status("randomize deck failure")
         return "restart"
 
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status("Failure getting to clash main")
         return "restart"
     return None
 
 
-def randomize_current_deck():
+def randomize_current_deck(logger):
     # figure out how much you can scroll down in your card list
-    max_scrolls = count_scrolls_in_card_page()
+    max_scrolls = count_scrolls_in_card_page(logger)
     if max_scrolls == "restart":
+        logger.change_status("Max scroll detection failure")
         return "restart"
 
     card_coord_list = [
@@ -123,14 +129,15 @@ def randomize_current_deck():
     for card_coord in card_coord_list:
         if (
             replace_card_in_deck(
-                card_to_replace_coord=card_coord, max_scrolls=max_scrolls
+                logger, card_to_replace_coord=card_coord, max_scrolls=max_scrolls
             )
             == "restart"
         ):
+            logger.change_status("replacing card in deck failure")
             return "restart"
 
 
-def replace_card_in_deck(card_to_replace_coord, max_scrolls):
+def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
     # scroll down a random amount
     scroll_range = calculate_scroll_range(max_scrolls)
 
@@ -147,6 +154,7 @@ def replace_card_in_deck(card_to_replace_coord, max_scrolls):
         scrolls -= 1
         loops += 1
         if loops > 25:
+            logger.change_status("Scrolled too many times checing scroll count")
             return "restart"
 
     use_card_button_coord = None
@@ -154,6 +162,7 @@ def replace_card_in_deck(card_to_replace_coord, max_scrolls):
         # find a random card on this page
         replacement_card_coord = find_random_card_coord()
         if replacement_card_coord == "restart":
+            logger.change_status("Failure replacing card")
             return "restart"
         click(replacement_card_coord[0], replacement_card_coord[1])
         time.sleep(1)
@@ -174,7 +183,7 @@ def replace_card_in_deck(card_to_replace_coord, max_scrolls):
     return None
 
 
-def find_random_card_coord():
+def find_random_card_coord(logger):
     region_list = [
         [50, 130, 81, 71],
         [131, 130, 81, 71],
@@ -203,6 +212,7 @@ def find_random_card_coord():
     while not has_card:
         loops += 1
         if loops > 15:
+            logger.change_status("Failed finding random card coord")
             return "restart"
 
         # pick a random region
@@ -327,7 +337,7 @@ def check_if_pixel_is_grey(pixel):
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
 
 
-def count_scrolls_in_card_page():
+def count_scrolls_in_card_page(logger):
     if check_if_mimimum_scroll_case():
         return 0
 
@@ -338,6 +348,7 @@ def count_scrolls_in_card_page():
     while check_if_can_still_scroll_in_card_page():
         loops += 1
         if loops > 40:
+            logger.change_status("Failed counting scrolls in card page")
             return "restart"
         scroll_down_super_fast()
         count += 1
