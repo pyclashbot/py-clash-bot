@@ -30,10 +30,14 @@ def request_random_card_from_clash_main(logger):
     logger.change_status("Checking if you're in a clan.")
     if not check_if_in_a_clan(logger):
         logger.change_status("Skipping request because we are not in a clan.")
-        if get_to_clash_main_from_clan_page(logger) == "restart": return "restart"
+        if get_to_clash_main_from_clan_page(logger) == "restart":
+            logger.change_status("failure getting to clash main from clan page")
+            return "restart"
         return None
-    else: 
-        if get_to_clash_main_from_clan_page(logger) == "restart": return "restart"
+    else:
+        if get_to_clash_main_from_clan_page(logger) == "restart":
+            logger.change_status("failure getting to clash main from card page")
+            return "restart"
         time.sleep(1)
 
     # Return if request is not available (Starts on main, ends on clan page)
@@ -42,6 +46,7 @@ def request_random_card_from_clash_main(logger):
     if not check_if_can_request(logger):
         logger.change_status("Request isn't available.")
         if get_to_clash_main_from_clan_page(logger) == "restart":
+            logger.change_status("failure getting to clash main from clan page")
             return "restart"
         return None
 
@@ -52,14 +57,17 @@ def request_random_card_from_clash_main(logger):
     # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
     maximum_scrolls = count_maximum_request_scrolls(logger)
     if maximum_scrolls == "restart":
+        logger.change_status("failure with max scrolls")
         return "restart"
 
     # request a random card (starts on requestable cards page, ends on clan chat page)
     if request_random_card(logger, maximum_scrolls=maximum_scrolls) == "restart":
+        logger.change_status("failed requesting random card")
         return "restart"
 
     # get back to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
+        logger.change_status("failed getting to clash main from clan page")
         return "restart"
     return None
 
@@ -123,6 +131,7 @@ def look_for_request_button():
 def check_if_can_request(logger):
     # Get to clan page
     if get_to_clan_page(logger) == "restart":
+        logger.change_status("failed getting to clan page")
         return "restart"
     time.sleep(1)
 
@@ -150,6 +159,7 @@ def count_maximum_request_scrolls(logger):
     while check_if_can_still_scroll_in_request_page():
         loops += 1
         if loops > 35:
+            logger.change_status("Failed counting maximum scrolls in request page.")
             return "restart"
         scroll_down_super_fast()
         scrolls += 1

@@ -31,7 +31,8 @@ def handle_war_attacks(logger):
 
     # get to war page
     logger.change_status("Getting to war page.")
-    if get_to_war_page_from_main() == "restart":
+    if get_to_war_page_from_main(logger) == "restart":
+        logger.change_status("Failure getting to war page")
         return "restart"
 
     # click a war battle
@@ -64,10 +65,14 @@ def handle_war_attacks(logger):
 
     # wait for the match to load
     if wait_for_war_battle_loading(logger) == "restart":
+        logger.change_status(
+            "Waiting for war battle loading took too long. Restarting."
+        )
         return "restart"
 
     # fight for the duration of the war match (losses do not matter)
     if fight_war_battle(logger) == "restart":
+        logger.change_status("Failure in war battle fight. Restarting.")
         return "restart"
 
     # exit battle
@@ -79,6 +84,7 @@ def handle_war_attacks(logger):
 
     # get to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
+        logger.change_status("Failed getting to clash main from clan page")
         return "restart"
     return None
 
@@ -89,6 +95,7 @@ def fight_war_battle(logger):
     while check_if_in_battle_with_delay():
         loops += 1
         if loops > 100:
+            logger.change_status("Fought in war too long. Returning")
             return "restart"
 
         # click random card
@@ -126,7 +133,7 @@ def check_if_on_war_page():
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
-def get_to_war_page_from_main():
+def get_to_war_page_from_main(logger):
     if check_if_on_war_page():
         return None
 
@@ -138,6 +145,7 @@ def get_to_war_page_from_main():
     while not check_if_on_war_page():
         loops += 1
         if loops > 20:
+            logger.change_status("failure getting to war page.")
             return "restart"
         click(280, 620)
         time.sleep(1)
@@ -207,7 +215,7 @@ def check_if_loading_war_battle():
         iar[446][270],
     ]
 
-    #print_pix_list(pix_list)
+    # print_pix_list(pix_list)
 
     color = [249, 99, 99]
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
@@ -219,6 +227,7 @@ def wait_for_war_battle_loading(logger):
     while check_if_loading_war_battle():
         loops += 1
         if loops > 100:
+            logger.change_status("Waited for war battle loading too long. Restarting.")
             return "restart"
         time.sleep(0.5)
     time.sleep(4)
