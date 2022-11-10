@@ -55,11 +55,12 @@ def collect_battlepass_rewards(logger):
 
         # click battlepass
         click(315, 165)
+        time.sleep(1)
 
         # click chest locations
         for coord in chest_locations:
             ahk.click(coord[0], coord[1])
-            time.sleep(0.1)
+            time.sleep(0.33)
 
         # click deadspace
         for _ in range(15):
