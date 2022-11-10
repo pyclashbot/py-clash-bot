@@ -33,9 +33,11 @@ def get_to_card_page(logger):
         # logger.change_status("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
+        time.sleep(1)
         loops = loops + 1
         if loops > 10:
             logger.change_status("Couldn't make it to card page")
+            print("12")
             return "restart"
         time.sleep(0.2)
     scroll_up_fast()
@@ -358,7 +360,7 @@ def count_scrolls_in_card_page(logger):
     click(111, 629)
     time.sleep(1)
 
-    return 0 if count == 0 else count - 2
+    return 0 if count == 0 else count - 3
 
 
 def look_for_card_collection_icon_on_card_page():
