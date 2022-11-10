@@ -235,6 +235,12 @@ def fight_debug():
     state_fight(logger)
 
 
+looping=True
+while looping:
+    if randomize_and_select_deck_2(logger)=="restart":looping=False
+    time.sleep(5)
 
 
-main_debug()
+
+
+# main_debug()
