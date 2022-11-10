@@ -48,8 +48,8 @@ def collect_battlepass_rewards(logger):
 
     loops = 0
     while check_if_has_battlepass_rewards():
-
         if loops > 15:
+            logger.change_status("looped through collect battlepass too many times.")
             return "restart"
         loops += 1
 

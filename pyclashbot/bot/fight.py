@@ -26,6 +26,7 @@ def do_fight(logger):
 
     while in_battle:
         if wait_until_has_6_elixer(logger) == "restart":
+            logger.change_status("Waited for 6 elixer too long. Restarting.")
             return "restart"
 
         play_random_card(logger)
@@ -52,6 +53,7 @@ def leave_end_battle_window(logger):
         click(79, 625)
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited for clash main too long")
             return "restart"
         return None
 
@@ -60,10 +62,12 @@ def leave_end_battle_window(logger):
         click(206, 594)
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited too long for clash main")
             return "restart"
         return None
 
     if wait_for_clash_main_menu(logger) == "restart":
+        logger.change_status("Waited too long for clash main")
         return "restart"
     return None
 
