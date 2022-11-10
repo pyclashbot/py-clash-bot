@@ -1,16 +1,13 @@
+import os
 import time
 from typing import Any
 
-
-
-import os
 os.environ["PYTHON_ENV"] = "development"
 
 from pymemuc import PyMemuc
 
 from pyclashbot.bot.clashmain import wait_for_clash_main_menu
 from pyclashbot.interface import show_clash_royale_setup_gui
-from pyclashbot.memu.client import minimize_window
 from pyclashbot.utils import setup_memu
 
 launcher_path = setup_memu()  # setup memu, install if necessary
@@ -18,7 +15,7 @@ pmc = PyMemuc()
 
 
 def configure_vm(logger, vm_index):
-    minimize_window("Microvirt\Memu\memuc")
+
     logger.change_status("Configuring VM")
 
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
@@ -40,7 +37,7 @@ def configure_vm(logger, vm_index):
 
 
 def create_vm(logger):
-    minimize_window("Microvirt\Memu\memuc")
+
     # create a vm named pyclashbot
     logger.change_status("VM not found, creating VM...")
     vm_index = pmc.create_vm()
@@ -52,7 +49,7 @@ def create_vm(logger):
 
 
 def check_for_vm(logger):
-    minimize_window("Microvirt\Memu\memuc")
+
     # get list of vms on machine
     vms: list[dict[str, Any]] = pmc.list_vm_info()  # type: ignore
 
@@ -67,7 +64,7 @@ def check_for_vm(logger):
 
 
 def start_vm(logger):
-    minimize_window("Microvirt\Memu\memuc")
+
     # Method for starting the memu client
     logger.change_status("Starting Memu Client")
     vm_index = check_for_vm(logger)
@@ -110,7 +107,7 @@ def restart_and_open_clash(logger):
 
 
 def start_clash_royale(logger, vm_index):
-    minimize_window("Microvirt\Memu\memuc")
+
     logger.change_status("Finding Clash Royale...")
 
     # using pymemuc check if clash royale is installed
@@ -135,7 +132,7 @@ def start_clash_royale(logger, vm_index):
 
 
 def skip_ads(logger, vm_index):
-    minimize_window("Microvirt\Memu\memuc")
+
     # Method for skipping the memu ads that popip up when you start memu
 
     logger.change_status("Skipping ads")
@@ -145,7 +142,7 @@ def skip_ads(logger, vm_index):
 
 
 def close_vm(logger, vm_index):
-    minimize_window("Microvirt\Memu\memuc")
+
     # Method to close memu
     logger.change_status("Closing VM")
     pmc.stop_vm(vm_index)
