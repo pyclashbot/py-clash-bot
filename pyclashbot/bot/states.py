@@ -42,6 +42,7 @@ def detect_state(logger):
     # if we're on clan page get back to clash main and return
     if check_if_on_clan_page():
         if get_to_clash_main_from_clan_page(logger) == "restart":
+            logger.change_status("Failure getting to clash main from clan page")
             return "restart"
         time.sleep(1)
         return "clashmain"
@@ -49,6 +50,7 @@ def detect_state(logger):
     # if we're on card page get back to clash main and return
     if check_if_on_first_card_page():
         if get_to_clash_main_from_card_page(logger) == "restart":
+            logger.change_status("failure getting to clash main from card page")
             return "restart"
         time.sleep(1)
         return "clashmain"
@@ -62,6 +64,7 @@ def detect_state(logger):
         click(79, 625)
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited for clash main too long")
             return "restart"
         return "clashmain"
 
@@ -70,6 +73,7 @@ def detect_state(logger):
         click(206, 594)
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited for clash main too long")
             return "restart"
         return "clashmain"
 

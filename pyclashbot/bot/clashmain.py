@@ -23,6 +23,7 @@ def wait_for_clash_main_menu(logger):
         # loop count
         loops += 1
         if loops > 25:
+            logger.change_status("Looped through getting to clash main too many times")
             return "restart"
 
         # wait 1 sec
@@ -137,13 +138,15 @@ def check_if_in_a_clan(logger):
     click(308, 627)
 
     # handle war chest popup
-    if check_for_war_loot_menu(): handle_war_loot_menu()
+    if check_for_war_loot_menu():
+        handle_war_loot_menu()
 
     # cycle through clan tab a few times
     for _ in range(5):
         click(280, 623)
         time.sleep(0.33)
-        if check_for_war_loot_menu(): handle_war_loot_menu()
+        if check_for_war_loot_menu():
+            handle_war_loot_menu()
     scroll_down()
     time.sleep(1)
 
@@ -153,7 +156,6 @@ def check_if_in_a_clan(logger):
     # cycle tab again
     click(280, 623)
     time.sleep(1)
-
 
     # get second pixel
     pixel_2 = numpy.array(screenshot())[118][206]
@@ -346,6 +348,7 @@ def get_to_account(logger, account_number):
     time.sleep(7)
     logger.add_account_switch()
     if wait_for_clash_main_menu(logger) == "restart":
+        logger.change_status("Failed waiting for clash main")
         return "restart"
 
     # handling the various things notifications and such that need to be
@@ -520,6 +523,7 @@ def start_2v2(logger):
     time.sleep(1)
 
     if find_and_click_2v2_quickmatch_button(logger) == "restart":
+        logger.change_status("failed to find 2v2 quickmatch button")
         return "restart"
 
     check_for_reward_limit()
