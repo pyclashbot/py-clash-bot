@@ -66,7 +66,7 @@ battle_stats_title = [
         sg.Text("Cards Played: "),
     ],
     [
-        sg.Text("Fights: "),
+        sg.Text("2v2 Fights: "),
     ],
     [
         sg.Text("War Battles Fought: "),
@@ -104,7 +104,7 @@ battle_stats_values = [
     [
         sg.Text(
             "0",
-            key="2v2 fights",
+            key="fights",
             relief=sg.RELIEF_SUNKEN,
             text_color="blue",
             size=(5, 1),
