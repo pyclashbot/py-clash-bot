@@ -104,7 +104,7 @@ battle_stats_values = [
     [
         sg.Text(
             "0",
-            key="fights",
+            key="2v2 fights",
             relief=sg.RELIEF_SUNKEN,
             text_color="blue",
             size=(5, 1),
