@@ -2,11 +2,9 @@ import os
 import time
 from os.path import dirname, join
 
-import numpy
 import pyautogui
 import pygetwindow
 from ahk import AHK
-from matplotlib import pyplot as plt
 
 from pyclashbot.utils import setup_ahk
 
@@ -89,16 +87,6 @@ def get_file_count(folder):
     directory = join(dirname(__file__)[:-4], "detection", "reference_images", folder)
 
     return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
-
-
-def show_image(image):
-    """Method to show a PIL image using matlibplot
-
-    Args:
-        image (PIL.Image): Image to show
-    """
-    plt.imshow(numpy.array(image))
-    plt.show()
 
 
 def compare_coords(coord1, coord2):
