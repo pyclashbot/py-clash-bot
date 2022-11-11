@@ -21,7 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
-          poetry install --with build --with dev
+          poetry install --with build
       - name: Run unittest
         run: |
           poetry run python -m unittest discover "tests" -p '*_test.py'
