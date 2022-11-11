@@ -13,27 +13,11 @@ bdist_msi_options = {
     "upgrade_code": "{494bebef-6fc5-42e5-98c8-d0b2e339750e}",
     "add_to_path": False,
     "initial_target_dir": f"[ProgramFilesFolder]\\{product_name}",
-}
-
-dependencies = [
-    "PIL",
-    "cv2",
-    "keyboard",
-    "numpy",
-    "pyautogui",
-    "pygetwindow",
-    "joblib",
-    "requests",
-    "matplotlib",
-    "ahk",
-    "PySimpleGUI",
-]
-
-build_exe_options = {
-    "includes": dependencies,
-    "include_files": [
-        "README.md",
-    ],
+    "summary_data": {
+        "author": "Matthew Miglio, Martin Miglio",
+        "comments": "A bot for the game Clash of Clans",
+        "keywords": "clash of clans bot",
+    },
 }
 
 
@@ -45,11 +29,16 @@ exe = Executable(
     base=base,
     shortcut_name=f"{product_name} {version}",
     shortcut_dir="DesktopFolder",
+    target_name=f"{product_name}.exe",
+    copyright="2022 Matthew Miglio",
 )
 
 setup(
     name=product_name,
     description="Automated Clash Royale",
     executables=[exe],
-    options={"bdist_msi": bdist_msi_options, "build_exe": build_exe_options},
+    options={
+        "bdist_msi": bdist_msi_options,
+        "build_exe": {"excludes": ["test", "setuptools"]},
+    },
 )
