@@ -1,6 +1,8 @@
 debug.py
 log.txt
 
+poetry.lock
+
 temp/
 .vscode/
 output/
