@@ -1,18 +1,14 @@
+import os
 import random
 import sys
 import time
 import webbrowser
 from dataclasses import replace
-import os
 from os.path import dirname, join
 from re import S
 from typing import Any
 
-
-
-
 import numpy
-
 import pyautogui
 import pygetwindow
 import PySimpleGUI as sg
@@ -61,7 +57,11 @@ from pyclashbot.bot.deck import (
     look_for_card_collection_icon_on_card_page,
     randomize_and_select_deck_2,
 )
-from pyclashbot.bot.level_up_reward_collection import check_for_level_up_reward_pixels, check_if_has_level_up_rewards, collect_level_up_rewards
+from pyclashbot.bot.level_up_reward_collection import (
+    check_for_level_up_reward_pixels,
+    check_if_has_level_up_rewards,
+    collect_level_up_rewards,
+)
 from pyclashbot.bot.request import (
     check_if_can_request,
     look_for_request_button,
@@ -96,12 +96,7 @@ from pyclashbot.memu import (
     scroll_down,
     scroll_down_super_fast,
 )
-from pyclashbot.memu.client import (
-    click,
-    get_file_count,
-    make_reference_image_list,
-    show_image,
-)
+from pyclashbot.memu.client import click, get_file_count, make_reference_image_list
 from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
@@ -109,10 +104,17 @@ ahk = AHK()
 logger = Logger(console_log=True)
 
 
+def show_image(image):
+    """Method to show a PIL image using matlibplot
+
+    Args:
+        image (PIL.Image): Image to show
+    """
+    plt.imshow(numpy.array(image))
+    plt.show()
 
 
 # show_image(screenshot())
-
 
 
 def gui_debug():
@@ -207,21 +209,21 @@ def reference_image_debug():
 
 
 def main_debug():
-    #print(check_if_on_clash_main_menu())
-    #open_chests(logger)
-    #collect_battlepass_rewards(logger)
-    #collect_card_mastery_rewards(logger)
-    #print(check_if_stuck_on_trophy_progression_page())
-    #print(check_if_on_first_card_page())
-    #get_to_account(logger, 0)
-    #start_2v2(logger)
-    #print(check_if_in_a_clan(logger))
-    #randomize_and_select_deck_2(logger)
-    #request_random_card_from_clash_main(logger)
-    #print(check_if_has_level_up_rewards())
-    #collect_level_up_rewards(logger)
-    #handle_war_attacks(logger)
-    #upgrade_current_cards(logger)
+    # print(check_if_on_clash_main_menu())
+    # open_chests(logger)
+    # collect_battlepass_rewards(logger)
+    # collect_card_mastery_rewards(logger)
+    # print(check_if_stuck_on_trophy_progression_page())
+    # print(check_if_on_first_card_page())
+    # get_to_account(logger, 0)
+    # start_2v2(logger)
+    # print(check_if_in_a_clan(logger))
+    # randomize_and_select_deck_2(logger)
+    # request_random_card_from_clash_main(logger)
+    # print(check_if_has_level_up_rewards())
+    # collect_level_up_rewards(logger)
+    # handle_war_attacks(logger)
+    # upgrade_current_cards(logger)
     # print(check_if_in_battle_with_delay())
     pass
 
@@ -235,12 +237,11 @@ def fight_debug():
     state_fight(logger)
 
 
-looping=True
+looping = True
 while looping:
-    if randomize_and_select_deck_2(logger)=="restart":looping=False
+    if randomize_and_select_deck_2(logger) == "restart":
+        looping = False
     time.sleep(5)
-
-
 
 
 # main_debug()
