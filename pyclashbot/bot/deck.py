@@ -137,6 +137,7 @@ def randomize_current_deck(logger):
         ):
             logger.change_status("replacing card in deck failure")
             return "restart"
+    return None
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
@@ -209,9 +210,8 @@ def find_random_card_coord(logger):
         [293, 488, 81, 71],
     ]
 
-    has_card = False
     loops = 0
-    while not has_card:
+    while True:
         loops += 1
         if loops > 15:
             logger.change_status("Failed finding random card coord")
@@ -225,10 +225,8 @@ def find_random_card_coord(logger):
             screenshot(random_region)
         )
         if coord is not None:
-            has_card = True
-
-    coord = (coord[0] + random_region[0], coord[1] + random_region[1])
-    return coord
+            coord = (coord[0] + random_region[0], coord[1] + random_region[1])
+            return coord
 
 
 def find_card_elixer_icon_in_card_list_in_given_image(image):
@@ -294,35 +292,24 @@ def check_if_can_still_scroll_in_card_page():
     pix_list_2_as_int = [[int(pix[0]), int(pix[1]), int(pix[2])] for pix in pix_list_2]
 
     # identifing each pix list as blue, grey, or None
-    pix_list_1_ID = identify_pix_list(pix_list_1_as_int)
-    pix_list_2_ID = identify_pix_list(pix_list_2_as_int)
-
-    if pix_list_1_ID == "fail" and pix_list_2_ID == "fail":
-        return False
-    return True
+    return bool(
+        is_not_blue_or_grey(pix_list_1_as_int) or is_not_blue_or_grey(pix_list_2_as_int)
+    )
 
 
 def check_if_pix_list_is_blue(pix_list):
     color_blue = [15, 70, 120]
-    for pix in pix_list:
-        if not pixel_is_equal(color_blue, pix, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal(color_blue, pix, tol=45) for pix in pix_list)
 
 
-def identify_pix_list(pix_list):
-    if check_if_pix_list_is_grey(pix_list):
-        return "fail"
-    if check_if_pix_list_is_blue(pix_list):
-        return "fail"
-    return "pass"
+def is_not_blue_or_grey(pix_list):
+    return not (
+        check_if_pix_list_is_blue(pix_list) or check_if_pix_list_is_grey(pix_list)
+    )
 
 
 def check_if_pix_list_is_grey(pix_list):
-    for pix in pix_list:
-        if not check_if_pixel_is_grey(pix):
-            return False
-    return True
+    return all(check_if_pixel_is_grey(pix) for pix in pix_list)
 
 
 def check_if_pixel_is_grey(pixel):
@@ -393,7 +380,7 @@ def check_if_mimimum_scroll_case():
 def check_if_pixels_indicate_minimum_scroll_case_with_delay():
     start_time = time.time()
     while time.time() - start_time < 3:
-        if check_if_pixels_indicate_minimum_scroll_case() == False:
+        if not check_if_pixels_indicate_minimum_scroll_case():
             return False
     return True
 
@@ -410,12 +397,7 @@ def check_if_pixels_indicate_minimum_scroll_case():
         iar[595][365],
     ]
 
-    for pix in pix_list:
-        if not pixel_is_equal(color, pix, tol=60):
-
-            return True
-
-    return False
+    return any(not pixel_is_equal(color, pix, tol=60) for pix in pix_list)
 
 
 def calculate_scroll_range(max_scrolls):
