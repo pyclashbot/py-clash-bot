@@ -162,7 +162,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
     use_card_button_coord = None
     while use_card_button_coord is None:
         # find a random card on this page
-        replacement_card_coord = find_random_card_coord()
+        replacement_card_coord = find_random_card_coord(logger)
         if replacement_card_coord == "restart":
             logger.change_status("Failure replacing card")
             return "restart"
