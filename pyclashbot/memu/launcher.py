@@ -1,8 +1,5 @@
-import os
 import time
 from typing import Any
-
-os.environ["PYTHON_ENV"] = "development"
 
 from pymemuc import PyMemuc
 
@@ -11,7 +8,7 @@ from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.utils import setup_memu
 
 launcher_path = setup_memu()  # setup memu, install if necessary
-pmc = PyMemuc()
+pmc = PyMemuc(debug=True)
 
 
 def configure_vm(logger, vm_index):
