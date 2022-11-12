@@ -199,6 +199,7 @@ class WorkerThread(StoppableThread):
                 (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
         except Exception as e:  # pylint: disable=broad-except
             # we don't want the thread to crash the interface so we catch all exceptions and log
+            #raise e 
             self.logger.error(str(e))
 
 

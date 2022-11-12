@@ -133,17 +133,20 @@ def click(x, y, duration=1, max_attempts=3):
 
     attempts = 0
 
-    while ahk.mouse_position != (x, y):
-        if attempts > max_attempts > 0:
-            raise MouseMoveException(
-                "Couldnt move mouse to given coordinates, aborting"
-            )
-        if time.time() - start > duration + tol:
-            start = time.time()
-            time.sleep(duration + tol)
-            ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
-            attempts += 1
-    ahk.click()
+    try:
+        while ahk.mouse_position != (x, y):
+            if attempts > max_attempts > 0:
+                raise MouseMoveException(
+                    "Couldnt move mouse to given coordinates, aborting"
+                )
+            if time.time() - start > duration + tol:
+                start = time.time()
+                time.sleep(duration + tol)
+                ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
+                attempts += 1
+        ahk.click()
+    except:
+        return "restart"
 
 
 def scroll_down():

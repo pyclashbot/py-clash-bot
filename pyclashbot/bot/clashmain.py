@@ -142,7 +142,7 @@ def check_if_in_a_clan(logger):
         handle_war_loot_menu()
 
     # cycle through clan tab a few times
-    for _ in range(5):
+    for _ in range(10):
         click(280, 623)
         time.sleep(0.33)
         if check_for_war_loot_menu():
