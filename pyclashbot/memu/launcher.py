@@ -6,12 +6,13 @@ from pymemuc import PyMemuc
 from pyclashbot.bot.clashmain import wait_for_clash_main_menu
 from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.utils import setup_memu
+from pyclashbot.utils.logger import Logger
 
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
 
 
-def configure_vm(logger, vm_index):
+def configure_vm(logger: Logger, vm_index):
 
     logger.change_status("Configuring VM")
 
@@ -33,7 +34,7 @@ def configure_vm(logger, vm_index):
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
 
-def create_vm(logger):
+def create_vm(logger: Logger):
 
     # create a vm named pyclashbot
     logger.change_status("VM not found, creating VM...")
@@ -45,23 +46,31 @@ def create_vm(logger):
     return vm_index
 
 
-def check_for_vm(logger):
+def check_for_vm(logger: Logger) -> int:
+    """Check for a vm named pyclashbot, create one if it doesn't exist
 
-    # get list of vms on machine
-    vms: list[dict[str, Any]] = pmc.list_vm_info()  # type: ignore
+    Args:
+        logger (Logger): Logger object
 
-    # find vm named pyclashbot
-    found = any(vm["title"] == "pyclashbot" for vm in vms)
+    Returns:
+        int: index of the vm
+    """
 
-    return (
-        next(vm["index"] for vm in vms if vm["title"] == "pyclashbot")
-        if found
-        else create_vm(logger)
-    )
+    # get list of vms on machine sorted by index
+    vms: list[dict[str, Any]] = pmc.list_vm_info().sort(key=lambda x: x["index"])  # type: ignore
+
+    # get the indecies of all vms named pyclashbot
+    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "pyclashbot"]
+
+    # delete all vms except the lowest index
+    for vm_index in vm_indices[1:]:
+        pmc.delete_vm(vm_index)
+
+    # return the index. if no vms named pyclashbot exist, create one.
+    return vm_indices[0] if vm_indices else create_vm(logger)
 
 
-def start_vm(logger):
-
+def start_vm(logger: Logger):
     # Method for starting the memu client
     logger.change_status("Starting Memu Client")
     vm_index = check_for_vm(logger)
@@ -74,10 +83,16 @@ def start_vm(logger):
     return vm_index
 
 
-def restart_and_open_clash(logger):
+first_run = True
+
+
+def restart_and_open_clash(logger: Logger):
 
     # Method for restarting Memu, opening clash, and
     # waiting for the clash main menu to appear.
+
+    # stop all vms
+    pmc.stop_all_vm()
 
     # get list of running vms on machine
     vms: list[dict[str, Any]] = pmc.list_vm_info(running=True)  # type: ignore
@@ -103,7 +118,7 @@ def restart_and_open_clash(logger):
     logger.add_restart()
 
 
-def start_clash_royale(logger, vm_index):
+def start_clash_royale(logger: Logger, vm_index):
 
     logger.change_status("Finding Clash Royale...")
 
@@ -128,7 +143,7 @@ def start_clash_royale(logger, vm_index):
     logger.change_status("Clash Royale started")
 
 
-def skip_ads(logger, vm_index):
+def skip_ads(logger: Logger, vm_index):
 
     # Method for skipping the memu ads that popip up when you start memu
 
@@ -138,7 +153,7 @@ def skip_ads(logger, vm_index):
         time.sleep(1)
 
 
-def close_vm(logger, vm_index):
+def close_vm(logger: Logger, vm_index):
 
     # Method to close memu
     logger.change_status("Closing VM")
