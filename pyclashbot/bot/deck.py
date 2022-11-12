@@ -141,14 +141,9 @@ def randomize_current_deck(logger):
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
-    # scroll down a random amount
-    scroll_range = calculate_scroll_range(max_scrolls)
 
     # get random scroll amount in this range
-    if scroll_range != [1, 1]:
-        scrolls = random.randint(scroll_range[0], scroll_range[1])
-    else:
-        scrolls = 1
+    scrolls = 1 if max_scrolls <= 0 else random.randint(3, max_scrolls)
 
     # scroll random amount
     loops = 0
@@ -218,7 +213,7 @@ def find_random_card_coord(logger):
             return "restart"
 
         # pick a random region
-        random_index = random.randint(0, 19)
+        random_index = random.randint(0, len(region_list) - 1)
         random_region = region_list[random_index]
 
         coord = find_card_elixer_icon_in_card_list_in_given_image(
@@ -313,9 +308,9 @@ def check_if_pix_list_is_grey(pix_list):
 
 
 def check_if_pixel_is_grey(pixel):
-    r = pixel[0]
-    g = pixel[1]
-    b = pixel[2]
+    r: int = pixel[0]
+    g: int = pixel[1]
+    b: int = pixel[2]
 
     # pixel to ignore
     ignore_pixel = [41, 40, 47]
@@ -398,7 +393,3 @@ def check_if_pixels_indicate_minimum_scroll_case():
     ]
 
     return any(not pixel_is_equal(color, pix, tol=60) for pix in pix_list)
-
-
-def calculate_scroll_range(max_scrolls):
-    return [1, 1] if max_scrolls == 0 else [3, max_scrolls]
