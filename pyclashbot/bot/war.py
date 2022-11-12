@@ -39,6 +39,7 @@ def handle_war_attacks(logger):
     if click_war_icon() == "failed":
         logger.change_status("Couldn't find a war battle. Returning.")
         time.sleep(1)
+        get_to_clash_main_from_clan_page(logger)
         return "clashmain"
 
     # click deadspace to get rid of the pop up
@@ -185,7 +186,7 @@ def click_war_icon():
             scroll_up_super_fast()
         else:
             scroll_down_super_fast()
-        time.sleep(1)
+        time.sleep(3)
         coord = find_battle_icon_on_war_page()
     click(coord[0], coord[1])
     return "success"
