@@ -48,14 +48,13 @@ main_layout = [
         ),
     ],
     [
-        sg.Text("Current Status: "),
         sg.InputText(
             "Idle",
             key="current_status",
             use_readonly_for_disable=True,
             disabled=True,
             text_color="blue",
-            size=(40, 1),
+            size=(60, 1),
         ),
     ],
 ]
