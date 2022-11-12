@@ -27,9 +27,17 @@ jobs:
       - name: Build package for Windows
         run: |
           poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
+      - name: Publish Pre-Release
+        uses: softprops/action-gh-release@master
+        if: startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')
+        with:
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            ./dist/py-clash-bot*.msi
       - name: Publish Release
         uses: softprops/action-gh-release@master
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'rc')
         with:
           generate_release_notes: true
           files: |
