@@ -223,6 +223,10 @@ def play_random_card(logger):
         click(289, 606)
     elif n == 3:
         click(355, 605)
+    
+    
+    print("Playing card ",n," at ",play_coord)
+    
     # Click the location we're playing it at
     click(play_coord[0], play_coord[1])
 
