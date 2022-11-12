@@ -234,10 +234,10 @@ def fight_debug():
         if not check_if_on_clash_main_menu():
             print("youre not on main dude.")
             return
-        
+
         randomize_and_select_deck_2(logger)
         time.sleep(1)
-        
+
         if not check_if_on_clash_main_menu():
             print("youre not on main dude.")
             return
@@ -245,8 +245,10 @@ def fight_debug():
         time.sleep(1)
         start_2v2(logger)
         wait_for_battle_start(logger)
-        if state_fight(logger)=="restart":return
+        if state_fight(logger) == "restart":
+            return
 
 
+# memu_debug(logger)
 
-handle_war_attacks(logger)
+orientate_terminal()
