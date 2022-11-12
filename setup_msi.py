@@ -21,7 +21,7 @@ bdist_msi_options = {
 }
 
 
-# sepccify program as gui so it doesnt open a console (use console=True for debugging)
+# sepccify program as gui so it doesnt open a console (use None for debugging)
 base = "Win32GUI"
 
 exe = Executable(
