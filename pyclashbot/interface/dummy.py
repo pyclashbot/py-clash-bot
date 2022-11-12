@@ -32,7 +32,7 @@ if __name__ == "__main__":
         "current_status": "Starting",
     }
 
-    window = sg.Window("Statistics", main_layout)
+    window = sg.Window("Py-ClashBot", main_layout)
 
     running = False  # pylint: disable=invalid-name
 
