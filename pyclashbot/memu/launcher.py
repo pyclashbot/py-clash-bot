@@ -56,8 +56,11 @@ def check_for_vm(logger: Logger) -> int:
         int: index of the vm
     """
 
-    # get list of vms on machine sorted by index
-    vms: list[dict[str, Any]] = pmc.list_vm_info().sort(key=lambda x: x["index"])  # type: ignore
+    # get list of vms on machine
+    vms: list[dict[str, Any]] = pmc.list_vm_info()  # type: ignore
+
+    # sorted by index, lowest to highest
+    vms.sort(key=lambda x: x["index"])
 
     # get the indecies of all vms named pyclashbot
     vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "pyclashbot"]
