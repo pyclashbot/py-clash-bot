@@ -57,6 +57,7 @@ from pyclashbot.bot.deck import (
     look_for_card_collection_icon_on_card_page,
     randomize_and_select_deck_2,
 )
+from pyclashbot.bot.fight import play_random_card
 from pyclashbot.bot.level_up_reward_collection import (
     check_for_level_up_reward_pixels,
     check_if_has_level_up_rewards,
@@ -229,19 +230,23 @@ def main_debug():
 
 
 def fight_debug():
-    if not check_if_on_clash_main_menu():
-        print("youre not on main dude.")
-        return
-    start_2v2(logger)
-    wait_for_battle_start(logger)
-    state_fight(logger)
+    while True:
+        if not check_if_on_clash_main_menu():
+            print("youre not on main dude.")
+            return
+        
+        randomize_and_select_deck_2(logger)
+        time.sleep(1)
+        
+        if not check_if_on_clash_main_menu():
+            print("youre not on main dude.")
+            return
+
+        time.sleep(1)
+        start_2v2(logger)
+        wait_for_battle_start(logger)
+        if state_fight(logger)=="restart":return
 
 
-looping = True
-while looping:
-    if randomize_and_select_deck_2(logger) == "restart":
-        looping = False
-    time.sleep(5)
 
-
-# main_debug()
+handle_war_attacks(logger)
