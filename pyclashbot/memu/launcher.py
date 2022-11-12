@@ -63,8 +63,9 @@ def check_for_vm(logger: Logger) -> int:
     vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "pyclashbot"]
 
     # delete all vms except the lowest index
-    for vm_index in vm_indices[1:]:
-        pmc.delete_vm(vm_index)
+    if len(vm_indices) > 1:
+        for vm_index in vm_indices[1:]:
+            pmc.delete_vm(vm_index)
 
     # return the index. if no vms named pyclashbot exist, create one.
     return vm_indices[0] if vm_indices else create_vm(logger)
