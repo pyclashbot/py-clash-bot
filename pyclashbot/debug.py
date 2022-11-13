@@ -64,6 +64,7 @@ from pyclashbot.bot.level_up_reward_collection import (
     collect_level_up_rewards,
 )
 from pyclashbot.bot.request import (
+    check_for_request_icon_on_clan_page,
     check_if_can_request,
     look_for_request_button,
     request_random_card_from_clash_main,
@@ -251,4 +252,6 @@ def fight_debug():
 
 # memu_debug(logger)
 
-orientate_terminal()
+# orientate_terminal()
+
+print(check_if_can_request(logger))
