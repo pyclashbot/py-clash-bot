@@ -143,7 +143,7 @@ def randomize_current_deck(logger):
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # get random scroll amount in this range
-    scrolls = 1 if max_scrolls <= 0 else random.randint(3, max_scrolls)
+    scrolls = 1 if max_scrolls < 1 else random.randint(1, max_scrolls)
 
     # scroll random amount
     loops = 0
