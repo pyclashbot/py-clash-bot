@@ -16,7 +16,11 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.memu.client import get_file_count, make_reference_image_list
+from pyclashbot.memu.client import (
+    get_file_count,
+    make_reference_image_list,
+    print_pix_list,
+)
 
 
 def request_random_card_from_clash_main(logger):
@@ -135,7 +139,10 @@ def check_if_can_request(logger):
         return "restart"
     time.sleep(1)
 
-    # Method to check if request is available
+    return check_for_request_icon_on_clan_page()
+
+
+def check_for_request_icon_on_clan_page():
     iar = numpy.array(screenshot())
     pix_list = [
         iar[536][50],
@@ -144,6 +151,13 @@ def check_if_can_request(logger):
         iar[536][47],
     ]
     color = [47, 69, 105]
+
+    # print_pix_list(pix_list)
+
+    # if some of these pixels are purple then it's EPIC SUNDAY special case
+    for pix in pix_list:
+        if pixel_is_equal(pix, [137, 46, 228], tol=35):
+            return True
 
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
