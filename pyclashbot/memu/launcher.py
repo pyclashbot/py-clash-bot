@@ -115,6 +115,7 @@ def restart_and_open_clash(logger: Logger):
 
     skip_ads(logger, vm_index)
     start_clash_royale(logger, vm_index)
+    time.sleep(10)
 
     wait_for_clash_main_menu(logger)
 
