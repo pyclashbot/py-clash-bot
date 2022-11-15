@@ -87,14 +87,7 @@ def start_vm(logger: Logger):
     return vm_index
 
 
-first_run = True
-
-
-def restart_and_open_clash(logger: Logger):
-
-    # Method for restarting Memu, opening clash, and
-    # waiting for the clash main menu to appear.
-
+def restart_memu(logger: Logger):
     # stop all vms
     pmc.stop_all_vm()
 
@@ -112,15 +105,27 @@ def restart_and_open_clash(logger: Logger):
     logger.change_status("Opening MEmu launcher")
     vm_index = start_vm(logger)
     time.sleep(10)
-
     skip_ads(logger, vm_index)
+    return vm_index
+
+
+first_run = True
+
+
+def restart_and_open_clash(logger: Logger):
+    # Method for restarting (and starting) Memu, opening clash, and
+    # waiting for the clash main menu to appear.
+
+    vm_index = restart_memu(logger)
     start_clash_royale(logger, vm_index)
     time.sleep(10)
-
     wait_for_clash_main_menu(logger)
 
-    # increment restart counter
-    logger.add_restart()
+    global first_run  # pylint: disable=global-statement
+    if first_run:
+        first_run = False
+    else:
+        logger.add_restart()
 
 
 def start_clash_royale(logger: Logger, vm_index):
