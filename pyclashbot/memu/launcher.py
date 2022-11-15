@@ -1,7 +1,7 @@
 import time
 from typing import Any
 
-from pymemuc import PyMemuc
+from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.clashmain import wait_for_clash_main_menu
 from pyclashbot.interface import show_clash_royale_setup_gui
@@ -57,7 +57,7 @@ def check_for_vm(logger: Logger) -> int:
     """
 
     # get list of vms on machine
-    vms: list[dict[str, Any]] = pmc.list_vm_info()  # type: ignore
+    vms: list[VMInfo] = pmc.list_vm_info()
 
     # sorted by index, lowest to highest
     vms.sort(key=lambda x: x["index"])
@@ -89,15 +89,19 @@ def start_vm(logger: Logger):
 
 def restart_memu(logger: Logger):
     # stop all vms
-    pmc.stop_all_vm()
-
-    # get list of running vms on machine
-    vms: list[dict[str, Any]] = pmc.list_vm_info(running=True)  # type: ignore
-
-    # stop any vms named pyclashbot
-    for vm in vms:
-        if vm["title"] == "pyclashbot":
-            pmc.stop_vm(vm["index"])
+    try:
+        pmc.stop_all_vm()
+        # get list of running vms on machine
+        vms: list[VMInfo] = pmc.list_vm_info(running=True)
+        # stop any vms named pyclashbot
+        for vm in vms:
+            if vm["title"] == "pyclashbot":
+                pmc.stop_vm(vm["index"])
+    except PyMemucError as err:
+        if vms := pmc.list_vm_info(running=True):
+            logger.change_status("Error stopping VM")
+            logger.error(str(err))
+            raise err
 
     # orientate_terminal()
 
