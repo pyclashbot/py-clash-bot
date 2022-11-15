@@ -108,12 +108,12 @@ def restart_and_open_clash(logger: Logger):
 
     # orientate_terminal()
 
-    # Open the Memu Multi Manager
     logger.change_status("Opening MEmu launcher")
     vm_index = start_vm(logger)
-    time.sleep(10)
+    time.sleep(15)
 
     skip_ads(logger, vm_index)
+    time.sleep(5)
     start_clash_royale(logger, vm_index)
     time.sleep(10)
 
