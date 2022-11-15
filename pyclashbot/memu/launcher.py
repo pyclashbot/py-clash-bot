@@ -1,7 +1,7 @@
 import time
 from typing import Any
 
-from pymemuc import PyMemuc
+from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.clashmain import wait_for_clash_main_menu
 from pyclashbot.interface import show_clash_royale_setup_gui
@@ -57,7 +57,7 @@ def check_for_vm(logger: Logger) -> int:
     """
 
     # get list of vms on machine
-    vms: list[dict[str, Any]] = pmc.list_vm_info()  # type: ignore
+    vms: list[VMInfo] = pmc.list_vm_info()
 
     # sorted by index, lowest to highest
     vms.sort(key=lambda x: x["index"])
@@ -87,40 +87,48 @@ def start_vm(logger: Logger):
     return vm_index
 
 
-first_run = True
-
-
-def restart_and_open_clash(logger: Logger):
-
-    # Method for restarting Memu, opening clash, and
-    # waiting for the clash main menu to appear.
-
+def restart_memu(logger: Logger):
     # stop all vms
-    pmc.stop_all_vm()
-
-    # get list of running vms on machine
-    vms: list[dict[str, Any]] = pmc.list_vm_info(running=True)  # type: ignore
-
-    # stop any vms named pyclashbot
-    for vm in vms:
-        if vm["title"] == "pyclashbot":
-            pmc.stop_vm(vm["index"])
+    try:
+        pmc.stop_all_vm()
+        # get list of running vms on machine
+        vms: list[VMInfo] = pmc.list_vm_info(running=True)
+        # stop any vms named pyclashbot
+        for vm in vms:
+            if vm["title"] == "pyclashbot":
+                pmc.stop_vm(vm["index"])
+    except PyMemucError as err:
+        if vms := pmc.list_vm_info(running=True):
+            logger.change_status("Error stopping VM")
+            logger.error(str(err))
+            raise err
 
     # orientate_terminal()
 
     logger.change_status("Opening MEmu launcher")
     vm_index = start_vm(logger)
     time.sleep(15)
-
     skip_ads(logger, vm_index)
-    time.sleep(5)
+    return vm_index
+
+
+first_run = True
+
+
+def restart_and_open_clash(logger: Logger):
+    # Method for restarting (and starting) Memu, opening clash, and
+    # waiting for the clash main menu to appear.
+
+    vm_index = restart_memu(logger)
     start_clash_royale(logger, vm_index)
     time.sleep(10)
-
     wait_for_clash_main_menu(logger)
 
-    # increment restart counter
-    logger.add_restart()
+    global first_run  # pylint: disable=global-statement
+    if first_run:
+        first_run = False
+    else:
+        logger.add_restart()
 
 
 def start_clash_royale(logger: Logger, vm_index):
