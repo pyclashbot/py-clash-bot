@@ -99,7 +99,7 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
 )
 from pyclashbot.memu.client import click, get_file_count, make_reference_image_list
-from pyclashbot.memu.launcher import start_vm
+from pyclashbot.memu.launcher import restart_and_open_clash, restart_memu, start_vm
 from pyclashbot.utils import Logger
 
 ahk = AHK()
@@ -250,8 +250,22 @@ def fight_debug():
             return
 
 
+def restart_stress_test(logger):
+    # test the function from launcher which restarts the vm over and over
+    with open("restart_stress_test.txt", "w") as f:
+        while True:
+            try:
+                restart_memu(logger)
+                f.write("restarted\n")
+            except Exception as err:
+                f.write(str(err) + "\n")
+            f.flush()
+
+
 # memu_debug(logger)
 
 # orientate_terminal()
 
-print(check_if_can_request(logger))
+restart_stress_test(logger)
+
+# print(check_if_can_request(logger))
