@@ -250,8 +250,13 @@ def fight_debug():
             return
 
 
-# memu_debug(logger)
+def randomize_deck_debug():
+    while True:
+        if not check_if_on_clash_main_menu():
+            print("youre not on main dude.")
+            return
+        if randomize_and_select_deck_2(logger) == "restart":
+            return
 
-# orientate_terminal()
 
-print(check_if_can_request(logger))
+memu_debug(logger)
