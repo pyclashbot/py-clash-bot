@@ -53,6 +53,7 @@ from pyclashbot.bot.deck import (
     check_if_pixels_indicate_minimum_scroll_case,
     check_if_pixels_indicate_minimum_scroll_case_with_delay,
     count_scrolls_in_card_page,
+    find_card_level_boost_icon,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
     randomize_and_select_deck_2,
@@ -259,4 +260,8 @@ def randomize_deck_debug():
             return
 
 
-memu_debug(logger)
+# memu_debug(logger)
+
+
+if find_card_level_boost_icon()[1] > 320:
+    scroll_down_super_fast()
