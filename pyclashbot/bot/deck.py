@@ -157,8 +157,11 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # check if we're too high up in scroll page
 
-    while find_card_level_boost_icon()[1] > 320:
-        scroll_down_super_fast()
+    card_level_boost_icon_coord = find_card_level_boost_icon()
+
+    if card_level_boost_icon_coord is not None:
+        if card_level_boost_icon_coord[1] > 320:
+            scroll_down_super_fast()
 
     use_card_button_coord = None
     while use_card_button_coord is None:
