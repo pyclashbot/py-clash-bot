@@ -25,6 +25,7 @@ from pyclashbot.bot.card_detection import get_card_images, identify_cards
 from pyclashbot.bot.card_mastery_collection import (
     check_if_can_collect_card_mastery_rewards,
     collect_card_mastery_rewards,
+    get_to_clash_main_from_card_page,
 )
 from pyclashbot.bot.clashmain import (
     check_for_friends_logo_on_main,
@@ -258,10 +259,10 @@ def randomize_deck_debug():
             return
         if randomize_and_select_deck_2(logger) == "restart":
             return
+        get_to_clash_main_from_card_page(logger)
 
 
 # memu_debug(logger)
 
 
-if find_card_level_boost_icon()[1] > 320:
-    scroll_down_super_fast()
+randomize_deck_debug()
