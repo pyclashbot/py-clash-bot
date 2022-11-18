@@ -265,4 +265,4 @@ def randomize_deck_debug():
 # memu_debug(logger)
 
 
-randomize_deck_debug()
+memu_debug(logger)
