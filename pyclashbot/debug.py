@@ -25,6 +25,7 @@ from pyclashbot.bot.card_detection import get_card_images, identify_cards
 from pyclashbot.bot.card_mastery_collection import (
     check_if_can_collect_card_mastery_rewards,
     collect_card_mastery_rewards,
+    get_to_clash_main_from_card_page,
 )
 from pyclashbot.bot.clashmain import (
     check_for_friends_logo_on_main,
@@ -53,6 +54,7 @@ from pyclashbot.bot.deck import (
     check_if_pixels_indicate_minimum_scroll_case,
     check_if_pixels_indicate_minimum_scroll_case_with_delay,
     count_scrolls_in_card_page,
+    find_card_level_boost_icon,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
     randomize_and_select_deck_2,
@@ -99,7 +101,7 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
 )
 from pyclashbot.memu.client import click, get_file_count, make_reference_image_list
-from pyclashbot.memu.launcher import restart_and_open_clash, restart_memu, start_vm
+from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
 ahk = AHK()
@@ -250,22 +252,17 @@ def fight_debug():
             return
 
 
-def restart_stress_test(logger):
-    # test the function from launcher which restarts the vm over and over
-    with open("restart_stress_test.txt", "w") as f:
-        while True:
-            try:
-                restart_memu(logger)
-                f.write("restarted\n")
-            except Exception as err:
-                f.write(str(err) + "\n")
-            f.flush()
+def randomize_deck_debug():
+    while True:
+        if not check_if_on_clash_main_menu():
+            print("youre not on main dude.")
+            return
+        if randomize_and_select_deck_2(logger) == "restart":
+            return
+        get_to_clash_main_from_card_page(logger)
 
 
 # memu_debug(logger)
 
-# orientate_terminal()
 
-restart_stress_test(logger)
-
-# print(check_if_can_request(logger))
+memu_debug(logger)

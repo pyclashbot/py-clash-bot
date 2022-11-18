@@ -155,6 +155,14 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
             logger.change_status("Scrolled too many times checing scroll count")
             return "restart"
 
+    # check if we're too high up in scroll page
+
+    card_level_boost_icon_coord = find_card_level_boost_icon()
+
+    if card_level_boost_icon_coord is not None:
+        if card_level_boost_icon_coord[1] > 320:
+            scroll_down_super_fast()
+
     use_card_button_coord = None
     while use_card_button_coord is None:
         # find a random card on this page
@@ -169,7 +177,6 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
         use_card_button_coord = find_use_card_button()
 
     # click use card
-
     click(use_card_button_coord[0], use_card_button_coord[1])
 
     # select the card coord in the deck that we're replacing with the random card
@@ -179,6 +186,27 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
     # change the card collection filter so increase randomness
     click(320, 575)
     return None
+
+
+def find_card_level_boost_icon():
+    current_image = screenshot()
+    reference_folder = "find_card_level_boost_icon"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_card_level_boost_icon",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
 
 
 def find_random_card_coord(logger):
