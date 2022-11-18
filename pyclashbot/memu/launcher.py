@@ -19,7 +19,7 @@ def configure_vm(logger: Logger, vm_index):
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
 
     configuration: dict[str, str] = {
-        "start_window_mode": "1",  # remember position
+        "start_window_mode": "2",  # Custom
         "win_x": "0",
         "win_y": "0",
         "is_customed_resolution": "1",
