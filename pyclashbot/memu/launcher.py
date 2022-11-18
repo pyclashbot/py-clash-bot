@@ -113,10 +113,9 @@ def restart_memu(logger: Logger):
 
     # orientate_terminal()
 
-    # Open the Memu Multi Manager
     logger.change_status("Opening MEmu launcher")
     vm_index = start_vm(logger)
-    time.sleep(10)
+    time.sleep(15)
     skip_ads(logger, vm_index)
     return vm_index
 
