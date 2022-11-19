@@ -1,5 +1,4 @@
 import time
-from typing import Any
 
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
@@ -19,7 +18,7 @@ def configure_vm(logger: Logger, vm_index):
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
 
     configuration: dict[str, str] = {
-        "start_window_mode": "2",  # Custom
+        "start_window_mode": "2",  # custom window position
         "win_x": "0",
         "win_y": "0",
         "is_customed_resolution": "1",
@@ -39,6 +38,8 @@ def create_vm(logger: Logger):
     # create a vm named pyclashbot
     logger.change_status("VM not found, creating VM...")
     vm_index = pmc.create_vm()
+    while vm_index == -1:  # handle when vm creation fails
+        vm_index = pmc.create_vm()
     # configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
     pmc.rename_vm(vm_index, new_name="pyclashbot")
@@ -65,10 +66,17 @@ def check_for_vm(logger: Logger) -> int:
     # get the indecies of all vms named pyclashbot
     vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "pyclashbot"]
 
-    # delete all vms except the lowest index
-    if len(vm_indices) > 1:
+    # delete all vms except the lowest index, keep looping until there is only one
+    while len(vm_indices) > 1:
+        # as long as no exception is raised, this while loop should exit on first iteration
         for vm_index in vm_indices[1:]:
-            pmc.delete_vm(vm_index)
+            try:
+                pmc.delete_vm(vm_index)
+                vm_indices.remove(vm_index)
+            except PyMemucError as err:
+                logger.error(str(err))
+                # don't raise error, just continue to loop until its deleted
+                # raise err # if program hangs on deleting vm then uncomment this line
 
     # return the index. if no vms named pyclashbot exist, create one.
     return vm_indices[0] if vm_indices else create_vm(logger)
