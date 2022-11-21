@@ -236,7 +236,7 @@ def find_random_card_coord(logger):
     loops = 0
     while True:
         loops += 1
-        if loops > 25:
+        if loops > 200:
             logger.change_status("Failed finding random card coord")
             return "restart"
 
