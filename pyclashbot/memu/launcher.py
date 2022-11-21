@@ -1,5 +1,6 @@
 import time
 
+import pygetwindow
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.clashmain import wait_for_clash_main_menu
@@ -21,6 +22,7 @@ def configure_vm(logger: Logger, vm_index):
         "start_window_mode": "2",  # custom window position
         "win_x": "0",
         "win_y": "0",
+        "win_scaling_percent2": "100", # 100% scaling
         "is_customed_resolution": "1",
         "resolution_width": "419",
         "resolution_height": "633",
@@ -89,9 +91,9 @@ def start_vm(logger: Logger):
     configure_vm(logger, vm_index)
     logger.change_status("Starting VM...")
     pmc.start_vm(vm_index=vm_index)
-    logger.change_status("VM Started")
+    orientate_memu()
     # move_window_to_top_left("pyclashbot")
-
+    logger.change_status("VM Started")
     return vm_index
 
 
@@ -180,3 +182,23 @@ def close_vm(logger: Logger, vm_index):
     logger.change_status("Closing VM")
     pmc.stop_vm(vm_index)
     logger.change_status("VM closed")
+
+
+def orientate_memu():
+    """Method for orientating Memu client"""
+    try:
+        window_memu = pygetwindow.getWindowsWithTitle("MEmu")[0]
+        window_memu.minimize()
+        window_memu.restore()
+        time.sleep(0.2)
+        try:
+            window_memu.moveTo(0, 0)
+        except pygetwindow.PyGetWindowException:
+            print("Had trouble moving MEmu window.")
+        time.sleep(0.2)
+        try:
+            window_memu.resizeTo(460, 680)
+        except pygetwindow.PyGetWindowException:
+            print("Had trouble resizing MEmu window")
+    except Exception:
+        print("Couldnt orientate MEmu")
