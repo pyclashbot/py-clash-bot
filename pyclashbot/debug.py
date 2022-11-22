@@ -118,7 +118,7 @@ def show_image(image):
     plt.show()
 
 
-show_image(screenshot())
+# show_image(screenshot())
 
 
 def gui_debug():
@@ -265,7 +265,7 @@ def randomize_deck_debug():
 # memu_debug(logger)
 
 
-# memu_debug(logger)
-
-
-show_image(screenshot(region=(0, 0, 2560, 1440)))
+while True:
+    region_list = [1, 2, 3, 4, 5]
+    this_random_region_list = random.sample(region_list, len(region_list))
+    print(this_random_region_list)
