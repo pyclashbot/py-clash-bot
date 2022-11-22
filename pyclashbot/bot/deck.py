@@ -233,23 +233,20 @@ def find_random_card_coord(logger):
         [293, 488, 81, 71],
     ]
 
-    loops = 0
-    while True:
-        loops += 1
-        if loops > 200:
-            logger.change_status("Failed finding random card coord")
-            return "restart"
-
-        # pick a random region
-        random_index = random.randint(0, len(region_list) - 1)
-        random_region = region_list[random_index]
-
-        coord = find_card_elixer_icon_in_card_list_in_given_image(
-            screenshot(random_region)
-        )
-        if coord is not None:
-            coord = (coord[0] + random_region[0], coord[1] + random_region[1])
-            return coord
+    # loop through the region list in random order 3 times
+    index = 0
+    for _ in range(3):
+        # randomize region list
+        this_random_region_list = random.sample(region_list, len(region_list))
+        for region in this_random_region_list:
+            index += 1
+            logger.log("Finding random card coord, index: " + str(index))
+            coord = find_card_elixer_icon_in_card_list_in_given_image(
+                screenshot(region)
+            )
+            if coord is not None:
+                return (coord[0] + region[0], coord[1] + region[1])
+    return "restart"
 
 
 def find_card_elixer_icon_in_card_list_in_given_image(image):
