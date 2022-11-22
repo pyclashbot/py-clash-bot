@@ -240,7 +240,7 @@ def find_random_card_coord(logger):
         this_random_region_list = random.sample(region_list, len(region_list))
         for region in this_random_region_list:
             index += 1
-            logger.log("Finding random card coord, index: " + str(index))
+            logger.change_status("Finding random card coord, index: " + str(index))
             coord = find_card_elixer_icon_in_card_list_in_given_image(
                 screenshot(region)
             )
