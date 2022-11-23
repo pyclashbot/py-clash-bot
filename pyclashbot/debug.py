@@ -54,6 +54,7 @@ from pyclashbot.bot.deck import (
     check_if_pixels_indicate_minimum_scroll_case,
     check_if_pixels_indicate_minimum_scroll_case_with_delay,
     count_scrolls_in_card_page,
+    find_card_elixer_icon_in_card_list_in_given_image,
     find_card_level_boost_icon,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
@@ -260,12 +261,3 @@ def randomize_deck_debug():
         if randomize_and_select_deck_2(logger) == "restart":
             return
         get_to_clash_main_from_card_page(logger)
-
-
-# memu_debug(logger)
-
-
-while True:
-    region_list = [1, 2, 3, 4, 5]
-    this_random_region_list = random.sample(region_list, len(region_list))
-    print(this_random_region_list)
