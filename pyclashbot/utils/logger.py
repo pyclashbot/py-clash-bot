@@ -23,6 +23,7 @@ class Logger:
         queue: Queue[dict[str, str | int]] | None = None,
         console_log: bool = False,
         file_log: bool = True,
+        timed: bool = True,
     ):
 
         # setup console log
@@ -43,10 +44,10 @@ class Logger:
             )  # noqa
 
         # queue for threaded communication
-        self._queue: Queue[dict[str, str | int]] = Queue() if queue is None else queue
+        self.queue: Queue[dict[str, str | int]] = Queue() if queue is None else queue
 
         # immutable statistics
-        self.start_time = time.time()
+        self.start_time = time.time() if timed else None
 
         # mutable statistics
         self.wins = 0
@@ -80,7 +81,7 @@ class Logger:
 
     def _update_queue(self):
         """updates the queue with a dictionary of mutable statistics"""
-        if self._queue is None:
+        if self.queue is None:
             return
 
         statistics: dict[str, str | int] = {
@@ -98,8 +99,9 @@ class Logger:
             "level_up_chest_collections": self.level_up_chest_collections,
             "war_battles_fought": self.war_battles_fought,
             "current_status": self.current_status,
+            "time_since_start": self.calc_time_since_start(),
         }
-        self._queue.put(statistics)
+        self.queue.put(statistics)
 
     @staticmethod
     def _updates_log(func):
@@ -113,70 +115,10 @@ class Logger:
 
         return wrapper
 
-    def log_to_console(self, fancy: bool = False):
+    def log_to_console(self):
         """log to console"""
-        if fancy:
-            line_with_leftside = "|----------------------------------------------------------------------------------"
-            line = "-----------------------------------------------------------------------------------"
 
-            self.console_add_row(line)
-            self.console_add_row(
-                f"|           Program uptime:           | {self.make_timestamp()}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|          Program restarts:          | {self.restarts}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|              Requests:              | {self.requests}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|               Fights:               | {self.fights}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|              Win rate:              | {self.make_win_loss_str()}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|           Chests unlocked:          | {self.chests_unlocked}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|            Cards played:            | {self.cards_played}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|            Cards upgraded:          | {self.cards_upgraded}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|           Account switches:         | {self.account_switches}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|   Card Mastery Reward Collections   | {self.card_mastery_reward_collections}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|    Battlepass Reward Collections    | {self.battlepass_rewards_collections}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|     Level Up Reward Collections     | {self.level_up_chest_collections}"
-            )
-            self.console_add_row(line_with_leftside)
-            self.console_add_row(
-                f"|          War Battles Fought         | {self.war_battles_fought}"
-            )
-            self.console_add_row(line_with_leftside)
-
-            self.console_add_row(f"|      Current status:      | {self.current_status}")
-            self.console_add_row(line)
-        else:
-            self.console_add_row(f"{self.make_timestamp()} | {self.current_status}")
+        self.console_add_row(f"{self.make_timestamp()} | {self.current_status}")
         self.print_buffer()
 
     def log_to_file(self):
@@ -248,6 +190,8 @@ class Logger:
         Returns:
             str: log time stamp
         """
+        if self.start_time is None:
+            return "00:00:00"
         output_time = time.time() - self.start_time
         output_time = int(output_time)
 
@@ -283,6 +227,14 @@ class Logger:
         """print log buffer"""
         print(self.console_buffer)
         self.console_buffer = ""  # clear buffer
+
+    def calc_time_since_start(self) -> str:
+        if self.start_time is not None:
+            hours, remainder = divmod(time.time() - self.start_time, 3600)
+            minutes, seconds = divmod(remainder, 60)
+        else:
+            hours, minutes, seconds = 0, 0, 0
+        return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
     @_updates_log
     def error(self, message: str):

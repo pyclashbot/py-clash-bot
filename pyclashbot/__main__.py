@@ -113,11 +113,12 @@ def shutdown_thread(thread, join=False):
             thread.join()  # this will block the gui
 
 
-def update_layout(window: sg.Window, statistics_q: Queue[dict[str, str | int]]):
+def update_layout(window: sg.Window, logger: Logger):
+    window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore
     # update the statistics in the gui
-    if not statistics_q.empty():
+    if not logger.queue.empty():
         # read the statistics from the logger
-        for stat, val in statistics_q.get().items():
+        for stat, val in logger.queue.get().items():
             window[stat].update(val)  # type: ignore
 
 
@@ -131,7 +132,7 @@ def main_gui():
     # track worker thread, communication queue and logger
     thread: WorkerThread | None = None
     statistics_q: Queue[dict[str, str | int]] = Queue()
-    logger = Logger(statistics_q, console_log=console_log)
+    logger = Logger(statistics_q, console_log=console_log, timed=False)
 
     # run the gui
     while True:
@@ -178,10 +179,10 @@ def main_gui():
                 window[key].update(disabled=False)
             # reset the communication queue and logger
             statistics_q = Queue()
-            logger = Logger(statistics_q, console_log=console_log)
+            logger = Logger(statistics_q, console_log=console_log, timed=False)
             thread = None
 
-        update_layout(window, statistics_q)
+        update_layout(window, logger)
 
     # shut down the thread if it is still running
     shutdown_thread(thread, join=True)
