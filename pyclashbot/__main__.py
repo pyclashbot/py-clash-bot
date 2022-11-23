@@ -1,7 +1,6 @@
 import sys
 import webbrowser
 from queue import Queue
-from typing import Union
 
 import PySimpleGUI as sg
 
@@ -23,7 +22,7 @@ from pyclashbot.utils.caching import check_user_settings
 
 def read_window(
     window: sg.Window, timeout: int = 10
-) -> tuple[str, dict[str, Union[str, int]]]:
+) -> tuple[str, dict[str, str | int]]:
     # Method for reading the attributes of the window
     # have a timeout so the output can be updated when no events are happening
     read_result = window.read(timeout=timeout)  # ms
@@ -33,7 +32,7 @@ def read_window(
     return read_result
 
 
-def read_job_list(values: dict[str, Union[str, int]]) -> list[str]:
+def read_job_list(values: dict[str, str | int]) -> list[str]:
     jobs = []
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
@@ -116,7 +115,7 @@ def shutdown_thread(thread):
         thread.join()
 
 
-def update_layout(window: sg.Window, statistics_q: Queue[dict[str, Union[str, int]]]):
+def update_layout(window: sg.Window, statistics_q: Queue[dict[str, str | int]]):
     # update the statistics in the gui
     if not statistics_q.empty():
         # read the statistics from the logger
@@ -132,8 +131,8 @@ def main_gui():
     load_last_settings(window)
 
     # track worker thread, communication queue and logger
-    thread: Union[WorkerThread, None] = None
-    statistics_q: Queue[dict[str, Union[str, int]]] = Queue()
+    thread: WorkerThread | None = None
+    statistics_q: Queue[dict[str, str | int]] = Queue()
     logger = Logger(statistics_q, console_log=console_log)
 
     # run the gui
@@ -199,7 +198,7 @@ class WorkerThread(StoppableThread):
                 (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
         except Exception as e:  # pylint: disable=broad-except
             # we don't want the thread to crash the interface so we catch all exceptions and log
-            #raise e 
+            # raise e
             self.logger.error(str(e))
 
 
