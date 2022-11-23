@@ -100,14 +100,24 @@ def randomize_and_select_deck_2(logger):
 
     # randomize this deck
     if randomize_current_deck(logger) == "restart":
-        logger.change_status("randomize deck failure")
-        return "restart"
+        logger.change_status("Randomize deck failure...")
+        return handle_randomize_deck_failure(logger)
 
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
         logger.change_status("Failure getting to clash main")
         return "restart"
     return None
+
+
+def handle_randomize_deck_failure(logger):
+    # tries to get back to clash main regardless of failing to randomize the deck fully. if it doesnt THEN we try restarting
+    logger.change_status(
+        "Trying to return to clash main and continue with half randomized deck"
+    )
+    if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status("Couldn't get to clash main. Must restart")
+        return "restart"
 
 
 def randomize_current_deck(logger):
@@ -156,13 +166,10 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
             return "restart"
 
     # check if we're too high up in scroll page
+    if check_for_random_scroll_success_in_deck_randomization():
+        scroll_down_super_fast()
 
-    card_level_boost_icon_coord = find_card_level_boost_icon()
-
-    if card_level_boost_icon_coord is not None:
-        if card_level_boost_icon_coord[1] > 320:
-            scroll_down_super_fast()
-
+    # click randomly until we get a 'use' button
     use_card_button_coord = None
     while use_card_button_coord is None:
         # find a random card on this page
@@ -419,3 +426,63 @@ def check_if_pixels_indicate_minimum_scroll_case():
     ]
 
     return any(not pixel_is_equal(color, pix, tol=60) for pix in pix_list)
+
+
+def check_for_random_scroll_success_in_deck_randomization():
+    # check 1
+    card_level_boost_icon_coord = find_card_level_boost_icon()
+    if card_level_boost_icon_coord is not None:
+        if card_level_boost_icon_coord[1] > 320:
+            return True
+
+    # check 2
+    if find_battle_deck_label_on_card_page() is not None:
+        return True
+
+    # check 3
+    if find_deck_number_label_on_card_page() is not None:
+        return True
+
+    return False
+
+
+def find_battle_deck_label_on_card_page():
+    current_image = screenshot()
+    reference_folder = "find_battle_deck_label_on_card_page"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_battle_deck_label_on_card_page",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+def find_deck_number_label_on_card_page():
+    current_image = screenshot()
+    reference_folder = "find_deck_number_label_on_card_page"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_deck_number_label_on_card_page",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
