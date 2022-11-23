@@ -22,7 +22,7 @@ def configure_vm(logger: Logger, vm_index):
         "start_window_mode": "2",  # custom window position
         "win_x": "0",
         "win_y": "0",
-        "win_scaling_percent2": "100", # 100% scaling
+        "win_scaling_percent2": "100",  # 100% scaling
         "is_customed_resolution": "1",
         "resolution_width": "419",
         "resolution_height": "633",

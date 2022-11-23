@@ -1,8 +1,8 @@
 import time
+from functools import wraps
 from os import makedirs
 from os.path import exists, expandvars, join
 from queue import Queue
-from typing import Union
 
 MODULE_NAME = "py-clash-bot"
 
@@ -13,14 +13,14 @@ class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
-        queue (Union[Queue, None], optional): Queue for threaded communication. Defaults to None.
+        queue (Queue | None, optional): Queue for threaded communication. Defaults to None.
         console_log (bool, optional): Enable console logging. Defaults to False.
         file_log (bool, optional): Enable file logging. Defaults to True.
     """
 
     def __init__(
         self,
-        queue: Union[Queue[dict[str, Union[str, int]]], None] = None,
+        queue: Queue[dict[str, str | int]] | None = None,
         console_log: bool = False,
         file_log: bool = True,
     ):
@@ -43,9 +43,7 @@ class Logger:
             )  # noqa
 
         # queue for threaded communication
-        self._queue: Queue[dict[str, Union[str, int]]] = (
-            Queue() if queue is None else queue
-        )
+        self._queue: Queue[dict[str, str | int]] = Queue() if queue is None else queue
 
         # immutable statistics
         self.start_time = time.time()
@@ -85,7 +83,7 @@ class Logger:
         if self._queue is None:
             return
 
-        statistics: dict[str, Union[str, int]] = {
+        statistics: dict[str, str | int] = {
             "wins": self.wins,
             "losses": self.losses,
             "fights": self.fights,
@@ -102,6 +100,18 @@ class Logger:
             "current_status": self.current_status,
         }
         self._queue.put(statistics)
+
+    @staticmethod
+    def _updates_log(func):
+        """decorator to specify functions which update the queue with statistics"""
+
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            result = func(self, *args, **kwargs)
+            self._update_log()  # pylint: disable=protected-access
+            return result
+
+        return wrapper
 
     def log_to_console(self, fancy: bool = False):
         """log to console"""
@@ -201,20 +211,6 @@ class Logger:
         if row is not None:
             self.file_buffer += row + "\n"
 
-    def print_buffer(self):
-        """print log buffer"""
-        print(self.console_buffer)
-        self.console_buffer = ""  # clear buffer
-
-    def error(self, message: str):
-        """log error message
-
-        Args:
-            message (str): error message
-        """
-        self.change_status(f"ERROR: {message}")
-        # self._update_log()
-
     def line_wrap(self, line: str, width: int) -> str:
         """wrap line to width
 
@@ -283,70 +279,85 @@ class Logger:
         seconds %= 60
         return f"{hour}:{minutes:02}:{seconds:02}"
 
+    def print_buffer(self):
+        """print log buffer"""
+        print(self.console_buffer)
+        self.console_buffer = ""  # clear buffer
+
+    @_updates_log
+    def error(self, message: str):
+        """log error message
+
+        Args:
+            message (str): error message
+        """
+        self.current_status = f"Error: {message}"
+
+    @_updates_log
     def add_battlepass_rewards_collection(self):
         """add battlepass rewards collection to log"""
         self.battlepass_rewards_collections += 1
-        self._update_log()
 
+    @_updates_log
     def add_level_up_chest_collection(self):
         """add level up chest collection to log"""
         self.level_up_chest_collections += 1
-        self._update_log()
 
+    @_updates_log
     def add_war_battle_fought(self):
         """add war battle fought to log"""
         self.war_battles_fought += 1
-        self._update_log()
 
+    @_updates_log
     def add_card_mastery_reward_collection(self):
         self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
-        self._update_log()
 
+    @_updates_log
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
         self.chests_unlocked += 1
-        self._update_log()
 
+    @_updates_log
     def add_card_played(self):
         """add card played to log"""
         self.cards_played += 1
-        self._update_log()
 
+    @_updates_log
     def add_card_upgraded(self):
         """add card upgraded to log"""
         self.cards_upgraded += 1
-        self._update_log()
 
+    @_updates_log
     def add_account_switch(self):
         """add account switch to log"""
         self.account_switches += 1
-        self._update_log()
 
+    @_updates_log
     def add_win(self):
         """add win to log"""
         self.wins += 1
-        self._update_log()
 
+    @_updates_log
     def add_loss(self):
         """add loss to log"""
         self.losses += 1
-        self._update_log()
 
+    @_updates_log
     def add_fight(self):
         """add fight to log"""
         self.fights += 1
-        self._update_log()
 
+    @_updates_log
     def add_request(self):
         """add request to log"""
         self.requests += 1
-        self._update_log()
 
+    @_updates_log
     def add_restart(self):
         """add restart to log"""
         self.restarts += 1
-        self._update_log()
 
+    @_updates_log
     def change_status(self, status):
         """change status of bot in log
 
@@ -354,4 +365,3 @@ class Logger:
             status (str): status of bot
         """
         self.current_status = status
-        self._update_log()
