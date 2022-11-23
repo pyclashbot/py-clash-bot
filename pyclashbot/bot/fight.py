@@ -19,6 +19,7 @@ from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
 
+#### card playing
 def do_fight(logger):
     logger.change_status("Starting fight")
     in_battle = True
@@ -43,126 +44,6 @@ def do_fight(logger):
 
     logger.change_status("Done fighting.")
     time.sleep(5)
-
-
-def leave_end_battle_window(logger):
-    # Method for finishing leaving a battle and returning to the clash royale
-    # main menu
-    # if end screen condition 1 (exit in bottom left)
-    if check_if_end_screen_is_exit_bottom_left():
-        click(79, 625)
-        time.sleep(1)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited for clash main too long")
-            return "restart"
-        return None
-
-    # if end screen condition 2 (OK in bottom middle)
-    if check_if_end_screen_is_ok_bottom_middle():
-        click(206, 594)
-        time.sleep(1)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited too long for clash main")
-            return "restart"
-        return None
-
-    if wait_for_clash_main_menu(logger) == "restart":
-        logger.change_status("Waited too long for clash main")
-        return "restart"
-    return None
-
-
-def check_if_end_screen_is_ok_bottom_middle():
-    # Method to check if the end screen is the one with the OK button in the
-    # middle
-    iar = numpy.array(screenshot())
-    # (210,589)
-    pix_list = [
-        iar[591][234],
-        iar[595][178],
-        iar[588][192],
-        iar[591][233],
-    ]
-    color = [78, 175, 255]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def check_if_end_screen_is_exit_bottom_left():
-    # Method to check if the end screen is the one with the exit button in the
-    # bottom left
-    iar = numpy.array(screenshot())
-    pix_list = [
-        iar[638][57],
-        iar[640][110],
-        iar[622][59],
-        iar[621][110],
-    ]
-    color = [87, 186, 255]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def open_activity_log():
-    # Method for opening the activity log from the clash royale main menu as
-    # to see past game outcomes
-    click(x=360, y=99)
-    time.sleep(1)
-
-    click(x=255, y=75)
-    time.sleep(1)
-
-
-def check_if_past_game_is_win(logger):
-    # Method for reading the actiivty log to check if the previous game was a
-    # win or loss
-    open_activity_log()
-    iar = numpy.array(screenshot())
-
-    for n in range(40, 130):
-        pix = iar[191][n]
-        sentinel = [1] * 3
-        sentinel[0] = 102
-        sentinel[1] = 204
-        sentinel[2] = 255
-        if pixel_is_equal(pix, sentinel, 10):
-            _extracted_from_check_if_past_game_is_win_12(
-                logger, "Last game was a win. Incrementing win counter."
-            )
-
-            logger.add_win()
-            return True
-    time.sleep(1)
-    click(385, 507)
-    _extracted_from_check_if_past_game_is_win_12(
-        logger, "Last game was a loss. Incrementing loss counter."
-    )
-
-    logger.add_loss()
-    return False
-
-
-# TODO Rename this here and in `check_if_past_game_is_win`
-def _extracted_from_check_if_past_game_is_win_12(logger, arg1):
-    click(20, 507)
-
-    logger.change_status(arg1)
-    time.sleep(2)
-
-
-def check_if_has_6_elixer():
-    # Method to see if the bot has 6 expendable elixer in the given moment
-    # during a battle
-    iar = numpy.array(screenshot())
-    pix_list = [
-        # iar[643][258],
-        iar[648][272],
-        iar[649][257],
-    ]
-    color_list = [[208, 34, 214], [245, 175, 250]]
-
-    return any(
-        pixel_is_equal(pix, color, tol=45)
-        for color, pix in itertools.product(color_list, pix_list)
-    )
 
 
 def wait_until_has_6_elixer(logger):
@@ -230,6 +111,121 @@ def play_random_card(logger):
     click(play_coord[0], play_coord[1])
 
 
+#### navigation
+def leave_end_battle_window(logger):
+    # Method for finishing leaving a battle and returning to the clash royale
+    # main menu
+    # if end screen condition 1 (exit in bottom left)
+    if check_if_end_screen_is_exit_bottom_left():
+        click(79, 625)
+        time.sleep(1)
+        if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited for clash main too long")
+            return "restart"
+        return None
+
+    # if end screen condition 2 (OK in bottom middle)
+    if check_if_end_screen_is_ok_bottom_middle():
+        click(206, 594)
+        time.sleep(1)
+        if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited too long for clash main")
+            return "restart"
+        return None
+
+    if wait_for_clash_main_menu(logger) == "restart":
+        logger.change_status("Waited too long for clash main")
+        return "restart"
+    return None
+
+
+def check_if_end_screen_is_ok_bottom_middle():
+    # Method to check if the end screen is the one with the OK button in the
+    # middle
+    iar = numpy.array(screenshot())
+    # (210,589)
+    pix_list = [
+        iar[591][234],
+        iar[595][178],
+        iar[588][192],
+        iar[591][233],
+    ]
+    color = [78, 175, 255]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+
+
+def check_if_end_screen_is_exit_bottom_left():
+    # Method to check if the end screen is the one with the exit button in the
+    # bottom left
+    iar = numpy.array(screenshot())
+    pix_list = [
+        iar[638][57],
+        iar[640][110],
+        iar[622][59],
+        iar[621][110],
+    ]
+    color = [87, 186, 255]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+
+
+def open_activity_log():
+    # Method for opening the activity log from the clash royale main menu as
+    # to see past game outcomes
+    click(x=360, y=99)
+    time.sleep(1)
+
+    click(x=255, y=75)
+    time.sleep(1)
+
+
+#### detection
+def check_if_past_game_is_win(logger):
+    # Method for reading the actiivty log to check if the previous game was a
+    # win or loss
+    open_activity_log()
+    iar = numpy.array(screenshot())
+
+    for n in range(40, 130):
+        pix = iar[191][n]
+        sentinel = [1] * 3
+        sentinel[0] = 102
+        sentinel[1] = 204
+        sentinel[2] = 255
+        if pixel_is_equal(pix, sentinel, 10):
+            _extracted_from_check_if_past_game_is_win_12(
+                logger, "Last game was a win. Incrementing win counter."
+            )
+
+            logger.add_win()
+            return True
+    time.sleep(1)
+    click(385, 507)
+    _extracted_from_check_if_past_game_is_win_12(
+        logger, "Last game was a loss. Incrementing loss counter."
+    )
+
+    logger.add_loss()
+    return False
+
+
+def check_if_has_6_elixer():
+    # Method to see if the bot has 6 expendable elixer in the given moment
+    # during a battle
+    iar = numpy.array(screenshot())
+    pix_list = [
+        # iar[643][258],
+        iar[648][272],
+        iar[649][257],
+    ]
+    color_list = [[208, 34, 214], [245, 175, 250]]
+
+    return any(
+        pixel_is_equal(pix, color, tol=45)
+        for color, pix in itertools.product(color_list, pix_list)
+    )
+
+
+#### board detection
 def cover_board_image(iar):
     # Method for covering parts of a board image that may obstruct enemy
     # detection
@@ -317,3 +313,11 @@ def pick_a_lane():
     if (lane_ratio[0] < 10) and (lane_ratio[1] < 10):
         return "random"
     return "right" if lane_ratio[1] > lane_ratio[0] else "left"
+
+
+#### etc
+def _extracted_from_check_if_past_game_is_win_12(logger, arg1):
+    click(20, 507)
+
+    logger.change_status(arg1)
+    time.sleep(2)
