@@ -16,6 +16,8 @@ if __name__ == "__main__":
 
     # some sample statistics
     statistics: dict[str, Any] = {
+        "current_status": "Idle",
+        "time_since_start": "00:00:00",
         "wins": 1,
         "losses": 2,
         "fights": 3,
@@ -29,7 +31,6 @@ if __name__ == "__main__":
         "battlepass_rewards_collections": 11,
         "level_up_chest_collections": 12,
         "war_battles_fought": 13,
-        "current_status": "Starting",
     }
 
     window = sg.Window("Py-ClashBot", main_layout)
@@ -73,6 +74,8 @@ if __name__ == "__main__":
 
         if running:
             # change some of the statistics
+            statistics["current_status"] = "Running"
+            statistics["time_since_start"] = "00:00:01"
             statistics["wins"] += 1
             statistics["losses"] += 1
             statistics["fights"] += 1
@@ -80,6 +83,8 @@ if __name__ == "__main__":
             statistics["requests"] += 1
 
         # update the statistics
+        window["current_status"].update(statistics["current_status"])  # type: ignore
+        window["time_since_start"].update(statistics["time_since_start"])  # type: ignore
         window["wins"].update(statistics["wins"])
         window["losses"].update(statistics["losses"])
         window["fights"].update(statistics["fights"])
