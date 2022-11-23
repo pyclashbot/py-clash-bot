@@ -60,6 +60,7 @@ optional = true
 pre-commit = "^2.20"
 black = "^22.10.0"
 matplotlib = "^3.6.2" # used in debug.py
+ipykernel = "^6.17.1"
 
 
 [tool.black]
