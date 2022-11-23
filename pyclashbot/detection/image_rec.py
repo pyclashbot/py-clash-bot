@@ -1,7 +1,6 @@
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from os.path import abspath, dirname, join
-from typing import Union
 
 import cv2
 import numpy as np
@@ -9,7 +8,7 @@ from joblib import Parallel, delayed
 from PIL import Image
 
 
-def get_first_location(locations: list[Union[list[int], None]], flip=False):
+def get_first_location(locations: list[list[int] | None], flip=False):
     """get the first location from a list of locations
 
     Args:
@@ -29,7 +28,7 @@ def get_first_location(locations: list[Union[list[int], None]], flip=False):
     )
 
 
-def check_for_location(locations: list[Union[list[int], None]]):
+def check_for_location(locations: list[list[int] | None]):
     """check for a location
 
     Args:
@@ -42,21 +41,21 @@ def check_for_location(locations: list[Union[list[int], None]]):
 
 
 def find_references(
-    screenshot: Union[np.ndarray, Image.Image],
+    screenshot: np.ndarray | Image.Image,
     folder: str,
     names: list[str],
     tolerance=0.97,
-) -> list[Union[list[int], None]]:
+) -> list[list[int] | None]:
     """find reference images in a screenshot
 
     Args:
-        screenshot (Union[np.ndarray, Image.Image]): find references in screenshot
+        screenshot (np.ndarray | Image.Image): find references in screenshot
         folder (str): folder to find references (from within reference_images)
         names (list[str]): names of references
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        list[Union[list[int], None]: coordinate locations
+        list[list[int] | None]: coordinate locations
     """
     num_cores = multiprocessing.cpu_count()
     with ThreadPoolExecutor(num_cores) as ex:
@@ -72,21 +71,21 @@ def find_references(
 
 
 def find_all_references(
-    screenshot: Union[np.ndarray, Image.Image],
+    screenshot: np.ndarray | Image.Image,
     folder: str,
     names: list[str],
     tolerance=0.97,
-) -> list[Union[list[int], None]] | None:
+) -> list[list[int] | None] | None:
     """find all reference images in a screenshot
 
     Args:
-        screenshot (Union[np.ndarray, Image.Image]): find references in screenshot
+        screenshot (np.ndarray | Image.Image): find references in screenshot
         folder (str): folder to find references (from within reference_images)
         names (list[str]): names of references
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        list[Union[list[int],None]]: coordinate locations
+        list[list[int] | None]: coordinate locations
     """
     num_cores = multiprocessing.cpu_count()
 
@@ -96,18 +95,18 @@ def find_all_references(
 
 
 def find_reference(
-    screenshot: Union[np.ndarray, Image.Image], folder: str, name: str, tolerance=0.97
-):
+    screenshot: np.ndarray | Image.Image, folder: str, name: str, tolerance=0.97
+) -> list[int] | None:
     """find a reference image in a screenshot
 
     Args:
-        screenshot (Union[np.ndarray, Image.Image]): find reference in screenshot
+        screenshot (np.ndarray | Image.Image): find reference in screenshot
         folder (str): folder to find reference (from within reference_images)
         name (str): name of reference
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
-        Union[list[int], None]: coordinate location
+        list[list[int] | None] | None: coordinate location
     """
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images"))
@@ -134,17 +133,17 @@ def pixel_is_equal(pix1, pix2, tol):
 
 
 def compare_images(
-    image: Union[np.ndarray, Image.Image],
-    template: Union[np.ndarray, Image.Image],
+    image: np.ndarray | Image.Image,
+    template: np.ndarray | Image.Image,
     threshold=0.8,
 ):
     """detects pixel location of a template in an image
     Args:
-        image (Union[np.ndarray, Image.Image]): image to find template within
-        template (Union[np.ndarray, Image.Image]): template image to match to
+        image (np.ndarray | Image.Image): image to find template within
+        template (np.ndarray | Image.Image): template image to match to
         threshold (float, optional): matching threshold. defaults to 0.8
     Returns:
-        Union[list[int], None]: a list of pixel location (x,y)
+        list[list[int] | None]: a list of pixel location (x,y)
     """
 
     # show template
@@ -156,14 +155,14 @@ def compare_images(
     template = np.array(template)
 
     # Convert image colors
-    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # pylint: disable=no-member
-    template_gray = cv2.cvtColor(  # pylint: disable=no-member
-        template, cv2.COLOR_RGB2GRAY  # pylint: disable=no-member
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore # pylint: disable=no-member
+    template_gray = cv2.cvtColor(  # type: ignore # pylint: disable=no-member
+        template, cv2.COLOR_RGB2GRAY  # type: ignore # pylint: disable=no-member
     )
 
     # Perform match operations.
-    res = cv2.matchTemplate(  # pylint: disable=no-member
-        img_gray, template_gray, cv2.TM_CCOEFF_NORMED  # pylint: disable=no-member
+    res = cv2.matchTemplate(  # type: ignore # pylint: disable=no-member
+        img_gray, template_gray, cv2.TM_CCOEFF_NORMED  # type: ignore # pylint: disable=no-member
     )
 
     # Store the coordinates of matched area in a numpy array
