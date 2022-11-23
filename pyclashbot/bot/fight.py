@@ -350,9 +350,11 @@ def pick_a_lane():
 
     lane_ratio = get_left_and_right_totals(covered_iar)
 
-    if (lane_ratio[0] < 10) and (lane_ratio[1] < 10):
-        return "random"
-    return "right" if lane_ratio[1] > lane_ratio[0] else "left"
+    # if (lane_ratio[0] < 10) and (lane_ratio[1] < 10):
+    #     return "random"
+    # return "right" if lane_ratio[1] > lane_ratio[0] else "left"
+
+    return "random"
 
 
 #### etc
