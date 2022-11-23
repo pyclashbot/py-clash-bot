@@ -23,6 +23,7 @@ from pyclashbot.memu import (
 )
 
 
+#### navigation methods
 def get_to_card_page(logger):
     # Method to get to the card page on clash main from the clash main menu
 
@@ -45,24 +46,17 @@ def get_to_card_page(logger):
     time.sleep(1)
 
 
-def find_card_page_logo():
-    # Method to find the card page logo in the icon list in the bottom of the
-    # screen when on clash main
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-    ]
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="card_page_logo",
-        names=references,
-        tolerance=0.97,
+def handle_randomize_deck_failure(logger):
+    # tries to get back to clash main regardless of failing to randomize the deck fully. if it doesnt THEN we try restarting
+    logger.change_status(
+        "Trying to return to clash main and continue with half randomized deck"
     )
-    return check_for_location(locations)
+    if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status("Couldn't get to clash main. Must restart")
+        return "restart"
 
 
+#### deck interaction methods
 def select_second_deck(logger):
     # Method to select the second deck of this account
 
@@ -100,8 +94,8 @@ def randomize_and_select_deck_2(logger):
 
     # randomize this deck
     if randomize_current_deck(logger) == "restart":
-        logger.change_status("randomize deck failure")
-        return "restart"
+        logger.change_status("Randomize deck failure...")
+        return handle_randomize_deck_failure(logger)
 
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
@@ -141,7 +135,6 @@ def randomize_current_deck(logger):
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
-
     # get random scroll amount in this range
     scrolls = 1 if max_scrolls < 1 else random.randint(1, max_scrolls)
 
@@ -156,13 +149,10 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
             return "restart"
 
     # check if we're too high up in scroll page
+    if check_for_random_scroll_success_in_deck_randomization():
+        scroll_down_super_fast()
 
-    card_level_boost_icon_coord = find_card_level_boost_icon()
-
-    if card_level_boost_icon_coord is not None:
-        if card_level_boost_icon_coord[1] > 320:
-            scroll_down_super_fast()
-
+    # click randomly until we get a 'use' button
     use_card_button_coord = None
     while use_card_button_coord is None:
         # find a random card on this page
@@ -188,6 +178,59 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
     return None
 
 
+def check_if_mimimum_scroll_case():
+    scroll_down()
+    time.sleep(3)
+
+    minimum_case = check_if_pixels_indicate_minimum_scroll_case_with_delay()
+
+    scroll_up_super_fast()
+    return minimum_case
+
+
+def count_scrolls_in_card_page(logger):
+    if check_if_mimimum_scroll_case():
+        return 0
+
+    # Count scrolls
+    count = 1
+    scroll_down_super_fast()
+    loops = 0
+    while check_if_can_still_scroll_in_card_page():
+        loops += 1
+        if loops > 40:
+            logger.change_status("Failed counting scrolls in card page")
+            return "restart"
+        scroll_down_super_fast()
+        count += 1
+
+    # get back to top of page
+    click(240, 621)
+    click(111, 629)
+    time.sleep(1)
+
+    return 0 if count == 0 else count - 3
+
+
+#### detection methods
+def find_card_page_logo():
+    # Method to find the card page logo in the icon list in the bottom of the
+    # screen when on clash main
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+    ]
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="card_page_logo",
+        names=references,
+        tolerance=0.97,
+    )
+    return check_for_location(locations)
+
+
 def find_card_level_boost_icon():
     current_image = screenshot()
     reference_folder = "find_card_level_boost_icon"
@@ -210,6 +253,9 @@ def find_card_level_boost_icon():
 
 
 def find_random_card_coord(logger):
+    # get the location of the deck options button we'll use it later
+    deck_options_button_coord = find_deck_options_button_on_card_page()
+
     region_list = [
         [50, 130, 81, 71],
         [131, 130, 81, 71],
@@ -240,16 +286,17 @@ def find_random_card_coord(logger):
         this_random_region_list = random.sample(region_list, len(region_list))
         for region in this_random_region_list:
             index += 1
-            logger.log("Finding random card coord, index: " + str(index))
+            logger.change_status("Finding random card coord, index: " + str(index))
+            # logger.change_status("Finding random card coord, index: " + str(index))
             coord = find_card_elixer_icon_in_card_list_in_given_image(
-                screenshot(region)
+                screenshot(region), deck_options_button_coord
             )
             if coord is not None:
                 return (coord[0] + region[0], coord[1] + region[1])
     return "restart"
 
 
-def find_card_elixer_icon_in_card_list_in_given_image(image):
+def find_card_elixer_icon_in_card_list_in_given_image(image, deck_options_button_coord):
     current_image = image
     reference_folder = "find_card_elixer_icon_in_card_list"
 
@@ -264,6 +311,11 @@ def find_card_elixer_icon_in_card_list_in_given_image(image):
         folder=reference_folder,
         names=references,
         tolerance=0.97,
+    )
+
+    # remove the invalid locations (invalid locations are ones that line up with the deck options button)
+    locations = remove_invalid_elixer_icon_locations(
+        locations, deck_options_button_coord
     )
 
     coord = get_first_location(locations)
@@ -317,6 +369,121 @@ def check_if_can_still_scroll_in_card_page():
     )
 
 
+def look_for_card_collection_icon_on_card_page():
+    current_image = screenshot()
+    reference_folder = "card_collection_icon"
+
+    references = make_reference_image_list(get_file_count("card_collection_icon"))
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.9,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+def check_for_random_scroll_success_in_deck_randomization():
+    # check 1
+    card_level_boost_icon_coord = find_card_level_boost_icon()
+    if card_level_boost_icon_coord is not None:
+        if card_level_boost_icon_coord[1] > 320:
+            return True
+
+    # check 2
+    if find_battle_deck_label_on_card_page() is not None:
+        return True
+
+    # check 3
+    if find_deck_number_label_on_card_page() is not None:
+        return True
+
+    return False
+
+
+def find_battle_deck_label_on_card_page():
+    current_image = screenshot()
+    reference_folder = "find_battle_deck_label_on_card_page"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_battle_deck_label_on_card_page",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+def find_deck_number_label_on_card_page():
+    current_image = screenshot()
+    reference_folder = "find_deck_number_label_on_card_page"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_deck_number_label_on_card_page",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+def find_deck_options_button_on_card_page():
+    current_image = screenshot()
+    reference_folder = "find_deck_options_button_on_card_page"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_deck_options_button_on_card_page",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+#### etc
+def remove_invalid_elixer_icon_locations(locations, deck_options_button_coord):
+    good_locations_list = []
+    for elixer_coord in locations:
+        if check_if_elixer_icon_location_is_valid(
+            elixer_coord, deck_options_button_coord
+        ):
+            good_locations_list.append(elixer_coord)
+    return good_locations_list
+
+
+def check_if_elixer_icon_location_is_valid(elixer_coord, deck_options_button_coord):
+    if abs(elixer_coord[1] - deck_options_button_coord[1]) < 10:
+        return False
+    return True
+
+
 def check_if_pix_list_is_blue(pix_list):
     color_blue = [15, 70, 120]
     return all(pixel_is_equal(color_blue, pix, tol=45) for pix in pix_list)
@@ -344,57 +511,6 @@ def check_if_pixel_is_grey(pixel):
         return False
 
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
-
-
-def count_scrolls_in_card_page(logger):
-    if check_if_mimimum_scroll_case():
-        return 0
-
-    # Count scrolls
-    count = 1
-    scroll_down_super_fast()
-    loops = 0
-    while check_if_can_still_scroll_in_card_page():
-        loops += 1
-        if loops > 40:
-            logger.change_status("Failed counting scrolls in card page")
-            return "restart"
-        scroll_down_super_fast()
-        count += 1
-
-    # get back to top of page
-    click(240, 621)
-    click(111, 629)
-    time.sleep(1)
-
-    return 0 if count == 0 else count - 3
-
-
-def look_for_card_collection_icon_on_card_page():
-    current_image = screenshot()
-    reference_folder = "card_collection_icon"
-
-    references = make_reference_image_list(get_file_count("card_collection_icon"))
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.9,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
-
-
-def check_if_mimimum_scroll_case():
-    scroll_down()
-    time.sleep(3)
-
-    minimum_case = check_if_pixels_indicate_minimum_scroll_case_with_delay()
-
-    scroll_up_super_fast()
-    return minimum_case
 
 
 def check_if_pixels_indicate_minimum_scroll_case_with_delay():
