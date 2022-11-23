@@ -103,16 +103,14 @@ def stop_button_event(logger: Logger, window, thread):
     logger.change_status("Stopping")
     window["Stop"].update(disabled=True)
     shutdown_thread(thread)  # send the shutdown flag to the thread
-    # enable the start button and configuration after the thread is stopped
-    for key in disable_keys:
-        window[key].update(disabled=False)
 
 
-def shutdown_thread(thread):
+def shutdown_thread(thread, join=False):
     if thread is not None:
         thread.shutdown_flag.set()
-        # wait for the thread to close
-        thread.join()
+        if join:
+            # wait for the thread to close
+            thread.join()  # this will block the gui
 
 
 def update_layout(window: sg.Window, statistics_q: Queue[dict[str, str | int]]):
@@ -145,13 +143,13 @@ def main_gui():
             break
 
         if event == "Start":
+            # reset the logger and communication queue for a new thread
+            statistics_q = Queue()
+            logger = Logger(statistics_q, console_log=console_log)
             thread = start_button_event(logger, window, values)
 
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
-            # reset the logger and communication queue after thread has been stopped
-            statistics_q = Queue()
-            logger = Logger(statistics_q, console_log=console_log)
 
         elif event in user_config_keys:
             save_current_settings(values)
@@ -173,10 +171,20 @@ def main_gui():
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
             )
 
+        # handle when thread is finished
+        if thread is not None and not thread.is_alive():
+            # enable the start button and configuration after the thread is stopped
+            for key in disable_keys:
+                window[key].update(disabled=False)
+            # reset the communication queue and logger
+            statistics_q = Queue()
+            logger = Logger(statistics_q, console_log=console_log)
+            thread = None
+
         update_layout(window, statistics_q)
 
     # shut down the thread if it is still running
-    shutdown_thread(thread)
+    shutdown_thread(thread, join=True)
 
     window.close()
 
