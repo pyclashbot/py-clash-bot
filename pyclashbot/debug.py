@@ -265,7 +265,10 @@ def randomize_deck_debug():
 # memu_debug(logger)
 
 
-while True:
-    region_list = [1, 2, 3, 4, 5]
-    this_random_region_list = random.sample(region_list, len(region_list))
-    print(this_random_region_list)
+# while True:
+#     region_list = [1, 2, 3, 4, 5]
+#     this_random_region_list = random.sample(region_list, len(region_list))
+#     print(this_random_region_list)
+
+
+randomize_deck_debug()
