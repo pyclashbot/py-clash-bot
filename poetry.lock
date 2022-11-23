@@ -416,7 +416,7 @@ pyrect = "*"
 
 [[package]]
 name = "pymemuc"
-version = "0.1.7"
+version = "0.1.8"
 description = "A Memuc.exe wrapper for Python"
 category = "main"
 optional = false
@@ -3128,8 +3128,8 @@ pygetwindow = [
     {file = "PyGetWindow-0.0.9.tar.gz", hash = "sha256:17894355e7d2b305cd832d717708384017c1698a90ce24f6f7fbf0242dd0a688"},
 ]
 pymemuc = [
-    {file = "pymemuc-0.1.7-py3-none-any.whl", hash = "sha256:d81fec8d48cca48cf51cd32c869bf959414a3805eee9af3eacd4a1c90db2b141"},
-    {file = "pymemuc-0.1.7.tar.gz", hash = "sha256:b0f9053917bf55e2d9c1b0fddeb4862ef5f92928b902347624f68b542196b92e"},
+    {file = "pymemuc-0.1.8-py3-none-any.whl", hash = "sha256:3c3c57064f7926e564b05dc0a601a0f52e8c56983374b673404cf9fb59bb4fea"},
+    {file = "pymemuc-0.1.8.tar.gz", hash = "sha256:b5dfa36ee98c287c00bcc7f596919e5a0fa6282672c9da35e5661c89e32d1faf"},
 ]
 pymsgbox = [
     {file = "PyMsgBox-1.0.9.tar.gz", hash = "sha256:2194227de8bff7a3d6da541848705a155dcbb2a06ee120d9f280a1d7f51263ff"},
