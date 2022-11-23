@@ -54,6 +54,7 @@ from pyclashbot.bot.deck import (
     check_if_pixels_indicate_minimum_scroll_case,
     check_if_pixels_indicate_minimum_scroll_case_with_delay,
     count_scrolls_in_card_page,
+    find_card_elixer_icon_in_card_list_in_given_image,
     find_card_level_boost_icon,
     find_use_card_button,
     look_for_card_collection_icon_on_card_page,
@@ -263,3 +264,23 @@ def randomize_deck_debug():
 
 
 # memu_debug(logger)
+
+# randomize_deck_debug()
+
+
+# get elixer coord
+image = screenshot(region=[30, 130, 70, 40])
+elixer_coord = find_card_elixer_icon_in_card_list_in_given_image(image)
+elixer_coord = [elixer_coord[0] + 30, elixer_coord[1] + 130]
+print(elixer_coord)
+
+# get deck options button coord
+deck_options_button_coord = find_deck_options_button_on_card_page()
+print(deck_options_button_coord)
+
+# compare these coordinates to determine if this coordinate is valid
+diff = abs(elixer_coord[1] - deck_options_button_coord[1])
+if diff < 10:
+    print("invalid")
+else:
+    print("Valid")
