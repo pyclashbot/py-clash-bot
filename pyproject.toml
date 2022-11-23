@@ -8,20 +8,22 @@ name = "pyclashbot"
 version = "v0.0.0"
 description = "Automated Clash Royale"
 readme = "README.md"
-authors = ["Matthew Miglio",
-           "Martin Miglio <code@martinmiglio.dev>"]
-homepage = "matthewmiglio.github.io/py-clash-bot"
-repository = "github.com/matthewmiglio/py-clash-bot"
-documentation = "matthewmiglio.github.io/py-clash-bot"
-
+authors = [
+  "Matthew Miglio",
+  "Martin Miglio <code@martinmiglio.dev>",
+]
+homepage = "https://matthewmiglio.github.io/py-clash-bot"
+repository = "https://github.com/matthewmiglio/py-clash-bot"
+documentation = "https://matthewmiglio.github.io/py-clash-bot"
 classifiers = [
-    "Intended Audience :: End Users/Desktop",
-    "Environment :: Win32 (MS Windows)",
-    "License :: OSI Approved :: MIT License",
-    "Natural Language :: English",
-    "Operating System :: Microsoft :: Windows",
-    "Programming Language :: Python :: 3.10",
-    "Topic :: Games/Entertainment"
+  "Intended Audience :: End Users/Desktop",
+  "Environment :: Win32 (MS Windows)",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Games/Entertainment",
 ]
 keywords = ["clash royale", "bot", "automation"]
 include = ["README.md", "pyclashbot/detection/reference_images/**/*.png"]
@@ -85,14 +87,15 @@ exclude = '''
 [tool.isort]
 profile = "black"
 
+
 [tool.pylint.main]
 ignore = ["build", "debug.py"]
 py-version = "3.10"
 suggestion-mode = true
 disable = [
-    "C0114", # missing-module-docstring
-    "C0115", # missing-class-docstring
-    "C0116", # missing-function-docstring
-    "C0301", # line-too-long
-    "C0103", # invalid-name
-    ]
+  "C0114", # missing-module-docstring
+  "C0115", # missing-class-docstring
+  "C0116", # missing-function-docstring
+  "C0301", # line-too-long
+  "C0103", # invalid-name
+]
