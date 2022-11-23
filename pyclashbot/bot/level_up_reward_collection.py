@@ -9,7 +9,13 @@ from pyclashbot.memu.client import print_pix_list
 
 
 def check_for_level_up_reward_pixels():
-    # starts on clash main ends on clash main
+    """
+    check_for_level_up_reward_pixels looks for level up reward icon pixels while on clash main menu
+
+    :
+
+    :return: bool: yes if rewards icon exists
+    """
     iar = numpy.asarray(screenshot())
 
     pix_list = [
@@ -26,6 +32,13 @@ def check_for_level_up_reward_pixels():
 
 
 def check_if_has_level_up_rewards():
+    """
+    test_function spams the check_for_level_up_reward_pixels() pixel check a few
+    times over a few seconds because the animation sometimes obstructs the pixels
+
+    :return: bool: yes if rewards icon pixels existed anytime in the last 0.36 seconds
+    """
+
     timer = 0
     while not check_for_level_up_reward_pixels():
 
@@ -37,6 +50,15 @@ def check_if_has_level_up_rewards():
 
 
 def collect_level_up_rewards(logger):
+    """
+    test_function collect_level_up_rewards() checks if the level up reward icon exists,
+    clicks icon, clicks chest, skips through chest rewards, then returns to clash main,
+    all on a loop until the rewards icon no longer appears on the clash main menu
+    :logger: logger from logger class initiaed in main
+
+    :return: "restart" if any failure occurs, else "battlepass reward collection"
+    """
+
     if not check_if_on_clash_main_menu():
         return "restart"
 
