@@ -65,6 +65,9 @@ class Logger:
         self.war_battles_fought = 0
         self.current_status = "Idle"
 
+        # track errored logger
+        self.errored = False
+
         # write initial values to queue
         self._update_queue()
 
@@ -243,6 +246,7 @@ class Logger:
         Args:
             message (str): error message
         """
+        self.errored = True
         self.current_status = f"Error: {message}"
 
     @_updates_log
