@@ -91,7 +91,7 @@ def handle_war_attacks(logger):
 
 
 def fight_war_battle(logger):
-    logger.change_status("Fighting war battle")
+    logger.change_status("Throwing war match")
     loops = 0
     while check_if_in_battle_with_delay():
         loops += 1
