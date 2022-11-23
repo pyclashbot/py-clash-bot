@@ -5,13 +5,13 @@ from pyclashbot.interface.theme import THEME
 sg.theme(THEME)
 
 
-def stat_box(stat_name: str):
+def stat_box(stat_name: str, size=(5, 1)) -> sg.Text:
     return sg.Text(
         "0",
         key=stat_name,
         relief=sg.RELIEF_SUNKEN,
         text_color="blue",
-        size=(5, 1),
+        size=size,
     )
 
 

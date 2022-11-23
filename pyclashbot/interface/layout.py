@@ -2,14 +2,19 @@ import PySimpleGUI as sg
 
 from pyclashbot.interface.controls import controls
 from pyclashbot.interface.joblist import jobs_checklist
-from pyclashbot.interface.stats import battle_stats, collections_stats, progress_stats
+from pyclashbot.interface.stats import (
+    battle_stats,
+    collections_stats,
+    progress_stats,
+    stat_box,
+)
 from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
 
 description = [
     [
-        sg.Text("Matthew Miglio\nMartin Miglio\nOctober 2022\n", size=(13, None)),
+        sg.Text("Matthew Miglio\nMartin Miglio\nNovember 2022\n", size=(13, None)),
     ],
     [
         sg.Text(
@@ -25,7 +30,7 @@ description = [
 main_layout = [
     [
         sg.Frame(layout=jobs_checklist, title="Jobs"),
-        sg.Frame(layout=controls, title="Controls"),
+        sg.Frame(layout=controls, title="Controls", expand_x=True),
     ],
     [
         sg.Frame(
@@ -41,20 +46,19 @@ main_layout = [
         sg.Frame(
             layout=collections_stats,
             title="Collection Stats",
+            expand_y=True,
         ),
-        sg.Frame(
-            layout=description,
-            title="Info",
-        ),
+        sg.Frame(layout=description, title="Info", expand_x=True),
     ],
     [
+        stat_box("time_since_start", size=(7, 1)),
         sg.InputText(
             "Idle",
             key="current_status",
             use_readonly_for_disable=True,
             disabled=True,
             text_color="blue",
-            size=(60, 1),
+            expand_x=True,
         ),
     ],
 ]
