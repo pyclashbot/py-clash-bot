@@ -121,6 +121,7 @@ def click(x, y, duration=1, max_attempts=3):
         duration (int, optional): Duration of the click. Defaults to 1.
         max_attempts (int, optional): Maximum amount of attempts to click the given coordinate. Defaults to 3. Set to less than 1 for infinite attempts.
     """
+    origin = ahk.mouse_position()
     duration = min(10, duration)  # 10 seconds max (ahk limitation)
     speed = duration * 10  # speed for ahk (0-100)
 
@@ -147,6 +148,7 @@ def click(x, y, duration=1, max_attempts=3):
         ahk.click()
     except:
         return "restart"
+    ahk.mouse_move(x=origin[0], y=origin[1], blocking=False)
 
 
 def scroll_down():
