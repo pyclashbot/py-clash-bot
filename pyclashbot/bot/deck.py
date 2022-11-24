@@ -130,7 +130,7 @@ def randomize_current_deck(logger):
             == "restart"
         ):
             logger.change_status("replacing card in deck failure")
-            if get_to_clash_main_from_card_page()=="restart":return "restart"
+            if get_to_clash_main_from_card_page(logger)=="restart":return "restart"
             else:return
 
 
