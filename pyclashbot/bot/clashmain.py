@@ -335,7 +335,7 @@ def get_to_account(logger, account_number):
 
     # click switch accounts
     click(200, 460)
-    time.sleep(1)
+    time.sleep(3)
 
     if account_number == 0:
         click(155, 350)
@@ -346,14 +346,19 @@ def get_to_account(logger, account_number):
     if account_number == 3:
         click(230, 595)
 
-    time.sleep(7)
-    logger.add_account_switch()
+    for n in range(10):logger.change_status("Manual wait time for clash main menu to load: " + str(n))
+
+    
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
         return "restart"
 
+    logger.change_status("Successful account switch. Incrementing account switch counter.")
+    logger.add_account_switch()
+
     # handling the various things notifications and such that need to be
     # cleared before bot can get going
+    logger.change_status("Handling notifications that may obstruct the bot later.")
     time.sleep(0.5)
     handle_gold_rush_event(logger)
     time.sleep(0.5)
@@ -388,25 +393,22 @@ def check_for_gold_rush_event():
 def handle_gold_rush_event(logger):
     # Method to handle a gold rush event notification obstructing the bot
 
-    logger.change_status(
-        "Handling the possibility of a gold rush event notification obstructing the bot."
-    )
+    
     click(193, 465)
-    time.sleep(0.1)
+    time.sleep(1)
     click(193, 465)
+    time.sleep(1)
 
 
 def handle_new_challenge(logger):
     # Method to handle a new challenge notification obstructing the bot
 
-    logger.change_status(
-        "Handling the possibility of a new challenge notification obstructing the bot."
-    )
+   
 
     click(376, 639)
-
+    time.sleep(1)
     click(196, 633)
-
+    time.sleep(1)
     if check_if_on_trophy_progession_rewards_page():
         logger.change_status(
             "Handling the possibility of trophy progession rewards page obstructing the bot."
@@ -417,14 +419,11 @@ def handle_new_challenge(logger):
 def handle_special_offer(logger):
     # Method to handle a special offer notification obstructing the bot
 
-    logger.change_status(
-        "Handling the possibility of special offer notification obstructing the bot."
-    )
 
     click(35, 633)
-
+    time.sleep(1)
     click(242, 633)
-
+    time.sleep(1)
     if check_if_on_trophy_progession_rewards_page():
         click(212, 633)
         time.sleep(0.5)
@@ -663,12 +662,13 @@ def check_if_in_battle():
 
 
 def handle_card_mastery_notification():
-
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
+    time.sleep(1)
 
     click(240, 630)
+    time.sleep(1)
 
 
 def check_for_war_loot_menu():
@@ -688,7 +688,7 @@ def check_for_war_loot_menu():
 def handle_war_loot_menu():
     # open chest
     click(205, 410)
-
+    time.sleep(1)
     # click dead space to skip thru chest
     for _ in range(15):
         click(20, 440)
