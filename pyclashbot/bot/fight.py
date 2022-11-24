@@ -218,7 +218,7 @@ def check_if_past_game_is_win(logger):
     open_activity_log()
     time.sleep(3)
     if check_if_pixels_indicate_win_on_activity_log():
-        logger.change_satatus("Last game was a win. Incrementing win count.")
+        logger.change_status("Last game was a win. Incrementing win count.")
         logger.add_win()
     else:
         logger.change_status("Last game was a loss. Incrementing loss count.")

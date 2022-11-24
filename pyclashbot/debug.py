@@ -304,6 +304,3 @@ def find_random_card_debug():
 
 
 print(check_if_past_game_is_win(logger))
-
-# while True:
-#     print(check_if_pixels_indicate_win_on_activity_log())
