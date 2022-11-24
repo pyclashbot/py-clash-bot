@@ -261,3 +261,8 @@ def randomize_deck_debug():
         if randomize_and_select_deck_2(logger) == "restart":
             return
         get_to_clash_main_from_card_page(logger)
+
+
+randomize_deck_debug()
+
+
