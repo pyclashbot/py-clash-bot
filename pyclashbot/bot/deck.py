@@ -130,8 +130,10 @@ def randomize_current_deck(logger):
             == "restart"
         ):
             logger.change_status("replacing card in deck failure")
-            if get_to_clash_main_from_card_page()=="restart":return "restart"
-            else:return
+            if get_to_clash_main_from_card_page(logger) == "restart":
+                return "restart"
+            else:
+                return
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
@@ -155,10 +157,10 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # click randomly until we get a 'use' button
     use_card_button_coord = None
-    loops=0
+    loops = 0
     while use_card_button_coord is None:
-        loops+=1
-        if loops>30:
+        loops += 1
+        if loops > 30:
             return "restart"
         # find a random card on this page
         replacement_card_coord = find_random_card_coord(logger)
@@ -387,9 +389,8 @@ def look_for_card_collection_icon_on_card_page():
 def check_for_random_scroll_success_in_deck_randomization():
     # check 1
     card_level_boost_icon_coord = find_card_level_boost_icon()
-    if card_level_boost_icon_coord is not None:
-        if card_level_boost_icon_coord[1] > 320:
-            return True
+    if card_level_boost_icon_coord is not None and card_level_boost_icon_coord[1] > 320:
+        return True
 
     # check 2
     if find_battle_deck_label_on_card_page() is not None:
@@ -442,8 +443,6 @@ def find_deck_number_label_on_card_page():
 
     coord = get_first_location(locations)
     return None if coord is None else [coord[1], coord[0]]
-
-
 
 
 #### etc
