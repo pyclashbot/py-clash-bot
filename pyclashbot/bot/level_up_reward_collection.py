@@ -58,36 +58,46 @@ def collect_level_up_rewards(logger):
 
     :return: "restart" if any failure occurs, else "battlepass reward collection"
     """
-
-    if not check_if_on_clash_main_menu():
-        return "restart"
-
     # starts and ends on clash main
     logger.change_status("Collecting level up rewards.")
     loops = 0
-    while True:
+    
+    #should be on clash main at this point
+    if not check_if_on_clash_main_menu():return "restart"
+
+    #loop until the level up rewards icon on the main menu indicates there are no more rewards
+    while check_if_has_level_up_rewards():
+        #loop counter
         loops += 1
-        if loops > 20:
-            logger.change_status(
-                "Looped through level up reward collection too many times"
-            )
-            return "restart"
+        if loops>20:
+            return"restart"
 
-        # return when no more rewards to collect
-        if not check_if_has_level_up_rewards():
-            logger.change_status("No more level up rewards to collect.")
-            return "battlepass reward collection"
-
-        # click level up reward logo in top left
+        #click logo in top left
         click(17, 48)
         time.sleep(1)
-
-        # click chest
+        
+        #click chest
         click(135, 160)
-
-        # skip through rewards
+        time.sleep(1)
+        
+        #click dead space to skip through rewards
         for _ in range(20):
             click(20, 450)
             time.sleep(0.33)
-
+        
+        #increment counter
         logger.add_level_up_chest_collection()
+
+        #should be on clash main at this point, if not click deadspace a little, then check again.
+        if not check_if_on_clash_main_menu():
+            #try to get to main by clicking deadspace more
+            for _ in range(20):
+                click(20, 450)
+                time.sleep(0.33)
+            #if this didnt help getting to main then return restart
+            if not check_if_on_clash_main_menu():return"restart"
+    
+    
+    
+
+
