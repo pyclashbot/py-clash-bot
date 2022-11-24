@@ -76,6 +76,8 @@ def request_random_card_from_clash_main(logger):
     return None
 
 
+
+
 def request_random_card(logger, maximum_scrolls=10):
     # method to request a random card
     # starts on the request screen (the one with a bunch of pictures of the cards)
