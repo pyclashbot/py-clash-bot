@@ -54,7 +54,7 @@ def handle_war_attacks(logger):
     # sometimes the player lacks the cards to make a complete deck at this point
     # if you STILL done have a deck, return to main
     if not check_if_has_a_deck_for_this_war_battle():
-        logger.change_status("Not enough cards to complete this deck. Returning.")
+        logger.change_status("Fight not avialable yet/Not enough cards to complete deck. Skipping war attack this time.")
         for _ in range(5):
             click(20, 440)
         get_to_clash_main_from_clan_page(logger)
@@ -69,6 +69,11 @@ def handle_war_attacks(logger):
         logger.change_status(
             "Waiting for war battle loading took too long. Restarting."
         )
+        return "restart"
+
+    # after waiting for match to load, confirm we're in a battle.
+    if not check_if_in_battle_with_delay():
+        logger.change_status("Was about to fight but not in a battle. Restarting.")
         return "restart"
 
     # fight for the duration of the war match (losses do not matter)
@@ -107,7 +112,7 @@ def fight_war_battle(logger):
         click(random.randint(70, 355), random.randint(320, 490))
         time.sleep(1)
 
-    time.sleep(9)
+    for n in range(15): logger.change_status("Manual wait for end battle..."+str(n))
 
 
 def make_a_random_deck_for_this_war_battle():
