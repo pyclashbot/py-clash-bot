@@ -37,6 +37,7 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
     check_if_on_first_card_page,
     check_if_stuck_on_trophy_progression_page,
+    check_if_stuck_on_war_final_results_page,
     check_if_unlock_chest_button_exists,
     find_2v2_quick_match_button,
     get_to_account,
