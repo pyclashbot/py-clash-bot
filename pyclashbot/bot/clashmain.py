@@ -353,8 +353,8 @@ def get_to_account(logger, account_number):
 
     # handling the various things notifications and such that need to be
     # cleared before bot can get going
-    time.sleep(0.5)
-    handle_gold_rush_event(logger)
+    # time.sleep(0.5)
+    # handle_gold_rush_event(logger)
     time.sleep(0.5)
     handle_new_challenge(logger)
     time.sleep(0.5)
