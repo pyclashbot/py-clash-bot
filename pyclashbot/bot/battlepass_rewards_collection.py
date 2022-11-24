@@ -2,6 +2,7 @@ import time
 
 import numpy
 from ahk import AHK
+from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
@@ -37,6 +38,11 @@ def check_if_has_battlepass_rewards():
 
 def collect_battlepass_rewards(logger):
     logger.change_status("Collecting battlepass rewards.")
+    
+    #should be on clash main at this point
+    if not check_if_on_clash_main_menu():return "restart"
+    
+    #declare locations of reward coords
     chest_locations = [
         [300, 280],
         [300, 340],
@@ -46,32 +52,40 @@ def collect_battlepass_rewards(logger):
         [300, 540],
     ]
 
+    #loop until the battlepass rewards icon on the main menu indicates there are no more rewards
     loops = 0
     while check_if_has_battlepass_rewards():
+        #if too many loops
         if loops > 15:
             logger.change_status("looped through collect battlepass too many times.")
             return "restart"
         loops += 1
 
-        # click battlepass
+        # click battlepass icon on clash main
         click(315, 165)
         time.sleep(1)
 
-        # click chest locations
+        # click every chest locations in the chest_locations list
         for coord in chest_locations:
-            ahk.click(coord[0], coord[1])
+            click(coord[0], coord[1],duration=0.1)
             time.sleep(0.33)
 
         # click deadspace
         for _ in range(15):
-            ahk.click(20, 440)
+            click(20, 440,duration=0.1)
             time.sleep(0.1)
 
-        # close battlepass to reset UI
+        # close battlepass to reset UI and return to clash main
         click(210, 630)
         time.sleep(1)
 
+        #increment the battlepass reward collection counter
         logger.add_battlepass_rewards_collection()
 
     logger.change_status("Done collecting battlepass rewards.")
-    return "clashmain"
+    
+
+    #should be on clash main at this point
+    if not check_if_on_clash_main_menu():return "restart"
+    else: return "clashmain"
+    
