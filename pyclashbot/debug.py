@@ -307,6 +307,3 @@ def card_detection_debug():
     while True:
         print(identify_cards())
     
-
-##methods to improve
-check_if_in_a_clan(logger)
