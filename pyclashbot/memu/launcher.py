@@ -141,6 +141,11 @@ def restart_and_open_clash(logger: Logger):
         logger.add_restart()
 
 
+
+
+
+
+
 def start_clash_royale(logger: Logger, vm_index):
 
     logger.change_status("Finding Clash Royale...")
