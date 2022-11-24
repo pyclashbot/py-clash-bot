@@ -55,6 +55,7 @@ def scroll_down_fast():
     """Method for scrolling down faster when interacting with a scrollable menu"""
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=350)
+    time.sleep(0.1)
     pyautogui.dragTo(x=215, y=300, button="left", duration=0.5)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
@@ -63,6 +64,7 @@ def scroll_down_super_fast():
     """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=400)
+    time.sleep(0.1)
     pyautogui.dragTo(x=215, y=300, button="left", duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
@@ -71,6 +73,7 @@ def scroll_up_super_fast():
     """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = pyautogui.position()
     pyautogui.moveTo(x=215, y=300)
+    time.sleep(0.1)
     pyautogui.dragTo(x=215, y=400, button="left", duration=0.2)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
@@ -121,7 +124,7 @@ def click(x, y, duration=1, max_attempts=3):
         duration (int, optional): Duration of the click. Defaults to 1.
         max_attempts (int, optional): Maximum amount of attempts to click the given coordinate. Defaults to 3. Set to less than 1 for infinite attempts.
     """
-    origin = ahk.mouse_position()
+    origin = ahk.mouse_position
     duration = min(10, duration)  # 10 seconds max (ahk limitation)
     speed = duration * 10  # speed for ahk (0-100)
 
