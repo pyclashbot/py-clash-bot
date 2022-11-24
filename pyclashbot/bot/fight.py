@@ -17,6 +17,7 @@ from pyclashbot.bot.clashmain import (
 )
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
+from pyclashbot.memu.client import print_pix_list
 
 
 #### card playing
@@ -215,25 +216,32 @@ def check_if_past_game_is_win(logger):
     """
 
     open_activity_log()
-    iar = numpy.array(screenshot())
+    time.sleep(3)
+    return check_if_pixels_indicate_win_on_activity_log()
+    
 
-    for n in range(40, 130):
-        if pixel_is_equal(iar[191][n], [102, 204, 255], 10):
-            # what in the world is this method doing?
-            _extracted_from_check_if_past_game_is_win_12(
-                logger, "Last game was a win. Incrementing win counter."
-            )
-            # this one^
-            logger.add_win()
-            return True
-    time.sleep(1)
-    click(385, 507)
-    _extracted_from_check_if_past_game_is_win_12(
-        logger, "Last game was a loss. Incrementing loss counter."
-    )
+def check_if_pixels_indicate_win_on_activity_log():
+    #fill pix list with a list of pixels that scan across the victory/defeat text
+    iar=numpy.asarray(screenshot())
+    pix_list=[]
+    for x_coord in range(48,113):
+        pix_list.append(iar[180][x_coord])
 
-    logger.add_loss()
-    return False
+    #cast this list to ints
+    int_pix_list=[]
+    for pix in pix_list:
+        this_int_pix=[int(pix[0]),int(pix[1]),int(pix[2])]
+        int_pix_list.append(this_int_pix)
+
+    #count red pixels
+    red_count=0
+    for pix in int_pix_list:
+        if pixel_is_equal(pix,[255,50,100],tol=35):
+            red_count+=1
+
+    #return logic
+    if red_count>10:return False
+    return True
 
 
 def check_if_has_6_elixer():
