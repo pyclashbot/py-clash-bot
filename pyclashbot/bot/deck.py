@@ -130,8 +130,10 @@ def randomize_current_deck(logger):
             == "restart"
         ):
             logger.change_status("replacing card in deck failure")
-            return "restart"
-    return None
+            if get_to_clash_main_from_card_page(logger) == "restart":
+                return "restart"
+            else:
+                return
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
@@ -142,6 +144,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
     loops = 0
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
+        time.sleep(0.1)
         scrolls -= 1
         loops += 1
         if loops > 25:
@@ -154,7 +157,11 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # click randomly until we get a 'use' button
     use_card_button_coord = None
+    loops = 0
     while use_card_button_coord is None:
+        loops += 1
+        if loops > 30:
+            return "restart"
         # find a random card on this page
         replacement_card_coord = find_random_card_coord(logger)
         if replacement_card_coord == "restart":
@@ -175,6 +182,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # change the card collection filter so increase randomness
     click(320, 575)
+    time.sleep(1)
     return None
 
 
@@ -202,6 +210,7 @@ def count_scrolls_in_card_page(logger):
             logger.change_status("Failed counting scrolls in card page")
             return "restart"
         scroll_down_super_fast()
+        time.sleep(0.1)
         count += 1
 
     # get back to top of page
@@ -253,9 +262,6 @@ def find_card_level_boost_icon():
 
 
 def find_random_card_coord(logger):
-    # get the location of the deck options button we'll use it later
-    deck_options_button_coord = find_deck_options_button_on_card_page()
-
     region_list = [
         [50, 130, 81, 71],
         [131, 130, 81, 71],
@@ -287,16 +293,15 @@ def find_random_card_coord(logger):
         for region in this_random_region_list:
             index += 1
             logger.change_status("Finding random card coord, index: " + str(index))
-            # logger.change_status("Finding random card coord, index: " + str(index))
             coord = find_card_elixer_icon_in_card_list_in_given_image(
-                screenshot(region), deck_options_button_coord
+                screenshot(region)
             )
             if coord is not None:
                 return (coord[0] + region[0], coord[1] + region[1])
     return "restart"
 
 
-def find_card_elixer_icon_in_card_list_in_given_image(image, deck_options_button_coord):
+def find_card_elixer_icon_in_card_list_in_given_image(image):
     current_image = image
     reference_folder = "find_card_elixer_icon_in_card_list"
 
@@ -311,11 +316,6 @@ def find_card_elixer_icon_in_card_list_in_given_image(image, deck_options_button
         folder=reference_folder,
         names=references,
         tolerance=0.97,
-    )
-
-    # remove the invalid locations (invalid locations are ones that line up with the deck options button)
-    locations = remove_invalid_elixer_icon_locations(
-        locations, deck_options_button_coord
     )
 
     coord = get_first_location(locations)
@@ -389,9 +389,8 @@ def look_for_card_collection_icon_on_card_page():
 def check_for_random_scroll_success_in_deck_randomization():
     # check 1
     card_level_boost_icon_coord = find_card_level_boost_icon()
-    if card_level_boost_icon_coord is not None:
-        if card_level_boost_icon_coord[1] > 320:
-            return True
+    if card_level_boost_icon_coord is not None and card_level_boost_icon_coord[1] > 320:
+        return True
 
     # check 2
     if find_battle_deck_label_on_card_page() is not None:
@@ -446,42 +445,7 @@ def find_deck_number_label_on_card_page():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def find_deck_options_button_on_card_page():
-    current_image = screenshot()
-    reference_folder = "find_deck_options_button_on_card_page"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "find_deck_options_button_on_card_page",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
-
-
 #### etc
-def remove_invalid_elixer_icon_locations(locations, deck_options_button_coord):
-    good_locations_list = []
-    for elixer_coord in locations:
-        if check_if_elixer_icon_location_is_valid(
-            elixer_coord, deck_options_button_coord
-        ):
-            good_locations_list.append(elixer_coord)
-    return good_locations_list
-
-
-def check_if_elixer_icon_location_is_valid(elixer_coord, deck_options_button_coord):
-    if abs(elixer_coord[1] - deck_options_button_coord[1]) < 10:
-        return False
-    return True
 
 
 def check_if_pix_list_is_blue(pix_list):
