@@ -143,6 +143,7 @@ def check_if_in_a_clan(logger):
 
     # cycle through clan tab a few times
     for _ in range(10):
+        handle_stuck_on_war_final_results_page()
         click(280, 623)
         time.sleep(0.33)
         if check_for_war_loot_menu():
@@ -698,3 +699,27 @@ def handle_war_loot_menu():
     time.sleep(0.5)
 
     scroll_down()
+
+
+
+
+def check_if_stuck_on_war_final_results_page():
+    iar=numpy.asarray(screenshot())
+    pix_list=[
+        iar[575][235],
+        iar[567][245],
+        iar[575][255],
+    ]
+    
+    
+    for pix in pix_list:
+        if not pixel_is_equal([180,96,253],pix,tol=45):
+            return False
+    return True
+
+
+def handle_stuck_on_war_final_results_page():
+    if check_if_stuck_on_war_final_results_page():
+        click(215,565)
+        time.sleep(1)
+

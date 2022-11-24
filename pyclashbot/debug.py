@@ -101,7 +101,7 @@ from pyclashbot.memu import (
     scroll_down,
     scroll_down_super_fast,
 )
-from pyclashbot.memu.client import click, get_file_count, make_reference_image_list
+from pyclashbot.memu.client import click, get_file_count, make_reference_image_list, print_pix_list
 from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
@@ -119,7 +119,7 @@ def show_image(image):
     plt.show()
 
 
-# show_image(screenshot())
+show_image(screenshot())
 
 
 def gui_debug():
@@ -292,3 +292,8 @@ def find_random_card_debug():
         if coord is not None:
             print("found elixer icon in region: ", region)
 
+
+
+
+
+print(check_if_stuck_on_war_final_results_page())
