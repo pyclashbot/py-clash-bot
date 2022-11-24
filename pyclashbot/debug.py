@@ -303,4 +303,10 @@ def find_random_card_debug():
             print("found elixer icon in region: ", region)
 
 
-print(check_if_past_game_is_win(logger))
+def card_detection_debug():
+    while True:
+        print(identify_cards())
+    
+
+##methods to improve
+check_if_in_a_clan(logger)
