@@ -346,21 +346,22 @@ def get_to_account(logger, account_number):
     if account_number == 3:
         click(230, 595)
 
-    for n in range(10):logger.change_status("Manual wait time for clash main menu to load: " + str(n))
+    for n in range(10):
+        logger.change_status("Manual wait time for clash main menu to load: " + str(n))
 
-    
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
         return "restart"
 
-    logger.change_status("Successful account switch. Incrementing account switch counter.")
+    logger.change_status(
+        "Successful account switch. Incrementing account switch counter."
+    )
     logger.add_account_switch()
 
     # handling the various things notifications and such that need to be
     # cleared before bot can get going
-    logger.change_status("Handling notifications that may obstruct the bot later.")
-    time.sleep(0.5)
-    handle_gold_rush_event(logger)
+    # time.sleep(0.5)
+    # handle_gold_rush_event(logger)
     time.sleep(0.5)
     handle_new_challenge(logger)
     time.sleep(0.5)
@@ -393,7 +394,6 @@ def check_for_gold_rush_event():
 def handle_gold_rush_event(logger):
     # Method to handle a gold rush event notification obstructing the bot
 
-    
     click(193, 465)
     time.sleep(1)
     click(193, 465)
@@ -402,8 +402,6 @@ def handle_gold_rush_event(logger):
 
 def handle_new_challenge(logger):
     # Method to handle a new challenge notification obstructing the bot
-
-   
 
     click(376, 639)
     time.sleep(1)
@@ -418,7 +416,6 @@ def handle_new_challenge(logger):
 
 def handle_special_offer(logger):
     # Method to handle a special offer notification obstructing the bot
-
 
     click(35, 633)
     time.sleep(1)
@@ -701,25 +698,21 @@ def handle_war_loot_menu():
     scroll_down()
 
 
-
-
 def check_if_stuck_on_war_final_results_page():
-    iar=numpy.asarray(screenshot())
-    pix_list=[
+    iar = numpy.asarray(screenshot())
+    pix_list = [
         iar[575][235],
         iar[567][245],
         iar[575][255],
     ]
-    
-    
+
     for pix in pix_list:
-        if not pixel_is_equal([180,96,253],pix,tol=45):
+        if not pixel_is_equal([180, 96, 253], pix, tol=45):
             return False
     return True
 
 
 def handle_stuck_on_war_final_results_page():
     if check_if_stuck_on_war_final_results_page():
-        click(215,565)
+        click(215, 565)
         time.sleep(1)
-
