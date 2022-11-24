@@ -263,6 +263,32 @@ def randomize_deck_debug():
         get_to_clash_main_from_card_page(logger)
 
 
-randomize_deck_debug()
-
+def find_random_card_debug():
+    region_list = [
+        [50, 130, 81, 71],
+        [131, 130, 81, 71],
+        [212, 130, 81, 71],
+        [293, 130, 81, 71],
+        [50, 275, 81, 71],
+        [50, 346, 81, 71],
+        [50, 417, 81, 71],
+        [50, 488, 81, 71],
+        [131, 275, 81, 71],
+        [131, 346, 81, 71],
+        [131, 417, 81, 71],
+        [131, 488, 81, 71],
+        [212, 275, 81, 71],
+        [212, 346, 81, 71],
+        [212, 417, 81, 71],
+        [212, 488, 81, 71],
+        [293, 275, 81, 71],
+        [293, 346, 81, 71],
+        [293, 417, 81, 71],
+        [293, 488, 81, 71],
+    ]
+    for region in region_list:
+        show_image(screenshot(region=region))
+        coord=find_card_elixer_icon_in_card_list_in_given_image(screenshot(region))
+        if coord is not None:
+            print("found elixer icon in region: ", region)
 
