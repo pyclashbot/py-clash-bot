@@ -513,6 +513,10 @@ def start_2v2(logger):
     # clash main menu
     logger.change_status("Initiating 2v2 match from main menu")
 
+    #if not on clash main at this point then this failed
+    if not check_if_on_clash_main_menu():return "restart"
+
+
     # getting to party tab
     click(365, 108)
     time.sleep(1)
