@@ -37,6 +37,7 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
     check_if_on_first_card_page,
     check_if_stuck_on_trophy_progression_page,
+    check_if_stuck_on_war_final_results_page,
     check_if_unlock_chest_button_exists,
     find_2v2_quick_match_button,
     get_to_account,
@@ -60,7 +61,7 @@ from pyclashbot.bot.deck import (
     look_for_card_collection_icon_on_card_page,
     randomize_and_select_deck_2,
 )
-from pyclashbot.bot.fight import play_random_card
+from pyclashbot.bot.fight import check_if_past_game_is_win, check_if_pixels_indicate_win_on_activity_log, play_random_card
 from pyclashbot.bot.level_up_reward_collection import (
     check_for_level_up_reward_pixels,
     check_if_has_level_up_rewards,
@@ -101,7 +102,7 @@ from pyclashbot.memu import (
     scroll_down,
     scroll_down_super_fast,
 )
-from pyclashbot.memu.client import click, get_file_count, make_reference_image_list
+from pyclashbot.memu.client import click, get_file_count, make_reference_image_list, print_pix_list
 from pyclashbot.memu.launcher import start_vm
 from pyclashbot.utils import Logger
 
@@ -292,3 +293,10 @@ def find_random_card_debug():
         if coord is not None:
             print("found elixer icon in region: ", region)
 
+
+
+
+print(check_if_past_game_is_win(logger))
+
+# while True:
+#     print(check_if_pixels_indicate_win_on_activity_log())
