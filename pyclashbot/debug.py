@@ -77,7 +77,7 @@ from pyclashbot.bot.request import (
     look_for_request_button,
     request_random_card_from_clash_main,
 )
-from pyclashbot.bot.states import state_fight, state_restart, state_tree
+from pyclashbot.bot.states import state_battlepass_collection, state_card_mastery_collection, state_clashmain, state_endfight, state_fight, state_level_up_reward_collection, state_request, state_restart, state_startfight, state_tree, state_upgrade, state_war
 from pyclashbot.bot.upgrade import (
     check_for_upgradable_cards,
     find_confirm_upgrade_for_gold_button,
@@ -308,14 +308,75 @@ def card_detection_debug():
         print(identify_cards())
 
 
-def debug_state_tree(logger):
-    pass
+def debug_state_tree(logger,ssid_max,jobs,ssid,state):
+    
+    if state == "clashmain":
+
+        state = state_clashmain(
+            logger=logger, ssid_max=ssid_max, account_number=ssid, jobs=jobs
+        )
+
+        # Increment account number, loop back to 0 if it's ssid_max
+        ssid = ssid + 1 if ssid < ssid_max else 0
+
+    elif state == "startfight":
+        state = (
+            state_startfight(logger, random_deck="Randomize Deck" in jobs)
+            if "Fight" in jobs
+            else "upgrade"
+        )
+
+    elif state == "fighting":
+        state = state_fight(logger)
+
+    elif state == "endfight":
+        state = state_endfight(logger)
+
+    elif state == "upgrade":
+        state = (
+            state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
+        )
+
+    elif state == "request":
+        state = (
+            state_request(logger) if "Request" in jobs else "level up reward collection"
+        )
+
+    elif state == "restart":
+        while True:time.sleep(1000)
+
+    elif state == "card mastery collection":
+        state = (
+            state_card_mastery_collection(logger)
+            if "card mastery collection" in jobs
+            else "request"
+        )
+
+    elif state == "level up reward collection":
+        state = (
+            state_level_up_reward_collection(logger)
+            if "level up reward collection" in jobs
+            else "battlepass reward collection"
+        )
+
+    elif state == "battlepass reward collection":
+        state = (
+            state_battlepass_collection(logger)
+            if "battlepass reward collection" in jobs
+            else "war"
+        )
+
+    elif state == "war":
+        state = state_war(logger) if "war" in jobs else "clashmain"
+
+    return (state, ssid)
 
 
 def do_debug_state_tree():
     state_restart(logger)
     jobs = [
-        "Open Chests" "Fight",
+        "Open Chests" ,
+        "Fight",
         "Request",
         "Upgrade",
         "Randomize Deck",
@@ -324,15 +385,15 @@ def do_debug_state_tree():
         "battlepass reward collection",
         "war",
     ]
-    state_tree(jobs=jobs, logger=logger, ssid_max=3, ssid=1, state="clashmain")
+    ssid=0
+    state="clashmain"
+    while True:
+        state,ssid=debug_state_tree(jobs=jobs, logger=logger, ssid_max=3, ssid=ssid,state=state)
 
 
-"Open Chests"
-"Fight"
-"Request"
-"Upgrade"
-"Randomize Deck"
-"card mastery collection"
-"level up reward collection"
-"battlepass reward collection"
-"war"
+
+
+
+    
+
+do_debug_state_tree()
