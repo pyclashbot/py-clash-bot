@@ -80,7 +80,7 @@ def collect_battlepass_rewards(logger):
         time.sleep(1)
 
         #increment the battlepass reward collection counter
-        logger.add_battlepass_collection()
+        logger.add_battlepass_reward_collection()
 
     logger.change_status("Done collecting battlepass rewards.")
     
