@@ -52,7 +52,9 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
         jobs.append("battlepass reward collection")
     if values["-War-Participation-in-"]:
         jobs.append("war")
-
+    if values["-Free-Offer-Collection-in-"]:
+        jobs.append("free offer collection")
+    
     return jobs
 
 
