@@ -63,7 +63,7 @@ class Logger:
         self.battlepass_rewards_collections = 0
         self.level_up_chest_collections = 0
         self.war_battles_fought = 0
-        self.free_offers_collected=0
+        self.free_offer_collections=0
         self.current_status = "Idle"
 
         # track errored logger
@@ -102,7 +102,7 @@ class Logger:
             "battlepass_rewards_collections": self.battlepass_rewards_collections,
             "level_up_chest_collections": self.level_up_chest_collections,
             "war_battles_fought": self.war_battles_fought,
-            "free_offers_collected": self.free_offers_collected,
+            "free_offer_collections": self.free_offer_collections,
             "current_status": self.current_status,
             "time_since_start": self.calc_time_since_start(),
         }
@@ -244,7 +244,7 @@ class Logger:
     @_updates_log
     def add_free_offer_collection(self):
         """add level up chest collection to log"""
-        self.free_offers_collected += 1
+        self.free_offer_collections += 1
 
 
     @_updates_log
