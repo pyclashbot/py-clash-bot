@@ -56,27 +56,6 @@ def handle_randomize_deck_failure(logger):
         return "restart"
 
 
-#### deck interaction methods
-def select_second_deck(logger):
-    # Method to select the second deck of this account
-
-    # logger.change_status("Selecting deck number 2 for use.")
-    # get to card page
-    if get_to_card_page(logger) == "restart":
-        logger.change_status("Failed getting to card page")
-        return "restart"
-    time.sleep(1)
-
-    # click number 2
-    click(173, 190)
-    time.sleep(1)
-
-    # get to main menu from card page
-    if get_to_clash_main_from_card_page(logger) == "restart":
-        logger.change_status("Failed getting to clash main from card page")
-        return "restart"
-    return None
-
 
 def randomize_and_select_deck_2(logger):
     # Method to randomize deck number 2 of this account
@@ -101,7 +80,7 @@ def randomize_and_select_deck_2(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         logger.change_status("Failure getting to clash main")
         return "restart"
-    return None
+    time.sleep(5)
 
 
 def randomize_current_deck(logger):
