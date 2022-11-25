@@ -130,7 +130,7 @@ collections_stats_values = [
         stat_box("level_up_chest_collections"),
     ],
     [
-        stat_box("free_offer_collections: "),
+        stat_box("free_offer_collections"),
     ],
 ]
 
