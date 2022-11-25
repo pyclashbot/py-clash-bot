@@ -77,7 +77,7 @@ from pyclashbot.bot.request import (
     look_for_request_button,
     request_random_card_from_clash_main,
 )
-from pyclashbot.bot.states import state_fight
+from pyclashbot.bot.states import state_fight, state_restart, state_tree
 from pyclashbot.bot.upgrade import (
     check_for_upgradable_cards,
     find_confirm_upgrade_for_gold_button,
@@ -307,3 +307,30 @@ def card_detection_debug():
     while True:
         print(identify_cards())
     
+
+def debug_state_tree(logger):
+    pass
+
+
+def do_debug_state_tree():
+    state_restart(logger)
+    jobs=["Open Chests"
+        "Fight",
+        "Request",
+        "Upgrade",
+        "Randomize Deck",
+        "card mastery collection",
+        "level up reward collection",
+        "battlepass reward collection",
+        "war",
+        ]
+    state_tree(jobs=jobs, logger=logger, ssid_max=3, ssid=1, state="clashmain")
+"Open Chests"
+"Fight"
+"Request"
+"Upgrade"
+"Randomize Deck"
+"card mastery collection"
+"level up reward collection"
+"battlepass reward collection"
+"war"
