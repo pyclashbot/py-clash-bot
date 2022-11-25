@@ -43,7 +43,6 @@ from pyclashbot.bot.clashmain import (
     get_to_account,
     get_to_clan_page,
     get_to_clash_main_from_clan_page,
-    handle_gold_rush_event,
     handle_war_loot_menu,
     open_chests,
     start_2v2,
