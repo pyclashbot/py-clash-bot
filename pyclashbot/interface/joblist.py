@@ -52,6 +52,12 @@ jobs_checklist = [
                         "-Battlepass-Reward-Collection-in-",
                     ),
                 ],
+                [
+                    job_check_box(
+                        "Free Offer Collection",
+                        "-Free-Offer-Collection-in-",
+                    ),
+                ],
             ],
             scrollable=True,
             vertical_scroll_only=True,
