@@ -1,10 +1,12 @@
 import time
 
+import numpy
 import pygetwindow
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.bot.clashmain import wait_for_clash_main_menu
+from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.interface import show_clash_royale_setup_gui
+from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils import setup_memu
 from pyclashbot.utils.logger import Logger
 
@@ -141,11 +143,6 @@ def restart_and_open_clash(logger: Logger):
         logger.add_restart()
 
 
-
-
-
-
-
 def start_clash_royale(logger: Logger, vm_index):
 
     logger.change_status("Finding Clash Royale...")
@@ -207,3 +204,128 @@ def orientate_memu():
             print("Had trouble resizing MEmu window")
     except Exception:
         print("Couldnt orientate MEmu")
+
+
+# copy of clashmain's wait_for_clash_main_menu methods
+def wait_for_clash_main_menu(logger):
+    logger.change_status("Waiting for clash main menu")
+    waiting = not check_if_on_clash_main_menu()
+
+    loops = 0
+    while waiting:
+        # loop count
+        loops += 1
+        if loops > 25:
+            logger.change_status("Looped through getting to clash main too many times")
+            return "restart"
+
+        # wait 1 sec
+        time.sleep(1)
+
+        # click dead space
+        click(32, 364)
+
+        # check if stuck on trophy progression page
+        if check_if_stuck_on_trophy_progression_page():
+            time.sleep(1)
+            click(210, 621)
+
+        # check if still waiting
+        waiting = not check_if_on_clash_main_menu()
+
+    logger.change_status("Done waiting for clash main menu")
+
+
+def check_if_stuck_on_trophy_progression_page():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        # iar[620][225],
+        iar[625][230],
+        iar[630][238],
+        iar[635][245],
+    ]
+
+    return all(pixel_is_equal(pix, [85, 177, 255], tol=45) for pix in pix_list)
+
+
+def check_if_on_clash_main_menu():
+    if not check_for_gem_logo_on_main():
+        # print("gem fail")
+        return False
+
+    if not check_for_blue_background_on_main():
+        # print("blue fail")
+        return False
+
+    if not check_for_friends_logo_on_main():
+        # print("friends logo")
+        return False
+
+    if not check_for_gold_logo_on_main():
+        # print("gold logo")
+        return False
+    return True
+
+
+def check_for_gem_logo_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
+
+    pix_list = [
+        iar[46][402],
+        iar[52][403],
+        iar[48][410],
+    ]
+
+    for pix in pix_list:
+        return bool(pixel_is_equal(pix, [75, 180, 35], tol=45))
+
+
+def check_for_blue_background_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
+
+    pix_list = [
+        iar[350][3],
+        iar[360][6],
+        iar[368][7],
+        iar[372][9],
+    ]
+
+    for pix in pix_list:
+        return bool(pixel_is_equal(pix, [9, 69, 119], tol=45))
+
+
+def check_for_gold_logo_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
+
+    pix_list = [
+        iar[48][299],
+        iar[52][300],
+        iar[44][302],
+        iar[49][297],
+    ]
+    color = [201, 177, 56]
+
+    for pix in pix_list:
+        return bool(pixel_is_equal(pix, color, tol=85))
+
+
+def check_for_friends_logo_on_main():
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot())
+
+    pix_list = [
+        iar[90][269],
+        iar[105][265],
+        iar[103][272],
+        iar[89][270],
+        iar[107][266],
+    ]
+    color = [177, 228, 252]
+
+    # pixel check
+    for pix in pix_list:
+        return bool(pixel_is_equal(pix, color, tol=65))
+    return False
