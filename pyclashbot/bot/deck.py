@@ -26,11 +26,12 @@ from pyclashbot.memu import (
 #### navigation methods
 def get_to_card_page(logger):
     # Method to get to the card page on clash main from the clash main menu
-
+    print("get to card page")
     click(x=100, y=630)
     time.sleep(2)
     loops = 0
     while not check_if_on_first_card_page():
+        print("Looping to get to card page")
         # logger.change_status("Not elixer button. Moving pages")
         time.sleep(1)
         click(x=100, y=630)
@@ -42,11 +43,12 @@ def get_to_card_page(logger):
             return "restart"
         time.sleep(0.2)
     scroll_up_fast()
-    # logger.change_status("Made it to card page")
+    print("made it to card page")
     time.sleep(1)
 
 
 def handle_randomize_deck_failure(logger):
+    print("Handling randomize deck failure got called.")
     # tries to get back to clash main regardless of failing to randomize the deck fully. if it doesnt THEN we try restarting
     logger.change_status(
         "Trying to return to clash main and continue with half randomized deck"
@@ -54,7 +56,6 @@ def handle_randomize_deck_failure(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         logger.change_status("Couldn't get to clash main. Must restart")
         return "restart"
-
 
 
 def randomize_and_select_deck_2(logger):
@@ -67,7 +68,7 @@ def randomize_and_select_deck_2(logger):
         return "restart"
 
     # select deck 2
-
+    print("Clicking deck 2")
     click(173, 190)
     time.sleep(1)
 
@@ -121,6 +122,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # scroll random amount
     loops = 0
+    print("Scrolling randomly with scrolls: " + str(scrolls))
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         time.sleep(0.1)
@@ -131,13 +133,19 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
             return "restart"
 
     # check if we're too high up in scroll page
-    if check_for_random_scroll_success_in_deck_randomization():
+    if check_for_random_scroll_failure_in_deck_randomization():
+        print(
+            "Random scroll failure detected. Scrolling a little to possibly save the bot"
+        )
         scroll_down_super_fast()
 
     # click randomly until we get a 'use' button
     use_card_button_coord = None
     loops = 0
+
+    print("Clicking randomly until we get a use button")
     while use_card_button_coord is None:
+        print("Clicking cards randomly")
         loops += 1
         if loops > 30:
             return "restart"
@@ -153,13 +161,17 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
         use_card_button_coord = find_use_card_button()
 
     # click use card
+    print("Clicking use card button")
     click(use_card_button_coord[0], use_card_button_coord[1])
+    time.sleep(1)
 
     # select the card coord in the deck that we're replacing with the random card
+    print("selecting the card to replace")
     click(card_to_replace_coord[0], card_to_replace_coord[1])
     time.sleep(0.22)
 
     # change the card collection filter so increase randomness
+    print("increment filter cycle")
     click(320, 575)
     time.sleep(1)
     return None
@@ -197,6 +209,7 @@ def count_scrolls_in_card_page(logger):
     click(111, 629)
     time.sleep(1)
 
+    print("Counted scrolls: " + str(count))
     return 0 if count == 0 else count - 3
 
 
@@ -365,7 +378,7 @@ def look_for_card_collection_icon_on_card_page():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def check_for_random_scroll_success_in_deck_randomization():
+def check_for_random_scroll_failure_in_deck_randomization():
     # check 1
     card_level_boost_icon_coord = find_card_level_boost_icon()
     if card_level_boost_icon_coord is not None and card_level_boost_icon_coord[1] > 320:
