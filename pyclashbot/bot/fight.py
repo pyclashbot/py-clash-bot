@@ -33,6 +33,7 @@ def do_fight(logger):
     plays = 0
 
     while in_battle:
+        print("plays: ", plays)
         if wait_until_has_6_elixer(logger) == "restart":
             logger.change_status("Waited for 6 elixer too long. Restarting.")
             return "restart"
@@ -93,16 +94,17 @@ def play_random_card(logger):
     if card_identification is None:
         card_identification = "Unknown"
     # logger.change_status(str("Identified card: "+card_identification))
+    print("current card identification: ", card_identification)
 
     # Get the card type of this identification
     card_type = get_card_group(card_identification)
     if card_type is None:
         card_type = "unknown"
-    # logger.change_status(str("Card type: "+card_type))
+    print("Current card group: ", card_type)
 
     # Pick a side to play on
     side = pick_a_lane()
-    logger.change_status(f"Playing card: {str(n + 1)} on side: {side}")
+    logger.change_status(f"Playing card: {str(card_identification)} on side: {side}")
 
     # Get the play coordinates of this card type
     play_coords_list = get_play_coords(card_type, side)
@@ -120,8 +122,6 @@ def play_random_card(logger):
     elif n == 3:
         click(355, 605)
 
-    # print("Playing card ",n," at ",play_coord)
-
     # Click the location we're playing it at
     click(play_coord[0], play_coord[1])
 
@@ -137,6 +137,7 @@ def leave_end_battle_window(logger):
 
     # if end screen condition 1 (exit in bottom left)
     if check_if_end_screen_is_exit_bottom_left():
+        print("Leaving end battle (condition 1)")
         click(79, 625)
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
@@ -146,6 +147,7 @@ def leave_end_battle_window(logger):
 
     # if end screen condition 2 (OK in bottom middle)
     if check_if_end_screen_is_ok_bottom_middle():
+        print("Leaving end battle (condition 2)")
         click(206, 594)
         time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
@@ -200,6 +202,7 @@ def open_activity_log():
     :return: None
     """
 
+    print("Opening activity log")
     click(x=360, y=99)
     time.sleep(1)
 
@@ -215,6 +218,7 @@ def check_if_past_game_is_win(logger):
     :return: bool: true if pixels are blue, else false
     """
 
+    print("Checking if game was a win")
     open_activity_log()
     time.sleep(3)
     if check_if_pixels_indicate_win_on_activity_log():
@@ -222,30 +226,31 @@ def check_if_past_game_is_win(logger):
         logger.add_win()
     else:
         logger.change_status("Last game was a loss. Incrementing loss count.")
-        logger.add_loss()    
-    
+        logger.add_loss()
+
 
 def check_if_pixels_indicate_win_on_activity_log():
-    #fill pix list with a list of pixels that scan across the victory/defeat text
-    iar=numpy.asarray(screenshot())
-    pix_list=[]
-    for x_coord in range(48,113):
+    # fill pix list with a list of pixels that scan across the victory/defeat text
+    iar = numpy.asarray(screenshot())
+    pix_list = []
+    for x_coord in range(48, 113):
         pix_list.append(iar[180][x_coord])
 
-    #cast this list to ints
-    int_pix_list=[]
+    # cast this list to ints
+    int_pix_list = []
     for pix in pix_list:
-        this_int_pix=[int(pix[0]),int(pix[1]),int(pix[2])]
+        this_int_pix = [int(pix[0]), int(pix[1]), int(pix[2])]
         int_pix_list.append(this_int_pix)
 
-    #count red pixels
-    red_count=0
+    # count red pixels
+    red_count = 0
     for pix in int_pix_list:
-        if pixel_is_equal(pix,[255,50,100],tol=35):
-            red_count+=1
+        if pixel_is_equal(pix, [255, 50, 100], tol=35):
+            red_count += 1
 
-    #return logic
-    if red_count>10:return False
+    # return logic
+    if red_count > 10:
+        return False
     return True
 
 
@@ -368,11 +373,3 @@ def pick_a_lane():
     # return "right" if lane_ratio[1] > lane_ratio[0] else "left"
 
     return "random"
-
-
-#### etc
-def _extracted_from_check_if_past_game_is_win_12(logger, arg1):
-    click(20, 507)
-
-    logger.change_status(arg1)
-    time.sleep(2)
