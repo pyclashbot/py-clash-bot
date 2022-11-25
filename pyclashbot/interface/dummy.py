@@ -31,6 +31,7 @@ if __name__ == "__main__":
         "battlepass_rewards_collections": 11,
         "level_up_chest_collections": 12,
         "war_battles_fought": 13,
+        "free_offers_collected": 14,
     }
 
     window = sg.Window("Py-ClashBot", main_layout)
@@ -81,6 +82,8 @@ if __name__ == "__main__":
             statistics["fights"] += 1
             statistics["war_battles_fought"] += 1
             statistics["requests"] += 1
+            statistics["free_offers_collected"] += 1
+            
 
         # update the statistics
         window["current_status"].update(statistics["current_status"])  # type: ignore

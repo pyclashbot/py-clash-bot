@@ -113,6 +113,10 @@ collections_stats_titles = [
     [
         sg.Text("Level Up Chest Collections: "),
     ],
+    [
+        sg.Text("Free Offer Collections: "),
+    ],
+    
 ]
 
 collections_stats_values = [
@@ -124,6 +128,9 @@ collections_stats_values = [
     ],
     [
         stat_box("level_up_chest_collections"),
+    ],
+    [
+        stat_box("free_offer_collections: "),
     ],
 ]
 

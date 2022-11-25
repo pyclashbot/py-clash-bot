@@ -66,6 +66,7 @@ from pyclashbot.bot.fight import (
     check_if_pixels_indicate_win_on_activity_log,
     play_random_card,
 )
+from pyclashbot.bot.free_offer_collection import check_if_on_shop_page, check_if_on_shop_page_with_delay, collect_free_offer_from_shop, find_free_offer_icon
 from pyclashbot.bot.level_up_reward_collection import (
     check_for_level_up_reward_pixels,
     check_if_has_level_up_rewards,
@@ -127,9 +128,6 @@ def show_image(image):
     """
     plt.imshow(numpy.array(image))
     plt.show()
-
-
-# show_image(screenshot())
 
 
 def gui_debug():
@@ -391,9 +389,6 @@ def do_debug_state_tree():
         state,ssid=debug_state_tree(jobs=jobs, logger=logger, ssid_max=3, ssid=ssid,state=state)
 
 
+# show_image(screenshot())
 
-
-
-    
-
-do_debug_state_tree()
+collect_free_offer_from_shop(logger)
