@@ -78,7 +78,7 @@ from pyclashbot.bot.request import (
     look_for_request_button,
     request_random_card_from_clash_main,
 )
-from pyclashbot.bot.states import state_battlepass_collection, state_card_mastery_collection, state_clashmain, state_endfight, state_fight, state_level_up_reward_collection, state_request, state_restart, state_startfight, state_tree, state_upgrade, state_war
+from pyclashbot.bot.states import state_battlepass_collection, state_card_mastery_collection, state_clashmain, state_endfight, state_fight, state_free_offer_collection, state_level_up_reward_collection, state_request, state_restart, state_startfight, state_tree, state_upgrade, state_war
 from pyclashbot.bot.upgrade import (
     check_for_upgradable_cards,
     find_confirm_upgrade_for_gold_button,
@@ -341,7 +341,7 @@ def debug_state_tree(logger,ssid_max,jobs,ssid,state):
         )
 
     elif state == "restart":
-        while True:time.sleep(1000)
+        state = state_restart(logger)
 
     elif state == "card mastery collection":
         state = (
@@ -365,7 +365,12 @@ def debug_state_tree(logger,ssid_max,jobs,ssid,state):
         )
 
     elif state == "war":
-        state = state_war(logger) if "war" in jobs else "clashmain"
+        state = state_war(logger) if "war" in jobs else "free_offer_collection"
+
+    elif state == "free_offer_collection":
+        state = state_free_offer_collection(logger) if "free offer collection" in jobs else "clashmain"
+
+
 
     return (state, ssid)
 
@@ -391,4 +396,4 @@ def do_debug_state_tree():
 
 # show_image(screenshot())
 
-collect_free_offer_from_shop(logger)
+do_debug_state_tree()
