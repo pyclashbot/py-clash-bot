@@ -26,6 +26,7 @@ from pyclashbot.bot.fight import (
     do_fight,
     leave_end_battle_window,
 )
+from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import (
@@ -161,13 +162,31 @@ def state_tree(
         )
 
     elif state == "war":
-        state = state_war(logger) if "war" in jobs else "clashmain"
+        state = state_war(logger) if "war" in jobs else "free_offer_collection"
+
+    elif state == "free_offer_collection":
+        state = (
+            state_free_offer_collection(logger)
+            if "free offer collection" in jobs
+            else "clashmain"
+        )
 
     return (state, ssid)
 
 
-def state_war(logger) -> Literal["restart", "clashmain"]:
-    return "restart" if handle_war_attacks(logger) == "restart" else "clashmain"
+def state_free_offer_collection(logger) -> Literal["restart", "clashmain"]:
+    if collect_free_offer_from_shop(logger) == "restart":
+        return "restart"
+    else:
+        return "clashmain"
+
+
+def state_war(logger) -> Literal["restart", "free_offer_collection"]:
+    return (
+        "restart"
+        if handle_war_attacks(logger) == "restart"
+        else "free_offer_collection"
+    )
 
 
 def state_battlepass_collection(logger) -> Literal["restart", "war"]:
