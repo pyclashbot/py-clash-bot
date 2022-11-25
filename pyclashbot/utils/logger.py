@@ -247,6 +247,11 @@ class Logger:
         self.free_offer_collections += 1
 
 
+    def add_battlepass_reward_collection(self):
+        """add battlepass collection to log"""
+        self.battlepass_rewards_collections += 1
+
+
     @_updates_log
     def error(self, message: str):
         """log error message
