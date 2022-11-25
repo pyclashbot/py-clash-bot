@@ -306,4 +306,6 @@ def find_random_card_debug():
 def card_detection_debug():
     while True:
         print(identify_cards())
-    
+
+
+memu_debug(logger)
