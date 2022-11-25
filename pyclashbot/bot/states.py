@@ -13,7 +13,6 @@ from pyclashbot.bot.clashmain import (
     get_to_card_page,
     get_to_clash_main_from_clan_page,
     handle_card_mastery_notification,
-    handle_gold_rush_event,
     open_chests,
     start_2v2,
     wait_for_battle_start,
