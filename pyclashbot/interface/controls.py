@@ -11,6 +11,7 @@ controls = [
                 [
                     sg.Button("Start"),
                     sg.Button("Stop", disabled=True),
+                    sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-"),
                 ],
                 [
                     sg.Text("# of Accounts: "),
