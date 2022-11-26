@@ -22,3 +22,29 @@ class StoppableThread(threading.Thread):
 
         # ... Clean shutdown code here ...
         print(f"Thread #{self.ident} stopped")  # doesnt print for some reason
+
+    def shutdown(self):
+        self.shutdown_flag.set()
+
+
+class PausableThread(StoppableThread):
+    def __init__(self, args, kwargs=None):
+        super().__init__(args, kwargs)
+        self.pause_flag = threading.Event()
+
+    def shutdown(self):
+        self.pause_flag.clear()  # clear pause flag to allow thread to shutdown
+        self.shutdown_flag.set()
+
+    def toggle_pause(self):
+        """Toggle the pause flag of the thread.
+
+        Returns:
+            bool: The new state of the pause flag.
+        """
+        if self.pause_flag.is_set():
+            self.pause_flag.clear()
+            return False
+        else:
+            self.pause_flag.set()
+            return True
