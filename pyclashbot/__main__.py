@@ -1,4 +1,5 @@
 import sys
+import time
 import webbrowser
 from queue import Queue
 
@@ -11,13 +12,9 @@ from pyclashbot.interface import (
     show_help_gui,
     user_config_keys,
 )
-from pyclashbot.utils import (
-    Logger,
-    StoppableThread,
-    cache_user_settings,
-    read_user_settings,
-)
+from pyclashbot.utils import Logger, cache_user_settings, read_user_settings
 from pyclashbot.utils.caching import check_user_settings
+from pyclashbot.utils.thread import PausableThread, StoppableThread
 
 
 def read_window(
@@ -54,7 +51,7 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
         jobs.append("war")
     if values["-Free-Offer-Collection-in-"]:
         jobs.append("free offer collection")
-    
+
     return jobs
 
 
@@ -97,22 +94,28 @@ def start_button_event(logger: Logger, window, values):
 
     # enable the stop button after the thread is started
     window["Stop"].update(disabled=False)
+    window["-Pause-Resume-Button-"].update(text="Pause")
+    window["-Pause-Resume-Button-"].update(disabled=False)
 
     return thread
 
 
-def stop_button_event(logger: Logger, window, thread):
+def stop_button_event(logger: Logger, window, thread: StoppableThread):
     logger.change_status("Stopping")
     window["Stop"].update(disabled=True)
-    shutdown_thread(thread)  # send the shutdown flag to the thread
+    window["-Pause-Resume-Button-"].update(text="Pause")
+    window["-Pause-Resume-Button-"].update(disabled=True)
+    thread.shutdown()  # send the shutdown flag to the thread
 
 
-def shutdown_thread(thread, join=False):
-    if thread is not None:
-        thread.shutdown_flag.set()
-        if join:
-            # wait for the thread to close
-            thread.join()  # this will block the gui
+def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
+    is_paused = thread.toggle_pause()
+    if is_paused:
+        logger.change_status("Pausing")
+        window["-Pause-Resume-Button-"].update(text="Resume")
+    else:
+        logger.change_status("Resuming")
+        window["-Pause-Resume-Button-"].update(text="Pause")
 
 
 def update_layout(window: sg.Window, logger: Logger):
@@ -142,7 +145,7 @@ def main_gui():
 
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
-            shutdown_thread(thread)
+            thread.shutdown()
             break
 
         if event == "Start":
@@ -153,6 +156,9 @@ def main_gui():
 
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
+
+        elif event == "-Pause-Resume-Button-" and thread is not None:
+            pause_resume_button_event(logger, window, thread)
 
         elif event in user_config_keys:
             save_current_settings(values)
@@ -190,12 +196,12 @@ def main_gui():
         update_layout(window, logger)
 
     # shut down the thread if it is still running
-    shutdown_thread(thread, join=True)
+    thread.shutdown(join=True)
 
     window.close()
 
 
-class WorkerThread(StoppableThread):
+class WorkerThread(PausableThread):
     def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
         self.logger = logger
@@ -210,6 +216,8 @@ class WorkerThread(StoppableThread):
             while not self.shutdown_flag.is_set():
                 # perform state transition
                 (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
+                while self.pause_flag.is_set():
+                    time.sleep(0.1)  # sleep for 100ms until pause flag is unset
         except Exception as e:  # pylint: disable=broad-except
             # we don't want the thread to crash the interface so we catch all exceptions and log
             # raise e
