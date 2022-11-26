@@ -197,6 +197,7 @@ def get_to_clash_main_from_card_page(logger):
         click(212, 623)
         time.sleep(1)
         on_clash_main = check_for_gem_logo_on_main()
+    logger.change_status("Got to clash main from card page")
 
 
 def find_card_page_logo():
