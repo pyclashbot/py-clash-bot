@@ -1,11 +1,10 @@
 import sys
-import time
 import webbrowser
 from queue import Queue
 
 import PySimpleGUI as sg
 
-from pyclashbot.bot import detect_state, state_tree
+from pyclashbot.bot import WorkerThread
 from pyclashbot.interface import (
     disable_keys,
     main_layout,
@@ -188,6 +187,7 @@ def main_gui():
                 window[key].update(disabled=False)
             if thread.logger.errored:
                 window["Stop"].update(disabled=True)
+                window["-Pause-Resume-Button-"].update(disabled=True)
             else:
                 # reset the communication queue and logger
                 statistics_q = Queue()
@@ -202,29 +202,6 @@ def main_gui():
         thread.join()
 
     window.close()
-
-
-class WorkerThread(PausableThread):
-    def __init__(self, logger: Logger, args, kwargs=None):
-        super().__init__(args, kwargs)
-        self.logger = logger
-
-    def run(self):
-        try:
-            jobs, ssid_max = self.args  # parse thread args
-            ssid = 0  # start ssid at 0
-            state = detect_state(self.logger)
-
-            # loop until shutdown flag is set
-            while not self.shutdown_flag.is_set():
-                # perform state transition
-                (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
-                while self.pause_flag.is_set():
-                    time.sleep(0.1)  # sleep for 100ms until pause flag is unset
-        except Exception as e:  # pylint: disable=broad-except
-            # we don't want the thread to crash the interface so we catch all exceptions and log
-            # raise e
-            self.logger.error(str(e))
 
 
 if __name__ == "__main__":
