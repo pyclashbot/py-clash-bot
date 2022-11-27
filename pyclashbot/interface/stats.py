@@ -116,7 +116,6 @@ collections_stats_titles = [
     [
         sg.Text("Free Offer Collections: "),
     ],
-    
 ]
 
 collections_stats_values = [

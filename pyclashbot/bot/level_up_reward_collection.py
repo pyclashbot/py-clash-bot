@@ -61,43 +61,40 @@ def collect_level_up_rewards(logger):
     # starts and ends on clash main
     logger.change_status("Collecting level up rewards.")
     loops = 0
-    
-    #should be on clash main at this point
-    if not check_if_on_clash_main_menu():return "restart"
 
-    #loop until the level up rewards icon on the main menu indicates there are no more rewards
+    # should be on clash main at this point
+    if not check_if_on_clash_main_menu():
+        return "restart"
+
+    # loop until the level up rewards icon on the main menu indicates there are no more rewards
     while check_if_has_level_up_rewards():
-        #loop counter
+        # loop counter
         loops += 1
-        if loops>20:
-            return"restart"
+        if loops > 20:
+            return "restart"
 
-        #click logo in top left
+        # click logo in top left
         click(17, 48)
         time.sleep(1)
-        
-        #click chest
+
+        # click chest
         click(135, 160)
         time.sleep(1)
-        
-        #click dead space to skip through rewards
+
+        # click dead space to skip through rewards
         for _ in range(20):
             click(20, 450)
             time.sleep(0.33)
-        
-        #increment counter
+
+        # increment counter
         logger.add_level_up_chest_collection()
 
-        #should be on clash main at this point, if not click deadspace a little, then check again.
+        # should be on clash main at this point, if not click deadspace a little, then check again.
         if not check_if_on_clash_main_menu():
-            #try to get to main by clicking deadspace more
+            # try to get to main by clicking deadspace more
             for _ in range(20):
                 click(20, 450)
                 time.sleep(0.33)
-            #if this didnt help getting to main then return restart
-            if not check_if_on_clash_main_menu():return"restart"
-    
-    
-    
-
-
+            # if this didnt help getting to main then return restart
+            if not check_if_on_clash_main_menu():
+                return "restart"
