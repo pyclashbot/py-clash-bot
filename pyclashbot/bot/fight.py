@@ -17,7 +17,6 @@ from pyclashbot.bot.clashmain import (
 )
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
-from pyclashbot.memu.client import print_pix_list
 
 
 #### card playing
@@ -237,10 +236,7 @@ def check_if_past_game_is_win(logger):
 def check_if_pixels_indicate_win_on_activity_log():
     # fill pix list with a list of pixels that scan across the victory/defeat text
     iar = numpy.asarray(screenshot())
-    pix_list = []
-    for x_coord in range(48, 113):
-        pix_list.append(iar[180][x_coord])
-
+    pix_list = [iar[180][x_coord] for x_coord in range(48, 113)]
     # cast this list to ints
     int_pix_list = []
     for pix in pix_list:
@@ -248,15 +244,12 @@ def check_if_pixels_indicate_win_on_activity_log():
         int_pix_list.append(this_int_pix)
 
     # count red pixels
-    red_count = 0
-    for pix in int_pix_list:
-        if pixel_is_equal(pix, [255, 50, 100], tol=35):
-            red_count += 1
+    red_count = sum(
+        bool(pixel_is_equal(pix, [255, 50, 100], tol=35)) for pix in int_pix_list
+    )
 
     # return logic
-    if red_count > 10:
-        return False
-    return True
+    return red_count <= 10
 
 
 def check_if_has_6_elixer():

@@ -45,6 +45,5 @@ class PausableThread(StoppableThread):
         if self.pause_flag.is_set():
             self.pause_flag.clear()
             return False
-        else:
-            self.pause_flag.set()
-            return True
+        self.pause_flag.set()
+        return True

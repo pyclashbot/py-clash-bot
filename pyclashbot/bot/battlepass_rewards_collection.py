@@ -86,7 +86,4 @@ def collect_battlepass_rewards(logger):
     logger.change_status("Done collecting battlepass rewards.")
 
     # should be on clash main at this point
-    if not check_if_on_clash_main_menu():
-        return "restart"
-    else:
-        return "clashmain"
+    return "clashmain" if check_if_on_clash_main_menu() else "restart"
