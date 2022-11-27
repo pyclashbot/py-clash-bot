@@ -12,7 +12,6 @@ from pyclashbot.memu.client import (
     click,
     get_file_count,
     make_reference_image_list,
-    print_pix_list,
     screenshot,
     scroll_down_super_fast,
 )
@@ -46,8 +45,7 @@ def collect_free_offer_from_shop(logger):
         # get to clash main from shop
         if get_to_clash_main_from_shop(logger) == "restart":
             return "restart"
-        else:
-            return
+        return
 
     # click free offer
     logger.change_status("Found free offer icon. Collecting it.")
