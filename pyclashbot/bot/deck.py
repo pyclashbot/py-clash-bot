@@ -56,6 +56,7 @@ def handle_randomize_deck_failure(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         logger.change_status("Couldn't get to clash main. Must restart")
         return "restart"
+    return None
 
 
 def randomize_and_select_deck_2(logger):
@@ -82,6 +83,7 @@ def randomize_and_select_deck_2(logger):
         logger.change_status("Failure getting to clash main")
         return "restart"
     time.sleep(5)
+    return None
 
 
 def randomize_current_deck(logger):
@@ -112,7 +114,9 @@ def randomize_current_deck(logger):
             logger.change_status("replacing card in deck failure")
             if get_to_clash_main_from_card_page(logger) == "restart":
                 return "restart"
-            return
+            return None
+
+    return None
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
