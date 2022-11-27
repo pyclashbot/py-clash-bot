@@ -177,8 +177,7 @@ def state_tree(
 def state_free_offer_collection(logger) -> Literal["restart", "clashmain"]:
     if collect_free_offer_from_shop(logger) == "restart":
         return "restart"
-    else:
-        return "clashmain"
+    return "clashmain"
 
 
 def state_war(logger) -> Literal["restart", "free_offer_collection"]:
@@ -365,8 +364,7 @@ def state_try_to_start_war_battle(logger):
         time.sleep(1)
         if get_to_clash_main_from_clan_page(logger) == "restart":
             return "restart"
-        else:
-            return "clashmain"
+        return "clashmain"
 
     # click deadspace to get rid of the pop up
     for _ in range(5):
@@ -405,7 +403,7 @@ def state_wait_for_war_battle(logger):
 
 
 def state_do_war_battle(logger, loops=0):
-    logger.change_status("Doing war battle. Loop#: " + str(loops))
+    logger.change_status(f"Doing war battle. Loop#: {loops}")
     # runs if state=="do_war_battle"
     # returns "leave_war_battle" if successfully done,
     # returns "do_war_battle" if still fighting,
@@ -418,10 +416,7 @@ def state_do_war_battle(logger, loops=0):
     click(random.randint(70, 355), random.randint(320, 490))
     time.sleep(1)
 
-    if not check_if_in_battle_with_delay():
-        return "leave_war_battle"
-    else:
-        return "do_war_battle"
+    return "do_war_battle" if check_if_in_battle_with_delay() else "leave_war_battle"
 
 
 def state_leave_end_of_war_battle_page(logger):
@@ -431,7 +426,7 @@ def state_leave_end_of_war_battle_page(logger):
 
     # manual wait
     for n in range(15):
-        logger.change_status("Manual wait for end battle..." + str(n))
+        logger.change_status(f"Manual wait for end battle...{n}")
 
     # exit battle
     logger.change_status("Exiting war battle")
@@ -447,7 +442,7 @@ def state_get_to_clash_main_from_war_page(logger):
     # returns "clashmain" if successful
 
     for n in range(15):
-        logger.change_status("Manual wait for clash main..." + str(n))
+        logger.change_status(f"Manual wait for clash main...{n}")
     # get to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
         logger.change_status("Failed getting to clash main from clan page")
