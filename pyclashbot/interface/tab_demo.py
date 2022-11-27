@@ -1,7 +1,6 @@
 import PySimpleGUI as sg
-from pyclashbot.interface.stats import (
-    stat_box,
-)
+
+from pyclashbot.interface.stats import stat_box
 from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
