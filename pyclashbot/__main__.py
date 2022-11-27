@@ -108,8 +108,7 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread):
 
 
 def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
-    is_paused = thread.toggle_pause()
-    if is_paused:
+    if thread.toggle_pause():
         logger.change_status("Pausing")
         window["-Pause-Resume-Button-"].update(text="Resume")
     else:

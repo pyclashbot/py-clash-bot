@@ -17,7 +17,6 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.memu.client import print_pix_list
 
 
 def handle_war_attacks(logger):
@@ -54,7 +53,9 @@ def handle_war_attacks(logger):
     # sometimes the player lacks the cards to make a complete deck at this point
     # if you STILL done have a deck, return to main
     if not check_if_has_a_deck_for_this_war_battle():
-        logger.change_status("Fight not avialable yet/Not enough cards to complete deck. Skipping war attack this time.")
+        logger.change_status(
+            "Fight not avialable yet/Not enough cards to complete deck. Skipping war attack this time."
+        )
         for _ in range(5):
             click(20, 440)
         get_to_clash_main_from_clan_page(logger)
@@ -112,7 +113,8 @@ def fight_war_battle(logger):
         click(random.randint(70, 355), random.randint(320, 490))
         time.sleep(1)
 
-    for n in range(15): logger.change_status("Manual wait for end battle..."+str(n))
+    for n in range(15):
+        logger.change_status(f"Manual wait for end battle...{n}")
 
 
 def make_a_random_deck_for_this_war_battle():

@@ -16,11 +16,7 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.memu.client import (
-    get_file_count,
-    make_reference_image_list,
-    print_pix_list,
-)
+from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
 
 def request_random_card_from_clash_main(logger):
@@ -38,11 +34,10 @@ def request_random_card_from_clash_main(logger):
             logger.change_status("failure getting to clash main from clan page")
             return "restart"
         return None
-    else:
-        if get_to_clash_main_from_clan_page(logger) == "restart":
-            logger.change_status("failure getting to clash main from card page")
-            return "restart"
-        time.sleep(1)
+    if get_to_clash_main_from_clan_page(logger) == "restart":
+        logger.change_status("failure getting to clash main from card page")
+        return "restart"
+    time.sleep(1)
 
     # Return if request is not available (Starts on main, ends on clan page)
     time.sleep(1)
@@ -74,8 +69,6 @@ def request_random_card_from_clash_main(logger):
         logger.change_status("failed getting to clash main from clan page")
         return "restart"
     return None
-
-
 
 
 def request_random_card(logger, maximum_scrolls=10):
