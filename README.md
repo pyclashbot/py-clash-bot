@@ -6,28 +6,10 @@ A Clash Royale automation bot written in Python.
 
 ## Install
 
-[Download the latest release](https://github.com/matthewmiglio/py-clash-bot/releases).
+[Download the latest release](https://github.com/matthewmiglio/py-clash-bot/releases), and run the installer.
 
-## MEmu Dependency
+## Usage
 
-To emulate the game, [Download and install MEmu](https://www.memuplay.com/).
+Run the shortcut `py-clash-bot vX.X.X` on your desktop.
 
-It is reccomended to install the emulator in English mode.
-
-### Configure MEmu
-
-Using the Multiple Instance Manager, set the instance, display and appearance settings of your instance to match the following
-
-![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_instance_settings.webp?raw=true)
-
-![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_display_settings.webp?raw=true)
-
-![MEmu configuration options](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/memu_appearance_settings.webp?raw=true)
-
-Then start the emulator and install Clash Royale with the Google Play Store.
-
-It is reccomended to play Clash Royale in English mode.
-
-## Run py-clash-bot on Windows
-
-Run the desktop shortcut the installer created.
+![User Interface](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/user_interface_nov22.webp?raw=true)
