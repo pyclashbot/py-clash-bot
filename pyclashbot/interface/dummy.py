@@ -83,7 +83,6 @@ if __name__ == "__main__":
             statistics["war_battles_fought"] += 1
             statistics["requests"] += 1
             statistics["free_offer_collections"] += 1
-            
 
         # update the statistics
         window["current_status"].update(statistics["current_status"])  # type: ignore
