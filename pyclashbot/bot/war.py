@@ -17,7 +17,6 @@ from pyclashbot.memu import (
     scroll_down_super_fast,
     scroll_up_super_fast,
 )
-from pyclashbot.memu.client import print_pix_list
 
 
 def handle_war_attacks(logger):
@@ -115,7 +114,7 @@ def fight_war_battle(logger):
         time.sleep(1)
 
     for n in range(15):
-        logger.change_status("Manual wait for end battle..." + str(n))
+        logger.change_status(f"Manual wait for end battle...{n}")
 
 
 def make_a_random_deck_for_this_war_battle():
