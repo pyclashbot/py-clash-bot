@@ -115,13 +115,13 @@ class MouseMoveException(Exception):
         return self.message
 
 
-def click(x, y, duration=1, max_attempts=3):
+def click(x, y, duration: float = 1, max_attempts=3):
     """Method for clicking a given coordinate
 
     Args:
         x (int): X coordinate
         y (int): Y coordinate
-        duration (int, optional): Duration of the click. Defaults to 1.
+        duration (float, optional): Duration of the click. Defaults to 1.
         max_attempts (int, optional): Maximum amount of attempts to click the given coordinate. Defaults to 3. Set to less than 1 for infinite attempts.
     """
     origin = ahk.mouse_position
@@ -149,7 +149,7 @@ def click(x, y, duration=1, max_attempts=3):
                 ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
                 attempts += 1
         ahk.click()
-    except:
+    except Exception:
         return "restart"
     ahk.mouse_move(x=origin[0], y=origin[1], blocking=False)
 

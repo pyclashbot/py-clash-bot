@@ -5,7 +5,6 @@ import numpy
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
-from pyclashbot.memu.client import print_pix_list
 
 
 def check_for_level_up_reward_pixels():
