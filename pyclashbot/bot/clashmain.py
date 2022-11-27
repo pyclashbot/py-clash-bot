@@ -336,10 +336,7 @@ def check_if_stuck_on_war_final_results_page():
         iar[575][255],
     ]
 
-    for pix in pix_list:
-        if not pixel_is_equal([180, 96, 253], pix, tol=45):
-            return False
-    return True
+    return all(pixel_is_equal([180, 96, 253], pix, tol=45) for pix in pix_list)
 
 
 def find_2v2_quick_match_button():
@@ -512,7 +509,7 @@ def get_to_account(logger, account_number):
         click(230, 595)
 
     for n in range(10):
-        logger.change_status("Manual wait time for clash main menu to load: " + str(n))
+        logger.change_status(f"Manual wait time for clash main menu to load: {n}")
 
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
