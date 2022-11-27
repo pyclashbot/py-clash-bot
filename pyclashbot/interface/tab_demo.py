@@ -122,6 +122,6 @@ main_layout = [
 
 window = sg.Window("Tabs", main_layout)
 # Read  values entered by user
-event, values = window.read()
+window.read()
 # access all the values and if selected add them to a string
 window.close()
