@@ -112,8 +112,7 @@ def randomize_current_deck(logger):
             logger.change_status("replacing card in deck failure")
             if get_to_clash_main_from_card_page(logger) == "restart":
                 return "restart"
-            else:
-                return
+            return
 
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
@@ -122,7 +121,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
 
     # scroll random amount
     loops = 0
-    print("Scrolling randomly with scrolls: " + str(scrolls))
+    print(f"Scrolling randomly with scrolls: {scrolls}")
     while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
         scroll_down_super_fast()
         time.sleep(0.1)
@@ -209,7 +208,7 @@ def count_scrolls_in_card_page(logger):
     click(111, 629)
     time.sleep(1)
 
-    print("Counted scrolls: " + str(count))
+    print(f"Counted scrolls: {count}")
     return 0 if count == 0 else count - 3
 
 
@@ -281,10 +280,12 @@ def find_random_card_coord(logger):
     index = 0
     for _ in range(3):
         # randomize region list
-        this_random_region_list = random.sample(region_list, len(region_list))
+        this_random_region_list: list[list[int]] = random.sample(
+            region_list, len(region_list)
+        )
         for region in this_random_region_list:
             index += 1
-            logger.change_status("Finding random card coord, index: " + str(index))
+            logger.change_status(f"Finding random card coord, index: {index}")
             coord = find_card_elixer_icon_in_card_list_in_given_image(
                 screenshot(region)
             )
@@ -379,20 +380,15 @@ def look_for_card_collection_icon_on_card_page():
 
 
 def check_for_random_scroll_failure_in_deck_randomization():
-    # check 1
     card_level_boost_icon_coord = find_card_level_boost_icon()
-    if card_level_boost_icon_coord is not None and card_level_boost_icon_coord[1] > 320:
-        return True
-
-    # check 2
-    if find_battle_deck_label_on_card_page() is not None:
-        return True
-
-    # check 3
-    if find_deck_number_label_on_card_page() is not None:
-        return True
-
-    return False
+    return (
+        (
+            card_level_boost_icon_coord is not None
+            and card_level_boost_icon_coord[1] > 320
+        )
+        or find_battle_deck_label_on_card_page() is not None
+        or find_deck_number_label_on_card_page() is not None
+    )
 
 
 def find_battle_deck_label_on_card_page():
