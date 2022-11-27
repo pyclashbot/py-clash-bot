@@ -418,4 +418,4 @@ def do_debug_state_tree():
 
 # show_image(screenshot())
 
-do_debug_state_tree()
+# memu_debug(logger)
