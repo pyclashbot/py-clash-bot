@@ -174,6 +174,11 @@ def check_for_request_icon_on_clan_page():
 def count_maximum_request_scrolls(logger):
     logger.change_status("Counting maximum request scrolls for the random scroling.")
 
+    # get to the top of this page
+    # b/c on epic sunday it automatically scrolls sorta halfway down to show the epic cards.
+    for _ in range(10):
+        scroll_up_super_fast()
+
     # count scrolls
     scrolls = 0
 
