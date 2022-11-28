@@ -10,6 +10,7 @@ from pyclashbot.detection import (
     pixel_is_equal,
 )
 from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
+from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
 ahk = AHK()
 
