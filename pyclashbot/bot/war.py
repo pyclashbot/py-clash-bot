@@ -32,6 +32,7 @@ def handle_war_attacks(logger):
     logger.change_status("Getting to war page.")
     if get_to_war_page_from_main(logger) == "restart":
         logger.change_status("Failure getting to war page")
+        print("Failure with get_to_war_page_from_main() in handle_war_attacks()")
         return "restart"
 
     # click a war battle
@@ -70,16 +71,19 @@ def handle_war_attacks(logger):
         logger.change_status(
             "Waiting for war battle loading took too long. Restarting."
         )
+        print("Failure with wait_for_war_battle_loading() in handle_war_attacks()")
         return "restart"
 
     # after waiting for match to load, confirm we're in a battle.
     if not check_if_in_battle_with_delay():
         logger.change_status("Was about to fight but not in a battle. Restarting.")
+        print("failure because not in battle at this point but should be.")
         return "restart"
 
     # fight for the duration of the war match (losses do not matter)
     if fight_war_battle(logger) == "restart":
         logger.change_status("Failure in war battle fight. Restarting.")
+        print("Failure with fight_war_battle() in handle_war_attacks")
         return "restart"
 
     # exit battle
@@ -92,6 +96,7 @@ def handle_war_attacks(logger):
     # get to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
         logger.change_status("Failed getting to clash main from clan page")
+        print("Failure with get_to_clash_main_from_clan_page() in handle_war_attacks")
         return "restart"
     return None
 
@@ -102,7 +107,9 @@ def fight_war_battle(logger):
     while check_if_in_battle_with_delay():
         loops += 1
         if loops > 100:
-            logger.change_status("Fought in war too long. Returning")
+            logger.change_status(
+                "Fought in war too long in fight_war_battle(). Returning"
+            )
             return "restart"
 
         # click random card
@@ -153,7 +160,9 @@ def get_to_war_page_from_main(logger):
     while not check_if_on_war_page():
         loops += 1
         if loops > 20:
-            logger.change_status("failure getting to war page.")
+            logger.change_status(
+                "failure getting to war page using get_to_war_page_from_main()"
+            )
             return "restart"
         click(280, 620)
         time.sleep(1)
@@ -235,7 +244,9 @@ def wait_for_war_battle_loading(logger):
     while check_if_loading_war_battle():
         loops += 1
         if loops > 100:
-            logger.change_status("Waited for war battle loading too long. Restarting.")
+            logger.change_status(
+                "Waited for war battle loading too long using wait_for_war_battle_loading(). Restarting."
+            )
             return "restart"
         time.sleep(0.5)
     time.sleep(4)

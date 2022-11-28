@@ -39,7 +39,6 @@ def get_to_card_page(logger):
         loops = loops + 1
         if loops > 10:
             logger.change_status("Couldn't make it to card page")
-            print("12")
             return "restart"
         time.sleep(0.2)
     scroll_up_fast()
@@ -113,6 +112,9 @@ def randomize_current_deck(logger):
         ):
             logger.change_status("replacing card in deck failure")
             if get_to_clash_main_from_card_page(logger) == "restart":
+                print(
+                    "Failed to get to clash main from card page in randomize_current_deck()"
+                )
                 return "restart"
             return None
 
@@ -151,6 +153,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
         print("Clicking cards randomly")
         loops += 1
         if loops > 30:
+            print("Clicked around for a random card too many times. Restarting")
             return "restart"
         # find a random card on this page
         replacement_card_coord = find_random_card_coord(logger)
@@ -295,6 +298,7 @@ def find_random_card_coord(logger):
             )
             if coord is not None:
                 return (coord[0] + region[0], coord[1] + region[1])
+    print("Looped through find_random_card_coord() too many times. Restarting")
     return "restart"
 
 

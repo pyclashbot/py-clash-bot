@@ -41,6 +41,7 @@ def collect_battlepass_rewards(logger):
 
     # should be on clash main at this point
     if not check_if_on_clash_main_menu():
+        print("Not on main so cant run collect_battlepass_rewards()")
         return "restart"
 
     # declare locations of reward coords
