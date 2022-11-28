@@ -712,3 +712,127 @@ def handle_stuck_on_war_final_results_page():
     if check_if_stuck_on_war_final_results_page():
         click(215, 565)
         time.sleep(1)
+
+
+# methods to sort
+def verify_ssid_input(logger, inputted_ssid_max):
+    logger.change_status("Verifying SSID input")
+    # should be on main
+    if not check_if_on_clash_main_menu():
+        print("Not on clash main so cant run verify_ssid_input()")
+        return "restart"
+
+    # get to accounts list.
+    #   If get_to_switch_accounts_tab fails then return "restart"
+    #   If switch accounts button is not there, AND ssid_max is 1, then return "pass".
+    #   If switch accounts button is not there, AND ssid_max is not 1, then return "failure".
+    #   If switch accounts button is there, then continue.
+    logger.change_status("Attempting to get to accounts list")
+    get_to_accounts_list_return = get_to_switch_accounts_tab()
+    if get_to_accounts_list_return == "restart":
+        print("Failure with get_to_switch_accounts_tab()")
+        return "restart"
+    elif get_to_accounts_list_return == "no other accounts":
+        if inputted_ssid_max == 1:
+            print("No other accouts, but ssid_max is 1 so passing.")
+            return "pass"
+        else:
+            print("No other accounts, but ssid_max is not 1 so failing.")
+            return "failure"
+
+    logger.change_status("Counting the amount of availbale accounts.")
+    # once on accoutns list, count accounts
+    account_count = count_ssid_accounts_on_switch_ssid_page()
+
+    # check against inputted_ssid_max
+    if account_count != inputted_ssid_max:
+        logger.change_status(
+            "The amount of SSIDs the bot counted is not the same as the inputted ssid_max."
+        )
+        return "failure"
+    else:
+        logger.change_status(
+            "The amount of SSIDs the bot counted is the same as the inputted ssid_max."
+        )
+        return "pass"
+
+
+def count_ssid_accounts_on_switch_ssid_page():
+    # coord list of accounts icons
+    account_coord_list = [
+        [373, 336],
+        [375, 422],
+        [373, 503],
+        [375, 590],
+    ]
+
+    positive_list = []
+    # check which trophy symbols from which accounts are visible
+    iar = numpy.asarray(screenshot())
+    for index in range(4):
+        this_coord = account_coord_list[index]
+        this_pixel = iar[this_coord[1]][this_coord[0]]
+        if pixel_is_equal(this_pixel, [255, 175, 90], tol=75):
+            positive_list.append(True)
+        else:
+            positive_list.append(False)
+
+    # if all 4 are true return 4
+    if all(positive_list):
+        return 4
+
+    # if all 3 are true return 3
+    if all(positive_list[0:3]):
+        return 3
+
+    # if all 2 are true return 2
+    if all(positive_list[0:2]):
+        return 2
+
+    # if all 1 are true return 1
+    if all(positive_list[0:1]):
+        return 1
+
+    # if none are true return 0
+    return 0
+
+
+def get_to_switch_accounts_tab():
+    # if not on main then failure
+    if not check_if_on_clash_main_menu():
+        print("Not on main so cant count accounts.")
+        return "restart"
+
+    # click hamburger icon in top right on clash main for options
+    click(365, 95)
+    time.sleep(1)
+
+    # IMPLEMENT CHECK IF SWITHC ACCOUTNS BUTTON IS THERE
+    if find_switch_accouts_button() is None:
+        print("No switch accoutns button")
+        return "no other accounts"
+
+    # click switch accounts button
+    click(200, 455)
+    time.sleep(3)
+
+
+def find_switch_accouts_button():
+    current_image = screenshot()
+    reference_folder = "find_switch_accouts_button"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_switch_accouts_button",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
