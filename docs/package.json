@@ -13,7 +13,7 @@
   "devDependencies": {
     "eslint": "^8",
     "eslint-config-google": "^0",
-    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react": "^7.31.11",
     "gh-pages": "^4",
     "react-scripts": "^5"
   },
