@@ -150,6 +150,7 @@ def click(x, y, duration: float = 1, max_attempts=3):
                 attempts += 1
         ahk.click()
     except Exception:
+        print("Click method caused a restart...")
         return "restart"
     ahk.mouse_move(x=origin[0], y=origin[1], blocking=False)
 

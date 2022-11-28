@@ -21,6 +21,7 @@ def collect_free_offer_from_shop(logger):
     logger.change_status("Collecting free offer from shop.")
 
     if not check_if_on_clash_main_menu():
+        print("not on clash main so cant run collect_free_offer_from_shop()")
         return "restart"
 
     # get to shop
@@ -44,6 +45,9 @@ def collect_free_offer_from_shop(logger):
         logger.change_status("Failed to find free offer icon.")
         # get to clash main from shop
         if get_to_clash_main_from_shop(logger) == "restart":
+            print(
+                "failed to get to clash main from shop page in collect_free_offer_from_shop()"
+            )
             return "restart"
         return
 
@@ -60,6 +64,9 @@ def collect_free_offer_from_shop(logger):
 
     # get to clash main from shop
     if get_to_clash_main_from_shop(logger) == "restart":
+        print(
+            "failed to get to clash main from shop page in collect_free_offer_from_shop()"
+        )
         return "restart"
 
 
@@ -94,6 +101,9 @@ def get_to_clash_main_from_shop(logger):
     while not check_if_on_clash_main_menu():
         loops += 1
         if loops > 20:
+            print(
+                "Looped through get_to_clash_main_from_shop() too many times. Restarting"
+            )
             return "restart"
         click(200, 620)
         time.sleep(2)
@@ -107,7 +117,7 @@ def get_to_shop_page_from_main(logger):
     # check if on main
     if not check_if_on_clash_main_menu():
         logger.change_status(
-            "Not on clash main so cant start collect free offer stuff."
+            "not no clash main so cant run get_to_shop_page_from_main()"
         )
         return "restart"
 
