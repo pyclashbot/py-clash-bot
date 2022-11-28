@@ -192,6 +192,7 @@ def orientate_memu():
         window_memu = pygetwindow.getWindowsWithTitle("MEmu")[0]
         window_memu.minimize()
         window_memu.restore()
+
         time.sleep(0.2)
         try:
             window_memu.moveTo(0, 0)
@@ -217,6 +218,9 @@ def wait_for_clash_main_menu(logger):
         loops += 1
         if loops > 25:
             logger.change_status("Looped through getting to clash main too many times")
+            print(
+                "wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
+            )
             return "restart"
 
         # wait 1 sec
