@@ -47,6 +47,7 @@ from pyclashbot.bot.clashmain import (
     open_chests,
     start_2v2,
     wait_for_battle_start,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.bot.deck import (
     check_if_can_still_scroll_in_card_page,
@@ -115,6 +116,7 @@ from pyclashbot.bot.war import (
     wait_for_war_battle_loading,
 )
 from pyclashbot.detection.image_rec import (
+    check_for_location,
     find_references,
     get_first_location,
     pixel_is_equal,
@@ -365,7 +367,8 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
 
     elif state == "restart":
         print("state==restart")
-        state = state_restart(logger)
+        while True:
+            time.sleep(1000)
 
     elif state == "card mastery collection":
         print("state==mastery")
@@ -413,7 +416,7 @@ def do_debug_state_tree():
         state_restart(logger)
     jobs = [
         "Open Chests",
-        "Fight",
+        # "Fight",
         "Request",
         "Upgrade",
         "Randomize Deck",
@@ -437,4 +440,10 @@ def do_debug_state_tree():
 # memu_debug(logger)
 
 
-do_debug_state_tree()
+# do_debug_state_tree()
+
+
+# handle_war_chest_obstruction(logger)
+
+
+print(check_if_in_a_clan_2(logger))
