@@ -64,6 +64,7 @@ class Logger:
         self.level_up_chest_collections = 0
         self.war_battles_fought = 0
         self.free_offer_collections = 0
+        self.war_chest_collections = 0
         self.current_status = "Idle"
 
         # track errored logger
@@ -240,6 +241,11 @@ class Logger:
         else:
             hours, minutes, seconds = 0, 0, 0
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+    @_updates_log
+    def add_war_chest_collection(self):
+        """add level up chest collection to log"""
+        self.war_chest_collections += 1
 
     @_updates_log
     def add_free_offer_collection(self):
