@@ -56,8 +56,9 @@ def collect_free_offer_from_shop(logger):
     logger.change_status("Found free offer icon. Collecting it.")
     click(free_offer_coords[0], free_offer_coords[1])
     time.sleep(2)
-    click(200, 425)
-    logger.add_free_offer_collection()
+    if click_find_free_button_in_shop() != "fail":
+        # implement logging for this later
+        pass
 
     # click deadspace
     for _ in range(4):
@@ -69,6 +70,36 @@ def collect_free_offer_from_shop(logger):
             "failed to get to clash main from shop page in collect_free_offer_from_shop()"
         )
         return "restart"
+
+
+def find_free_button_in_shop():
+    current_image = screenshot()
+    reference_folder = "find_free_button_in_shop"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "find_free_button_in_shop",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
+
+
+def click_find_free_button_in_shop():
+    coord = find_free_button_in_shop()
+    if coord is None:
+        return "fail"
+    click(coord[0], coord[1])
+    time.sleep(2)
+    return "success"
 
 
 def find_free_offer_icon():

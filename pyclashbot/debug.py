@@ -436,10 +436,10 @@ def do_debug_state_tree():
 # do_debug_state_tree()
 
 
-memu_debug(logger)
+# memu_debug(logger)
 
 
-do_debug_state_tree()
+# do_debug_state_tree()
 
 
-do_debug_state_tree()
+collect_free_offer_from_shop(logger)
