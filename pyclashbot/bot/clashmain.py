@@ -511,6 +511,7 @@ def get_to_account(logger, account_number):
 
     for n in range(10):
         logger.change_status(f"Manual wait time for clash main menu to load: {n}")
+        time.sleep(1)
 
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
@@ -731,9 +732,11 @@ def verify_ssid_input(logger, inputted_ssid_max):
     elif get_to_accounts_list_return == "no other accounts":
         if inputted_ssid_max == 1:
             print("No other accouts, but ssid_max is 1 so passing.")
+            wait_for_clash_main_menu(logger)
             return "pass"
         else:
             print("No other accounts, but ssid_max is not 1 so failing.")
+            wait_for_clash_main_menu(logger)
             return "failure"
 
     logger.change_status("Counting the amount of availbale accounts.")
@@ -745,11 +748,19 @@ def verify_ssid_input(logger, inputted_ssid_max):
         logger.change_status(
             "The amount of SSIDs the bot counted is not the same as the inputted ssid_max."
         )
+        # close menu
+        click(390, 85)
+        time.sleep(3)
+        wait_for_clash_main_menu(logger)
         return "failure"
     else:
         logger.change_status(
             "The amount of SSIDs the bot counted is the same as the inputted ssid_max."
         )
+        # close menu
+        click(390, 85)
+        time.sleep(3)
+        wait_for_clash_main_menu(logger)
         return "pass"
 
 
