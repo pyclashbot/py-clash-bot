@@ -409,17 +409,18 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
 
 
 def do_debug_state_tree():
-    state_restart(logger)
+    if not check_if_on_clash_main_menu():
+        state_restart(logger)
     jobs = [
-        # "Open Chests",
-        # "Fight",
-        # "Request",0.
-        # "Upgrade",
-        # "Randomize Deck",
-        # "card mastery collection",
-        # "level up reward collection",
-        # "battlepass reward collection",
-        # "war",
+        "Open Chests",
+        "Fight",
+        "Request",
+        "Upgrade",
+        "Randomize Deck",
+        "card mastery collection",
+        "level up reward collection",
+        "battlepass reward collection",
+        "war",
         "free_offer_collection",
     ]
     ssid = 0
@@ -433,13 +434,7 @@ def do_debug_state_tree():
 
 # show_image(screenshot())
 
-# do_debug_state_tree()
-
-
 # memu_debug(logger)
 
 
-# do_debug_state_tree()
-
-
-collect_free_offer_from_shop(logger)
+do_debug_state_tree()
