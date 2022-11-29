@@ -336,6 +336,7 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
         ssid = ssid + 1 if ssid < ssid_max else 0
 
     elif state == "startfight":
+        print("state==startfight")
         state = (
             state_startfight(logger, random_deck="Randomize Deck" in jobs)
             if "Fight" in jobs
@@ -343,25 +344,31 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
         )
 
     elif state == "fighting":
+        print("state==fighting")
         state = state_fight(logger)
 
     elif state == "endfight":
+        print("state==endfight")
         state = state_endfight(logger)
 
     elif state == "upgrade":
+        print("state==upgrade")
         state = (
             state_upgrade(logger) if "Upgrade" in jobs else "card mastery collection"
         )
 
     elif state == "request":
+        print("state==request")
         state = (
             state_request(logger) if "Request" in jobs else "level up reward collection"
         )
 
     elif state == "restart":
+        print("state==restart")
         state = state_restart(logger)
 
     elif state == "card mastery collection":
+        print("state==mastery")
         state = (
             state_card_mastery_collection(logger)
             if "card mastery collection" in jobs
@@ -369,6 +376,7 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
         )
 
     elif state == "level up reward collection":
+        print("state==level up reward collection")
         state = (
             state_level_up_reward_collection(logger)
             if "level up reward collection" in jobs
@@ -376,6 +384,7 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
         )
 
     elif state == "battlepass reward collection":
+        print("state==battlepass reward collection")
         state = (
             state_battlepass_collection(logger)
             if "battlepass reward collection" in jobs
@@ -383,14 +392,18 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
         )
 
     elif state == "war":
+        print("state==war")
         state = state_war(logger) if "war" in jobs else "free_offer_collection"
 
     elif state == "free_offer_collection":
-        state = (
-            state_free_offer_collection(logger)
-            if "free offer collection" in jobs
-            else "clashmain"
-        )
+        print("state==free_offer_collection")
+
+        if "free_offer_collection" in jobs:
+            print("free offer collection is in jobs")
+            state = state_free_offer_collection(logger)
+        else:
+            print("free offer collection not in jobs")
+            state = "clashmain"
 
     return (state, ssid)
 
@@ -398,24 +411,29 @@ def debug_state_tree(logger, ssid_max, jobs, ssid, state):
 def do_debug_state_tree():
     state_restart(logger)
     jobs = [
-        "Open Chests",
-        "Fight",
-        "Request",
-        "Upgrade",
-        "Randomize Deck",
-        "card mastery collection",
-        "level up reward collection",
-        "battlepass reward collection",
-        "war",
+        # "Open Chests",
+        # "Fight",
+        # "Request",0.
+        # "Upgrade",
+        # "Randomize Deck",
+        # "card mastery collection",
+        # "level up reward collection",
+        # "battlepass reward collection",
+        # "war",
+        "free_offer_collection",
     ]
     ssid = 0
     state = "clashmain"
     while True:
+        print(state)
         state, ssid = debug_state_tree(
-            jobs=jobs, logger=logger, ssid_max=3, ssid=ssid, state=state
+            jobs=jobs, logger=logger, ssid_max=4, ssid=ssid, state=state
         )
 
 
 # show_image(screenshot())
 
 # memu_debug(logger)
+
+
+do_debug_state_tree()

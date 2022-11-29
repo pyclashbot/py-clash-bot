@@ -21,6 +21,7 @@ def collect_free_offer_from_shop(logger):
     logger.change_status("Collecting free offer from shop.")
 
     if not check_if_on_clash_main_menu():
+        print("Cant run collect_free_offer_from_shop() because not on main.")
         return "restart"
 
     # get to shop
