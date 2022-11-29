@@ -11,9 +11,10 @@ from pyclashbot.detection import (
 )
 from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
 from pyclashbot.memu.client import get_file_count, make_reference_image_list
+from pyclashbot.utils.logger import Logger
 
 ahk = AHK()
-
+logger = Logger()
 
 # page navigation methods
 def wait_for_clash_main_menu(logger):
@@ -102,7 +103,7 @@ def get_to_clan_page(logger):
 
         # handling infinite loop
         loops += 1
-        if loops > 25:
+        if loops > 7:
             logger.change_status("Could not get to clan page.")
             return "restart"
 
