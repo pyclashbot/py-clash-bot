@@ -115,7 +115,7 @@ class MouseMoveException(Exception):
         return self.message
 
 
-def click(x, y, duration: float = 1, max_attempts=3):
+def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
     """Method for clicking a given coordinate
 
     Args:
@@ -148,7 +148,9 @@ def click(x, y, duration: float = 1, max_attempts=3):
                 time.sleep(duration + tol)
                 ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
                 attempts += 1
-        ahk.click()
+        for _ in range(clicks):
+            ahk.click()
+            time.sleep(interval)
     except Exception:
         print("Click method caused a restart...")
         return "restart"
