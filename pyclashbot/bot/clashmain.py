@@ -442,45 +442,43 @@ def check_if_in_a_clan(logger):
     # Method to check if the current account has a clan
 
     # starts and ends on clash main
-    logger.change_status("Checking if in a clan.")
+    logger.change_status("Checking if in a clan")
 
-    # click clan tab
-    print("Clicking clan page")
-    click(308, 627)
+    # should be on main
+    if not check_if_on_clash_main_menu():
+        logger.change_status("Not on main menu so cant run check_if_in_a_clan()")
+        return "restart"
 
-    # handle war chest popup
-    if check_for_war_loot_menu():
-        print("Handling war chest popup")
-        handle_war_loot_menu()
+    # click profile
+    click(100, 130)
+    time.sleep(3)
 
-    # cycle through clan tab a few times
-    print("Cycle through clan tab a few times")
-    for _ in range(7):
-        handle_stuck_on_war_final_results_page()
-        click(280, 623)
-        time.sleep(0.33)
-        if check_for_war_loot_menu():
-            handle_war_loot_menu()
-    scroll_down()
-    time.sleep(1)
+    # get image array of flag where clan flag should be.
+    iar = numpy.asarray(screenshot())
+    pix_list = []
+    for x_coord in range(82, 97):
+        for y_coord in range(471, 481):
+            this_pixel = iar[y_coord][x_coord]
+            pix_list.append(this_pixel)
 
-    # get a pixel from this clan tab
-    pixel_1 = numpy.array(screenshot())[118][206]
+    # print this pixel list
+    # print_pix_list(pix_list)
 
-    # cycle tab again
-    click(280, 623)
-    time.sleep(1)
+    # if any of these pixels are NOT grey, we ARE in a clan. Else return False
+    is_in_a_clan = False
+    for pix in pix_list:
+        if not pixel_is_equal(pix, [50, 50, 50], tol=15):
+            print("Found a pixel that indicates we are in a clan")
+            is_in_a_clan = True
+    if not is_in_a_clan:
+        print("Found no pixels that indicate we are in a clan")
 
-    # get second pixel
-    pixel_2 = numpy.array(screenshot())[118][206]
+    # return to main after getting this information
+    logger.change_status("Returning to main menu")
+    click(363, 93)
+    wait_for_clash_main_menu(logger)
 
-    # if pixels aren't equal return True (in a clan because there are two
-    # available pages instead of one)
-    if not pixel_is_equal(pixel_1, pixel_2, tol=25):
-        logger.change_status("You're in a clan")
-        return True
-    logger.change_status("Not in a clan.")
-    return False
+    return is_in_a_clan
 
 
 def get_to_account(logger, account_number):
@@ -848,3 +846,52 @@ def find_switch_accouts_button():
 
     coord = get_first_location(locations)
     return None if coord is None else [coord[1], coord[0]]
+
+
+def handle_war_chest_obstruction(logger):
+    if check_for_war_chest_obstruction():
+        logger.change_status("Opening war chest.")
+        open_war_chest(logger)
+
+
+def check_for_war_chest_obstruction():
+    current_image = screenshot()
+    reference_folder = "check_for_war_chest_obstruction"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "check_for_war_chest_obstruction",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    return check_for_location(locations)
+
+
+def open_war_chest(logger):
+    # click chset
+    logger.change_status("Opening the war chest. . .")
+    click(210, 440)
+    time.sleep(1)
+
+    # open it
+    logger.change_status("Skipping through rewards. . .")
+    for n in range(15):
+        click(10, 220)
+    time.sleep(3)
+
+    # Click OK on war results page popup
+    print("Clicking OK on war results page popup")
+    click(205, 555)
+    for n in range(5):
+        print(
+            "Manual wait time after closing war results page popup after opening war chest:",
+            n,
+        )
+        time.sleep(1)
