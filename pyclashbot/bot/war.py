@@ -7,6 +7,7 @@ from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
     check_if_in_battle_with_delay,
     get_to_clash_main_from_clan_page,
+    handle_war_chest_obstruction,
 )
 from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
 from pyclashbot.memu import (
@@ -26,6 +27,11 @@ def handle_war_attacks(logger):
     logger.change_status("Checking if in a clan")
     if not check_if_in_a_clan(logger):
         logger.change_status("Not in a clan. Returning.")
+        if get_to_clash_main_from_clan_page() == "restart":
+            print(
+                "Failed to get back to clash main after finding no clan in handle_war_attacks()"
+            )
+            return "restart"
         return "clashmain"
 
     # get to war page
@@ -158,6 +164,7 @@ def get_to_war_page_from_main(logger):
 
     loops = 0
     while not check_if_on_war_page():
+        handle_war_chest_obstruction(logger)
         loops += 1
         if loops > 20:
             logger.change_status(
