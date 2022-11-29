@@ -78,7 +78,7 @@ def get_to_clash_main_from_clan_page(logger):
     while not on_main:
         print("Still not on main page. Cycling")
         loops += 1
-        if loops > 25:
+        if loops > 7:
             logger.change_status("Could not get to clash main from request page.")
             return "restart"
         click(208, 636)
