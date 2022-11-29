@@ -58,7 +58,7 @@ def collect_free_offer_from_shop(logger):
     time.sleep(2)
     if click_find_free_button_in_shop() != "fail":
         # implement logging for this later
-        pass
+        logger.add_free_offer_collection()
 
     # click deadspace
     for _ in range(4):
