@@ -193,6 +193,9 @@ def get_to_clash_main_from_card_page(logger):
         loops += 1
         if loops > 15:
             logger.change_status("Couldn't get to clash main from card page")
+            print(
+                "Failed getting to clash main from card page with get_to_clash_main_from_card_page()"
+            )
             return "restart"
         click(212, 623)
         time.sleep(1)

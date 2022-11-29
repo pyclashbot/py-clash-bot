@@ -63,6 +63,7 @@ def collect_level_up_rewards(logger):
 
     # should be on clash main at this point
     if not check_if_on_clash_main_menu():
+        print("not on main so cant run collect_level_up_rewards()")
         return "restart"
 
     # loop until the level up rewards icon on the main menu indicates there are no more rewards
@@ -70,6 +71,7 @@ def collect_level_up_rewards(logger):
         # loop counter
         loops += 1
         if loops > 20:
+            print("looped through check_if_has_level_up_rewards() too many times")
             return "restart"
 
         # click logo in top left
@@ -96,4 +98,7 @@ def collect_level_up_rewards(logger):
                 time.sleep(0.33)
             # if this didnt help getting to main then return restart
             if not check_if_on_clash_main_menu():
+                print(
+                    "check_if_has_level_up_rewards() didnt finish its loop on clash main. Restarting"
+                )
                 return "restart"
