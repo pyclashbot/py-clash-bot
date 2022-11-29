@@ -166,11 +166,12 @@ def state_tree(
         state = state_war(logger) if "war" in jobs else "free_offer_collection"
 
     elif state == "free_offer_collection":
-        state = (
-            state_free_offer_collection(logger)
-            if "free offer collection" in jobs
-            else "clashmain"
-        )
+        if "free offer collection" in jobs:
+            print("Should be running free offer collection")
+            state = state_free_offer_collection(logger)
+        else:
+            print("Skipping free offer collection")
+            state = "clashmain"
 
     return (state, ssid)
 
@@ -339,124 +340,124 @@ def state_request(logger) -> Literal["restart", "level up reward collection"]:
 
 
 ####### war
-def state_check_if_in_clan(logger):
-    # runs when state=="check_if_in_a_clan"
-    # if in a clan return get_to_war_page else return clashmain state
-    logger.change_status("Checking if in clan")
-    if not check_if_in_a_clan(logger):
-        logger.change_status("Not in clan")
-        return "clashmain"
-    return "get_to_war_page"
+# def state_check_if_in_clan(logger):
+#     # runs when state=="check_if_in_a_clan"
+#     # if in a clan return get_to_war_page else return clashmain state
+#     logger.change_status("Checking if in clan")
+#     if not check_if_in_a_clan(logger):
+#         logger.change_status("Not in clan")
+#         return "clashmain"
+#     return "get_to_war_page"
 
 
-def state_get_to_war_page_from_main(logger):
-    # runs when state=="get_to_war_page"
-    # if gets to main returns check_if_can_start_war_battle(), else returns "restart"
-    logger.change_status("Getting to war page")
-    if get_to_war_page_from_main(logger) == "restart":
-        logger.change_status("Failure getting to war page")
-        return "restart"
-    return "check_if_can_start_war_battle"
+# def state_get_to_war_page_from_main(logger):
+#     # runs when state=="get_to_war_page"
+#     # if gets to main returns check_if_can_start_war_battle(), else returns "restart"
+#     logger.change_status("Getting to war page")
+#     if get_to_war_page_from_main(logger) == "restart":
+#         logger.change_status("Failure getting to war page")
+#         return "restart"
+#     return "check_if_can_start_war_battle"
 
 
-def state_try_to_start_war_battle(logger):
-    # runs when state=="check_if_can_start_war_battle"
-    # returns:
-    # "made_deck_for_war" if cant start battle,
-    # "start_war_battle" if can start battle,
-    # "clashmain" if finding a war battle doesn't work,
-    # "restart" if failure somehow
+# def state_try_to_start_war_battle(logger):
+#     # runs when state=="check_if_can_start_war_battle"
+#     # returns:
+#     # "made_deck_for_war" if cant start battle,
+#     # "start_war_battle" if can start battle,
+#     # "clashmain" if finding a war battle doesn't work,
+#     # "restart" if failure somehow
 
-    # click a war battle
-    if click_war_icon() == "failed":
-        logger.change_status("Couldn't find a war battle. Returning.")
-        time.sleep(1)
-        if get_to_clash_main_from_clan_page(logger) == "restart":
-            return "restart"
-        return "clashmain"
+#     # click a war battle
+#     if click_war_icon() == "failed":
+#         logger.change_status("Couldn't find a war battle. Returning.")
+#         time.sleep(1)
+#         if get_to_clash_main_from_clan_page(logger) == "restart":
+#             return "restart"
+#         return "clashmain"
 
-    # click deadspace to get rid of the pop up
-    for _ in range(5):
-        click(220, 290)
+#     # click deadspace to get rid of the pop up
+#     for _ in range(5):
+#         click(220, 290)
 
-    # if you dont have a random deck, make one
-    if not check_if_has_a_deck_for_this_war_battle():
-        logger.change_status("Making a random deck for this war battle.")
-        make_a_random_deck_for_this_war_battle()
+#     # if you dont have a random deck, make one
+#     if not check_if_has_a_deck_for_this_war_battle():
+#         logger.change_status("Making a random deck for this war battle.")
+#         make_a_random_deck_for_this_war_battle()
 
-    # if you dont have a random deck this time, return to clash main
-    if not check_if_has_a_deck_for_this_war_battle():
-        logger.change_status("Battle must not be available. Returning to clash main.")
-        return "clash main"
+#     # if you dont have a random deck this time, return to clash main
+#     if not check_if_has_a_deck_for_this_war_battle():
+#         logger.change_status("Battle must not be available. Returning to clash main.")
+#         return "clash main"
 
-    return "start_war_battle"
-
-
-def state_start_war_battle():
-    # runs if state=="start_war_battle"
-    # returns "waiting_for_war_battle_to_start"
-    click(280, 445)
-    time.sleep(5)
-    return "waiting_for_war_battle_to_start"
+#     return "start_war_battle"
 
 
-def state_wait_for_war_battle(logger):
-    # runs if state=="waiting_for_war_battle_to_start"
-    # returns "do_war_battle" if waiting is successfully over, returns "restart" if failure.
-    if wait_for_war_battle_loading(logger) == "restart":
-        logger.change_status(
-            "Waiting for war battle loading took too long. Restarting."
-        )
-        return "restart"
-    return "do_war_battle"
+# def state_start_war_battle():
+#     # runs if state=="start_war_battle"
+#     # returns "waiting_for_war_battle_to_start"
+#     click(280, 445)
+#     time.sleep(5)
+#     return "waiting_for_war_battle_to_start"
 
 
-def state_do_war_battle(logger, loops=0):
-    logger.change_status(f"Doing war battle. Loop#: {loops}")
-    # runs if state=="do_war_battle"
-    # returns "leave_war_battle" if successfully done,
-    # returns "do_war_battle" if still fighting,
-
-    # click random card
-    click(random.randint(125, 355), 585)
-    time.sleep(1)
-
-    # click random placement
-    click(random.randint(70, 355), random.randint(320, 490))
-    time.sleep(1)
-
-    return "do_war_battle" if check_if_in_battle_with_delay() else "leave_war_battle"
+# def state_wait_for_war_battle(logger):
+#     # runs if state=="waiting_for_war_battle_to_start"
+#     # returns "do_war_battle" if waiting is successfully over, returns "restart" if failure.
+#     if wait_for_war_battle_loading(logger) == "restart":
+#         logger.change_status(
+#             "Waiting for war battle loading took too long. Restarting."
+#         )
+#         return "restart"
+#     return "do_war_battle"
 
 
-def state_leave_end_of_war_battle_page(logger):
-    # runs if state=="leave_war_battle"
-    # returns "get_to_clash_main_from_war_page" if successful
-    # returns "restart" if failure
+# def state_do_war_battle(logger, loops=0):
+#     logger.change_status(f"Doing war battle. Loop#: {loops}")
+#     # runs if state=="do_war_battle"
+#     # returns "leave_war_battle" if successfully done,
+#     # returns "do_war_battle" if still fighting,
 
-    # manual wait
-    for n in range(15):
-        logger.change_status(f"Manual wait for end battle...{n}")
+#     # click random card
+#     click(random.randint(125, 355), 585)
+#     time.sleep(1)
 
-    # exit battle
-    logger.change_status("Exiting war battle")
-    click(215, 585)
-    logger.add_war_battle_fought()
+#     # click random placement
+#     click(random.randint(70, 355), random.randint(320, 490))
+#     time.sleep(1)
 
-    return "get_to_clash_main_from_war_page"
+#     return "do_war_battle" if check_if_in_battle_with_delay() else "leave_war_battle"
 
 
-def state_get_to_clash_main_from_war_page(logger):
-    # runs if state=="get_to_clash_main_from_war_page"
-    # returns "restart" if failure
-    # returns "clashmain" if successful
+# def state_leave_end_of_war_battle_page(logger):
+#     # runs if state=="leave_war_battle"
+#     # returns "get_to_clash_main_from_war_page" if successful
+#     # returns "restart" if failure
 
-    for n in range(15):
-        logger.change_status(f"Manual wait for clash main...{n}")
-    # get to clash main
-    if get_to_clash_main_from_clan_page(logger) == "restart":
-        logger.change_status("Failed getting to clash main from clan page")
-        return "restart"
-    return "clashmain"
+#     # manual wait
+#     for n in range(15):
+#         logger.change_status(f"Manual wait for end battle...{n}")
+
+#     # exit battle
+#     logger.change_status("Exiting war battle")
+#     click(215, 585)
+#     logger.add_war_battle_fought()
+
+#     return "get_to_clash_main_from_war_page"
+
+
+# def state_get_to_clash_main_from_war_page(logger):
+#     # runs if state=="get_to_clash_main_from_war_page"
+#     # returns "restart" if failure
+#     # returns "clashmain" if successful
+
+#     for n in range(15):
+#         logger.change_status(f"Manual wait for clash main...{n}")
+#     # get to clash main
+#     if get_to_clash_main_from_clan_page(logger) == "restart":
+#         logger.change_status("Failed getting to clash main from clan page")
+#         return "restart"
+#     return "clashmain"
 
 
 ####### battlepass collection
