@@ -31,11 +31,15 @@ def request_random_card_from_clash_main(logger):
     if not check_if_in_a_clan(logger):
         logger.change_status("Skipping request because we are not in a clan.")
         if get_to_clash_main_from_clan_page(logger) == "restart":
-            logger.change_status("failure getting to clash main from clan page")
+            logger.change_status(
+                "failure getting to clash main from clan page in request_random_card_from_clash_main()"
+            )
             return "restart"
         return None
     if get_to_clash_main_from_clan_page(logger) == "restart":
-        logger.change_status("failure getting to clash main from card page")
+        logger.change_status(
+            "failure getting to clash main from card page in request_random_card_from_clash_main()"
+        )
         return "restart"
     time.sleep(1)
 
@@ -45,7 +49,9 @@ def request_random_card_from_clash_main(logger):
     if not check_if_can_request(logger):
         logger.change_status("Request isn't available.")
         if get_to_clash_main_from_clan_page(logger) == "restart":
-            logger.change_status("failure getting to clash main from clan page")
+            logger.change_status(
+                "failure getting to clash main from clan page in request_random_card_from_clash_main()"
+            )
             return "restart"
         return None
 
@@ -56,17 +62,23 @@ def request_random_card_from_clash_main(logger):
     # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
     maximum_scrolls = count_maximum_request_scrolls(logger)
     if maximum_scrolls == "restart":
-        logger.change_status("failure with max scrolls")
+        logger.change_status(
+            "failure with max scrolls in request_random_card_from_clash_main()"
+        )
         return "restart"
 
     # request a random card (starts on requestable cards page, ends on clan chat page)
     if request_random_card(logger, maximum_scrolls=maximum_scrolls) == "restart":
-        logger.change_status("failed requesting random card")
+        logger.change_status(
+            "failed requesting random card in request_random_card_from_clash_main()"
+        )
         return "restart"
 
     # get back to clash main
     if get_to_clash_main_from_clan_page(logger) == "restart":
-        logger.change_status("failed getting to clash main from clan page")
+        logger.change_status(
+            "failed getting to clash main from clan page in request_random_card_from_clash_main()"
+        )
         return "restart"
     return None
 
@@ -88,7 +100,9 @@ def request_random_card(logger, maximum_scrolls=10):
     while not has_card_to_request:
         loops += 1
         if loops > 25:
-            logger.change_status("Could not find a card to request.")
+            logger.change_status(
+                "Could not find a card to request in request_random_card()"
+            )
             return "restart"
         # click random coord in region of card selection
         click(Random().randint(72, 343), Random().randint(264, 570))
@@ -130,7 +144,7 @@ def look_for_request_button():
 def check_if_can_request(logger):
     # Get to clan page
     if get_to_clan_page(logger) == "restart":
-        logger.change_status("failed getting to clan page")
+        logger.change_status("failed getting to clan page in check_if_can_request()")
         return "restart"
     time.sleep(1)
 
@@ -160,6 +174,11 @@ def check_for_request_icon_on_clan_page():
 def count_maximum_request_scrolls(logger):
     logger.change_status("Counting maximum request scrolls for the random scroling.")
 
+    # get to the top of this page
+    # b/c on epic sunday it automatically scrolls sorta halfway down to show the epic cards.
+    for _ in range(10):
+        scroll_up_super_fast()
+
     # count scrolls
     scrolls = 0
 
@@ -168,7 +187,9 @@ def count_maximum_request_scrolls(logger):
     while check_if_can_still_scroll_in_request_page():
         loops += 1
         if loops > 35:
-            logger.change_status("Failed counting maximum scrolls in request page.")
+            logger.change_status(
+                "Failed counting maximum scrolls in request page in count_maximum_request_scrolls()"
+            )
             return "restart"
         scroll_down_super_fast()
         scrolls += 1
