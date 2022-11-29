@@ -590,16 +590,14 @@ def start_2v2(logger):
 
 
 def open_chests(logger):
-    # unlock coord (210, 455)
-    # chest 1 coord (78, 554)
-    # chest 2 coord (162,549)
-    # chest 3 coord (263,541)
-    # chest 4 coord (349 551)
-    # dead space coord (20, 556)
-    # check_if_unlock_chest_button_exists()
     logger.change_status("Opening chests")
 
-    chest_coord_list = [[78, 554], [162, 549], [263, 541], [349, 551]]
+    chest_coord_list = [
+        [78, 554],
+        [162, 549],
+        [263, 541],
+        [349, 551],
+    ]
 
     chest_index = 0
     for chest_coord in chest_coord_list:
@@ -614,10 +612,7 @@ def open_chests(logger):
             logger.add_chest_unlocked()
             click(210, 465)
         else:
-            # logger.change_status("Handling possibility of rewards screen")
-            for _ in range(10):
-                ahk.click(20, 556)
-                time.sleep(0.33)
+            click(20, 556, clicks=10, interval=0.33)
 
         # close chest menu
         click(20, 556)
