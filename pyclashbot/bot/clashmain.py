@@ -891,3 +891,7 @@ def open_war_chest(logger):
             n,
         )
         time.sleep(1)
+
+    # increment logger
+    print("Incrementing war chest collection counter.")
+    logger.add_war_chest_collection()
