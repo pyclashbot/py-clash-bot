@@ -433,7 +433,13 @@ def do_debug_state_tree():
 
 # show_image(screenshot())
 
-# memu_debug(logger)
+# do_debug_state_tree()
+
+
+memu_debug(logger)
+
+
+do_debug_state_tree()
 
 
 do_debug_state_tree()
