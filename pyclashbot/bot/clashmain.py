@@ -26,7 +26,9 @@ def wait_for_clash_main_menu(logger):
         # loop count
         loops += 1
         if loops > 25:
-            logger.change_status("Looped through getting to clash main too many times")
+            logger.change_status(
+                "Looped through wait_for_clash_main_menu too many times"
+            )
             return "restart"
 
         # wait 1 sec
@@ -569,11 +571,14 @@ def start_2v2(logger):
 
     # if not on clash main at this point then this failed
     if not check_if_on_clash_main_menu():
+        print("Not on clash main so cant run start_2v2()")
         return "restart"
 
     # getting to party tab
+    print("Clicking options hamburber icon in clash main to get to party mode")
     click(365, 108)
     time.sleep(1)
+    print("Clicking party mode in the options list")
     click(263, 248)
     time.sleep(1)
 
