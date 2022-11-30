@@ -115,7 +115,7 @@ def get_to_clash_main_from_card_page(logger):
 
     # get to card page
     click(240, 627)
-    time.sleep(1)
+    time.sleep(2)
 
     loops = 0
     while not check_if_on_clash_main_menu():
