@@ -72,7 +72,10 @@ progress_stats_titles = [
         sg.Text("Account Switches: "),
     ],
     [
-        sg.Text("Restarts: "),
+        sg.Text("Automatic Restarts: "),
+    ],
+    [
+        sg.Text("Restarts b/c Failure: "),
     ],
 ]
 
@@ -90,7 +93,10 @@ progress_stats_values = [
         stat_box("account_switches"),
     ],
     [
-        stat_box("restarts"),
+        stat_box("auto_restarts"),
+    ],
+    [
+        stat_box("restarts_after_failure"),
     ],
 ]
 

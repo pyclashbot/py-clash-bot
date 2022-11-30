@@ -140,7 +140,8 @@ def restart_and_open_clash(logger: Logger):
     if first_run:
         first_run = False
     else:
-        logger.add_restart()
+        # logger.add_restart()
+        pass
 
 
 def start_clash_royale(logger: Logger, vm_index):
