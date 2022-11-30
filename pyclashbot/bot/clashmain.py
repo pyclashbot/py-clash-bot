@@ -895,3 +895,21 @@ def open_war_chest(logger):
     # increment logger
     print("Incrementing war chest collection counter.")
     logger.add_war_chest_collection()
+
+
+def get_to_clash_main_from_card_page(logger):
+    # logger.change_status("Getting to Clash main menu from card page")
+
+    # get to card page
+    click(240, 627)
+    time.sleep(2)
+
+    loops = 0
+    while not check_if_on_clash_main_menu():
+        if loops > 15:
+            logger.change_status("Couldn't get to Clash main menu from card page")
+            return "restart"
+
+        # if not on menu at this point cycle the screen off trophy progression page and back on
+        click(212, 637)
+        time.sleep(1)
