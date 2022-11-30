@@ -15,11 +15,14 @@ class WorkerThread(PausableThread):
             jobs, ssid_max = self.args  # parse thread args
             ssid = 0  # start ssid at 0
             state = detect_state(self.logger)
+            restart_log = []
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
                 # perform state transition
-                (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
+                (state, ssid, restart_log) = state_tree(
+                    jobs, self.logger, ssid_max, ssid, state, restart_log
+                )
                 while self.pause_flag.is_set():
                     time.sleep(0.1)  # sleep for 100ms until pause flag is unset
         except Exception as e:  # pylint: disable=broad-except
