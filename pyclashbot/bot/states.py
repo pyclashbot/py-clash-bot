@@ -154,7 +154,7 @@ def state_tree(
         # run restart state
         state = state_restart(logger)
 
-    elif state == "autorestart":
+    elif state == "auto_restart":
         logger.change_status("Doing automatic hourly restart. . .")
 
         # append this time to the list of restart times
@@ -198,7 +198,7 @@ def state_tree(
         if difference > 3600:
             state_free_offer_collection(logger)
             print("FORCING AN AUTO RESTART BECAUSE ITS BEEN ", difference, " SECONDS")
-            return "restart"
+            return "auto_restart"
 
         elif "free offer collection" in jobs:
             print("Should be running free offer collection")
