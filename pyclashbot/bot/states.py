@@ -11,6 +11,7 @@ from pyclashbot.bot.clashmain import (
     check_if_on_first_card_page,
     get_to_account,
     get_to_card_page,
+    get_to_clash_main_from_card_page,
     get_to_clash_main_from_clan_page,
     handle_card_mastery_notification,
     open_chests,
