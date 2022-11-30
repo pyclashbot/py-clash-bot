@@ -142,13 +142,29 @@ def state_tree(
         )
 
     elif state == "restart":
+        logger.change_status("Restarting because bot failed at some point. . .")
+
         # append this time to the list of restart times
         this_time = int(time.time())
         restart_log.append(this_time)
-        print("added ", this_time, " to restart log.")
-        for restart_time in restart_log:
-            print(restart_time)
+
+        # increment the restart_after_failure counter
+        logger.add_restart_after_failure()
+
         # run restart state
+        state = state_restart(logger)
+
+    elif state == "autorestart":
+        logger.change_status("Doing automatic hourly restart. . .")
+
+        # append this time to the list of restart times
+        this_time = int(time.time())
+        restart_log.append(this_time)
+
+        # increment auto restart counter
+        logger.add_auto_restart()
+
+        # restart
         state = state_restart(logger)
 
     elif state == "card mastery collection":
@@ -243,10 +259,14 @@ def state_restart(logger) -> Literal["clashmain"]:
     # Method for the restart state of the program
 
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
-    # clear_log()
+
+    # increment fail restart counter
+
+    # orientate gui
     orientate_terminal()
     logger.change_status("Restarting")
 
+    # restart until it works, then return 'clashmain' as the next state
     if restart_and_open_clash(logger) == "restart":
         restart_and_open_clash(logger)
     return "clashmain"
