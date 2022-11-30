@@ -30,10 +30,7 @@ from pyclashbot.bot.fight import (
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.request import request_random_card_from_clash_main
-from pyclashbot.bot.upgrade import (
-    get_to_clash_main_from_card_page,
-    upgrade_current_cards,
-)
+from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import (
     check_if_has_a_deck_for_this_war_battle,
     click_war_icon,
