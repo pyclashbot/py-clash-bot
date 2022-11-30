@@ -181,28 +181,6 @@ def upgrade_current_cards(logger):
             upgrade_card(logger, index)
 
 
-def get_to_clash_main_from_card_page(logger):
-    # Method to get to the clash royale main menu screen from the card page
-
-    logger.change_status("Getting to clash main from card page")
-    click(250, 630)
-    loops = 0
-
-    on_clash_main = check_for_gem_logo_on_main()
-    while not on_clash_main:
-        loops += 1
-        if loops > 15:
-            logger.change_status("Couldn't get to clash main from card page")
-            print(
-                "Failed getting to clash main from card page with get_to_clash_main_from_card_page()"
-            )
-            return "restart"
-        click(212, 623)
-        time.sleep(1)
-        on_clash_main = check_for_gem_logo_on_main()
-    logger.change_status("Got to clash main from card page")
-
-
 def find_card_page_logo():
     # Method to find the card page logo in the icon list in the bottom of the
     # screen when on clash main
