@@ -90,8 +90,13 @@ def detect_state(logger):
 
 
 def state_tree(
-    jobs: list[str], logger: Logger, ssid_max: int, ssid: int, state: str
-) -> tuple[str, int]:
+    jobs: list[str],
+    logger: Logger,
+    ssid_max: int,
+    ssid: int,
+    state: str,
+    restart_log: list[int],
+) -> tuple[str, int, list[int]]:
     """
     Method for the state tree of the program
 
@@ -137,6 +142,13 @@ def state_tree(
         )
 
     elif state == "restart":
+        # append this time to the list of restart times
+        this_time = int(time.time())
+        restart_log.append(this_time)
+        print("added ", this_time, " to restart log.")
+        for restart_time in restart_log:
+            print(restart_time)
+        # run restart state
         state = state_restart(logger)
 
     elif state == "card mastery collection":
@@ -164,14 +176,22 @@ def state_tree(
         state = state_war(logger) if "war" in jobs else "free_offer_collection"
 
     elif state == "free_offer_collection":
-        if "free offer collection" in jobs:
+        # if this time - most recent time in restart_log is more than an hour, always pass to restart
+        difference = abs(int(time.time()) - restart_log[-1])
+        print("Its been", difference, " seconds since the last restart.")
+        if difference > 3600:
+            state_free_offer_collection(logger)
+            print("FORCING AN AUTO RESTART BECAUSE ITS BEEN ", difference, " SECONDS")
+            return "restart"
+
+        elif "free offer collection" in jobs:
             print("Should be running free offer collection")
             state = state_free_offer_collection(logger)
         else:
             print("Skipping free offer collection")
             state = "clashmain"
 
-    return (state, ssid)
+    return (state, ssid, restart_log)
 
 
 def state_free_offer_collection(logger) -> Literal["restart", "clashmain"]:
