@@ -117,6 +117,10 @@ def state_tree(
         # Increment account number, loop back to 0 if it's ssid_max
         ssid = ssid + 1 if ssid < ssid_max else 0
 
+    elif state == "intro":
+        print("RUNNING INTRO STATE")
+        state = state_restart(logger)
+
     elif state == "startfight":
         state = (
             state_startfight(logger, random_deck="Randomize Deck" in jobs)
@@ -143,10 +147,6 @@ def state_tree(
     elif state == "restart":
         logger.change_status("Restarting because bot failed at some point. . .")
 
-        # append this time to the list of restart times
-        this_time = int(time.time())
-        logger.change_most_recent_restart_time(this_time)
-
         # increment the restart_after_failure counter
         logger.add_restart_after_failure()
 
@@ -155,10 +155,6 @@ def state_tree(
 
     elif state == "auto_restart":
         logger.change_status("Doing automatic hourly restart. . .")
-
-        # append this time to the list of restart times
-        this_time = int(time.time())
-        logger.change_most_recent_restart_time(this_time)
 
         # increment auto restart counter
         logger.add_auto_restart()
@@ -256,23 +252,23 @@ def state_card_mastery_collection(logger) -> Literal["restart", "request"]:
     return "request"
 
 
-def state_restart(logger) -> Literal["clashmain"]:
+def state_restart(logger) -> Literal["clashmain", "restart"]:
     # Method for the restart state of the program
 
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
 
-    # increment fail restart counter
-    logger.add_restart_after_failure()
+    # update most recent restart time
+    logger.change_most_recent_restart_time(int(time.time()))
 
-    # orientate gui
+    # orietate gui
     orientate_terminal()
     logger.change_status("Restarting")
 
     # restart until it works, then return 'clashmain' as the next state
     if restart_and_open_clash(logger) == "restart":
-        logger.add_restart_after_failure()
-        restart_and_open_clash(logger)
-    return "clashmain"
+        return "restart"
+    else:
+        return "clashmain"
 
 
 def state_clashmain(
