@@ -57,6 +57,7 @@ class Logger:
 
         self.auto_restarts = 0
         self.restarts_after_failure = 0
+        self.most_recent_restart_time = 0
 
         self.chests_unlocked = 0
         self.cards_played = 0
@@ -336,9 +337,14 @@ class Logger:
     @_updates_log
     def add_auto_restart(self):
         """add request to log"""
-        self.requests += 1
+        self.auto_restarts += 1
 
     @_updates_log
     def add_restart_after_failure(self):
         """add request to log"""
-        self.requests += 1
+        self.restarts_after_failure += 1
+
+    @_updates_log
+    def change_most_recent_restart_time(self, time):
+        """add request to log"""
+        self.most_recent_restart_time = time
