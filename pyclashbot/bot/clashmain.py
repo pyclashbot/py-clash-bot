@@ -469,7 +469,7 @@ def check_if_in_a_clan(logger):
     is_in_a_clan = False
     for pix in pix_list:
         if not pixel_is_equal(pix, [50, 50, 50], tol=15):
-            print("Found a pixel that indicates we are in a clan")
+            # print("Found a pixel that indicates we are in a clan")
             is_in_a_clan = True
     if not is_in_a_clan:
         print("Found no pixels that indicate we are in a clan")
