@@ -95,8 +95,7 @@ def state_tree(
     ssid_max: int,
     ssid: int,
     state: str,
-    restart_log: list[int],
-) -> tuple[str, int, list[int]]:
+) -> tuple[str, int]:
     """
     Method for the state tree of the program
 
@@ -146,7 +145,7 @@ def state_tree(
 
         # append this time to the list of restart times
         this_time = int(time.time())
-        restart_log.append(this_time)
+        logger.change_most_recent_restart_time(this_time)
 
         # increment the restart_after_failure counter
         logger.add_restart_after_failure()
@@ -159,7 +158,7 @@ def state_tree(
 
         # append this time to the list of restart times
         this_time = int(time.time())
-        restart_log.append(this_time)
+        logger.change_most_recent_restart_time(this_time)
 
         # increment auto restart counter
         logger.add_auto_restart()
@@ -193,9 +192,11 @@ def state_tree(
 
     elif state == "free_offer_collection":
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
-        difference = abs(int(time.time()) - restart_log[-1])
+        this_time = time.time()
+        difference = abs(logger.most_recent_restart_time - this_time)
+
         print("Its been", difference, " seconds since the last restart.")
-        if difference > 3:
+        if difference > 3600:
             state_free_offer_collection(logger)
             print("FORCING AN AUTO RESTART BECAUSE ITS BEEN ", difference, " SECONDS")
             state = "auto_restart"
@@ -207,7 +208,7 @@ def state_tree(
             print("Skipping free offer collection")
             state = "clashmain"
 
-    return (state, ssid, restart_log)
+    return (state, ssid)
 
 
 def state_free_offer_collection(logger) -> Literal["restart", "clashmain"]:
