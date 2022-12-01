@@ -198,7 +198,7 @@ def state_tree(
         if difference > 3600:
             state_free_offer_collection(logger)
             print("FORCING AN AUTO RESTART BECAUSE ITS BEEN ", difference, " SECONDS")
-            return "auto_restart"
+            state = "auto_restart"
 
         elif "free offer collection" in jobs:
             print("Should be running free offer collection")
@@ -261,6 +261,7 @@ def state_restart(logger) -> Literal["clashmain"]:
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
 
     # increment fail restart counter
+    logger.add_restart_after_failure()
 
     # orientate gui
     orientate_terminal()
@@ -268,6 +269,7 @@ def state_restart(logger) -> Literal["clashmain"]:
 
     # restart until it works, then return 'clashmain' as the next state
     if restart_and_open_clash(logger) == "restart":
+        logger.add_restart_after_failure()
         restart_and_open_clash(logger)
     return "clashmain"
 
