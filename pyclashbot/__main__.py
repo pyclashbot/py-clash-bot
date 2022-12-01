@@ -73,7 +73,7 @@ def load_last_settings(window):
 
 
 def start_button_event(logger: Logger, window, values):
-    logger.change_status("Starting")
+    logger.change_status("Start Button Event")
 
     for key in disable_keys:
         window[key].update(disabled=True)

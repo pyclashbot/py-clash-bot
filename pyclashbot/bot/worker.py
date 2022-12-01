@@ -11,13 +11,19 @@ class WorkerThread(PausableThread):
         self.logger = logger
 
     def run(self):
+        loops = 0
+
         try:
             jobs, ssid_max = self.args  # parse thread args
             ssid = 0  # start ssid at 0
-            state = detect_state(self.logger)
+            state = "intro"
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
+
+                loops += 1
+                print("----------------------\nSTATE LOOPS", loops)
+
                 # perform state transition
                 (state, ssid) = state_tree(jobs, self.logger, ssid_max, ssid, state)
                 while self.pause_flag.is_set():
