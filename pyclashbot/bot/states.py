@@ -195,7 +195,7 @@ def state_tree(
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
         difference = abs(int(time.time()) - restart_log[-1])
         print("Its been", difference, " seconds since the last restart.")
-        if difference > 3600:
+        if difference > 3:
             state_free_offer_collection(logger)
             print("FORCING AN AUTO RESTART BECAUSE ITS BEEN ", difference, " SECONDS")
             state = "auto_restart"
