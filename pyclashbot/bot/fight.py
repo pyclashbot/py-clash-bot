@@ -15,6 +15,7 @@ from pyclashbot.bot.clashmain import (
     check_if_in_battle_with_delay,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.deck import check_if_pixel_is_grey
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
@@ -64,6 +65,10 @@ def wait_until_has_6_elixer(logger):
     logger.change_status("Waiting for 6 elixer")
     loops = 0
     while not has_6:
+        if check_if_all_cards_are_available():
+            logger.log("All cards are available. Making a play")
+            break
+
         loops += 1
         if loops > 250:
             logger.change_status("Waited too long to get to 6 elixer. Restarting.")
@@ -371,3 +376,112 @@ def pick_a_lane():
     # return "right" if lane_ratio[1] > lane_ratio[0] else "left"
 
     return "random"
+
+
+##### to sort
+def check_if_card_1_is_available():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[560][120],
+        iar[580][135],
+        iar[610][165],
+    ]
+
+    grey_bool_list = []
+    for pix in pix_list:
+        grey_bool = check_if_pixel_is_grey(pix)
+        grey_bool_list.append(grey_bool)
+
+    is_available = False
+    for is_grey in grey_bool_list:
+        if not is_grey:
+            is_available = True
+
+    return is_available
+
+
+def check_if_card_2_is_available():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[565][185],
+        iar[585][195],
+        iar[595][210],
+        iar[610][230],
+    ]
+
+    grey_bool_list = []
+    for pix in pix_list:
+        grey_bool = check_if_pixel_is_grey(pix)
+        grey_bool_list.append(grey_bool)
+
+    # print(grey_bool_list)
+
+    is_available = False
+    for is_grey in grey_bool_list:
+        if not is_grey:
+            is_available = True
+
+    return is_available
+
+
+def check_if_card_3_is_available():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[565][250],
+        iar[585][265],
+        iar[595][285],
+        iar[610][300],
+    ]
+
+    grey_bool_list = []
+    for pix in pix_list:
+        grey_bool = check_if_pixel_is_grey(pix)
+        grey_bool_list.append(grey_bool)
+
+    # print(grey_bool_list)
+
+    is_available = False
+    for is_grey in grey_bool_list:
+        if not is_grey:
+            is_available = True
+
+    return is_available
+
+
+def check_if_card_4_is_available():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[565][320],
+        iar[585][335],
+        iar[595][350],
+        iar[610][365],
+    ]
+
+    grey_bool_list = []
+    for pix in pix_list:
+        grey_bool = check_if_pixel_is_grey(pix)
+        grey_bool_list.append(grey_bool)
+
+    # print(grey_bool_list)
+
+    is_available = False
+    for is_grey in grey_bool_list:
+        if not is_grey:
+            is_available = True
+
+    return is_available
+
+
+def check_available_cards():
+    available_cards_return = [False, False, False, False]
+    available_cards_return[0] = check_if_card_1_is_available()
+    available_cards_return[1] = check_if_card_2_is_available()
+    available_cards_return[2] = check_if_card_3_is_available()
+    available_cards_return[3] = check_if_card_4_is_available()
+
+    return available_cards_return
+
+
+def check_if_all_cards_are_available():
+    available_cards = check_available_cards()
+    return all(available_cards)
