@@ -131,6 +131,7 @@ def restart_and_open_clash(logger: Logger):
     # Method for restarting (and starting) Memu, opening clash, and
     # waiting for the clash main menu to appear.
 
+    close_memu()
     vm_index = restart_memu(logger)
     start_clash_royale(logger, vm_index)
     time.sleep(10)
@@ -142,6 +143,15 @@ def restart_and_open_clash(logger: Logger):
     else:
         # logger.add_restart()
         pass
+
+
+def close_memu():
+    try:
+        memu_window = pygetwindow.getWindowsWithTitle("(pyclashbot)")[0]
+        memu_window.close()
+        time.sleep(3)
+    except:
+        print("Couldn't close memu b/c couldn't find it's window")
 
 
 def start_clash_royale(logger: Logger, vm_index):
