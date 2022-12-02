@@ -115,7 +115,11 @@ def state_tree(
         )
 
         # Increment account number, loop back to 0 if it's ssid_max
-        ssid = ssid + 1 if ssid < ssid_max else 0
+        ssid = ssid + 1 if ssid < (ssid_max - 1) else 0
+
+        # if ssid==ssid_max:
+        #     ssid=0
+        # else:ssid+=1
 
     elif state == "intro":
         print("RUNNING INTRO STATE")
