@@ -779,18 +779,22 @@ def handle_card_mastery_notification():
 
 def handle_war_loot_menu():
     # open chest
+    print("Opening war chest")
     click(205, 410)
     time.sleep(1)
+
     # click dead space to skip thru chest
-    for _ in range(15):
-        click(20, 440)
-        time.sleep(0.1)
+    print("Skipping thru war chest rewards")
+    click(20, 440, clicks=20, interval=0.1)
+    time.sleep(1)
 
-    # click OK
-    click(215, 550)
-    time.sleep(0.5)
+    # # click OK
+    # print("Clicking OK after war chest or something")
+    # click(215, 550)
+    # time.sleep(0.5)
 
-    scroll_down()
+    # print("Scrolling down idk why")
+    # scroll_down()
 
 
 def handle_stuck_on_war_final_results_page():
