@@ -59,22 +59,24 @@ def collect_card_mastery_rewards(logger):
         return "restart"
 
     # click mastery reward button
+    print("Clicking mastery button")
     click(257, 505)
     time.sleep(1)
 
     # click topleft most card in card mastery reward list
+    print("Clicking first card in mastery reward table")
     click(104, 224)
     time.sleep(1)
 
     # click all reward regions
+    print("Clicking various reward locations")
     for coord in reward_coords:
         click(coord[0], coord[1])
         time.sleep(1)
 
     # click dead space
-    for _ in range(12):
-        click(20, 400)
-        time.sleep(0.1)
+    print("Clicking dead space")
+    click(20, 400, clicks=20, interval=0.1)
 
     # get back to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
