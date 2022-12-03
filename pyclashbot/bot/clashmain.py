@@ -73,7 +73,7 @@ def get_to_clash_main_from_clan_page(logger):
     print("getting to main from clan page")
     # Method to return to clash main menu from request page
     click(172, 612)
-    time.sleep(2)
+    time.sleep(3)
     on_main = check_for_gem_logo_on_main()
     loops = 0
     while not on_main:
@@ -91,7 +91,7 @@ def get_to_clan_page(logger):
     # method to get to clan chat page from clash main
     print("getting to clan chat page.")
     click(312, 629)
-    time.sleep(2)
+    time.sleep(3)
     on_clan_chat_page = check_if_on_clan_page()
     loops = 0
     while not on_clan_chat_page:
@@ -949,7 +949,7 @@ def get_to_clash_main_from_card_page(logger):
 
     # get to card page
     click(240, 627)
-    time.sleep(2)
+    time.sleep(3)
 
     loops = 0
     while not check_if_on_clash_main_menu():
