@@ -24,43 +24,41 @@ def request_random_card_from_clash_main(logger):
     # Starts on clash main ends on clash main
 
     # handle card mastery notification because it coveres the request button
+    print("Handling card mastery notification before requesting b/c obstruction.")
     handle_card_mastery_notification()
 
     # Return if not in clan (starts on main, ends on main)
     logger.change_status("Checking if you're in a clan.")
     if not check_if_in_a_clan(logger):
         logger.change_status("Skipping request because we are not in a clan.")
-        if get_to_clash_main_from_clan_page(logger) == "restart":
-            logger.change_status(
-                "failure getting to clash main from clan page in request_random_card_from_clash_main()"
-            )
-            return "restart"
-        return None
-    if get_to_clash_main_from_clan_page(logger) == "restart":
-        logger.change_status(
-            "failure getting to clash main from card page in request_random_card_from_clash_main()"
-        )
-        return "restart"
+        return
     time.sleep(1)
 
     # Return if request is not available (Starts on main, ends on clan page)
     time.sleep(1)
     logger.change_status("Checking if request is available.")
+    # check_if_can_request gets to clan page and checks
     if not check_if_can_request(logger):
         logger.change_status("Request isn't available.")
+        # if request isnt available, go back to main and return
         if get_to_clash_main_from_clan_page(logger) == "restart":
             logger.change_status(
                 "failure getting to clash main from clan page in request_random_card_from_clash_main()"
             )
             return "restart"
         return None
+    else:
+        print("Request IS available.")
 
     # Click request button (getting to page of requestable cards)
+    print("Clicking request button.")
     click(75, 565)
     time.sleep(1)
 
     # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
+    print("Counting maximum scrolls in request page.")
     maximum_scrolls = count_maximum_request_scrolls(logger)
+    print("maximum scrolls in request page is", maximum_scrolls)
     if maximum_scrolls == "restart":
         logger.change_status(
             "failure with max scrolls in request_random_card_from_clash_main()"
@@ -90,6 +88,7 @@ def request_random_card(logger, maximum_scrolls=10):
     logger.change_status("Requesting a random card.")
 
     # scroll down for randomness
+    print("Scrolling randomly with maximum scrolls of ", maximum_scrolls)
     for _ in range(maximum_scrolls):
         scroll_down_super_fast()
 
@@ -112,6 +111,8 @@ def request_random_card(logger, maximum_scrolls=10):
         request_button_coord = look_for_request_button()
 
         if request_button_coord is not None:
+            print("found a card to request with ", loops, " loops.")
+
             # change loop bool to exit loop
             has_card_to_request = True
 
