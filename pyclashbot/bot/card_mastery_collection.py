@@ -28,6 +28,7 @@ def collect_card_mastery_rewards(logger):
     logger.change_status("Checking if there are card mastery rewards to collect")
 
     # check if there are rewards to collect
+    # check_if_can_collect_card_mastery_rewards starts and ends on clashmain
     has_rewards = check_if_can_collect_card_mastery_rewards(logger)
 
     # if reward to collect check fails return restart
@@ -40,11 +41,6 @@ def collect_card_mastery_rewards(logger):
         logger.change_status(
             "No card mastery rewards to collect. Returning to clash main."
         )
-        if get_to_clash_main_from_card_page(logger) == "restart":
-            logger.change_status(
-                "Failed to get to main from card page after collecting card mastery rewards."
-            )
-            return "restart"
         return None
 
     # otherwise there are rewards to collect so continue
