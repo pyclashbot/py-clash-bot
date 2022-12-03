@@ -89,6 +89,7 @@ def get_to_clash_main_from_clan_page(logger):
         click(208, 636)
         time.sleep(1)
         on_main = check_for_gem_logo_on_main()
+    time.sleep(3)
 
 
 def get_to_clan_page(logger):
