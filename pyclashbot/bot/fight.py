@@ -66,7 +66,7 @@ def wait_until_has_6_elixer(logger):
     loops = 0
     while not has_6:
         if check_if_all_cards_are_available():
-            logger.log("All cards are available. Making a play")
+            logger.change_status("All cards are available. Making a play")
             break
 
         loops += 1
