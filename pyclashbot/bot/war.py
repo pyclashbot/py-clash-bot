@@ -76,6 +76,7 @@ def handle_war_attacks(logger):
         return None
 
     # click start battle
+    print("Clicking start button")
     click(280, 445)
     time.sleep(5)
 
@@ -133,20 +134,26 @@ def fight_war_battle(logger):
         click(random.randint(70, 355), random.randint(320, 490))
         time.sleep(1)
 
+        print("Played a card randomly. War loops: " + str(loops))
+
     for n in range(15):
         logger.change_status(f"Manual wait for end battle...{n}")
+        time.sleep(1)
 
 
 def make_a_random_deck_for_this_war_battle():
     # Click edit deck
+    print("Clicking edit war deck")
     click(155, 450)
     time.sleep(1)
 
     # click random deck button
+    print("Clicking random deck button")
     click(265, 495)
     time.sleep(1)
 
     # click close
+    print("Closing edit war deck menu.")
     click(205, 95)
     time.sleep(1)
 
@@ -162,15 +169,16 @@ def check_if_on_war_page():
 
 
 def get_to_war_page_from_main(logger):
+    print("getting to war page from clash main.")
     if check_if_on_war_page():
         return None
 
     click(315, 635)
-    click(315, 635)
-    time.sleep(2)
+    time.sleep(3)
 
     loops = 0
     while not check_if_on_war_page():
+        print("still not on war page. Cycling.")
         handle_war_chest_obstruction(logger)
         loops += 1
         if loops > 20:
@@ -205,9 +213,11 @@ def find_battle_icon_on_war_page():
 
 
 def click_war_icon():
+    print("Running click_war_icon()")
     loops = 0
     coord = find_battle_icon_on_war_page()
     while coord is None:
+        print("Looping through click_war_icon()")
         loops += 1
         if loops > 8:
             return "failed"
@@ -219,6 +229,7 @@ def click_war_icon():
         time.sleep(3)
         coord = find_battle_icon_on_war_page()
     click(coord[0], coord[1])
+    print("Found a war battle icon with ", loops, " loops.")
     return "success"
 
 
@@ -263,5 +274,6 @@ def wait_for_war_battle_loading(logger):
             )
             return "restart"
         time.sleep(0.5)
+        print("waiting for war battle to start loading. Loops: " + str(loops))
     time.sleep(4)
     logger.change_status("Done waiting for battle to load.")
