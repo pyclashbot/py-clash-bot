@@ -10,7 +10,11 @@ from pyclashbot.detection import (
     pixel_is_equal,
 )
 from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
-from pyclashbot.memu.client import get_file_count, make_reference_image_list
+from pyclashbot.memu.client import (
+    get_file_count,
+    make_reference_image_list,
+    scroll_down_fast,
+)
 from pyclashbot.utils.logger import Logger
 
 ahk = AHK()
@@ -494,21 +498,65 @@ def get_to_account(logger, account_number):
     )
 
     # open settings
+    print("Opening settings butting from clash main to get to account switch")
     click(x=364, y=99)
     time.sleep(1)
 
     # click switch accounts
+    print("Clicking the switch accounts button.")
     click(200, 460)
     time.sleep(3)
 
+    print("getting to then clicking the appropriate account")
+
     if account_number == 0:
+        print("matthew")
         click(155, 350)
+
     if account_number == 1:
+        print("pycb:1")
+
         click(190, 420)
+
     if account_number == 2:
+        print("py-clashbot#2")
+
         click(230, 510)
+
     if account_number == 3:
+        print("py-clashbot#1")
+
         click(230, 595)
+
+    if account_number == 4:
+        print("pycb:3")
+        scroll_down_fast()
+        time.sleep(1)
+        click(170, 640)
+
+    if account_number == 5:
+        print("pycb:4")
+        for _ in range(4):
+            scroll_down_fast()
+            time.sleep(1)
+        time.sleep(1)
+        click(230, 585)
+
+    if account_number == 6:
+        print("pycb:5")
+        for _ in range(7):
+            scroll_down_fast()
+            time.sleep(1)
+        time.sleep(1)
+        click(240, 550)
+
+    if account_number == 7:
+        print("pycb:6")
+        for _ in range(7):
+            scroll_down_fast()
+            time.sleep(1)
+        time.sleep(1)
+        click(230, 625)
 
     for n in range(10):
         logger.change_status(f"Manual wait time for clash main menu to load: {n}")
