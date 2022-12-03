@@ -445,7 +445,7 @@ def handle_puzzleroyale_popup(logger):
 
 
 def check_if_in_a_clan(logger):
-    # Method to check if the current account has a clan
+    # Method to check if the current account has a clan. starts and ends on clash main
 
     # starts and ends on clash main
     logger.change_status("Checking if in a clan")
