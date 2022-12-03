@@ -16,7 +16,7 @@ controls = [
                 [
                     sg.Text("# of Accounts: "),
                     sg.Combo(
-                        ["1", "2", "3", "4"],
+                        ["1", "2", "3", "4", "5", "6", "7", "8"],
                         key="-SSID_IN-",
                         default_value="1",
                         enable_events=True,
