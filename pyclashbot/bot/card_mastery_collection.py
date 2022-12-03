@@ -8,7 +8,9 @@ from pyclashbot.bot.clashmain import (
     get_to_clash_main_from_card_page,
 )
 from pyclashbot.detection import pixel_is_equal
+from pyclashbot.detection.image_rec import check_for_location, find_references
 from pyclashbot.memu import click, screenshot
+from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
 
 def collect_card_mastery_rewards(logger):
@@ -71,11 +73,12 @@ def collect_card_mastery_rewards(logger):
     # click all reward regions
     print("Clicking various reward locations")
     for coord in reward_coords:
+        handle_banner_box_popup()
         click(coord[0], coord[1])
         time.sleep(1)
 
     # click dead space
-    print("Clicking dead space")
+    print("Clicking dead space to exit mastery tabs")
     click(20, 400, clicks=20, interval=0.1)
 
     # get back to clash main
@@ -114,3 +117,58 @@ def check_if_can_collect_card_mastery_rewards(logger):
         return "restart"
 
     return has_rewards
+
+
+def check_for_banner_box_popup():
+    current_image = screenshot()
+    reference_folder = "check_for_banner_box_popup"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "check_for_banner_box_popup",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    return check_for_location(locations)
+
+
+def handle_banner_box_popup():
+    if check_for_banner_box_popup():
+        print("Found banner box popup")
+
+        # click go to bannerbox
+        print("click go to bannerbox")
+        click(205, 450)
+        time.sleep(1)
+
+        # click '100 tickets' button in bottom right
+        print("click '100 tickets' button in bottom right")
+        click(330, 610)
+        time.sleep(1)
+
+        # click '100 tickets' button in the middle of the screen to open the chest
+        print(
+            "click '100 tickets' button in the middle of the screen to open the chest"
+        )
+        click(215, 505)
+        time.sleep(1)
+
+        # click deadspace
+        print("Clicking dead space to skip through rewards")
+        click(20, 440, clicks=10, interval=0.1)
+
+        # close banner box
+        print("Closing banner box")
+        click(99, 999)
+        time.sleep(3)
+
+        # close mastery tabs
+        print("Clicking dead space to get to card page main.")
+        click(20, 440, clicks=10, interval=0.1)
