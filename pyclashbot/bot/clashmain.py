@@ -495,7 +495,7 @@ def get_to_account(logger, account_number):
     time.sleep(2)
 
     logger.change_status(
-        f"Switching accounts to account number {str(account_number)}, (0-3)"
+        f"Switching accounts to account number {str(account_number)}, (0-7)"
     )
 
     # open settings
