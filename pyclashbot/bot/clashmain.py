@@ -510,32 +510,29 @@ def get_to_account(logger, account_number):
     print("getting to then clicking the appropriate account")
 
     if account_number == 0:
-        print("matthew")
+
         click(155, 350)
 
     if account_number == 1:
-        print("pycb:1")
 
         click(190, 420)
 
     if account_number == 2:
-        print("py-clashbot#2")
 
         click(230, 510)
 
     if account_number == 3:
-        print("py-clashbot#1")
 
         click(230, 595)
 
     if account_number == 4:
-        print("pycb:3")
+
         scroll_down_fast()
         time.sleep(1)
         click(170, 640)
 
     if account_number == 5:
-        print("pycb:4")
+
         for _ in range(4):
             scroll_down_fast()
             time.sleep(1)
@@ -543,7 +540,6 @@ def get_to_account(logger, account_number):
         click(230, 585)
 
     if account_number == 6:
-        print("pycb:5")
         for _ in range(7):
             scroll_down_fast()
             time.sleep(1)
@@ -551,7 +547,6 @@ def get_to_account(logger, account_number):
         click(240, 550)
 
     if account_number == 7:
-        print("pycb:6")
         for _ in range(7):
             scroll_down_fast()
             time.sleep(1)
