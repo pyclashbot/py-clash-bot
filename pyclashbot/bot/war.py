@@ -33,6 +33,8 @@ def handle_war_attacks(logger):
             )
             return "restart"
         return "clashmain"
+    else:
+        print("Youre in a clan.")
 
     # get to war page
     logger.change_status("Getting to war page.")
@@ -42,6 +44,7 @@ def handle_war_attacks(logger):
         return "restart"
 
     # click a war battle
+    print("Running alg to get find and click a war match")
     if click_war_icon() == "failed":
         logger.change_status("Couldn't find a war battle. Returning.")
         time.sleep(1)
@@ -49,13 +52,15 @@ def handle_war_attacks(logger):
         return "clashmain"
 
     # click deadspace to get rid of the pop up
-    for _ in range(5):
-        click(220, 290)
+    print("Clicking deadspace to help with popups for new accounts")
+    click(220, 290, clicks=5, interval=0.1)
 
     # if you dont have a deck make a random deck
     if not check_if_has_a_deck_for_this_war_battle():
         logger.change_status("Making a random deck for this war battle.")
         make_a_random_deck_for_this_war_battle()
+    else:
+        print("Looks like this account has a deck for this battle. Continuing.")
 
     # sometimes the player lacks the cards to make a complete deck at this point
     # if you STILL done have a deck, return to main
@@ -63,8 +68,10 @@ def handle_war_attacks(logger):
         logger.change_status(
             "Fight not avialable yet/Not enough cards to complete deck. Skipping war attack this time."
         )
-        for _ in range(5):
-            click(20, 440)
+        print("Clicking deadspace to clear popups second time.")
+        click(20, 440, clicks=5, interval=0.1)
+
+        print("getting to clash main from clan page.")
         get_to_clash_main_from_clan_page(logger)
         return None
 
