@@ -286,13 +286,13 @@ def state_clashmain(
     logger.change_status("On clash main")
 
     # verifying the amount of SSID accounts in this client is the same as the amount inputted into the gui
-    if ssid_max != 1:
-        if verify_ssid_input(logger, inputted_ssid_max=ssid_max) == "failure":
-            logger.change_status(
-                "SSID inputted is not the same as the amount of accounts in this client!!!"
-            )
-            time.sleep(100000)
-            return "restart"
+    # if ssid_max != 1:
+    #     if verify_ssid_input(logger, inputted_ssid_max=ssid_max) == "failure":
+    #         logger.change_status(
+    #             "SSID inputted is not the same as the amount of accounts in this client!!!"
+    #         )
+    #         time.sleep(100000)
+    #         return "restart"
 
     # Get to correct account if more than one account is being used
     if ssid_max > 1 and get_to_account(logger, account_number) == "restart":
