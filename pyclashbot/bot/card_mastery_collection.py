@@ -158,16 +158,21 @@ def handle_banner_box_popup():
             "click '100 tickets' button in the middle of the screen to open the chest"
         )
         click(215, 505)
-        time.sleep(1)
+        time.sleep(3)
 
         # click deadspace
         print("Clicking dead space to skip through rewards")
         click(20, 440, clicks=10, interval=0.1)
 
         # close banner box
-        print("Closing banner box")
+        print("Closing banner box first time")
         click(99, 999)
-        time.sleep(3)
+        time.sleep(1)
+
+        # close banner box
+        print("Closing banner box second time")
+        click(355, 65)
+        time.sleep(1)
 
         # close mastery tabs
         print("Clicking dead space to get to card page main.")
