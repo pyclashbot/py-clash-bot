@@ -780,7 +780,7 @@ def handle_card_mastery_notification():
 def handle_war_loot_menu():
     # open chest
     print("Opening war chest")
-    click(205, 410)
+    click(205, 420)
     time.sleep(1)
 
     # click dead space to skip thru chest
