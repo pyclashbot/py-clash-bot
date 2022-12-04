@@ -131,7 +131,7 @@ def fight_war_battle(logger):
         time.sleep(1)
 
         # click random placement
-        click(random.randint(70, 355), random.randint(320, 490))
+        click(random.randint(70, 140), random.randint(180, 480))
         time.sleep(1)
 
         print("Played a card randomly. War loops: " + str(loops))
