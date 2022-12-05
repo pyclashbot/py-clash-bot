@@ -251,6 +251,8 @@ def restart_clash_app(logger):
     wait_for_clash_main_menu(logger)
 
     # log to new restarts var
+    print("Added app restart stat to logger")
+    logger.add_app_restart()
 
 
 # copy of clashmain's wait_for_clash_main_menu methods
