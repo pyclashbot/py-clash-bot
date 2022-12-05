@@ -8,6 +8,7 @@ from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
     check_if_in_battle_with_delay,
     check_if_on_clan_page,
+    check_if_on_clash_main_menu,
     check_if_on_first_card_page,
     get_to_account,
     get_to_card_page,
@@ -41,6 +42,7 @@ from pyclashbot.bot.war import (
     wait_for_war_battle_loading,
 )
 from pyclashbot.memu import click, orientate_terminal, restart_and_open_clash
+from pyclashbot.memu.launcher import restart_clash_app
 from pyclashbot.utils import Logger
 
 
@@ -394,3 +396,12 @@ def state_request(logger) -> Literal["restart", "level up reward collection"]:
         return "restart"
 
     return "level up reward collection"
+
+
+def state_restart_clash_app(logger):
+    print("RUNNING RESTART CLASH APP STATE")
+
+    # run restart clash from launcher.py
+    if restart_clash_app(logger) != "success":
+        print("FAILURE WITH RESTART CLASH APP")
+        return "restart"
