@@ -221,6 +221,38 @@ def orientate_memu():
         print("Couldnt orientate MEmu")
 
 
+def close_clash(logger, pmc, vm_index):
+    logger.change_status("Closing Clash Royale Application")
+
+    apk_base_name = "com.supercell.clashroyale"
+
+    # close clash app
+    pmc.stop_app_vm(apk_base_name, vm_index)
+
+
+def restart_clash_app(logger):
+    logger.change_status("Restarting Clash Royale Application")
+
+    # get this vm index
+    vm_index = check_for_vm(logger)
+
+    # close app
+    close_clash(logger, pmc, vm_index)
+
+    # start app
+    start_clash_royale(logger, vm_index)
+
+    # manual wait time for clash main
+    for n in range(5):
+        print("Manual wait time for clash main: ", n)
+        time.sleep(1)
+
+    # wait for main
+    wait_for_clash_main_menu(logger)
+
+    # log to new restarts var
+
+
 # copy of clashmain's wait_for_clash_main_menu methods
 def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
