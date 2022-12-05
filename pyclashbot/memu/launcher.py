@@ -1,3 +1,4 @@
+import subprocess
 import time
 
 import numpy
@@ -148,8 +149,10 @@ def restart_and_open_clash(logger: Logger):
 def close_memu():
     try:
         memu_window = pygetwindow.getWindowsWithTitle("(pyclashbot)")[0]
+        if memu_window is not None:
+            print("Found a memu process to kill.")
         memu_window.close()
-        time.sleep(3)
+        subprocess.call("TASKKILL /F /IM MEmu.exe", shell=True)
     except:
         print("Couldn't close memu b/c couldn't find it's window")
 
