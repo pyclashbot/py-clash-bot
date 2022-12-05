@@ -233,6 +233,10 @@ def close_clash(logger, pmc, vm_index):
 def restart_clash_app(logger):
     logger.change_status("Restarting Clash Royale Application")
 
+    # log to new restarts var
+    print("Added app restart stat to logger")
+    logger.add_app_restart()
+
     # get this vm index
     vm_index = check_for_vm(logger)
 
@@ -248,11 +252,10 @@ def restart_clash_app(logger):
         time.sleep(1)
 
     # wait for main
-    wait_for_clash_main_menu(logger)
-
-    # log to new restarts var
-    print("Added app restart stat to logger")
-    logger.add_app_restart()
+    if wait_for_clash_main_menu(logger) == "restart":
+        return "restart"
+    else:
+        return "success"
 
 
 # copy of clashmain's wait_for_clash_main_menu methods
