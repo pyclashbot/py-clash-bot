@@ -106,6 +106,10 @@ def get_to_clan_page(logger):
             print("Found war loot. handling it.")
             handle_war_loot_menu()
 
+        # handle final results popup
+        if check_for_final_results_popup():
+            handle_final_results_popup()
+
         # handling infinite loop
         loops += 1
         if loops > 7:
@@ -1006,3 +1010,26 @@ def get_to_clash_main_from_card_page(logger):
         # if not on menu at this point cycle the screen off trophy progression page and back on
         click(212, 637)
         time.sleep(1)
+
+
+def check_for_final_results_popup():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[555][170],
+        iar[565][180],
+        iar[569][187],
+        iar[575][195],
+    ]
+    for pix in pix_list:
+        if not pixel_is_equal(pix, [181, 96, 253], tol=45):
+            return False
+    print("Final results popup detected.")
+    return True
+
+
+def handle_final_results_popup():
+    print("Doing final results popup hanlding.")
+
+    # click OK
+    click(220, 555)
+    time.sleep(5)
