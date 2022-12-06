@@ -119,10 +119,6 @@ def state_tree(
         # Increment account number, loop back to 0 if it's ssid_max
         ssid = ssid + 1 if ssid < (ssid_max - 1) else 0
 
-        # if ssid==ssid_max:
-        #     ssid=0
-        # else:ssid+=1
-
     elif state == "intro":
         print("RUNNING INTRO STATE")
         state = state_restart(logger)
@@ -157,7 +153,7 @@ def state_tree(
         logger.add_restart_after_failure()
 
         # run restart state
-        state = state_restart(logger)
+        state = new_state_restart(logger)
 
     elif state == "auto_restart":
         logger.change_status("Doing automatic hourly restart. . .")
@@ -400,8 +396,31 @@ def state_request(logger) -> Literal["restart", "level up reward collection"]:
 
 def state_restart_clash_app(logger):
     print("RUNNING RESTART CLASH APP STATE")
+    # Method for the state of the program when restarting clash app]
+    # starts anywhere, ends on clashmain.
+    # returns 'restart' if it fails to restart clash app
+    # reuturns success if it restarts clash app
 
     # run restart clash from launcher.py
     if restart_clash_app(logger) != "success":
         print("FAILURE WITH RESTART CLASH APP")
         return "restart"
+    else:
+        return "success"
+
+
+def new_state_restart(logger) -> Literal["clashmain", "restart"]:
+    orientate_terminal()
+
+    # try to restart capp. if it doesnt work then restart memu.
+    logger.change_status("Trying to restart clash app")
+    if state_restart_clash_app(logger) != "success":
+        logger.change_status("Failure with just restarting the app. Restarting memu.")
+        if restart_and_open_clash(logger) == "restart":
+            print("Failure with restart. Returning restart state for next loop.")
+            return "restart"
+        else:
+            print("Success with restartin. Returning 'clashmain' state")
+            return "clashmain"
+    else:
+        print("Done restarting just by restarting clash app")
