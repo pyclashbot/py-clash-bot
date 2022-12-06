@@ -424,3 +424,4 @@ def new_state_restart(logger) -> Literal["clashmain", "restart"]:
             return "clashmain"
     else:
         print("Done restarting just by restarting clash app")
+        return "clashmain"
