@@ -120,7 +120,7 @@ def fight_war_battle(logger):
     loops = 0
     while check_if_in_battle_with_delay():
         loops += 1
-        if loops > 100:
+        if loops > 200:
             logger.change_status(
                 "Fought in war too long in fight_war_battle(). Returning"
             )
