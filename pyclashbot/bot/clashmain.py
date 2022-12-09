@@ -78,7 +78,7 @@ def get_to_clash_main_from_clan_page(logger):
     # Method to return to clash main menu from request page
     click(172, 612)
     time.sleep(3)
-    on_main = check_for_gem_logo_on_main()
+    on_main = check_if_on_clash_main_menu()
     loops = 0
     while not on_main:
         print("Still not on main page. Cycling")
@@ -88,7 +88,8 @@ def get_to_clash_main_from_clan_page(logger):
             return "restart"
         click(208, 636)
         time.sleep(1)
-        on_main = check_for_gem_logo_on_main()
+        on_main = check_if_on_clash_main_menu()
+    print("made it to clash main.")
     time.sleep(3)
 
 
