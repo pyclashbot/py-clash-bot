@@ -1000,7 +1000,7 @@ def open_war_chest(logger):
 
 
 def get_to_clash_main_from_card_page(logger):
-    # logger.change_status("Getting to Clash main menu from card page")
+    logger.change_status("Getting to Clash main menu from card page")
 
     # get to card page
     click(240, 627)
@@ -1008,6 +1008,7 @@ def get_to_clash_main_from_card_page(logger):
 
     loops = 0
     while not check_if_on_clash_main_menu():
+        loops += 1
         if loops > 15:
             logger.change_status("Couldn't get to Clash main menu from card page")
             return "restart"
