@@ -152,6 +152,9 @@ def state_tree(
         # increment the restart_after_failure counter
         logger.add_restart_after_failure()
 
+        # DEBUG::: wait forever instead of restarting
+        # while True:time.sleep(1000)
+
         # run restart state
         state = state_restart(logger)
 
