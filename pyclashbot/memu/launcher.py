@@ -18,6 +18,88 @@ launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
 
 
+#### launcher methods
+def restart_memu(logger):
+    # close everything related to memu
+    # configure the topmost VM to be the clashbot vm
+    # open and orientate launcher
+    # click start
+    # use pymemuc to skip ads then start clash
+
+    logger.change_status("restarting memu")
+
+    print("Closing all running VMs")
+    # stop all vms
+    close_everything_memu()
+    # close_memu_using_pymemuc(logger)
+
+    # make VM named clashbot if doesnt exist
+    # configure VM
+    # vm_index = check_for_vm(logger)
+    configure_vm(logger, vm_index=0)
+
+    # open launcher+configure launcher
+    open_memu_launcher(logger)
+    orientate_memu_launcher(logger)
+
+    # start pyclashbot vm
+    click(550, 140)
+
+    # wait
+    sleep_time = 20
+    for n in range(sleep_time):
+        logger.change_status(f"Waiting for VM to load {n}/{sleep_time}")
+        time.sleep(1)
+
+    # skip ads using pymemuc
+    skip_ads(logger, vm_index=0)
+
+    # start clash using pymemuc
+    start_clash_royale(logger, vm_index=0)
+
+    # manually wait for clash main
+    sleep_time = 10
+    for n in range(sleep_time):
+        logger.change_status(f"Manually waiting for clash main page. {n}/{sleep_time}")
+        time.sleep(1)
+
+    # actually wait for clash main if need to wait longer
+    wait_for_clash_main_menu(logger)
+
+
+def open_memu_launcher(logger):
+    # if alreayd open then close it
+    windows = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")
+    if len(windows) > 0:
+        print("Launcher already open. Closing it.")
+        windows[0].close()
+
+    # get launcher path
+    path = r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
+
+    # start launcher
+    logger.change_status("Starting Memu Launcher")
+    subprocess.Popen(path)
+
+    # wait for launcher to exist
+    print("Waiting for launcher")
+    while len(pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) == 0:
+        pass
+    print("Done waiting for launcher.")
+
+
+def orientate_memu_launcher(logger):
+    logger.change_status("Orientating Memu launcher")
+    window = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")[0]
+    window.activate()
+    window.moveTo(0, 0)
+    window.resizeTo(732, 596)
+    logger.change_status("Done orientating Memu launcher")
+
+
+#### making and configuring VMs
+
+
 def configure_vm(logger: Logger, vm_index):
 
     logger.change_status("Configuring VM")
@@ -104,61 +186,26 @@ def start_vm(logger: Logger):
     return vm_index
 
 
-def restart_memu(logger: Logger):
-    # stop all vms
-    try:
-        pmc.stop_all_vm()
-        # get list of running vms on machine
-        vms: list[VMInfo] = pmc.list_vm_info(running=True)
-        # stop any vms named pyclashbot
-        for vm in vms:
-            if vm["title"] == "pyclashbot":
-                pmc.stop_vm(vm["index"])
-    except PyMemucError as err:
-        if vms := pmc.list_vm_info(running=True):
-            logger.change_status("Error stopping VM")
-            logger.error(str(err))
-            raise err
-
-    # orientate_terminal()
-
-    logger.change_status("Opening MEmu launcher")
-    vm_index = start_vm(logger)
-    time.sleep(15)
-    skip_ads(logger, vm_index)
-    return vm_index
+def close_everything_memu():
+    pythoncom.CoInitialize()
+    c = wmi.WMI()
+    print("Entered close_everything_memu()")
+    for process in c.Win32_Process():
+        name_list = [
+            "MEmuConsole.exe",
+            "MEmu.exe",
+            "MEmuHeadless.exe",
+        ]
+        if process.name in name_list:
+            print("Closing process", process.name)
+            process.Terminate()
+    print("Exiting close_everything_memu(). . .")
 
 
 first_run = True
 
 
-def restart_and_open_clash(logger: Logger):
-    # Method for restarting (and starting) Memu, opening clash, and
-    # waiting for the clash main menu to appear.
-
-    close_memu()
-    vm_index = restart_memu(logger)
-    start_clash_royale(logger, vm_index)
-    time.sleep(10)
-    wait_for_clash_main_menu(logger)
-
-    global first_run  # pylint: disable=global-statement
-    if first_run:
-        first_run = False
-    else:
-        # logger.add_restart()
-        pass
-
-
-def close_memu():
-    try:
-        memu_window = pygetwindow.getWindowsWithTitle("(pyclashbot)")[0]
-        if memu_window is not None:
-            print("Found a memu process to kill.")
-        memu_window.close()
-        subprocess.call("TASKKILL /F /IM MEmu.exe", shell=True)
-    except:
-        print("Couldn't close memu b/c couldn't find it's window")
+#### interacting with the vm
 
 
 def start_clash_royale(logger: Logger, vm_index):
@@ -196,14 +243,6 @@ def skip_ads(logger: Logger, vm_index):
         time.sleep(1)
 
 
-def close_vm(logger: Logger, vm_index):
-
-    # Method to close memu
-    logger.change_status("Closing VM")
-    pmc.stop_vm(vm_index)
-    logger.change_status("VM closed")
-
-
 def orientate_memu():
     """Method for orientating Memu client"""
     try:
@@ -225,44 +264,7 @@ def orientate_memu():
         print("Couldnt orientate MEmu")
 
 
-def close_clash(logger, pmc, vm_index):
-    logger.change_status("Closing Clash Royale Application")
-
-    apk_base_name = "com.supercell.clashroyale"
-
-    # close clash app
-    pmc.stop_app_vm(apk_base_name, vm_index)
-
-
-def restart_clash_app(logger):
-    logger.change_status("Restarting Clash Royale Application")
-
-    # log to new restarts var
-    print("Added app restart stat to logger")
-    logger.add_app_restart()
-
-    # get this vm index
-    vm_index = check_for_vm(logger)
-
-    # close app
-    close_clash(logger, pmc, vm_index)
-
-    # start app
-    start_clash_royale(logger, vm_index)
-
-    # manual wait time for clash main
-    for n in range(5):
-        print("Manual wait time for clash main: ", n)
-        time.sleep(1)
-
-    # wait for main
-    if wait_for_clash_main_menu(logger) == "restart":
-        return "restart"
-    else:
-        return "success"
-
-
-# copy of clashmain's wait_for_clash_main_menu methods
+#### copy of clashmain's wait_for_clash_main_menu methods
 def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
     waiting = not check_if_on_clash_main_menu()
@@ -390,104 +392,40 @@ def check_for_friends_logo_on_main():
     return False
 
 
-# methods for new memu launcher (opening MMIM then clicking start)
+#### extra methods relating to launcher
+
+# def close_clash(logger, pmc, vm_index):
+#     logger.change_status("Closing Clash Royale Application")
+
+#     apk_base_name = "com.supercell.clashroyale"
+
+#     # close clash app
+#     pmc.stop_app_vm(apk_base_name, vm_index)
 
 
-def open_memu_launcher(logger):
-    # if alreayd open then close it
-    windows = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")
-    if len(windows) > 0:
-        print("Launcher already open. Closing it.")
-        windows[0].close()
+# def restart_clash_app(logger):
+#     logger.change_status("Restarting Clash Royale Application")
 
-    # get launcher path
-    path = r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
+#     # log to new restarts var
+#     print("Added app restart stat to logger")
+#     logger.add_app_restart()
 
-    # start launcher
-    logger.change_status("Starting Memu Launcher")
-    subprocess.Popen(path)
+#     # get this vm index
+#     vm_index = check_for_vm(logger)
 
-    # wait for launcher to exist
-    print("Waiting for launcher")
-    while len(pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) == 0:
-        pass
-    print("Done waiting for launcher.")
+#     # close app
+#     close_clash(logger, pmc, vm_index)
 
+#     # start app
+#     start_clash_royale(logger, vm_index)
 
-def orientate_memu_launcher(logger):
-    logger.change_status("Orientating Memu launcher")
-    window = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")[0]
-    window.activate()
-    window.moveTo(0, 0)
-    window.resizeTo(732, 596)
-    logger.change_status("Done orientating Memu launcher")
+#     # manual wait time for clash main
+#     for n in range(5):
+#         print("Manual wait time for clash main: ", n)
+#         time.sleep(1)
 
-
-def restart_memu_2(logger):
-    logger.change_status("restarting memu")
-
-    print("Closing all running VMs")
-    # stop all vms
-    close_everything_memu()
-    # close_memu_using_pymemuc(logger)
-
-    # make VM named clashbot if doesnt exist
-    # configure VM
-    # vm_index = check_for_vm(logger)
-    configure_vm(logger, vm_index=0)
-
-    # open launcher+configure launcher
-    open_memu_launcher(logger)
-    orientate_memu_launcher(logger)
-
-    # start pyclashbot vm
-    click(550, 140)
-
-    # wait
-    for n in range(20):
-        logger.change_status(f"Waiting for VM to load {n}/20")
-        time.sleep(1)
-
-    # skip ads
-    skip_ads(logger, vm_index=0)
-
-    # start clash
-    start_clash_royale(logger, vm_index=0)
-
-    # wait for clash main
-    for n in range(10):
-        logger.change_status(f"Waiting for clash main page. {n}/20")
-        time.sleep(1)
-    wait_for_clash_main_menu(logger)
-
-
-def close_everything_memu():
-    pythoncom.CoInitialize()
-    c = wmi.WMI()
-    print("Entered close_everything_memu()")
-    for process in c.Win32_Process():
-        name_list = [
-            "MEmuConsole.exe",
-            "MEmu.exe",
-            "MEmuHeadless.exe",
-        ]
-        if process.name in name_list:
-            print("Closing process", process.name)
-            process.Terminate()
-    print("Exiting close_everything_memu(). . .")
-
-
-def close_memu_using_pymemuc(logger):
-    try:
-        pmc.stop_all_vm()
-        # get list of running vms on machine
-        vms: list[VMInfo] = pmc.list_vm_info(running=True)
-        # stop any vms named pyclashbot
-        for vm in vms:
-            if vm["title"] == "pyclashbot":
-                pmc.stop_vm(vm["index"])
-    except PyMemucError as err:
-        if vms := pmc.list_vm_info(running=True):
-            logger.change_status("Error stopping VM")
-            logger.error(str(err))
-            raise err
+#     # wait for main
+#     if wait_for_clash_main_menu(logger) == "restart":
+#         return "restart"
+#     else:
+#         return "success"
