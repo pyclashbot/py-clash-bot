@@ -153,7 +153,7 @@ def state_tree(
         logger.add_restart_after_failure()
 
         # run restart state
-        state = new_state_restart(logger)
+        state = state_restart(logger)
 
     elif state == "auto_restart":
         logger.change_status("Doing automatic hourly restart. . .")

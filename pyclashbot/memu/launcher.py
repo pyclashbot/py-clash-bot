@@ -3,6 +3,8 @@ import time
 
 import numpy
 import pygetwindow
+import pythoncom
+import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.detection.image_rec import pixel_is_equal
@@ -33,6 +35,7 @@ def configure_vm(logger: Logger, vm_index):
         "vbox_dpi": "160",
         "fps": "30",
         "enable_audio": "0",
+        "name": "pyclashbot",
     }
 
     for key, value in configuration.items():
@@ -425,6 +428,56 @@ def restart_memu_2(logger):
 
     print("Closing all running VMs")
     # stop all vms
+    close_everything_memu()
+    # close_memu_using_pymemuc(logger)
+
+    # make VM named clashbot if doesnt exist
+    # configure VM
+    # vm_index = check_for_vm(logger)
+    configure_vm(logger, vm_index=0)
+
+    # open launcher+configure launcher
+    open_memu_launcher(logger)
+    orientate_memu_launcher(logger)
+
+    # start pyclashbot vm
+    click(550, 140)
+
+    # wait
+    for n in range(20):
+        logger.change_status(f"Waiting for VM to load {n}/20")
+        time.sleep(1)
+
+    # skip ads
+    skip_ads(logger, vm_index=0)
+
+    # start clash
+    start_clash_royale(logger, vm_index=0)
+
+    # wait for clash main
+    for n in range(10):
+        logger.change_status(f"Waiting for clash main page. {n}/20")
+        time.sleep(1)
+    wait_for_clash_main_menu(logger)
+
+
+def close_everything_memu():
+    pythoncom.CoInitialize()
+    c = wmi.WMI()
+    print("Entered close_everything_memu()")
+    for process in c.Win32_Process():
+        name_list = [
+            "MEmuConsole.exe",
+            "MEmu.exe",
+            "MEmuHeadless.exe",
+        ]
+        if process.name in name_list:
+            print("Closing process", process.name)
+            process.Terminate()
+    print("Exiting close_everything_memu(). . .")
+
+
+def close_memu_using_pymemuc(logger):
     try:
         pmc.stop_all_vm()
         # get list of running vms on machine
@@ -438,32 +491,3 @@ def restart_memu_2(logger):
             logger.change_status("Error stopping VM")
             logger.error(str(err))
             raise err
-
-    # make VM named clashbot if doesnt exist
-    # configure VM
-    vm_index = check_for_vm(logger)
-    configure_vm(logger, vm_index)
-
-    # open launcher+configure launcher
-    open_memu_launcher(logger)
-    orientate_memu_launcher(logger)
-
-    # start pyclashbot vm
-    click(550, 140)
-
-    # wait
-    for n in range(20):
-        logger.change_status(f"Waiting for VM to load {n}/30")
-        time.sleep(1)
-
-    # skip ads
-    skip_ads(logger, vm_index)
-
-    # start clash
-    start_clash_royale(logger, vm_index)
-
-    # wait for clash main
-    for n in range(10):
-        logger.change_status(f"Waiting for clash main page. {n}/20")
-        time.sleep(1)
-    wait_for_clash_main_menu(logger)
