@@ -67,7 +67,7 @@ def collect_free_offer_from_shop(logger):
 
     # click deadspace
     print("Clicking deadspace to skip through free reward")
-    click(20, 380, clicks=10, interval=0.1)
+    click(20, 380, clicks=15, interval=0.33)
 
     # get to clash main from shop
     if get_to_clash_main_from_shop(logger) == "restart":
