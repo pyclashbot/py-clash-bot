@@ -9,6 +9,7 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils import setup_memu
+from pyclashbot.utils.dependency import get_memu_path
 from pyclashbot.utils.logger import Logger
 
 launcher_path = setup_memu()  # setup memu, install if necessary
@@ -384,3 +385,85 @@ def check_for_friends_logo_on_main():
     for pix in pix_list:
         return bool(pixel_is_equal(pix, color, tol=65))
     return False
+
+
+# methods for new memu launcher (opening MMIM then clicking start)
+
+
+def open_memu_launcher(logger):
+    # if alreayd open then close it
+    windows = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")
+    if len(windows) > 0:
+        print("Launcher already open. Closing it.")
+        windows[0].close()
+
+    # get launcher path
+    path = r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
+
+    # start launcher
+    logger.change_status("Starting Memu Launcher")
+    subprocess.Popen(path)
+
+    # wait for launcher to exist
+    print("Waiting for launcher")
+    while len(pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) == 0:
+        pass
+    print("Done waiting for launcher.")
+
+
+def orientate_memu_launcher(logger):
+    logger.change_status("Orientating Memu launcher")
+    window = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")[0]
+    window.activate()
+    window.moveTo(0, 0)
+    window.resizeTo(732, 596)
+    logger.change_status("Done orientating Memu launcher")
+
+
+def restart_memu_2(logger):
+    logger.change_status("restarting memu")
+
+    print("Closing all running VMs")
+    # stop all vms
+    try:
+        pmc.stop_all_vm()
+        # get list of running vms on machine
+        vms: list[VMInfo] = pmc.list_vm_info(running=True)
+        # stop any vms named pyclashbot
+        for vm in vms:
+            if vm["title"] == "pyclashbot":
+                pmc.stop_vm(vm["index"])
+    except PyMemucError as err:
+        if vms := pmc.list_vm_info(running=True):
+            logger.change_status("Error stopping VM")
+            logger.error(str(err))
+            raise err
+
+    # make VM named clashbot if doesnt exist
+    # configure VM
+    vm_index = check_for_vm(logger)
+    configure_vm(logger, vm_index)
+
+    # open launcher+configure launcher
+    open_memu_launcher(logger)
+    orientate_memu_launcher(logger)
+
+    # start pyclashbot vm
+    click(550, 140)
+
+    # wait
+    for n in range(20):
+        logger.change_status(f"Waiting for VM to start {n}/20")
+        time.sleep(1)
+
+    # skip ads
+    skip_ads(logger, vm_index)
+
+    # start clash
+    start_clash_royale(logger, vm_index)
+
+    # wait for clash main
+    for n in range(10):
+        logger.change_status(f"Waiting for VM to start {n}/10")
+        time.sleep(1)
+    wait_for_clash_main_menu(logger)
