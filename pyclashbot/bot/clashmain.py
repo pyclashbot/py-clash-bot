@@ -101,6 +101,10 @@ def get_to_clan_page(logger):
     loops = 0
     while not on_clan_chat_page:
         print("Still not on clan chat page.")
+
+        # handle other war chest popup
+        handle_war_loot_chest()
+
         # handle war chest popup
         if check_for_war_loot_menu():
             print("Found war loot. handling it.")
@@ -1033,3 +1037,39 @@ def handle_final_results_popup():
     # click OK
     click(220, 555)
     time.sleep(5)
+
+
+def check_for_war_loot_chest():
+    current_image = screenshot()
+    reference_folder = "check_for_war_loot_chest"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "check_for_war_loot_chest",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    return check_for_location(locations)
+
+
+def handle_war_loot_chest():
+    if check_for_war_loot_chest():
+        print("Found a war chest in the way...")
+        # click open chest
+        print("Clicking open war chest..")
+        click(205, 440)
+        time.sleep(1)
+
+        # skip thru chest
+        print("Skipping thru war chest rewards...")
+        click(20, 450, clicks=10, interval=0.33)
+        time.sleep(1)
+
+        print("Done handling war chest...")
