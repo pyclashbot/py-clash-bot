@@ -42,7 +42,7 @@ from pyclashbot.bot.war import (
     wait_for_war_battle_loading,
 )
 from pyclashbot.memu import click, orientate_terminal, restart_and_open_clash
-from pyclashbot.memu.launcher import restart_clash_app
+from pyclashbot.memu.launcher import restart_clash_app, restart_memu_2
 from pyclashbot.utils import Logger
 
 
@@ -267,7 +267,7 @@ def state_restart(logger) -> Literal["clashmain", "restart"]:
     logger.change_status("Restarting")
 
     # restart until it works, then return 'clashmain' as the next state
-    if restart_and_open_clash(logger) == "restart":
+    if restart_memu_2(logger) == "restart":
         return "restart"
     else:
         return "clashmain"
@@ -407,21 +407,3 @@ def state_restart_clash_app(logger):
         return "restart"
     else:
         return "success"
-
-
-def new_state_restart(logger) -> Literal["clashmain", "restart"]:
-    orientate_terminal()
-
-    # try to restart capp. if it doesnt work then restart memu.
-    logger.change_status("Trying to restart clash app")
-    if state_restart_clash_app(logger) != "success":
-        logger.change_status("Failure with just restarting the app. Restarting memu.")
-        if restart_and_open_clash(logger) == "restart":
-            print("Failure with restart. Returning restart state for next loop.")
-            return "restart"
-        else:
-            print("Success with restartin. Returning 'clashmain' state")
-            return "clashmain"
-    else:
-        print("Done restarting just by restarting clash app")
-        return "clashmain"
