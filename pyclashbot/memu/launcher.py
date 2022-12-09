@@ -453,7 +453,7 @@ def restart_memu_2(logger):
 
     # wait
     for n in range(20):
-        logger.change_status(f"Waiting for VM to start {n}/20")
+        logger.change_status(f"Waiting for VM to load {n}/30")
         time.sleep(1)
 
     # skip ads
@@ -464,6 +464,6 @@ def restart_memu_2(logger):
 
     # wait for clash main
     for n in range(10):
-        logger.change_status(f"Waiting for VM to start {n}/10")
+        logger.change_status(f"Waiting for clash main page. {n}/20")
         time.sleep(1)
     wait_for_clash_main_menu(logger)
