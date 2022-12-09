@@ -42,7 +42,7 @@ from pyclashbot.bot.war import (
     wait_for_war_battle_loading,
 )
 from pyclashbot.memu import click, orientate_terminal, restart_and_open_clash
-from pyclashbot.memu.launcher import restart_clash_app, restart_memu_2
+from pyclashbot.memu.launcher import restart_clash_app, restart_memu
 from pyclashbot.utils import Logger
 
 
@@ -270,7 +270,7 @@ def state_restart(logger) -> Literal["clashmain", "restart"]:
     logger.change_status("Restarting")
 
     # restart until it works, then return 'clashmain' as the next state
-    if restart_memu_2(logger) == "restart":
+    if restart_memu(logger) == "restart":
         return "restart"
     else:
         return "clashmain"
@@ -395,18 +395,3 @@ def state_request(logger) -> Literal["restart", "level up reward collection"]:
         return "restart"
 
     return "level up reward collection"
-
-
-def state_restart_clash_app(logger):
-    print("RUNNING RESTART CLASH APP STATE")
-    # Method for the state of the program when restarting clash app]
-    # starts anywhere, ends on clashmain.
-    # returns 'restart' if it fails to restart clash app
-    # reuturns success if it restarts clash app
-
-    # run restart clash from launcher.py
-    if restart_clash_app(logger) != "success":
-        print("FAILURE WITH RESTART CLASH APP")
-        return "restart"
-    else:
-        return "success"

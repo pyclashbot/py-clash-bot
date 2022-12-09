@@ -9,7 +9,6 @@ from .client import (
     scroll_up_fast,
     scroll_up_super_fast,
 )
-from .launcher import restart_and_open_clash
 
 __all__ = [
     "click",
@@ -21,5 +20,4 @@ __all__ = [
     "scroll_up_fast",
     "scroll_up_super_fast",
     "orientate_terminal",
-    "restart_and_open_clash",
 ]
