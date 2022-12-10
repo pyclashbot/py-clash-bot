@@ -45,8 +45,17 @@ def restart_memu(logger):
     # start pyclashbot vm
     click(550, 140)
 
+    # wait for the window to appear
+    wait_for_pyclashbot_window(logger)
+
+    wait_for_black_memu_screen()
+
+    wait_for_memu_loading_screen()
+
+    wait_for_black_memu_screen()
+
     # wait
-    sleep_time = 20
+    sleep_time = 5
     for n in range(sleep_time):
         logger.change_status(f"Waiting for VM to load {n}/{sleep_time}")
         time.sleep(1)
@@ -100,6 +109,11 @@ def orientate_memu_launcher(logger):
 #### making and configuring VMs
 
 
+def rename_first_VM():
+    print("Renaming first VM")
+    pmc.rename_vm(vm_index=0, new_name="(pyclashbot)")
+
+
 def configure_vm(logger: Logger, vm_index):
 
     logger.change_status("Configuring VM")
@@ -122,6 +136,8 @@ def configure_vm(logger: Logger, vm_index):
 
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
+
+    rename_first_VM()
 
 
 def create_vm(logger: Logger):
@@ -187,18 +203,22 @@ def start_vm(logger: Logger):
 
 
 def close_everything_memu():
+    name_list = [
+        "MEmuConsole.exe",
+        "MEmu.exe",
+        "MEmuHeadless.exe",
+    ]
+
     pythoncom.CoInitialize()
     c = wmi.WMI()
     print("Entered close_everything_memu()")
     for process in c.Win32_Process():
-        name_list = [
-            "MEmuConsole.exe",
-            "MEmu.exe",
-            "MEmuHeadless.exe",
-        ]
-        if process.name in name_list:
-            print("Closing process", process.name)
-            process.Terminate()
+        try:
+            if process.name in name_list:
+                print("Closing process", process.name)
+                process.Terminate()
+        except:
+            print("Couldnt close process", process.name)
     print("Exiting close_everything_memu(). . .")
 
 
@@ -262,6 +282,20 @@ def orientate_memu():
             print("Had trouble resizing MEmu window")
     except Exception:
         print("Couldnt orientate MEmu")
+
+
+def wait_for_pyclashbot_window(logger):
+    logger.change_status("Waiting for PyClashBot window to open")
+
+    loops = 0
+    while len(pygetwindow.getWindowsWithTitle("(pyClashBot)")) == 0:
+        loops += 1
+        logger.change_status(
+            "Still waiting for PyClashBot window to open..." + str(loops)
+        )
+        time.sleep(1)
+    logger.change_status("PyClashBot window found open.")
+    time.sleep(2)
 
 
 #### copy of clashmain's wait_for_clash_main_menu methods
@@ -393,6 +427,49 @@ def check_for_friends_logo_on_main():
 
 
 #### extra methods relating to launcher
+
+
+def wait_for_memu_loading_screen():
+    loops = 0
+    while check_if_pixels_indicate_memu_loading_screen():
+        loops += 1
+        print("Waiting for memu loading screen", loops)
+        time.sleep(1)
+    print("Done waiting for memu loading screen")
+
+
+def check_if_pixels_indicate_memu_loading_screen():
+    iar = numpy.asarray(screenshot())
+    pixel = iar[664][7]
+    color = [0, 255, 204]
+    if pixel_is_equal(pixel, color, tol=45):
+        return True
+    return False
+
+
+def wait_for_black_memu_screen():
+    while check_if_memu_screen_is_black():
+        print("Waiting for black screen")
+        time.sleep(1)
+
+
+def check_if_memu_screen_is_black():
+    iar = numpy.asanyarray(screenshot())
+    pix_list = [
+        iar[120][75],
+        iar[450][250],
+        iar[545][95],
+        iar[115][290],
+    ]
+    color_black = [0, 0, 0]
+    for pix in pix_list:
+        if not pixel_is_equal(pix, color_black, tol=45):
+            return False
+    return True
+
+
+# method to get the first vm's name value
+
 
 # def close_clash(logger, pmc, vm_index):
 #     logger.change_status("Closing Clash Royale Application")

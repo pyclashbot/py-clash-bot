@@ -171,7 +171,7 @@ def orientate_terminal():
     """Method for orientating the terminal"""
     try:
         window = pygetwindow.getWindowsWithTitle("Py-ClashBot")[0]
-        window.moveTo(713, 0)
+        window.moveTo(732, 0)
     except Exception:
         print("Couldn't orientate terminal")
 
