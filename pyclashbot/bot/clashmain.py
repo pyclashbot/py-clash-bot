@@ -675,7 +675,7 @@ def open_chests(logger):
                 click(210, 465)
             else:
                 print("Skipping through rewards for chest index: ", index + 1)
-                click(20, 556, clicks=15, interval=0.33)
+                click(20, 556, clicks=15, interval=0.45)
 
             # close chest menu
             print("Closing chest index", index + 1)
@@ -796,14 +796,6 @@ def handle_war_loot_menu():
     print("Skipping thru war chest rewards")
     click(20, 440, clicks=20, interval=0.1)
     time.sleep(1)
-
-    # # click OK
-    # print("Clicking OK after war chest or something")
-    # click(215, 550)
-    # time.sleep(0.5)
-
-    # print("Scrolling down idk why")
-    # scroll_down()
 
 
 def handle_stuck_on_war_final_results_page():
