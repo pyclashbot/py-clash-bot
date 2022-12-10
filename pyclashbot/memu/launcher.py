@@ -1,3 +1,4 @@
+import os
 import subprocess
 import time
 
@@ -84,7 +85,7 @@ def open_memu_launcher(logger):
         windows[0].close()
 
     # get launcher path
-    path = r"D:\Program Files\Microvirt\MEmu\MEmuConsole.exe"
+    path = get_launcher_path()
 
     # start launcher
     logger.change_status("Starting Memu Launcher")
@@ -104,6 +105,13 @@ def orientate_memu_launcher(logger):
     window.moveTo(0, 0)
     window.resizeTo(732, 596)
     logger.change_status("Done orientating Memu launcher")
+
+
+def get_launcher_path():
+    return os.path.join(
+        get_memu_path(),
+        "MEmuConsole.exe",
+    )
 
 
 #### making and configuring VMs
