@@ -41,8 +41,8 @@ from pyclashbot.bot.war import (
     make_a_random_deck_for_this_war_battle,
     wait_for_war_battle_loading,
 )
-from pyclashbot.memu import click, orientate_terminal, restart_and_open_clash
-from pyclashbot.memu.launcher import restart_clash_app, restart_memu
+from pyclashbot.memu import click, orientate_terminal
+from pyclashbot.memu.launcher import restart_memu
 from pyclashbot.utils import Logger
 
 
