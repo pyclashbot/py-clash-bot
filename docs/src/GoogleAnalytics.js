@@ -26,92 +26,11 @@ export function pageChange(page) {
   }
 }
 
-/**
- * source badge click event handler
- */
-export function sourceBadgeEvent() {
+// Track link clicks
+export const handleClick = (event) => {
   ReactGA.event({
-    category: 'User',
-    action: `Clicked source badge`,
+    category: 'Outbound Link',
+    action: 'Click',
+    label: event.currentTarget.href,
   });
-}
-
-/**
- * memu install click event handler
- */
-export function memuDownloadEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: `Clicked memu download`,
-  });
-}
-
-/**
- * test badge click event handler
- */
-export function testBadgeEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: `Clicked test badge`,
-  });
-}
-
-/**
- * pypi badge click event handler
- */
-export function pypiBadgeEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: `Clicked pypi badge`,
-  });
-}
-
-/**
- * python version badge click event handler
- */
-export function pythonVersionBadgeEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: `Clicked python version badge`,
-  });
-}
-
-/**
- * codefactor badge click event handler
- */
-export function codeFactorBadgeEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: `Clicked codefactor badge`,
-  });
-}
-
-/**
- * release link click event handler
- */
-export function releaseLinkEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: 'Clicked release download link',
-  });
-}
-
-/**
- * bug report link click event handler
- */
-export function bugReportEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: 'Clicked bug report link',
-  });
-}
-
-/**
- * feature request link click event handler
- */
-export function featureRequestEvent() {
-  ReactGA.event({
-    category: 'User',
-    action: 'Clicked feature request link',
-  });
-}
+};

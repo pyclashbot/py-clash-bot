@@ -3,19 +3,20 @@
   "version": "0.1.0",
   "homepage": "https://matthewmiglio.github.io/py-clash-bot",
   "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "react-ga4": "^1",
-    "react-helmet": "^6",
-    "react-router-dom": "^6",
-    "web-vitals": "^3"
+    "react": "^18.0",
+    "react-dom": "^18.0",
+    "react-ga4": "^1.0",
+    "react-helmet": "^6.0",
+    "react-router-dom": "^6.0",
+    "web-vitals": "^3.0"
   },
   "devDependencies": {
-    "eslint": "^8",
-    "eslint-config-google": "^0",
-    "eslint-plugin-react": "^7.31.11",
-    "gh-pages": "^4",
-    "react-scripts": "^5"
+    "eslint": "^8.0",
+    "eslint-config-google": "^0.0",
+    "eslint-config-react-app": "^7.0",
+    "eslint-plugin-react": "^7.0",
+    "gh-pages": "^4.0",
+    "react-scripts": "^5.0"
   },
   "scripts": {
     "start": "react-scripts start",
