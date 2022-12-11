@@ -148,6 +148,7 @@ def main_gui():
             break
 
         if event == "Start":
+
             # reset the logger and communication queue for a new thread
             statistics_q = Queue()
             logger = Logger(statistics_q, console_log=console_log)
