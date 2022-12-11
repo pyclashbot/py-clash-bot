@@ -85,6 +85,13 @@ def collect_battlepass_rewards(logger):
         logger.add_battlepass_reward_collection()
 
     logger.change_status("Done collecting battlepass rewards.")
+    time.sleep(1)
 
     # should be on clash main at this point
-    return "clashmain" if check_if_on_clash_main_menu() else "restart"
+    if check_if_on_clash_main_menu():
+        return "clashmain"
+    else:
+        print(
+            "Not on clash main at the end of collecting battlepass rewards loop. returning restart"
+        )
+        return "restart"
