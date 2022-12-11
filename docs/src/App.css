@@ -1,0 +1,48 @@
+/*
+  App.css
+*/
+
+.App {
+    color: #ccc;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+@media only screen and (max-width: 600px) {
+    .App {
+        font-size: 14px;
+    }
+}
+
+.App h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #fff;
+    margin: 20px 0;
+}
+
+.App p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 20px 0;
+}
+
+.App ul {
+    list-style: square;
+}
+
+
+.App a {
+    color: #8be9fd;
+    text-decoration: none;
+}
+
+.App code {
+    color: #50fa7b;
+    background-color: #44475a;
+}
