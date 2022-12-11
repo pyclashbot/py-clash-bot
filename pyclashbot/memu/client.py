@@ -9,6 +9,7 @@ import pygetwindow
 from ahk import AHK
 
 from pyclashbot.utils import setup_ahk
+from pyclashbot.utils.image_logging import save_this_screen_image_to_log
 
 setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
@@ -126,6 +127,9 @@ def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
         duration (float, optional): Duration of the click. Defaults to 1.
         max_attempts (int, optional): Maximum amount of attempts to click the given coordinate. Defaults to 3. Set to less than 1 for infinite attempts.
     """
+    # save this image to image log
+    save_this_screen_image_to_log(logger)
+
     origin = ahk.mouse_position
     duration = min(10, duration)  # 10 seconds max (ahk limitation)
     speed = duration * 10  # speed for ahk (0-100)
