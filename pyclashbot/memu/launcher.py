@@ -449,6 +449,9 @@ def wait_for_memu_loading_screen():
         print("Waiting for memu loading screen", loops)
         time.sleep(1)
         if loops > 40:
+            print(
+                "wait_for_memu_loading_screen() in launcher.py loops > 40 so returning restart"
+            )
             return "restart"
     print("Done waiting for memu loading screen")
 
@@ -467,6 +470,9 @@ def wait_for_black_memu_screen():
     while check_if_memu_screen_is_black():
         loops += 1
         if loops > 50:
+            print(
+                "wait_for_black_memu_screen() in launcher.py loops > 50 so returning restart"
+            )
             return "restart"
         print("Waiting for black screen")
         time.sleep(1)
