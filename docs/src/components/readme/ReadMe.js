@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import React, {Component} from 'react';
 import {handleClick} from '../../GoogleAnalytics';
+import ReleaseLink from '../release/ReleaseLink';
 import './ReadMe.css';
 
 /**
@@ -50,22 +51,14 @@ export default class ReadMe extends Component {
           <li>Automatic chest farming</li>
           <li>Multi-account support</li>
         </ul>
-        <h2>Requirements</h2>
-        <ul>
-          <li>Windows OS</li>
-        </ul>
         <h2>Installation</h2>
         <ol>
           <li>
-            Download and run the latest windows installer{' '}
-            <a href="https://github.com/matthewmiglio/py-clash-bot/releases/latest" onClick={handleClick}>
-              here
-            </a>
-            .
+            <ReleaseLink child="Download and run the latest windows installer"/>
           </li>
           <li>Run the shortcut on the desktop</li>
           <li>
-            The program will automatically install MEmu and AutoHotKey, just follow the
+            The program will automatically install MEmu and AutoHotKey, follow the
             installation prompts
           </li>
         </ol>
