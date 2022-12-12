@@ -1,0 +1,14 @@
+.Readme.badge-flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.badge {
+    margin-right: 6px;
+}
+
+.screenshot {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
