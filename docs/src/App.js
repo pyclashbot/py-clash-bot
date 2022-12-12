@@ -3,7 +3,7 @@ import {initializeGA} from './GoogleAnalytics';
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import AppHelmet from './components/AppHelmet';
-import Contributing from './components/contributing/Contributing';
+import './App.css';
 
 /**
  * main app
@@ -13,10 +13,9 @@ export default function App() {
   initializeGA();
   return (
     <Router basename="/py-clash-bot">
-      <div className="mume markdown-preview  ">
+      <div className="App">
         <AppHelmet />
         <Routes>
-          <Route path="contributing" element={<Contributing />} />
           <Route path="/" element={<ReadMe />} />
         </Routes>
       </div>
