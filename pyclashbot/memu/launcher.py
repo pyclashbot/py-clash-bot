@@ -49,11 +49,14 @@ def restart_memu(logger):
     # wait for the window to appear
     wait_for_pyclashbot_window(logger)
 
-    wait_for_black_memu_screen()
+    if wait_for_black_memu_screen() == "restart":
+        return restart_memu(logger)
 
-    wait_for_memu_loading_screen()
+    if wait_for_memu_loading_screen() == "restart":
+        return restart_memu(logger)
 
-    wait_for_black_memu_screen()
+    if wait_for_black_memu_screen() == "restart":
+        return restart_memu(logger)
 
     # wait
     sleep_time = 5
@@ -75,6 +78,8 @@ def restart_memu(logger):
 
     # actually wait for clash main if need to wait longer
     wait_for_clash_main_menu(logger)
+
+    return True
 
 
 def open_memu_launcher(logger):
@@ -443,6 +448,8 @@ def wait_for_memu_loading_screen():
         loops += 1
         print("Waiting for memu loading screen", loops)
         time.sleep(1)
+        if loops > 40:
+            return "restart"
     print("Done waiting for memu loading screen")
 
 
@@ -456,7 +463,11 @@ def check_if_pixels_indicate_memu_loading_screen():
 
 
 def wait_for_black_memu_screen():
+    loops = 0
     while check_if_memu_screen_is_black():
+        loops += 1
+        if loops > 50:
+            return "restart"
         print("Waiting for black screen")
         time.sleep(1)
 
