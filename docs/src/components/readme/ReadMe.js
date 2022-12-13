@@ -2,7 +2,10 @@
 import React, {Component} from 'react';
 import {handleClick} from '../../GoogleAnalytics';
 import ReleaseLink from '../release/ReleaseLink';
+import Badge from '../badge/Badge';
 import logo from '../../assets/pixel-pycb.svg';
+import demogame from '../../assets/demo-game.webp';
+import demogui from '../../assets/demo-gui.webp';
 import './ReadMe.css';
 
 /**
@@ -20,36 +23,14 @@ export default class ReadMe extends Component {
           <div className='header-block'>
             <div className='text-block'>
               <h1>py-clash-bot</h1>
-              <h2 className='badge-flex'>
-                <a className='badge' href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml" onClick={handleClick}>
-                  <img
-                    alt="Build windows package"
-                    src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml/badge.svg"
-                    content="no-cache, no-store, must-revalidate"
-                  />
-                </a>
-                <a className='badge' href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml" onClick={handleClick}>
-                  <img
-                    alt="GitHub Python Tests"
-                    src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg"
-                    content="no-cache, no-store, must-revalidate"
-                  />
-                </a>
-                <a className='badge' href="https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot" onClick={handleClick}>
-                  <img
-                    alt="CodeFactor"
-                    src="https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge"
-                    content="no-cache, no-store, must-revalidate"
-                  />
-                </a>
-              </h2>
+              <Badge/>
             </div>
             <div className='logo-block'>
               <img className='logo' alt="py-clash-bot logo" src={logo}
                 content="max-age=259200" />
             </div>
           </div>
-          <p>
+          <p className='description'>
                 py-clash-bot is an open-source application that allows users to automate
                 their Clash Royale gameplay on Windows using an emulated Android phone. The
                 bot uses a combination of image recognition, mouse control, and Android
@@ -91,13 +72,21 @@ export default class ReadMe extends Component {
           </ol>
         </div>
         <div className='block'>
-          <h2>Screenshots</h2>
-          <img
-            className='screenshot'
-            alt="User interface"
-            src="https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/user_interface_nov22.webp?raw=true"
-            content="max-age=259200"
-          />
+          <h2>Demo</h2>
+          <div className="demo">
+            <img
+              className='demo-game'
+              alt="Clash Royale gameplay"
+              src={demogame}
+              content="max-age=259200"
+            />
+            <img
+              className='demo-gui'
+              alt="User interface"
+              src={demogui}
+              content="max-age=259200"
+            />
+          </div>
         </div>
         <div className='block'>
           <h2>Contribute</h2>
