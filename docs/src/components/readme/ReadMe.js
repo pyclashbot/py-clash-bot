@@ -74,18 +74,8 @@ export default class ReadMe extends Component {
         <div className='block'>
           <h2>Demo</h2>
           <div className="demo">
-            <img
-              className='demo-game'
-              alt="Clash Royale gameplay"
-              src={demogame}
-              content="max-age=259200"
-            />
-            <img
-              className='demo-gui'
-              alt="User interface"
-              src={demogui}
-              content="max-age=259200"
-            />
+            <img className='demo-game' alt="Clash Royale gameplay" src={demogame}/>
+            <img className='demo-gui' alt="User interface" src={demogui} />
           </div>
         </div>
         <div className='block'>
