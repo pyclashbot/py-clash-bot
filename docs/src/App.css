@@ -1,11 +1,7 @@
-/*
-  App.css
-*/
-
 .App {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
+    ;
 }
 
 @media only screen and (max-width: 600px) {
@@ -14,15 +10,7 @@
     }
 }
 
-.App h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #fff;
-    margin: 20px 0;
-}
+
 
 .App p {
     font-size: 16px;
@@ -34,13 +22,17 @@ h6 {
     list-style: square;
 }
 
+.App ol li {
+    padding-bottom: 6px;
+}
+
 
 .App a {
-    color: #8be9fd;
+    color: #0000FF;
     text-decoration: none;
 }
 
 .App code {
-    color: #50fa7b;
-    background-color: #44475a;
+    color: #006400;
+    background-color: #D3D3D3;
 }
