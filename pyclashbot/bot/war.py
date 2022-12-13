@@ -27,7 +27,7 @@ def handle_war_attacks(logger):
     logger.change_status("Checking if in a clan")
     if not check_if_in_a_clan(logger):
         logger.change_status("Not in a clan. Returning.")
-        if get_to_clash_main_from_clan_page() == "restart":
+        if get_to_clash_main_from_clan_page(logger) == "restart":
             print(
                 "Failed to get back to clash main after finding no clan in handle_war_attacks()"
             )
