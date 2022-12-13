@@ -22,6 +22,7 @@ export default class AppHelmet extends Component {
           name="twitter:card"
           content="A Clash Royale automation bot written in Python"
         />
+        <meta httpEquiv="Cache-Control" content="max-age=86400" />
       </Helmet>
     );
   }
