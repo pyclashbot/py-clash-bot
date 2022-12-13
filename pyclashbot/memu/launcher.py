@@ -306,6 +306,8 @@ def wait_for_pyclashbot_window(logger):
         logger.change_status(
             "Still waiting for PyClashBot window to open..." + str(loops)
         )
+        if loops > 25:
+            return "restart"
         time.sleep(1)
     logger.change_status("PyClashBot window found open.")
     time.sleep(2)
