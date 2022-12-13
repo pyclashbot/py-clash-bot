@@ -1,14 +1,97 @@
-.Readme.badge-flex {
+.Readme {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.block {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #C0C0C0;
+    box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
+    -webkit-box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
+    -moz-box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
+}
+
+.header-block {
     display: flex;
     justify-content: space-between;
+    flex-direction: row-reverse;
+    height: 100%;
+}
+
+.header-block .logo-block {
+    width: 15%;
+    flex: 1;
+    position: relative;
+    margin-right: 5px;
+}
+
+.header-block .logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    object-fit: scale-down;
+}
+
+
+.header-block .text-block {
+    width: 85%;
+}
+
+.ReadMe h1 {
+    background-color: #018281;
+    color: #FFFFFF;
+    box-shadow: inset -2px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
+    -webkit-box-shadow: inset -2px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
+    -moz-box-shadow: inset -2px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
+    padding: 5px 0px 5px 10px;
+}
+
+.ReadMe h2,
+h3,
+h4,
+h5,
+h6 {
+    background-color: #018281;
+    color: #FFFFFF;
+    box-shadow: inset -1px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
+    -webkit-box-shadow: inset -1px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
+    -moz-box-shadow: inset -1px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
+    padding: 2px 0px 2px 6px;
+    margin: 20px 0;
+}
+
+.badge-flex {
+    display: flex;
+    justify-content: left;
+
 }
 
 .badge {
     margin-right: 6px;
 }
 
+
+.download-button {
+    padding: 1px 8px;
+    font-size: 14px;
+    background-color: #C0C0C0;
+    box-shadow: 2px 2px 2px #000000;
+    -webkit-box-shadow: 2px 2px 2px #000000;
+    -moz-box-shadow: 2px 2px 2px #000000;
+}
+
+.download-button:hover {
+    background-color: #b1b1b1;
+}
+
 .screenshot {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
 }
