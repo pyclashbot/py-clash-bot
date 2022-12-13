@@ -10,10 +10,6 @@ py-clash-bot is an open-source application that allows users to automate their C
 - Automatic chest farming
 - Multi-account support
 
-## Requirements
-
-- Windows OS
-
 ## Installation
 
 1. Download and run the latest windows installer [here](https://github.com/matthewmiglio/py-clash-bot/releases/latest).
@@ -26,14 +22,10 @@ py-clash-bot is an open-source application that allows users to automate their C
 2. Click the `Start` button to begin automation
 3. Enjoy the benefits of always-on farming with the py-clash-bot taking care of the heavy lifting for you
 
-## Screenshots
+## Demo
 
-![User interface](https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/user_interface_nov22.webp?raw=true)
+<img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/demo-game.gif?raw=true" width="50%"/><img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/demo-gui.gif?raw=true" width="50%"/>
 
 ## Contribute
 
 We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/matthewmiglio/py-clash-bot/issues) or submit a pull request.
-
-## License
-
-py-clash-bot is licensed under the terms of the MIT license. See the `LICENSE` file for more information.
