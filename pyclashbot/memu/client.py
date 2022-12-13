@@ -128,7 +128,7 @@ def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
         max_attempts (int, optional): Maximum amount of attempts to click the given coordinate. Defaults to 3. Set to less than 1 for infinite attempts.
     """
     # save this image to image log
-    save_this_screen_image_to_log(logger)
+    # save_this_screen_image_to_log(logger)
 
     origin = ahk.mouse_position
     duration = min(10, duration)  # 10 seconds max (ahk limitation)
