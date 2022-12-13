@@ -1,0 +1,10 @@
+.badge-flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+
+}
+
+.badge {
+    margin-right: 6px;
+}
