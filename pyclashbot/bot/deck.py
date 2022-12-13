@@ -1,5 +1,6 @@
 import random
 import time
+from typing import Literal
 
 import numpy
 
@@ -123,11 +124,11 @@ def randomize_current_deck(logger):
     return None
 
 
-def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
+def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls: int):
     # get random scroll amount in this range
     print("max_scrolls is ", max_scrolls)
-    if max_scrolls < 1:
-        scrolls = 1
+    if max_scrolls <= 3:
+        scrolls = max_scrolls if max_scrolls > 0 else 1
         print("Scrolls is minimum so scrolls is ", scrolls)
     else:
         scrolls = random.randint(3, max_scrolls)
@@ -227,12 +228,12 @@ def find_for_seasonal_card_boosts_icon():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def count_scrolls_in_card_page(logger):
+def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     if check_if_mimimum_scroll_case():
         return 0
 
     # Count scrolls
-    count = 1
+    count: int = 1
     scroll_down_super_fast()
     loops = 0
     while check_if_can_still_scroll_in_card_page():
