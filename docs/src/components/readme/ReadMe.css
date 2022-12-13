@@ -1,3 +1,21 @@
+.Readme {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.block {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    background-color: #4f5057;
+    box-shadow:inset 2px 1px 3px #7a7a7a;
+    -webkit-box-shadow:inset 2px 1px 3px #7a7a7a;
+    -moz-box-shadow:inset 2px 1px 3px #7a7a7a;
+}
+
 .Readme.badge-flex {
     display: flex;
     justify-content: space-between;
@@ -11,4 +29,7 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
 }
