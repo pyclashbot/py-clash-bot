@@ -1,8 +1,6 @@
 import os
 import time
 
-from pyclashbot.memu.client import screenshot
-
 MAX_FILE_COUNT = 100
 
 # method to get this file location
