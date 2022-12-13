@@ -83,7 +83,7 @@ def randomize_and_select_deck_2(logger):
     if get_to_clash_main_from_card_page(logger) == "restart":
         logger.change_status("Failure getting to clash main")
         return "restart"
-    time.sleep(5)
+    time.sleep(1)
     return None
 
 
@@ -125,7 +125,13 @@ def randomize_current_deck(logger):
 
 def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls):
     # get random scroll amount in this range
-    scrolls = 1 if max_scrolls < 1 else random.randint(1, max_scrolls)
+    print("max_scrolls is ", max_scrolls)
+    if max_scrolls < 1:
+        scrolls = 1
+        print("Scrolls is minimum so scrolls is ", scrolls)
+    else:
+        scrolls = random.randint(3, max_scrolls)
+        print("Scrolls is random so scrolls is ", scrolls)
 
     # scroll random amount
     loops = 0
@@ -189,10 +195,36 @@ def check_if_mimimum_scroll_case():
     scroll_down()
     time.sleep(3)
 
-    minimum_case = check_if_pixels_indicate_minimum_scroll_case_with_delay()
+    minimum_case = True
+    seasonal_card_boosts_icon_coord = find_for_seasonal_card_boosts_icon()
+    if seasonal_card_boosts_icon_coord is None:
+        pass
+    elif seasonal_card_boosts_icon_coord[1] < 515:
+        minimum_case = False
 
     scroll_up_super_fast()
     return minimum_case
+
+
+def find_for_seasonal_card_boosts_icon():
+    current_image = screenshot()
+    reference_folder = "check_for_seasonal_card_boosts_icon"
+
+    references = make_reference_image_list(
+        get_file_count(
+            "check_for_seasonal_card_boosts_icon",
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
 
 
 def count_scrolls_in_card_page(logger):
@@ -218,7 +250,7 @@ def count_scrolls_in_card_page(logger):
     time.sleep(1)
 
     print(f"Counted scrolls: {count}")
-    return 0 if count == 0 else count - 3
+    return 0 if count == 0 else count - 1
 
 
 #### detection methods
@@ -346,30 +378,113 @@ def find_use_card_button():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def check_if_can_still_scroll_in_card_page():
+def check_if_can_still_scroll_in_card_page_2():
     iar = numpy.asarray(screenshot())
-    pix_list_1 = [
-        iar[559][83],
-        iar[559][170],
-        iar[559][250],
-        iar[559][340],
+    pix_list = [
+        iar[552][341],
+        iar[529][363],
+        iar[561][237],
+        iar[530][271],
     ]
 
-    pix_list_2 = [
-        iar[495][83],
-        iar[495][172],
-        iar[495][259],
-        iar[495][342],
+    # print_pix_list(pix_list)
+
+    # classify this pix list
+    color_blue = [15, 70, 125]
+    color_purple = [204, 102, 255]
+
+    classified_pix_list = []
+    for pix in pix_list:
+        if pixel_is_equal(pix, color_blue, tol=45):
+            classified_pix_list.append("Blue")
+        elif check_if_pixel_is_grey(pix):
+            classified_pix_list.append("Grey")
+        elif pixel_is_equal(pix, color_purple, tol=45):
+            classified_pix_list.append("Purple")
+        else:
+            classified_pix_list.append("Other")
+
+    # if any of the pixels aren't grey or blue, we can keep scrolling
+    for color in classified_pix_list:
+        if color != "Grey" and color != "Blue" and color != "Purple":
+            return True
+    return False
+
+
+def check_if_can_still_scroll_in_card_page_3():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[489][66],
+        iar[500][94],
+        iar[495][155],
+        iar[546][176],
     ]
 
-    # casting to int because numpy arrays are weird
-    pix_list_1_as_int = [[int(pix[0]), int(pix[1]), int(pix[2])] for pix in pix_list_1]
-    pix_list_2_as_int = [[int(pix[0]), int(pix[1]), int(pix[2])] for pix in pix_list_2]
+    # print_pix_list(pix_list)
 
-    # identifing each pix list as blue, grey, or None
-    return bool(
-        is_not_blue_or_grey(pix_list_1_as_int) or is_not_blue_or_grey(pix_list_2_as_int)
-    )
+    # classify this pix list
+    color_blue = [15, 70, 125]
+    color_purple = [204, 102, 255]
+
+    classified_pix_list = []
+    for pix in pix_list:
+        if pixel_is_equal(pix, color_blue, tol=45):
+            classified_pix_list.append("Blue")
+        elif check_if_pixel_is_grey(pix):
+            classified_pix_list.append("Grey")
+        elif pixel_is_equal(pix, color_purple, tol=45):
+            classified_pix_list.append("Purple")
+        else:
+            classified_pix_list.append("Other")
+
+    # if any of the pixels aren't grey or blue, we can keep scrolling
+    for color in classified_pix_list:
+        if color != "Grey" and color != "Blue" and color != "Purple":
+            return True
+    return False
+
+
+def check_if_can_still_scroll_in_card_page_4():
+    iar = numpy.asarray(screenshot())
+    pix_list = [
+        iar[313][147],
+        iar[371][161],
+        iar[306][235],
+        iar[346][275],
+    ]
+
+    # print_pix_list(pix_list)
+
+    # classify this pix list
+    color_blue = [15, 70, 125]
+    color_purple = [204, 102, 255]
+
+    classified_pix_list = []
+    for pix in pix_list:
+        if pixel_is_equal(pix, color_blue, tol=45):
+            classified_pix_list.append("Blue")
+        elif check_if_pixel_is_grey(pix):
+            classified_pix_list.append("Grey")
+        elif pixel_is_equal(pix, color_purple, tol=45):
+            classified_pix_list.append("Purple")
+        else:
+            classified_pix_list.append("Other")
+
+    # if any of the pixels aren't grey or blue, we can keep scrolling
+    for color in classified_pix_list:
+        if color != "Grey" and color != "Blue" and color != "Purple":
+            return True
+    return False
+
+
+def check_if_can_still_scroll_in_card_page():
+    if not check_if_can_still_scroll_in_card_page_2():
+        return False
+    if not check_if_can_still_scroll_in_card_page_3():
+        return False
+    if not check_if_can_still_scroll_in_card_page_4():
+        return False
+    return True
 
 
 def look_for_card_collection_icon_on_card_page():
