@@ -17,11 +17,14 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row-reverse;
-    height: 100%;
+    height: fit-content;
+}
+
+.header-block .text-block {
+    width: calc(100% - 125px);
 }
 
 .header-block .logo-block {
-    width: 15%;
     flex: 1;
     position: relative;
     margin-right: 5px;
@@ -35,10 +38,6 @@
     object-fit: scale-down;
 }
 
-
-.header-block .text-block {
-    width: 85%;
-}
 
 .ReadMe h1 {
     background-color: #018281;
