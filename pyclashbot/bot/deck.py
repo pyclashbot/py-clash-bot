@@ -587,7 +587,7 @@ def check_if_pixels_indicate_minimum_scroll_case():
     return any(not pixel_is_equal(color, pix, tol=60) for pix in pix_list)
 
 
-def randomize_and_select_deck_2():
+def randomize_and_select_deck_2(logger):
     # get to card page
     print("Getting to card page to randomize deck.")
     get_to_card_page(logger)
