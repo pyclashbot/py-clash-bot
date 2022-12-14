@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {handleClick} from '../../GoogleAnalytics';
+import {handleDownload} from '../../GoogleAnalytics';
 
 const API_URL =
   'https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest';
@@ -45,7 +45,7 @@ export default class ReleaseLink extends Component {
       <a
         className="release_link"
         href={this.state.release_url}
-        onClick={() => handleClick()}
+        onClick={() => handleDownload()}
         rel="preconnect"
       >
         {this.props.child}
