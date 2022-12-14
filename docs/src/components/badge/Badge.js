@@ -12,7 +12,7 @@ export default class Badge extends Component {
  */
   render() {
     return (
-      <h1 className='badge-flex'>
+      <h2 className='badge-flex'>
         <a className='badge' href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml" onClick={handleClick}>
           <img
             alt="Build windows package"
@@ -34,7 +34,7 @@ export default class Badge extends Component {
             content="no-cache, no-store, must-revalidate"
           />
         </a>
-      </h1>
+      </h2>
     );
   }
 }
