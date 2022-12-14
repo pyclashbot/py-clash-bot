@@ -34,3 +34,11 @@ export const handleClick = (event) => {
     label: event.currentTarget.href,
   });
 };
+
+export const handleDownload = (event) => {
+  ReactGA.event({
+    category: 'Release',
+    action: 'Download',
+    label: event.currentTarget.href,
+  });
+};
