@@ -61,33 +61,6 @@ def handle_randomize_deck_failure(logger):
     return None
 
 
-def randomize_and_select_deck_2(logger):
-    # Method to randomize deck number 2 of this account
-
-    logger.change_status("Randomizing deck number 2")
-    # get to card page
-    if get_to_card_page(logger) == "restart":
-        logger.change_status("Failed getting to card page from clash main")
-        return "restart"
-
-    # select deck 2
-    print("Clicking deck 2")
-    click(173, 190)
-    time.sleep(1)
-
-    # randomize this deck
-    if randomize_current_deck(logger) == "restart":
-        logger.change_status("Randomize deck failure...")
-        return handle_randomize_deck_failure(logger)
-
-    # return to clash main
-    if get_to_clash_main_from_card_page(logger) == "restart":
-        logger.change_status("Failure getting to clash main")
-        return "restart"
-    time.sleep(1)
-    return None
-
-
 def randomize_current_deck(logger):
     # figure out how much you can scroll down in your card list
     max_scrolls = count_scrolls_in_card_page(logger)
@@ -229,14 +202,14 @@ def find_for_seasonal_card_boosts_icon():
 
 
 def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
-    if check_if_mimimum_scroll_case():
-        return 0
+    print("Counting maximum scrolls in card page")
 
     # Count scrolls
     count: int = 1
     scroll_down_super_fast()
     loops = 0
     while check_if_can_still_scroll_in_card_page():
+        print("Scrolling down in card page: ", count)
         loops += 1
         if loops > 40:
             logger.change_status("Failed counting scrolls in card page")
@@ -612,3 +585,115 @@ def check_if_pixels_indicate_minimum_scroll_case():
     ]
 
     return any(not pixel_is_equal(color, pix, tol=60) for pix in pix_list)
+
+
+def randomize_and_select_deck_2():
+    # get to card page
+    print("Getting to card page to randomize deck.")
+    get_to_card_page(logger)
+    print("Done getting to card page to randomize deck.")
+
+    # click deck 2
+    print("Clicking deck 2")
+    click(173, 190)
+    time.sleep(1)
+
+    # check if minimum scroll case
+    minimum_scroll_case_boolean = check_if_mimimum_scroll_case()
+    print(minimum_scroll_case_boolean, minimum_scroll_case_boolean)
+
+    # for each card slot, scroll according to which case it is, then replace with random card
+    randomize_this_deck(logger, minimum_scroll_case_boolean)
+
+    # return to clash main
+    if get_to_clash_main_from_card_page(logger) == "restart":
+        logger.change_status("Failure getting to clash main")
+        return "restart"
+    time.sleep(1)
+
+
+def randomize_this_deck(logger, minimum_scroll_case_boolean):
+    card_coord_list = [
+        [75, 271],
+        [162, 277],
+        [250, 267],
+        [337, 267],
+        [77, 400],
+        [174, 398],
+        [250, 411],
+        [325, 404],
+    ]
+
+    # count maximum scrolls
+    print("Coutning maximum scrolls for deck randomization.")
+    maximum_scrolls = count_scrolls_in_card_page(logger)
+
+    # for each card slot, replace with random card
+    print("Starting card replacement loop")
+    for card_to_replace_coord in card_coord_list:
+        # calculate a an amount to randomly scroll
+        if minimum_scroll_case_boolean:
+            minimum_scrolls = 1
+        else:
+            minimum_scrolls = 3
+        print(
+            "minimum_scroll_case_boolean is ",
+            minimum_scroll_case_boolean,
+            " so minimum scrolls is ",
+            minimum_scrolls,
+        )
+
+        # handle possiblity of minimum being higher than maximum
+        if minimum_scrolls > maximum_scrolls:
+            print(
+                "minimum_scrolls is greater than maximum_scrolls so making minimum_scrolls = maximum_scrolls"
+            )
+            minimum_scrolls = maximum_scrolls
+
+        random_scroll_amount = random.randint(minimum_scrolls, maximum_scrolls)
+        print(
+            "This random scroll amount is ",
+            random_scroll_amount,
+            " within a range of (",
+            minimum_scrolls,
+            ",",
+            maximum_scrolls,
+            ")",
+        )
+
+        # scroll that amount
+        for _ in range(random_scroll_amount):
+            scroll_down_super_fast()
+            time.sleep(0.1)
+
+        # click randomly until we get a 'use' button
+        use_card_button_coord = None
+        loops = 0
+
+        print("Clicking randomly until we get a use button")
+        while use_card_button_coord is None:
+            print("Clicking cards randomly")
+            loops += 1
+            if loops > 30:
+                print("Clicked around for a random card too many times. Restarting")
+                return "restart"
+            # find a random card on this page
+            replacement_card_coord = find_random_card_coord(logger)
+            if replacement_card_coord == "restart":
+                logger.change_status("Failure replacing card")
+                return "restart"
+            click(replacement_card_coord[0], replacement_card_coord[1])
+            time.sleep(1)
+
+            # get a random card from this screen to use
+            use_card_button_coord = find_use_card_button()
+
+        # click use card
+        print("Clicking use card button")
+        click(use_card_button_coord[0], use_card_button_coord[1])
+        time.sleep(1)
+
+        # select the card coord in the deck that we're replacing with the random card
+        print("selecting the card to replace")
+        click(card_to_replace_coord[0], card_to_replace_coord[1])
+        time.sleep(0.22)
