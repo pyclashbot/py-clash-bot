@@ -45,7 +45,7 @@ export default class ReleaseLink extends Component {
       <a
         className="release_link"
         href={this.state.release_url}
-        onClick={() => handleDownload()}
+        onClick={(event) => handleDownload(event, this.state.release_url)}
         rel="preconnect"
       >
         {this.props.child}
