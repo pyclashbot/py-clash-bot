@@ -1,5 +1,6 @@
 import ctypes
 import os
+import sys
 import tkinter.messagebox
 
 
@@ -16,5 +17,4 @@ if not check_if_program_is_running_in_admin():
         "CRITICAL ERROR",
         "This program MUST be running in administrator mode!\n\nClose the running program and restart it as administrator.",
     )
-    while True:
-        pass
+    sys.exit()
