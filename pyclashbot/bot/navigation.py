@@ -18,6 +18,7 @@ from pyclashbot.memu.client import (
 )
 
 
+####Main navigation methods
 def get_to_card_page(logger):
     # Method to get to the card page on clash main from the clash main menu
     print("get to card page")
@@ -223,6 +224,7 @@ def get_to_clan_page(logger):
         on_clan_chat_page = check_if_on_clan_page()
 
 
+####Methods for handling popups
 def handle_war_loot_chest():
     if check_for_war_loot_chest():
         print("Found a war chest in the way...")
@@ -267,6 +269,48 @@ def handle_stuck_on_war_final_results_page():
         time.sleep(1)
 
 
+def handle_final_results_popup():
+    print("Doing final results popup hanlding.")
+
+    # click OK
+    click(220, 555)
+    time.sleep(5)
+
+
+def open_war_chest(logger):
+    # click chset
+    logger.change_status("Opening the war chest. . .")
+    click(210, 440)
+    time.sleep(1)
+
+    # open it
+    logger.change_status("Skipping through rewards. . .")
+    for n in range(15):
+        click(10, 220)
+    time.sleep(3)
+
+    # Click OK on war results page popup
+    print("Clicking OK on war results page popup")
+    click(205, 555)
+    for n in range(5):
+        print(
+            "Manual wait time after closing war results page popup after opening war chest:",
+            n,
+        )
+        time.sleep(1)
+
+    # increment logger
+    print("Incrementing war chest collection counter.")
+    logger.add_war_chest_collection()
+
+
+def handle_war_chest_obstruction(logger):
+    if check_for_war_chest_obstruction():
+        logger.change_status("Opening war chest.")
+        open_war_chest(logger)
+
+
+####Methods for detecting the page
 def check_if_stuck_on_war_final_results_page():
     iar = numpy.asarray(screenshot())
     pix_list = [
@@ -505,14 +549,6 @@ def check_if_on_shop_page():
     return True
 
 
-def handle_final_results_popup():
-    print("Doing final results popup hanlding.")
-
-    # click OK
-    click(220, 555)
-    time.sleep(5)
-
-
 def find_switch_accouts_button():
     current_image = screenshot()
     reference_folder = "find_switch_accouts_button"
@@ -534,12 +570,6 @@ def find_switch_accouts_button():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def handle_war_chest_obstruction(logger):
-    if check_for_war_chest_obstruction():
-        logger.change_status("Opening war chest.")
-        open_war_chest(logger)
-
-
 def check_for_war_chest_obstruction():
     current_image = screenshot()
     reference_folder = "check_for_war_chest_obstruction"
@@ -558,30 +588,3 @@ def check_for_war_chest_obstruction():
     )
 
     return check_for_location(locations)
-
-
-def open_war_chest(logger):
-    # click chset
-    logger.change_status("Opening the war chest. . .")
-    click(210, 440)
-    time.sleep(1)
-
-    # open it
-    logger.change_status("Skipping through rewards. . .")
-    for n in range(15):
-        click(10, 220)
-    time.sleep(3)
-
-    # Click OK on war results page popup
-    print("Clicking OK on war results page popup")
-    click(205, 555)
-    for n in range(5):
-        print(
-            "Manual wait time after closing war results page popup after opening war chest:",
-            n,
-        )
-        time.sleep(1)
-
-    # increment logger
-    print("Incrementing war chest collection counter.")
-    logger.add_war_chest_collection()
