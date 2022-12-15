@@ -2,7 +2,6 @@ import os
 import time
 from os.path import dirname, join
 
-import matplotlib.pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
@@ -180,11 +179,3 @@ def orientate_terminal():
         print("Couldn't orientate terminal")
 
 
-def show_image(image):
-    """Method to show a PIL image using matlibplot
-
-    Args:
-        image (PIL.Image): Image to show
-    """
-    plt.imshow(numpy.array(image))
-    plt.show()
