@@ -3,11 +3,10 @@ import time
 
 import numpy
 
-from pyclashbot.bot.clashmain import (
-    check_if_in_a_clan,
-    check_if_in_battle_with_delay,
+from pyclashbot.bot.clashmain import check_if_in_a_clan, check_if_in_battle_with_delay
+from pyclashbot.bot.navigation import (
     get_to_clash_main_from_clan_page,
-    handle_war_chest_obstruction,
+    get_to_war_page_from_main,
 )
 from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
 from pyclashbot.memu import (
@@ -156,39 +155,6 @@ def make_a_random_deck_for_this_war_battle():
     print("Closing edit war deck menu.")
     click(205, 95)
     time.sleep(1)
-
-
-def check_if_on_war_page():
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[73][43],
-        iar[83][43],
-    ]
-    color = [232, 225, 236]
-    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
-
-
-def get_to_war_page_from_main(logger):
-    print("getting to war page from clash main.")
-    if check_if_on_war_page():
-        return None
-
-    click(315, 635)
-    time.sleep(3)
-
-    loops = 0
-    while not check_if_on_war_page():
-        print("still not on war page. Cycling.")
-        handle_war_chest_obstruction(logger)
-        loops += 1
-        if loops > 20:
-            logger.change_status(
-                "failure getting to war page using get_to_war_page_from_main()"
-            )
-            return "restart"
-        click(280, 620)
-        time.sleep(1)
-    return None
 
 
 def find_battle_icon_on_war_page():
