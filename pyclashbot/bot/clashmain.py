@@ -499,6 +499,7 @@ def find_and_click_2v2_quickmatch_button(logger):
         coords = find_2v2_quick_match_button()
     time.sleep(0.33)
     # once we find the coords, click them
+    print("Found 2v2 quickmatch button, clicking it")
     click(coords[0], coords[1])
     logger.change_status("Done queueing a 2v2 quickmatch")
 
