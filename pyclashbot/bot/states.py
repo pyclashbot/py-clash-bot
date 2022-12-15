@@ -7,13 +7,8 @@ from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
 from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
     check_if_in_battle_with_delay,
-    check_if_on_clan_page,
     check_if_on_clash_main_menu,
-    check_if_on_first_card_page,
     get_to_account,
-    get_to_card_page,
-    get_to_clash_main_from_card_page,
-    get_to_clash_main_from_clan_page,
     handle_card_mastery_notification,
     open_chests,
     start_2v2,
@@ -31,12 +26,18 @@ from pyclashbot.bot.fight import (
 )
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
+from pyclashbot.bot.navigation import (
+    check_if_on_clan_page,
+    check_if_on_first_card_page,
+    get_to_card_page,
+    get_to_clash_main_from_card_page,
+    get_to_clash_main_from_clan_page,
+)
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import (
     check_if_has_a_deck_for_this_war_battle,
     click_war_icon,
-    get_to_war_page_from_main,
     handle_war_attacks,
     make_a_random_deck_for_this_war_battle,
     wait_for_war_battle_loading,
