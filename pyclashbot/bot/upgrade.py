@@ -2,7 +2,6 @@ import time
 
 import numpy
 
-from pyclashbot.bot.clashmain import check_for_gem_logo_on_main
 from pyclashbot.detection import (
     check_for_location,
     find_references,

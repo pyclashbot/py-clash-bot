@@ -4,10 +4,7 @@ from typing import Literal
 
 import numpy
 
-from pyclashbot.bot.clashmain import (
-    check_if_on_first_card_page,
-    get_to_clash_main_from_card_page,
-)
+from pyclashbot.bot.navigation import get_to_card_page, get_to_clash_main_from_card_page
 from pyclashbot.detection import (
     check_for_location,
     find_references,
@@ -24,29 +21,6 @@ from pyclashbot.memu import (
     scroll_up_fast,
     scroll_up_super_fast,
 )
-
-
-#### navigation methods
-def get_to_card_page(logger):
-    # Method to get to the card page on clash main from the clash main menu
-    print("get to card page")
-    click(x=100, y=630)
-    time.sleep(2)
-    loops = 0
-    while not check_if_on_first_card_page():
-        print("Looping to get to card page")
-        # logger.change_status("Not elixer button. Moving pages")
-        time.sleep(1)
-        click(x=100, y=630)
-        time.sleep(1)
-        loops = loops + 1
-        if loops > 10:
-            logger.change_status("Couldn't make it to card page")
-            return "restart"
-        time.sleep(0.2)
-    scroll_up_fast()
-    print("made it to card page")
-    time.sleep(1)
 
 
 def handle_randomize_deck_failure(logger):
@@ -138,7 +112,7 @@ def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls: int):
             print("Clicked around for a random card too many times. Restarting")
             return "restart"
         # find a random card on this page
-        replacement_card_coord = find_random_card_coord(logger)
+        replacement_card_coord = find_random_card_coord()
         if replacement_card_coord == "restart":
             logger.change_status("Failure replacing card")
             return "restart"
@@ -169,10 +143,10 @@ def check_if_mimimum_scroll_case():
     scroll_down()
     time.sleep(3)
 
-    minimum_case = True
     seasonal_card_boosts_icon_coord = find_for_seasonal_card_boosts_icon()
     if seasonal_card_boosts_icon_coord is None:
-        pass
+        minimum_case = True
+
     elif seasonal_card_boosts_icon_coord[1] < 515:
         minimum_case = False
 
@@ -267,7 +241,7 @@ def find_card_level_boost_icon():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def find_random_card_coord(logger):
+def find_random_card_coord():
     region_list = [
         [50, 130, 81, 71],
         [131, 130, 81, 71],
@@ -678,7 +652,7 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
                 print("Clicked around for a random card too many times. Restarting")
                 return "restart"
             # find a random card on this page
-            replacement_card_coord = find_random_card_coord(logger)
+            replacement_card_coord = find_random_card_coord()
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
                 return "restart"
