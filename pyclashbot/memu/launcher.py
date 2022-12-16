@@ -49,7 +49,8 @@ def restart_memu(logger):
     click(550, 140)
 
     # wait for the window to appear
-    wait_for_pyclashbot_window(logger)
+    if wait_for_pyclashbot_window(logger) == "restart":
+        return restart_memu(logger)
 
     if wait_for_black_memu_screen() == "restart":
         return restart_memu(logger)
@@ -61,7 +62,7 @@ def restart_memu(logger):
         return restart_memu(logger)
 
     # wait
-    sleep_time = 5
+    sleep_time = 10
     for n in range(sleep_time):
         logger.change_status(f"Waiting for VM to load {n}/{sleep_time}")
         time.sleep(1)
@@ -79,7 +80,8 @@ def restart_memu(logger):
         time.sleep(1)
 
     # actually wait for clash main if need to wait longer
-    wait_for_clash_main_menu(logger)
+    if wait_for_clash_main_menu(logger) == "restart":
+        return restart_memu(logger)
 
     return True
 
