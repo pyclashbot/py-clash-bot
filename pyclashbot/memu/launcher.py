@@ -18,6 +18,8 @@ from pyclashbot.utils.logger import Logger
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
 
+mmim_window_title = "Multiple Instance Manager"
+
 
 #### launcher methods
 def restart_memu(logger):
@@ -84,7 +86,7 @@ def restart_memu(logger):
 
 def open_memu_launcher(logger):
     # if alreayd open then close it
-    windows = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")
+    windows = pygetwindow.getWindowsWithTitle(mmim_window_title)
     if len(windows) > 0:
         print("Launcher already open. Closing it.")
         windows[0].close()
@@ -98,14 +100,14 @@ def open_memu_launcher(logger):
 
     # wait for launcher to exist
     print("Waiting for launcher")
-    while len(pygetwindow.getWindowsWithTitle("Multiple Instance Manager")) == 0:
-        pass
+    while len(pygetwindow.getWindowsWithTitle(mmim_window_title)) == 0:
+        time.sleep(0.1)
     print("Done waiting for launcher.")
 
 
 def orientate_memu_launcher(logger):
     logger.change_status("Orientating Memu launcher")
-    window = pygetwindow.getWindowsWithTitle("Multiple Instance Manager")[0]
+    window = pygetwindow.getWindowsWithTitle(mmim_window_title)[0]
     window.activate()
     window.moveTo(0, 0)
     window.resizeTo(732, 596)
@@ -122,7 +124,7 @@ def get_launcher_path():
 #### making and configuring VMs
 
 
-def rename_first_VM():
+def rename_first_vm():
     print("Renaming first VM")
     pmc.rename_vm(vm_index=0, new_name="(pyclashbot)")
 
@@ -150,7 +152,7 @@ def configure_vm(logger: Logger, vm_index):
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
-    rename_first_VM()
+    rename_first_vm()
 
 
 def create_vm(logger: Logger):
@@ -230,8 +232,9 @@ def close_everything_memu():
             if process.name in name_list:
                 print("Closing process", process.name)
                 process.Terminate()
-        except:
+        except Exception as e:
             print("Couldnt close process", process.name)
+            print("This error occured:", e)
     print("Exiting close_everything_memu(). . .")
 
 
@@ -493,43 +496,3 @@ def check_if_memu_screen_is_black():
         if not pixel_is_equal(pix, color_black, tol=45):
             return False
     return True
-
-
-# method to get the first vm's name value
-
-
-# def close_clash(logger, pmc, vm_index):
-#     logger.change_status("Closing Clash Royale Application")
-
-#     apk_base_name = "com.supercell.clashroyale"
-
-#     # close clash app
-#     pmc.stop_app_vm(apk_base_name, vm_index)
-
-
-# def restart_clash_app(logger):
-#     logger.change_status("Restarting Clash Royale Application")
-
-#     # log to new restarts var
-#     print("Added app restart stat to logger")
-#     logger.add_app_restart()
-
-#     # get this vm index
-#     vm_index = check_for_vm(logger)
-
-#     # close app
-#     close_clash(logger, pmc, vm_index)
-
-#     # start app
-#     start_clash_royale(logger, vm_index)
-
-#     # manual wait time for clash main
-#     for n in range(5):
-#         print("Manual wait time for clash main: ", n)
-#         time.sleep(1)
-
-#     # wait for main
-#     if wait_for_clash_main_menu(logger) == "restart":
-#         return "restart"
-#     else:
-#         return "success"
