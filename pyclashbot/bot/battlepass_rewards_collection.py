@@ -52,6 +52,12 @@ def collect_battlepass_rewards(logger):
         [300, 430],
         [300, 480],
         [300, 540],
+        [125, 280],
+        [125, 340],
+        [125, 380],
+        [125, 430],
+        [125, 480],
+        [125, 540],
     ]
 
     # loop until the battlepass rewards icon on the main menu indicates there are no more rewards
