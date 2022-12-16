@@ -4,6 +4,7 @@ from queue import Queue
 
 import PySimpleGUI as sg
 
+import pyclashbot.utils.admin_check
 from pyclashbot.bot import WorkerThread
 from pyclashbot.interface import (
     disable_keys,
