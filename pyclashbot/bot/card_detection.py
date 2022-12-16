@@ -392,19 +392,3 @@ def get_play_coords(card_group, side):
             [375, 491],
         ]
     return None
-
-
-def select_second_deck(logger):
-    # Method to select the second deck of this account
-
-    # logger.change_status("Selecting deck number 2 for use.")
-    # get to card page
-    get_to_card_page(logger)
-    time.sleep(1)
-
-    # click number 2
-    click(173, 190)
-    time.sleep(1)
-
-    # get to main menu from card page
-    get_to_clash_main_from_card_page(logger)
