@@ -10,12 +10,9 @@ from pyclashbot.bot.card_detection import (
     get_play_coords,
     identify_card,
 )
-from pyclashbot.bot.clashmain import (
-    check_if_in_battle,
-    check_if_in_battle_with_delay,
-    wait_for_clash_main_menu,
-)
+from pyclashbot.bot.clashmain import check_if_in_battle, check_if_in_battle_with_delay
 from pyclashbot.bot.deck import check_if_pixel_is_grey
+from pyclashbot.bot.navigation import open_activity_log
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
@@ -131,90 +128,6 @@ def play_random_card(logger):
     click(play_coord[0], play_coord[1])
 
 
-#### navigation
-def leave_end_battle_window(logger):
-    """
-    leave_end_battle_window checks which end screen case is (there are two),
-    clicks the appropriate button to leave the end battle screen, then waits for clash main.
-    :logger: logger object from logger class initialized in main
-    :return: returns "restart" if it fails to get to clash main, else None
-    """
-
-    # if end screen condition 1 (exit in bottom left)
-    if check_if_end_screen_is_exit_bottom_left():
-        print("Leaving end battle (condition 1)")
-        click(79, 625)
-        time.sleep(1)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited for clash main too long")
-            return "restart"
-        return None
-
-    # if end screen condition 2 (OK in bottom middle)
-    if check_if_end_screen_is_ok_bottom_middle():
-        print("Leaving end battle (condition 2)")
-        click(206, 594)
-        time.sleep(1)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited too long for clash main")
-            return "restart"
-        return None
-
-    if wait_for_clash_main_menu(logger) == "restart":
-        logger.change_status("Waited too long for clash main")
-        return "restart"
-    return None
-
-
-def check_if_end_screen_is_ok_bottom_middle():
-    """
-    check_if_end_screen_is_ok_bottom_middle checks for one of the end of battle screen cases (OK in bottom middle)
-    :return: bool: True if pixels indicate this is the case, else False
-    """
-
-    iar = numpy.array(screenshot())
-    # (210,589)
-    pix_list = [
-        iar[591][234],
-        iar[595][178],
-        iar[588][192],
-        iar[591][233],
-    ]
-    color = [78, 175, 255]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def check_if_end_screen_is_exit_bottom_left():
-    """
-    check_if_end_screen_is_exit_bottom_left checks for one of the end of battle screen cases (OK in bottom left)
-    :return: bool: True if pixels indicate this is the case, else False
-    """
-
-    iar = numpy.array(screenshot())
-    pix_list = [
-        iar[638][57],
-        iar[640][110],
-        iar[622][59],
-        iar[621][110],
-    ]
-    color = [87, 186, 255]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def open_activity_log():
-    """
-    open_activity_log opens the activity log from the clash main
-    :return: None
-    """
-
-    print("Opening activity log")
-    click(x=360, y=99)
-    time.sleep(1)
-
-    click(x=255, y=75)
-    time.sleep(1)
-
-
 #### detection
 def check_if_past_game_is_win(logger):
     """
@@ -254,7 +167,6 @@ def check_if_pixels_indicate_win_on_activity_log():
         bool(pixel_is_equal(pix, [255, 50, 100], tol=35)) for pix in int_pix_list
     )
 
-    # return logic
     return red_count <= 10
 
 
