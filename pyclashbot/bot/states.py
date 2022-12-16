@@ -14,7 +14,6 @@ from pyclashbot.bot.clashmain import (
     start_2v2,
     verify_ssid_input,
     wait_for_battle_start,
-    wait_for_clash_main_menu,
 )
 from pyclashbot.bot.deck import randomize_and_select_deck_2
 from pyclashbot.bot.fight import (
@@ -22,7 +21,6 @@ from pyclashbot.bot.fight import (
     check_if_end_screen_is_ok_bottom_middle,
     check_if_past_game_is_win,
     do_fight,
-    leave_end_battle_window,
 )
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
@@ -32,6 +30,8 @@ from pyclashbot.bot.navigation import (
     get_to_card_page,
     get_to_clash_main_from_card_page,
     get_to_clash_main_from_clan_page,
+    leave_end_battle_window,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
