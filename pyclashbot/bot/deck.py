@@ -675,3 +675,5 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
         print("selecting the card to replace")
         click(card_to_replace_coord[0], card_to_replace_coord[1])
         time.sleep(0.22)
+
+        return None
