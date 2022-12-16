@@ -16,12 +16,7 @@ from pyclashbot.bot.clashmain import (
     wait_for_battle_start,
 )
 from pyclashbot.bot.deck import randomize_and_select_deck_2
-from pyclashbot.bot.fight import (
-    check_if_end_screen_is_exit_bottom_left,
-    check_if_end_screen_is_ok_bottom_middle,
-    check_if_past_game_is_win,
-    do_fight,
-)
+from pyclashbot.bot.fight import check_if_past_game_is_win, do_fight
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.navigation import (
