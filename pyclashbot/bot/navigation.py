@@ -224,6 +224,87 @@ def get_to_clan_page(logger):
         on_clan_chat_page = check_if_on_clan_page()
 
 
+def open_activity_log():
+    """
+    open_activity_log opens the activity log from the clash main
+    :return: None
+    """
+
+    print("Opening activity log")
+    click(x=360, y=99)
+    time.sleep(1)
+
+    click(x=255, y=75)
+    time.sleep(1)
+
+
+def leave_end_battle_window(logger):
+    """
+    leave_end_battle_window checks which end screen case is (there are two),
+    clicks the appropriate button to leave the end battle screen, then waits for clash main.
+    :logger: logger object from logger class initialized in main
+    :return: returns "restart" if it fails to get to clash main, else None
+    """
+
+    # if end screen condition 1 (exit in bottom left)
+    if check_if_end_screen_is_exit_bottom_left():
+        print("Leaving end battle (condition 1)")
+        click(79, 625)
+        time.sleep(1)
+        if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited for clash main too long")
+            return "restart"
+        return None
+
+    # if end screen condition 2 (OK in bottom middle)
+    if check_if_end_screen_is_ok_bottom_middle():
+        print("Leaving end battle (condition 2)")
+        click(206, 594)
+        time.sleep(1)
+        if wait_for_clash_main_menu(logger) == "restart":
+            logger.change_status("waited too long for clash main")
+            return "restart"
+        return None
+
+    if wait_for_clash_main_menu(logger) == "restart":
+        logger.change_status("Waited too long for clash main")
+        return "restart"
+    return None
+
+
+def wait_for_clash_main_menu(logger):
+    logger.change_status("Waiting for clash main menu")
+    waiting = not check_if_on_clash_main_menu()
+
+    loops = 0
+    while waiting:
+        print("Still waiting for clash main")
+        # loop count
+        loops += 1
+        if loops > 25:
+            logger.change_status(
+                "Looped through wait_for_clash_main_menu too many times"
+            )
+            return "restart"
+
+        # wait 1 sec
+        time.sleep(1)
+
+        # click dead space
+        click(32, 364)
+
+        # check if stuck on trophy progression page
+        if check_if_stuck_on_trophy_progression_page():
+            print("Stuck on trophy progression page. Clicking out")
+            time.sleep(2)
+            click(210, 621)
+
+        # check if still waiting
+        waiting = not check_if_on_clash_main_menu()
+
+    logger.change_status("Done waiting for clash main menu")
+
+
 ####Methods for handling popups
 def handle_war_loot_chest():
     if check_for_war_loot_chest():
@@ -588,3 +669,51 @@ def check_for_war_chest_obstruction():
     )
 
     return check_for_location(locations)
+
+
+def check_if_end_screen_is_ok_bottom_middle():
+    """
+    check_if_end_screen_is_ok_bottom_middle checks for one of the end of battle screen cases (OK in bottom middle)
+    :return: bool: True if pixels indicate this is the case, else False
+    """
+
+    iar = numpy.array(screenshot())
+    # (210,589)
+    pix_list = [
+        iar[591][234],
+        iar[595][178],
+        iar[588][192],
+        iar[591][233],
+    ]
+    color = [78, 175, 255]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+
+
+def check_if_end_screen_is_exit_bottom_left():
+    """
+    check_if_end_screen_is_exit_bottom_left checks for one of the end of battle screen cases (OK in bottom left)
+    :return: bool: True if pixels indicate this is the case, else False
+    """
+
+    iar = numpy.array(screenshot())
+    pix_list = [
+        iar[638][57],
+        iar[640][110],
+        iar[622][59],
+        iar[621][110],
+    ]
+    color = [87, 186, 255]
+    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
+
+
+def check_if_stuck_on_trophy_progression_page():
+    iar = numpy.asarray(screenshot())
+    color = [85, 177, 255]
+    pix_list = [
+        # iar[620][225],
+        iar[625][230],
+        iar[630][238],
+        iar[635][245],
+    ]
+
+    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
