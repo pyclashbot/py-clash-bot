@@ -7,6 +7,7 @@ from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
     get_to_switch_accounts_tab,
     handle_card_mastery_notification,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.detection import (
     check_for_location,
@@ -26,51 +27,8 @@ ahk = AHK()
 logger = Logger()
 
 # page navigation methods
-def wait_for_clash_main_menu(logger):
-    logger.change_status("Waiting for clash main menu")
-    waiting = not check_if_on_clash_main_menu()
-
-    loops = 0
-    while waiting:
-        print("Still waiting for clash main")
-        # loop count
-        loops += 1
-        if loops > 25:
-            logger.change_status(
-                "Looped through wait_for_clash_main_menu too many times"
-            )
-            return "restart"
-
-        # wait 1 sec
-        time.sleep(1)
-
-        # click dead space
-        click(32, 364)
-
-        # check if stuck on trophy progression page
-        if check_if_stuck_on_trophy_progression_page():
-            print("Stuck on trophy progression page. Clicking out")
-            time.sleep(2)
-            click(210, 621)
-
-        # check if still waiting
-        waiting = not check_if_on_clash_main_menu()
-
-    logger.change_status("Done waiting for clash main menu")
-
 
 # detection methods
-def check_if_stuck_on_trophy_progression_page():
-    iar = numpy.asarray(screenshot())
-    color = [85, 177, 255]
-    pix_list = [
-        # iar[620][225],
-        iar[625][230],
-        iar[630][238],
-        iar[635][245],
-    ]
-
-    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 def look_for_puzzleroyale_popup():
@@ -103,34 +61,21 @@ def check_if_on_trophy_progession_rewards_page():
 
 
 def check_if_unlock_chest_button_exists():
-    # Method for checking if the unlock chest button exists in the menu that
-    # appears when clicking a chest
+    # method to find the 2v2 quickmatch button in the party mode menu
     current_image = screenshot()
     reference_folder = "unlock_chest_button"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        "13.png",
-        "14.png",
-        "15.png",
-        "16.png",
-    ]
+
+    references = make_reference_image_list(
+        get_file_count(
+            "unlock_chest_button",
+        )
+    )
 
     locations = find_references(
         screenshot=current_image,
         folder=reference_folder,
         names=references,
-        tolerance=0.90,
+        tolerance=0.97,
     )
 
     return any(location is not None for location in locations)
@@ -138,33 +83,14 @@ def check_if_unlock_chest_button_exists():
 
 def find_2v2_quick_match_button():
     # method to find the 2v2 quickmatch button in the party mode menu
-
     current_image = screenshot()
     reference_folder = "2v2_quick_match"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-        "13.png",
-        "14.png",
-        "15.png",
-        "16.png",
-        "17.png",
-        "18.png",
-        "19.png",
-        "20.png",
-        "21.png",
-        "22.png",
-    ]
+
+    references = make_reference_image_list(
+        get_file_count(
+            "2v2_quick_match",
+        )
+    )
 
     locations = find_references(
         screenshot=current_image,
@@ -178,18 +104,26 @@ def find_2v2_quick_match_button():
 
 
 def check_for_reward_limit():
-    # Method to check for the reward limit popup notification and close it
+    # method to find the 2v2 quickmatch button in the party mode menu
+    current_image = screenshot()
+    reference_folder = "reward_limit"
 
-    references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
+    references = make_reference_image_list(
+        get_file_count(
+            "reward_limit",
+        )
+    )
 
     locations = find_references(
-        screenshot=screenshot(), folder="reward_limit", names=references, tolerance=0.97
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
     )
 
     for location in locations:
         if location is not None:
             click(211, 432)
-
             return True
     return False
 
@@ -474,7 +408,6 @@ def check_for_chests():
         else:
             return_bool_list.append(True)
 
-    # print return_bool_list
     print("chest_exists_bool_list", return_bool_list)
 
     # return this list
