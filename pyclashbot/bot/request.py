@@ -5,10 +5,9 @@ import numpy
 
 from pyclashbot.bot.clashmain import (
     check_if_in_a_clan,
-    get_to_clan_page,
-    get_to_clash_main_from_clan_page,
     handle_card_mastery_notification,
 )
+from pyclashbot.bot.navigation import get_to_clan_page, get_to_clash_main_from_clan_page
 from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
 from pyclashbot.memu import (
     click,
