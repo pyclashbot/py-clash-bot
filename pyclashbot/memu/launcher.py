@@ -29,9 +29,8 @@ def restart_memu(logger):
     # click start
     # use pymemuc to skip ads then start clash
 
-    logger.change_status("restarting memu")
 
-    print("Closing all running VMs")
+    logger.change_status("Closing everything Memu related. . .")
     # stop all vms
     close_everything_memu()
     # close_memu_using_pymemuc(logger)
@@ -42,6 +41,7 @@ def restart_memu(logger):
     configure_vm(logger, vm_index=0)
 
     # open launcher+configure launcher
+    logger.change_status("Starting a new Memu Client using the launcher. . .")
     open_memu_launcher(logger)
     orientate_memu_launcher(logger)
 
@@ -49,7 +49,8 @@ def restart_memu(logger):
     click(550, 140)
 
     # wait for the window to appear
-    wait_for_pyclashbot_window(logger)
+    logger.log("Waiting for Memu client loading sequence. . .")
+    wait_for_pyclashbot_window()
 
     if wait_for_black_memu_screen() == "restart":
         return restart_memu(logger)
@@ -63,11 +64,11 @@ def restart_memu(logger):
     # wait
     sleep_time = 5
     for n in range(sleep_time):
-        logger.change_status(f"Waiting for VM to load {n}/{sleep_time}")
+        print(f"Waiting for VM to load {n}/{sleep_time}")
         time.sleep(1)
 
     # skip ads using pymemuc
-    skip_ads(logger, vm_index=0)
+    skip_ads( vm_index=0)
 
     # start clash using pymemuc
     start_clash_royale(logger, vm_index=0)
@@ -75,7 +76,7 @@ def restart_memu(logger):
     # manually wait for clash main
     sleep_time = 10
     for n in range(sleep_time):
-        logger.change_status(f"Manually waiting for clash main page. {n}/{sleep_time}")
+        print(f"Manually waiting for clash main page. {n}/{sleep_time}")
         time.sleep(1)
 
     # actually wait for clash main if need to wait longer
@@ -246,7 +247,6 @@ first_run = True
 
 def start_clash_royale(logger: Logger, vm_index):
 
-    logger.change_status("Finding Clash Royale...")
 
     # using pymemuc check if clash royale is installed
     apk_base_name = "com.supercell.clashroyale"
@@ -269,11 +269,11 @@ def start_clash_royale(logger: Logger, vm_index):
     logger.change_status("Clash Royale started")
 
 
-def skip_ads(logger: Logger, vm_index):
+def skip_ads( vm_index):
 
     # Method for skipping the memu ads that popip up when you start memu
 
-    logger.change_status("Skipping ads")
+    print("Skipping ads")
     for _ in range(4):
         pmc.trigger_keystroke_vm("home", vm_index=vm_index)
         time.sleep(1)
@@ -300,19 +300,19 @@ def orientate_memu():
         print("Couldnt orientate MEmu")
 
 
-def wait_for_pyclashbot_window(logger):
-    logger.change_status("Waiting for PyClashBot window to open")
+def wait_for_pyclashbot_window():
+    print("Waiting for PyClashBot Memu client window to open")
 
     loops = 0
     while len(pygetwindow.getWindowsWithTitle("(pyClashBot)")) == 0:
         loops += 1
-        logger.change_status(
-            "Still waiting for PyClashBot window to open..." + str(loops)
+        print(
+            "Still waiting for PyClashBot Memu client window to open..." + str(loops)
         )
         if loops > 25:
             return "restart"
         time.sleep(1)
-    logger.change_status("PyClashBot window found open.")
+    print("PyClashBot Memu client window found open.")
     time.sleep(2)
 
 

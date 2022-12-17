@@ -566,6 +566,8 @@ def check_if_pixels_indicate_minimum_scroll_case():
 
 
 def randomize_and_select_deck_2(logger):
+    logger.change_status("Making a random deck before starting a 2v2. . .")
+    
     # get to card page
     print("Getting to card page to randomize deck.")
     get_to_card_page(logger)
@@ -577,10 +579,12 @@ def randomize_and_select_deck_2(logger):
     time.sleep(1)
 
     # check if minimum scroll case
+    logger.change_status("Checking how far the bot can randomly scroll in this account's deck list. . .")
     minimum_scroll_case_boolean = check_if_mimimum_scroll_case()
     print(minimum_scroll_case_boolean, minimum_scroll_case_boolean)
 
     # for each card slot, scroll according to which case it is, then replace with random card
+    logger.change_status("Randomizing this deck. . .")
     randomize_this_deck(logger, minimum_scroll_case_boolean)
 
     # return to clash main
