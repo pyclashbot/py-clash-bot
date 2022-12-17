@@ -63,18 +63,32 @@ def wait_until_has_6_elixer(logger):
     logger.change_status("Waiting for 6 elixer")
     loops = 0
     while not has_6:
+        # if the hero power is available, use it
+        if check_for_hero_power():
+            print("Playing hero power.")
+            play_hero_power()
+
+        # if all cards become avialable before we have 6 elixer, stop waiting
         if check_if_all_cards_are_available():
             logger.change_status("All cards are available. Making a play")
             break
 
+        #if waiting too long, restart
         loops += 1
         if loops > 250:
             logger.change_status("Waited too long to get to 6 elixer. Restarting.")
             return "restart"
+        
+        
         time.sleep(0.1)
         has_6 = check_if_has_6_elixer()
+        
+        # if we're not in a battle, break from this loop.
         if not check_if_in_battle():
             return None
+
+
+
 
 
 def play_random_card(logger):
@@ -396,3 +410,22 @@ def check_available_cards():
 def check_if_all_cards_are_available():
     available_cards = check_available_cards()
     return all(available_cards)
+
+
+
+def check_for_hero_power():
+    #checks for the purple elixer icon of the hero power in the botton left of the screen
+    iar=numpy.asarray(screenshot())
+    pix_list=[
+        iar[494][327],
+        iar[486][334],
+    ]
+    color=[255,65,242]
+
+    for pix in pix_list:
+        if pixel_is_equal(pix,color,tol=45):
+            return True
+    return False
+
+def play_hero_power():
+    click(349,512)
