@@ -55,6 +55,7 @@ def request_random_card_from_clash_main(logger):
     time.sleep(1)
 
     # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
+    logger.change_status("Checking how much the bot can randomly scroll in the request page. . .")
     print("Counting maximum scrolls in request page.")
     maximum_scrolls = count_maximum_request_scrolls(logger)
     print("maximum scrolls in request page is", maximum_scrolls)
@@ -92,7 +93,6 @@ def request_random_card(logger, maximum_scrolls=10):
         scroll_down_super_fast()
 
     # click random cards in the card list until a request button appears.
-    logger.change_status("Looking for card to request.")
     has_card_to_request = False
     loops = 0
     while not has_card_to_request:

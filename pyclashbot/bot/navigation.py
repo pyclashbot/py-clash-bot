@@ -107,7 +107,7 @@ def get_to_shop_page_from_main(logger):
 
 
 def get_to_clash_main_from_card_page(logger):
-    logger.change_status("Getting to Clash main menu from card page")
+    print("Getting to Clash main menu from card page")
 
     # get to card page
     click(240, 627)
@@ -160,7 +160,6 @@ def get_to_card_page(logger):
             return "restart"
         time.sleep(1)
     scroll_up_fast()
-    # logger.change_status("Made it to card page")
     time.sleep(1)
 
 
@@ -245,6 +244,7 @@ def leave_end_battle_window(logger):
     :logger: logger object from logger class initialized in main
     :return: returns "restart" if it fails to get to clash main, else None
     """
+    logger.change_status("Leaving this 2v2 battle. . .")
 
     # if end screen condition 1 (exit in bottom left)
     if check_if_end_screen_is_exit_bottom_left():
