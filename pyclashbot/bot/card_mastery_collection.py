@@ -12,7 +12,6 @@ from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
 def collect_card_mastery_rewards(logger):
     # starts on clash main, collects mastery rewards, returns to clash main
-    logger.change_status("Collecting card mastery rewards")
 
     reward_coords = [
         [210, 360],
@@ -53,6 +52,7 @@ def collect_card_mastery_rewards(logger):
         )
         return "restart"
 
+    logger.change_status("Collecting a card mastery reward. . .")
     # click mastery reward button
     print("Clicking mastery button")
     click(257, 505)
