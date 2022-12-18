@@ -53,6 +53,8 @@ def collect_daily_challenge_rewards(logger):
 def collect_daily_reward(logger,reward_index):
     logger.change_status("Collecting daily challenge reward index: "+str(reward_index))
 
+    
+
     daily_challenge_reward_coord_list=[
         #task 1
         (165,235),
@@ -66,6 +68,9 @@ def collect_daily_reward(logger,reward_index):
         (180,545),
     ]
     
+    #increment logger
+    logger.add_daily_challenge_reward_collection()
+
     #click the given reward coord
     coord=daily_challenge_reward_coord_list[reward_index]
     click(coord[0],coord[1])
