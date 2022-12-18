@@ -35,110 +35,6 @@ def handle_randomize_deck_failure(logger):
     return None
 
 
-def randomize_current_deck(logger):
-    # figure out how much you can scroll down in your card list
-    max_scrolls = count_scrolls_in_card_page(logger)
-    if max_scrolls == "restart":
-        logger.change_status("Max scroll detection failure")
-        return "restart"
-
-    card_coord_list = [
-        [75, 271],
-        [162, 277],
-        [250, 267],
-        [337, 267],
-        [77, 400],
-        [174, 398],
-        [250, 411],
-        [325, 404],
-    ]
-
-    for card_coord in card_coord_list:
-        if (
-            replace_card_in_deck(
-                logger, card_to_replace_coord=card_coord, max_scrolls=max_scrolls
-            )
-            == "restart"
-        ):
-            logger.change_status("replacing card in deck failure")
-            if get_to_clash_main_from_card_page(logger) == "restart":
-                print(
-                    "Failed to get to clash main from card page in randomize_current_deck()"
-                )
-                return "restart"
-            return None
-
-    return None
-
-
-def replace_card_in_deck(logger, card_to_replace_coord, max_scrolls: int):
-    # get random scroll amount in this range
-    print("max_scrolls is ", max_scrolls)
-    if max_scrolls <= 3:
-        scrolls = max_scrolls if max_scrolls > 0 else 1
-        print("Scrolls is minimum so scrolls is ", scrolls)
-    else:
-        scrolls = random.randint(3, max_scrolls)
-        print("Scrolls is random so scrolls is ", scrolls)
-
-    # scroll random amount
-    loops = 0
-    print(f"Scrolling randomly with scrolls: {scrolls}")
-    while (scrolls > 0) and (check_if_can_still_scroll_in_card_page()):
-        scroll_down_super_fast()
-        time.sleep(0.1)
-        scrolls -= 1
-        loops += 1
-        if loops > 25:
-            logger.change_status("Scrolled too many times checing scroll count")
-            return "restart"
-
-    # check if we're too high up in scroll page
-    if check_for_random_scroll_failure_in_deck_randomization():
-        print(
-            "Random scroll failure detected. Scrolling a little to possibly save the bot"
-        )
-        scroll_down_super_fast()
-
-    # click randomly until we get a 'use' button
-    use_card_button_coord = None
-    loops = 0
-
-    print("Clicking randomly until we get a use button")
-    while use_card_button_coord is None:
-        print("Clicking cards randomly")
-        loops += 1
-        if loops > 30:
-            print("Clicked around for a random card too many times. Restarting")
-            return "restart"
-        # find a random card on this page
-        replacement_card_coord = find_random_card_coord()
-        if replacement_card_coord == "restart":
-            logger.change_status("Failure replacing card")
-            return "restart"
-        click(replacement_card_coord[0], replacement_card_coord[1])
-        time.sleep(1)
-
-        # get a random card from this screen to use
-        use_card_button_coord = find_use_card_button()
-
-    # click use card
-    print("Clicking use card button")
-    click(use_card_button_coord[0], use_card_button_coord[1])
-    time.sleep(1)
-
-    # select the card coord in the deck that we're replacing with the random card
-    print("selecting the card to replace")
-    click(card_to_replace_coord[0], card_to_replace_coord[1])
-    time.sleep(0.22)
-
-    # change the card collection filter so increase randomness
-    print("increment filter cycle")
-    click(320, 575)
-    time.sleep(1)
-    return None
-
-
 def check_if_mimimum_scroll_case():
     scroll_down()
     time.sleep(3)
@@ -588,29 +484,8 @@ def check_if_pixel_is_grey(pixel):
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
 
 
-def check_if_pixels_indicate_minimum_scroll_case_with_delay():
-    start_time = time.time()
-    while time.time() - start_time < 3:
-        if not check_if_pixels_indicate_minimum_scroll_case():
-            return False
-    return True
 
-
-def check_if_pixels_indicate_minimum_scroll_case():
-    iar = numpy.asarray(screenshot())
-
-    color = [59, 39, 110]
-
-    pix_list = [
-        iar[565][320],
-        iar[575][325],
-        iar[585][345],
-        iar[595][365],
-    ]
-
-    return any(not pixel_is_equal(color, pix, tol=60) for pix in pix_list)
-
-
+### TO SORT
 def randomize_and_select_deck_2(logger):
     logger.change_status("Making a random deck before starting a 2v2. . .")
     
@@ -693,6 +568,8 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
         for _ in range(random_scroll_amount):
             scroll_down_super_fast()
             time.sleep(0.1)
+
+        #check for scrolling failure here maybe
 
         # click randomly until we get a 'use' button
         use_card_button_coord = None
