@@ -172,9 +172,10 @@ def check_for_final_upgrade_button() -> bool:
 
 
 def upgrade_current_cards(logger):
-    logger.change_status("Upgrading your current deck...")
+    logger.change_status("Checking for upgradable cards. . .")
     upgradable_cards_list = check_for_upgradable_cards()
 
+    logger.change_status("Upgrading your current deck...")
     for index, card in enumerate(upgradable_cards_list):
         if card == "Upgrade":
             upgrade_card(logger, index)
