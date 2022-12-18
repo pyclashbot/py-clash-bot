@@ -49,7 +49,7 @@ def restart_memu(logger):
     click(550, 140)
 
     # wait for the window to appear
-    logger.log("Waiting for Memu client loading sequence. . .")
+    logger.change_status("Waiting for Memu client loading sequence. . .")
     wait_for_pyclashbot_window()
 
     if wait_for_black_memu_screen() == "restart":
