@@ -60,21 +60,35 @@ def wait_until_has_6_elixer(logger):
     """
 
     has_6 = check_if_has_6_elixer()
-    logger.change_status("Waiting for 6 elixer")
+    logger.change_status("Waiting for 6 elixer. . .")
     loops = 0
     while not has_6:
+        # if the hero power is available, use it
+        if check_for_hero_power():
+            logger.change_status("Playing hero power. . .")
+            play_hero_power()
+
+        # if all cards become avialable before we have 6 elixer, stop waiting
         if check_if_all_cards_are_available():
-            logger.change_status("All cards are available. Making a play")
+            logger.change_status("All cards are available. Making a play. . .")
             break
 
+        #if waiting too long, restart
         loops += 1
         if loops > 250:
-            logger.change_status("Waited too long to get to 6 elixer. Restarting.")
+            logger.change_status("Waited too long to get to 6 elixer. Restarting. . .")
             return "restart"
+        
+        
         time.sleep(0.1)
         has_6 = check_if_has_6_elixer()
+        
+        # if we're not in a battle, break from this loop.
         if not check_if_in_battle():
             return None
+
+
+
 
 
 def play_random_card(logger):
@@ -86,7 +100,6 @@ def play_random_card(logger):
 
     # Select which card we're to play
     n = random.randint(0, 3)
-    # logger.change_status(str("Selected card: "+str(n)))
 
     # Get an image of this card
     card_image = get_card_images()[n]
@@ -95,7 +108,6 @@ def play_random_card(logger):
     card_identification = identify_card(card_image)
     if card_identification is None:
         card_identification = "Unknown"
-    # logger.change_status(str("Identified card: "+card_identification))
     print("current card identification: ", card_identification)
 
     # Get the card type of this identification
@@ -136,7 +148,7 @@ def check_if_past_game_is_win(logger):
     :return: bool: true if pixels are blue, else false
     """
 
-    print("Checking if game was a win")
+    logger.change_status("Checking if game was a win")
     open_activity_log()
     time.sleep(3)
     if check_if_pixels_indicate_win_on_activity_log():
@@ -396,3 +408,22 @@ def check_available_cards():
 def check_if_all_cards_are_available():
     available_cards = check_available_cards()
     return all(available_cards)
+
+
+
+def check_for_hero_power():
+    #checks for the purple elixer icon of the hero power in the botton left of the screen
+    iar=numpy.asarray(screenshot())
+    pix_list=[
+        iar[494][327],
+        iar[486][334],
+    ]
+    color=[255,65,242]
+
+    for pix in pix_list:
+        if pixel_is_equal(pix,color,tol=45):
+            return True
+    return False
+
+def play_hero_power():
+    click(349,512)

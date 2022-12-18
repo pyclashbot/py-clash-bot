@@ -117,6 +117,7 @@ def state_tree(
 
     elif state == "intro":
         print("RUNNING INTRO STATE")
+        logger.change_status("Running first startup sequence.")
         state = state_restart(logger)
 
     elif state == "startfight":
@@ -307,7 +308,7 @@ def state_clashmain(
     # Open chests
     if "Open Chests" in jobs:
         open_chests(logger)
-    time.sleep(3)
+    time.sleep(1)
     return "startfight"
 
 
@@ -353,8 +354,6 @@ def state_endfight(logger) -> Literal["upgrade"]:
 
     # Checks if the last battle was a win or loss then adds this to the logger tally
     # Starts and ends on the clash royale main menu
-
-    logger.change_status("Post fight")
 
     check_if_past_game_is_win(logger)
     return "upgrade"

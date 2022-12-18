@@ -143,7 +143,8 @@ def check_if_mimimum_scroll_case():
     scroll_down()
     time.sleep(3)
 
-    seasonal_card_boosts_icon_coord = find_for_seasonal_card_boosts_icon()
+    minimum_case = False
+    seasonal_card_boosts_icon_coord = find_seasonal_card_boost_icon()
     if seasonal_card_boosts_icon_coord is None:
         minimum_case = True
 
@@ -154,7 +155,7 @@ def check_if_mimimum_scroll_case():
     return minimum_case
 
 
-def find_for_seasonal_card_boosts_icon():
+def find_seasonal_card_boost_icon():
     current_image = screenshot()
     reference_folder = "check_for_seasonal_card_boosts_icon"
 
@@ -453,15 +454,18 @@ def look_for_card_collection_icon_on_card_page():
 
 
 def check_for_random_scroll_failure_in_deck_randomization():
-    card_level_boost_icon_coord = find_card_level_boost_icon()
-    return (
-        (
-            card_level_boost_icon_coord is not None
-            and card_level_boost_icon_coord[1] > 320
-        )
-        or find_battle_deck_label_on_card_page() is not None
-        or find_deck_number_label_on_card_page() is not None
-    )
+    card_level_boost_icon_coord_height = find_seasonal_card_boost_icon()
+    if card_level_boost_icon_coord_height is None: return True
+    
+    card_level_boost_icon_coord_height = card_level_boost_icon_coord_height[1]
+    
+    if card_level_boost_icon_coord_height > 167:return True
+    else: return False
+    
+    
+    
+    
+    
 
 
 def find_battle_deck_label_on_card_page():
@@ -562,6 +566,8 @@ def check_if_pixels_indicate_minimum_scroll_case():
 
 
 def randomize_and_select_deck_2(logger):
+    logger.change_status("Making a random deck before starting a 2v2. . .")
+    
     # get to card page
     print("Getting to card page to randomize deck.")
     get_to_card_page(logger)
@@ -573,10 +579,12 @@ def randomize_and_select_deck_2(logger):
     time.sleep(1)
 
     # check if minimum scroll case
+    logger.change_status("Checking how far the bot can randomly scroll in this account's deck list. . .")
     minimum_scroll_case_boolean = check_if_mimimum_scroll_case()
     print(minimum_scroll_case_boolean, minimum_scroll_case_boolean)
 
     # for each card slot, scroll according to which case it is, then replace with random card
+    logger.change_status("Randomizing this deck. . .")
     randomize_this_deck(logger, minimum_scroll_case_boolean)
 
     # return to clash main
