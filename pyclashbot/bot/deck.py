@@ -585,7 +585,7 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             loops += 1
             if loops > 30:
                 print("Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized.")
-                if get_to_clash_main_from_card_page()=="restart":return"restart"
+                if get_to_clash_main_from_card_page(logger)=="restart":return"restart"
                 else:return
 
 
@@ -594,7 +594,7 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             replacement_card_coord = find_random_card_coord()
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
-                if get_to_clash_main_from_card_page()=="restart":return"restart"
+                if get_to_clash_main_from_card_page(logger)=="restart":return"restart"
                 else:return
             click(replacement_card_coord[0], replacement_card_coord[1])
             time.sleep(1)
