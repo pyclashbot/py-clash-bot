@@ -80,15 +80,11 @@ def wait_until_has_6_elixer(logger):
             return "restart"
         
         
-        time.sleep(0.1)
         has_6 = check_if_has_6_elixer()
         
         # if we're not in a battle, break from this loop.
         if not check_if_in_battle():
             return None
-
-
-
 
 
 def play_random_card(logger):
