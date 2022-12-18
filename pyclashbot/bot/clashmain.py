@@ -199,9 +199,6 @@ def get_to_account(logger, account_number):
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
     # Account number is ints 0-3 for the first 4 accounts
-
-    time.sleep(2)
-
     logger.change_status(
         f"Switching accounts to account number {str(account_number)}, (0-7)"
     )
