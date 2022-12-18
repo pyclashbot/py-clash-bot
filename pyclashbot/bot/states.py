@@ -185,7 +185,13 @@ def state_tree(
         )
 
     elif state == "war":
-        state = state_war(logger) if "war" in jobs else "free_offer_collection"
+        state = (
+            state_war(logger) if "war" in jobs else "daily_challenge_reward_collection"
+        )
+
+    elif state == "daily_challenge_reward_collection":
+        pass
+        state = "free_offer_collection"
 
     elif state == "free_offer_collection":
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
