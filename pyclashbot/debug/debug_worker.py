@@ -1,6 +1,6 @@
 import time
 
-from pyclashbot.bot.states import detect_state, state_tree
+from pyclashbot.bot.states import  state_tree
 from pyclashbot.utils import Logger
 from pyclashbot.utils.thread import PausableThread
 
