@@ -68,6 +68,8 @@ def collect_level_up_rewards(logger):
 
     # loop until the level up rewards icon on the main menu indicates there are no more rewards
     while check_if_has_level_up_rewards():
+        logger.change_status("Found level up rewards to collect...")
+
         # loop counter
         loops += 1
         if loops > 20:
@@ -81,7 +83,8 @@ def collect_level_up_rewards(logger):
         # click chest
         click(135, 160)
         time.sleep(1)
-
+        
+        logger.change_status("Collecting this battlepass reward...")
         # click dead space to skip through rewards
         for _ in range(20):
             click(20, 450)
@@ -102,3 +105,4 @@ def collect_level_up_rewards(logger):
                     "check_if_has_level_up_rewards() didnt finish its loop on clash main. Restarting"
                 )
                 return "restart"
+        logger.change_status("Done collecting battlepass rewards.")
