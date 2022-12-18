@@ -98,29 +98,28 @@ def state_tree(
 
 
     elif state == "account_switching":
-        state,ssid = state_account_switching(logger)
+        state,ssid = state_account_switching(logger,ssid,ssid_max)
 
 
     elif state=="chest_reward_collection":
-        state = state_chest_reward_collection(logger)
+        if "Open Chests" not in jobs: state = "free_offer_collection"
+        else: state = state_chest_reward_collection(logger)
 
 
     elif state == "free_offer_collection":
-        # if this time - most recent time in restart_log is more than an hour, always pass to restart
-        if abs(logger.most_recent_restart_time - time.time()) > 3600:
-            state_free_offer_collection(logger)
-            state = "auto_restart"
-
-        elif "free offer collection" in jobs:
-            print("Should be running free offer collection")
+        if "free offer collection" in jobs:
             state = state_free_offer_collection(logger)
         else:
-            print("Skipping free offer collection")
             state = "daily_challenge_reward_collection"
+
+        # if this time - most recent time in restart_log is more than an hour, always pass to restart
+        if abs(logger.most_recent_restart_time - time.time()) > 3600:
+            state = "auto_restart"
 
 
     elif state == "daily_challenge_reward_collection":
-        state = state_daily_challenge_reward_collection(logger)
+        if "daily challenge reward collection" in jobs: state = state_daily_challenge_reward_collection(logger)
+        else: state = "battlepass_reward_collection"
 
 
     elif state == "battlepass_reward_collection":
@@ -193,6 +192,7 @@ def state_tree(
 
 
 def state_restart(logger) -> Literal["account_switching", "restart"]:
+    print("state is :state_restart")
     # Method for the restart state of the program
 
     # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
@@ -211,6 +211,8 @@ def state_restart(logger) -> Literal["account_switching", "restart"]:
         return "account_switching"
 
 def state_account_switching(logger,ssid,ssid_max) -> Literal["chest_reward_collection", "restart"]:
+    print("state is :state_account_switching")
+    
     logger.change_status("Switching accounts. . .")
 
     # Get to correct account if more than one account is being used
@@ -223,10 +225,13 @@ def state_account_switching(logger,ssid,ssid_max) -> Literal["chest_reward_colle
     return "chest_reward_collection",ssid
 
 def state_chest_reward_collection(logger) -> Literal["free_offer_collection", "restart"]:
+    print("state is :state_chest_reward_collection")
+    
     if not check_if_on_clash_main_menu():
         print("Not on clash main menu at start of state_chest_reward_collection, restarting")
         return "restart"
     
+
     open_chests(logger)
 
     if not check_if_on_clash_main_menu():
@@ -236,15 +241,21 @@ def state_chest_reward_collection(logger) -> Literal["free_offer_collection", "r
     return "free_offer_collection"
 
 def state_free_offer_collection(logger) -> Literal["restart", "daily_challenge_reward_collection"]:
+    print("state is :state_free_offer_collection")
+    
     if collect_free_offer_from_shop(logger) == "restart":
         print("Fail in collect_free_offer_from_shop()")
         return "restart"
     return "daily_challenge_reward_collection"
 
 def state_daily_challenge_reward_collection(logger,) -> Literal["restart", "battlepass_reward_collection"]:
+    print("state is :state_daily_challenge_reward_collection")
+    
     return collect_daily_challenge_rewards(logger)
 
 def state_battlepass_collection(logger) -> Literal["restart", "level_up_reward_collection"]:
+    print("state is :state_battlepass_collection")
+    
     if collect_battlepass_rewards(logger) == "restart":
         print("Failure with collect_battlepass_rewards()")
         return "restart"
@@ -252,6 +263,8 @@ def state_battlepass_collection(logger) -> Literal["restart", "level_up_reward_c
         return "level_up_reward_collection"
 
 def state_level_up_reward_collection(logger,) -> Literal["restart", "card_mastery_reward_collection"]:
+    print("state is :state_level_up_reward_collection")
+    
     # Method for level up reward collection state of the program
 
     # state_level_up_reward_collection state starts on clash main and ends on clash main
@@ -261,6 +274,8 @@ def state_level_up_reward_collection(logger,) -> Literal["restart", "card_master
     return "card_mastery_reward_collection"
 
 def state_card_mastery_collection(logger) -> Literal["restart", "request"]:
+    print("state is :state_card_mastery_collection")
+    
     # Method for the card mastery collection state of the program
 
     # card_mastery_collection state starts on clash main and ends on clash main
@@ -270,6 +285,8 @@ def state_card_mastery_collection(logger) -> Literal["restart", "request"]:
     return "request"
 
 def state_request(logger) -> Literal["restart", "upgrade"]:
+    print("state is :state_request")
+    
     # Method for the state of the program when requesting cards
     # Request method goes to clan page, requests a random card if request is
     # available, then returns to the clash royale main menu
@@ -282,6 +299,8 @@ def state_request(logger) -> Literal["restart", "upgrade"]:
     return "upgrade"
 
 def state_upgrade(logger) -> Literal["restart", "deck_randomization"]:
+    print("state is :state_upgrade")
+    
     # Method for the state of the program when upgrading cards
 
     # Starts on the clash royale main menu and ends on the clash royale main
@@ -307,12 +326,16 @@ def state_upgrade(logger) -> Literal["restart", "deck_randomization"]:
     return "deck_randomization"
 
 def state_deck_randomization(logger,random_deck_bool) -> Literal["restart", "startfight"]:
+    print("state is :state_deck_randomization")
+    
     if random_deck_bool and randomize_and_select_deck_2(logger) == "restart":
         print("Failure with randomize_and_select_deck_2() in state_startfight()")
         return "restart"
     else:return "startfight"
 
 def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]:
+    print("state is :state_startfight")
+    
     # Method for the starting of a fight state of the program
 
     # Begins on clash main, ends in the beginning of a fight
@@ -330,6 +353,8 @@ def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]
     return "fighting"
 
 def state_fight(logger) -> Literal["restart", "endfight"]:
+    print("state is :state_fight")
+    
     # Method for the state of the program when fighting
 
     # Method that plays cards with certain logic until the fight is over then
@@ -348,6 +373,8 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
     return "endfight"
 
 def state_endfight(logger) -> Literal["war"]:
+    print("state is :state_endfight")
+    
     # Method for the state of the program after a fight
 
     # Checks if the last battle was a win or loss then adds this to the logger tally
@@ -357,6 +384,8 @@ def state_endfight(logger) -> Literal["war"]:
     return "war"
 
 def state_war(logger) -> Literal["restart", "account_switching"]:
+    print("state is :state_war")
+    
     if handle_war_attacks(logger) == "restart":
         print("Failure with handle_war_attacks()")
         return "restart"
