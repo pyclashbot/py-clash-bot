@@ -119,6 +119,7 @@ class Logger:
             "level_up_chest_collections": self.level_up_chest_collections,
             "war_battles_fought": self.war_battles_fought,
             "free_offer_collections": self.free_offer_collections,
+            "daily_challenge_reward_collections": self.daily_challenge_reward_collections,
             "current_status": self.current_status,
             "time_since_start": self.calc_time_since_start(),
         }
