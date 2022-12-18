@@ -108,13 +108,13 @@ def open_memu_launcher(logger):
 
 
 def orientate_memu_launcher(logger):
-    logger.change_status("Orientating Memu launcher")
+    # logger.change_status("Orientating Memu launcher")
     window = pygetwindow.getWindowsWithTitle(mmim_window_title)[0]
     window.activate()
     window.moveTo(0, 0)
     window.resizeTo(732, 596)
-    logger.change_status("Done orientating Memu launcher")
-
+    # logger.change_status("Done orientating Memu launcher")
+    pass
 
 def get_launcher_path():
     return os.path.join(
