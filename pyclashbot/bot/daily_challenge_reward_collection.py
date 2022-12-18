@@ -48,7 +48,7 @@ def collect_daily_challenge_rewards(logger):
         )
         return "restart"
 
-    return "free_offer_collection"
+    return "battlepass_reward_collection"
 
 
 def collect_daily_reward(logger,reward_index):
