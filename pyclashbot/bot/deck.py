@@ -243,7 +243,52 @@ def find_card_level_boost_icon():
 
 
 def find_random_card_coord():
-    region_list = [
+    region_list=[
+        #cover the region that cards' elixer values can appear in once
+        [50,180,50,50],
+        [100,180,50,50],
+        [150,180,50,50],
+        [200,180,50,50],
+        [250,180,50,50],
+        [300,180,50,50],
+        [350,180,50,50],
+        [50,230,50,50],
+        [100,230,50,50],
+        [150,230,50,50],
+        [200,230,50,50],
+        [250,230,50,50],
+        [300,230,50,50],
+        [350,230,50,50],
+        [50,280,50,50],
+        [100,280,50,50],
+        [150,280,50,50],
+        [200,280,50,50],
+        [250,280,50,50],
+        [300,280,50,50],
+        [350,280,50,50],
+        [50,330,50,50],
+        [100,330,50,50],
+        [150,330,50,50],
+        [200,330,50,50],
+        [250,330,50,50],
+        [300,330,50,50],
+        [350,330,50,50],
+        [50,380,50,50],
+        [100,380,50,50],
+        [150,380,50,50],
+        [200,380,50,50],
+        [250,380,50,50],
+        [300,380,50,50],
+        [350,380,50,50],
+        [50,430,50,50],
+        [100,430,50,50],
+        [150,430,50,50],
+        [200,430,50,50],
+        [250,430,50,50],
+        [300,430,50,50],
+        [350,430,50,50],
+        
+        #cover the region that cards' elixer values can appear in twice (this time with different increments of regions)
         [50, 130, 81, 71],
         [131, 130, 81, 71],
         [212, 130, 81, 71],
@@ -286,6 +331,7 @@ def find_random_card_coord():
 
 
 def find_card_elixer_icon_in_card_list_in_given_image(image):
+
     current_image = image
     reference_folder = "find_card_elixer_icon_in_card_list"
 
@@ -680,4 +726,11 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
         click(card_to_replace_coord[0], card_to_replace_coord[1])
         time.sleep(0.22)
 
-        return None
+    return None
+
+
+
+
+
+
+
