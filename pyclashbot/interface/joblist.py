@@ -58,6 +58,12 @@ jobs_checklist = [
                         "-Free-Offer-Collection-in-",
                     ),
                 ],
+                [
+                    job_check_box(
+                        "Daily Challenge Reward Collection",
+                        "-Daily-Challenge-Reward-Collection-",
+                    ),
+                ],
             ],
             scrollable=True,
             vertical_scroll_only=True,
