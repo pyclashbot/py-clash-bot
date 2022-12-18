@@ -49,29 +49,37 @@ class Logger:
         # immutable statistics
         self.start_time = time.time() if timed else None
 
-        # mutable statistics
+
+        ####STATISTICS
+
+        #fight stats
         self.wins = 0
         self.losses = 0
         self.fights = 0
-        self.requests = 0
-
-        # restart vars
-        self.auto_restarts = 0
-        self.restarts_after_failure = 0
-        self.most_recent_restart_time = 0
-        self.app_restarts = 0
-
-        self.chests_unlocked = 0
         self.cards_played = 0
+        
+        #job stats
+        self.requests = 0
+        self.chests_unlocked = 0
         self.cards_upgraded = 0
-        self.account_switches = 0
         self.card_mastery_reward_collections = 0
         self.battlepass_rewards_collections = 0
         self.level_up_chest_collections = 0
         self.war_battles_fought = 0
         self.free_offer_collections = 0
         self.war_chest_collections = 0
+        self.daily_challenge_reward_collections = 0
+
+        #restart stats
+        self.auto_restarts = 0
+        self.restarts_after_failure = 0
+        self.most_recent_restart_time = 0
+        self.app_restarts = 0
+
+        #bot stats
+        self.account_switches = 0
         self.current_status = "Idle"
+
 
         # track errored logger
         self.errored = False
@@ -255,10 +263,16 @@ class Logger:
         self.war_chest_collections += 1
 
     @_updates_log
+    def add_daily_challenge_reward_collection(self):
+        """daily_challenge_reward_collection to log"""
+        self.daily_challenge_reward_collections += 1
+
+    @_updates_log
     def add_free_offer_collection(self):
         """add level up chest collection to log"""
         self.free_offer_collections += 1
 
+    @_updates_log
     def add_battlepass_reward_collection(self):
         """add battlepass collection to log"""
         self.battlepass_rewards_collections += 1
