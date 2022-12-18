@@ -181,19 +181,3 @@ def upgrade_current_cards(logger):
             upgrade_card(logger, index)
 
 
-def find_card_page_logo():
-    # Method to find the card page logo in the icon list in the bottom of the
-    # screen when on clash main
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-    ]
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="card_page_logo",
-        names=references,
-        tolerance=0.97,
-    )
-    return check_for_location(locations)
