@@ -15,6 +15,9 @@ from pyclashbot.bot.clashmain import (
     verify_ssid_input,
     wait_for_battle_start,
 )
+from pyclashbot.bot.daily_challenge_reward_collection import (
+    collect_daily_challenge_rewards,
+)
 from pyclashbot.bot.deck import randomize_and_select_deck_2
 from pyclashbot.bot.fight import check_if_past_game_is_win, do_fight
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
@@ -191,8 +194,7 @@ def state_tree(
         )
 
     elif state == "daily_challenge_reward_collection":
-        pass
-        state = "free_offer_collection"
+        state = state_daily_challenge_reward_collection(logger)
 
     elif state == "free_offer_collection":
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
@@ -213,6 +215,12 @@ def state_tree(
             state = "clashmain"
 
     return (state, ssid)
+
+
+def state_daily_challenge_reward_collection(
+    logger,
+) -> Literal["restart", "free_offer_collection"]:
+    return collect_daily_challenge_rewards(logger)
 
 
 def state_free_offer_collection(logger) -> Literal["restart", "clashmain"]:
