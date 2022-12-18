@@ -25,6 +25,7 @@ def collect_daily_challenge_rewards(logger):
 
         #check which rewards are available
         rewards_bool_list=check_for_daily_challenge_rewards_in_daily_challenge_page()
+        print("rewards_bool_list: ",rewards_bool_list)
 
         #collect the rewards
         index=0
@@ -70,6 +71,7 @@ def collect_daily_reward(logger,reward_index):
     
     #increment logger
     logger.add_daily_challenge_reward_collection()
+    print("Incremented logger to",logger.daily_challenge_reward_collections)
 
     #click the given reward coord
     coord=daily_challenge_reward_coord_list[reward_index]
