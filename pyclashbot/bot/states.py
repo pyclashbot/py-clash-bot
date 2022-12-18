@@ -45,49 +45,6 @@ from pyclashbot.memu.launcher import restart_memu
 from pyclashbot.utils import Logger
 
 
-def detect_state(logger):
-    # Method for detecting the state of the client in a given moment
-    # sourcery skip: extract-duplicate-method
-    # if we're on clan page get back to clash main and return
-    if check_if_on_clan_page():
-        if get_to_clash_main_from_clan_page(logger) == "restart":
-            logger.change_status("Failure getting to clash main from clan page")
-            return "restart"
-        time.sleep(1)
-        return "clashmain"
-
-    # if we're on card page get back to clash main and return
-    if check_if_on_first_card_page():
-        if get_to_clash_main_from_card_page(logger) == "restart":
-            logger.change_status("failure getting to clash main from card page")
-            return "restart"
-        time.sleep(1)
-        return "clashmain"
-
-    # if we're in battle return fighting
-    if check_if_in_battle_with_delay():
-        return "fighting"
-
-    # if we're on end fight screen condition 1 (exit in bottom left)
-    if check_if_end_screen_is_exit_bottom_left():
-        click(79, 625)
-        time.sleep(1)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited for clash main too long")
-            return "restart"
-        return "clashmain"
-
-    # if we're on end fight screen condition 2 (OK in bottom middle)
-    if check_if_end_screen_is_ok_bottom_middle():
-        click(206, 594)
-        time.sleep(1)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited for clash main too long")
-            return "restart"
-        return "clashmain"
-
-    # if none of these conditions are met return "restart"
-    return "restart"
 
 
 def state_tree(
