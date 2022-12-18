@@ -68,6 +68,8 @@ def state_tree(
     """
 
 
+
+
     if state == "intro":
         print("RUNNING INTRO STATE")
         logger.change_status("Running first startup sequence.")
@@ -166,11 +168,11 @@ def state_tree(
         )
 
 
-    elif state == "startfight":
+    elif state == "start_fight":
         state = (
             state_startfight(logger, random_deck="Randomize Deck" in jobs)
             if "Fight" in jobs
-            else "upgrade"
+            else "war"
         )
 
 
@@ -325,13 +327,13 @@ def state_upgrade(logger) -> Literal["restart", "deck_randomization"]:
 
     return "deck_randomization"
 
-def state_deck_randomization(logger,random_deck_bool) -> Literal["restart", "startfight"]:
+def state_deck_randomization(logger,random_deck_bool) -> Literal["restart", "start_fight"]:
     print("state is :state_deck_randomization")
     
     if random_deck_bool and randomize_and_select_deck_2(logger) == "restart":
         print("Failure with randomize_and_select_deck_2() in state_startfight()")
         return "restart"
-    else:return "startfight"
+    else:return "start_fight"
 
 def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]:
     print("state is :state_startfight")
