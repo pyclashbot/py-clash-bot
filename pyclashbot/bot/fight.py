@@ -136,6 +136,9 @@ def play_random_card(logger):
     click(play_coord[0], play_coord[1])
 
 
+def play_hero_power():
+    click(349,512)
+
 #### detection
 def check_if_past_game_is_win(logger):
     """
@@ -198,106 +201,6 @@ def check_if_has_6_elixer():
     )
 
 
-#### board detection
-def cover_board_image(iar):
-    """
-    cover_board_image covers specific regions in the board image with black that may indicate false positives to make the board detection more accurate.
-    :iar: a numpy image array. This is the image array of the board screenshot.
-    :return: iar: the image array of the board screenshot with the covered regions.
-    """
-
-    # Cover left enemy tower
-    for x, y in itertools.product(range(101, 147), range(154, 215)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover enemy king tower
-    for x, y in itertools.product(range(156, 266), range(81, 185)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover enemy right tower
-    for x, y in itertools.product(range(272, 322), range(152, 216)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover left side
-    for x, y in itertools.product(range(70), range(700)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover right side
-    for x, y in itertools.product(range(350, 500), range(700)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover bottom
-    for x, y in itertools.product(range(500), range(495, 700)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover top
-    for x, y in itertools.product(range(500), range(70)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover river
-    for x, y in itertools.product(range(500), range(300, 340)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover friendly left tower
-    for x, y in itertools.product(range(101, 148), range(401, 452)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover friendly right tower
-    for x, y in itertools.product(range(275, 320), range(403, 459)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover friendly king tower
-    for x, y in itertools.product(range(152, 269), range(442, 500)):
-        iar[y][x] = [0, 0, 0]
-
-    # Cover top again
-    for x, y in itertools.product(range(500), range(50, 136)):
-        iar[y][x] = [0, 0, 0]
-
-    # return
-    return iar
-
-
-def get_left_and_right_totals(iar):
-    """
-    get_left_and_right_totals counts the red pixels on the left and right lanes of the board.
-    :iar: a numpy image array. This is the image array of the board screenshot.
-    :return: [left_lane_total, right_lane_total]: integer totals of the red pixels on the left and right lanes of the board.
-    """
-
-    left_lane_total = 0
-    right_lane_total = 0
-
-    red = [212, 45, 43]
-    for x, y in itertools.product(range(500), range(700)):
-        pixel = iar[y][x]
-        if pixel_is_equal(pixel, red, tol=35):
-            if x > 250:
-                right_lane_total += 1
-            if x < 250:
-                left_lane_total += 1
-
-    return left_lane_total, right_lane_total
-
-
-def pick_a_lane():
-    """
-    pick_a_lane gets a numpy image array of the board screenshot, covers the regions that may indicate false positives, and counts the red pixels on the left and right lanes of the board. It then returns the lane with the most red pixels.
-    :return: String: "left" or "right" depending on which lane has the most red pixels. Returns "random" if the lanes are equal within a threshold.
-    """
-
-    iar = numpy.array(screenshot())
-
-    covered_iar = cover_board_image(iar)
-
-    lane_ratio = get_left_and_right_totals(covered_iar)
-
-    if (lane_ratio[0] < 10) and (lane_ratio[1] < 10):
-        return "random"
-    return "right" if lane_ratio[1] > lane_ratio[0] else "left"
-
-
-##### to sort
 def check_if_card_1_is_available():
     iar = numpy.asarray(screenshot())
     pix_list = [
@@ -406,7 +309,6 @@ def check_if_all_cards_are_available():
     return all(available_cards)
 
 
-
 def check_for_hero_power():
     #checks for the purple elixer icon of the hero power in the botton left of the screen
     iar=numpy.asarray(screenshot())
@@ -421,5 +323,103 @@ def check_for_hero_power():
             return True
     return False
 
-def play_hero_power():
-    click(349,512)
+#### board detection
+def cover_board_image(iar):
+    """
+    cover_board_image covers specific regions in the board image with black that may indicate false positives to make the board detection more accurate.
+    :iar: a numpy image array. This is the image array of the board screenshot.
+    :return: iar: the image array of the board screenshot with the covered regions.
+    """
+
+    # Cover left enemy tower
+    for x, y in itertools.product(range(101, 147), range(154, 215)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover enemy king tower
+    for x, y in itertools.product(range(156, 266), range(81, 185)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover enemy right tower
+    for x, y in itertools.product(range(272, 322), range(152, 216)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover left side
+    for x, y in itertools.product(range(70), range(700)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover right side
+    for x, y in itertools.product(range(350, 500), range(700)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover bottom
+    for x, y in itertools.product(range(500), range(495, 700)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover top
+    for x, y in itertools.product(range(500), range(70)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover river
+    for x, y in itertools.product(range(500), range(300, 340)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover friendly left tower
+    for x, y in itertools.product(range(101, 148), range(401, 452)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover friendly right tower
+    for x, y in itertools.product(range(275, 320), range(403, 459)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover friendly king tower
+    for x, y in itertools.product(range(152, 269), range(442, 500)):
+        iar[y][x] = [0, 0, 0]
+
+    # Cover top again
+    for x, y in itertools.product(range(500), range(50, 136)):
+        iar[y][x] = [0, 0, 0]
+
+    # return
+    return iar
+
+
+def get_left_and_right_totals(iar):
+    """
+    get_left_and_right_totals counts the red pixels on the left and right lanes of the board.
+    :iar: a numpy image array. This is the image array of the board screenshot.
+    :return: [left_lane_total, right_lane_total]: integer totals of the red pixels on the left and right lanes of the board.
+    """
+
+    left_lane_total = 0
+    right_lane_total = 0
+
+    red = [212, 45, 43]
+    for x, y in itertools.product(range(500), range(700)):
+        pixel = iar[y][x]
+        if pixel_is_equal(pixel, red, tol=35):
+            if x > 250:
+                right_lane_total += 1
+            if x < 250:
+                left_lane_total += 1
+
+    return left_lane_total, right_lane_total
+
+
+def pick_a_lane():
+    """
+    pick_a_lane gets a numpy image array of the board screenshot, covers the regions that may indicate false positives, and counts the red pixels on the left and right lanes of the board. It then returns the lane with the most red pixels.
+    :return: String: "left" or "right" depending on which lane has the most red pixels. Returns "random" if the lanes are equal within a threshold.
+    """
+
+    iar = numpy.array(screenshot())
+
+    covered_iar = cover_board_image(iar)
+
+    lane_ratio = get_left_and_right_totals(covered_iar)
+
+    if (lane_ratio[0] < 10) and (lane_ratio[1] < 10):
+        return "random"
+    return "right" if lane_ratio[1] > lane_ratio[0] else "left"
+
+
+
