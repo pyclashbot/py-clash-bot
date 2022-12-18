@@ -192,7 +192,7 @@ def state_war(logger) -> Literal["restart", "free_offer_collection"]:
         print("Failure with handle_war_attacks()")
         return "restart"
     else:
-        return "free_offer_collection"
+        return "daily_challenge_reward_collection"
 
 
 def state_battlepass_collection(logger) -> Literal["restart", "war"]:
