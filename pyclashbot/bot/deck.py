@@ -570,6 +570,10 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             time.sleep(0.1)
 
         #check for scrolling failure here maybe
+        if check_for_random_scroll_failure_in_deck_randomization():
+            print("detected a failure when randomly scrolling during deck randomization... attempting to save the bot")
+            for _ in range(3):scroll_down_super_fast();time.sleep(0.1)
+            
 
         # click randomly until we get a 'use' button
         use_card_button_coord = None
@@ -580,13 +584,18 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             print("Clicking cards randomly")
             loops += 1
             if loops > 30:
-                print("Clicked around for a random card too many times. Restarting")
-                return "restart"
+                print("Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized.")
+                if get_to_clash_main_from_card_page()=="restart":return"restart"
+                else:return
+
+
+
             # find a random card on this page
             replacement_card_coord = find_random_card_coord()
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
-                return "restart"
+                if get_to_clash_main_from_card_page()=="restart":return"restart"
+                else:return
             click(replacement_card_coord[0], replacement_card_coord[1])
             time.sleep(1)
 
