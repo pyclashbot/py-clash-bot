@@ -23,17 +23,6 @@ from pyclashbot.memu import (
 )
 
 
-def handle_randomize_deck_failure(logger):
-    print("Handling randomize deck failure got called.")
-    # tries to get back to clash main regardless of failing to randomize the deck fully. if it doesnt THEN we try restarting
-    logger.change_status(
-        "Trying to return to clash main and continue with half randomized deck"
-    )
-    if get_to_clash_main_from_card_page(logger) == "restart":
-        logger.change_status("Couldn't get to clash main. Must restart")
-        return "restart"
-    return None
-
 
 def check_if_mimimum_scroll_case():
     scroll_down()
@@ -99,43 +88,6 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 
 
 #### detection methods
-def find_card_page_logo():
-    # Method to find the card page logo in the icon list in the bottom of the
-    # screen when on clash main
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-    ]
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="card_page_logo",
-        names=references,
-        tolerance=0.97,
-    )
-    return check_for_location(locations)
-
-
-def find_card_level_boost_icon():
-    current_image = screenshot()
-    reference_folder = "find_card_level_boost_icon"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "find_card_level_boost_icon",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
 
 
 def find_random_card_coord():
@@ -378,23 +330,6 @@ def check_if_can_still_scroll_in_card_page():
     return True
 
 
-def look_for_card_collection_icon_on_card_page():
-    current_image = screenshot()
-    reference_folder = "card_collection_icon"
-
-    references = make_reference_image_list(get_file_count("card_collection_icon"))
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.9,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
-
-
 def check_for_random_scroll_failure_in_deck_randomization():
     card_level_boost_icon_coord_height = find_seasonal_card_boost_icon()
     if card_level_boost_icon_coord_height is None: return True
@@ -405,70 +340,12 @@ def check_for_random_scroll_failure_in_deck_randomization():
     else: return False
     
     
-    
-    
-    
-
-
-def find_battle_deck_label_on_card_page():
-    current_image = screenshot()
-    reference_folder = "find_battle_deck_label_on_card_page"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "find_battle_deck_label_on_card_page",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
-
-
-def find_deck_number_label_on_card_page():
-    current_image = screenshot()
-    reference_folder = "find_deck_number_label_on_card_page"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "find_deck_number_label_on_card_page",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
-
-
 #### etc
 
 
 def check_if_pix_list_is_blue(pix_list):
     color_blue = [15, 70, 120]
     return all(pixel_is_equal(color_blue, pix, tol=45) for pix in pix_list)
-
-
-def is_not_blue_or_grey(pix_list):
-    return not (
-        check_if_pix_list_is_blue(pix_list) or check_if_pix_list_is_grey(pix_list)
-    )
-
-
-def check_if_pix_list_is_grey(pix_list):
-    return all(check_if_pixel_is_grey(pix) for pix in pix_list)
-
 
 def check_if_pixel_is_grey(pixel):
     r: int = pixel[0]
