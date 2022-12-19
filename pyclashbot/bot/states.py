@@ -161,8 +161,10 @@ def state_tree(
 
 
     elif state == "deck_randomization":
+        if "Randomize Deck" in jobs:random_deck_bool=True
+        else:random_deck_bool=False
         state = (
-            state_deck_randomization(logger)
+            state_deck_randomization(logger,random_deck_bool)
             if "Randomize Deck" in jobs
             else "start_fight"
         )
