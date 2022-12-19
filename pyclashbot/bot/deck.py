@@ -332,12 +332,8 @@ def check_if_can_still_scroll_in_card_page():
 
 def check_for_random_scroll_failure_in_deck_randomization():
     card_level_boost_icon_coord_height = find_seasonal_card_boost_icon()
-    if card_level_boost_icon_coord_height is None: return True
-    
-    card_level_boost_icon_coord_height = card_level_boost_icon_coord_height[1]
-    
-    if card_level_boost_icon_coord_height > 167:return True
-    else: return False
+    if card_level_boost_icon_coord_height is None: return False
+    else:return True
     
     
 #### etc
@@ -463,7 +459,7 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             if loops > 30:
                 print("Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized.")
                 if get_to_clash_main_from_card_page(logger)=="restart":return"restart"
-                else:return
+                else:return"fail"
 
 
 
