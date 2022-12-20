@@ -10,9 +10,9 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
     get_to_account,
     handle_card_mastery_notification,
-    open_chests,
+
     start_2v2,
-    verify_ssid_input,
+    
     wait_for_battle_start,
 )
 from pyclashbot.bot.daily_challenge_reward_collection import (
@@ -31,6 +31,7 @@ from pyclashbot.bot.navigation import (
     leave_end_battle_window,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.open_chests import open_chests
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import (
