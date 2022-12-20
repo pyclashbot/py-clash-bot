@@ -292,10 +292,12 @@ def handle_card_mastery_notification():
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
-    time.sleep(1)
+    time.sleep(0.33)
+
 
     click(240, 630)
-    time.sleep(1)
+    time.sleep(0.33)
+
 
 
 def handle_war_loot_menu():
@@ -854,5 +856,70 @@ def wait_card_mastery_page():
         pass
 
 def get_to_card_mastery_page():
+
     click(257, 505)
     wait_card_mastery_page()
+
+
+
+
+def check_if_profile_page_is_open():
+    iar=numpy.asarray(screenshot())
+
+    profile_page_crown_logo_exists=False
+    for x_coord in range(180,240):
+        this_pixel=iar[80][x_coord]
+        if pixel_is_equal(this_pixel,[255,220,0],tol=35):
+            profile_page_crown_logo_exists=True
+
+
+    close_button_exists=False
+    for x_coord in range(350,370):
+        this_pixel=iar[90][x_coord]
+        if pixel_is_equal(this_pixel,[253,132,133],tol=35):
+            close_button_exists=True
+
+    if profile_page_crown_logo_exists and close_button_exists:
+        return True
+    return False
+
+def open_profile_page():
+    click(100, 130)
+    wait_for_profile_page()
+
+
+def wait_for_profile_page():
+    while not check_if_profile_page_is_open():
+        pass
+
+
+
+
+def check_if_on_party_mode_page():
+    iar=numpy.asarray(screenshot())
+
+    party_title_text_exists=False
+    for x_coord in range(180,240):
+        this_pixel=iar[140][x_coord]
+        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
+            party_title_text_exists=True
+
+
+    close_button_exists=False
+    for x_coord in range(340,365):
+        this_pixel=iar[130][x_coord]
+        if pixel_is_equal(this_pixel,[253,132,133],tol=35):
+            close_button_exists=True
+
+
+    if close_button_exists and party_title_text_exists:
+        return True
+    return False
+
+def wait_for_party_mode_page():
+    while not check_if_on_party_mode_page():
+        pass
+
+def get_to_party_mode_page_from_settings_page():
+    click(263, 248)
+    wait_for_party_mode_page()

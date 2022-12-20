@@ -6,9 +6,11 @@ from ahk import AHK
 from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
     get_to_clash_main_settings_page,
+    get_to_party_mode_page_from_settings_page,
     get_to_ssid_switch_page,
     get_to_switch_accounts_tab,
     handle_card_mastery_notification,
+    open_profile_page,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection import (
@@ -33,20 +35,6 @@ logger = Logger()
 # detection methods
 
 
-def look_for_puzzleroyale_popup():
-    # Method to check for puzzleroyale popup
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[173][102],
-        iar[290][96],
-        iar[154][312],
-    ]
-
-    color = [244, 183, 118]
-
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
 
 def check_if_on_trophy_progession_rewards_page():
     # Method to check if the bot is on the trophy progression rewards page in
@@ -60,7 +48,6 @@ def check_if_on_trophy_progession_rewards_page():
     color = [78, 175, 255]
 
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
-
 
 
 def find_2v2_quick_match_button():
@@ -125,15 +112,6 @@ def check_if_in_battle():
 
 # interaction methods
 
-
-def handle_puzzleroyale_popup(logger):
-    # Method to handle puzzleroyale popup
-    if look_for_puzzleroyale_popup():
-        logger.change_status("Handling puzzle royale popup")
-        click(366, 121)
-        time.sleep(3)
-
-
 def check_if_in_a_clan(logger):
     # Method to check if the current account has a clan. starts and ends on clash main
 
@@ -146,8 +124,7 @@ def check_if_in_a_clan(logger):
         return "restart"
 
     # click profile
-    click(100, 130)
-    time.sleep(3)
+    open_profile_page()
 
     # get image array of flag where clan flag should be.
     iar = numpy.asarray(screenshot())
@@ -156,9 +133,6 @@ def check_if_in_a_clan(logger):
         for y_coord in range(471, 481):
             this_pixel = iar[y_coord][x_coord]
             pix_list.append(this_pixel)
-
-    # print this pixel list
-    # print_pix_list(pix_list)
 
     # if any of these pixels are NOT grey, we ARE in a clan. Else return False
     is_in_a_clan = False
@@ -210,36 +184,30 @@ def get_to_account(logger, account_number):
     if account_number == 4:
         # scroll then click
         scroll_down_fast()
-        time.sleep(1)
         click(170, 640)
 
     if account_number == 5:
         # scroll then click
         for _ in range(4):
             scroll_down_fast()
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(0.5)
         click(230, 585)
 
     if account_number == 6:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(0.5)
         click(240, 550)
 
     if account_number == 7:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(0.5)
+
         click(230, 625)
 
-    for n in range(10):
-        logger.change_status(f"Manual wait time for clash main menu to load: {n}")
-        time.sleep(1)
 
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
@@ -250,17 +218,10 @@ def get_to_account(logger, account_number):
     )
     logger.add_account_switch()
 
-    # handling the various things notifications and such that need to be
-    # cleared before bot can get going
-    # time.sleep(0.5)
-    # handle_gold_rush_event(logger)
-    time.sleep(0.5)
+
     handle_new_challenge(logger)
-    time.sleep(0.5)
     handle_special_offer(logger)
-    time.sleep(0.5)
     handle_card_mastery_notification()
-    time.sleep(0.5)
     return None
 
 
@@ -268,9 +229,10 @@ def handle_new_challenge(logger):
     # Method to handle a new challenge notification obstructing the bot
     logger.change_status("Handling new challenge notification")
     click(376, 639)
-    time.sleep(1)
+    time.sleep(0.33)
     click(196, 633)
-    time.sleep(1)
+    time.sleep(0.33)
+
     if check_if_on_trophy_progession_rewards_page():
         logger.change_status(
             "Handling the possibility of trophy progession rewards page obstructing the bot."
@@ -282,9 +244,10 @@ def handle_special_offer(logger):
     # Method to handle a special offer notification obstructing the bot
     logger.change_status("Handling special offer notification")
     click(35, 633)
-    time.sleep(1)
+    time.sleep(0.33)
     click(242, 633)
-    time.sleep(1)
+    time.sleep(0.33)
+
     if check_if_on_trophy_progession_rewards_page():
         click(212, 633)
         time.sleep(0.5)
@@ -302,11 +265,10 @@ def start_2v2(logger):
 
     # getting to party tab
     print("Clicking options hamburber icon in clash main to get to party mode")
-    click(365, 108)
-    time.sleep(1)
-    print("Clicking party mode in the options list")
-    click(263, 248)
-    time.sleep(1)
+    get_to_clash_main_settings_page()
+
+    print("getting to party mode page")
+    get_to_party_mode_page_from_settings_page()
 
     if find_and_click_2v2_quickmatch_button(logger) == "restart":
         logger.change_status("failed to find 2v2 quickmatch button")
@@ -345,36 +307,34 @@ def wait_for_battle_start(logger):
 
     logger.change_status("Waiting for battle start. . .")
     in_battle = False
-    loops = 0
 
-    while not in_battle:
-        if check_if_in_battle_with_delay():
-            in_battle = True
-        click(100, 100)
-        time.sleep(0.25)
-        loops += 1
-        logger.change_status(str(f"Waiting for battle start... {loops}"))
-        if loops > 120:
+    start_time=time.time()
+
+    while not check_if_in_battle_with_delay():
+        if time.time() - start_time > 30:
             logger.change_status("Waited longer than 30 sec for a fight")
             return "restart"
 
 
+def check_if_pixels_indicate_in_battle():
+    references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="check_if_in_battle",
+        names=references,
+        tolerance=0.97,
+    )
+
+    if check_for_location(locations):
+        return True
+
+
+
 def check_if_in_battle_with_delay():
-    # Method to check if the bot is in a battle in the given moment
-
-    for _ in range(5):
-        references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
-
-        locations = find_references(
-            screenshot=screenshot(),
-            folder="check_if_in_battle",
-            names=references,
-            tolerance=0.97,
-        )
-
-        if check_for_location(locations):
-            return True
-        time.sleep(1)
+    start_time=time.time()
+    while time.time()-start_time<3:
+        if check_if_pixels_indicate_in_battle():return True
     return False
 
 
