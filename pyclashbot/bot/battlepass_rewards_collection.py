@@ -4,7 +4,7 @@ import numpy
 from ahk import AHK
 
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
-from pyclashbot.bot.navigation import get_to_battlepass_rewards_page
+from pyclashbot.bot.navigation import get_to_battlepass_rewards_page, wait_for_clash_main_menu
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
@@ -85,7 +85,9 @@ def collect_battlepass_rewards(logger):
 
         # close battlepass to reset UI and return to clash main
         click(210, 630)
-        time.sleep(1)
+        if wait_for_clash_main_menu()=="restart":
+            print("waited too long for clash main menu to return after closing battlepass")
+            return "restart"
 
         # increment the battlepass reward collection counter
         logger.add_battlepass_reward_collection()

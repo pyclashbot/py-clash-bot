@@ -250,7 +250,6 @@ def leave_end_battle_window(logger):
     if check_if_end_screen_is_exit_bottom_left():
         print("Leaving end battle (condition 1)")
         click(79, 625)
-        time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
             logger.change_status("waited for clash main too long")
             return "restart"
@@ -260,7 +259,6 @@ def leave_end_battle_window(logger):
     if check_if_end_screen_is_ok_bottom_middle():
         print("Leaving end battle (condition 2)")
         click(206, 594)
-        time.sleep(1)
         if wait_for_clash_main_menu(logger) == "restart":
             logger.change_status("waited too long for clash main")
             return "restart"
@@ -693,28 +691,29 @@ def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
     waiting = not check_if_on_clash_main_menu()
 
+
+    start_time=time.time()
+
     loops = 0
     while waiting:
         print("Still waiting for clash main")
         # loop count
         loops += 1
-        if loops > 25:
+        
+        if time.time()-start_time>20:
             logger.change_status(
-                "Looped through wait_for_clash_main_menu too many times"
+                "Waited more than 20 sec for clashmain. restarting"
             )
             return "restart"
 
-        # wait 1 sec
-        time.sleep(1)
-
         # click dead space
-        click(32, 364)
+        if loops%5==0:click(32, 364)
 
         # check if stuck on trophy progression page
         if check_if_stuck_on_trophy_progression_page():
             print("Stuck on trophy progression page. Clicking out")
-            time.sleep(2)
             click(210, 621)
+            time.sleep(1)
 
         # check if still waiting
         waiting = not check_if_on_clash_main_menu()
@@ -825,3 +824,35 @@ def check_for_battlepass_rewards_page():
 def wait_for_battlepass_rewards_page():
     while not check_for_battlepass_rewards_page():
         pass
+
+
+
+def check_for_card_mastery_page():
+    iar=numpy.asarray(screenshot())
+
+    card_masteries_text_exists=False
+    for x_coord in range(150,275):
+        this_pixel=iar[135][x_coord]
+        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
+            card_masteries_text_exists=True
+
+
+    close_button_exists=False
+    for x_coord in range(345,365):
+        this_pixel=iar[145][x_coord]
+        if pixel_is_equal(this_pixel,[228,24,24],tol=35):
+            close_button_exists=True
+
+
+
+    if close_button_exists and card_masteries_text_exists:
+        return True
+    return False
+
+def wait_card_mastery_page():
+    while not check_for_card_mastery_page():
+        pass
+
+def get_to_card_mastery_page():
+    click(257, 505)
+    wait_card_mastery_page()
