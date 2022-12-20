@@ -84,7 +84,7 @@ def state_tree(
 
         # DEBUG::: wait forever instead of restarting
         # while True:time.sleep(1000)
-        clip_that()
+        # clip_that()
 
         # run restart state
         state = state_restart(logger)
