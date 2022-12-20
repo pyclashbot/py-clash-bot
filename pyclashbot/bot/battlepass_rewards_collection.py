@@ -85,7 +85,7 @@ def collect_battlepass_rewards(logger):
 
         # close battlepass to reset UI and return to clash main
         click(210, 630)
-        if wait_for_clash_main_menu()=="restart":
+        if wait_for_clash_main_menu(logger)=="restart":
             print("waited too long for clash main menu to return after closing battlepass")
             return "restart"
 
