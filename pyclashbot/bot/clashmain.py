@@ -5,6 +5,8 @@ from ahk import AHK
 
 from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
+    get_to_clash_main_settings_page,
+    get_to_ssid_switch_page,
     get_to_switch_accounts_tab,
     handle_card_mastery_notification,
     wait_for_clash_main_menu,
@@ -204,14 +206,12 @@ def get_to_account(logger, account_number):
     )
 
     # open settings
-    print("Opening settings butting from clash main to get to account switch")
-    click(x=364, y=99)
-    time.sleep(1)
+    print("Opening settings tab from clash main to get to account switch")
+    get_to_clash_main_settings_page()
 
     # click switch accounts
     print("Clicking the switch accounts button.")
-    click(200, 460)
-    time.sleep(3)
+    get_to_ssid_switch_page()
 
     print("getting to then clicking the appropriate account")
 
