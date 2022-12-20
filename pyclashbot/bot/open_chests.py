@@ -32,9 +32,8 @@ def open_chests(logger):
             # click chest
             chest_coord = chest_coord_list[index]
             click(chest_coord[0], chest_coord[1])
-            time.sleep(1)
 
-            if check_if_unlock_chest_button_exists():
+            if check_if_unlock_chest_button_exists_with_delay():
                 print("Unlocked a chest", index + 1)
                 logger.add_chest_unlocked()
                 click(210, 465)
@@ -99,3 +98,13 @@ def check_if_unlock_chest_button_exists():
 
     return any(location is not None for location in locations)
 
+
+
+
+def check_if_unlock_chest_button_exists_with_delay():
+    start_time=time.time()
+    while True:
+        if time.time()-start_time>3:
+            return False
+        if check_if_unlock_chest_button_exists():
+            return True
