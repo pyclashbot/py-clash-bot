@@ -84,7 +84,7 @@ def state_tree(
 
         # DEBUG::: wait forever instead of restarting
         # while True:time.sleep(1000)
-        # clip_that()
+        clip_that()
 
         # run restart state
         state = state_restart(logger)
@@ -401,22 +401,22 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 
 
 #FOR OBS RECORDING OF ERRORS 
-# def clip_that():
-#     import pyautogui
+def clip_that():
+    import pyautogui
 
-#     #press key combination
-#     pyautogui.keyDown("ctrl")
-#     pyautogui.keyDown("shift")
-#     time.sleep(0.33)
-#     pyautogui.keyDown("r")
-#     time.sleep(0.33)
+    #press key combination
+    pyautogui.keyDown("ctrl")
+    pyautogui.keyDown("shift")
+    time.sleep(0.33)
+    pyautogui.keyDown("r")
+    time.sleep(0.33)
 
-#     #unpress
-#     pyautogui.keyUp("r")
-#     pyautogui.keyUp("ctrl")
-#     pyautogui.keyUp("shift")
+    #unpress
+    pyautogui.keyUp("r")
+    pyautogui.keyUp("ctrl")
+    pyautogui.keyUp("shift")
     
-#     print("Clipped this error!")
+    print("Clipped this error!")
 
     
 

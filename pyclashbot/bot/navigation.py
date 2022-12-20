@@ -272,38 +272,6 @@ def leave_end_battle_window(logger):
     return None
 
 
-def wait_for_clash_main_menu(logger):
-    logger.change_status("Waiting for clash main menu")
-    waiting = not check_if_on_clash_main_menu()
-
-    loops = 0
-    while waiting:
-        print("Still waiting for clash main")
-        # loop count
-        loops += 1
-        if loops > 25:
-            logger.change_status(
-                "Looped through wait_for_clash_main_menu too many times"
-            )
-            return "restart"
-
-        # wait 1 sec
-        time.sleep(1)
-
-        # click dead space
-        click(32, 364)
-
-        # check if stuck on trophy progression page
-        if check_if_stuck_on_trophy_progression_page():
-            print("Stuck on trophy progression page. Clicking out")
-            time.sleep(2)
-            click(210, 621)
-
-        # check if still waiting
-        waiting = not check_if_on_clash_main_menu()
-
-    logger.change_status("Done waiting for clash main menu")
-
 
 ####Methods for handling popups
 def handle_war_loot_chest():
@@ -717,3 +685,143 @@ def check_if_stuck_on_trophy_progression_page():
     ]
 
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
+
+
+####Methods to wait
+
+def wait_for_clash_main_menu(logger):
+    logger.change_status("Waiting for clash main menu")
+    waiting = not check_if_on_clash_main_menu()
+
+    loops = 0
+    while waiting:
+        print("Still waiting for clash main")
+        # loop count
+        loops += 1
+        if loops > 25:
+            logger.change_status(
+                "Looped through wait_for_clash_main_menu too many times"
+            )
+            return "restart"
+
+        # wait 1 sec
+        time.sleep(1)
+
+        # click dead space
+        click(32, 364)
+
+        # check if stuck on trophy progression page
+        if check_if_stuck_on_trophy_progression_page():
+            print("Stuck on trophy progression page. Clicking out")
+            time.sleep(2)
+            click(210, 621)
+
+        # check if still waiting
+        waiting = not check_if_on_clash_main_menu()
+
+    logger.change_status("Done waiting for clash main menu")
+
+
+
+
+
+
+#### TO SORT
+
+def get_to_clash_main_settings_page():
+    click(x=364, y=99)
+    wait_for_clash_main_settings_page()
+
+
+def check_if_on_clash_main_settings_page():
+    iar=numpy.asarray(screenshot())
+
+    battle_log_text_exists=False
+    for x_coord in range(230,250):
+        this_pixel=iar[75][x_coord]
+        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
+            battle_log_text_exists=True
+
+
+    tournaments_button_exists=False
+    for x_coord in range(185,210):
+        this_pixel=iar[335][x_coord]
+        if pixel_is_equal(this_pixel,[95,141,51],tol=35):
+            tournaments_button_exists=True
+
+
+
+    if battle_log_text_exists and tournaments_button_exists:
+        return True
+    return False
+        
+
+def wait_for_clash_main_settings_page():
+    while not check_if_on_clash_main_settings_page():
+        pass
+
+
+
+def wait_for_ssid_switch_page():
+    while not check_for_ssid_switch_page():
+        pass
+
+def get_to_ssid_switch_page():
+    click(200, 460)
+    wait_for_ssid_switch_page()
+
+def check_for_ssid_switch_page():
+    iar=numpy.asarray(screenshot())
+
+    blue_background_color_exists=False
+    for x_coord in range(30,70):
+        this_pixel=iar[110][x_coord]
+        if pixel_is_equal(this_pixel,[50,118,182],tol=35):
+            blue_background_color_exists=True
+
+
+    switch_accounts_logo_exists=False
+    for x_coord in range(150,165):
+        this_pixel=iar[265][x_coord]
+        if pixel_is_equal(this_pixel,[47,243,198],tol=35):
+            switch_accounts_logo_exists=True
+
+
+
+    if switch_accounts_logo_exists and blue_background_color_exists:
+        return True
+    return False
+
+
+
+
+def get_to_battlepass_rewards_page():
+    click(315, 165)
+    wait_for_battlepass_rewards_page()
+
+
+def check_for_battlepass_rewards_page():
+    iar=numpy.asarray(screenshot())
+
+    season_timer_clock_icon_exists=False
+    for x_coord in range(235,265):
+        this_pixel=iar[155][x_coord]
+        if pixel_is_equal(this_pixel,[212,204,204],tol=35):
+            season_timer_clock_icon_exists=True
+
+
+    ok_button_exists=False
+    for x_coord in range(180,240):
+        this_pixel=iar[630][x_coord]
+        if pixel_is_equal(this_pixel,[104,187,255],tol=35):
+            ok_button_exists=True
+
+
+
+    if ok_button_exists and season_timer_clock_icon_exists:
+        return True
+    return False
+
+def wait_for_battlepass_rewards_page():
+    while not check_for_battlepass_rewards_page():
+        pass

@@ -4,6 +4,7 @@ import numpy
 from ahk import AHK
 
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
+from pyclashbot.bot.navigation import get_to_battlepass_rewards_page
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
@@ -70,8 +71,7 @@ def collect_battlepass_rewards(logger):
         loops += 1
 
         # click battlepass icon on clash main
-        click(315, 165)
-        time.sleep(1)
+        get_to_battlepass_rewards_page()
 
         # click every chest locations in the chest_locations list
         for coord in chest_locations:
