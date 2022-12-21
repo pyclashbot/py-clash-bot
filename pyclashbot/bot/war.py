@@ -86,6 +86,7 @@ def handle_war_attacks(logger):
         )
         print("Failure with wait_for_war_battle_loading() in handle_war_attacks()")
         return "restart"
+    time.sleep(10)
 
     # after waiting for match to load, confirm we're in a battle.
     if not check_if_in_battle_with_delay():
@@ -241,5 +242,4 @@ def wait_for_war_battle_loading(logger):
             return "restart"
         time.sleep(0.5)
         print("waiting for war battle to start loading. Loops: " + str(loops))
-    time.sleep(4)
     logger.change_status("Done waiting for battle to load.")
