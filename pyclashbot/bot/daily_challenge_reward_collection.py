@@ -78,6 +78,10 @@ def collect_daily_reward(logger,reward_index):
     click(coord[0],coord[1])
     time.sleep(1)
 
+    if check_for_bannerbox_inventory_full_popup():
+        handle_bannerbox_inventory_full_popup
+
+
     #daily and weekly coords require skipping thru the rewards in a chest
     if reward_index==3 or reward_index==4 or reward_index==1:
         #click the skip button
@@ -88,6 +92,86 @@ def collect_daily_reward(logger,reward_index):
         click(60, 230)
         time.sleep(1)
 
+
+def handle_bannerbox_inventory_full_popup():
+    #go to bannerbox 
+    get_to_bannerbox()
+    
+    #click the '100 tickets' button
+    click(300,600)
+    time.sleep(1)
+
+    #click next '100 tickets' button 
+    click(215,510)
+    time.sleep(1)
+
+    #click thru chest
+    click(20,440,clicks=20,interval=0.33)
+    time.sleep(1)
+
+    #close battlebox
+    click(355,70)
+    time.sleep(1)
+
+    #click reward 2 again
+    click(190,300)
+    time.sleep(1)
+
+
+def get_to_bannerbox():
+    click(200,450)
+    wait_for_bannerbox_page()
+
+def check_if_on_bannerbox_page():
+    iar=numpy.asarray(screenshot())
+
+    bannerbox_title_text_exists=False
+    for x_coord in range(160,280):
+        this_pixel=iar[140][x_coord]
+        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
+            bannerbox_title_text_exists=True
+
+
+    info_button_exists=False
+    for x_coord in range(70,90):
+        this_pixel=iar[612][x_coord]
+        if pixel_is_equal(this_pixel,[76,172,255],tol=35):
+            info_button_exists=True
+
+
+
+    if bannerbox_title_text_exists and info_button_exists:
+        return True
+    return False
+
+def wait_for_bannerbox_page():
+    while not check_if_on_bannerbox_page():
+        pass
+
+
+
+def check_for_bannerbox_inventory_full_popup():
+    iar=numpy.asarray(screenshot())
+
+    inventory_full_text_exists=False
+    for x_coord in range(160,260):
+        this_pixel=iar[200][x_coord]
+        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
+            inventory_full_text_exists=True
+
+
+    go_to_banner_box_text_exists=False
+    for x_coord in range(160,260):
+        this_pixel=iar[450][x_coord]
+        if pixel_is_equal(this_pixel,[106,234,118],tol=35):
+            go_to_banner_box_text_exists=True
+
+
+
+
+    if go_to_banner_box_text_exists and inventory_full_text_exists:
+        return True
+    return False
 
 
 
