@@ -1,6 +1,7 @@
 import random
 import time
 from typing import Literal
+from pyclashbot.bot.bannerbox_collection import collect_bannerbox_chests
 
 from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
@@ -114,12 +115,16 @@ def state_tree(
         if "free offer collection" in jobs:
             state = state_free_offer_collection(logger)
         else:
-            state = "daily_challenge_reward_collection"
+            state = "bannerbox_collection"
 
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
         if abs(logger.most_recent_restart_time - time.time()) > 3600:
             state = "auto_restart"
 
+
+    elif state == "bannerbox_collection":
+        if "daily challenge reward collection" in jobs:state=state_bannerbox_collection(logger)
+        else: state = "battlepass_reward_collection"
 
     elif state == "daily_challenge_reward_collection":
         if "daily challenge reward collection" in jobs: state = state_daily_challenge_reward_collection(logger)
@@ -246,11 +251,21 @@ def state_chest_reward_collection(logger) -> Literal["free_offer_collection", "r
 
     return "free_offer_collection"
 
+
+
+
+
 def state_free_offer_collection(logger) -> Literal["restart", "daily_challenge_reward_collection"]:
     print("state is :state_free_offer_collection")
     
     if collect_free_offer_from_shop(logger) == "restart":
         print("Fail in collect_free_offer_from_shop()")
+        return "restart"
+    return "bannerbox_collection"
+
+def state_bannerbox_collection(logger):
+    if collect_bannerbox_chests(logger)=="restart":
+        print("Error withc ollect_bannerbox_chests() in state_bannerbox_collection()")
         return "restart"
     return "daily_challenge_reward_collection"
 
@@ -258,6 +273,13 @@ def state_daily_challenge_reward_collection(logger,) -> Literal["restart", "batt
     print("state is :state_daily_challenge_reward_collection")
     
     return collect_daily_challenge_rewards(logger)
+
+
+
+
+
+
+
 
 def state_battlepass_collection(logger) -> Literal["restart", "level_up_reward_collection"]:
     print("state is :state_battlepass_collection")
@@ -397,7 +419,6 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
         return "restart"
     else:
         return "account_switching"
-
 
 
 
