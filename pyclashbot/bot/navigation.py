@@ -20,25 +20,18 @@ from pyclashbot.memu.client import (
 
 ####Main navigation methods
 def get_to_card_page(logger):
-    # Method to get to the card page on clash main from the clash main menu
-    print("get to card page")
-    click(x=100, y=630)
-    time.sleep(2)
-    loops = 0
-    while not check_if_on_first_card_page():
-        print("Looping to get to card page")
-        # logger.change_status("Not elixer button. Moving pages")
-        time.sleep(1)
-        click(x=100, y=630)
-        time.sleep(1)
-        loops = loops + 1
-        if loops > 10:
-            logger.change_status("Couldn't make it to card page")
-            return "restart"
-        time.sleep(0.2)
-    scroll_up_fast()
-    print("made it to card page")
-    time.sleep(1)
+    #geting to battledeck page from clash main
+
+    #click card page 
+    logger.change_status("Getting to card collection tab...")
+    click(105,630)
+    wait_for_card_page()
+
+    #get to battle deck page
+    logger.change_status("Getting to battle deck page...")
+    get_to_battle_deck_page()
+
+
 
 
 def get_to_war_page_from_main(logger):
@@ -144,23 +137,6 @@ def get_to_switch_accounts_tab():
     click(200, 455)
     time.sleep(3)
 
-
-def get_to_card_page(logger):
-    # Method to get to the card page on clash main from the clash main menu
-    click(x=100, y=630)
-    time.sleep(2)
-    loops = 0
-    while not check_if_on_first_card_page():
-        print("still not on card page. Cycling")
-        time.sleep(1)
-        click(x=100, y=630)
-        loops = loops + 1
-        if loops > 10:
-            logger.change_status("Couldn't make it to card page")
-            return "restart"
-        time.sleep(1)
-    scroll_up_fast()
-    time.sleep(1)
 
 
 def get_to_clash_main_from_clan_page(logger):
@@ -923,3 +899,65 @@ def wait_for_party_mode_page():
 def get_to_party_mode_page_from_settings_page():
     click(263, 248)
     wait_for_party_mode_page()
+
+
+
+def wait_for_card_page():
+    while not check_if_on_card_page():
+        pass
+
+def check_if_on_card_page():
+    iar=numpy.asarray(screenshot())
+
+    left_arrow_exists=False
+    for x_coord in range(85,95):
+        this_pixel=iar[635][x_coord]
+        if pixel_is_equal(this_pixel,[137,224,255],tol=35):
+            left_arrow_exists=True
+
+
+    right_arrow_exists=False
+    for x_coord in range(185,195):
+        this_pixel=iar[635][x_coord]
+        if pixel_is_equal(this_pixel,[137,224,255],tol=35):
+            right_arrow_exists=True
+
+    collection_text_exists=False
+    for x_coord in range(110,170):
+        this_pixel=iar[655][x_coord]
+        if pixel_is_equal(this_pixel,[253,253,253],tol=35):
+            collection_text_exists=True
+
+    if collection_text_exists and right_arrow_exists and left_arrow_exists:
+        return True
+    return False
+
+def check_if_on_battle_deck_page():
+    iar=numpy.asarray(screenshot())
+
+    battle_deck_text_exists=False
+    for x_coord in range(180,240):
+        this_pixel=iar[140][x_coord]
+        if pixel_is_equal(this_pixel,[248,250,253],tol=35):
+            battle_deck_text_exists=True
+
+
+    elixer_icon_exists=False
+    for x_coord in range(40,60):
+        this_pixel=iar[500][x_coord]
+        if pixel_is_equal(this_pixel,[237,53,225],tol=35):
+            elixer_icon_exists=True
+
+
+    if battle_deck_text_exists and elixer_icon_exists:
+        return True
+    return False
+
+
+
+def get_to_battle_deck_page():
+    while not check_if_on_battle_deck_page():
+        click(140,620)
+        time.sleep(1)
+
+
