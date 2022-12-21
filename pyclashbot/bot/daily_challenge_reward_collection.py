@@ -1,5 +1,6 @@
 import numpy
 import time
+from pyclashbot.bot.navigation import get_to_bannerbox_from_daily_reward_collection_popup
 from pyclashbot.detection.image_rec import pixel_is_equal
 
 from pyclashbot.memu.client import click, screenshot
@@ -54,8 +55,6 @@ def collect_daily_challenge_rewards(logger):
 def collect_daily_reward(logger,reward_index):
     logger.change_status("Collecting daily challenge reward index: "+str(reward_index))
 
-    
-
     daily_challenge_reward_coord_list=[
         #task 1
         (165,235),
@@ -78,8 +77,12 @@ def collect_daily_reward(logger,reward_index):
     click(coord[0],coord[1])
     time.sleep(1)
 
+    print('checking for bannerbox inventory full page')
     if check_for_bannerbox_inventory_full_popup():
+        print("Bannerbox inventory  full")
         handle_bannerbox_inventory_full_popup
+    else:
+        print("Bannerbox inventory not full")
 
 
     #daily and weekly coords require skipping thru the rewards in a chest
@@ -95,7 +98,7 @@ def collect_daily_reward(logger,reward_index):
 
 def handle_bannerbox_inventory_full_popup():
     #go to bannerbox 
-    get_to_bannerbox()
+    get_to_bannerbox_from_daily_reward_collection_popup()
     
     #click the '100 tickets' button
     click(300,600)
@@ -117,36 +120,6 @@ def handle_bannerbox_inventory_full_popup():
     click(190,300)
     time.sleep(1)
 
-
-def get_to_bannerbox():
-    click(200,450)
-    wait_for_bannerbox_page()
-
-def check_if_on_bannerbox_page():
-    iar=numpy.asarray(screenshot())
-
-    bannerbox_title_text_exists=False
-    for x_coord in range(160,280):
-        this_pixel=iar[140][x_coord]
-        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
-            bannerbox_title_text_exists=True
-
-
-    info_button_exists=False
-    for x_coord in range(70,90):
-        this_pixel=iar[612][x_coord]
-        if pixel_is_equal(this_pixel,[76,172,255],tol=35):
-            info_button_exists=True
-
-
-
-    if bannerbox_title_text_exists and info_button_exists:
-        return True
-    return False
-
-def wait_for_bannerbox_page():
-    while not check_if_on_bannerbox_page():
-        pass
 
 
 
@@ -230,6 +203,3 @@ def check_for_daily_challenge_rewards_in_daily_challenge_page():
 
 
 
- # # skip through thoroughly
-    # click(20, 540, clicks=30, interval=0.3)
-    # time.sleep(1)
