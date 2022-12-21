@@ -991,6 +991,7 @@ def check_if_on_bannerbox_page():
 
 def wait_for_bannerbox_page():
     while not check_if_on_bannerbox_page():
+        click(20,440)
         pass
 
 def get_to_bannerbox():
