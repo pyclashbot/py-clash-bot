@@ -405,19 +405,24 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 def clip_that():
     import pyautogui
 
-    #press key combination
-    pyautogui.keyDown("ctrl")
-    pyautogui.keyDown("shift")
-    time.sleep(0.33)
-    pyautogui.keyDown("r")
-    time.sleep(0.33)
 
-    #unpress
-    pyautogui.keyUp("r")
-    pyautogui.keyUp("ctrl")
-    pyautogui.keyUp("shift")
+    print('Saving a clip...')
+
+    #click deadspace
+    click(20,440)
+
+    #press keybind for clipping with obs...
+    pyautogui.keyDown('ctrlleft')
+    pyautogui.keyDown('shiftleft')
+    time.sleep(3)
+    pyautogui.keyDown('r')
+    time.sleep(3)
+    pyautogui.keyUp('r')
+    pyautogui.keyUp('shiftleft')
+    pyautogui.keyUp('ctrlleft')
     
-    print("Clipped this error!")
+    print('saved a clip')
+
 
     
 
