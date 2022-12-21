@@ -961,3 +961,39 @@ def get_to_battle_deck_page():
         time.sleep(1)
 
 
+def get_to_bannerbox_from_daily_reward_collection_popup():
+    click(200,450)
+    wait_for_bannerbox_page()
+
+
+def check_if_on_bannerbox_page():
+    iar=numpy.asarray(screenshot())
+
+    bannerbox_title_text_exists=False
+    for x_coord in range(160,280):
+        this_pixel=iar[140][x_coord]
+        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
+            bannerbox_title_text_exists=True
+
+
+    info_button_exists=False
+    for x_coord in range(70,90):
+        this_pixel=iar[612][x_coord]
+        if pixel_is_equal(this_pixel,[76,172,255],tol=35):
+            info_button_exists=True
+
+
+
+    if bannerbox_title_text_exists and info_button_exists:
+        return True
+    return False
+
+
+def wait_for_bannerbox_page():
+    while not check_if_on_bannerbox_page():
+        pass
+
+def get_to_bannerbox():
+    click(355,230)
+    wait_for_bannerbox_page()
+    print('made it to bannerbox page')
