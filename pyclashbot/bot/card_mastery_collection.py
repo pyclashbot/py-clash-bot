@@ -20,7 +20,6 @@ def collect_card_mastery_rewards(logger):
         [205, 480],
     ]
 
-    # if no mastery rewards to collect return
     logger.change_status("Checking if there are card mastery rewards to collect")
 
     # check if there are rewards to collect
