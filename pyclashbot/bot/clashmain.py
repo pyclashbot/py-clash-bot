@@ -222,6 +222,7 @@ def get_to_account(logger, account_number):
     handle_new_challenge(logger)
     handle_special_offer(logger)
     handle_card_mastery_notification()
+    time.sleep(1)
     return None
 
 
