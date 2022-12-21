@@ -408,20 +408,25 @@ def clip_that():
 
     print('Saving a clip...')
 
-    #click deadspace
-    click(20,440)
+    click(945,880)
+    time.sleep(3)
 
-    #press keybind for clipping with obs...
-    pyautogui.keyDown('ctrlleft')
-    pyautogui.keyDown('shiftleft')
-    time.sleep(3)
-    pyautogui.keyDown('r')
-    time.sleep(3)
-    pyautogui.keyUp('r')
-    pyautogui.keyUp('shiftleft')
-    pyautogui.keyUp('ctrlleft')
+
+
+    # #click deadspace
+    # click(20,440)
+
+    # #press keybind for clipping with obs...
+    # pyautogui.keyDown('ctrlleft')
+    # pyautogui.keyDown('shiftleft')
+    # time.sleep(3)
+    # pyautogui.keyDown('r')
+    # time.sleep(3)
+    # pyautogui.keyUp('r')
+    # pyautogui.keyUp('shiftleft')
+    # pyautogui.keyUp('ctrlleft')
     
-    print('saved a clip')
+    # print('saved a clip')
 
 
     
