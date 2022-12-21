@@ -15,6 +15,9 @@ def collect_bannerbox_chests(logger):
     print('clicking 100 tickets button in the bottom left to buy a chest')
     get_to_confrim_battlebox_purchase_page()
 
+    if check_for_welcome_to_bannerbox_popup():
+        handle_welcome_to_bannerbox_popup()
+
     #buy a chest if u can
     print("checking if can buy a chest this time")
     if check_if_can_purchase_a_battlebox():
@@ -83,5 +86,33 @@ def check_for_confirm_battlebox_purchase_page():
 
 
     if info_button_exists and confirm_purchase_text_exists:
+        return True
+    return False
+
+
+
+def handle_welcome_to_bannerbox_popup():
+    click(20,440,clicks=5,interval=1)
+    time.sleep(1)
+
+def check_for_welcome_to_bannerbox_popup():
+    iar=numpy.asarray(screenshot())
+
+    welcome_to_bannerbox_text_exists=False
+    for x_coord in range(180,200):
+        this_pixel=iar[403][x_coord]
+        if pixel_is_equal(this_pixel,[98,102,113],tol=35):
+            welcome_to_bannerbox_text_exists=True
+
+
+    king_crown_graphic_exists=False
+    for x_coord in range(60,100):
+        this_pixel=iar[440][x_coord]
+        if pixel_is_equal(this_pixel,[255,210,155],tol=35):
+            king_crown_graphic_exists=True
+
+
+
+    if king_crown_graphic_exists and welcome_to_bannerbox_text_exists:
         return True
     return False
