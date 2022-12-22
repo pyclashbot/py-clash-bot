@@ -13,6 +13,7 @@ from pyclashbot.bot.card_detection import (
 from pyclashbot.bot.clashmain import check_if_in_battle, check_if_in_battle_with_delay
 from pyclashbot.bot.deck import check_if_pixel_is_grey
 from pyclashbot.bot.navigation import open_activity_log
+from pyclashbot.debug.ML_image_data.ML_screenshotting import save_screenshot_for_ML_data
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
@@ -36,6 +37,7 @@ def do_fight(logger):
             return "restart"
 
         play_random_card(logger)
+        save_screenshot_for_ML_data()
         time.sleep(1)
         plays += 1
         logger.add_card_played()
