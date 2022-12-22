@@ -68,7 +68,8 @@ def restart_memu(logger):
         time.sleep(1)
 
     # skip ads using pymemuc
-    if skip_ads(vm_index=0)=="fail":return restart_memu(logger)
+    if skip_ads(vm_index=0) == "fail":
+        return restart_memu(logger)
 
     # start clash using pymemuc
     start_clash_royale(logger, vm_index=0)
@@ -115,6 +116,7 @@ def orientate_memu_launcher(logger):
     window.resizeTo(732, 596)
     # logger.change_status("Done orientating Memu launcher")
     pass
+
 
 def get_launcher_path():
     return os.path.join(
