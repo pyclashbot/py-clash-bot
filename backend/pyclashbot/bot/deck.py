@@ -23,7 +23,6 @@ from pyclashbot.memu import (
 )
 
 
-
 def check_if_mimimum_scroll_case():
     scroll_down()
     time.sleep(3)
@@ -91,52 +90,51 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 
 
 def find_random_card_coord():
-    region_list=[
-        #cover the region that cards' elixer values can appear in once
-        [50,180,50,50],
-        [100,180,50,50],
-        [150,180,50,50],
-        [200,180,50,50],
-        [250,180,50,50],
-        [300,180,50,50],
-        [350,180,50,50],
-        [50,230,50,50],
-        [100,230,50,50],
-        [150,230,50,50],
-        [200,230,50,50],
-        [250,230,50,50],
-        [300,230,50,50],
-        [350,230,50,50],
-        [50,280,50,50],
-        [100,280,50,50],
-        [150,280,50,50],
-        [200,280,50,50],
-        [250,280,50,50],
-        [300,280,50,50],
-        [350,280,50,50],
-        [50,330,50,50],
-        [100,330,50,50],
-        [150,330,50,50],
-        [200,330,50,50],
-        [250,330,50,50],
-        [300,330,50,50],
-        [350,330,50,50],
-        [50,380,50,50],
-        [100,380,50,50],
-        [150,380,50,50],
-        [200,380,50,50],
-        [250,380,50,50],
-        [300,380,50,50],
-        [350,380,50,50],
-        [50,430,50,50],
-        [100,430,50,50],
-        [150,430,50,50],
-        [200,430,50,50],
-        [250,430,50,50],
-        [300,430,50,50],
-        [350,430,50,50],
-        
-        #cover the region that cards' elixer values can appear in twice (this time with different increments of regions)
+    region_list = [
+        # cover the region that cards' elixer values can appear in once
+        [50, 180, 50, 50],
+        [100, 180, 50, 50],
+        [150, 180, 50, 50],
+        [200, 180, 50, 50],
+        [250, 180, 50, 50],
+        [300, 180, 50, 50],
+        [350, 180, 50, 50],
+        [50, 230, 50, 50],
+        [100, 230, 50, 50],
+        [150, 230, 50, 50],
+        [200, 230, 50, 50],
+        [250, 230, 50, 50],
+        [300, 230, 50, 50],
+        [350, 230, 50, 50],
+        [50, 280, 50, 50],
+        [100, 280, 50, 50],
+        [150, 280, 50, 50],
+        [200, 280, 50, 50],
+        [250, 280, 50, 50],
+        [300, 280, 50, 50],
+        [350, 280, 50, 50],
+        [50, 330, 50, 50],
+        [100, 330, 50, 50],
+        [150, 330, 50, 50],
+        [200, 330, 50, 50],
+        [250, 330, 50, 50],
+        [300, 330, 50, 50],
+        [350, 330, 50, 50],
+        [50, 380, 50, 50],
+        [100, 380, 50, 50],
+        [150, 380, 50, 50],
+        [200, 380, 50, 50],
+        [250, 380, 50, 50],
+        [300, 380, 50, 50],
+        [350, 380, 50, 50],
+        [50, 430, 50, 50],
+        [100, 430, 50, 50],
+        [150, 430, 50, 50],
+        [200, 430, 50, 50],
+        [250, 430, 50, 50],
+        [300, 430, 50, 50],
+        [350, 430, 50, 50],
+        # cover the region that cards' elixer values can appear in twice (this time with different increments of regions)
         [50, 130, 81, 71],
         [131, 130, 81, 71],
         [212, 130, 81, 71],
@@ -332,16 +330,19 @@ def check_if_can_still_scroll_in_card_page():
 
 def check_for_random_scroll_failure_in_deck_randomization():
     card_level_boost_icon_coord_height = find_seasonal_card_boost_icon()
-    if card_level_boost_icon_coord_height is None: return False
-    else:return True
-    
-    
+    if card_level_boost_icon_coord_height is None:
+        return False
+    else:
+        return True
+
+
 #### etc
 
 
 def check_if_pix_list_is_blue(pix_list):
     color_blue = [15, 70, 120]
     return all(pixel_is_equal(color_blue, pix, tol=45) for pix in pix_list)
+
 
 def check_if_pixel_is_grey(pixel):
     r: int = pixel[0]
@@ -357,11 +358,10 @@ def check_if_pixel_is_grey(pixel):
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
 
 
-
 ### TO SORT
 def randomize_and_select_deck_2(logger):
     logger.change_status("Making a random deck before starting a 2v2. . .")
-    
+
     # get to card page
     print("Getting to card page to randomize deck.")
     get_to_card_page(logger)
@@ -373,7 +373,9 @@ def randomize_and_select_deck_2(logger):
     time.sleep(1)
 
     # check if minimum scroll case
-    logger.change_status("Checking how far the bot can randomly scroll in this account's deck list. . .")
+    logger.change_status(
+        "Checking how far the bot can randomly scroll in this account's deck list. . ."
+    )
     minimum_scroll_case_boolean = check_if_mimimum_scroll_case()
     print(minimum_scroll_case_boolean, minimum_scroll_case_boolean)
 
@@ -442,11 +444,14 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             scroll_down_super_fast()
             time.sleep(0.1)
 
-        #check for scrolling failure here maybe
+        # check for scrolling failure here maybe
         if check_for_random_scroll_failure_in_deck_randomization():
-            print("detected a failure when randomly scrolling during deck randomization... attempting to save the bot")
-            for _ in range(3):scroll_down_super_fast();time.sleep(0.1)
-            
+            print(
+                "detected a failure when randomly scrolling during deck randomization... attempting to save the bot"
+            )
+            for _ in range(3):
+                scroll_down_super_fast()
+                time.sleep(0.1)
 
         # click randomly until we get a 'use' button
         use_card_button_coord = None
@@ -457,18 +462,22 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             print("Clicking cards randomly")
             loops += 1
             if loops > 30:
-                print("Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized.")
-                if get_to_clash_main_from_card_page(logger)=="restart":return"restart"
-                else:return"fail"
-
-
+                print(
+                    "Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized."
+                )
+                if get_to_clash_main_from_card_page(logger) == "restart":
+                    return "restart"
+                else:
+                    return "fail"
 
             # find a random card on this page
             replacement_card_coord = find_random_card_coord()
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
-                if get_to_clash_main_from_card_page(logger)=="restart":return"restart"
-                else:return
+                if get_to_clash_main_from_card_page(logger) == "restart":
+                    return "restart"
+                else:
+                    return
             click(replacement_card_coord[0], replacement_card_coord[1])
             time.sleep(1)
 
@@ -486,10 +495,3 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
         time.sleep(0.22)
 
     return None
-
-
-
-
-
-
-
