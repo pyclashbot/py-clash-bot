@@ -24,6 +24,6 @@ function startBackend() {
 exports.startBackend = startBackend;
 // a function to stop the backend process
 function stopBackend(exeProcess) {
-  exeProcess.kill();
+  if (exeProcess) exeProcess.kill();
 }
 exports.stopBackend = stopBackend;
