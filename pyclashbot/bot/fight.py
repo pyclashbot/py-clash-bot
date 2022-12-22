@@ -49,7 +49,7 @@ def do_fight(logger):
             return "restart"
 
     logger.change_status("Done fighting.")
-    time.sleep(5)
+    time.sleep(10)
 
 
 def wait_until_has_6_elixer(logger):
