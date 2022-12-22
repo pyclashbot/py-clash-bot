@@ -1,0 +1,95 @@
+{
+  "name": "py-clash-bot",
+  "scripts": {
+    "poetry-dev": "cd ../backend && poetry run python bot/__main__.py",
+    "poetry-build": "cd ../backend && poetry run python setup_exe.py build",
+    "react-start": "cross-env BROWSER=none react-scripts start",
+    "react-build": "react-scripts build",
+    "electron-start": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
+    "dev": "concurrently --kill-others \"npm run react-start\" \"npm run electron-start\"",
+    "package": "npm run react-build && ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
+    "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version\" -a v%npm_package_version%  && git push && git push --tags",
+    "bump": "npm version prerelease & npm run push-release",
+    "bump-patch": "npm version patch && npm run push-release",
+    "bump-minor": "npm version minor && npm run push-release",
+    "bump-major": "npm version major && npm run push-release"
+  },
+  "main": "electron/main.js",
+  "homepage": "./",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "axios": "^1.2.1",
+    "chroma-js": "^2.4.2",
+    "electron-is-dev": "^2.0.0",
+    "glob": "^8.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.7.0",
+    "uuid": "^9.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "eslint-config-react-app": "^7.0.1",
+    "ncp": "^2.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "build": {
+    "files": [
+      "build",
+      "node_modules"
+    ],
+    "extraFiles": [
+      {
+        "from": "../backend/build/exe.win-amd64-3.11/",
+        "to": "bin/",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": [
+        "en_US"
+      ]
+    },
+    "afterPack": "./util/removeLocales.js"
+  },
+  "version": "0.0.0"
+}
