@@ -1,70 +1,61 @@
 {
   "name": "py-clash-bot",
-  "version": "2.0.0-1",
-  "homepage": "https://matthewmiglio.github.io/py-clash-bot/",
   "description": "Automated Clash Royale",
   "keywords": [
     "clash royale",
     "bot",
     "automation"
   ],
+  "author": "Matthew Miglio",
   "contributors": [
     {
       "name": "Martin Miglio",
       "email": "code@martinmiglio.dev",
       "url": "https://martinmiglio.dev"
-    },
-    {
-      "name": "Matthew Miglio"
     }
   ],
   "scripts": {
-<<<<<<< HEAD
     "poetry-start": "cd ../backend && poetry run python pyclashbot/server.py",
-=======
-    "poetry-dev": "cd ../backend && poetry run python bot/server.py",
->>>>>>> 81ca9d5 (add backend server, update build scripts and deps)
     "poetry-build": "cd ../backend && poetry run python setup_exe.py build",
     "react-start": "cross-env BROWSER=none react-scripts start",
     "react-build": "react-scripts build",
     "electron-start": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
-    "electron-build": "ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
-    "dev": "concurrently --kill-others \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
+    "electron-build": "electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "dev": "concurrently -k \"npm run poetry-start\" \"wait-on http-get://127.0.0.1:1357/heartbeat && npm run react-start\" \"wait-on http://127.0.0.1:3000/ && npm run electron-start\"",
     "package": "npm run poetry-build && npm run react-build && npm run electron-build",
-    "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version v%npm_package_version%\" -a v%npm_package_version%  && git push && git push --tags",
+    "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version v%npm_package_version%\" -a v%npm_package_version%  && git push && git push origin v%npm_package_version%",
     "bump": "npm version prerelease & npm run push-release",
     "bump-patch": "npm version patch && npm run push-release",
     "bump-minor": "npm version minor && npm run push-release",
     "bump-major": "npm version major && npm run push-release"
   },
-  "main": "electron/main.js",
+  "main": "./public/electron.js",
+  "homepage": "./",
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "axios": "^1.2.1",
+    "axios": "^1.2.2",
     "chroma-js": "^2.4.2",
     "electron-is-dev": "^2.0.0",
-    "glob": "^8.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.0",
     "uuid": "^9.0.0",
-    "web-vitals": "^2.1.4"
+    "winreg": "^1.2.4"
   },
   "devDependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "electron": "^22.0.0",
+    "electron": "^22.0.2",
     "electron-builder": "^23.6.0",
     "eslint-config-react-app": "^7.0.1",
-    "ncp": "^2.0.0"
+    "wait-on": "^7.0.1"
   },
   "browserslist": {
     "production": [
@@ -80,10 +71,20 @@
   },
   "build": {
     "files": [
-      "build",
-      "node_modules"
+      "build/**/*",
+      "node_modules/**/*"
     ],
+    "directories": {
+      "buildResources": "public"
+    },
     "extraFiles": [
+      {
+        "from": "../backend/build/exe.win-amd64-3.10/",
+        "to": "bin/",
+        "filter": [
+          "**/*"
+        ]
+      },
       {
         "from": "../backend/build/exe.win-amd64-3.11/",
         "to": "bin/",
@@ -101,16 +102,20 @@
           ]
         }
       ],
-      "signAndEditExecutable": true
+      "signAndEditExecutable": true,
+      "icon": "./src/assets/icon256.ico"
     },
     "nsis": {
-      "installerIcon": "src/assets/pixel-pycb.ico",
+      "installerIcon": "./src/assets/icon.ico",
+      "uninstallerIcon": "./src/assets/icon.ico",
+      "installerHeaderIcon": "./src/assets/icon.ico",
       "oneClick": false,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
       "installerLanguages": [
         "en_US"
       ],
+      "include": "./util/NSIS/installer.nsh",
       "guid": "494bebef-6fc5-42e5-98c8-d0b2e339750e"
     },
     "afterPack": "./util/removeLocales.js"

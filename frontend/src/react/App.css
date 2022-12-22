@@ -1,0 +1,27 @@
+.AppContainer {
+  margin: 0;
+  padding: 0;
+}
+
+@media only screen and (max-width: 600px) {
+  .AppContainer {
+    font-size: 14px;
+  }
+}
+
+button {
+  padding: 1px 8px;
+  font-size: 14px;
+  background-color: #C0C0C0;
+  box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
+  -webkit-box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
+  -moz-box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
+  border: 0px;
+}
+
+button:hover:enabled {
+  background-color: #b1b1b1;
+  box-shadow: -2px -2px 0px #000000, 2px 2px 0px #FFFFFF;
+  -webkit-box-shadow: -2px -2px 0px #000000, 2px 2px 0px #FFFFFF;
+  -moz-box-shadow: -2px -2px 0px #000000, 2px 2px 0px #FFFFFF;
+}

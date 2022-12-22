@@ -1,18 +1,42 @@
 import signal
+import sys
+from logging.config import dictConfig
 
 from flask import Flask, request
+from flask.logging import create_logger
 from flask_cors import CORS
 from gevent.pywsgi import WSGIServer
 
 from pyclashbot.bot import WorkerThread
 from pyclashbot.utils.logger import Logger
 
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "DEBUG", "handlers": ["console"]},
+    }
+)
+
+
 app = Flask(__name__)
+create_logger(app)
 CORS(app, supports_credentials=True)
 
 # Create global variable for thread
 thread: WorkerThread | None = None
-logger = Logger()
+thread_logger = Logger()
 
 
 # Define route to start thread
@@ -22,14 +46,20 @@ def start_thread():
         global thread
         if request.json is not None and thread is None:
             selected_jobs: list = request.json["selectedJobs"]
-            selected_accounts: int = request.json["selectedAccounts"]
+            selected_accounts: int = int(request.json["selectedAccounts"])
             args = (selected_jobs, selected_accounts)
-            thread = WorkerThread(logger, args)
+            app.logger.info(
+                "Starting thread with args: %s, of types: %s",
+                args,
+                list(map(type, args)),
+            )
+            thread = WorkerThread(thread_logger, args)
             thread.start()
 
         # Return success response
         return {"status": "started", "message": "Thread started"}
     except Exception as err:
+        app.logger.warning(err)
         return {"status": "failed", "message": f"Error: {err}"}
 
 
@@ -37,33 +67,56 @@ def start_thread():
 @app.route("/stop-thread", methods=["GET"])
 def stop_thread():
     # Stop thread
-    global thread, logger
+    global thread, thread_logger
     if thread is not None:
         thread.shutdown()
-        thread = None
-        logger = Logger()
 
     # Return success response
-    return {"status": "stopped", "message": "Thread stopped"}
+    return {"status": "stopping", "message": "Stopping thread"}
+
+
+# Define route to pause thread
+@app.route("/toggle-pause-thread", methods=["GET"])
+def pause_thread():
+    # Pause thread
+    global thread
+    if thread is not None:
+        paused: bool = thread.toggle_pause()
+        if paused:
+            return {"status": "paused", "message": "Paused thread"}
+        return {"status": "resumed", "message": "Resuming thread"}
+    return {"status": "stopped", "message": "No thread running"}
 
 
 @app.route("/output")
 def handle_output():
-    # read the value of the mutex output on the thread object
-    stats = logger.get_stats()
-    if thread is not None and stats is not None:
-        if logger.errored:
-            return {"status": "errored", "message": f"Error: {stats['current_status']}"}
-        return {
-            "status": "running",
-            "message": f"{stats['current_status']}",
-            "statistics": stats,
-        }
+    global thread, thread_logger
+    if thread is not None:
+        if thread.shutdown_flag.is_set() and not thread.is_alive():
+            return {"status": "stopped", "message": "Idle"}
+        # read the value of the mutex output on the thread object
+        stats = thread_logger.get_stats()
+        if stats is not None:
+            if thread_logger.errored:
+                stop_thread()
+                app.logger.warning("Thread errored: %s", stats["current_status"])
+                return {
+                    "status": "errored",
+                    "message": f"Error: {stats['current_status']}",
+                }
+            if thread.shutdown_flag.is_set() and thread.is_alive():
+                stats[
+                    "current_status"
+                ] = f"Waiting for: {stats['current_status']} to stop"
+            return {
+                "status": "running",
+                "message": f"{stats['current_status']}",
+                "statistics": stats,
+            }
+    app.logger.info("No thread running")
     return {"status": "stopped", "message": "No thread running", "statistics": {}}
 
 
-<<<<<<< HEAD
-=======
 @app.route("/heartbeat")
 def heartbeat():
     return {"status": "listening", "message": "Server running"}
@@ -74,11 +127,9 @@ class SigTermException(Exception):
 
 
 def sigterm_handler(_signo, _stack_frame):
-    # Raises SystemExit(0):
     raise SigTermException
 
 
->>>>>>> 5316ffd (adding prints to server.py)
 http_server = WSGIServer(("127.0.0.1", 1357), app)
 
 try:
@@ -90,6 +141,6 @@ except (KeyboardInterrupt, SigTermException):
     if thread is not None:
         thread.shutdown()
         thread = None
-        logger = Logger()
+        thread_logger = Logger()
     print("Server shut down")
-    exit(0)
+    sys.exit(0)

@@ -40,7 +40,7 @@ jobs:
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm install
+          npm install --omit=dev
       - name: Build and package
         env:
           CSC_LINK: ${{ format('file://{0}',steps.key_writer.outputs.filePath) }}
