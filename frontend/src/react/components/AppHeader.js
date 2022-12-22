@@ -5,6 +5,7 @@ import {
   faQuestion,
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
+import logo from "../../assets/pixel-pycb.png";
 const { ipcRenderer } = window.require("electron");
 
 const Header = () => {
@@ -50,13 +51,16 @@ const Header = () => {
       <div style={headerStyles}>
         <div
           style={{
-            paddingLeft: "10px",
+            paddingLeft: "3px",
             WebkitAppRegion: "drag",
             flexGrow: 1,
             userSelect: "none",
           }}
         >
-          py-clash-bot
+          <div style={{ display: "flex", alignItems:"center"}}>
+            <img src={logo} alt="logo" style={{ height: "21px" }} />
+            <div style={{paddingLeft:"3px"}}>py-clash-bot</div>
+          </div>
         </div>
         <div style={{ marginRight: "5px" }}>
           <button onClick={handleHelp}>

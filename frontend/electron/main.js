@@ -11,6 +11,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 480,
     height: 600,
+    icon: path.join(__dirname, "../src/assets/pixel-pycb.ico"),
     show: false,
     frame: false,
     transparent: true,
@@ -41,7 +42,7 @@ function createWindow() {
 app.commandLine.appendSwitch("lang", "en-US");
 
 app.whenReady().then(() => {
-  exeProcess = startBackend();
+  if (!isDev) exeProcess = startBackend();
   createWindow();
   initIpcListeners(mainWindow);
   app.on("activate", function () {

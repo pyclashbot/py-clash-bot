@@ -83,6 +83,7 @@
       "signAndEditExecutable": true
     },
     "nsis": {
+      "installerIcon":"src/assets/pixel-pycb.ico",
       "oneClick": false,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
