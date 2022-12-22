@@ -1,3 +1,4 @@
+import pyautogui
 import time
 
 import numpy
@@ -286,8 +287,11 @@ def find_and_click_2v2_quickmatch_button(logger):
     # ends when loading a match
     # logger.change_status("Finding and clicking 2v2 quickmatch button")
     # repeatedly scroll down until we find coords for the 2v2 quickmatch button
+    origin=pyautogui.position()
     coords = None
     loops = 0
+    pyautogui.moveTo(200,200)
+    time.sleep(1)
     while coords is None:
         loops += 1
         if loops > 20:
@@ -300,6 +304,7 @@ def find_and_click_2v2_quickmatch_button(logger):
     # once we find the coords, click them
     print("Found 2v2 quickmatch button, clicking it")
     click(coords[0], coords[1])
+    pyautogui.moveTo(origin[0],origin[1])
     logger.change_status("Done queueing a 2v2 quickmatch")
 
 

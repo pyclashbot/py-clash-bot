@@ -126,6 +126,7 @@ def state_tree(
         if "daily challenge reward collection" in jobs:state=state_bannerbox_collection(logger)
         else: state = "battlepass_reward_collection"
 
+
     elif state == "daily_challenge_reward_collection":
         if "daily challenge reward collection" in jobs: state = state_daily_challenge_reward_collection(logger)
         else: state = "battlepass_reward_collection"
@@ -251,10 +252,6 @@ def state_chest_reward_collection(logger) -> Literal["free_offer_collection", "r
 
     return "free_offer_collection"
 
-
-
-
-
 def state_free_offer_collection(logger) -> Literal["restart", "daily_challenge_reward_collection"]:
     print("state is :state_free_offer_collection")
     
@@ -273,13 +270,6 @@ def state_daily_challenge_reward_collection(logger,) -> Literal["restart", "batt
     print("state is :state_daily_challenge_reward_collection")
     
     return collect_daily_challenge_rewards(logger)
-
-
-
-
-
-
-
 
 def state_battlepass_collection(logger) -> Literal["restart", "level_up_reward_collection"]:
     print("state is :state_battlepass_collection")
