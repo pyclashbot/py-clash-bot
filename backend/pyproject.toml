@@ -42,6 +42,9 @@ PySimpleGUI = "^4.60"
 ahk = "^0.14"
 pymemuc = "^0.1"
 wmi = "^1.5.1"
+flask = "^2.2.2"
+flask-cors = "^3.0.10"
+gevent = "^22.10.2"
 
 
 [tool.poetry.group.build]

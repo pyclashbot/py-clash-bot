@@ -13,10 +13,19 @@ try:
 except subprocess.CalledProcessError:
     VERSION = "0.0.0"
 
-build_exe_options = {"excludes": ["tkinter", "test", "unittest", "setuptools"]}
+build_exe_options = {
+    "excludes": [
+        "PySimpleGUI",
+        "tkinter",
+        "test",
+        "setuptools",
+        "pyclashbot.interface",
+        "matplotlib",
+    ]
+}
 
 exe = Executable(
-    script="pyclashbot\\__main__.py",
+    script="pyclashbot\\server.py",
     base="Win32GUI",  # none for debugging
     target_name=f"{PRODUCT_NAME}_back.exe",
 )
