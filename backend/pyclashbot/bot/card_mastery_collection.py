@@ -3,7 +3,11 @@ import time
 import numpy
 
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
-from pyclashbot.bot.navigation import get_to_card_mastery_page, get_to_card_page, get_to_clash_main_from_card_page
+from pyclashbot.bot.navigation import (
+    get_to_card_mastery_page,
+    get_to_card_page,
+    get_to_clash_main_from_card_page,
+)
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.detection.image_rec import check_for_location, find_references
 from pyclashbot.memu import click, screenshot
