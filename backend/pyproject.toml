@@ -6,10 +6,10 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "pyclashbot"
 version = "v0.0.0"
-description = "Automated Clash Royale"
+description = "Automated Clash Royale Backend Server"
 readme = "../README.md"
 authors = [
-  "Matthew Miglio <matthew@martinmiglio.dev>",
+  "Matthew Miglio <nan@nan.nan>",
   "Martin Miglio <code@martinmiglio.dev>",
 ]
 homepage = "https://matthewmiglio.github.io/py-clash-bot"
