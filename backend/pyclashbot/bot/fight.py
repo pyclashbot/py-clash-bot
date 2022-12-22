@@ -37,8 +37,11 @@ def do_fight(logger):
             return "restart"
 
         play_random_card(logger)
+
         save_screenshot_for_ML_data()
+
         time.sleep(1)
+
         plays += 1
         logger.add_card_played()
 

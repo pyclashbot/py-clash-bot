@@ -21,15 +21,16 @@ def save_screenshot_for_ML_data():
     # get a screenshot
     screenshot = pyautogui.screenshot(region=[65, 100, 290, 405])
 
-    # show the image we're about to save
-    # show_image(screenshot)
+    image_data_folder_path = (
+        r"C:\Users\matmi\OneDrive\Desktop\clashbot_fight_ML_image_data"
+    )
 
     # count files in file
-    count = count_files_in_dir(image_data_path)
+    count = count_files_in_dir(image_data_folder_path)
 
     # make path of this screenshot
-    path = os.path.join(image_data_path, str(count + 1) + ".png")
+    this_screenshot_path = os.path.join(image_data_folder_path, str(count + 1) + ".png")
 
-    screenshot.save(path)
+    screenshot.save(this_screenshot_path)
 
-    print("saved to path " + path)
+    print("saved to path " + this_screenshot_path)
