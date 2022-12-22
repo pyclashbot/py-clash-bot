@@ -28,4 +28,4 @@ py-clash-bot is an open-source application that allows users to automate their C
 
 ## Contribute
 
-We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/matthewmiglio/py-clash-bot/issues) or submit a pull request.
+We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/matthewmiglio/py-clash-bot/issues) or check out [how to contribute directly](https://github.com/matthewmiglio/py-clash-bot/blob/master/CONTRIBUTING.md).
