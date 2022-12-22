@@ -48,11 +48,20 @@ jobs:
         run: |
           cd frontend
           npm run package
+      - name: Publish Pre-Release
+        uses: softprops/action-gh-release@master
+        if: startsWith(github.ref, 'refs/tags/') && contains(github.ref, '-')
+        with:
+          prerelease: true
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            ./frontend/dist/*.exe
       - name: Publish Release
         uses: softprops/action-gh-release@master
+        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, '-')
         with:
-          fail_on_unmatched_files: true
-          prerelease: startsWith(github.ref, 'refs/tags/') && contains(github.ref, '-')
           generate_release_notes: true
+          fail_on_unmatched_files: true
           files: |
             ./frontend/dist/*.exe
