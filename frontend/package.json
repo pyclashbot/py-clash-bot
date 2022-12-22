@@ -88,7 +88,8 @@
       "allowToChangeInstallationDirectory": true,
       "installerLanguages": [
         "en_US"
-      ]
+      ],
+      "guid": "494bebef-6fc5-42e5-98c8-d0b2e339750e"
     },
     "afterPack": "./util/removeLocales.js"
   },
