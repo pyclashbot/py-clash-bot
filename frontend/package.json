@@ -1,13 +1,14 @@
 {
   "name": "py-clash-bot",
   "scripts": {
-    "poetry-dev": "cd ../backend && poetry run python bot/server.py",
+    "poetry-start": "cd ../backend && poetry run python bot/server.py",
     "poetry-build": "cd ../backend && poetry run python setup_exe.py build",
     "react-start": "cross-env BROWSER=none react-scripts start",
     "react-build": "react-scripts build",
     "electron-start": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
-    "dev": "concurrently --kill-others \"npm run react-start\" \"npm run electron-start\"",
-    "package": "npm run react-build && ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
+    "electron-build": "ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
+    "dev": "concurrently --kill-others \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
+    "package": "npm run poetry-build && npm run react-build && npm run electron-build",
     "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version\" -a v%npm_package_version%  && git push && git push --tags",
     "bump": "npm version prerelease & npm run push-release",
     "bump-patch": "npm version patch && npm run push-release",
