@@ -49,12 +49,13 @@ def delete_oldest_file_in_directory():
     oldest_file = None
     oldest_file_time = None
     for file in os.listdir(directory):
-        file_time = os.path.getmtime(directory + "\\" + file)
+        file_time = os.path.getmtime(os.path.join(directory, file))
         if oldest_file_time is None or file_time < oldest_file_time:
             oldest_file = file
             oldest_file_time = file_time
-    print("Removing ", oldest_file)
-    os.remove(directory + "\\" + oldest_file)
+    if oldest_file is not None:
+        print("Removing ", oldest_file)
+        os.remove(os.path.join(directory, oldest_file))
 
 
 # method to count the amount of files in a directory
