@@ -37,13 +37,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
       - name: Build and package
         env:
           CSC_LINK: ${{ format('file://{0}',steps.key_writer.outputs.filePath) }}
           CSC_KEY_PASSWORD: ${{ secrets.PFX_PASSWORD }}
         run: |
           cd frontend
-          npm install
           npm run package
       - name: Publish Release
         uses: softprops/action-gh-release@master
