@@ -83,7 +83,7 @@
       "signAndEditExecutable": true
     },
     "nsis": {
-      "installerIcon":"src/assets/pixel-pycb.ico",
+      "installerIcon": "src/assets/pixel-pycb.ico",
       "oneClick": false,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
@@ -94,5 +94,5 @@
     },
     "afterPack": "./util/removeLocales.js"
   },
-  "version": "2.0.0-0"
+  "version": "2.0.0-1"
 }
