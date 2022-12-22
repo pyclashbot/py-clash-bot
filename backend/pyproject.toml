@@ -7,7 +7,7 @@ build-backend = "poetry.core.masonry.api"
 name = "pyclashbot"
 version = "v0.0.0"
 description = "Automated Clash Royale"
-readme = "README.md"
+readme = "../README.md"
 authors = [
   "Matthew Miglio <matthew@martinmiglio.dev>",
   "Martin Miglio <code@martinmiglio.dev>",
@@ -26,7 +26,7 @@ classifiers = [
   "Topic :: Games/Entertainment",
 ]
 keywords = ["clash royale", "bot", "automation"]
-include = ["README.md", "pyclashbot/detection/reference_images/**/*.png"]
+include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
 
 
 [tool.poetry.dependencies]
