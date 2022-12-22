@@ -1,0 +1,55 @@
+name: Build windows package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-package:
+    name: Build and package
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Installer Key
+        id: key_writer
+        env:
+          PFX_FILE: ${{ secrets.PFX_FILE }}
+        run: |
+          echo $env:PFX_FILE > encoded.pfx.b64
+          certutil -decode -f encoded.pfx.b64 frontend/certificate.pfx
+          echo "::set-output name=filePath::certificate.pfx"
+      - name: Set up Python 3.11
+        uses: actions/setup-python@master
+        id: cp311
+        with:
+          python-version: "3.11"
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pipx install poetry
+          poetry env use '${{ steps.cp311.outputs.python-path }}'
+          poetry install --with build --without dev
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - name: Build and package
+        env:
+          CSC_LINK: ${{ format('file://{0}',steps.key_writer.outputs.filePath) }}
+          CSC_KEY_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+        run: |
+          cd frontend
+          npm install
+          npm run package
+      - name: Publish Release
+        uses: softprops/action-gh-release@master
+        with:
+          fail_on_unmatched_files: true
+          prerelease: startsWith(github.ref, 'refs/tags/') && contains(github.ref, '-')
+          generate_release_notes: true
+          files: |
+            ./frontend/dist/*.exe
