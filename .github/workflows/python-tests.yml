@@ -24,9 +24,8 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: "poetry"
-      - name: Install package and dependencies
+      - name: Install package and dependencies, then run tests
         run: |
+          cd backend
           poetry install --with build
-      - name: Run unittest
-        run: |
           poetry run python -m unittest discover "tests" -p '*_test.py'

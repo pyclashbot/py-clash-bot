@@ -1,7 +1,7 @@
-import pyautogui
 import time
 
 import numpy
+import pyautogui
 from ahk import AHK
 
 from pyclashbot.bot.navigation import (
@@ -34,7 +34,6 @@ logger = Logger()
 # page navigation methods
 
 # detection methods
-
 
 
 def check_if_on_trophy_progession_rewards_page():
@@ -112,6 +111,7 @@ def check_if_in_battle():
 
 
 # interaction methods
+
 
 def check_if_in_a_clan(logger):
     # Method to check if the current account has a clan. starts and ends on clash main
@@ -209,7 +209,6 @@ def get_to_account(logger, account_number):
 
         click(230, 625)
 
-
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
         return "restart"
@@ -218,7 +217,6 @@ def get_to_account(logger, account_number):
         "Successful account switch. Incrementing account switch counter."
     )
     logger.add_account_switch()
-
 
     handle_new_challenge(logger)
     handle_special_offer(logger)
@@ -280,17 +278,16 @@ def start_2v2(logger):
     return None
 
 
-
 def find_and_click_2v2_quickmatch_button(logger):
     # method to find and click the 2v2 quickmatch button in the party mode menu
     # starts in the party mode
     # ends when loading a match
     # logger.change_status("Finding and clicking 2v2 quickmatch button")
     # repeatedly scroll down until we find coords for the 2v2 quickmatch button
-    origin=pyautogui.position()
+    origin = pyautogui.position()
     coords = None
     loops = 0
-    pyautogui.moveTo(200,200)
+    pyautogui.moveTo(200, 200)
     time.sleep(1)
     while coords is None:
         loops += 1
@@ -304,7 +301,7 @@ def find_and_click_2v2_quickmatch_button(logger):
     # once we find the coords, click them
     print("Found 2v2 quickmatch button, clicking it")
     click(coords[0], coords[1])
-    pyautogui.moveTo(origin[0],origin[1])
+    pyautogui.moveTo(origin[0], origin[1])
     logger.change_status("Done queueing a 2v2 quickmatch")
 
 
@@ -314,7 +311,7 @@ def wait_for_battle_start(logger):
     logger.change_status("Waiting for battle start. . .")
     in_battle = False
 
-    start_time=time.time()
+    start_time = time.time()
 
     while not check_if_in_battle_with_delay():
         if time.time() - start_time > 30:
@@ -336,12 +333,9 @@ def check_if_pixels_indicate_in_battle():
         return True
 
 
-
 def check_if_in_battle_with_delay():
-    start_time=time.time()
-    while time.time()-start_time<3:
-        if check_if_pixels_indicate_in_battle():return True
+    start_time = time.time()
+    while time.time() - start_time < 3:
+        if check_if_pixels_indicate_in_battle():
+            return True
     return False
-
-
-

@@ -128,7 +128,6 @@ collections_stats_titles = [
     [
         sg.Text("Daily Challenge Reward Collections: "),
     ],
-    
 ]
 
 collections_stats_values = [
@@ -150,7 +149,6 @@ collections_stats_values = [
     [
         stat_box("daily_challenge_reward_collections"),
     ],
-    
 ]
 
 collections_stats = [

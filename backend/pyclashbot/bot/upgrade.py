@@ -179,5 +179,3 @@ def upgrade_current_cards(logger):
     for index, card in enumerate(upgradable_cards_list):
         if card == "Upgrade":
             upgrade_card(logger, index)
-
-

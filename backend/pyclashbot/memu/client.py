@@ -177,5 +177,3 @@ def orientate_terminal():
         window.moveTo(732, 0)
     except Exception:
         print("Couldn't orientate terminal")
-
-

@@ -21,11 +21,10 @@ jobs:
         with:
           python-version: "3.11"
           cache: "poetry"
-      - name: Install package and dependencies
+      - name: Install package and dependencies, then build package
         run: |
+          cd backend
           poetry install --with build --without dev
-      - name: Build package for Windows
-        run: |
           poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
       - name: Publish Pre-Release
         uses: softprops/action-gh-release@master
@@ -34,11 +33,11 @@ jobs:
           prerelease: true
           generate_release_notes: true
           files: |
-            ./dist/py-clash-bot*.msi
+            ./backend/dist/py-clash-bot*.msi
       - name: Publish Release
         uses: softprops/action-gh-release@master
         if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'rc')
         with:
           generate_release_notes: true
           files: |
-            ./dist/py-clash-bot*.msi
+            ./backend/dist/py-clash-bot*.msi
