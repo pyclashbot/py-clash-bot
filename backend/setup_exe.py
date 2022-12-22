@@ -2,7 +2,7 @@ import subprocess
 
 from cx_Freeze import Executable, setup
 
-PRODUCT_NAME = "neoui"
+PRODUCT_NAME = "pycb"
 
 try:
     VERSION = str(
@@ -16,7 +16,7 @@ except subprocess.CalledProcessError:
 build_exe_options = {"excludes": ["tkinter", "test", "unittest", "setuptools"]}
 
 exe = Executable(
-    script="bot\\__main__.py",
+    script="pyclashbot\\__main__.py",
     base="Win32GUI",  # none for debugging
     target_name=f"{PRODUCT_NAME}_back.exe",
 )
