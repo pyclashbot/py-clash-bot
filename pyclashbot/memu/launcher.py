@@ -68,7 +68,7 @@ def restart_memu(logger):
         time.sleep(1)
 
     # skip ads using pymemuc
-    skip_ads(vm_index=0)
+    if skip_ads(vm_index=0)=="fail":return restart_memu(logger)
 
     # start clash using pymemuc
     start_clash_royale(logger, vm_index=0)
@@ -273,10 +273,14 @@ def skip_ads(vm_index):
 
     # Method for skipping the memu ads that popip up when you start memu
 
-    print("Skipping ads")
-    for _ in range(4):
-        pmc.trigger_keystroke_vm("home", vm_index=vm_index)
-        time.sleep(1)
+    print("Trying to skipping ads")
+    try:
+        for _ in range(4):
+            pmc.trigger_keystroke_vm("home", vm_index=vm_index)
+            time.sleep(1)
+    except:
+        print("Fail sending home clicks to skip ads... Redoing restart...")
+        return "fail"
 
 
 def orientate_memu():

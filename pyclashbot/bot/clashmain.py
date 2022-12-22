@@ -1,3 +1,4 @@
+import pyautogui
 import time
 
 import numpy
@@ -5,8 +6,12 @@ from ahk import AHK
 
 from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
+    get_to_clash_main_settings_page,
+    get_to_party_mode_page_from_settings_page,
+    get_to_ssid_switch_page,
     get_to_switch_accounts_tab,
     handle_card_mastery_notification,
+    open_profile_page,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection import (
@@ -31,20 +36,6 @@ logger = Logger()
 # detection methods
 
 
-def look_for_puzzleroyale_popup():
-    # Method to check for puzzleroyale popup
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[173][102],
-        iar[290][96],
-        iar[154][312],
-    ]
-
-    color = [244, 183, 118]
-
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
 
 def check_if_on_trophy_progession_rewards_page():
     # Method to check if the bot is on the trophy progression rewards page in
@@ -58,27 +49,6 @@ def check_if_on_trophy_progession_rewards_page():
     color = [78, 175, 255]
 
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
-
-
-def check_if_unlock_chest_button_exists():
-    # method to find the 2v2 quickmatch button in the party mode menu
-    current_image = screenshot()
-    reference_folder = "unlock_chest_button"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "unlock_chest_button",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    return any(location is not None for location in locations)
 
 
 def find_2v2_quick_match_button():
@@ -143,15 +113,6 @@ def check_if_in_battle():
 
 # interaction methods
 
-
-def handle_puzzleroyale_popup(logger):
-    # Method to handle puzzleroyale popup
-    if look_for_puzzleroyale_popup():
-        logger.change_status("Handling puzzle royale popup")
-        click(366, 121)
-        time.sleep(3)
-
-
 def check_if_in_a_clan(logger):
     # Method to check if the current account has a clan. starts and ends on clash main
 
@@ -164,8 +125,7 @@ def check_if_in_a_clan(logger):
         return "restart"
 
     # click profile
-    click(100, 130)
-    time.sleep(3)
+    open_profile_page()
 
     # get image array of flag where clan flag should be.
     iar = numpy.asarray(screenshot())
@@ -174,9 +134,6 @@ def check_if_in_a_clan(logger):
         for y_coord in range(471, 481):
             this_pixel = iar[y_coord][x_coord]
             pix_list.append(this_pixel)
-
-    # print this pixel list
-    # print_pix_list(pix_list)
 
     # if any of these pixels are NOT grey, we ARE in a clan. Else return False
     is_in_a_clan = False
@@ -204,14 +161,12 @@ def get_to_account(logger, account_number):
     )
 
     # open settings
-    print("Opening settings butting from clash main to get to account switch")
-    click(x=364, y=99)
-    time.sleep(1)
+    print("Opening settings tab from clash main to get to account switch")
+    get_to_clash_main_settings_page()
 
     # click switch accounts
     print("Clicking the switch accounts button.")
-    click(200, 460)
-    time.sleep(3)
+    get_to_ssid_switch_page()
 
     print("getting to then clicking the appropriate account")
 
@@ -230,36 +185,30 @@ def get_to_account(logger, account_number):
     if account_number == 4:
         # scroll then click
         scroll_down_fast()
-        time.sleep(1)
         click(170, 640)
 
     if account_number == 5:
         # scroll then click
         for _ in range(4):
             scroll_down_fast()
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(0.5)
         click(230, 585)
 
     if account_number == 6:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(0.5)
         click(240, 550)
 
     if account_number == 7:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
-            time.sleep(1)
-        time.sleep(1)
+            time.sleep(0.5)
+
         click(230, 625)
 
-    for n in range(10):
-        logger.change_status(f"Manual wait time for clash main menu to load: {n}")
-        time.sleep(1)
 
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Failed waiting for clash main")
@@ -270,17 +219,11 @@ def get_to_account(logger, account_number):
     )
     logger.add_account_switch()
 
-    # handling the various things notifications and such that need to be
-    # cleared before bot can get going
-    # time.sleep(0.5)
-    # handle_gold_rush_event(logger)
-    time.sleep(0.5)
+
     handle_new_challenge(logger)
-    time.sleep(0.5)
     handle_special_offer(logger)
-    time.sleep(0.5)
     handle_card_mastery_notification()
-    time.sleep(0.5)
+    time.sleep(1)
     return None
 
 
@@ -288,9 +231,10 @@ def handle_new_challenge(logger):
     # Method to handle a new challenge notification obstructing the bot
     logger.change_status("Handling new challenge notification")
     click(376, 639)
-    time.sleep(1)
+    time.sleep(0.33)
     click(196, 633)
-    time.sleep(1)
+    time.sleep(0.33)
+
     if check_if_on_trophy_progession_rewards_page():
         logger.change_status(
             "Handling the possibility of trophy progession rewards page obstructing the bot."
@@ -302,9 +246,10 @@ def handle_special_offer(logger):
     # Method to handle a special offer notification obstructing the bot
     logger.change_status("Handling special offer notification")
     click(35, 633)
-    time.sleep(1)
+    time.sleep(0.33)
     click(242, 633)
-    time.sleep(1)
+    time.sleep(0.33)
+
     if check_if_on_trophy_progession_rewards_page():
         click(212, 633)
         time.sleep(0.5)
@@ -322,11 +267,10 @@ def start_2v2(logger):
 
     # getting to party tab
     print("Clicking options hamburber icon in clash main to get to party mode")
-    click(365, 108)
-    time.sleep(1)
-    print("Clicking party mode in the options list")
-    click(263, 248)
-    time.sleep(1)
+    get_to_clash_main_settings_page()
+
+    print("getting to party mode page")
+    get_to_party_mode_page_from_settings_page()
 
     if find_and_click_2v2_quickmatch_button(logger) == "restart":
         logger.change_status("failed to find 2v2 quickmatch button")
@@ -336,80 +280,6 @@ def start_2v2(logger):
     return None
 
 
-def open_chests(logger):
-    logger.change_status("Opening chests")
-
-    # check which chests exist
-    existing_chests_array = check_for_chests()
-
-    # identify locations of chests
-    chest_coord_list = [
-        [78, 554],
-        [162, 549],
-        [263, 541],
-        [349, 551],
-    ]
-
-    # for each chest that exists
-    # click current chest
-    # check if unlock appears
-    # if unlock appears unlock the chest
-    # else click dead space 15 times to skip thru rewards
-    # then close this chest menu.
-    index = 0
-    for chest in existing_chests_array:
-        if chest:
-            logger.change_status("Handling chest number: " + str(index + 1))
-            # click chest
-            chest_coord = chest_coord_list[index]
-            click(chest_coord[0], chest_coord[1])
-            time.sleep(1)
-
-            if check_if_unlock_chest_button_exists():
-                print("Unlocked a chest", index + 1)
-                logger.add_chest_unlocked()
-                click(210, 465)
-            else:
-                print("Skipping through rewards for chest index: ", index + 1)
-                click(20, 556, clicks=15, interval=0.45)
-
-            # close chest menu
-            print("Closing chest index", index + 1)
-            click(20, 556)
-
-        index += 1
-
-    logger.change_status("Done collecting chests.")
-
-
-def check_for_chests():
-    # returns an array of 4 bools each representing a chest slot
-    # true means hsa chest, false means no chest
-    return_bool_list = []
-
-    # make a list of 4 pixels each representing a chest
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[572][92],
-        iar[567][155],
-        iar[568][269],
-        iar[566][329],
-    ]
-
-    # print this pixel list
-    # print_pix_list(pix_list)
-
-    for pix in pix_list:
-        if pixel_is_equal(pix, [27, 110, 146], tol=25):
-            return_bool_list.append(False)
-        else:
-            return_bool_list.append(True)
-
-    print("chest_exists_bool_list", return_bool_list)
-
-    # return this list
-    return return_bool_list
-
 
 def find_and_click_2v2_quickmatch_button(logger):
     # method to find and click the 2v2 quickmatch button in the party mode menu
@@ -417,8 +287,11 @@ def find_and_click_2v2_quickmatch_button(logger):
     # ends when loading a match
     # logger.change_status("Finding and clicking 2v2 quickmatch button")
     # repeatedly scroll down until we find coords for the 2v2 quickmatch button
+    origin=pyautogui.position()
     coords = None
     loops = 0
+    pyautogui.moveTo(200,200)
+    time.sleep(1)
     while coords is None:
         loops += 1
         if loops > 20:
@@ -431,6 +304,7 @@ def find_and_click_2v2_quickmatch_button(logger):
     # once we find the coords, click them
     print("Found 2v2 quickmatch button, clicking it")
     click(coords[0], coords[1])
+    pyautogui.moveTo(origin[0],origin[1])
     logger.change_status("Done queueing a 2v2 quickmatch")
 
 
@@ -439,127 +313,35 @@ def wait_for_battle_start(logger):
 
     logger.change_status("Waiting for battle start. . .")
     in_battle = False
-    loops = 0
 
-    while not in_battle:
-        if check_if_in_battle_with_delay():
-            in_battle = True
-        click(100, 100)
-        time.sleep(0.25)
-        loops += 1
-        logger.change_status(str(f"Waiting for battle start... {loops}"))
-        if loops > 120:
+    start_time=time.time()
+
+    while not check_if_in_battle_with_delay():
+        if time.time() - start_time > 30:
             logger.change_status("Waited longer than 30 sec for a fight")
             return "restart"
 
 
+def check_if_pixels_indicate_in_battle():
+    references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="check_if_in_battle",
+        names=references,
+        tolerance=0.97,
+    )
+
+    if check_for_location(locations):
+        return True
+
+
+
 def check_if_in_battle_with_delay():
-    # Method to check if the bot is in a battle in the given moment
-
-    for _ in range(5):
-        references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
-
-        locations = find_references(
-            screenshot=screenshot(),
-            folder="check_if_in_battle",
-            names=references,
-            tolerance=0.97,
-        )
-
-        if check_for_location(locations):
-            return True
-        time.sleep(1)
+    start_time=time.time()
+    while time.time()-start_time<3:
+        if check_if_pixels_indicate_in_battle():return True
     return False
 
 
-# methods to sort
-def verify_ssid_input(logger, inputted_ssid_max):
-    logger.change_status("Verifying SSID input")
-    # should be on main
-    if not check_if_on_clash_main_menu():
-        print("Not on clash main so cant run verify_ssid_input()")
-        return "restart"
 
-    # get to accounts list.
-    #   If get_to_switch_accounts_tab fails then return "restart"
-    #   If switch accounts button is not there, AND ssid_max is 1, then return "pass".
-    #   If switch accounts button is not there, AND ssid_max is not 1, then return "failure".
-    #   If switch accounts button is there, then continue.
-    logger.change_status("Attempting to get to accounts list")
-    get_to_accounts_list_return = get_to_switch_accounts_tab()
-    if get_to_accounts_list_return == "restart":
-        print("Failure with get_to_switch_accounts_tab()")
-        return "restart"
-    elif get_to_accounts_list_return == "no other accounts":
-        if inputted_ssid_max == 1:
-            print("No other accouts, but ssid_max is 1 so passing.")
-            wait_for_clash_main_menu(logger)
-            return "pass"
-        else:
-            print("No other accounts, but ssid_max is not 1 so failing.")
-            wait_for_clash_main_menu(logger)
-            return "failure"
-
-    logger.change_status("Counting the amount of availbale accounts.")
-    # once on accoutns list, count accounts
-    account_count = count_ssid_accounts_on_switch_ssid_page()
-
-    # check against inputted_ssid_max
-    if account_count != inputted_ssid_max:
-        logger.change_status(
-            "The amount of SSIDs the bot counted is not the same as the inputted ssid_max."
-        )
-        # close menu
-        click(390, 85)
-        time.sleep(3)
-        wait_for_clash_main_menu(logger)
-        return "failure"
-    else:
-        logger.change_status(
-            "The amount of SSIDs the bot counted is the same as the inputted ssid_max."
-        )
-        # close menu
-        click(390, 85)
-        time.sleep(3)
-        wait_for_clash_main_menu(logger)
-        return "pass"
-
-
-def count_ssid_accounts_on_switch_ssid_page():
-    # coord list of accounts icons
-    account_coord_list = [
-        [373, 336],
-        [375, 422],
-        [373, 503],
-        [375, 590],
-    ]
-
-    positive_list = []
-    # check which trophy symbols from which accounts are visible
-    iar = numpy.asarray(screenshot())
-    for index in range(4):
-        this_coord = account_coord_list[index]
-        this_pixel = iar[this_coord[1]][this_coord[0]]
-        if pixel_is_equal(this_pixel, [255, 175, 90], tol=75):
-            positive_list.append(True)
-        else:
-            positive_list.append(False)
-
-    # if all 4 are true return 4
-    if all(positive_list):
-        return 4
-
-    # if all 3 are true return 3
-    if all(positive_list[0:3]):
-        return 3
-
-    # if all 2 are true return 2
-    if all(positive_list[0:2]):
-        return 2
-
-    # if all 1 are true return 1
-    if all(positive_list[0:1]):
-        return 1
-
-    # if none are true return 0
-    return 0

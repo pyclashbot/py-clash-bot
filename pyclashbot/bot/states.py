@@ -1,6 +1,7 @@
 import random
 import time
 from typing import Literal
+from pyclashbot.bot.bannerbox_collection import collect_bannerbox_chests
 
 from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
@@ -10,9 +11,9 @@ from pyclashbot.bot.clashmain import (
     check_if_on_clash_main_menu,
     get_to_account,
     handle_card_mastery_notification,
-    open_chests,
+
     start_2v2,
-    verify_ssid_input,
+    
     wait_for_battle_start,
 )
 from pyclashbot.bot.daily_challenge_reward_collection import (
@@ -31,6 +32,7 @@ from pyclashbot.bot.navigation import (
     leave_end_battle_window,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.open_chests import open_chests
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import (
@@ -84,6 +86,7 @@ def state_tree(
 
         # DEBUG::: wait forever instead of restarting
         # while True:time.sleep(1000)
+        clip_that()
 
         # run restart state
         state = state_restart(logger)
@@ -112,11 +115,16 @@ def state_tree(
         if "free offer collection" in jobs:
             state = state_free_offer_collection(logger)
         else:
-            state = "daily_challenge_reward_collection"
+            state = "bannerbox_collection"
 
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
         if abs(logger.most_recent_restart_time - time.time()) > 3600:
             state = "auto_restart"
+
+
+    elif state == "bannerbox_collection":
+        if "daily challenge reward collection" in jobs:state=state_bannerbox_collection(logger)
+        else: state = "battlepass_reward_collection"
 
 
     elif state == "daily_challenge_reward_collection":
@@ -249,6 +257,12 @@ def state_free_offer_collection(logger) -> Literal["restart", "daily_challenge_r
     
     if collect_free_offer_from_shop(logger) == "restart":
         print("Fail in collect_free_offer_from_shop()")
+        return "restart"
+    return "bannerbox_collection"
+
+def state_bannerbox_collection(logger):
+    if collect_bannerbox_chests(logger)=="restart":
+        print("Error withc ollect_bannerbox_chests() in state_bannerbox_collection()")
         return "restart"
     return "daily_challenge_reward_collection"
 
@@ -398,10 +412,35 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 
 
 
+#FOR OBS RECORDING OF ERRORS 
+def clip_that():
+    import pyautogui
+
+
+    print('Saving a clip...')
+
+    click(945,880)
+    time.sleep(3)
 
 
 
+    # #click deadspace
+    # click(20,440)
 
+    # #press keybind for clipping with obs...
+    # pyautogui.keyDown('ctrlleft')
+    # pyautogui.keyDown('shiftleft')
+    # time.sleep(3)
+    # pyautogui.keyDown('r')
+    # time.sleep(3)
+    # pyautogui.keyUp('r')
+    # pyautogui.keyUp('shiftleft')
+    # pyautogui.keyUp('ctrlleft')
+    
+    # print('saved a clip')
+
+
+    
 
 
 
