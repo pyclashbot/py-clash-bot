@@ -1,8 +1,8 @@
+import threading
 import time
 from functools import wraps
 from os import makedirs
 from os.path import exists, expandvars, join
-from queue import Queue
 
 MODULE_NAME = "py-clash-bot"
 
@@ -13,14 +13,14 @@ class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
-        queue (Queue | None, optional): Queue for threaded communication. Defaults to None.
+        stats (dict[str, str | int] | None, optional): stats to communicate between threads. Defaults to None.
         console_log (bool, optional): Enable console logging. Defaults to False.
         file_log (bool, optional): Enable file logging. Defaults to True.
     """
 
     def __init__(
         self,
-        queue: Queue[dict[str, str | int]] | None = None,
+        stats: dict[str, str | int] | None = None,
         console_log: bool = False,
         file_log: bool = True,
         timed: bool = True,
@@ -43,22 +43,22 @@ class Logger:
                 join(top_level, "log.txt"), "w", encoding="utf-8"
             )  # noqa
 
-        # queue for threaded communication
-        self.queue: Queue[dict[str, str | int]] = Queue() if queue is None else queue
+        # stats for threaded communication
+        self.stats = stats
+        self.stats_mutex = threading.Lock()
 
         # immutable statistics
         self.start_time = time.time() if timed else None
 
-
         ####STATISTICS
 
-        #fight stats
+        # fight stats
         self.wins = 0
         self.losses = 0
         self.fights = 0
         self.cards_played = 0
-        
-        #job stats
+
+        # job stats
         self.requests = 0
         self.chests_unlocked = 0
         self.cards_upgraded = 0
@@ -70,40 +70,37 @@ class Logger:
         self.war_chest_collections = 0
         self.daily_challenge_reward_collections = 0
 
-        #restart stats
+        # restart stats
         self.auto_restarts = 0
         self.restarts_after_failure = 0
         self.most_recent_restart_time = 0
         self.app_restarts = 0
 
-        #bot stats
+        # bot stats
         self.account_switches = 0
         self.current_status = "Idle"
-
 
         # track errored logger
         self.errored = False
 
         # write initial values to queue
-        self._update_queue()
+        self._update_stats()
 
     def __del__(self):
         if self.file_log:
             self._log_file.close()
 
     def _update_log(self):
-        self._update_queue()
+        self._update_stats()
         if self.console_log:
             self.log_to_console()
         if self.file_log:
             self.log_to_file()
 
-    def _update_queue(self):
-        """updates the queue with a dictionary of mutable statistics"""
-        if self.queue is None:
-            return
-
-        statistics: dict[str, str | int] = {
+    def _update_stats(self):
+        """updates the stats with a dictionary of mutable statistics"""
+        self.stats_mutex.acquire()
+        self.stats = {
             "wins": self.wins,
             "losses": self.losses,
             "fights": self.fights,
@@ -123,7 +120,14 @@ class Logger:
             "current_status": self.current_status,
             "time_since_start": self.calc_time_since_start(),
         }
-        self.queue.put(statistics)
+        self.stats_mutex.release()
+
+    def get_stats(self):
+        """get stats"""
+        self.stats_mutex.acquire()
+        stats = self.stats
+        self.stats_mutex.release()
+        return stats
 
     @staticmethod
     def _updates_log(func):

@@ -122,9 +122,9 @@ def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
 def update_layout(window: sg.Window, logger: Logger):
     window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore
     # update the statistics in the gui
-    if not logger.queue.empty():
-        # read the statistics from the logger
-        for stat, val in logger.queue.get().items():
+    stats = logger.get_stats()
+    if stats is not None:
+        for stat, val in stats.items():
             window[stat].update(val)  # type: ignore
 
 
@@ -135,10 +135,9 @@ def main_gui():
 
     load_last_settings(window)
 
-    # track worker thread, communication queue and logger
+    # track worker thread and logger
     thread: WorkerThread | None = None
-    statistics_q: Queue[dict[str, str | int]] = Queue()
-    logger = Logger(statistics_q, console_log=console_log, timed=False)
+    logger = Logger(console_log=console_log, timed=False)
 
     # run the gui
     while True:
@@ -152,9 +151,8 @@ def main_gui():
 
         if event == "Start":
 
-            # reset the logger and communication queue for a new thread
-            statistics_q = Queue()
-            logger = Logger(statistics_q, console_log=console_log)
+            # reset the logger for a new thread
+            logger = Logger(console_log=console_log)
             thread = start_button_event(logger, window, values)
 
         elif event == "Stop" and thread is not None:
@@ -192,9 +190,8 @@ def main_gui():
                 window["Stop"].update(disabled=True)
                 window["-Pause-Resume-Button-"].update(disabled=True)
             else:
-                # reset the communication queue and logger
-                statistics_q = Queue()
-                logger = Logger(statistics_q, console_log=console_log, timed=False)
+                # reset the logger
+                logger = Logger(console_log=console_log, timed=False)
                 thread = None
 
         update_layout(window, logger)
