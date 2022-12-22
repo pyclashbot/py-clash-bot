@@ -1,7 +1,7 @@
 {
   "name": "py-clash-bot",
   "scripts": {
-    "poetry-start": "cd ../backend && poetry run python bot/server.py",
+    "poetry-start": "cd ../backend && poetry run python pyclashbot/server.py",
     "poetry-build": "cd ../backend && poetry run python setup_exe.py build",
     "react-start": "cross-env BROWSER=none react-scripts start",
     "react-build": "react-scripts build",
