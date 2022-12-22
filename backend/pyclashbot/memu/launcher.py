@@ -9,7 +9,6 @@ import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils import setup_memu
 from pyclashbot.utils.dependency import get_memu_path
@@ -261,10 +260,7 @@ def start_clash_royale(logger: Logger, vm_index):
 
     if not found:
         # notify user that clash royale is not installed, program will exit
-        logger.change_status(
-            "Clash royale is not installed. Please install it and restart"
-        )
-        show_clash_royale_setup_gui()
+        logger.error("Clash royale is not installed. Please install it and restart")
 
     # start clash royale
     pmc.start_app_vm(apk_base_name, vm_index)
