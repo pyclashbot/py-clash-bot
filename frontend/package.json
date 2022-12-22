@@ -9,7 +9,7 @@
     "electron-build": "ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
     "dev": "concurrently --kill-others \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
     "package": "npm run poetry-build && npm run react-build && npm run electron-build",
-    "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version\" -a v%npm_package_version%  && git push && git push --tags",
+    "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version v%npm_package_version%\" -a v%npm_package_version%  && git push && git push --tags",
     "bump": "npm version prerelease & npm run push-release",
     "bump-patch": "npm version patch && npm run push-release",
     "bump-minor": "npm version minor && npm run push-release",
@@ -92,5 +92,5 @@
     },
     "afterPack": "./util/removeLocales.js"
   },
-  "version": "0.0.0"
+  "version": "2.0.0-0"
 }
