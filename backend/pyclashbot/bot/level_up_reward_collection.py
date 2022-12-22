@@ -83,7 +83,7 @@ def collect_level_up_rewards(logger):
         # click chest
         click(135, 160)
         time.sleep(1)
-        
+
         logger.change_status("Collecting this battlepass reward...")
         # click dead space to skip through rewards
         for _ in range(20):

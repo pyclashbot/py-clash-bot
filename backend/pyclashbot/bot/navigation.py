@@ -20,18 +20,16 @@ from pyclashbot.memu.client import (
 
 ####Main navigation methods
 def get_to_card_page(logger):
-    #geting to battledeck page from clash main
+    # geting to battledeck page from clash main
 
-    #click card page 
+    # click card page
     logger.change_status("Getting to card collection tab...")
-    click(105,630)
+    click(105, 630)
     wait_for_card_page()
 
-    #get to battle deck page
+    # get to battle deck page
     logger.change_status("Getting to battle deck page...")
     get_to_battle_deck_page()
-
-
 
 
 def get_to_war_page_from_main(logger):
@@ -136,7 +134,6 @@ def get_to_switch_accounts_tab():
     # click switch accounts button
     click(200, 455)
     time.sleep(3)
-
 
 
 def get_to_clash_main_from_clan_page(logger):
@@ -246,7 +243,6 @@ def leave_end_battle_window(logger):
     return None
 
 
-
 ####Methods for handling popups
 def handle_war_loot_chest():
     if check_for_war_loot_chest():
@@ -270,10 +266,8 @@ def handle_card_mastery_notification():
     click(107, 623)
     time.sleep(0.33)
 
-
     click(240, 630)
     time.sleep(0.33)
-
 
 
 def handle_war_loot_menu():
@@ -665,27 +659,26 @@ def check_if_stuck_on_trophy_progression_page():
 
 ####Methods to wait
 
+
 def wait_for_clash_main_menu(logger):
     logger.change_status("Waiting for clash main menu")
     waiting = not check_if_on_clash_main_menu()
 
-
-    start_time=time.time()
+    start_time = time.time()
 
     loops = 0
     while waiting:
         print("Still waiting for clash main")
         # loop count
         loops += 1
-        
-        if time.time()-start_time>20:
-            logger.change_status(
-                "Waited more than 20 sec for clashmain. restarting"
-            )
+
+        if time.time() - start_time > 20:
+            logger.change_status("Waited more than 20 sec for clashmain. restarting")
             return "restart"
 
         # click dead space
-        if loops%5==0:click(32, 364)
+        if loops % 5 == 0:
+            click(32, 364)
 
         # check if stuck on trophy progression page
         if check_if_stuck_on_trophy_progression_page():
@@ -699,11 +692,8 @@ def wait_for_clash_main_menu(logger):
     logger.change_status("Done waiting for clash main menu")
 
 
-
-
-
-
 #### TO SORT
+
 
 def get_to_clash_main_settings_page():
     click(x=364, y=99)
@@ -711,65 +701,58 @@ def get_to_clash_main_settings_page():
 
 
 def check_if_on_clash_main_settings_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    battle_log_text_exists=False
-    for x_coord in range(230,250):
-        this_pixel=iar[75][x_coord]
-        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
-            battle_log_text_exists=True
+    battle_log_text_exists = False
+    for x_coord in range(230, 250):
+        this_pixel = iar[75][x_coord]
+        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
+            battle_log_text_exists = True
 
-
-    tournaments_button_exists=False
-    for x_coord in range(185,210):
-        this_pixel=iar[335][x_coord]
-        if pixel_is_equal(this_pixel,[95,141,51],tol=35):
-            tournaments_button_exists=True
-
-
+    tournaments_button_exists = False
+    for x_coord in range(185, 210):
+        this_pixel = iar[335][x_coord]
+        if pixel_is_equal(this_pixel, [95, 141, 51], tol=35):
+            tournaments_button_exists = True
 
     if battle_log_text_exists and tournaments_button_exists:
         return True
     return False
-        
+
 
 def wait_for_clash_main_settings_page():
     while not check_if_on_clash_main_settings_page():
         pass
 
 
-
 def wait_for_ssid_switch_page():
     while not check_for_ssid_switch_page():
         pass
+
 
 def get_to_ssid_switch_page():
     click(200, 460)
     wait_for_ssid_switch_page()
 
+
 def check_for_ssid_switch_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    blue_background_color_exists=False
-    for x_coord in range(30,70):
-        this_pixel=iar[110][x_coord]
-        if pixel_is_equal(this_pixel,[50,118,182],tol=35):
-            blue_background_color_exists=True
+    blue_background_color_exists = False
+    for x_coord in range(30, 70):
+        this_pixel = iar[110][x_coord]
+        if pixel_is_equal(this_pixel, [50, 118, 182], tol=35):
+            blue_background_color_exists = True
 
-
-    switch_accounts_logo_exists=False
-    for x_coord in range(150,165):
-        this_pixel=iar[265][x_coord]
-        if pixel_is_equal(this_pixel,[47,243,198],tol=35):
-            switch_accounts_logo_exists=True
-
-
+    switch_accounts_logo_exists = False
+    for x_coord in range(150, 165):
+        this_pixel = iar[265][x_coord]
+        if pixel_is_equal(this_pixel, [47, 243, 198], tol=35):
+            switch_accounts_logo_exists = True
 
     if switch_accounts_logo_exists and blue_background_color_exists:
         return True
     return False
-
-
 
 
 def get_to_battlepass_rewards_page():
@@ -778,58 +761,54 @@ def get_to_battlepass_rewards_page():
 
 
 def check_for_battlepass_rewards_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    season_timer_clock_icon_exists=False
-    for x_coord in range(235,265):
-        this_pixel=iar[155][x_coord]
-        if pixel_is_equal(this_pixel,[212,204,204],tol=35):
-            season_timer_clock_icon_exists=True
+    season_timer_clock_icon_exists = False
+    for x_coord in range(235, 265):
+        this_pixel = iar[155][x_coord]
+        if pixel_is_equal(this_pixel, [212, 204, 204], tol=35):
+            season_timer_clock_icon_exists = True
 
-
-    ok_button_exists=False
-    for x_coord in range(180,240):
-        this_pixel=iar[630][x_coord]
-        if pixel_is_equal(this_pixel,[104,187,255],tol=35):
-            ok_button_exists=True
-
-
+    ok_button_exists = False
+    for x_coord in range(180, 240):
+        this_pixel = iar[630][x_coord]
+        if pixel_is_equal(this_pixel, [104, 187, 255], tol=35):
+            ok_button_exists = True
 
     if ok_button_exists and season_timer_clock_icon_exists:
         return True
     return False
+
 
 def wait_for_battlepass_rewards_page():
     while not check_for_battlepass_rewards_page():
         pass
 
 
-
 def check_for_card_mastery_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    card_masteries_text_exists=False
-    for x_coord in range(150,275):
-        this_pixel=iar[135][x_coord]
-        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
-            card_masteries_text_exists=True
+    card_masteries_text_exists = False
+    for x_coord in range(150, 275):
+        this_pixel = iar[135][x_coord]
+        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
+            card_masteries_text_exists = True
 
-
-    close_button_exists=False
-    for x_coord in range(345,365):
-        this_pixel=iar[145][x_coord]
-        if pixel_is_equal(this_pixel,[228,24,24],tol=35):
-            close_button_exists=True
-
-
+    close_button_exists = False
+    for x_coord in range(345, 365):
+        this_pixel = iar[145][x_coord]
+        if pixel_is_equal(this_pixel, [228, 24, 24], tol=35):
+            close_button_exists = True
 
     if close_button_exists and card_masteries_text_exists:
         return True
     return False
 
+
 def wait_card_mastery_page():
     while not check_for_card_mastery_page():
         pass
+
 
 def get_to_card_mastery_page():
 
@@ -837,27 +816,25 @@ def get_to_card_mastery_page():
     wait_card_mastery_page()
 
 
-
-
 def check_if_profile_page_is_open():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    profile_page_crown_logo_exists=False
-    for x_coord in range(180,240):
-        this_pixel=iar[80][x_coord]
-        if pixel_is_equal(this_pixel,[255,220,0],tol=35):
-            profile_page_crown_logo_exists=True
+    profile_page_crown_logo_exists = False
+    for x_coord in range(180, 240):
+        this_pixel = iar[80][x_coord]
+        if pixel_is_equal(this_pixel, [255, 220, 0], tol=35):
+            profile_page_crown_logo_exists = True
 
-
-    close_button_exists=False
-    for x_coord in range(350,370):
-        this_pixel=iar[90][x_coord]
-        if pixel_is_equal(this_pixel,[253,132,133],tol=35):
-            close_button_exists=True
+    close_button_exists = False
+    for x_coord in range(350, 370):
+        this_pixel = iar[90][x_coord]
+        if pixel_is_equal(this_pixel, [253, 132, 133], tol=35):
+            close_button_exists = True
 
     if profile_page_crown_logo_exists and close_button_exists:
         return True
     return False
+
 
 def open_profile_page():
     click(100, 130)
@@ -869,120 +846,112 @@ def wait_for_profile_page():
         pass
 
 
-
-
 def check_if_on_party_mode_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    party_title_text_exists=False
-    for x_coord in range(180,240):
-        this_pixel=iar[140][x_coord]
-        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
-            party_title_text_exists=True
+    party_title_text_exists = False
+    for x_coord in range(180, 240):
+        this_pixel = iar[140][x_coord]
+        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
+            party_title_text_exists = True
 
-
-    close_button_exists=False
-    for x_coord in range(340,365):
-        this_pixel=iar[130][x_coord]
-        if pixel_is_equal(this_pixel,[253,132,133],tol=35):
-            close_button_exists=True
-
+    close_button_exists = False
+    for x_coord in range(340, 365):
+        this_pixel = iar[130][x_coord]
+        if pixel_is_equal(this_pixel, [253, 132, 133], tol=35):
+            close_button_exists = True
 
     if close_button_exists and party_title_text_exists:
         return True
     return False
 
+
 def wait_for_party_mode_page():
     while not check_if_on_party_mode_page():
         pass
+
 
 def get_to_party_mode_page_from_settings_page():
     click(263, 248)
     wait_for_party_mode_page()
 
 
-
 def wait_for_card_page():
     while not check_if_on_card_page():
         pass
 
+
 def check_if_on_card_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    left_arrow_exists=False
-    for x_coord in range(85,95):
-        this_pixel=iar[635][x_coord]
-        if pixel_is_equal(this_pixel,[137,224,255],tol=35):
-            left_arrow_exists=True
+    left_arrow_exists = False
+    for x_coord in range(85, 95):
+        this_pixel = iar[635][x_coord]
+        if pixel_is_equal(this_pixel, [137, 224, 255], tol=35):
+            left_arrow_exists = True
 
+    right_arrow_exists = False
+    for x_coord in range(185, 195):
+        this_pixel = iar[635][x_coord]
+        if pixel_is_equal(this_pixel, [137, 224, 255], tol=35):
+            right_arrow_exists = True
 
-    right_arrow_exists=False
-    for x_coord in range(185,195):
-        this_pixel=iar[635][x_coord]
-        if pixel_is_equal(this_pixel,[137,224,255],tol=35):
-            right_arrow_exists=True
-
-    collection_text_exists=False
-    for x_coord in range(110,170):
-        this_pixel=iar[655][x_coord]
-        if pixel_is_equal(this_pixel,[253,253,253],tol=35):
-            collection_text_exists=True
+    collection_text_exists = False
+    for x_coord in range(110, 170):
+        this_pixel = iar[655][x_coord]
+        if pixel_is_equal(this_pixel, [253, 253, 253], tol=35):
+            collection_text_exists = True
 
     if collection_text_exists and right_arrow_exists and left_arrow_exists:
         return True
     return False
 
+
 def check_if_on_battle_deck_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    battle_deck_text_exists=False
-    for x_coord in range(180,240):
-        this_pixel=iar[140][x_coord]
-        if pixel_is_equal(this_pixel,[248,250,253],tol=35):
-            battle_deck_text_exists=True
+    battle_deck_text_exists = False
+    for x_coord in range(180, 240):
+        this_pixel = iar[140][x_coord]
+        if pixel_is_equal(this_pixel, [248, 250, 253], tol=35):
+            battle_deck_text_exists = True
 
-
-    elixer_icon_exists=False
-    for x_coord in range(40,60):
-        this_pixel=iar[500][x_coord]
-        if pixel_is_equal(this_pixel,[237,53,225],tol=35):
-            elixer_icon_exists=True
-
+    elixer_icon_exists = False
+    for x_coord in range(40, 60):
+        this_pixel = iar[500][x_coord]
+        if pixel_is_equal(this_pixel, [237, 53, 225], tol=35):
+            elixer_icon_exists = True
 
     if battle_deck_text_exists and elixer_icon_exists:
         return True
     return False
 
 
-
 def get_to_battle_deck_page():
     while not check_if_on_battle_deck_page():
-        click(140,620)
+        click(140, 620)
         time.sleep(1)
 
 
 def get_to_bannerbox_from_daily_reward_collection_popup():
-    click(200,450)
+    click(200, 450)
     wait_for_bannerbox_page()
 
 
 def check_if_on_bannerbox_page():
-    iar=numpy.asarray(screenshot())
+    iar = numpy.asarray(screenshot())
 
-    bannerbox_title_text_exists=False
-    for x_coord in range(160,280):
-        this_pixel=iar[140][x_coord]
-        if pixel_is_equal(this_pixel,[255,255,255],tol=35):
-            bannerbox_title_text_exists=True
+    bannerbox_title_text_exists = False
+    for x_coord in range(160, 280):
+        this_pixel = iar[140][x_coord]
+        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
+            bannerbox_title_text_exists = True
 
-
-    info_button_exists=False
-    for x_coord in range(70,90):
-        this_pixel=iar[612][x_coord]
-        if pixel_is_equal(this_pixel,[76,172,255],tol=35):
-            info_button_exists=True
-
-
+    info_button_exists = False
+    for x_coord in range(70, 90):
+        this_pixel = iar[612][x_coord]
+        if pixel_is_equal(this_pixel, [76, 172, 255], tol=35):
+            info_button_exists = True
 
     if bannerbox_title_text_exists and info_button_exists:
         return True
@@ -991,10 +960,11 @@ def check_if_on_bannerbox_page():
 
 def wait_for_bannerbox_page():
     while not check_if_on_bannerbox_page():
-        click(20,440)
+        click(20, 440)
         pass
 
+
 def get_to_bannerbox():
-    click(355,230)
+    click(355, 230)
     wait_for_bannerbox_page()
-    print('made it to bannerbox page')
+    print("made it to bannerbox page")

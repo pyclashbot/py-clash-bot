@@ -1,8 +1,14 @@
-import numpy
 import time
 
+import numpy
+
 from pyclashbot.detection.image_rec import find_references, pixel_is_equal
-from pyclashbot.memu.client import click, get_file_count, make_reference_image_list, screenshot
+from pyclashbot.memu.client import (
+    click,
+    get_file_count,
+    make_reference_image_list,
+    screenshot,
+)
 
 
 def open_chests(logger):
@@ -78,6 +84,7 @@ def check_for_chests():
     # return this list
     return return_bool_list
 
+
 def check_if_unlock_chest_button_exists():
     # method to find the 2v2 quickmatch button in the party mode menu
     current_image = screenshot()
@@ -99,12 +106,10 @@ def check_if_unlock_chest_button_exists():
     return any(location is not None for location in locations)
 
 
-
-
 def check_if_unlock_chest_button_exists_with_delay():
-    start_time=time.time()
+    start_time = time.time()
     while True:
-        if time.time()-start_time>3:
+        if time.time() - start_time > 3:
             return False
         if check_if_unlock_chest_button_exists():
             return True
