@@ -16,14 +16,27 @@ class App extends React.Component {
     this.state = {
       selectedJobs: [],
       selectedAccounts: null,
-      statistics: [
-        { title: "test0:", value: "test0" },
-        { title: "test1:", value: "test1" },
-        { title: "test2:", value: "test2" },
-        { title: "test3:", value: "test3" },
-        { title: "test4:", value: "test4" },
-        { title: "test5:", value: "test5" },
-      ],
+      statistics: {
+        wins: 0,
+        losses: 0,
+        fights: 0,
+        requests: 0,
+        auto_restarts: 0,
+        restarts_after_failure: 0,
+        chests_unlocked: 0,
+        cards_played: 0,
+        cards_upgraded: 0,
+        account_switches: 0,
+        card_mastery_reward_collections: 0,
+        battlepass_rewards_collections: 0,
+        level_up_chest_collections: 0,
+        war_battles_fought: 0,
+        free_offer_collections: 0,
+        daily_challenge_reward_collections: 0,
+        war_chest_collections: 0,
+        current_status: 0,
+        time_since_start: "0:00:00",
+      },
       output: "",
       thread: null,
 
@@ -146,11 +159,17 @@ class App extends React.Component {
             <BoxFrame title="Battle">
               <StatsGrid
                 stats={[
-                  { title: "Wins:", value: "0" },
-                  { title: "Losses:", value: "1" },
-                  { title: "Cards Played:", value: "2" },
-                  { title: "2v2 Fights:", value: "3" },
-                  { title: "War Fights:", value: "4" },
+                  { title: "Wins:", value: this.state.statistics.wins },
+                  { title: "Losses:", value: this.state.statistics.losses },
+                  {
+                    title: "Cards Played:",
+                    value: this.state.statistics.cards_played,
+                  },
+                  { title: "2v2 Fights:", value: this.state.statistics.fights },
+                  {
+                    title: "War Fights:",
+                    value: this.state.statistics.war_battles_fought,
+                  },
                 ]}
                 columnCount="1"
               />
@@ -158,12 +177,27 @@ class App extends React.Component {
             <BoxFrame title="Progress">
               <StatsGrid
                 stats={[
-                  { title: "Requests:", value: "0" },
-                  { title: "Chests Opened:", value: "1" },
-                  { title: "Cards Upgraded:", value: "2" },
-                  { title: "Acount Switches:", value: "3" },
-                  { title: "Automatic Restarts:", value: "4" },
-                  { title: "Restarts:", value: "5" },
+                  { title: "Requests:", value: this.state.statistics.requests },
+                  {
+                    title: "Chests Opened:",
+                    value: this.state.statistics.chests_unlocked,
+                  },
+                  {
+                    title: "Cards Upgraded:",
+                    value: this.state.statistics.cards_upgraded,
+                  },
+                  {
+                    title: "Acount Switches:",
+                    value: this.state.statistics.account_switches,
+                  },
+                  {
+                    title: "Automatic Restarts:",
+                    value: this.state.statistics.auto_restarts,
+                  },
+                  {
+                    title: "Restarts:",
+                    value: this.state.statistics.restarts_after_failure,
+                  },
                 ]}
                 columnCount="1"
               />
@@ -171,12 +205,32 @@ class App extends React.Component {
             <BoxFrame title="Collection">
               <StatsGrid
                 stats={[
-                  { title: "Card Master Reward:", value: "1" },
-                  { title: "Battlepass Reward:", value: "2" },
-                  { title: "Lvl Up Chest:", value: "3" },
-                  { title: "Free Offer:", value: "4" },
-                  { title: "War Chest:", value: "5" },
-                  { title: "Daily Challenge:", value: "6" },
+                  {
+                    title: "Card Master Reward:",
+                    value:
+                      this.state.statistics.card_mastery_reward_collections,
+                  },
+                  {
+                    title: "Battlepass Reward:",
+                    value: this.state.statistics.battlepass_rewards_collections,
+                  },
+                  {
+                    title: "Lvl Up Chest:",
+                    value: this.state.statistics.level_up_chest_collections,
+                  },
+                  {
+                    title: "Free Offer:",
+                    value: this.state.statistics.free_offer_collections,
+                  },
+                  {
+                    title: "War Chest:",
+                    value: this.state.statistics.war_chest_collections,
+                  },
+                  {
+                    title: "Daily Challenge:",
+                    value:
+                      this.state.statistics.daily_challenge_reward_collections,
+                  },
                 ]}
                 columnCount="1"
               />
