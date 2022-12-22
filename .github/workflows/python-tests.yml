@@ -20,6 +20,7 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
       - name: Set up Python ${{ matrix.python }}
+        id: pysetup
         uses: actions/setup-python@master
         with:
           python-version: ${{ matrix.python }}
@@ -27,5 +28,6 @@ jobs:
       - name: Install package and dependencies, then run tests
         run: |
           cd backend
+          poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build
           poetry run python -m unittest discover "tests" -p '*_test.py'
