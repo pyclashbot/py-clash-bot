@@ -386,7 +386,7 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
         return "restart"
 
     # wait 3 sec so that the card mastery progress notification doesnt obstruct clicking the options menu on clashmain
-    time.sleep(3)
+    time.sleep(7)
 
     return "endfight"
 
