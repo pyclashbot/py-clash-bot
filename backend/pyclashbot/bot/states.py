@@ -6,8 +6,8 @@ from pyclashbot.bot.bannerbox_collection import collect_bannerbox_chests
 from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
 from pyclashbot.bot.clashmain import (
-    check_if_in_a_clan,
-    check_if_in_battle_with_delay,
+    
+    
     check_if_on_clash_main_menu,
     get_to_account,
     handle_card_mastery_notification,
@@ -22,23 +22,23 @@ from pyclashbot.bot.fight import check_if_past_game_is_win, do_fight
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.navigation import (
-    check_if_on_clan_page,
-    check_if_on_first_card_page,
+    
+    
     get_to_card_page,
     get_to_clash_main_from_card_page,
-    get_to_clash_main_from_clan_page,
+    
     leave_end_battle_window,
-    wait_for_clash_main_menu,
+    
 )
 from pyclashbot.bot.open_chests import open_chests
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import (
-    check_if_has_a_deck_for_this_war_battle,
-    click_war_icon,
+    
+    
     handle_war_attacks,
-    make_a_random_deck_for_this_war_battle,
-    wait_for_war_battle_loading,
+    
+    
 )
 from pyclashbot.memu import click, orientate_terminal
 from pyclashbot.memu.launcher import restart_memu
@@ -107,9 +107,7 @@ def state_tree(
         else:
             state = "bannerbox_collection"
 
-        # if this time - most recent time in restart_log is more than an hour, always pass to restart
-        if abs(logger.most_recent_restart_time - time.time()) > 3600:
-            state = "auto_restart"
+        
 
     elif state == "bannerbox_collection":
         if "daily challenge reward collection" in jobs:
@@ -176,6 +174,10 @@ def state_tree(
 
     elif state == "war":
         state = state_war(logger) if "war" in jobs else "account_switching"
+
+        # if this time - most recent time in restart_log is more than an hour, always pass to restart
+        if abs(logger.most_recent_restart_time - time.time()) > 3600:
+            state = "auto_restart"
 
     return (state, ssid)
 
