@@ -6,8 +6,6 @@ from pyclashbot.bot.bannerbox_collection import collect_bannerbox_chests
 from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
 from pyclashbot.bot.clashmain import (
-    
-    
     check_if_on_clash_main_menu,
     get_to_account,
     handle_card_mastery_notification,
@@ -22,24 +20,14 @@ from pyclashbot.bot.fight import check_if_past_game_is_win, do_fight
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.navigation import (
-    
-    
     get_to_card_page,
     get_to_clash_main_from_card_page,
-    
     leave_end_battle_window,
-    
 )
 from pyclashbot.bot.open_chests import open_chests
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
-from pyclashbot.bot.war import (
-    
-    
-    handle_war_attacks,
-    
-    
-)
+from pyclashbot.bot.war import handle_war_attacks
 from pyclashbot.memu import click, orientate_terminal
 from pyclashbot.memu.launcher import restart_memu
 from pyclashbot.utils import Logger
@@ -106,8 +94,6 @@ def state_tree(
             state = state_free_offer_collection(logger)
         else:
             state = "bannerbox_collection"
-
-        
 
     elif state == "bannerbox_collection":
         if "daily challenge reward collection" in jobs:
@@ -431,18 +417,3 @@ def clip_that():
 
     click(945, 880)
     time.sleep(3)
-
-    # #click deadspace
-    # click(20,440)
-
-    # #press keybind for clipping with obs...
-    # pyautogui.keyDown('ctrlleft')
-    # pyautogui.keyDown('shiftleft')
-    # time.sleep(3)
-    # pyautogui.keyDown('r')
-    # time.sleep(3)
-    # pyautogui.keyUp('r')
-    # pyautogui.keyUp('shiftleft')
-    # pyautogui.keyUp('ctrlleft')
-
-    # print('saved a clip')
