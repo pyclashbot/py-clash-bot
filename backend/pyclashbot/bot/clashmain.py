@@ -173,35 +173,35 @@ def get_to_account(logger, account_number):
     if account_number == 0:
         click(155, 350)
 
-    if account_number == 1:
+    elif account_number == 1:
         click(190, 420)
 
-    if account_number == 2:
+    elif account_number == 2:
         click(230, 510)
 
-    if account_number == 3:
+    elif account_number == 3:
         click(230, 595)
 
-    if account_number == 4:
+    elif account_number == 4:
         # scroll then click
         scroll_down_fast()
         click(170, 640)
 
-    if account_number == 5:
+    elif account_number == 5:
         # scroll then click
         for _ in range(4):
             scroll_down_fast()
             time.sleep(0.5)
         click(230, 585)
 
-    if account_number == 6:
+    elif account_number == 6:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
             time.sleep(0.5)
         click(240, 550)
 
-    if account_number == 7:
+    elif account_number == 7:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
