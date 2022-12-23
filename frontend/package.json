@@ -1,0 +1,114 @@
+{
+  "name": "py-clash-bot",
+  "version": "2.0.0-2",
+  "homepage": "https://matthewmiglio.github.io/py-clash-bot/",
+  "description": "Automated Clash Royale",
+  "keywords": [
+    "clash royale",
+    "bot",
+    "automation"
+  ],
+  "contributors": [
+    {
+      "name": "Martin Miglio",
+      "email": "code@martinmiglio.dev",
+      "url": "https://martinmiglio.dev"
+    },
+    {
+      "name": "Matthew Miglio"
+    }
+  ],
+  "scripts": {
+    "poetry-start": "cd ../backend && poetry run python pyclashbot/server.py",
+    "poetry-build": "cd ../backend && poetry run python setup_exe.py build",
+    "react-start": "cross-env BROWSER=none react-scripts start",
+    "react-build": "react-scripts build",
+    "electron-start": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
+    "electron-build": "ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
+    "dev": "concurrently --kill-others \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
+    "package": "npm run poetry-build && npm run react-build && npm run electron-build",
+    "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version v%npm_package_version%\" -a v%npm_package_version%  && git push && git push --tags",
+    "bump": "npm version prerelease & npm run push-release",
+    "bump-patch": "npm version patch && npm run push-release",
+    "bump-minor": "npm version minor && npm run push-release",
+    "bump-major": "npm version major && npm run push-release"
+  },
+  "main": "electron/main.js",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "axios": "^1.2.1",
+    "chroma-js": "^2.4.2",
+    "electron-is-dev": "^2.0.0",
+    "glob": "^8.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.7.0",
+    "uuid": "^9.0.0",
+    "web-vitals": "^3.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "eslint-config-react-app": "^7.0.1",
+    "ncp": "^2.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "build": {
+    "files": [
+      "build",
+      "node_modules"
+    ],
+    "extraFiles": [
+      {
+        "from": "../backend/build/exe.win-amd64-3.11/",
+        "to": "bin/",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "installerIcon": "src/assets/pixel-pycb.ico",
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": [
+        "en_US"
+      ],
+      "guid": "494bebef-6fc5-42e5-98c8-d0b2e339750e"
+    },
+    "afterPack": "./util/removeLocales.js"
+  }
+}

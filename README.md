@@ -1,6 +1,6 @@
 # py-clash-bot
 
-[![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
+[![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
 
 py-clash-bot is an open-source application that allows users to automate their Clash Royale gameplay on Windows using an emulated Android phone. The bot uses a combination of image recognition, mouse control, and Android emulation to perform a variety of tasks without user intervention.
 
@@ -28,4 +28,4 @@ py-clash-bot is an open-source application that allows users to automate their C
 
 ## Contribute
 
-We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/matthewmiglio/py-clash-bot/issues) or submit a pull request.
+We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/matthewmiglio/py-clash-bot/issues) or check out [how to contribute directly](https://github.com/matthewmiglio/py-clash-bot/blob/master/CONTRIBUTING.md).

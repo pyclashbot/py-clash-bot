@@ -1,0 +1,107 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "pyclashbot"
+version = "v0.0.0"
+description = "Automated Clash Royale Backend Server"
+readme = "../README.md"
+authors = [
+  "Matthew Miglio <nan@nan.nan>",
+  "Martin Miglio <code@martinmiglio.dev>",
+]
+homepage = "https://matthewmiglio.github.io/py-clash-bot"
+repository = "https://github.com/matthewmiglio/py-clash-bot"
+documentation = "https://matthewmiglio.github.io/py-clash-bot"
+classifiers = [
+  "Intended Audience :: End Users/Desktop",
+  "Environment :: Win32 (MS Windows)",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Games/Entertainment",
+]
+keywords = ["clash royale", "bot", "automation"]
+include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
+
+
+[tool.poetry.dependencies]
+python = "^3.10.0"
+pillow = "^9.3.0"
+opencv-python = "^4.6.0"
+numpy = "^1.23.5"
+pyautogui = "^0.9"
+pygetwindow = "^0.0"
+joblib = "^1.2"
+requests = "^2.28"
+PySimpleGUI = "^4.60"
+ahk = "^0.14"
+pymemuc = "^0.1"
+wmi = "^1.5.1"
+flask = "^2.2.2"
+flask-cors = "^3.0.10"
+gevent = "^22.10.2"
+
+
+[tool.poetry.group.build]
+optional = true
+
+
+[tool.poetry.group.build.dependencies]
+cx-logging = "^3.1.0" # specify version of cx_logging for cx_freeze to run with python 3.11
+Cx_Freeze = "^6.13.1"
+
+
+[tool.poetry.group.dev]
+optional = true
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.20"
+black = "^22.10.0"
+matplotlib = "^3.6.2" # used in debug.py
+ipykernel = "^6.17.1"
+vulture = "^2.6"
+
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+
+[tool.isort]
+profile = "black"
+
+
+[tool.pylint.main]
+ignore = ["build", "debug.py"]
+py-version = "3.10"
+suggestion-mode = true
+disable = [
+  "C0114", # missing-module-docstring
+  "C0115", # missing-class-docstring
+  "C0116", # missing-function-docstring
+  "C0301", # line-too-long
+  "C0103", # invalid-name
+]

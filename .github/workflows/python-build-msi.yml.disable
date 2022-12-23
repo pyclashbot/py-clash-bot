@@ -1,0 +1,45 @@
+name: Build windows package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build package
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python 3.11
+        uses: actions/setup-python@master
+        id: pysetup
+        with:
+          python-version: "3.11"
+          cache: "poetry"
+      - name: Install package and dependencies, then build package
+        run: |
+          cd backend
+          poetry env use '${{ steps.pysetup.outputs.python-path }}'
+          poetry install --with build --without dev
+          poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
+      - name: Publish Pre-Release
+        uses: softprops/action-gh-release@master
+        if: startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')
+        with:
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            ./backend/dist/py-clash-bot*.msi
+      - name: Publish Release
+        uses: softprops/action-gh-release@master
+        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'rc')
+        with:
+          generate_release_notes: true
+          files: |
+            ./backend/dist/py-clash-bot*.msi
