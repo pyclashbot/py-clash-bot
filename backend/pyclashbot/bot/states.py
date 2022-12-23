@@ -384,6 +384,10 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
     if leave_end_battle_window(logger) == "restart":
         print("Failure with leave_end_battle_window() in state_fight()")
         return "restart"
+
+    # wait 3 sec so that the card mastery progress notification doesnt obstruct clicking the options menu on clashmain
+    time.sleep(3)
+
     return "endfight"
 
 
