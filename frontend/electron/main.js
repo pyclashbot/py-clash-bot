@@ -11,7 +11,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 480,
     height: 600,
-    icon: path.join(__dirname, "../src/assets/pixel-pycb.ico"),
+    icon: path.join(__dirname, "../src/assets/icon.ico"),
     show: false,
     frame: false,
     transparent: true,

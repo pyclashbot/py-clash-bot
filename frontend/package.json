@@ -98,13 +98,13 @@
         }
       ],
       "signAndEditExecutable": true,
-      "icon": "./src/assets/pixel-pycb.ico"
+      "icon": "./src/assets/icon256.ico"
     },
     "nsis": {
-      "installerIcon": "./src/assets/pixel-pycb.ico",
-      "uninstallerIcon": "./src/assets/pixel-pycb.ico",
-      "installerHeaderIcon": "./src/assets/pixel-pycb.ico",
-      "oneClick": true,
+      "installerIcon": "./src/assets/icon.ico",
+      "uninstallerIcon": "./src/assets/icon.ico",
+      "installerHeaderIcon": "./src/assets/icon.ico",
+      "oneClick": false,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
       "installerLanguages": [

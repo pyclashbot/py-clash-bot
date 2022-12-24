@@ -5,7 +5,7 @@ import {
   faQuestion,
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
-import logo from "../../assets/pixel-pycb.png";
+import logo from "../../assets/icon.png";
 const { ipcRenderer } = window.require("electron");
 
 const Header = () => {
