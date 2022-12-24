@@ -97,11 +97,14 @@
           ]
         }
       ],
-      "signAndEditExecutable": true
+      "signAndEditExecutable": true,
+      "icon": "./src/assets/pixel-pycb.ico"
     },
     "nsis": {
-      "installerIcon": "src/assets/pixel-pycb.ico",
-      "oneClick": false,
+      "installerIcon": "./src/assets/pixel-pycb.ico",
+      "uninstallerIcon": "./src/assets/pixel-pycb.ico",
+      "installerHeaderIcon": "./src/assets/pixel-pycb.ico",
+      "oneClick": true,
       "perMachine": true,
       "allowToChangeInstallationDirectory": true,
       "installerLanguages": [
