@@ -44,6 +44,14 @@ def get_to_war_page_from_main(logger):
     while not check_if_on_war_page():
         print("still not on war page. Cycling.")
         handle_war_chest_obstruction(logger)
+
+        # check if stuck on trophy progression page
+        if check_if_stuck_on_trophy_progression_page():
+            print("Stuck on trophy progression page. Clicking out")
+            click(210, 621)
+            time.sleep(2)
+            get_to_war_page_from_main(logger)
+
         loops += 1
         if loops > 20:
             logger.change_status(
