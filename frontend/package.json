@@ -76,8 +76,7 @@
   },
   "build": {
     "files": [
-      "build",
-      "node_modules"
+      "build"
     ],
     "extraFiles": [
       {
