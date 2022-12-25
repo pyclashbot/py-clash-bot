@@ -473,18 +473,19 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             # find a random card on this page
             replacement_card_coord = find_random_card_coord()
 
-            # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
-            if replacement_card_coord[1] < 200:
-                print("replacement_card_coord is too high on the screen. trying again")
-                loops -= 1
-                continue
-
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
                 if get_to_clash_main_from_card_page(logger) == "restart":
                     return "restart"
                 else:
                     return
+
+            # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
+            if replacement_card_coord[1] < 200:
+                print("replacement_card_coord is too high on the screen. trying again")
+                loops -= 1
+                continue
+
             click(replacement_card_coord[0], replacement_card_coord[1])
             time.sleep(1)
 
