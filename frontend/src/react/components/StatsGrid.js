@@ -41,7 +41,7 @@ const StatsGrid = ({ stats, columnCount }) => {
           <div className="value-column">
             {column.map((item) => (
               <div
-                key={item.value}
+                key={`${item.title}-value`}
                 className="value-item"
                 style={{
                   width: "15px",
@@ -57,7 +57,6 @@ const StatsGrid = ({ stats, columnCount }) => {
                     "inset -1px -1px 0px #FFFFFF, inset 1px 1px 0px #000000",
                   MozBoxShadow:
                     "inset -1px -1px 0px #FFFFFF, inset 1px 1px 0px #000000",
-
                 }}
               >
                 {item.value}
