@@ -5,13 +5,12 @@ const { spawn } = require("child_process");
 // a function to start the backend process
 function startBackend() {
   const exeName = "pycb_back.exe";
-  let exeProc = spawn(
-    path.join(
-      __dirname,
-      isDev ? "../../backend/build/exe.win-amd64-3.11" : "../../../../bin/",
-      exeName
-    )
+  const exePath = path.join(
+    __dirname,
+    isDev ? "../../backend/build/exe.win-amd64-3.11" : "../../../../bin",
+    exeName
   );
+  let exeProc = spawn(exePath);
 
   // setup listeners for the backend process to log stdout and stderr
   const consoleOutput = (data) => {
