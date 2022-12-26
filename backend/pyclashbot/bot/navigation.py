@@ -1,3 +1,4 @@
+import random
 import time
 
 import numpy
@@ -59,6 +60,10 @@ def get_to_war_page_from_main(logger):
             )
             return "restart"
         click(280, 620)
+
+        if random.randint(1, 2) == 2:
+            scroll_down()
+
         time.sleep(1)
     return None
 
@@ -312,8 +317,7 @@ def open_war_chest(logger):
 
     # open it
     logger.change_status("Skipping through rewards. . .")
-    for n in range(15):
-        click(10, 220)
+    click(10, 220, clicks=20, interval=1)
     time.sleep(3)
 
     # Click OK on war results page popup
