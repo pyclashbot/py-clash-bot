@@ -483,7 +483,8 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
             if replacement_card_coord[1] < 200:
                 print("replacement_card_coord is too high on the screen. trying again")
-                loops -= 1
+                if random.randint(1, 2) == 2:
+                    loops -= 1
                 continue
 
             click(replacement_card_coord[0], replacement_card_coord[1])
