@@ -2,6 +2,7 @@ import random
 import time
 
 import numpy
+import pyautogui
 
 from pyclashbot.detection.image_rec import (
     check_for_location,
@@ -62,7 +63,11 @@ def get_to_war_page_from_main(logger):
         click(280, 620)
 
         if random.randint(1, 2) == 2:
-            scroll_down()
+            origin = pyautogui.position()
+            pyautogui.moveTo(300, 300)
+            time.sleep(1)
+            scroll_up_fast()
+            pyautogui.moveTo(origin[0], origin[1])
 
         time.sleep(1)
     return None
