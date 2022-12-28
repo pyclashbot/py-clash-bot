@@ -83,7 +83,7 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     time.sleep(1)
 
     print(f"Counted scrolls: {count}")
-    return 0 if count == 0 else count - 1
+    return 1 if count == 0 else count - 1
 
 
 #### detection methods

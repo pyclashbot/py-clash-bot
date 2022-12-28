@@ -25,15 +25,24 @@ def request_random_card_from_clash_main(logger):
     # handle card mastery notification because it coveres the request button
     print("Handling card mastery notification before requesting b/c obstruction.")
     handle_card_mastery_notification()
+    time.sleep(1)
 
     # Return if not in clan (starts on main, ends on main)
     logger.change_status("Checking if you're in a clan.")
-    if not check_if_in_a_clan(logger):
+
+    in_a_clan_return_string = check_if_in_a_clan(logger)
+    if in_a_clan_return_string == "restart":
+        print(
+            "failure with check_if_in_a_clan() in request_random_card_from_clash_main()"
+        )
+        return "restart"
+    if not in_a_clan_return_string:
         logger.change_status("Skipping request because we are not in a clan.")
         return
-    time.sleep(1)
+    else:
+        logger.change_status("We are in a clan. Continuing with request.")
+        print("We are in a clan. Continuing with request.")
 
-    # Return if request is not available (Starts on main, ends on clan page)
     time.sleep(1)
     logger.change_status("Checking if request is available.")
     # check_if_can_request gets to clan page and checks
