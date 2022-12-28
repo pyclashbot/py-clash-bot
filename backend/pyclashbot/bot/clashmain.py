@@ -27,6 +27,7 @@ from pyclashbot.memu.client import (
     scroll_down_fast,
 )
 from pyclashbot.utils.logger import Logger
+from pyclashbot.utils.ssid_account_logging import add_this_ssid_to_log
 
 ahk = AHK()
 logger = Logger()
@@ -167,6 +168,8 @@ def get_to_account(logger, account_number):
     get_to_ssid_switch_page()
 
     print("getting to then clicking the appropriate account")
+
+    add_this_ssid_to_log(str(account_number))
 
     if account_number == 0:
         click(155, 350)
