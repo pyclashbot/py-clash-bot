@@ -168,9 +168,6 @@ def get_to_account(logger, account_number):
 
     print("getting to then clicking the appropriate account")
 
-    # REMOVE LATER
-    write_this_ssid_to_log(str(account_number))
-
     if account_number == 0:
         click(155, 350)
 
@@ -341,10 +338,3 @@ def check_if_in_battle_with_delay():
         if check_if_pixels_indicate_in_battle():
             return True
     return False
-
-
-# REMOVE LATER
-def write_this_ssid_to_log(ssid_number):
-    path = r"C:\Users\matmi\OneDrive\Desktop\clashbot_ssid_data.txt"
-    with open(path, "a") as f:
-        f.write(ssid_number + "\n")
