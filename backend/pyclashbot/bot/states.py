@@ -39,6 +39,7 @@ def state_tree(
     ssid_max: int,
     ssid: int,
     state: str,
+    ssid_order_list: list[int],
 ) -> tuple[str, int]:
     """
     Method for the state tree of the program
@@ -81,7 +82,10 @@ def state_tree(
         state = state_restart(logger)
 
     elif state == "account_switching":
-        state, ssid = state_account_switching(logger, ssid, ssid_max)
+        print("entered account_siwtching state...\nGonna start the method...")
+        state, ssid, ssid_order_list = state_account_switching(
+            logger, ssid, ssid_max, ssid_order_list
+        )
 
     elif state == "chest_reward_collection":
         if "Open Chests" not in jobs:
@@ -165,7 +169,7 @@ def state_tree(
         if abs(logger.most_recent_restart_time - time.time()) > 3600:
             state = "auto_restart"
 
-    return (state, ssid)
+    return (state, ssid, ssid_order_list)
 
 
 def state_restart(logger) -> Literal["account_switching", "restart"]:
@@ -189,20 +193,45 @@ def state_restart(logger) -> Literal["account_switching", "restart"]:
 
 
 def state_account_switching(
-    logger, ssid, ssid_max
-) -> Literal["chest_reward_collection", "restart"]:
-    print("state is :state_account_switching")
+    logger,
+    ssid_index,
+    ssid_max,
+    ssid_order_list,
+):
 
     logger.change_status("Switching accounts. . .")
 
-    # Get to correct account if more than one account is being used
-    if ssid_max > 1 and get_to_account(logger, account_number=ssid) == "restart":
+    # if order list is empty, make a new one
+    if ssid_order_list == [] or ssid_order_list == None:
+        print("ssid_order_list is empty or None. Making new list.")
+        ssid_order_list = make_random_ssid_list(ssid_max)
+        print("New list is: ", ssid_order_list)
+        ssid_index = 0
+
+    # if only 1 account selected, skip account switching
+    if ssid_max < 2:
+        print("only 1 account selected so skipping accuont switch entirely")
+        return "chest_reward_collection", ssid_index, ssid_order_list
+
+    # get to this account
+    print("account selection range is: 0-", (ssid_max - 1))
+    if get_to_account(logger, account_number=ssid_order_list[ssid_index]) == "restart":
         print("Failure with get_to_account() in state_clashmain()")
-        return "restart"
+        return "chest_reward_collection", ssid_index, ssid_order_list
+    else:
+        ssid_index += 1
 
-    ssid = ssid + 1 if ssid < (ssid_max - 1) else 0
+    # if at maximum index, make a new list, and reset to 0
+    print("current ssid_index is: ", ssid_index)
+    print("ssid_max-1 is  ", ssid_max)
 
-    return "chest_reward_collection", ssid
+    if ssid_index == (ssid_max - 1):
+        print("At maximum index. Making new list and resetting index to 0.")
+        ssid_order_list = make_random_ssid_list(ssid_max)
+        print("New list is: ", ssid_order_list)
+        ssid_index = 0
+
+    return "chest_reward_collection", ssid_index, ssid_order_list
 
 
 def state_chest_reward_collection(
@@ -421,3 +450,26 @@ def clip_that():
 
     click(945, 880)
     time.sleep(3)
+
+
+# making the random order of accout switching
+def make_random_ssid_list(max_ssid):
+    ssid_list = []
+    for n in range(max_ssid):
+        ssid_list.append(n)
+    list = randomize_list(ssid_list)
+    list = randomize_list(ssid_list)
+    list = randomize_list(ssid_list)
+    return list
+
+
+# method to randomize a given list of ints
+def randomize_list(list):
+    randomized_list = list.copy()
+    for i in range(len(randomized_list)):
+        random_index = random.randint(0, len(randomized_list) - 1)
+        randomized_list[i], randomized_list[random_index] = (
+            randomized_list[random_index],
+            randomized_list[i],
+        )
+    return randomized_list
