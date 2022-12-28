@@ -156,9 +156,7 @@ def get_to_account(logger, account_number):
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
     # Account number is ints 0-3 for the first 4 accounts
-    logger.change_status(
-        f"Switching accounts to account number {str(account_number)}, (0-7)"
-    )
+    logger.change_status(f"Switching accounts to account number {str(account_number)}")
 
     # open settings
     print("Opening settings tab from clash main to get to account switch")
@@ -169,6 +167,9 @@ def get_to_account(logger, account_number):
     get_to_ssid_switch_page()
 
     print("getting to then clicking the appropriate account")
+
+    # REMOVE LATER
+    write_this_ssid_to_log(str(account_number))
 
     if account_number == 0:
         click(155, 350)
@@ -309,13 +310,14 @@ def wait_for_battle_start(logger):
     # Method to wait for a the loading sequence of a battle to finish
 
     logger.change_status("Waiting for battle start. . .")
-    in_battle = False
 
     start_time = time.time()
 
+    wait_time = 60
+
     while not check_if_in_battle_with_delay():
-        if time.time() - start_time > 30:
-            logger.change_status("Waited longer than 30 sec for a fight")
+        if time.time() - start_time > wait_time:
+            logger.change_status(f"Waited longer than {wait_time} sec for a fight")
             return "restart"
 
 
@@ -339,3 +341,10 @@ def check_if_in_battle_with_delay():
         if check_if_pixels_indicate_in_battle():
             return True
     return False
+
+
+# REMOVE LATER
+def write_this_ssid_to_log(ssid_number):
+    path = r"C:\Users\matmi\OneDrive\Desktop\clashbot_ssid_data.txt"
+    with open(path, "a") as f:
+        f.write(ssid_number + "\n")

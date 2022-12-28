@@ -689,8 +689,12 @@ def wait_for_clash_main_menu(logger):
         # loop count
         loops += 1
 
-        if time.time() - start_time > 20:
-            logger.change_status("Waited more than 20 sec for clashmain. restarting")
+        wait_time = 60
+
+        if time.time() - start_time > wait_time:
+            logger.change_status(
+                f"Waited more than {wait_time} sec for clashmain. restarting"
+            )
             return "restart"
 
         # click dead space
