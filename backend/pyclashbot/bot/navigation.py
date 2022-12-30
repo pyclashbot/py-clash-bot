@@ -282,7 +282,10 @@ def handle_card_mastery_notification():
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
-    time.sleep(0.33)
+    time.sleep(1)
+
+    if check_for_card_mastery_reward_introduction_popup:
+        handle_card_mastery_reward_introduction_popup()
 
     click(240, 630)
     time.sleep(0.33)
@@ -899,7 +902,8 @@ def get_to_party_mode_page_from_settings_page():
 
 def wait_for_card_page():
     while not check_if_on_card_page():
-        pass
+        if check_for_card_mastery_reward_introduction_popup:
+            handle_card_mastery_reward_introduction_popup()
 
 
 def check_if_on_card_page():
@@ -950,6 +954,9 @@ def check_if_on_battle_deck_page():
 
 def get_to_battle_deck_page():
     while not check_if_on_battle_deck_page():
+        if check_for_card_mastery_reward_introduction_popup:
+            handle_card_mastery_reward_introduction_popup()
+
         click(140, 620)
         time.sleep(1)
 
@@ -989,3 +996,64 @@ def get_to_bannerbox():
     click(355, 230)
     wait_for_bannerbox_page()
     print("made it to bannerbox page")
+
+
+def check_for_card_mastery_reward_introduction_popup():
+    iar = numpy.asarray(screenshot())
+
+    white_background_exists = False
+    for x_coord in range(234, 260):
+        this_pixel = iar[366][x_coord]
+        if pixel_is_equal(this_pixel, [243, 243, 243], tol=35):
+            white_background_exists = True
+
+    black_text_exists = False
+    for x_coord in range(225, 250):
+        this_pixel = iar[397][x_coord]
+        if pixel_is_equal(this_pixel, [131, 134, 142], tol=35):
+            black_text_exists = True
+
+    if black_text_exists and white_background_exists:
+        return True
+    return False
+
+
+def handle_card_mastery_reward_introduction_popup():
+    # skip speech bubbles
+    click(20, 440, clicks=5, interval=1)
+    time.sleep(1)
+
+    # click mastery icon in battledeck page
+    click(258, 502)
+    time.sleep(1)
+
+    # click topleft most card in card mastery list
+    click(97, 211)
+    time.sleep(1)
+
+    # click claim regions
+    coord_list = [
+        (200, 350),
+        (200, 400),
+        (200, 450),
+        (200, 500),
+        (200, 550),
+        (200, 600),
+    ]
+    for coord in coord_list:
+        click(coord[0], coord[1])
+
+    # click deadspace a lot
+    click(20, 440, clicks=15, interval=1)
+
+    # click bagdes icon in battledeck page
+    click(323, 91)
+    time.sleep(1)
+
+    # click battledeck icon
+    click(81, 93)
+    time.sleep(1)
+
+
+if check_for_card_mastery_reward_introduction_popup:
+    handle_card_mastery_reward_introduction_popup()
