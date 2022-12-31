@@ -364,7 +364,9 @@ def randomize_and_select_deck_2(logger):
 
     # get to card page
     print("Getting to card page to randomize deck.")
-    get_to_card_page(logger)
+    if get_to_card_page(logger) == "restart":
+        print("failure with get_to_card_page")
+        return "restart"
     print("Done getting to card page to randomize deck.")
 
     # click deck 2

@@ -27,11 +27,14 @@ def get_to_card_page(logger):
     # click card page
     logger.change_status("Getting to card collection tab...")
     click(105, 630)
-    wait_for_card_page()
+    if wait_for_card_page() == "fail":
+        print("failed waiting for card page")
+        return "restart"
 
     # get to battle deck page
     logger.change_status("Getting to battle deck page...")
-    get_to_battle_deck_page()
+    if get_to_battle_deck_page() == "restart":
+        return "restart"
 
 
 def get_to_war_page_from_main(logger):
@@ -901,9 +904,14 @@ def get_to_party_mode_page_from_settings_page():
 
 
 def wait_for_card_page():
+    start_time = time.time()
     while not check_if_on_card_page():
         if check_for_card_mastery_reward_introduction_popup:
+            print("detected card_mastery_reward_introduction_popup")
             handle_card_mastery_reward_introduction_popup()
+        if time.time() - start_time > 10:
+            print("timed out waiting for card page")
+            return "fail"
 
 
 def check_if_on_card_page():
@@ -953,7 +961,13 @@ def check_if_on_battle_deck_page():
 
 
 def get_to_battle_deck_page():
+    loops = 0
     while not check_if_on_battle_deck_page():
+        loops += 1
+        if loops > 25:
+            print("failure with get_to_battle_deck_page()")
+            return "restart"
+
         if check_for_card_mastery_reward_introduction_popup:
             handle_card_mastery_reward_introduction_popup()
 
@@ -1019,6 +1033,8 @@ def check_for_card_mastery_reward_introduction_popup():
 
 
 def handle_card_mastery_reward_introduction_popup():
+    print("handling card_mastery_reward_introduction_popup")
+
     # skip speech bubbles
     click(20, 440, clicks=5, interval=1)
     time.sleep(1)
