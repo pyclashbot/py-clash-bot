@@ -1071,5 +1071,3 @@ def handle_card_mastery_reward_introduction_popup():
     time.sleep(1)
 
 
-if check_for_card_mastery_reward_introduction_popup:
-    handle_card_mastery_reward_introduction_popup()
