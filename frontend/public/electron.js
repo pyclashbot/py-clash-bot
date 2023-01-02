@@ -3,27 +3,13 @@ const path = require("path");
 const isDev = require("electron-is-dev");
 const { initIpcListeners } = require("./ipcListeners");
 const { startBackend, stopBackend } = require("./backendLinker");
+const windowConfig = require("./windowConfig");
 
 let mainWindow;
 let exeProcess;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 480,
-    height: 600,
-    icon: path.join(__dirname, "../src/assets/icon.ico"),
-    show: false,
-    frame: false,
-    transparent: true,
-    //resizable: false, //when true, the window will auto shrink, when false, the window cant be resized by user
-    autoHideMenuBar: true,
-    webPreferences: {
-      allowFileAccessFromFileUrls: true,
-      preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  });
+  mainWindow = new BrowserWindow(windowConfig.window);
   if (isDev) {
     mainWindow.webContents.openDevTools({ mode: "undocked" });
   }
