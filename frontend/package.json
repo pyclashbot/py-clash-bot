@@ -22,7 +22,7 @@
     "react-build": "react-scripts build",
     "electron-start": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
     "electron-build": "electron-builder -w -c.extraMetadata.main=build/electron.js",
-    "dev": "concurrently -k \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
+    "dev": "concurrently -k \"npm run poetry-start\" \"wait-on http-get://127.0.0.1:1357/heartbeat && npm run react-start\" \"wait-on http://127.0.0.1:3000/ && npm run electron-start\"",
     "package": "npm run poetry-build && npm run react-build && npm run electron-build",
     "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version v%npm_package_version%\" -a v%npm_package_version%  && git push && git push --tags",
     "bump": "npm version prerelease & npm run push-release",
@@ -56,7 +56,8 @@
     "cross-env": "^7.0.3",
     "electron": "^22.0.0",
     "electron-builder": "^23.6.0",
-    "eslint-config-react-app": "^7.0.1"
+    "eslint-config-react-app": "^7.0.1",
+    "wait-on": "^7.0.1"
   },
   "browserslist": {
     "production": [

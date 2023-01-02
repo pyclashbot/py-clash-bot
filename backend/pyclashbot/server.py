@@ -63,5 +63,10 @@ def handle_output():
     return {"status": "stopped", "message": "No thread running", "statistics": {}}
 
 
+@app.route("/heartbeat")
+def heartbeat():
+    return {"status": "listening", "message": "Server running"}
+
+
 http_server = WSGIServer(("127.0.0.1", 1357), app)
 http_server.serve_forever()
