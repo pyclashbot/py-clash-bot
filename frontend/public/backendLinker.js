@@ -7,7 +7,7 @@ function startBackend() {
   const exeName = "pycb_back.exe";
   const exePath = path.join(
     __dirname,
-    isDev ? "../../backend/build/exe.win-amd64-3.11" : "../../../../bin",
+    isDev ? "../../backend/build/exe.win-amd64-3.11" : "../../../bin",
     exeName
   );
   let exeProc = spawn(exePath);
