@@ -40,6 +40,9 @@ setup(
     executables=[exe],
     options={
         "bdist_msi": bdist_msi_options,
-        "build_exe": {"excludes": ["test", "setuptools"]},
+        "build_exe": {
+            "excludes": ["test", "setuptools"],
+            "include_msvcr": True,
+        },
     },
 )

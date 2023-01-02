@@ -14,6 +14,7 @@ except subprocess.CalledProcessError:
     VERSION = "0.0.0"
 
 build_exe_options = {
+    "include_msvcr": True,
     "excludes": [
         "PySimpleGUI",
         "tkinter",
@@ -21,7 +22,7 @@ build_exe_options = {
         "setuptools",
         "pyclashbot.interface",
         "matplotlib",
-    ]
+    ],
 }
 
 exe = Executable(
