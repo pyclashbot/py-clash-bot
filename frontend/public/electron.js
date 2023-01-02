@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const url = require("url");
 const isDev = require("electron-is-dev");
 const { initIpcListeners } = require("./ipcListeners");
 const { startBackend, stopBackend } = require("./backendLinker");
@@ -15,7 +16,11 @@ function createWindow() {
   }
   const startUrl = isDev
     ? "http://localhost:3000"
-    : `file:${path.join(__dirname, "../index.html")}`;
+    : url.format({
+        pathname: path.join(__dirname, "index.html"),
+        protocol: "file:",
+        slashes: true,
+      });
   mainWindow.loadURL(startUrl);
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
