@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, protocol } = require("electron");
 const path = require("path");
 const url = require("url");
 const isDev = require("electron-is-dev");
@@ -27,15 +27,26 @@ function createWindow() {
   });
 }
 
+function setupLocalFilesNormalizerProxy() {
+  protocol.registerHttpProtocol(
+    "file",
+    (request, callback) => {
+      const url = request.url.slice(8);
+      callback({ path: path.normalize(`${__dirname}/${url}`) });
+    },
+    (error) => {
+      if (error) console.error("Failed to register protocol");
+    }
+  );
+}
+
 app.commandLine.appendSwitch("lang", "en-US");
 
-app.whenReady().then(() => {
-  if (!isDev) exeProcess = startBackend();
+app.on("ready", () => {
   createWindow();
+  setupLocalFilesNormalizerProxy();
   initIpcListeners(mainWindow);
-  app.on("activate", function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  if (!isDev) exeProcess = startBackend();
 });
 
 app.on("window-all-closed", function () {
