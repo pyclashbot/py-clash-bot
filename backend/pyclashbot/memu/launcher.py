@@ -83,6 +83,8 @@ def restart_memu(logger):
     if wait_for_clash_main_menu(logger) == "restart":
         return restart_memu(logger)
 
+    time.sleep(5)
+
     return True
 
 
