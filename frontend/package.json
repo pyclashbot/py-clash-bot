@@ -1,21 +1,18 @@
 {
   "name": "py-clash-bot",
   "version": "2.0.0-2",
-  "homepage": "https://matthewmiglio.github.io/py-clash-bot/",
   "description": "Automated Clash Royale",
   "keywords": [
     "clash royale",
     "bot",
     "automation"
   ],
+  "author": "Matthew Miglio",
   "contributors": [
     {
       "name": "Martin Miglio",
       "email": "code@martinmiglio.dev",
       "url": "https://martinmiglio.dev"
-    },
-    {
-      "name": "Matthew Miglio"
     }
   ],
   "scripts": {
@@ -24,8 +21,8 @@
     "react-start": "cross-env BROWSER=none react-scripts start",
     "react-build": "react-scripts build",
     "electron-start": "cross-env ELECTRON_START_URL=http://localhost:3000 electron .",
-    "electron-build": "ncp electron build\\electron && electron-builder build --win -c.extraMetadata.main=build/electron/main.js --publish never",
-    "dev": "concurrently --kill-others \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
+    "electron-build": "electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "dev": "concurrently -k \"npm run poetry-start\" \"npm run react-start\" \"npm run electron-start\"",
     "package": "npm run poetry-build && npm run react-build && npm run electron-build",
     "push-release": "git add package.json package-lock.json && git commit -m \"Bump version\" && git tag -m \"Bump Version v%npm_package_version%\" -a v%npm_package_version%  && git push && git push --tags",
     "bump": "npm version prerelease & npm run push-release",
@@ -33,11 +30,11 @@
     "bump-minor": "npm version minor && npm run push-release",
     "bump-major": "npm version major && npm run push-release"
   },
-  "main": "electron/main.js",
+  "main": "./public/electron.js",
+  "homepage": "./",
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "dependencies": {
@@ -59,8 +56,7 @@
     "cross-env": "^7.0.3",
     "electron": "^22.0.0",
     "electron-builder": "^23.6.0",
-    "eslint-config-react-app": "^7.0.1",
-    "ncp": "^2.0.0"
+    "eslint-config-react-app": "^7.0.1"
   },
   "browserslist": {
     "production": [
@@ -76,8 +72,12 @@
   },
   "build": {
     "files": [
-      "build"
+      "build/**/*",
+      "node_modules/**/*"
     ],
+    "directories": {
+      "buildResources": "public"
+    },
     "extraFiles": [
       {
         "from": "../backend/build/exe.win-amd64-3.11/",
