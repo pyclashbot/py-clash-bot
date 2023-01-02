@@ -806,7 +806,8 @@ def check_for_battlepass_rewards_page():
 
 def wait_for_battlepass_rewards_page():
     while not check_for_battlepass_rewards_page():
-        pass
+        if check_for_bonus_bank_popup_in_battlepass_page:
+            handle_bonus_bank_popup_in_battlepass_page()
 
 
 def check_for_card_mastery_page():
@@ -1002,3 +1003,41 @@ def get_to_bannerbox():
     click(355, 230)
     wait_for_bannerbox_page()
     print("made it to bannerbox page")
+
+
+def check_for_bonus_bank_popup_in_battlepass_page():
+    iar = numpy.asarray(screenshot())
+
+    yellow_background_exists = False
+    for x_coord in range(90, 100):
+        this_pixel = iar[265][x_coord]
+        if pixel_is_equal(this_pixel, [253, 204, 52], tol=35):
+            yellow_background_exists = True
+
+    green_collect_button_exists = False
+    for x_coord in range(200, 220):
+        this_pixel = iar[450][x_coord]
+        if pixel_is_equal(this_pixel, [86, 228, 100], tol=35):
+            green_collect_button_exists = True
+
+    grey_background_exists = False
+    for x_coord in range(320, 330):
+        this_pixel = iar[470][x_coord]
+        if pixel_is_equal(this_pixel, [80, 81, 110], tol=35):
+            grey_background_exists = True
+
+    if (
+        yellow_background_exists
+        and green_collect_button_exists
+        and grey_background_exists
+    ):
+        print("found bonus bank popup")
+        return True
+    return False
+
+
+def handle_bonus_bank_popup_in_battlepass_page():
+    print("handling bonus bank popup")
+    # click collect
+    click(216, 466)
+    time.sleep(3)
