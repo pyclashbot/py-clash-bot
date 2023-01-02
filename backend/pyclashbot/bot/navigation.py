@@ -2,6 +2,7 @@ import random
 import time
 
 import numpy
+import pyautogui
 
 from pyclashbot.detection.image_rec import (
     check_for_location,
@@ -26,11 +27,14 @@ def get_to_card_page(logger):
     # click card page
     logger.change_status("Getting to card collection tab...")
     click(105, 630)
-    wait_for_card_page()
+    if wait_for_card_page() == "fail":
+        print("failed waiting for card page")
+        return "restart"
 
     # get to battle deck page
     logger.change_status("Getting to battle deck page...")
-    get_to_battle_deck_page()
+    if get_to_battle_deck_page() == "restart":
+        return "restart"
 
 
 def get_to_war_page_from_main(logger):
@@ -62,7 +66,11 @@ def get_to_war_page_from_main(logger):
         click(280, 620)
 
         if random.randint(1, 2) == 2:
-            scroll_down()
+            origin = pyautogui.position()
+            pyautogui.moveTo(300, 300)
+            time.sleep(1)
+            scroll_up_fast()
+            pyautogui.moveTo(origin[0], origin[1])
 
         time.sleep(1)
     return None
@@ -267,7 +275,7 @@ def handle_war_loot_chest():
 
         # skip thru chest
         print("Skipping thru war chest rewards...")
-        click(20, 450, clicks=10, interval=0.33)
+        click(20, 450, clicks=20, interval=1)
         time.sleep(1)
 
         print("Done handling war chest...")
@@ -277,7 +285,7 @@ def handle_card_mastery_notification():
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
-    time.sleep(0.33)
+    time.sleep(1)
 
     click(240, 630)
     time.sleep(0.33)
@@ -684,8 +692,12 @@ def wait_for_clash_main_menu(logger):
         # loop count
         loops += 1
 
-        if time.time() - start_time > 20:
-            logger.change_status("Waited more than 20 sec for clashmain. restarting")
+        wait_time = 60
+
+        if time.time() - start_time > wait_time:
+            logger.change_status(
+                f"Waited more than {wait_time} sec for clashmain. restarting"
+            )
             return "restart"
 
         # click dead space
@@ -794,7 +806,8 @@ def check_for_battlepass_rewards_page():
 
 def wait_for_battlepass_rewards_page():
     while not check_for_battlepass_rewards_page():
-        pass
+        if check_for_bonus_bank_popup_in_battlepass_page:
+            handle_bonus_bank_popup_in_battlepass_page()
 
 
 def check_for_card_mastery_page():
@@ -889,8 +902,12 @@ def get_to_party_mode_page_from_settings_page():
 
 
 def wait_for_card_page():
+    start_time = time.time()
     while not check_if_on_card_page():
-        pass
+
+        if time.time() - start_time > 10:
+            print("timed out waiting for card page")
+            return "fail"
 
 
 def check_if_on_card_page():
@@ -940,7 +957,13 @@ def check_if_on_battle_deck_page():
 
 
 def get_to_battle_deck_page():
+    loops = 0
     while not check_if_on_battle_deck_page():
+        loops += 1
+        if loops > 25:
+            print("failure with get_to_battle_deck_page()")
+            return "restart"
+
         click(140, 620)
         time.sleep(1)
 
@@ -980,3 +1003,41 @@ def get_to_bannerbox():
     click(355, 230)
     wait_for_bannerbox_page()
     print("made it to bannerbox page")
+
+
+def check_for_bonus_bank_popup_in_battlepass_page():
+    iar = numpy.asarray(screenshot())
+
+    yellow_background_exists = False
+    for x_coord in range(90, 100):
+        this_pixel = iar[265][x_coord]
+        if pixel_is_equal(this_pixel, [253, 204, 52], tol=35):
+            yellow_background_exists = True
+
+    green_collect_button_exists = False
+    for x_coord in range(200, 220):
+        this_pixel = iar[450][x_coord]
+        if pixel_is_equal(this_pixel, [86, 228, 100], tol=35):
+            green_collect_button_exists = True
+
+    grey_background_exists = False
+    for x_coord in range(320, 330):
+        this_pixel = iar[470][x_coord]
+        if pixel_is_equal(this_pixel, [80, 81, 110], tol=35):
+            grey_background_exists = True
+
+    if (
+        yellow_background_exists
+        and green_collect_button_exists
+        and grey_background_exists
+    ):
+        print("found bonus bank popup")
+        return True
+    return False
+
+
+def handle_bonus_bank_popup_in_battlepass_page():
+    print("handling bonus bank popup")
+    # click collect
+    click(216, 466)
+    time.sleep(3)
