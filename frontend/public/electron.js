@@ -40,6 +40,7 @@ function setupLocalFilesNormalizerProxy() {
   );
 }
 
+app.disableHardwareAcceleration()
 app.commandLine.appendSwitch("lang", "en-US");
 
 app.on("ready", () => {
