@@ -22,9 +22,6 @@ function createWindow() {
         slashes: true,
       });
   mainWindow.loadURL(startUrl);
-  mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
-  });
   mainWindow.on("closed", function () {
     mainWindow = null;
   });
