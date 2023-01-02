@@ -159,16 +159,22 @@ class App extends React.Component {
             <BoxFrame title="Battle">
               <StatsGrid
                 stats={[
-                  { title: "Wins:", value: this.state.statistics.wins },
-                  { title: "Losses:", value: this.state.statistics.losses },
+                  { title: "Wins:", value: this.state.statistics.wins ?? 0 },
+                  {
+                    title: "Losses:",
+                    value: this.state.statistics.losses ?? 0,
+                  },
                   {
                     title: "Cards Played:",
-                    value: this.state.statistics.cards_played,
+                    value: this.state.statistics.cards_played ?? 0,
                   },
-                  { title: "2v2 Fights:", value: this.state.statistics.fights },
+                  {
+                    title: "2v2 Fights:",
+                    value: this.state.statistics.fights ?? 0,
+                  },
                   {
                     title: "War Fights:",
-                    value: this.state.statistics.war_battles_fought,
+                    value: this.state.statistics.war_battles_fought ?? 0,
                   },
                 ]}
                 columnCount="1"
@@ -177,26 +183,29 @@ class App extends React.Component {
             <BoxFrame title="Progress">
               <StatsGrid
                 stats={[
-                  { title: "Requests:", value: this.state.statistics.requests },
+                  {
+                    title: "Requests:",
+                    value: this.state.statistics.requests ?? 0,
+                  },
                   {
                     title: "Chests Opened:",
-                    value: this.state.statistics.chests_unlocked,
+                    value: this.state.statistics.chests_unlocked ?? 0,
                   },
                   {
                     title: "Cards Upgraded:",
-                    value: this.state.statistics.cards_upgraded,
+                    value: this.state.statistics.cards_upgraded ?? 0,
                   },
                   {
                     title: "Acount Switches:",
-                    value: this.state.statistics.account_switches,
+                    value: this.state.statistics.account_switches ?? 0,
                   },
                   {
                     title: "Automatic Restarts:",
-                    value: this.state.statistics.auto_restarts,
+                    value: this.state.statistics.auto_restarts ?? 0,
                   },
                   {
                     title: "Restarts:",
-                    value: this.state.statistics.restarts_after_failure,
+                    value: this.state.statistics.restarts_after_failure ?? 0,
                   },
                 ]}
                 columnCount="1"
@@ -208,28 +217,32 @@ class App extends React.Component {
                   {
                     title: "Card Master Reward:",
                     value:
-                      this.state.statistics.card_mastery_reward_collections,
+                      this.state.statistics.card_mastery_reward_collections ??
+                      0,
                   },
                   {
                     title: "Battlepass Reward:",
-                    value: this.state.statistics.battlepass_rewards_collections,
+                    value:
+                      this.state.statistics.battlepass_rewards_collections ?? 0,
                   },
                   {
                     title: "Lvl Up Chest:",
-                    value: this.state.statistics.level_up_chest_collections,
+                    value:
+                      this.state.statistics.level_up_chest_collections ?? 0,
                   },
                   {
                     title: "Free Offer:",
-                    value: this.state.statistics.free_offer_collections,
+                    value: this.state.statistics.free_offer_collections ?? 0,
                   },
                   {
                     title: "War Chest:",
-                    value: this.state.statistics.war_chest_collections,
+                    value: this.state.statistics.war_chest_collections ?? 0,
                   },
                   {
                     title: "Daily Challenge:",
                     value:
-                      this.state.statistics.daily_challenge_reward_collections,
+                      this.state.statistics
+                        .daily_challenge_reward_collections ?? 0,
                   },
                 ]}
                 columnCount="1"
@@ -238,8 +251,7 @@ class App extends React.Component {
           </div>
           <input
             className="status"
-            placeholder="Idle"
-            value={this.state.output}
+            value={this.state.output ?? "Idle"}
             readOnly
           />
         </div>
