@@ -275,7 +275,7 @@ def handle_war_loot_chest():
 
         # skip thru chest
         print("Skipping thru war chest rewards...")
-        click(20, 450, clicks=10, interval=0.33)
+        click(20, 450, clicks=20, interval=1)
         time.sleep(1)
 
         print("Done handling war chest...")
