@@ -16,7 +16,6 @@ logger = Logger()
 # Define route to start thread
 @app.route("/start-thread", methods=["POST"])
 def start_thread():
-
     try:
         global thread
         if request.json is not None and thread is None:
@@ -69,4 +68,15 @@ def heartbeat():
 
 
 http_server = WSGIServer(("127.0.0.1", 1357), app)
-http_server.serve_forever()
+
+try:
+    http_server.serve_forever()
+except KeyboardInterrupt:
+    print("Shutting down server")
+    http_server.stop()
+    if thread is not None:
+        thread.shutdown()
+        thread = None
+        logger = Logger()
+    print("Server shut down")
+    exit(0)
