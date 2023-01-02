@@ -1,3 +1,5 @@
+import signal
+
 from flask import Flask, request
 from flask_cors import CORS
 from gevent.pywsgi import WSGIServer
@@ -21,6 +23,9 @@ def start_thread():
         if request.json is not None and thread is None:
             selected_jobs: list = request.json["selectedJobs"]
             selected_accounts: int = request.json["selectedAccounts"]
+
+            print(type(selected_jobs))
+            print(type(selected_accounts))
 
             args = (selected_jobs, selected_accounts)
 
@@ -67,11 +72,21 @@ def heartbeat():
     return {"status": "listening", "message": "Server running"}
 
 
+class SigTermException(Exception):
+    pass
+
+
+def sigterm_handler(_signo, _stack_frame):
+    # Raises SystemExit(0):
+    raise SigTermException
+
+
 http_server = WSGIServer(("127.0.0.1", 1357), app)
 
 try:
+    signal.signal(signal.SIGTERM, sigterm_handler)
     http_server.serve_forever()
-except KeyboardInterrupt:
+except (KeyboardInterrupt, SigTermException):
     print("Shutting down server")
     http_server.stop()
     if thread is not None:
