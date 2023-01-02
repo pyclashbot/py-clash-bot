@@ -18,7 +18,7 @@ class App extends React.Component {
       selectedAccounts: null,
       statistics: {},
       output: "",
-      thread: null,
+      pollTimer: null,
 
       //backend thread states
       threadStarted: false,
@@ -51,6 +51,21 @@ class App extends React.Component {
       this.startReadFromServerTimer();
     } catch (err) {
       // Handle error
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(err.response.data);
+        console.log(err.response.status);
+        console.log(err.response.headers);
+      } else if (err.request) {
+        // The request was made but no response was received
+        // `err.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(err.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", err.message);
+      }
     }
   };
 
@@ -63,7 +78,7 @@ class App extends React.Component {
     }, 3000); // Read from server every 3 seconds
 
     // Save timer to state
-    this.setState({ thread: timer });
+    this.setState({ pollTimer: timer });
   };
 
   stopThread = async () => {
@@ -73,10 +88,25 @@ class App extends React.Component {
 
       this.setState({ threadStarted: false });
       // Clear timer
-      clearInterval(this.state.thread);
-      this.setState({ thread: null });
+      clearInterval(this.state.pollTimer);
+      this.setState({ pollTimer: null });
     } catch (err) {
       // Handle error
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(err.response.data);
+        console.log(err.response.status);
+        console.log(err.response.headers);
+      } else if (err.request) {
+        // The request was made but no response was received
+        // `err.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(err.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", err.message);
+      }
     }
   };
 
@@ -86,10 +116,25 @@ class App extends React.Component {
       const res = await axios.get(FLASK_BASE_URL + "/output");
 
       // Update output with response data
-      this.setState({ statistics: res.data.statistics });
-      this.setState({ output: res.data.message });
+      this.setState({ statistics: res.data.statistics ?? {} });
+      this.setState({ output: res.data.message ?? "Waiting for response..." });
     } catch (err) {
       // Handle error
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(err.response.data);
+        console.log(err.response.status);
+        console.log(err.response.headers);
+      } else if (err.request) {
+        // The request was made but no response was received
+        // `err.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(err.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", err.message);
+      }
     }
   };
 
