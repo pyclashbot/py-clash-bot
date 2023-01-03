@@ -5,11 +5,9 @@ function ThreadTimer({ isActive }) {
 
   useEffect(() => {
     let interval = null;
-    console.log("Timer effected");
     if (isActive) {
       interval = setInterval(() => {
         setTime((time) => time + 100);
-        console.log("Timer ticked");
       }, 100);
     } else {
       clearInterval(interval);
