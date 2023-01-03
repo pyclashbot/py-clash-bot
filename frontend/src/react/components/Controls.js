@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import AccountDropDown from "./AccountDropDown";
 import JobDropDown from "./JobDropDown";
 
-function Controls({ startThread, stopThread, threadStarted, threadPaused }) {
+function Controls({
+  startThread,
+  stopThread,
+  pauseThreadToggle,
+  threadStarted,
+  threadPaused,
+}) {
   const [selectedJobs, setJobs] = useState(null);
   const [selectedAccounts, setAccounts] = useState(null);
   return (
@@ -34,8 +40,12 @@ function Controls({ startThread, stopThread, threadStarted, threadPaused }) {
         >
           Start
         </button>
-        <button disabled={!threadStarted} style={{ flexGrow: 1 }}>
-          {!threadPaused ? "Pause" : "resume"}
+        <button
+          onClick={pauseThreadToggle}
+          disabled={!threadStarted}
+          style={{ flexGrow: 1 }}
+        >
+          {!threadPaused ? "Pause" : "Resume"}
         </button>
         <button
           onClick={stopThread}

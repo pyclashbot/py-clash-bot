@@ -70,27 +70,49 @@ def stop_thread():
     global thread, thread_logger
     if thread is not None:
         thread.shutdown()
-        thread = None
-        thread_logger = Logger()
 
     # Return success response
-    return {"status": "stopped", "message": "Thread stopped"}
+    return {"status": "stopping", "message": "Stopping thread"}
+
+
+# Define route to pause thread
+@app.route("/toggle-pause-thread", methods=["GET"])
+def pause_thread():
+    # Pause thread
+    global thread
+    if thread is not None:
+        paused: bool = thread.toggle_pause()
+        if paused:
+            return {"status": "paused", "message": "Paused thread"}
+        return {"status": "resumed", "message": "Resuming thread"}
+    return {"status": "stopped", "message": "No thread running"}
 
 
 @app.route("/output")
 def handle_output():
-    # read the value of the mutex output on the thread object
-    stats = thread_logger.get_stats()
-    if thread is not None and stats is not None:
-        if thread_logger.errored:
-            stop_thread()
-            app.logger.warning("Thread errored: %s", stats["current_status"])
-            return {"status": "errored", "message": f"Error: {stats['current_status']}"}
-        return {
-            "status": "running",
-            "message": f"{stats['current_status']}",
-            "statistics": stats,
-        }
+    global thread, thread_logger
+    if thread is not None:
+        if thread.shutdown_flag.is_set() and not thread.is_alive():
+            return {"status": "stopped", "message": "Idle"}
+        # read the value of the mutex output on the thread object
+        stats = thread_logger.get_stats()
+        if stats is not None:
+            if thread_logger.errored:
+                stop_thread()
+                app.logger.warning("Thread errored: %s", stats["current_status"])
+                return {
+                    "status": "errored",
+                    "message": f"Error: {stats['current_status']}",
+                }
+            if thread.shutdown_flag.is_set() and thread.is_alive():
+                stats[
+                    "current_status"
+                ] = f"Waiting for: {stats['current_status']} to stop"
+            return {
+                "status": "running",
+                "message": f"{stats['current_status']}",
+                "statistics": stats,
+            }
     app.logger.info("No thread running")
     return {"status": "stopped", "message": "No thread running", "statistics": {}}
 

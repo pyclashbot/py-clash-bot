@@ -10,6 +10,7 @@ import Output from "./components/Output";
 import {
   startThread,
   stopThread,
+  pauseThreadToggle,
   readFromServer,
 } from "./functions/threadCommunication";
 
@@ -65,6 +66,23 @@ class App extends React.Component {
     this.setState({ pollTimer: null });
   };
 
+  pauseThreadToggle = async () => {
+    const data = await pauseThreadToggle();
+    // if data.status is "stopped", then thread is stopped and not paused
+    // if data.status is "paused", then thread is paused
+    // if data.status is "resumed", then thread is not paused
+    this.setState({
+      threadPaused: data.status === "paused" && data.status !== "resumed",
+    });
+
+    if (data.status === "stopped") {
+      clearInterval(this.state.pollTimer);
+      this.setState({ pollTimer: null });
+      this.setState({ threadStarted: false });
+      this.setState({ threadPaused: false });
+    }
+  };
+
   render() {
     return (
       <div className="AppContainer">
@@ -86,6 +104,7 @@ class App extends React.Component {
           <Controls
             startThread={this.startThread}
             stopThread={this.stopThread}
+            pauseThreadToggle={this.pauseThreadToggle}
             threadStarted={this.state.threadStarted}
             threadPaused={this.state.threadPaused}
           />
