@@ -48,6 +48,12 @@ class App extends React.Component {
   readFromServer = async () => {
     const data = await readFromServer();
 
+    if (data.status === "stopped" || data.status === "errored") {
+      // Stop timer if thread is stopped
+      clearInterval(this.state.pollTimer);
+      this.setState({ pollTimer: null });
+      this.setState({ threadStarted: false });
+    }
     this.setState({ statistics: data.statistics ?? {} });
     this.setState({ output: data.message ?? "Waiting for response..." });
   };

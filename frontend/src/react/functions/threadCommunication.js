@@ -64,7 +64,7 @@ export const readFromServer = async () => {
     // Make GET request to read from server
     const res = await axios.get(BACKEND_BASE_URL + "/output");
 
-    return res.data;
+    return res.data ?? {};
   } catch (err) {
     // Handle error
     if (err.response) {
