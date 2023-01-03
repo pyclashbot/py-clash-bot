@@ -113,7 +113,7 @@ button:hover:enabled {
 }
 
 .output-block {
-  margin: 3px 0 0 0;
+  margin: 3px 0 0;
   display: flex;
 }
 
