@@ -92,7 +92,7 @@ export default class AccountDropDown extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedOptions: [],
+      selectedOptions: this.props.selectedOptions,
     };
   }
 

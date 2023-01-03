@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AccountDropDown from "./AccountDropDown";
 import JobDropDown from "./JobDropDown";
+const { ipcRenderer } = window.require("electron");
 
 function Controls({
   startThread,
@@ -10,8 +11,18 @@ function Controls({
   threadStarted,
   threadPaused,
 }) {
-  const [selectedJobs, setJobs] = useState(null);
-  const [selectedAccounts, setAccounts] = useState(null);
+  let savedSettings = ipcRenderer.sendSync("load-settings");
+  const [selectedJobs, setJobs] = useState(savedSettings?.selectedJobs);
+  const [selectedAccounts, setAccounts] = useState(
+    savedSettings?.selectedAccounts
+  );
+  useEffect(() => {
+    ipcRenderer.send("save-settings", {
+      selectedJobs,
+      selectedAccounts,
+    });
+  }, [selectedJobs, selectedAccounts]);
+
   return (
     <>
       <div

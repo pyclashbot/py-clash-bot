@@ -160,7 +160,7 @@ export default class JobDropDown extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedOptions: [],
+      selectedOptions: this.props.selectedOptions,
     };
   }
 
