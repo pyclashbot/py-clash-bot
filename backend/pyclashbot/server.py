@@ -23,12 +23,7 @@ def start_thread():
         if request.json is not None and thread is None:
             selected_jobs: list = request.json["selectedJobs"]
             selected_accounts: int = request.json["selectedAccounts"]
-
-            print(type(selected_jobs))
-            print(type(selected_accounts))
-
             args = (selected_jobs, selected_accounts)
-
             thread = WorkerThread(logger, args)
             thread.start()
 
