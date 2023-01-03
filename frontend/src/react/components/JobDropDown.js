@@ -94,7 +94,7 @@ const joblistStyles = {
   }),
   menuList: (styles) => ({
     ...styles,
-    maxHeight: 150,
+    maxHeight: 140,
     overflowY: "scroll",
   }),
 };
