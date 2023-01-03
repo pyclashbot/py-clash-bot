@@ -39,8 +39,8 @@ def state_tree(
     ssid_max: int,
     ssid: int,
     state: str,
-    ssid_order_list: list[int],
-) -> tuple[str, int]:
+    ssid_order_list: list[int] | None,
+) -> tuple[str, int, list[int] | None]:
     """
     Method for the state tree of the program
 
@@ -197,29 +197,27 @@ def state_account_switching(
     ssid_index,
     ssid_max,
     ssid_order_list,
-):
+) -> tuple[Literal["chest_reward_collection", "account_switching"], int, list[int]]:
 
     logger.change_status("Switching accounts. . .")
 
     # if order list is empty, make a new one
-    if ssid_order_list == [] or ssid_order_list == None:
+    if ssid_order_list == [] or ssid_order_list is None:
         print("ssid_order_list is empty or None. Making new list.")
         ssid_order_list = make_random_ssid_list(ssid_max)
         print("New list is: ", ssid_order_list)
         ssid_index = 0
 
     # if only 1 account selected, skip account switching
-    if ssid_max < 2:
+    if ssid_max <= 1:
         print("only 1 account selected so skipping accuont switch entirely")
         return "chest_reward_collection", ssid_index, ssid_order_list
-
     # get to this account
     print("account selection range is: 0-", (ssid_max - 1))
     if get_to_account(logger, account_number=ssid_order_list[ssid_index]) == "restart":
         print("Failure with get_to_account() in state_clashmain()")
         return "chest_reward_collection", ssid_index, ssid_order_list
-    else:
-        ssid_index += 1
+    ssid_index += 1
 
     # if at maximum index, make a new list, and reset to 0
     print("current ssid_index is: ", ssid_index)
