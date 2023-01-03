@@ -1,5 +1,4 @@
 import React from "react";
-import jQuery from "jquery";
 
 import "./App.css";
 import JobDropDown from "./components/JobDropDown";
@@ -7,6 +6,7 @@ import AccountDropDown from "./components/AccountDropDown";
 import BoxFrame from "./components/BoxFrame";
 import StatsGrid from "./components/StatsGrid";
 import AppHeader from "./components/AppHeader";
+import ThreadTimer from "./components/ThreadTimer";
 
 import {
   startThread,
@@ -21,7 +21,6 @@ class App extends React.Component {
       selectedJobs: [],
       selectedAccounts: null,
       statistics: {},
-      output: "",
       pollTimer: null,
 
       //backend thread states
@@ -36,15 +35,16 @@ class App extends React.Component {
     const selectedAccounts = this.state.selectedAccounts.value;
     const data = await startThread(selectedJobs, selectedAccounts);
 
-    this.setState({ threadStarted: !jQuery.isEmptyObject(data) });
+    this.setState({ threadStarted: data.status === "started"});
     this.setState({ output: data.message ?? "" });
+
     const timer = setInterval(() => {
       this.readFromServer().catch(() => {
         // Stop timer if reading from server fails
         clearInterval(timer);
         this.setState({ threadStarted: false });
       });
-    }, 3000); // Read from server every 3 seconds
+    }, 1000); // Read from server every second
 
     // Save timer to state
     this.setState({ pollTimer: timer });
@@ -200,11 +200,14 @@ class App extends React.Component {
               />
             </BoxFrame>
           </div>
-          <input
-            className="status"
-            value={this.state.output ?? "Idle"}
-            readOnly
-          />
+          <div className="output-block">
+            <ThreadTimer isActive={this.state.threadStarted} />
+            <input
+              className="status"
+              value={this.state.output ?? "Idle"}
+              readOnly
+            />
+          </div>
         </div>
       </div>
     );

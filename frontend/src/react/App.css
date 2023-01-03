@@ -112,9 +112,13 @@ button:hover:enabled {
   -moz-box-shadow: -2px -2px 0px #000000, 2px 2px 0px #FFFFFF;
 }
 
+.output-block {
+  margin: 3px 0 0 0;
+  display: flex;
+}
+
 .status {
-  margin-top: 10px;
-  width: 98%;
+  flex-grow: 1;
   box-shadow: -1px -1px 0px #5f5f5f, 1px 1px 0px #FFFFFF;
   -webkit-box-shadow: -1px -1px 0px #5f5f5f, 1px 1px 0px #FFFFFF;
   -moz-box-shadow: -1px -1px 0px #5f5f5f, 1px 1px 0px #FFFFFF;
