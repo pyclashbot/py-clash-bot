@@ -161,7 +161,7 @@ def find_random_card_coord():
     index = 0
     for _ in range(3):
         # randomize region list
-        this_random_region_list: list[tuple[int]] = random.sample(
+        this_random_region_list: list[tuple[int, int, int, int]] = random.sample(
             region_list, len(region_list)
         )
         for region in this_random_region_list:
