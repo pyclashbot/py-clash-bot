@@ -57,9 +57,9 @@ const Header = () => {
             userSelect: "none",
           }}
         >
-          <div style={{ display: "flex", alignItems:"center"}}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             <img src={logo} alt="logo" style={{ height: "21px" }} />
-            <div style={{paddingLeft:"3px"}}>py-clash-bot</div>
+            <div style={{ paddingLeft: "3px" }}>py-clash-bot</div>
           </div>
         </div>
         <div style={{ marginRight: "5px" }}>
