@@ -27,8 +27,9 @@ build_exe_options = {
 
 exe = Executable(
     script="pyclashbot\\server.py",
-    base="Win32GUI",  # none for debugging
+    base=None,
     target_name=f"{PRODUCT_NAME}_back.exe",
+    uac_admin=True,
 )
 
 setup(

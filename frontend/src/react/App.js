@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import jQuery from "jquery";
 
 import "./App.css";
 import JobDropDown from "./components/JobDropDown";
@@ -8,7 +8,11 @@ import BoxFrame from "./components/BoxFrame";
 import StatsGrid from "./components/StatsGrid";
 import AppHeader from "./components/AppHeader";
 
-const FLASK_BASE_URL = "http://localhost:1357";
+import {
+  startThread,
+  stopThread,
+  readFromServer,
+} from "./functions/threadCommunication";
 
 class App extends React.Component {
   constructor(props) {
@@ -27,53 +31,18 @@ class App extends React.Component {
   }
 
   startThread = async () => {
-    try {
-      // parse out only the value of the selected jobs
-      const selectedJobs = this.state.selectedJobs.map((job) => job.value);
-      const selectedAccounts = this.state.selectedAccounts.value;
+    // parse out only the value of the selected jobs
+    const selectedJobs = this.state.selectedJobs.map((job) => job.value);
+    const selectedAccounts = this.state.selectedAccounts.value;
+    const data = await startThread(selectedJobs, selectedAccounts);
 
-      // Make POST request to start thread
-      const res = await axios.post(
-        FLASK_BASE_URL + "/start-thread",
-        {
-          selectedJobs: selectedJobs,
-          selectedAccounts: selectedAccounts,
-        },
-        { withCredentials: true }
-      );
-
-      this.setState({ threadStarted: true });
-
-      // Update output with response message
-      this.setState({ output: res.data.message });
-
-      // Start timer to periodically read from server
-      this.startReadFromServerTimer();
-    } catch (err) {
-      // Handle error
-      if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(err.response.data);
-        console.log(err.response.status);
-        console.log(err.response.headers);
-      } else if (err.request) {
-        // The request was made but no response was received
-        // `err.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(err.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error", err.message);
-      }
-    }
-  };
-
-  startReadFromServerTimer = () => {
+    this.setState({ threadStarted: !jQuery.isEmptyObject(data) });
+    this.setState({ output: data.message ?? "" });
     const timer = setInterval(() => {
       this.readFromServer().catch(() => {
         // Stop timer if reading from server fails
         clearInterval(timer);
+        this.setState({ threadStarted: false });
       });
     }, 3000); // Read from server every 3 seconds
 
@@ -82,60 +51,17 @@ class App extends React.Component {
   };
 
   stopThread = async () => {
-    try {
-      // Make GET request to stop thread
-      await axios.get(FLASK_BASE_URL + "/stop-thread");
-
-      this.setState({ threadStarted: false });
-      // Clear timer
-      clearInterval(this.state.pollTimer);
-      this.setState({ pollTimer: null });
-    } catch (err) {
-      // Handle error
-      if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(err.response.data);
-        console.log(err.response.status);
-        console.log(err.response.headers);
-      } else if (err.request) {
-        // The request was made but no response was received
-        // `err.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(err.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error", err.message);
-      }
-    }
+    await stopThread();
+    this.setState({ threadStarted: false });
+    clearInterval(this.state.pollTimer);
+    this.setState({ pollTimer: null });
   };
 
   readFromServer = async () => {
-    try {
-      // Make GET request to read from server
-      const res = await axios.get(FLASK_BASE_URL + "/output");
+    const data = await readFromServer();
 
-      // Update output with response data
-      this.setState({ statistics: res.data.statistics ?? {} });
-      this.setState({ output: res.data.message ?? "Waiting for response..." });
-    } catch (err) {
-      // Handle error
-      if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(err.response.data);
-        console.log(err.response.status);
-        console.log(err.response.headers);
-      } else if (err.request) {
-        // The request was made but no response was received
-        // `err.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(err.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error", err.message);
-      }
-    }
+    this.setState({ statistics: data.statistics ?? {} });
+    this.setState({ output: data.message ?? "Waiting for response..." });
   };
 
   updateSelectedJobs = (selectedJobs) => {
