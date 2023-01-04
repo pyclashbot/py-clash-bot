@@ -256,7 +256,7 @@ def state_chest_reward_collection(
 
 def state_free_offer_collection(
     logger,
-) -> Literal["restart", "daily_challenge_reward_collection"]:
+) -> Literal["restart", "bannerbox_collection"]:
     print("state is :state_free_offer_collection")
 
     if collect_free_offer_from_shop(logger) == "restart":
@@ -442,7 +442,6 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 
 # FOR OBS RECORDING OF ERRORS
 def clip_that():
-    import pyautogui
 
     print("Saving a clip...")
 
@@ -455,15 +454,13 @@ def make_random_ssid_list(max_ssid):
     ssid_list = []
     for n in range(max_ssid):
         ssid_list.append(n)
-    list = randomize_list(ssid_list)
-    list = randomize_list(ssid_list)
-    list = randomize_list(ssid_list)
-    return list
+    new_list = randomize_list(ssid_list)
+    return new_list
 
 
 # method to randomize a given list of ints
-def randomize_list(list):
-    randomized_list = list.copy()
+def randomize_list(list_to_randomize):
+    randomized_list = list_to_randomize.copy()
     for i in range(len(randomized_list)):
         random_index = random.randint(0, len(randomized_list) - 1)
         randomized_list[i], randomized_list[random_index] = (
