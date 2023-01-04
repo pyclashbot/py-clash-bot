@@ -408,6 +408,10 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
     print("Coutning maximum scrolls for deck randomization.")
     maximum_scrolls = count_scrolls_in_card_page(logger)
 
+    if maximum_scrolls == "restart":
+        print("Failure with count_scrolls_in_card_page")
+        return "restart"
+
     # for each card slot, replace with random card
     print("Starting card replacement loop")
     for card_to_replace_coord in card_coord_list:
