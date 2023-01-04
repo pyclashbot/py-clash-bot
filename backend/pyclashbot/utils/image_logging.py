@@ -1,11 +1,12 @@
 import os
-import time
+
+from pyclashbot.memu.client import screenshot
 
 MAX_FILE_COUNT = 100
 
 # method to get this file location
 def get_image_log_directory():
-    return os.path.dirname(os.path.realpath(__file__)) + "\image_log"
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "image_log")
 
 
 # method to delete all files in a given directory
