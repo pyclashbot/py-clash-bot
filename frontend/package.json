@@ -43,13 +43,12 @@
     "axios": "^1.2.2",
     "chroma-js": "^2.4.2",
     "electron-is-dev": "^2.0.0",
-    "glob": "^8.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.0",
     "uuid": "^9.0.0",
-    "web-vitals": "^3.1.0"
+    "winreg": "^1.2.4"
   },
   "devDependencies": {
     "concurrently": "^7.6.0",
@@ -110,6 +109,7 @@
       "installerLanguages": [
         "en_US"
       ],
+      "include": "./util/NSIS/installer.nsh",
       "guid": "494bebef-6fc5-42e5-98c8-d0b2e339750e"
     },
     "afterPack": "./util/removeLocales.js"
