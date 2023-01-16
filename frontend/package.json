@@ -53,7 +53,7 @@
   "devDependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "electron": "^22.0.0",
+    "electron": "^22.0.2",
     "electron-builder": "^23.6.0",
     "eslint-config-react-app": "^7.0.1",
     "wait-on": "^7.0.1"
