@@ -30,9 +30,9 @@ export default class ReleaseUpdate extends Component {
           const dateDiff = new Date() - new Date(data.assets[0].updated_at);
           // eslint-disable-next-line eqeqeq
           let daysAgo = (dateDiff / oneDay).toFixed();
-          daysAgo = `${daysAgo} ${daysAgo == 1 ? 'day' : 'days'} ago`;
+          daysAgo = `${daysAgo} ${daysAgo === 1 ? 'day' : 'days'} ago`;
           let hoursAgo = (dateDiff / oneHour).toFixed();
-          hoursAgo = `${hoursAgo} ${hoursAgo == 1 ? 'hour' : 'hours'} ago`;
+          hoursAgo = `${hoursAgo} ${hoursAgo === 1 ? 'hour' : 'hours'} ago`;
           const timeAgo = dateDiff < oneDay ? hoursAgo : daysAgo;
           this.setState({last_updated: timeAgo});
         });
