@@ -80,6 +80,9 @@ def collect_battlepass_rewards(logger):
         for coord in chest_locations:
             click(coord[0], coord[1], duration=0.1)
 
+        # close 'buy battlepass' popup that occurs on accounts without battlepass
+        click(353, 153)
+
         # click deadspace
         click(20, 440, duration=0.1, clicks=15, interval=0.33)
 

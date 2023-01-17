@@ -83,7 +83,7 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     time.sleep(1)
 
     print(f"Counted scrolls: {count}")
-    return 0 if count == 0 else count - 1
+    return 1 if count == 0 else count - 1
 
 
 #### detection methods
@@ -92,76 +92,76 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 def find_random_card_coord():
     region_list = [
         # cover the region that cards' elixer values can appear in once
-        [50, 180, 50, 50],
-        [100, 180, 50, 50],
-        [150, 180, 50, 50],
-        [200, 180, 50, 50],
-        [250, 180, 50, 50],
-        [300, 180, 50, 50],
-        [350, 180, 50, 50],
-        [50, 230, 50, 50],
-        [100, 230, 50, 50],
-        [150, 230, 50, 50],
-        [200, 230, 50, 50],
-        [250, 230, 50, 50],
-        [300, 230, 50, 50],
-        [350, 230, 50, 50],
-        [50, 280, 50, 50],
-        [100, 280, 50, 50],
-        [150, 280, 50, 50],
-        [200, 280, 50, 50],
-        [250, 280, 50, 50],
-        [300, 280, 50, 50],
-        [350, 280, 50, 50],
-        [50, 330, 50, 50],
-        [100, 330, 50, 50],
-        [150, 330, 50, 50],
-        [200, 330, 50, 50],
-        [250, 330, 50, 50],
-        [300, 330, 50, 50],
-        [350, 330, 50, 50],
-        [50, 380, 50, 50],
-        [100, 380, 50, 50],
-        [150, 380, 50, 50],
-        [200, 380, 50, 50],
-        [250, 380, 50, 50],
-        [300, 380, 50, 50],
-        [350, 380, 50, 50],
-        [50, 430, 50, 50],
-        [100, 430, 50, 50],
-        [150, 430, 50, 50],
-        [200, 430, 50, 50],
-        [250, 430, 50, 50],
-        [300, 430, 50, 50],
-        [350, 430, 50, 50],
+        (50, 180, 50, 50),
+        (100, 180, 50, 50),
+        (150, 180, 50, 50),
+        (200, 180, 50, 50),
+        (250, 180, 50, 50),
+        (300, 180, 50, 50),
+        (350, 180, 50, 50),
+        (50, 230, 50, 50),
+        (100, 230, 50, 50),
+        (150, 230, 50, 50),
+        (200, 230, 50, 50),
+        (250, 230, 50, 50),
+        (300, 230, 50, 50),
+        (350, 230, 50, 50),
+        (50, 280, 50, 50),
+        (100, 280, 50, 50),
+        (150, 280, 50, 50),
+        (200, 280, 50, 50),
+        (250, 280, 50, 50),
+        (300, 280, 50, 50),
+        (350, 280, 50, 50),
+        (50, 330, 50, 50),
+        (100, 330, 50, 50),
+        (150, 330, 50, 50),
+        (200, 330, 50, 50),
+        (250, 330, 50, 50),
+        (300, 330, 50, 50),
+        (350, 330, 50, 50),
+        (50, 380, 50, 50),
+        (100, 380, 50, 50),
+        (150, 380, 50, 50),
+        (200, 380, 50, 50),
+        (250, 380, 50, 50),
+        (300, 380, 50, 50),
+        (350, 380, 50, 50),
+        (50, 430, 50, 50),
+        (100, 430, 50, 50),
+        (150, 430, 50, 50),
+        (200, 430, 50, 50),
+        (250, 430, 50, 50),
+        (300, 430, 50, 50),
+        (350, 430, 50, 50),
         # cover the region that cards' elixer values can appear in twice (this time with different increments of regions)
-        [50, 130, 81, 71],
-        [131, 130, 81, 71],
-        [212, 130, 81, 71],
-        [293, 130, 81, 71],
-        [50, 275, 81, 71],
-        [50, 346, 81, 71],
-        [50, 417, 81, 71],
-        [50, 488, 81, 71],
-        [131, 275, 81, 71],
-        [131, 346, 81, 71],
-        [131, 417, 81, 71],
-        [131, 488, 81, 71],
-        [212, 275, 81, 71],
-        [212, 346, 81, 71],
-        [212, 417, 81, 71],
-        [212, 488, 81, 71],
-        [293, 275, 81, 71],
-        [293, 346, 81, 71],
-        [293, 417, 81, 71],
-        [293, 488, 81, 71],
+        (50, 130, 81, 71),
+        (131, 130, 81, 71),
+        (212, 130, 81, 71),
+        (293, 130, 81, 71),
+        (50, 275, 81, 71),
+        (50, 346, 81, 71),
+        (50, 417, 81, 71),
+        (50, 488, 81, 71),
+        (131, 275, 81, 71),
+        (131, 346, 81, 71),
+        (131, 417, 81, 71),
+        (131, 488, 81, 71),
+        (212, 275, 81, 71),
+        (212, 346, 81, 71),
+        (212, 417, 81, 71),
+        (212, 488, 81, 71),
+        (293, 275, 81, 71),
+        (293, 346, 81, 71),
+        (293, 417, 81, 71),
+        (293, 488, 81, 71),
     ]
 
     # loop through the region list in random order 3 times
     index = 0
     for _ in range(3):
         # randomize region list
-        this_random_region_list: list[list[int]] = random.sample(
+        this_random_region_list: list[tuple[int, int, int, int]] = random.sample(
             region_list, len(region_list)
         )
         for region in this_random_region_list:
@@ -364,7 +364,9 @@ def randomize_and_select_deck_2(logger):
 
     # get to card page
     print("Getting to card page to randomize deck.")
-    get_to_card_page(logger)
+    if get_to_card_page(logger) == "restart":
+        print("failure with get_to_card_page")
+        return "restart"
     print("Done getting to card page to randomize deck.")
 
     # click deck 2
@@ -405,6 +407,10 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
     # count maximum scrolls
     print("Coutning maximum scrolls for deck randomization.")
     maximum_scrolls = count_scrolls_in_card_page(logger)
+
+    if maximum_scrolls == "restart":
+        print("Failure with count_scrolls_in_card_page")
+        return "restart"
 
     # for each card slot, replace with random card
     print("Starting card replacement loop")
@@ -472,12 +478,21 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
 
             # find a random card on this page
             replacement_card_coord = find_random_card_coord()
+
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
                 if get_to_clash_main_from_card_page(logger) == "restart":
                     return "restart"
                 else:
                     return
+
+            # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
+            if replacement_card_coord[1] < 200:
+                print("replacement_card_coord is too high on the screen. trying again")
+                if random.randint(1, 2) == 2:
+                    loops -= 1
+                continue
+
             click(replacement_card_coord[0], replacement_card_coord[1])
             time.sleep(1)
 
