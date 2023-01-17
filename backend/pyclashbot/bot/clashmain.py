@@ -27,6 +27,7 @@ from pyclashbot.memu.client import (
     scroll_down_fast,
 )
 from pyclashbot.utils.logger import Logger
+from pyclashbot.utils.ssid_account_logging import add_this_ssid_to_log
 
 ahk = AHK()
 logger = Logger()
@@ -156,9 +157,7 @@ def get_to_account(logger, account_number):
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
     # Account number is ints 0-3 for the first 4 accounts
-    logger.change_status(
-        f"Switching accounts to account number {str(account_number)}, (0-7)"
-    )
+    logger.change_status(f"Switching accounts to account number {str(account_number)}")
 
     # open settings
     print("Opening settings tab from clash main to get to account switch")
@@ -170,38 +169,40 @@ def get_to_account(logger, account_number):
 
     print("getting to then clicking the appropriate account")
 
+    add_this_ssid_to_log(str(account_number))
+
     if account_number == 0:
         click(155, 350)
 
-    if account_number == 1:
+    elif account_number == 1:
         click(190, 420)
 
-    if account_number == 2:
+    elif account_number == 2:
         click(230, 510)
 
-    if account_number == 3:
+    elif account_number == 3:
         click(230, 595)
 
-    if account_number == 4:
+    elif account_number == 4:
         # scroll then click
         scroll_down_fast()
         click(170, 640)
 
-    if account_number == 5:
+    elif account_number == 5:
         # scroll then click
         for _ in range(4):
             scroll_down_fast()
             time.sleep(0.5)
         click(230, 585)
 
-    if account_number == 6:
+    elif account_number == 6:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
             time.sleep(0.5)
         click(240, 550)
 
-    if account_number == 7:
+    elif account_number == 7:
         # scroll then click
         for _ in range(7):
             scroll_down_fast()
@@ -309,13 +310,14 @@ def wait_for_battle_start(logger):
     # Method to wait for a the loading sequence of a battle to finish
 
     logger.change_status("Waiting for battle start. . .")
-    in_battle = False
 
     start_time = time.time()
 
+    wait_time = 60
+
     while not check_if_in_battle_with_delay():
-        if time.time() - start_time > 30:
-            logger.change_status("Waited longer than 30 sec for a fight")
+        if time.time() - start_time > wait_time:
+            logger.change_status(f"Waited longer than {wait_time} sec for a fight")
             return "restart"
 
 
