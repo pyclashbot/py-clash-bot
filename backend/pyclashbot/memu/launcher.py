@@ -370,9 +370,9 @@ def check_if_on_clash_main_menu():
         # print("gem fail")
         return False
 
-    if not check_for_blue_background_on_main():
-        # print("blue fail")
-        return False
+    # if not check_for_blue_background_on_main():
+    #     # print("blue fail")
+    #     return False
 
     if not check_for_friends_logo_on_main():
         # print("friends logo")
