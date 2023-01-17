@@ -1,10 +1,9 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {handleDownload} from '../../GoogleAnalytics';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { handleDownload } from "../../GoogleAnalytics";
 
 const API_URL =
-  'https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest';
-
+  "https://api.github.com/repos/matthewmiglio/py-clash-bot/releases/latest";
 
 /**
  * Component for latest release download link
@@ -17,7 +16,8 @@ export default class ReleaseLink extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      release_url: [],
+      release_url:
+        "https://github.com/matthewmiglio/py-clash-bot/releases/latest",
     };
   }
   /**
@@ -25,10 +25,10 @@ export default class ReleaseLink extends Component {
    */
   getLatestReleaseInfo() {
     fetch(API_URL)
-        .then((response) => response.json())
-        .then((data) => {
-          this.setState({release_url: data.assets[0].browser_download_url});
-        });
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ release_url: data.assets[0].browser_download_url });
+      });
   }
   /**
    * on mount get release info
