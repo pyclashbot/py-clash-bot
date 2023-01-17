@@ -99,34 +99,33 @@ class Logger:
 
     def _update_stats(self):
         """updates the stats with a dictionary of mutable statistics"""
-        self.stats_mutex.acquire()
-        self.stats = {
-            "wins": self.wins,
-            "losses": self.losses,
-            "fights": self.fights,
-            "requests": self.requests,
-            "auto_restarts": self.auto_restarts,
-            "restarts_after_failure": self.restarts_after_failure,
-            "chests_unlocked": self.chests_unlocked,
-            "cards_played": self.cards_played,
-            "cards_upgraded": self.cards_upgraded,
-            "account_switches": self.account_switches,
-            "card_mastery_reward_collections": self.card_mastery_reward_collections,
-            "battlepass_rewards_collections": self.battlepass_rewards_collections,
-            "level_up_chest_collections": self.level_up_chest_collections,
-            "war_battles_fought": self.war_battles_fought,
-            "free_offer_collections": self.free_offer_collections,
-            "daily_challenge_reward_collections": self.daily_challenge_reward_collections,
-            "current_status": self.current_status,
-            "time_since_start": self.calc_time_since_start(),
-        }
-        self.stats_mutex.release()
+        with self.stats_mutex:
+            self.stats = {
+                "wins": self.wins,
+                "losses": self.losses,
+                "fights": self.fights,
+                "requests": self.requests,
+                "auto_restarts": self.auto_restarts,
+                "restarts_after_failure": self.restarts_after_failure,
+                "chests_unlocked": self.chests_unlocked,
+                "cards_played": self.cards_played,
+                "cards_upgraded": self.cards_upgraded,
+                "account_switches": self.account_switches,
+                "card_mastery_reward_collections": self.card_mastery_reward_collections,
+                "battlepass_rewards_collections": self.battlepass_rewards_collections,
+                "level_up_chest_collections": self.level_up_chest_collections,
+                "war_battles_fought": self.war_battles_fought,
+                "free_offer_collections": self.free_offer_collections,
+                "daily_challenge_reward_collections": self.daily_challenge_reward_collections,
+                "war_chest_collections": self.war_chest_collections,
+                "current_status": self.current_status,
+                "time_since_start": self.calc_time_since_start(),
+            }
 
     def get_stats(self):
         """get stats"""
-        self.stats_mutex.acquire()
-        stats = self.stats
-        self.stats_mutex.release()
+        with self.stats_mutex:
+            stats = self.stats
         return stats
 
     @staticmethod
