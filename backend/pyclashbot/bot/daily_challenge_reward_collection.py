@@ -86,7 +86,7 @@ def collect_daily_reward(logger, reward_index):
     print("checking for bannerbox inventory full page")
     if check_for_bannerbox_inventory_full_popup():
         print("Bannerbox inventory  full")
-        handle_bannerbox_inventory_full_popup
+        handle_bannerbox_inventory_full_popup()
     else:
         print("Bannerbox inventory not full")
 

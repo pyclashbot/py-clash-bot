@@ -8,7 +8,6 @@ import pygetwindow
 from ahk import AHK
 
 from pyclashbot.utils import setup_ahk
-from pyclashbot.utils.image_logging import save_this_screen_image_to_log
 
 setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
