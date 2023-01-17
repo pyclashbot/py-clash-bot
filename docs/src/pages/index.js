@@ -1,6 +1,9 @@
-import SEO from "../components/SEO";
-import ReadMe from "../components/readme/ReadMe";
+import dynamic from "next/dynamic";
+
 import { initializeGA } from "../GoogleAnalytics";
+
+const SEO = dynamic(() => import("../components/SEO"));
+const ReadMe = dynamic(() => import("../components/readme/ReadMe"));
 
 initializeGA();
 
