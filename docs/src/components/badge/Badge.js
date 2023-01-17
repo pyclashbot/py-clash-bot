@@ -1,33 +1,44 @@
-import React, {Component} from 'react';
-import {handleClick} from '../../GoogleAnalytics';
-import './Badge.css';
+import React, { Component } from "react";
+import { handleClick } from "../../GoogleAnalytics";
 
 /**
  *A component for all the badges
-*/
-export default class Badge extends Component {
-/**
- * react render override
- * @return {JSX.Element}
  */
+export default class Badge extends Component {
+  /**
+   * react render override
+   * @return {JSX.Element}
+   */
   render() {
     return (
-      <h2 className='badge-flex'>
-        <a className='badge' href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml" onClick={handleClick}>
+      <h2 style={{ display: "flex", flexWrap: "wrap", justifyContent: "left" }}>
+        <a
+          style={{ marginRight: "6px" }}
+          href="hhttps://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml"
+          onClick={handleClick}
+        >
           <img
             alt="Build windows package"
             src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml/badge.svg"
             content="no-cache, no-store, must-revalidate"
           />
         </a>
-        <a className='badge' href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml" onClick={handleClick}>
+        <a
+          style={{ marginRight: "6px" }}
+          href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml"
+          onClick={handleClick}
+        >
           <img
             alt="GitHub Python Tests"
             src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg"
             content="no-cache, no-store, must-revalidate"
           />
         </a>
-        <a className='badge' href="https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot" onClick={handleClick}>
+        <a
+          style={{ marginRight: "6px" }}
+          href="https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot"
+          onClick={handleClick}
+        >
           <img
             alt="CodeFactor"
             src="https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge"
