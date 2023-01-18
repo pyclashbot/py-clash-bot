@@ -13,6 +13,7 @@ export default function Home() {
       <Header
         title="py-clash-bot"
         description="A Clash Royale automation bot written in Python"
+        keywords="clash royale, bot, automation, python, py-clash-bot"
       />
       <ReadMe />
     </>
