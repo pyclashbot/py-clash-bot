@@ -41,6 +41,7 @@ export default class Header extends Component {
         <meta property="twitter:description" content={this.state.description} />
         <meta httpEquiv="Cache-Control" content="max-age=86400" />
         <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
+        <meta name="google-site-verification" content="Fimwu5S-RkDYvpJD2yVaGoZYT8ticA_v_V285-5AFqg" />
         <link rel="icon" href={assetPrefix + "/favicon.ico"} />
         <link
           rel="icon"
