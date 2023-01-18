@@ -19,6 +19,7 @@ export default class Header extends Component {
     this.state = {
       title: this.props.title,
       description: this.props.description,
+      keywords: this.props.keywords,
     };
   }
 
@@ -28,6 +29,7 @@ export default class Header extends Component {
         <title>{this.state.title}</title>
         <meta charset="utf-8" />
         <meta name="description" content={this.state.description} />
+        <meta name="keywords" content={this.state.keywords}/>
         <meta property="og:type" content="website" />
         <meta property="og:title" content={this.state.title} />
         <meta property="og:description" content={this.state.description} />
@@ -38,6 +40,7 @@ export default class Header extends Component {
         <meta property="twitter:title" content={this.state.title} />
         <meta property="twitter:description" content={this.state.description} />
         <meta httpEquiv="Cache-Control" content="max-age=86400" />
+        <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
         <link rel="icon" href={assetPrefix + "/favicon.ico"} />
         <link
           rel="icon"
