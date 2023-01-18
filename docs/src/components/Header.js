@@ -2,10 +2,13 @@
 import React, { Component } from "react";
 import Head from "next/head";
 
+const isProd = process.env.NODE_ENV === "production";
+const assetPrefix = isProd ? "/py-clash-bot" : "";
+
 /**
- * Component for SEO
+ * Header Component
  */
-export default class SEO extends Component {
+export default class Header extends Component {
   /**
    * react render override
    * @return {JSX.Element}
@@ -35,6 +38,19 @@ export default class SEO extends Component {
         <meta property="twitter:title" content={this.state.title} />
         <meta property="twitter:description" content={this.state.description} />
         <meta httpEquiv="Cache-Control" content="max-age=86400" />
+        <link rel="icon" href={assetPrefix + "/favicon.ico"} />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href={assetPrefix + "/favicon-32x32.png"}
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href={assetPrefix + "/favicon-16x16.png"}
+        />
       </Head>
     );
   }
