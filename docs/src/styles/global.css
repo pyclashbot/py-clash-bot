@@ -12,3 +12,13 @@ body {
         width: 90%;
     }
 }
+
+a {
+    color: #0000FF;
+    text-decoration: none;
+}
+
+code {
+    color: #006400;
+    background-color: #D3D3D3;
+}
