@@ -13,16 +13,18 @@ from pyclashbot.memu.client import make_reference_image_list
 
 
 def check_if_card_is_upgradable(card_coord=None, upgrade_coord=None):
+    # null checks
     if card_coord is None:
         card_coord = []
     if upgrade_coord is None:
         upgrade_coord = []
+
     # click card
     click(card_coord[0], card_coord[1])
-    time.sleep(0.2)
+    time.sleep(1)
 
     # check upgrade coord
-    upgrade_color = [107, 233, 118]
+    upgrade_color = [56, 228, 72]
     pixel = numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
 
     return bool(pixel_is_equal(pixel, upgrade_color, tol=35))
