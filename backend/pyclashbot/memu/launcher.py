@@ -346,13 +346,61 @@ def wait_for_clash_main_menu(logger):
 
         # check if stuck on trophy progression page
         if check_if_stuck_on_trophy_progression_page():
+            logger.change_status("Stuck on trophy progression page. Trying to fix...")
             time.sleep(1)
             click(210, 621)
+
+        # check if stuck in the middle of opening a lightning chest
+        if check_if_stuck_on_lightning_chest():
+            logger.change_status("Stuck on lightning chest. Trying to fix...")
+            handle_stuck_on_lightning_chest()
 
         # check if still waiting
         waiting = not check_if_on_clash_main_menu()
 
     logger.change_status("Done waiting for clash main menu")
+
+
+def check_if_stuck_on_lightning_chest():
+    iar = numpy.asarray(screenshot())
+
+    yellow_question_mark_exists = False
+    for x in range(335, 355):
+        this_pixel = iar[625][x]
+        if pixel_is_equal(this_pixel, [255, 188, 40], tol=35):
+            yellow_question_mark_exists = True
+
+    lightning_symbol_exists = False
+    for x in range(70, 80):
+        this_pixel = iar[610][x]
+        if pixel_is_equal(this_pixel, [120, 224, 255], tol=35):
+            lightning_symbol_exists = True
+
+    red_card_count_exists = False
+    for x in range(260, 290):
+        this_pixel = iar[339][x]
+        if pixel_is_equal(this_pixel, [200, 49, 48], tol=35):
+            red_card_count_exists = True
+
+    if (
+        yellow_question_mark_exists
+        and lightning_symbol_exists
+        and red_card_count_exists
+    ):
+        return True
+    return False
+
+
+def handle_stuck_on_lightning_chest():
+    # skip thru chest
+    click(20, 440, clicks=10, interval=1)
+
+    # click skip strikes
+    click(212, 610)
+    time.sleep(1)
+
+    # click deadspace a few times
+    click(20, 440, clicks=5, interval=1)
 
 
 def check_if_stuck_on_trophy_progression_page():
