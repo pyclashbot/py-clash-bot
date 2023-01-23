@@ -37,7 +37,7 @@
     "@next/eslint-plugin-next": "^13.1.4",
     "eslint": "^8.32.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-config-next": "^13.1.4",
+    "eslint-config-next": "^13.1.5",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react": "^7.31.11",
     "gh-pages": "^5.0.0",
