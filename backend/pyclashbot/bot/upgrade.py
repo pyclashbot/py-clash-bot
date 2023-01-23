@@ -32,38 +32,51 @@ def check_if_card_is_upgradable(card_coord=None, upgrade_coord=None):
 
 def check_for_upgradable_cards():
     card_coord_list = [
-        [94, 277],
-        [179, 277],
-        [255, 277],
-        [338, 277],
-        [94, 406],
-        [179, 406],
-        [255, 406],
-        [338, 406],
+        [80, 270],
+        [170, 270],
+        [270, 270],
+        [335, 270],
+        [80, 400],
+        [170, 400],
+        [270, 400],
+        [335, 400],
     ]
     upgrade_coord_list = [
-        [47, 338],
-        [133, 338],
-        [221, 338],
-        [307, 337],
-        [47, 471],
-        [133, 471],
-        [221, 470],
-        [309, 471],
+        [113, 361],
+        [198, 360],
+        [288, 361],
+        [375, 363],
+        [115, 482],
+        [204, 478],
+        [292, 480],
+        [378, 481],
     ]
 
-    card_upgrade_list = []
+    upgrade_card_bool_list = []
+
+    scroll_up_fast()
+
     for card_index in range(8):
-        card_coord = card_coord_list[card_index]
-        upgrade_coord = upgrade_coord_list[card_index]
-        if check_if_card_is_upgradable(
-            card_coord=card_coord, upgrade_coord=upgrade_coord
-        ):
-            card_upgrade_list.append("Upgrade")
+        this_card_coord = card_coord_list[card_index]
+        this_upgrade_coord = upgrade_coord_list[card_index]
+
+        # click the card
+        click(this_card_coord[0], this_card_coord[1])
+        time.sleep(1)
+
+        # get the pixel surrounding the upgrade button
+        this_pixel = numpy.asarray(screenshot())[this_upgrade_coord[1]][
+            this_upgrade_coord[0]
+        ]
+
+        green_color = [56, 228, 72]
+
+        if pixel_is_equal(this_pixel, green_color, tol=35):
+            upgrade_card_bool_list.append("Upgrade")
         else:
-            card_upgrade_list.append("No upgrade")
-            time.sleep(0.5)
-    return card_upgrade_list
+            upgrade_card_bool_list.append("No upgrade")
+
+    return upgrade_card_bool_list
 
 
 def upgrade_card(logger, card_index):
