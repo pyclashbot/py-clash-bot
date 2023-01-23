@@ -9,7 +9,7 @@ from pyclashbot.detection import (
     pixel_is_equal,
 )
 from pyclashbot.memu import click, get_file_count, screenshot
-from pyclashbot.memu.client import make_reference_image_list
+from pyclashbot.memu.client import make_reference_image_list, scroll_up_fast
 
 
 def check_if_card_is_upgradable(card_coord=None, upgrade_coord=None):
