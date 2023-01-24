@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "homepage": "https://matthewmiglio.github.io/py-clash-bot",
   "dependencies": {
-    "next": "^13.1.2",
+    "next": "^13.1.4",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-ga4": "^1.4.1"
+    "react-ga4": "^2.0.0"
   },
   "scripts": {
     "dev": "next dev",
@@ -34,13 +34,13 @@
     ]
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^13.1.2",
+    "@next/eslint-plugin-next": "^13.1.4",
     "eslint": "^8.32.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-config-next": "^13.1.2",
+    "eslint-config-next": "^13.1.5",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react": "^7.31.11",
-    "gh-pages": "^4.0.0",
+    "gh-pages": "^5.0.0",
     "touch": "^3.1.0"
   }
 }
