@@ -12,24 +12,6 @@ from pyclashbot.memu import click, get_file_count, screenshot
 from pyclashbot.memu.client import make_reference_image_list, scroll_up_fast
 
 
-def check_if_card_is_upgradable(card_coord=None, upgrade_coord=None):
-    # null checks
-    if card_coord is None:
-        card_coord = []
-    if upgrade_coord is None:
-        upgrade_coord = []
-
-    # click card
-    click(card_coord[0], card_coord[1])
-    time.sleep(1)
-
-    # check upgrade coord
-    upgrade_color = [56, 228, 72]
-    pixel = numpy.asarray(screenshot())[upgrade_coord[1]][upgrade_coord[0]]
-
-    return bool(pixel_is_equal(pixel, upgrade_color, tol=35))
-
-
 def check_for_upgradable_cards():
     card_coord_list = [
         [80, 270],
@@ -72,125 +54,153 @@ def check_for_upgradable_cards():
         green_color = [56, 228, 72]
 
         if pixel_is_equal(this_pixel, green_color, tol=35):
-            upgrade_card_bool_list.append("Upgrade")
-        else:
-            upgrade_card_bool_list.append("No upgrade")
+            upgrade_card_bool_list.append(card_index)
 
     return upgrade_card_bool_list
 
 
-def upgrade_card(logger, card_index):
+def upgrade_current_cards(logger):
+    logger.change_status("Checking for upgradable cards")
+    upgradable_cards_list = check_for_upgradable_cards()
+
     card_coord_list = [
-        [81, 337],
-        [169, 339],
-        [253, 338],
-        [330, 337],
-        [81, 464],
-        [164, 468],
-        [248, 466],
-        [334, 468],
+        [80, 270],
+        [170, 270],
+        [270, 270],
+        [335, 270],
+        [80, 400],
+        [170, 400],
+        [270, 400],
+        [335, 400],
     ]
 
-    # Click the given card
-    card_coord = card_coord_list[card_index]
-    click(card_coord[0], card_coord[1])
+    upgrade_coord_list = [
+        [77, 354],
+        [166, 351],
+        [250, 350],
+        [335, 353],
+        [77, 466],
+        [164, 468],
+        [250, 470],
+        [340, 468],
+    ]
 
-    # Click the upgrade button below the card
+    for index in upgradable_cards_list:
+        this_card_coord = card_coord_list[index]
+        this_upgrade_coord = upgrade_coord_list[index]
+        upgrade_card(logger, this_card_coord, this_upgrade_coord)
+
+
+def upgrade_card(logger, card_coord, upgrade_coord):
+    # click the card in question
+    print("clicking card to upgrade")
     click(card_coord[0], card_coord[1])
     time.sleep(1)
 
-    # Click upgrade for gold button
-    upgrade_for_gold_button = find_first_upgrade_for_gold_button()
-    if upgrade_for_gold_button is not None:
-        click(upgrade_for_gold_button[1], upgrade_for_gold_button[0])
+    # click the upgrade button
+    print("clicking upgrade button")
+    click(upgrade_coord[0], upgrade_coord[1])
+    time.sleep(1)
+
+    # locate+click the first upgrade button in the upgrade menu
+    print("clicking first upgrade button")
+    first_upgrade_button = find_first_upgrade_button_in_upgrade_menu()
+    click(first_upgrade_button[0], first_upgrade_button[1])
+    time.sleep(1)
+
+    # if missing gold popup exists now then there isnt enough gold, so return
+    if check_if_buy_missing_gold_popup_exists():
+        logger.log("Not enough gold to upgrade this card")
+        close_buy_missing_gold_popup()
         time.sleep(1)
 
-    # Check for second upgrade for gold button
-    if check_for_final_upgrade_button():
-        logger.add_card_upgraded()
+        # click deadspace a little
+        click(20, 440, clicks=5, interval=1)
 
-    # Click confirm upgrade for gold button
-    confirm_upgrade_button = find_confirm_upgrade_for_gold_button()
-    if confirm_upgrade_button is not None:
-        click(confirm_upgrade_button[1], confirm_upgrade_button[0])
+        return
 
-    # Click close to 'not enough gold' notification
-    click(346, 252)
+    # locate+click  the second upgrade button in the upgrade menu (aka the confirm button)
+    print("clicking second upgrade button")
+    second_upgrade_button = find_second_upgrade_button_in_upgrade_menu()
+    click(second_upgrade_button[0], second_upgrade_button[1])
+    time.sleep(1)
 
-    # Click dead space to close card page
-    for _ in range(5):
-        click(26, 518)
-        time.sleep(0.33)
+    logger.add_card_upgraded()
+
+    # click deadspace
+    click(20, 440, clicks=5, interval=1)
 
 
-def find_first_upgrade_for_gold_button():
-    # Method to find the first upgrade for gold button in the card page
+def find_first_upgrade_button_in_upgrade_menu():
+    # method to find the 2v2 quickmatch button in the party mode menu
+    current_image = screenshot()
+    reference_folder = "find_first_upgrade_button_in_upgrade_menu"
+
     references = make_reference_image_list(
         get_file_count(
-            "card_collection_icon",
+            "find_first_upgrade_button_in_upgrade_menu",
         )
     )
 
     locations = find_references(
-        screenshot=screenshot(),
-        folder="find_first_upgrade_for_gold_button",
+        screenshot=current_image,
+        folder=reference_folder,
         names=references,
         tolerance=0.97,
     )
-    return get_first_location(locations)
+
+    coord = get_first_location(locations)
+    if coord is None:
+        return None
+    return [coord[1], coord[0]]
 
 
-def find_confirm_upgrade_for_gold_button():
-    # Method to find the first upgrade for gold button in the card page
+def find_second_upgrade_button_in_upgrade_menu():
+    # method to find the 2v2 quickmatch button in the party mode menu
+    current_image = screenshot()
+    reference_folder = "find_second_upgrade_button_in_upgrade_menu"
+
     references = make_reference_image_list(
         get_file_count(
-            "card_collection_icon",
+            "find_second_upgrade_button_in_upgrade_menu",
         )
     )
 
     locations = find_references(
-        screenshot=screenshot(),
-        folder="find_confirm_upgrade_for_gold_button",
+        screenshot=current_image,
+        folder=reference_folder,
         names=references,
         tolerance=0.97,
     )
-    return get_first_location(locations)
+
+    coord = get_first_location(locations)
+    if coord is None:
+        return None
+    return [coord[1], coord[0]]
 
 
-def check_for_final_upgrade_button() -> bool:
+def check_if_buy_missing_gold_popup_exists():
     iar = numpy.asarray(screenshot())
-    color = [56, 228, 72]
-    pix_list = [
-        iar[540][200],
-        iar[547][204],
-        iar[555][208],
-        iar[560][212],
-    ]
-    check_1 = True
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            check_1 = False
-    if check_1:
+
+    top_green_background_exists = False
+    for x in range(180, 240):
+        if pixel_is_equal(iar[409][x], [105, 235, 118], tol=35):
+            top_green_background_exists = True
+
+    bottom_green_background = False
+    for x in range(180, 240):
+        if pixel_is_equal(iar[437][x], [53, 225, 69], tol=35):
+            bottom_green_background = True
+
+    white_text_exists = False
+    for x in range(180, 220):
+        if pixel_is_equal(iar[424][x], [250, 250, 250], tol=35):
+            white_text_exists = True
+
+    if top_green_background_exists and bottom_green_background and white_text_exists:
         return True
-
-    pix_list = [
-        iar[435][206],
-        iar[445][204],
-        iar[455][203],
-        iar[465][201],
-    ]
-    check_2 = True
-    for pix in pix_list:
-        if not pixel_is_equal(pix, color, tol=45):
-            check_2 = False
-    return bool(check_2)
+    return False
 
 
-def upgrade_current_cards(logger):
-    logger.change_status("Checking for upgradable cards. . .")
-    upgradable_cards_list = check_for_upgradable_cards()
-
-    logger.change_status("Upgrading your current deck...")
-    for index, card in enumerate(upgradable_cards_list):
-        if card == "Upgrade":
-            upgrade_card(logger, index)
+def close_buy_missing_gold_popup():
+    click(352, 239)
