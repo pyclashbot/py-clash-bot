@@ -92,6 +92,8 @@ def upgrade_current_cards(logger):
 
 
 def upgrade_card(logger, card_coord, upgrade_coord):
+    logger.change_status("Upgrading a card")
+
     if check_for_level_up_popup_page():
         logger.change_status("Level up popup detected, closing it")
         handle_level_up_popup_page()
@@ -109,12 +111,15 @@ def upgrade_card(logger, card_coord, upgrade_coord):
     # locate+click the first upgrade button in the upgrade menu
     print("clicking first upgrade button")
     first_upgrade_button = find_first_upgrade_button_in_upgrade_menu()
+    if first_upgrade_button is None:
+        click(20, 440, clicks=5, interval=1)
+        return
     click(first_upgrade_button[0], first_upgrade_button[1])
     time.sleep(1)
 
     # if missing gold popup exists now then there isnt enough gold, so return
     if check_if_buy_missing_gold_popup_exists():
-        logger.log("Not enough gold to upgrade this card")
+        print("Not enough gold to upgrade this card")
         close_buy_missing_gold_popup()
         time.sleep(1)
 
@@ -126,6 +131,9 @@ def upgrade_card(logger, card_coord, upgrade_coord):
     # locate+click  the second upgrade button in the upgrade menu (aka the confirm button)
     print("clicking second upgrade button")
     second_upgrade_button = find_second_upgrade_button_in_upgrade_menu()
+    if second_upgrade_button is None:
+        click(20, 440, clicks=5, interval=1)
+        return
     click(second_upgrade_button[0], second_upgrade_button[1])
     time.sleep(1)
 
