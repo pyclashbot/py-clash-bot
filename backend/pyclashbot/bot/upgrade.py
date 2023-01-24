@@ -92,6 +92,10 @@ def upgrade_current_cards(logger):
 
 
 def upgrade_card(logger, card_coord, upgrade_coord):
+    if check_for_level_up_popup_page():
+        logger.change_status("Level up popup detected, closing it")
+        handle_level_up_popup_page()
+
     # click the card in question
     print("clicking card to upgrade")
     click(card_coord[0], card_coord[1])
@@ -129,6 +133,10 @@ def upgrade_card(logger, card_coord, upgrade_coord):
 
     # click deadspace
     click(20, 440, clicks=5, interval=1)
+
+    if check_for_level_up_popup_page():
+        logger.change_status("Level up popup detected, closing it")
+        handle_level_up_popup_page()
 
 
 def find_first_upgrade_button_in_upgrade_menu():
@@ -204,3 +212,32 @@ def check_if_buy_missing_gold_popup_exists():
 
 def close_buy_missing_gold_popup():
     click(352, 239)
+
+
+def check_for_level_up_popup_page():
+    iar = numpy.asarray(screenshot())
+
+    white_level_up_text_exists = False
+    for x in range(120, 145):
+        if pixel_is_equal(iar[155][x], [247, 247, 247], tol=35):
+            white_level_up_text_exists = True
+
+    blue_ok_button_exists = False
+    for x in range(175, 195):
+        if pixel_is_equal(iar[548][x], [104, 187, 255], tol=35):
+            blue_ok_button_exists = True
+
+    king_tower_text_exists = False
+    for x in range(70, 110):
+        if pixel_is_equal(iar[395][x], [255, 204, 102], tol=35):
+            king_tower_text_exists = True
+
+    if white_level_up_text_exists and blue_ok_button_exists and king_tower_text_exists:
+        return True
+
+    return False
+
+
+def handle_level_up_popup_page():
+    click(20, 440, clicks=2, interval=1)
+    time.sleep(1)
