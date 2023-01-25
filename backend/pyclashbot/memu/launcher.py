@@ -38,7 +38,7 @@ def restart_emulator(logger):
     # logger.change_status("Starting a new Memu Client using the launcher. . .")
     # start_emulator_without_pmc(logger) # this is the old way
     logger.change_status("Starting emulator...")
-    pmc.start_vm(vm_index=vm_index, timeout=10)
+    pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
     sleep_time = 10
@@ -151,7 +151,6 @@ def configure_vm(logger: Logger, vm_index):
         "vbox_dpi": "160",
         "fps": "30",
         "enable_audio": "0",
-        "name": "pyclashbot",
     }
 
     for key, value in configuration.items():
@@ -167,7 +166,7 @@ def create_vm(logger: Logger):
         vm_index = pmc.create_vm()
     configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
-    pmc.rename_vm(vm_index, new_name="pyclashbot")
+    pmc.rename_vm(vm_index=vm_index, new_name="(pyclashbot)")
     logger.change_status("VM created")
     return vm_index
 
@@ -207,19 +206,6 @@ def check_for_vm(logger: Logger) -> int:
     return vm_indices[0] if vm_indices else create_vm(logger)
 
 
-def start_vm(logger: Logger):
-    # Method for starting the memu client
-    logger.change_status("Starting Memu Client")
-    vm_index = check_for_vm(logger)
-    configure_vm(logger, vm_index)
-    logger.change_status("Starting VM...")
-    pmc.start_vm(vm_index=vm_index)
-    orientate_memu()
-    # move_window_to_top_left("pyclashbot")
-    logger.change_status("VM Started")
-    return vm_index
-
-
 def close_everything_memu():
     name_list = [
         "MEmuConsole.exe",
@@ -245,7 +231,6 @@ def close_everything_memu():
 
 
 def start_clash_royale(logger: Logger, vm_index):
-
     # using pymemuc check if clash royale is installed
     apk_base_name = "com.supercell.clashroyale"
 
