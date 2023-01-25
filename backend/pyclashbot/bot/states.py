@@ -139,15 +139,8 @@ def state_tree(
         state = state_upgrade(logger) if "Upgrade" in jobs else "deck_randomization"
 
     elif state == "deck_randomization":
-        if "Randomize Deck" in jobs:
-            random_deck_bool = True
-        else:
-            random_deck_bool = False
-        state = (
-            state_deck_randomization(logger, random_deck_bool)
-            if "Randomize Deck" in jobs
-            else "start_fight"
-        )
+        if 'Randomize Deck' in jobs: state = state_deck_randomization(logger, random_deck_bool=True)
+        else: state = 'start_fight'
 
     elif state == "start_fight":
         state = (
@@ -436,8 +429,7 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
     if handle_war_attacks(logger) == "restart":
         print("Failure with handle_war_attacks()")
         return "restart"
-    else:
-        return "account_switching"
+    return "account_switching"
 
 
 # FOR OBS RECORDING OF ERRORS
@@ -461,7 +453,7 @@ def make_random_ssid_list(max_ssid):
 # method to randomize a given list of ints
 def randomize_list(list_to_randomize):
     randomized_list = list_to_randomize.copy()
-    for i in range(len(randomized_list)):
+    for i, item in enumerate(randomized_list):
         random_index = random.randint(0, len(randomized_list) - 1)
         randomized_list[i], randomized_list[random_index] = (
             randomized_list[random_index],
