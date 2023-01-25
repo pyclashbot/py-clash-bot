@@ -1,6 +1,5 @@
 import sys
 import webbrowser
-from queue import Queue
 
 import PySimpleGUI as sg
 
