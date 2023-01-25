@@ -29,7 +29,7 @@ from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
 from pyclashbot.bot.war import handle_war_attacks
 from pyclashbot.memu import click, orientate_terminal
-from pyclashbot.memu.launcher import restart_memu
+from pyclashbot.memu.launcher import restart_emulator
 from pyclashbot.utils import Logger
 
 
@@ -186,7 +186,7 @@ def state_restart(logger) -> Literal["account_switching", "restart"]:
     logger.change_status("Restarting")
 
     # restart until it works, then return 'clashmain' as the next state
-    if restart_memu(logger) == "restart":
+    if restart_emulator(logger) == "restart":
         return "restart"
     else:
         return "account_switching"
