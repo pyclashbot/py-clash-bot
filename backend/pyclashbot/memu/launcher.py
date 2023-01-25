@@ -18,60 +18,41 @@ from pyclashbot.utils.logger import Logger
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
 
-mmim_window_title = "Multiple Instance Manager"
+MMIM_TITLE = "Multiple Instance Manager"
 
 
 #### launcher methods
-def restart_memu(logger):
-    # close everything related to memu
-    # configure the topmost VM to be the clashbot vm
-    # open and orientate launcher
-    # click start
-    # use pymemuc to skip ads then start clash
+def restart_emulator(logger):
+    # restart the game, including the launcher and emulator
 
-    logger.change_status("Closing everything Memu related. . .")
     # stop all vms
+    logger.change_status("Closing everything Memu related. . .")
+    pmc.stop_all_vm(timeout=10)
     close_everything_memu()
-    # close_memu_using_pymemuc(logger)
 
-    # make VM named clashbot if doesnt exist
-    # configure VM
-    # vm_index = check_for_vm(logger)
-    configure_vm(logger, vm_index=0)
+    # check for the pyclashbot vm, if not found then create it
+    vm_index = check_for_vm(logger)
+    configure_vm(logger, vm_index=vm_index)
 
-    # open launcher+configure launcher
-    logger.change_status("Starting a new Memu Client using the launcher. . .")
-    open_memu_launcher(logger)
-    orientate_memu_launcher(logger)
-
-    # start pyclashbot vm
-    click(550, 140)
+    # start the vm
+    # logger.change_status("Starting a new Memu Client using the launcher. . .")
+    # start_emulator_without_pmc(logger) # this is the old way
+    logger.change_status("Starting emulator...")
+    pmc.start_vm(vm_index=vm_index, timeout=10)
 
     # wait for the window to appear
-    logger.change_status("Waiting for Memu loading sequence. . .")
-    if wait_for_pyclashbot_window() == "restart":
-        return restart_memu(logger)
-
-    if wait_for_black_memu_screen() == "restart":
-        return restart_memu(logger)
-
-    if wait_for_memu_loading_screen() == "restart":
-        return restart_memu(logger)
-
-    if wait_for_black_memu_screen() == "restart":
-        return restart_memu(logger)
-
-    # wait
     sleep_time = 10
     for n in range(sleep_time):
         print(f"Waiting for VM to load {n}/{sleep_time}")
         time.sleep(1)
 
-    # skip ads using pymemuc
-    if skip_ads(vm_index=0) == "fail":
-        return restart_memu(logger)
+    # wait_for_memu_window(logger)
 
-    # start clash using pymemuc
+    # skip ads
+    if skip_ads(vm_index=0) == "fail":
+        return restart_emulator(logger)
+
+    # start clash royale
     start_clash_royale(logger, vm_index=0)
 
     # manually wait for clash main
@@ -80,18 +61,42 @@ def restart_memu(logger):
         print(f"Manually waiting for clash main page. {n}/{sleep_time}")
         time.sleep(1)
 
-    # actually wait for clash main if need to wait longer
+    # check-wait for clash main if need to wait longer
     if wait_for_clash_main_menu(logger) == "restart":
-        return restart_memu(logger)
+        return restart_emulator(logger)
 
     time.sleep(5)
 
     return True
 
 
+def wait_for_memu_window(logger):
+    # wait for the window to appear
+    logger.change_status("Waiting for Memu loading sequence. . .")
+    if wait_for_pyclashbot_window() == "restart":
+        return restart_emulator(logger)
+
+    if wait_for_black_memu_screen() == "restart":
+        return restart_emulator(logger)
+
+    if wait_for_memu_loading_screen() == "restart":
+        return restart_emulator(logger)
+
+    if wait_for_black_memu_screen() == "restart":
+        return restart_emulator(logger)
+
+
+def start_emulator_without_pmc(logger):
+    open_memu_launcher(logger)
+    orientate_memu_launcher(logger)
+
+    # start pyclashbot vm
+    click(550, 140)
+
+
 def open_memu_launcher(logger):
     # if alreayd open then close it
-    windows = pygetwindow.getWindowsWithTitle(mmim_window_title)
+    windows = pygetwindow.getWindowsWithTitle(MMIM_TITLE)
     if len(windows) > 0:
         print("Launcher already open. Closing it.")
         windows[0].close()
@@ -105,19 +110,18 @@ def open_memu_launcher(logger):
 
     # wait for launcher to exist
     print("Waiting for launcher")
-    while len(pygetwindow.getWindowsWithTitle(mmim_window_title)) == 0:
+    while len(pygetwindow.getWindowsWithTitle(MMIM_TITLE)) == 0:
         time.sleep(0.1)
     print("Done waiting for launcher.")
 
 
 def orientate_memu_launcher(logger):
     # logger.change_status("Orientating Memu launcher")
-    window = pygetwindow.getWindowsWithTitle(mmim_window_title)[0]
+    window = pygetwindow.getWindowsWithTitle(MMIM_TITLE)[0]
     window.activate()
     window.moveTo(0, 0)
     window.resizeTo(732, 596)
     # logger.change_status("Done orientating Memu launcher")
-    pass
 
 
 def get_launcher_path():
@@ -128,11 +132,6 @@ def get_launcher_path():
 
 
 #### making and configuring VMs
-
-
-def rename_first_vm():
-    print("Renaming first VM")
-    pmc.rename_vm(vm_index=0, new_name="(pyclashbot)")
 
 
 def configure_vm(logger: Logger, vm_index):
@@ -158,8 +157,6 @@ def configure_vm(logger: Logger, vm_index):
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
-    rename_first_vm()
-
 
 def create_vm(logger: Logger):
 
@@ -168,7 +165,7 @@ def create_vm(logger: Logger):
     vm_index = pmc.create_vm()
     while vm_index == -1:  # handle when vm creation fails
         vm_index = pmc.create_vm()
-    # configure_vm(logger, vm_index)
+    configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
     pmc.rename_vm(vm_index, new_name="pyclashbot")
     logger.change_status("VM created")
@@ -192,7 +189,7 @@ def check_for_vm(logger: Logger) -> int:
     vms.sort(key=lambda x: x["index"])
 
     # get the indecies of all vms named pyclashbot
-    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "pyclashbot"]
+    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "(pyclashbot)"]
 
     # delete all vms except the lowest index, keep looping until there is only one
     while len(vm_indices) > 1:
@@ -230,7 +227,7 @@ def close_everything_memu():
         "MEmuHeadless.exe",
     ]
 
-    pythoncom.CoInitialize()
+    pythoncom.CoInitialize()  # pylint: disable=no-member
     c = wmi.WMI()
     print("Entered close_everything_memu()")
     for process in c.Win32_Process():
@@ -242,9 +239,6 @@ def close_everything_memu():
             print("Couldnt close process", process.name)
             print("This error occured:", e)
     print("Exiting close_everything_memu(). . .")
-
-
-first_run = True
 
 
 #### interacting with the vm
