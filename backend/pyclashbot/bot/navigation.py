@@ -318,7 +318,7 @@ def handle_final_results_popup():
 
 
 def open_war_chest(logger):
-    # click chset
+    # click chest
     logger.change_status("Opening the war chest. . .")
     click(210, 440)
     time.sleep(1)
