@@ -13,7 +13,7 @@ export default class Badge extends Component {
   render() {
     return (
       <h2 className='badge-flex'>
-        <a className='badge' href="hhttps://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml" onClick={handleClick}>
+        <a className='badge' href="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml" onClick={handleClick}>
           <img
             alt="Build windows package"
             src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg"
