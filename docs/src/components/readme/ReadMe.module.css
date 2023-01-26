@@ -4,6 +4,25 @@
     align-items: baseline;
 }
 
+@media only screen and (max-width: 600px) {
+    .Readme {
+        font-size: 14px;
+    }
+}
+
+.Readme p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.Readme ul {
+    list-style: square;
+}
+
+.Readme ol li {
+    padding-bottom: 6px;
+}
+
 .block {
     margin-top: 10px;
     padding: 5px 10px;
@@ -13,31 +32,27 @@
     -moz-box-shadow: -2px -2px 0px #FFFFFF, 2px 2px 0px #000000;
 }
 
-.header-block {
+.headerblock {
     display: flex;
     justify-content: space-between;
     flex-direction: row-reverse;
     height: fit-content;
 }
 
-.header-block .text-block {
+.textblock {
     width: calc(100% - 125px);
 }
 
-.header-block .logo-block {
+.logoblock {
     flex: 1;
-    position: relative;
     margin-right: 5px;
 }
 
-.header-block .logo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    object-fit: scale-down;
+.logo {
+    display: block;
+    width: auto;
+    height: auto;
 }
-
 
 .ReadMe h1 {
     background-color: #018281;
@@ -49,20 +64,20 @@
 }
 
 .ReadMe h2,
-h3,
-h4,
-h5,
-h6 {
+.ReadMe h3,
+.ReadMe h4,
+.ReadMe h5,
+.ReadMe h6 {
     background-color: #018281;
     color: #FFFFFF;
     box-shadow: inset -1px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
     -webkit-box-shadow: inset -1px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
     -moz-box-shadow: inset -1px -2px 0px #FFFFFF, inset 2px 2px 0px #000000;
     padding: 2px 0px 2px 6px;
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
-.download-button {
+.downloadbutton {
     padding: 1px 8px;
     font-size: 14px;
     background-color: #C0C0C0;
@@ -71,21 +86,18 @@ h6 {
     -moz-box-shadow: 2px 2px 2px #000000;
 }
 
-.download-button:hover {
+.downloadbutton:hover {
     background-color: #b1b1b1;
 }
 
 .demo {
-    width: 100%;
-    height: 0;
-    padding-bottom: 77%;
-    position: relative;
+    display: flex;
+    align-items: flex-start;
 }
 
-
-
-.demo img {
-    float: left;
+.demoimage {
     width: 50%;
-    object-fit: contain;
+    display: block;
+    height: auto;
+    object-fit: scale-down;
 }

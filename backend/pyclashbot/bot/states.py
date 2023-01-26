@@ -6,8 +6,6 @@ from pyclashbot.bot.bannerbox_collection import collect_bannerbox_chests
 from pyclashbot.bot.battlepass_rewards_collection import collect_battlepass_rewards
 from pyclashbot.bot.card_mastery_collection import collect_card_mastery_rewards
 from pyclashbot.bot.clashmain import (
-    check_if_in_a_clan,
-    check_if_in_battle_with_delay,
     check_if_on_clash_main_menu,
     get_to_account,
     handle_card_mastery_notification,
@@ -22,26 +20,16 @@ from pyclashbot.bot.fight import check_if_past_game_is_win, do_fight
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.navigation import (
-    check_if_on_clan_page,
-    check_if_on_first_card_page,
     get_to_card_page,
     get_to_clash_main_from_card_page,
-    get_to_clash_main_from_clan_page,
     leave_end_battle_window,
-    wait_for_clash_main_menu,
 )
 from pyclashbot.bot.open_chests import open_chests
 from pyclashbot.bot.request import request_random_card_from_clash_main
 from pyclashbot.bot.upgrade import upgrade_current_cards
-from pyclashbot.bot.war import (
-    check_if_has_a_deck_for_this_war_battle,
-    click_war_icon,
-    handle_war_attacks,
-    make_a_random_deck_for_this_war_battle,
-    wait_for_war_battle_loading,
-)
+from pyclashbot.bot.war import handle_war_attacks
 from pyclashbot.memu import click, orientate_terminal
-from pyclashbot.memu.launcher import restart_memu
+from pyclashbot.memu.launcher import restart_emulator
 from pyclashbot.utils import Logger
 
 
@@ -51,7 +39,8 @@ def state_tree(
     ssid_max: int,
     ssid: int,
     state: str,
-) -> tuple[str, int]:
+    ssid_order_list: list[int] | None,
+) -> tuple[str, int, list[int] | None]:
     """
     Method for the state tree of the program
 
@@ -93,7 +82,10 @@ def state_tree(
         state = state_restart(logger)
 
     elif state == "account_switching":
-        state, ssid = state_account_switching(logger, ssid, ssid_max)
+        print("entered account_siwtching state...\nGonna start the method...")
+        state, ssid, ssid_order_list = state_account_switching(
+            logger, ssid, ssid_max, ssid_order_list
+        )
 
     elif state == "chest_reward_collection":
         if "Open Chests" not in jobs:
@@ -106,10 +98,6 @@ def state_tree(
             state = state_free_offer_collection(logger)
         else:
             state = "bannerbox_collection"
-
-        # if this time - most recent time in restart_log is more than an hour, always pass to restart
-        if abs(logger.most_recent_restart_time - time.time()) > 3600:
-            state = "auto_restart"
 
     elif state == "bannerbox_collection":
         if "daily challenge reward collection" in jobs:
@@ -151,15 +139,8 @@ def state_tree(
         state = state_upgrade(logger) if "Upgrade" in jobs else "deck_randomization"
 
     elif state == "deck_randomization":
-        if "Randomize Deck" in jobs:
-            random_deck_bool = True
-        else:
-            random_deck_bool = False
-        state = (
-            state_deck_randomization(logger, random_deck_bool)
-            if "Randomize Deck" in jobs
-            else "start_fight"
-        )
+        if 'Randomize Deck' in jobs: state = state_deck_randomization(logger, random_deck_bool=True)
+        else: state = 'start_fight'
 
     elif state == "start_fight":
         state = (
@@ -177,7 +158,11 @@ def state_tree(
     elif state == "war":
         state = state_war(logger) if "war" in jobs else "account_switching"
 
-    return (state, ssid)
+        # if this time - most recent time in restart_log is more than an hour, always pass to restart
+        if abs(logger.most_recent_restart_time - time.time()) > 3600:
+            state = "auto_restart"
+
+    return (state, ssid, ssid_order_list)
 
 
 def state_restart(logger) -> Literal["account_switching", "restart"]:
@@ -194,27 +179,50 @@ def state_restart(logger) -> Literal["account_switching", "restart"]:
     logger.change_status("Restarting")
 
     # restart until it works, then return 'clashmain' as the next state
-    if restart_memu(logger) == "restart":
+    if restart_emulator(logger) == "restart":
         return "restart"
     else:
         return "account_switching"
 
 
 def state_account_switching(
-    logger, ssid, ssid_max
-) -> Literal["chest_reward_collection", "restart"]:
-    print("state is :state_account_switching")
+    logger,
+    ssid_index,
+    ssid_max,
+    ssid_order_list,
+) -> tuple[Literal["chest_reward_collection", "account_switching"], int, list[int]]:
 
     logger.change_status("Switching accounts. . .")
 
-    # Get to correct account if more than one account is being used
-    if ssid_max > 1 and get_to_account(logger, account_number=ssid) == "restart":
+    # if order list is empty, make a new one
+    if ssid_order_list == [] or ssid_order_list is None:
+        print("ssid_order_list is empty or None. Making new list.")
+        ssid_order_list = make_random_ssid_list(ssid_max)
+        print("New list is: ", ssid_order_list)
+        ssid_index = 0
+
+    # if only 1 account selected, skip account switching
+    if ssid_max <= 1:
+        print("only 1 account selected so skipping accuont switch entirely")
+        return "chest_reward_collection", ssid_index, ssid_order_list
+    # get to this account
+    print("account selection range is: 0-", (ssid_max - 1))
+    if get_to_account(logger, account_number=ssid_order_list[ssid_index]) == "restart":
         print("Failure with get_to_account() in state_clashmain()")
-        return "restart"
+        return "chest_reward_collection", ssid_index, ssid_order_list
+    ssid_index += 1
 
-    ssid = ssid + 1 if ssid < (ssid_max - 1) else 0
+    # if at maximum index, make a new list, and reset to 0
+    print("current ssid_index is: ", ssid_index)
+    print("ssid_max-1 is  ", ssid_max)
 
-    return "chest_reward_collection", ssid
+    if ssid_index == (ssid_max - 1):
+        print("At maximum index. Making new list and resetting index to 0.")
+        ssid_order_list = make_random_ssid_list(ssid_max)
+        print("New list is: ", ssid_order_list)
+        ssid_index = 0
+
+    return "chest_reward_collection", ssid_index, ssid_order_list
 
 
 def state_chest_reward_collection(
@@ -241,7 +249,7 @@ def state_chest_reward_collection(
 
 def state_free_offer_collection(
     logger,
-) -> Literal["restart", "daily_challenge_reward_collection"]:
+) -> Literal["restart", "bannerbox_collection"]:
     print("state is :state_free_offer_collection")
 
     if collect_free_offer_from_shop(logger) == "restart":
@@ -396,6 +404,10 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
     if leave_end_battle_window(logger) == "restart":
         print("Failure with leave_end_battle_window() in state_fight()")
         return "restart"
+
+    # wait 3 sec so that the card mastery progress notification doesnt obstruct clicking the options menu on clashmain
+    time.sleep(7)
+
     return "endfight"
 
 
@@ -417,30 +429,34 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
     if handle_war_attacks(logger) == "restart":
         print("Failure with handle_war_attacks()")
         return "restart"
-    else:
-        return "account_switching"
+    return "account_switching"
 
 
 # FOR OBS RECORDING OF ERRORS
 def clip_that():
-    import pyautogui
 
     print("Saving a clip...")
 
     click(945, 880)
     time.sleep(3)
 
-    # #click deadspace
-    # click(20,440)
 
-    # #press keybind for clipping with obs...
-    # pyautogui.keyDown('ctrlleft')
-    # pyautogui.keyDown('shiftleft')
-    # time.sleep(3)
-    # pyautogui.keyDown('r')
-    # time.sleep(3)
-    # pyautogui.keyUp('r')
-    # pyautogui.keyUp('shiftleft')
-    # pyautogui.keyUp('ctrlleft')
+# making the random order of accout switching
+def make_random_ssid_list(max_ssid):
+    ssid_list = []
+    for n in range(max_ssid):
+        ssid_list.append(n)
+    new_list = randomize_list(ssid_list)
+    return new_list
 
-    # print('saved a clip')
+
+# method to randomize a given list of ints
+def randomize_list(list_to_randomize):
+    randomized_list = list_to_randomize.copy()
+    for i, item in enumerate(randomized_list):
+        random_index = random.randint(0, len(randomized_list) - 1)
+        randomized_list[i], randomized_list[random_index] = (
+            randomized_list[random_index],
+            randomized_list[i],
+        )
+    return randomized_list
