@@ -103,6 +103,7 @@
           ]
         }
       ],
+      "requestedExecutionLevel": "requireAdministrator",
       "signAndEditExecutable": true,
       "icon": "./src/assets/icon256.ico"
     },
