@@ -1,3 +1,5 @@
 .vscode
 cert
 node_modules
+build
+dist
