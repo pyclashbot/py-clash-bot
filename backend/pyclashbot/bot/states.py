@@ -34,7 +34,19 @@ from pyclashbot.utils import Logger
 
 
 def state_tree(
-    jobs: list[str],
+    jobs: Literal[
+        "-Open-Chests-in-",
+        "-Fight-in-",
+        "-Upgrade_cards-in-",
+        "-Random-Decks-in-",
+        "-Requesting-in-",
+        "-War-Participation-in-",
+        "-Card-Mastery-Collection-in-",
+        "-Level-Up-Reward-Collection-in-",
+        "-Battlepass-Reward-Collection-in-",
+        "-Free-Offer-Collection-in-",
+        "-Daily-Challenge-Reward-Collection-in-",
+    ],
     logger: Logger,
     ssid_max: int,
     ssid: int,
@@ -88,25 +100,25 @@ def state_tree(
         )
 
     elif state == "chest_reward_collection":
-        if "Open Chests" not in jobs:
+        if "-Open-Chests-in-" not in jobs:
             state = "free_offer_collection"
         else:
             state = state_chest_reward_collection(logger)
 
     elif state == "free_offer_collection":
-        if "free offer collection" in jobs:
+        if "-Free-Offer-Collection-in-" in jobs:
             state = state_free_offer_collection(logger)
         else:
             state = "bannerbox_collection"
 
     elif state == "bannerbox_collection":
-        if "daily challenge reward collection" in jobs:
+        if "-Daily-Challenge-Reward-Collection-in-" in jobs:
             state = state_bannerbox_collection(logger)
         else:
             state = "battlepass_reward_collection"
 
     elif state == "daily_challenge_reward_collection":
-        if "daily challenge reward collection" in jobs:
+        if "-Daily-Challenge-Reward-Collection-in-" in jobs:
             state = state_daily_challenge_reward_collection(logger)
         else:
             state = "battlepass_reward_collection"
@@ -114,38 +126,44 @@ def state_tree(
     elif state == "battlepass_reward_collection":
         state = (
             state_battlepass_collection(logger)
-            if "battlepass reward collection" in jobs
+            if "-Battlepass-Reward-Collection-in" in jobs
             else "level_up_reward_collection"
         )
 
     elif state == "level_up_reward_collection":
         state = (
             state_level_up_reward_collection(logger)
-            if "level up reward collection" in jobs
+            if "-Level-Up-Reward-Collection-in-" in jobs
             else "card_mastery_reward_collection"
         )
 
     elif state == "card_mastery_reward_collection":
         state = (
             state_card_mastery_collection(logger)
-            if "card mastery collection" in jobs
+            if "-Card-Mastery-Collection-in-" in jobs
             else "request"
         )
 
     elif state == "request":
-        state = state_request(logger) if "Request" in jobs else "upgrade"
+        state = state_request(logger) if "-Requesting-in-" in jobs else "upgrade"
 
     elif state == "upgrade":
-        state = state_upgrade(logger) if "Upgrade" in jobs else "deck_randomization"
+        state = (
+            state_upgrade(logger)
+            if "-Upgrade_cards-in-" in jobs
+            else "deck_randomization"
+        )
 
     elif state == "deck_randomization":
-        if 'Randomize Deck' in jobs: state = state_deck_randomization(logger, random_deck_bool=True)
-        else: state = 'start_fight'
+        if "-Random-Decks-in-" in jobs:
+            state = state_deck_randomization(logger, random_deck_bool=True)
+        else:
+            state = "start_fight"
 
     elif state == "start_fight":
         state = (
-            state_startfight(logger, random_deck="Randomize Deck" in jobs)
-            if "Fight" in jobs
+            state_startfight(logger, random_deck="-Random-Decks-in-" in jobs)
+            if "-Fight-in-" in jobs
             else "war"
         )
 
@@ -156,7 +174,11 @@ def state_tree(
         state = state_endfight(logger)
 
     elif state == "war":
-        state = state_war(logger) if "war" in jobs else "account_switching"
+        state = (
+            state_war(logger)
+            if "-War-Participation-in-" in jobs
+            else "account_switching"
+        )
 
         # if this time - most recent time in restart_log is more than an hour, always pass to restart
         if abs(logger.most_recent_restart_time - time.time()) > 3600:

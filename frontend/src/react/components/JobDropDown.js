@@ -105,7 +105,7 @@ const jobOptions = [
     options: [
       {
         value: "-Open-Chests-in-",
-        label: "Open chests",
+        label: "Open Chests",
       },
       {
         value: "-Fight-in-",
@@ -113,11 +113,11 @@ const jobOptions = [
       },
       {
         value: "-Upgrade_cards-in-",
-        label: "Upgrade cards",
+        label: "Upgrade Cards",
       },
       {
         value: "-Random-Decks-in-",
-        label: "Random decks",
+        label: "Random Decks",
       },
     ],
   },
@@ -153,6 +153,10 @@ const jobOptions = [
         value: "-Free-Offer-Collection-in-",
         label: "Free Offer Collection",
       },
+      {
+        value: "-Daily-Challenge-Reward-Collection-in-",
+        label: "Daily Challenge Reward Collection",
+      }
     ],
   },
 ];
