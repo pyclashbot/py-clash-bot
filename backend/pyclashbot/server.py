@@ -48,7 +48,7 @@ def start_thread():
             selected_jobs: list = request.json["selectedJobs"]
             selected_accounts: int = int(request.json["selectedAccounts"])
             args = (selected_jobs, selected_accounts)
-            app.logger.info(
+            app.logger.info(  # pylint: disable=no-member
                 "Starting thread with args: %s, of types: %s",
                 args,
                 list(map(type, args)),
@@ -59,7 +59,7 @@ def start_thread():
         # Return success response
         return {"status": "started", "message": "Thread started"}
     except Exception as err:
-        app.logger.warning(err)
+        app.logger.warning(err)  # pylint: disable=no-member
         return {"status": "failed", "message": f"Error: {err}"}
 
 
@@ -113,7 +113,7 @@ def handle_output():
                 "message": f"{stats['current_status']}",
                 "statistics": stats,
             }
-    app.logger.info("No thread running")
+    app.logger.info("No thread running")  # pylint: disable=no-member
     return {"status": "stopped", "message": "No thread running", "statistics": {}}
 
 
