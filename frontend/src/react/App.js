@@ -8,10 +8,10 @@ import AppHeader from "./components/AppHeader";
 import Output from "./components/Output";
 
 import {
-  startThread,
-  stopThread,
-  pauseThreadToggle,
-  readFromServer,
+  sendStart,
+  sendStop,
+  sendPauseToggle,
+  pollOutput,
 } from "./functions/threadCommunication";
 
 class App extends React.Component {
@@ -29,7 +29,7 @@ class App extends React.Component {
 
   startThread = async (selectedJobs, selectedAccounts) => {
     // parse out only the value of the selected jobs
-    const data = await startThread(selectedJobs, selectedAccounts);
+    const data = await sendStart(selectedJobs, selectedAccounts);
 
     this.setState({ threadStarted: data.status === "started" });
     this.setState({ output: data.message ?? "" });
@@ -47,9 +47,14 @@ class App extends React.Component {
   };
 
   readFromServer = async () => {
-    const data = await readFromServer();
+    const data = await pollOutput();
 
     if (data.status === "stopped" || data.status === "errored") {
+      if (data.status === "errored" && data.exception === "AppNotFoundException") {
+
+        this.setState({ output: data.message ?? "Error" });
+      }
+
       // Stop timer if thread is stopped
       clearInterval(this.state.pollTimer);
       this.setState({ pollTimer: null });
@@ -60,14 +65,14 @@ class App extends React.Component {
   };
 
   stopThread = async () => {
-    await stopThread();
+    await sendStop();
     this.setState({ threadStarted: false });
     clearInterval(this.state.pollTimer);
     this.setState({ pollTimer: null });
   };
 
   pauseThreadToggle = async () => {
-    const data = await pauseThreadToggle();
+    const data = await sendPauseToggle();
     // if data.status is "stopped", then thread is stopped and not paused
     // if data.status is "paused", then thread is paused
     // if data.status is "resumed", then thread is not paused

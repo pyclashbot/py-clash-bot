@@ -21,7 +21,7 @@ const handleError = (err) => {
   }
 };
 
-export const startThread = async (selectedJobs, selectedAccounts) => {
+export const sendStart = async (selectedJobs, selectedAccounts) => {
   try {
     // Make POST request to start thread
     const res = await axios.post(
@@ -39,7 +39,7 @@ export const startThread = async (selectedJobs, selectedAccounts) => {
   }
 };
 
-export const stopThread = async () => {
+export const sendStop = async () => {
   try {
     // Make GET request to stop thread
     await axios.get(BACKEND_BASE_URL + "/stop-thread");
@@ -48,7 +48,7 @@ export const stopThread = async () => {
   }
 };
 
-export const pauseThreadToggle = async () => {
+export const sendPauseToggle = async () => {
   try {
     // Make GET request to pause thread
     const res = await axios.get(BACKEND_BASE_URL + "/toggle-pause-thread");
@@ -59,7 +59,7 @@ export const pauseThreadToggle = async () => {
   }
 };
 
-export const readFromServer = async () => {
+export const pollOutput = async () => {
   try {
     // Make GET request to read from server
     const res = await axios.get(BACKEND_BASE_URL + "/output");

@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import time
 
@@ -18,6 +19,11 @@ launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
 
 MMIM_TITLE = "Multiple Instance Manager"
+
+
+class AppNotFoundException(Exception):
+    def __init__(self):
+        self.message = "Clash Royale not found, please install it and try again."
 
 
 #### launcher methods
@@ -48,11 +54,15 @@ def restart_emulator(logger):
     # wait_for_memu_window(logger)
 
     # skip ads
-    if skip_ads(vm_index=0) == "fail":
+    if skip_ads(vm_index=vm_index) == "fail":
         return restart_emulator(logger)
 
+    # check for clash royale
+    if not check_for_clash_royale(vm_index=vm_index):
+        raise AppNotFoundException
+
     # start clash royale
-    start_clash_royale(logger, vm_index=0)
+    start_clash_royale(logger, vm_index=vm_index)
 
     # manually wait for clash main
     sleep_time = 10
@@ -67,6 +77,14 @@ def restart_emulator(logger):
     time.sleep(5)
 
     return True
+
+
+def check_for_clash_royale(vm_index) -> bool:
+    clash_royale_regex = re.compile(r"com\.supercell\.clashroyale-Clash Royale-.*")
+
+    apps: list[str] = pmc.get_app_info_list_vm(vm_index=vm_index)
+
+    return any(clash_royale_regex.match(app) for app in apps)
 
 
 def wait_for_memu_window(logger):
@@ -197,7 +215,7 @@ def check_for_vm(logger: Logger) -> int:
                 pmc.delete_vm(vm_index)
                 vm_indices.remove(vm_index)
             except PyMemucError as err:
-                logger.error(str(err))
+                logger.error(message=str(err))
                 # don't raise error, just continue to loop until its deleted
                 # raise err # if program hangs on deleting vm then uncomment this line
 
@@ -230,21 +248,11 @@ def close_everything_memu():
 
 
 def start_clash_royale(logger: Logger, vm_index):
-    # using pymemuc check if clash royale is installed
-    apk_base_name = "com.supercell.clashroyale"
-
-    # get list of installed apps
-    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
-
-    # check list of installed apps for names containing base name
-    found = [app for app in installed_apps if apk_base_name in app]
-
-    if not found:
-        # notify user that clash royale is not installed, program will exit
-        logger.error("Clash royale is not installed. Please install it and restart")
+    if not check_for_clash_royale(vm_index):
+        raise AppNotFoundException
 
     # start clash royale
-    pmc.start_app_vm(apk_base_name, vm_index)
+    pmc.start_app_vm("com.supercell.clashroyale", vm_index)
     logger.change_status("Clash Royale started")
 
 

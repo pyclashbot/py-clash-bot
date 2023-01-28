@@ -1,4 +1,3 @@
-import random
 import time
 
 from pyclashbot.bot.states import state_tree
@@ -29,7 +28,7 @@ class WorkerThread(PausableThread):
                 while self.pause_flag.is_set():
                     time.sleep(0.1)  # sleep for 100ms until pause flag is unset
 
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as exc:  # pylint: disable=broad-except
             # we don't want the thread to crash the interface so we catch all exceptions and log
             # raise e
-            self.logger.error(str(e))
+            self.logger.error(message=str(exc))
