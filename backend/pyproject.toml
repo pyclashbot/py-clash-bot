@@ -63,7 +63,7 @@ black = "^22.10.0"
 matplotlib = "^3.6.2" # used in debug.py
 ipykernel = "^6.17.1"
 vulture = "^2.6"
-isort = "^5.11.4"
+isort = "^5.12.0"
 
 
 [tool.black]
