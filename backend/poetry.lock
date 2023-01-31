@@ -416,54 +416,54 @@ test-no-images = ["pytest"]
 
 [[package]]
 name = "cx-freeze"
-version = "6.14.1"
+version = "6.14.2"
 description = "Create standalone executables from Python scripts"
 category = "dev"
 optional = false
 python-versions = ">=3.7.4"
 files = [
-    {file = "cx_Freeze-6.14.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:043556edd8a0a68832237c99bb1ee18058eef59df5e66d9e88de802ef64b79d1"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d50a18704d8962fd131c09c8dd254b6e9b67ce9995810e2dd76f08a08a662716"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:686e99bd75a70ecacff9e24491d5c8ba3f1b3973268dbda61528e9b0e2a4877c"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bb92977b9917f35bf85ee0c7c7bd96b7f66d08b18b6f024a4de41ee0699876e2"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aa4debdc1c8d387b7a2ea53c68a71239282e44a6ff4290e68b00e7e4bbd8afbb"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:c272e71d1321f3a4a65b6bb3233778d23b41a9f0a2f74ab96f1ebc189c9ed986"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:87c917cccc81bd7a5f3c8aac13db30c9358cc068f974f5461500dfb2fa565ed4"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-win32.whl", hash = "sha256:e2eb830371ae8bb6bc2a199e1a674ad44e79771aecdacd00d038e4d5bea57951"},
-    {file = "cx_Freeze-6.14.1-cp310-cp310-win_amd64.whl", hash = "sha256:893fdddb551cf0684861286f8755c4dc7eaaf3e5c8f3487a090903d8ff138100"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ab5e194b455a686d1ea456740e049462aed2bbb674cfd93cebd56e1a1f9a2a4c"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:7e16a7e3e6937d7cc8600c980c5fb97ef3c6fface102d0e3b024686393e07c38"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:6c930d511f3f0ad1ed19bc2ea1d9447d5808c301e0fb6a3fc6cdc886cc6f890c"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d6821ee5f1120d2056d9cb16e211517ba1539b5ed62bb431f01ef1315a394771"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e706341d9ff41313c7b99b01c9f5e51ec3721072f3d5b71bdf676a29b451f50b"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:f32ce5973f997541439a8de3cb36a40d0648b125938a45f7dcf78ebbd3966bef"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:340d26b04f63ffcf8567e38eea76bf273d07b2e4ae12d05837c28703cb29c9d4"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-win32.whl", hash = "sha256:4b8f24294999d87a008c6f06535d1bd80c868c8a53b68787c3f12a1e41c4fa74"},
-    {file = "cx_Freeze-6.14.1-cp311-cp311-win_amd64.whl", hash = "sha256:8effee1d0b67e00ad2943dd2fe2878d88d2da4817e41bcf08d16bf0d6810bb06"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:239b5e74524a1726f3dc8b52a41b959ab2bec972ddefac518cc327699e341d1e"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:454f0f896534f6c5d4c9412f167b457b2734929aa0c7f428e9b624049b089507"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b535f5f30c5d08a9a29ec882305c444f1aff394cf69ad0283b9c5630e30d7f85"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:87cc2ac7d8c879f1fa29ecc38b0d1ffab0a663ee844e02229666e7cba53adc68"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:fa1f2e91176cbd8597b0912b5394c8a29c0183cb188dc6c6b79984e7a5f249f7"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-win32.whl", hash = "sha256:55dff247bd0d6175f47deb35727bc44e63683c1dd531ec82910ba7c95dc1324f"},
-    {file = "cx_Freeze-6.14.1-cp37-cp37m-win_amd64.whl", hash = "sha256:215b40db234dd07dfabe800dd5361ec0e89e8103de5e8110683b836508a292c8"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:2d3d24bbb99e45ebe7410e23eec2f46c92bce5bee02fccd98b8096e17d1d07b3"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4e5e85c3e6b5c4dd2c3ffcf588c5cf8cf3da6ded07f221c94f207062dc2cdb6f"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6f499cff29b8b65acf54aea4b6040b0adae99e7a68dc4af7c3cccbb4342b6937"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:41f5a9d0554b97b545ae8efaa1010ad099b5b35ba1e5b3625a49b594c48d916a"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:a947223198a7abdfff28a830b65269f52265290146657f21fd5d60dbe2f0622b"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-win32.whl", hash = "sha256:ef87d2bf4e1fe299e35110a1c437943f640cd0970c4a087ece2b8b2ae9505848"},
-    {file = "cx_Freeze-6.14.1-cp38-cp38-win_amd64.whl", hash = "sha256:be3e49beed269a861b14091e08ce8e96c88a6d08b91c7ae8cdae0034d83b82e3"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:b9d313f290ae44e86567c09a31f533ef4d99e32f37b510037b05b37585cadf5e"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:e4e5f11f6747d59d76a437fed1c5437b16abba3a3ebff503e04368306af30ed8"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:b7bce6d10f57bc6fd78738659b8b5d6eea44d30d5c7457ae152a06b905b28ae8"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:56e459bc0307bba7ee136299315cf4deb67e3be984dab0419f5d2b9b558b16d7"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c4459d348f8474e65dc34de7aefda2400e5c66b2a16d22cc78ab83e2aefd01c5"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:53543d5c59511fb91603ddb1a70f3167ac5132cec630c879bf4808b30c26da75"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:3b49891a06d02d11361932e844e07fea2e8373a3b8c33b58b851e440a57d6bb7"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-win32.whl", hash = "sha256:7f4ad9b76e1c351740d17d51f89706ff829f0f1b0f440ad4e17d0d6704a1e9a1"},
-    {file = "cx_Freeze-6.14.1-cp39-cp39-win_amd64.whl", hash = "sha256:027b69a3d7871e2797f0782cd4a2abb6c2b370d326f696902d5ccd55d3c93455"},
-    {file = "cx_Freeze-6.14.1.tar.gz", hash = "sha256:e620c61a57518d35033a85696501e0e24920401e2564923bcf034dc3b9c259ca"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:887b85c7d8c715ca294b7c12a4000b9143ac84cffae78ca18ef73e3c4dbde064"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:37055bcce24e1c583be8686fcbe13b2ab91031614e86cd9f3bea495cdfa4154f"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a467e90d882faa99c9f19f85d09f49fe45114c3822f74d6dc1426d363fceffe6"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a71af80a007408470e6ab67065b6d74f6ef0dad9ee27b7dd84da2eace05ed77e"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3c72fe0b8ba85287999da03c0ea29e86c5a3fd8be122119626c568a6c49cdaa2"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:710ab3a3c021cda4953f4b900029e3edbdd1c4ac35a3140e90203f32e340c2ff"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:6bb563d100d4433287a3ee23e18a4ae54fd6d85082bc96e3157f8489e3239a9e"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-win32.whl", hash = "sha256:0b5081b920452b5880f9ba1e6085adf7e623eb67af2063e32703238f5d56ebc5"},
+    {file = "cx_Freeze-6.14.2-cp310-cp310-win_amd64.whl", hash = "sha256:148e0543e26a24dd0dbbc6bb17443e10cc89d588b4cc6e5dd24a21c0fd1744dc"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:a1409c795659415da916cee46cb5196be07d53d878f541b8fe68b9116e804d5d"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:6045044bbe3d5389d65a4355c4e6cd395da63ca097f01d3c33fddc498e8c016b"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:3a8ee223a732fc81fcdb08bd9c4aa5457608cb6c080ef56ecbc96812bc36642e"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:40458460dc08b13b21696c795a71da3922b598e59089263d4de014da8d6f9cac"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e23d0cc6c346c35384cff9e4ac4b0d6a0cf4bec942c1b2759cadfbcec84f15d9"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:05a10c0d9b2a565030aaf03cfbe0ff14b906ee0fb52dbdb776119d21128c0002"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:7748f9de4d2f17426b2b375ac1a775da4a4b439db5c0d506dde894bec4a3faeb"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-win32.whl", hash = "sha256:ce2a1a19a00bc30737b72182d2dba1031e876a72cf91d62652060334431c77f3"},
+    {file = "cx_Freeze-6.14.2-cp311-cp311-win_amd64.whl", hash = "sha256:ed9d486b217a858072b37ff119df8ce4c266347d6e72cae59fb367f8bbe793aa"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c66c4a275a271c5f2ff28620216669d7805c655374e19396ca633b5a2e7c0305"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d6a188d9084b0aec420435c5202ccc6a3fa91515878fa76257d545107653ad33"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a106f3b695dd82a1e50fe614a7d08babe3c0a772cc72a605391628acda6f3afc"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:bf1b701d14be2aa91cb567f6a1b6272c7f4f67934fc655513577aa3986702b29"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:c7efcfc147cd69889fddfab78a4469047b226dcaf494c0e400b347cdb6ffb4f4"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-win32.whl", hash = "sha256:786b7f3229eb36a94322f4d296814f21e21956248d37524ce69317b331e2d8bb"},
+    {file = "cx_Freeze-6.14.2-cp37-cp37m-win_amd64.whl", hash = "sha256:ee7d4db680fa84018efbe43031d6f8a88b1518122fd553c34e491590f1e85260"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:ea00d4cc817368b5a9a862c772b87aeac05d0c82e4e8b16562bc6b91049d7390"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bcd6f9057faff9ccf04b085af407116455cef01165fbd42fb291cd46672e2648"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:15c4a6d32d3130f23f1253ba4b0a673cb54d97bd202c99a8f4552324ae238389"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:2daf0cccbeeead40c01ff624acc2b733eb6c36737e23fcfc1faa75bd8ddc90d1"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:eac69028b52095c78df116b7d52f3baefb87e11a25fbe9e6e7b1d17b4f5cbbca"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-win32.whl", hash = "sha256:42dfce59e985b13c24184a25c47176d4b1d5f337894a951f19c08818fbe7386a"},
+    {file = "cx_Freeze-6.14.2-cp38-cp38-win_amd64.whl", hash = "sha256:38eba202d1fbeedde850cbb72438a67bd4ee2b96fe9292c37e6e14ca3fdcc046"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:775ebee16898a2be04b1542839979e6b8a35b2476c42e4d15ad0248fc1f1cfe3"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:f027587bc96ae2e41af9f346807948c7b3172a0eaf4de04a5feb99486c0d979a"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:fae0e046b3ce8297706e636930ad9e39d3cd8948c77c99c66de6bccd4eeaa3c6"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3f289455df43285a2aee75ca0426c6af3fe82b3b716ea5d177b932eea7d7f06a"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6bc12c9fdc41c2467bf8f953e2d745a1752a5b35d4b1e0d2499e52e5c4c58502"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:481f2e176daf9d971ec021d0027a3cd5be8a3b8290fbfdb860bf1f1bad9158bd"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:8997ef63e9d1aadab63048af62803038ba1c600f6da11ebdf6b81c125a477aee"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-win32.whl", hash = "sha256:7beaacaab89378b4c3615e2ff54c5c206c3dd16c245ec3fffee109a0d79e0bba"},
+    {file = "cx_Freeze-6.14.2-cp39-cp39-win_amd64.whl", hash = "sha256:94cf0f8d89e0f8862787138043eae7b949b29365f49fd9ca7637e154b3dbc200"},
+    {file = "cx_Freeze-6.14.2.tar.gz", hash = "sha256:2206569d7a2cfc76984a059234dde9db29d9ed3c5051c9b6d6ef3de12221040d"},
 ]
 
 [package.dependencies]
@@ -4866,4 +4866,4 @@ tests = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.0"
-content-hash = "702812c464c443dcff4108ee773ef6324bf23fdc0872fb7fe5fd5d0cbe5c1733"
+content-hash = "2236945636baeb863f56a04cf6aec2b1a72d2c2b0ea1e7ccc39ce2ec4974625a"
