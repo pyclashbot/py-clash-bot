@@ -34,7 +34,7 @@
     ]
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^13.1.4",
+    "@next/eslint-plugin-next": "^13.1.6",
     "eslint": "^8.33.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-next": "^13.1.6",
