@@ -20,7 +20,7 @@ export default class Badge extends Component {
         >
           <Image
             alt="Build windows package"
-            src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-build-msi.yml/badge.svg"
+            src="https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg"
             content="no-cache, no-store, must-revalidate"
             height={20}
             width={206}
