@@ -14,6 +14,7 @@ export default function Home() {
         title="py-clash-bot"
         description="A Clash Royale automation bot written in Python"
         keywords="clash royale, bot, automation, python, py-clash-bot"
+        url="https://matthewmiglio.github.io/py-clash-bot"
       />
       <ReadMe />
     </>
