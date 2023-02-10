@@ -145,11 +145,10 @@ def main_gui():
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
             if thread is not None:
-                thread.shutdown()
+                thread.shutdown(kill=True)
             break
 
         if event == "Start":
-
             # reset the logger for a new thread
             logger = Logger(console_log=console_log)
             thread = start_button_event(logger, window, values)
@@ -197,7 +196,7 @@ def main_gui():
 
     # shut down the thread if it is still running
     if thread is not None:
-        thread.shutdown()
+        thread.shutdown(kill=True)
         thread.join()
 
     window.close()
