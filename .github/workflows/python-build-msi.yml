@@ -21,7 +21,6 @@ jobs:
         id: pysetup
         with:
           python-version: "3.11"
-          cache: "poetry"
       - name: Install package and dependencies, then build package
         run: |
           cd backend
