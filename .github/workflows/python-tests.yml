@@ -28,5 +28,5 @@ jobs:
         run: |
           cd backend
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
-          poetry install --with build
+          poetry install --with build -vvv
           poetry run python -m unittest discover "tests" -p '*_test.py'
