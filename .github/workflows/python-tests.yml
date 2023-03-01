@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-python@master
         with:
           python-version: ${{ matrix.python }}
-          cache: "poetry"
       - name: Install package and dependencies, then run tests
         run: |
           cd backend
