@@ -671,14 +671,14 @@ files = [
 
 [[package]]
 name = "ipykernel"
-version = "6.21.2"
+version = "6.21.3"
 description = "IPython Kernel for Jupyter"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ipykernel-6.21.2-py3-none-any.whl", hash = "sha256:430d00549b6aaf49bd0f5393150691edb1815afa62d457ee6b1a66b25cb17874"},
-    {file = "ipykernel-6.21.2.tar.gz", hash = "sha256:6e9213484e4ce1fb14267ee435e18f23cc3a0634e635b9fb4ed4677b84e0fdf8"},
+    {file = "ipykernel-6.21.3-py3-none-any.whl", hash = "sha256:24ebd9715e317c185e37156ab3a87382410185230dde7aeffce389d6c7d4428a"},
+    {file = "ipykernel-6.21.3.tar.gz", hash = "sha256:c8ff581905d70e7299bc1473a2f7c113bec1744fb3746d58e5b4b93bd8ee7001"},
 ]
 
 [package.dependencies]
@@ -4869,4 +4869,4 @@ tests = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.0"
-content-hash = "e3f3bd50f43123234975bc0015e5f3a756bc312281660752d0451482f25f18d5"
+content-hash = "e0772b2ddd9eb7d69b7abeb747184f71b23cdc4a54b4de99af8596d8d85c540f"
