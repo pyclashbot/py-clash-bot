@@ -123,13 +123,8 @@ class ThreadAPI:
 
     def sigterm_handler(self, _signo, _stack_frame):
         """Handles SIGTERM signal."""
-        raise SigTermException
-
-
-class SigTermException(Exception):
-    """Exception for SIGTERM signal."""
-
-    pass
+        self.stop_thread()
+        self.http_server.stop()
 
 
 if __name__ == "__main__":
