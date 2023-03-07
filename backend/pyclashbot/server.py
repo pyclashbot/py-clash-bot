@@ -1,5 +1,6 @@
+"""Server for handling API requests to interact witht the worker thread"""
+
 import signal
-import sys
 from logging.config import dictConfig
 
 from flask import Flask, request
@@ -30,117 +31,107 @@ dictConfig(
 )
 
 
-app = Flask(__name__)
-create_logger(app)
-CORS(app, supports_credentials=True)
+class ThreadAPI:
+    """Class for handling thread API requests."""
 
-# Create global variable for thread
-thread: WorkerThread | None = None
-thread_logger = Logger()
+    def __init__(self):
+        self.app = Flask(__name__)
+        create_logger(self.app)
+        CORS(self.app, supports_credentials=True)
 
+        self.thread = None
+        self.thread_logger = Logger()
 
-# Define route to start thread
-@app.route("/start-thread", methods=["POST"])
-def start_thread():
-    try:
-        global thread
-        if request.json is not None and thread is None:
-            selected_jobs: list = request.json["selectedJobs"]
-            selected_accounts: int = int(request.json["selectedAccounts"])
-            args = (selected_jobs, selected_accounts)
-            app.logger.info(  # pylint: disable=no-member
-                "Starting thread with args: %s, of types: %s",
-                args,
-                list(map(type, args)),
-            )
-            thread = WorkerThread(thread_logger, args)
-            thread.start()
+        self.app.route("/start-thread", methods=["POST"])(self.start_thread)
+        self.app.route("/stop-thread", methods=["GET"])(self.stop_thread)
+        self.app.route("/toggle-pause-thread", methods=["GET"])(self.pause_thread)
+        self.app.route("/output")(self.handle_output)
+        self.app.route("/heartbeat")(self.heartbeat)
 
-        # Return success response
-        return {"status": "started", "message": "Thread started"}
-    except Exception as err:
-        app.logger.warning(err)  # pylint: disable=no-member
-        return {"status": "failed", "message": f"Error: {err}"}
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
 
+        self.http_server = WSGIServer(("127.0.0.1", 1357), self.app)
 
-# Define route to stop thread
-@app.route("/stop-thread", methods=["GET"])
-def stop_thread():
-    # Stop thread
-    global thread, thread_logger
-    if thread is not None:
-        thread.shutdown(kill=True)
+    def start_thread(self):
+        """Starts the thread with the given args."""
+        try:
+            if request.json is not None and self.thread is None:
+                selected_jobs: list = request.json["selectedJobs"]
+                selected_accounts: int = int(request.json["selectedAccounts"])
+                args = (selected_jobs, selected_accounts)
+                self.app.logger.info(  # pylint: disable=no-member
+                    "Starting thread with args: %s, of types: %s",
+                    args,
+                    list(map(type, args)),
+                )
+                self.thread = WorkerThread(self.thread_logger, args)
+                self.thread.start()
 
-    # Return success response
-    return {"status": "stopping", "message": "Stopping thread"}
+            # Return success response
+            return {"status": "started", "message": "Thread started"}
+        except Exception as err:
+            self.app.logger.warning(err)  # pylint: disable=no-member
+            return {"status": "failed", "message": f"Error: {err}"}
 
+    def stop_thread(self):
+        """Stops the thread."""
+        self.thread_logger = Logger()
+        if self.thread is not None:
+            self.thread.shutdown(kill=True)
+        return {"status": "stopping", "message": "Stopping thread"}
 
-# Define route to pause thread
-@app.route("/toggle-pause-thread", methods=["GET"])
-def pause_thread():
-    # Pause thread
-    global thread
-    if thread is not None:
-        paused: bool = thread.toggle_pause()
-        if paused:
-            return {"status": "paused", "message": "Paused thread"}
-        return {"status": "resumed", "message": "Resuming thread"}
-    return {"status": "stopped", "message": "No thread running"}
+    def pause_thread(self):
+        """Pauses/resumes the thread."""
+        if self.thread is not None:
+            paused: bool = self.thread.toggle_pause()
+            if paused:
+                return {"status": "paused", "message": "Paused thread"}
+            return {"status": "resumed", "message": "Resuming thread"}
+        return {"status": "stopped", "message": "No thread running"}
 
-
-@app.route("/output")
-def handle_output():
-    global thread, thread_logger
-    if thread is not None:
-        if thread.shutdown_flag.is_set() and not thread.is_alive():
-            return {"status": "stopped", "message": "Idle"}
-        # read the value of the mutex output on the thread object
-        stats = thread_logger.get_stats()
-        if stats is not None:
-            if thread_logger.errored:
-                stop_thread()
-                app.logger.warning("Thread errored: %s", stats["current_status"])
+    def handle_output(self):
+        """Handles output requests."""
+        if self.thread is not None:
+            if self.thread.shutdown_flag.is_set() and not self.thread.is_alive():
+                return {"status": "stopped", "message": "Idle"}
+            stats = self.thread_logger.get_stats()
+            if stats is not None:
+                if self.thread_logger.errored:
+                    self.stop_thread()
+                    self.app.logger.warning(
+                        "Thread errored: %s", stats["current_status"]
+                    )
+                    return {
+                        "status": "errored",
+                        "message": f"Error: {stats['current_status']}",
+                    }
+                if self.thread.shutdown_flag.is_set() and self.thread.is_alive():
+                    stats[
+                        "current_status"
+                    ] = f"Waiting for: {stats['current_status']} to stop"
                 return {
-                    "status": "errored",
-                    "message": f"Error: {stats['current_status']}",
+                    "status": "running",
+                    "message": f"{stats['current_status']}",
+                    "statistics": stats,
                 }
-            if thread.shutdown_flag.is_set() and thread.is_alive():
-                stats[
-                    "current_status"
-                ] = f"Waiting for: {stats['current_status']} to stop"
-            return {
-                "status": "running",
-                "message": f"{stats['current_status']}",
-                "statistics": stats,
-            }
-    app.logger.info("No thread running")  # pylint: disable=no-member
-    return {"status": "stopped", "message": "No thread running", "statistics": {}}
+        self.app.logger.info("No thread running")  # pylint: disable=no-member
+        return {"status": "stopped", "message": "No thread running", "statistics": {}}
 
+    def heartbeat(self):
+        """Handles heartbeat requests."""
+        return {"status": "listening", "message": "Server running"}
 
-@app.route("/heartbeat")
-def heartbeat():
-    return {"status": "listening", "message": "Server running"}
+    def sigterm_handler(self, _signo, _stack_frame):
+        """Handles SIGTERM signal."""
+        raise SigTermException
 
 
 class SigTermException(Exception):
+    """Exception for SIGTERM signal."""
+
     pass
 
 
-def sigterm_handler(_signo, _stack_frame):
-    raise SigTermException
-
-
-http_server = WSGIServer(("127.0.0.1", 1357), app)
-
-try:
-    signal.signal(signal.SIGTERM, sigterm_handler)
-    http_server.serve_forever()
-except (KeyboardInterrupt, SigTermException):
-    print("Shutting down server")
-    http_server.stop()
-    if thread is not None:
-        thread.shutdown()
-        thread = None
-        thread_logger = Logger()
-    print("Server shut down")
-    sys.exit(0)
+if __name__ == "__main__":
+    api = ThreadAPI()
+    api.http_server.serve_forever()
