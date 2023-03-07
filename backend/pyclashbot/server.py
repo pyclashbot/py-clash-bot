@@ -69,7 +69,7 @@ def stop_thread():
     # Stop thread
     global thread, thread_logger
     if thread is not None:
-        thread.shutdown()
+        thread.shutdown(kill=True)
 
     # Return success response
     return {"status": "stopping", "message": "Stopping thread"}
