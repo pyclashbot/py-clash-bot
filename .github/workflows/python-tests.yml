@@ -2,8 +2,7 @@ name: Python Test
 
 on:
   push:
-    branches:
-      - "**" # matches every branch
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -17,17 +16,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
-      - name: Install poetry
-        run: pipx install poetry
       - name: Set up Python ${{ matrix.python }}
         id: pysetup
         uses: actions/setup-python@master
         with:
           python-version: ${{ matrix.python }}
-          cache: "poetry"
       - name: Install package and dependencies, then run tests
         run: |
           cd backend
+          python -m pip install poetry==1.3.2
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
-          poetry install --with build
+          poetry install --with build -vvv
           poetry run python -m unittest discover "tests" -p '*_test.py'
