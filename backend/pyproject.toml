@@ -60,7 +60,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.1.1"
 black = "^23.1.0"
-matplotlib = "^3.6.2" # used in debug.py
+matplotlib = "^3.7.1" # used in debug.py
 ipykernel = "^6.17.1"
 vulture = "^2.6"
 isort = "^5.12.0"
