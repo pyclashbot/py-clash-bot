@@ -32,6 +32,7 @@ def restart_emulator(logger):
 
     # check for the pyclashbot vm, if not found then create it
     vm_index = check_for_vm(logger)
+    print(f'Found vm of index {vm_index}')
     configure_vm(logger, vm_index=vm_index)
 
     # start the vm
@@ -49,11 +50,11 @@ def restart_emulator(logger):
     # wait_for_memu_window(logger)
 
     # skip ads
-    if skip_ads(vm_index=0) == "fail":
+    if skip_ads(vm_index) == "fail":
         return restart_emulator(logger)
 
     # start clash royale
-    start_clash_royale(logger, vm_index=0)
+    start_clash_royale(logger,vm_index)
 
     # manually wait for clash main
     sleep_time = 10
@@ -167,7 +168,7 @@ def create_vm(logger: Logger):
     configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
     pmc.rename_vm(vm_index=vm_index, new_name="(pyclashbot)")
-    logger.change_status("VM created")
+    logger.change_status(f"VM created with index {vm_index}")
     return vm_index
 
 
@@ -231,6 +232,7 @@ def close_everything_memu():
 
 
 def start_clash_royale(logger: Logger, vm_index):
+
     # using pymemuc check if clash royale is installed
     apk_base_name = "com.supercell.clashroyale"
 
@@ -261,8 +263,9 @@ def skip_ads(vm_index):
         for _ in range(4):
             pmc.trigger_keystroke_vm("home", vm_index=vm_index)
             time.sleep(1)
-    except:
-        print("Fail sending home clicks to skip ads... Redoing restart...")
+    except Exception as e:
+        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{e}")
+        input('Enter to cont')
         return "fail"
 
 
