@@ -13,8 +13,10 @@ py-clash-bot is an open-source application that allows users to automate their C
 ## Installation
 
 1. Download and run the latest windows installer [here](https://github.com/matthewmiglio/py-clash-bot/releases/latest).
-2. Run the shortcut on the desktop
-3. The program will automatically install MEmu and AutoHotKey, just follow the installation prompts
+2. Run the shortcut on the desktop.
+3. The program will automatically install MEmu and AutoHotKey, just follow the installation prompts.
+4. You must manually install Clash Royale on your new MEmu client.
+5. You must complete the tutorial (takes 30 seconds) then sign into your account using the SuperCell ID login (or use the fresh account).
 
 ## Usage
 
