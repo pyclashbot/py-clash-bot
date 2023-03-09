@@ -23,22 +23,6 @@ from pyclashbot.memu import (
 )
 
 
-def check_if_mimimum_scroll_case():
-    scroll_down()
-    time.sleep(3)
-
-    minimum_case = False
-    seasonal_card_boosts_icon_coord = find_seasonal_card_boost_icon()
-    if seasonal_card_boosts_icon_coord is None:
-        minimum_case = True
-
-    elif seasonal_card_boosts_icon_coord[1] < 515:
-        minimum_case = False
-
-    scroll_up_super_fast()
-    return minimum_case
-
-
 def find_seasonal_card_boost_icon():
     current_image = screenshot()
     reference_folder = "check_for_seasonal_card_boosts_icon"
@@ -378,12 +362,10 @@ def randomize_and_select_deck_2(logger):
     logger.change_status(
         "Checking how far the bot can randomly scroll in this account's deck list. . ."
     )
-    minimum_scroll_case_boolean = check_if_mimimum_scroll_case()
-    print(minimum_scroll_case_boolean, minimum_scroll_case_boolean)
 
     # for each card slot, scroll according to which case it is, then replace with random card
     logger.change_status("Randomizing this deck. . .")
-    randomize_this_deck(logger, minimum_scroll_case_boolean)
+    randomize_this_deck(logger)
 
     # return to clash main
     if get_to_clash_main_from_card_page(logger) == "restart":
@@ -392,7 +374,7 @@ def randomize_and_select_deck_2(logger):
     time.sleep(1)
 
 
-def randomize_this_deck(logger, minimum_scroll_case_boolean):
+def randomize_this_deck(logger):
     card_coord_list = [
         [75, 271],
         [162, 277],
@@ -412,37 +394,20 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
         print("Failure with count_scrolls_in_card_page")
         return "restart"
 
+    # calculate  an amount to randomly scroll
+    minimum_scrolls = 3
+
+    # handle possiblity of minimum being higher than maximum
+    if minimum_scrolls > maximum_scrolls:
+        minimum_scrolls = maximum_scrolls
+
     # for each card slot, replace with random card
     print("Starting card replacement loop")
     for card_to_replace_coord in card_coord_list:
-        # calculate a an amount to randomly scroll
-        if minimum_scroll_case_boolean:
-            minimum_scrolls = 1
-        else:
-            minimum_scrolls = 3
-        print(
-            "minimum_scroll_case_boolean is ",
-            minimum_scroll_case_boolean,
-            " so minimum scrolls is ",
-            minimum_scrolls,
-        )
-
-        # handle possiblity of minimum being higher than maximum
-        if minimum_scrolls > maximum_scrolls:
-            print(
-                "minimum_scrolls is greater than maximum_scrolls so making minimum_scrolls = maximum_scrolls"
-            )
-            minimum_scrolls = maximum_scrolls
-
         random_scroll_amount = random.randint(minimum_scrolls, maximum_scrolls)
+
         print(
-            "This random scroll amount is ",
-            random_scroll_amount,
-            " within a range of (",
-            minimum_scrolls,
-            ",",
-            maximum_scrolls,
-            ")",
+            f"This random scroll amount is {random_scroll_amount} within a range of ({minimum_scrolls}, {maximum_scrolls})"
         )
 
         # scroll that amount
@@ -450,7 +415,7 @@ def randomize_this_deck(logger, minimum_scroll_case_boolean):
             scroll_down_super_fast()
             time.sleep(0.1)
 
-        # check for scrolling failure here maybe
+        # check for scrolling failure
         if check_for_random_scroll_failure_in_deck_randomization():
             print(
                 "detected a failure when randomly scrolling during deck randomization... attempting to save the bot"
