@@ -100,7 +100,8 @@ def request_random_card(logger, maximum_scrolls=10):
 
     # scroll down for randomness
     print("Scrolling randomly with maximum scrolls of ", maximum_scrolls)
-    for _ in range(maximum_scrolls):
+    random_scroll_amount = Random().randint(0, maximum_scrolls)
+    for _ in range(random_scroll_amount):
         scroll_down_super_fast()
 
     # click random cards in the card list until a request button appears.
