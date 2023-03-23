@@ -29,6 +29,12 @@ def read_window(
 
 
 def read_job_list(values: dict[str, str | int]) -> list[str]:
+    """method for unpacking the job list from the user's input in the gui
+    args:
+        values: dictionary of the values of the window
+    returns:
+        list of jobs as str[]
+    """
     jobs = []
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
@@ -57,6 +63,12 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
 
 
 def save_current_settings(values):
+    """method for caching the user's current settings
+    args:
+        values: dictionary of the values of the window
+    returns:
+        None
+    """
     # read the currently selected values for each key in user_coinfig_keys
     user_settings = {key: values[key] for key in user_config_keys if key in values}
     # cache the user settings
@@ -64,6 +76,12 @@ def save_current_settings(values):
 
 
 def load_last_settings(window):
+    """method for accessing chacned user settings and updating the gui
+    args:
+        window,the gui window
+    returns:
+        None
+    """
     if check_user_settings():
         read_window(window)  # read the window to edit the layout
         user_settings = read_user_settings()
@@ -75,6 +93,14 @@ def load_last_settings(window):
 
 
 def start_button_event(logger: Logger, window, values):
+    """method for starting the main bot thread
+    args:
+        logger, the logger object for for stats storage and printing
+        window, the gui window
+        values: dictionary of the values of the window
+    returns:
+        None
+    """
     logger.change_status("Start Button Event")
 
     for key in disable_keys:
@@ -102,6 +128,14 @@ def start_button_event(logger: Logger, window, values):
 
 
 def stop_button_event(logger: Logger, window, thread: StoppableThread):
+    """method for stopping the main bot thread
+    args:
+        logger, the logger object for for stats storage and printing
+        window, the gui window
+        thread: the main bot thread
+    returns:
+        None
+    """
     logger.change_status("Stopping")
     window["Stop"].update(disabled=True)
     window["-Pause-Resume-Button-"].update(text="Pause")
@@ -110,6 +144,14 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread):
 
 
 def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
+    """method for temporarily stopping the main bot thread
+    args:
+        logger, the logger object for for stats storage and printing
+        window, the gui window
+        thread: the main bot thread
+    returns:
+        None
+    """
     if thread.toggle_pause():
         logger.change_status("Pausing")
         window["-Pause-Resume-Button-"].update(text="Resume")
@@ -119,6 +161,13 @@ def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
 
 
 def update_layout(window: sg.Window, logger: Logger):
+    """method for updaing the values in the gui's window
+    args:
+        window, the gui window
+        logger, the logger object for for stats storage and printing
+    returns:
+        None
+    """
     window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore
     # update the statistics in the gui
     stats = logger.get_stats()
@@ -128,6 +177,12 @@ def update_layout(window: sg.Window, logger: Logger):
 
 
 def main_gui():
+    """method for displaying the main gui
+    args:
+        None
+    returns:
+        None
+    """
     console_log = True  # enable/disable console logging
 
     window = sg.Window("Py-ClashBot", main_layout)
