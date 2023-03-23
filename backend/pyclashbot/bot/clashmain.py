@@ -9,7 +9,6 @@ from pyclashbot.bot.navigation import (
     get_to_clash_main_settings_page,
     get_to_party_mode_page_from_settings_page,
     get_to_ssid_switch_page,
-    get_to_switch_accounts_tab,
     handle_card_mastery_notification,
     open_profile_page,
     wait_for_clash_main_menu,
