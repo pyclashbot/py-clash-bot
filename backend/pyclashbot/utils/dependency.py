@@ -9,7 +9,7 @@
 """
 
 
-from os import environ, makedirs, pathsep
+from os import environ, listdir, makedirs, pathsep, remove
 from os.path import exists, expandvars, getsize, join, normpath
 from socket import gaierror
 from subprocess import call
@@ -96,8 +96,15 @@ def run_installer(path: str) -> bool:
     Returns:
         bool: if install was successful
     """
-    print(f"Running installer {path}, please follow the installation prompts.")
-    return call(path, shell=False) == 0
+    try:
+        print(f"Running installer {path}, please follow the installation prompts.")
+        return call(path, shell=False) == 0
+    except FileNotFoundError:
+        print(f"Installer {path} not found.")
+        return False
+    except OSError:
+        print(f"Installer {path} is corrupt or inaccessible.")
+        return False
 
 
 # endregion
@@ -136,6 +143,10 @@ def install_ahk() -> None:
     """installs ahk"""
     ahk_link = get_ahk_link()
     if ahk_link is not None:
+        # delete old ahk installer
+        for file in listdir(make_cache()):
+            if file.startswith("ahk-install"):
+                remove(join(make_cache(), file))
         ahk_installer_path = download_from_url(ahk_link[0], make_cache(), ahk_link[1])
         if ahk_installer_path is not None:
             run_installer(ahk_installer_path)
@@ -146,6 +157,7 @@ def setup_ahk() -> str:
     # install ahk if not found
     if not check_ahk():
         install_ahk()
+        setup_ahk()
 
     ahk_dir = get_ahk_path()
     if ahk_dir != "":
@@ -205,6 +217,10 @@ def install_memu() -> None:
     """installs memu"""
     memu_link = get_memu_link()
     if memu_link is not None:
+        # delete old memu installers if they exist
+        for file in listdir(make_cache()):
+            if file.startswith("MEmu-setup-abroad-sdk"):
+                remove(join(make_cache(), file))
         memu_installer_path = download_from_url(
             memu_link[0], make_cache(), memu_link[1]
         )
@@ -230,6 +246,7 @@ def setup_memu() -> str:
     # install memu if not found
     if not check_memu():
         install_memu()
+        setup_memu()
 
     # get memu path
     memu_path = get_memu_path()
