@@ -9,7 +9,6 @@ from pyclashbot.bot.navigation import (
     get_to_clash_main_settings_page,
     get_to_party_mode_page_from_settings_page,
     get_to_ssid_switch_page,
-    get_to_switch_accounts_tab,
     handle_card_mastery_notification,
     open_profile_page,
     wait_for_clash_main_menu,
@@ -27,14 +26,9 @@ from pyclashbot.memu.client import (
     scroll_down_fast,
 )
 from pyclashbot.utils.logger import Logger
-from pyclashbot.utils.ssid_account_logging import add_this_ssid_to_log
 
 ahk = AHK()
 logger = Logger()
-
-# page navigation methods
-
-# detection methods
 
 
 def check_if_on_trophy_progession_rewards_page():
@@ -111,9 +105,6 @@ def check_if_in_battle():
     return bool(check_for_location(locations))
 
 
-# interaction methods
-
-
 def check_if_in_a_clan(logger):
     # Method to check if the current account has a clan. starts and ends on clash main
 
@@ -168,8 +159,6 @@ def get_to_account(logger, account_number):
     get_to_ssid_switch_page()
 
     print("getting to then clicking the appropriate account")
-
-    add_this_ssid_to_log(str(account_number))
 
     if account_number == 0:
         click(155, 350)
