@@ -7,7 +7,15 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 
 
+"""Methods that have to do with the collection of the bannerbox rewards
+
+"""
+
+
 def collect_bannerbox_chests(logger):
+    """main method for collecing the bannerbox chests from the clash main menu"""
+
+    # get to the bannerbox menu
     print("Opening bannerbox menu from main")
     get_to_bannerbox()
 
@@ -15,14 +23,16 @@ def collect_bannerbox_chests(logger):
     print("clicking 100 tickets button in the bottom left to buy a chest")
     get_to_confrim_battlebox_purchase_page()
 
+    # handle welcome to bannerbox popup
     if check_for_welcome_to_bannerbox_popup():
         handle_welcome_to_bannerbox_popup()
 
-    # buy a chest if u can
+    # buy a chest if possible
     print("checking if can buy a chest this time")
     if check_if_can_purchase_a_battlebox():
         print("can buy a chest this time")
         buy_a_battlebox()
+    # if cant purchase a chest, close the confirm purchase page
     else:
         print("cant buy a chest this time")
         # close confirm purchase page
@@ -33,6 +43,7 @@ def collect_bannerbox_chests(logger):
     print("closing bannerbox menu to get back to clash main")
     click(354, 67)
 
+    # return to the clash main menu
     print("waiting for main to return")
     if wait_for_clash_main_menu(logger) == "restart":
         print("Failure wiht wait_for_clash_main_menu() in collect_bannerbox_chests()")
@@ -40,6 +51,13 @@ def collect_bannerbox_chests(logger):
 
 
 def buy_a_battlebox():
+    """method for buying a battlebox from the bannerbox menu
+    args:
+        None
+    returns:
+        None
+
+    """
     click(205, 505)
     time.sleep(1)
 
@@ -48,6 +66,13 @@ def buy_a_battlebox():
 
 
 def check_if_can_purchase_a_battlebox():
+    """method for checking if a battlebox can be purchased while on the bannerbox menu
+    args:
+        None
+    returns:
+        bool, True if a battlebox can be purchased, False otherwise
+
+    """
     iar = numpy.asarray(screenshot())
 
     for x_coord in range(170, 195):
@@ -58,16 +83,34 @@ def check_if_can_purchase_a_battlebox():
 
 
 def get_to_confrim_battlebox_purchase_page():
+    """Method to get to the confirm battlebox purchase page from the bannerbox menu
+    args:
+        None
+    returns:
+        None
+    """
     click(312, 606)
     wait_for_confirm_battlebox_purchase_page()
 
 
 def wait_for_confirm_battlebox_purchase_page():
+    """Method to wait for the confirm battlebox purchase page to load
+    args:
+        None
+    returns:
+        None
+    """
     while not check_for_confirm_battlebox_purchase_page():
         pass
 
 
 def check_for_confirm_battlebox_purchase_page():
+    """Method to scan for the confirm battlebox purchase page
+    args:
+        None
+    returns:
+        bool, True if the confirm battlebox purchase page is found, False otherwise
+    """
     iar = numpy.asarray(screenshot())
 
     confirm_purchase_text_exists = False
@@ -88,11 +131,23 @@ def check_for_confirm_battlebox_purchase_page():
 
 
 def handle_welcome_to_bannerbox_popup():
+    """Method to close the 'welcome to bannerbox' popup
+    args:
+        None
+    returns:
+        None
+    """
     click(20, 440, clicks=5, interval=1)
     time.sleep(1)
 
 
 def check_for_welcome_to_bannerbox_popup():
+    """Method to scan for pixels that indicate the 'welcome to bannerbox' popup is present
+    args:
+        None
+    returns:
+        bool, True if the 'welcome to bannerbox' popup is present, False otherwise
+    """
     iar = numpy.asarray(screenshot())
 
     welcome_to_bannerbox_text_exists = False
