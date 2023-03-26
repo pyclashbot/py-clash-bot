@@ -22,8 +22,17 @@ from pyclashbot.memu import (
     scroll_up_super_fast,
 )
 
+"""Methods that have to do with the randomization of the current deck"""
+
 
 def find_seasonal_card_boost_icon():
+    """Method to check for images that indicate a seasonal card boost is active (which obstructs the bot)
+    args:
+        None
+    returns:
+        None if no boost is active, or the coordinates of the boost icon if it is active
+    """
+
     current_image = screenshot()
     reference_folder = "check_for_seasonal_card_boosts_icon"
 
@@ -45,6 +54,13 @@ def find_seasonal_card_boost_icon():
 
 
 def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
+    """Method to cound the number of times the bot can scroll down in the card page while still having usable cards
+    args:
+        logger: the logger object
+    returns:
+        int,the number of scrolls that can be made in the card page
+    """
+
     print("Counting maximum scrolls in card page")
 
     # Count scrolls
@@ -74,6 +90,12 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 
 
 def find_random_card_coord():
+    """method to find coordinates of a random card on the given page of usable cards using random regions to assure randomness
+    args:
+        None
+    returns:
+        coordinates of the card"""
+
     region_list = [
         # cover the region that cards' elixer values can appear in once
         (50, 180, 50, 50),
@@ -161,6 +183,12 @@ def find_random_card_coord():
 
 
 def find_card_elixer_icon_in_card_list_in_given_image(image):
+    """Method to find a card's elixer icon in a given image
+    args:
+        image: image to search for the elixer icon in
+    returns:
+        int[],coordinates of the elixer icon
+    """
 
     current_image = image
     reference_folder = "find_card_elixer_icon_in_card_list"
@@ -183,6 +211,13 @@ def find_card_elixer_icon_in_card_list_in_given_image(image):
 
 
 def find_use_card_button():
+    """method to find the use card button after clicking on a card to use
+    args:
+        none
+    returns:
+        int[], coordinates of the use card button
+    """
+
     current_image = screenshot()
     reference_folder = "find_use_card_button"
 
@@ -204,6 +239,13 @@ def find_use_card_button():
 
 
 def check_if_can_still_scroll_in_card_page_2():
+    """method to check if pixels indicate that the card page can still be scrolled while still seeing usable cards
+    args:
+        none
+    returns:
+        bool, True if the card page can still be scrolled, False if not
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[552][341],
@@ -237,6 +279,13 @@ def check_if_can_still_scroll_in_card_page_2():
 
 
 def check_if_can_still_scroll_in_card_page_3():
+    """another method to check if pixels indicate that the card page can still be scrolled while still seeing usable cards
+    args:
+        none
+    returns:
+        bool, True if the card page can still be scrolled, False if not
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[489][66],
@@ -270,6 +319,12 @@ def check_if_can_still_scroll_in_card_page_3():
 
 
 def check_if_can_still_scroll_in_card_page_4():
+    """method to check if pixels indicate that the card page can still be scrolled while still seeing usable cards
+    args:
+        none
+    returns:
+        bool, True if the card page can still be scrolled, False if not
+    """
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[313][147],
@@ -303,6 +358,12 @@ def check_if_can_still_scroll_in_card_page_4():
 
 
 def check_if_can_still_scroll_in_card_page():
+    """Main method for checking if the bot can still scroll in the card page while seeing usable cards
+    args:
+        none
+    returns:
+        bool, True if the bot can still scroll, False if not
+    """
     if not check_if_can_still_scroll_in_card_page_2():
         return False
     if not check_if_can_still_scroll_in_card_page_3():
@@ -313,6 +374,13 @@ def check_if_can_still_scroll_in_card_page():
 
 
 def check_for_random_scroll_failure_in_deck_randomization():
+    """ "Method to check for pixels that indicate a failure when randomly scrolling through the deck
+    args
+        none
+    returns:
+        bool, True if the bot can still scroll, False if not
+    """
+
     card_level_boost_icon_coord_height = find_seasonal_card_boost_icon()
     if card_level_boost_icon_coord_height is None:
         return False
@@ -320,15 +388,24 @@ def check_for_random_scroll_failure_in_deck_randomization():
         return True
 
 
-#### etc
-
-
 def check_if_pix_list_is_blue(pix_list):
+    """method to check a given pixel list to see if it is blue
+    args:
+        pix_list: list of pixels to check
+    returns:
+        bool, True if all pixels in the list are blue, False if not
+    """
     color_blue = [15, 70, 120]
     return all(pixel_is_equal(color_blue, pix, tol=45) for pix in pix_list)
 
 
 def check_if_pixel_is_grey(pixel):
+    """Method to check if a given pixel is greyscale or not
+    args:
+        pixel: list of 3 ints, representing the RGB values of the pixel
+    returns:
+        bool, True if the pixel is greyscale, False if not
+    """
     r: int = pixel[0]
     g: int = pixel[1]
     b: int = pixel[2]
@@ -342,8 +419,14 @@ def check_if_pixel_is_grey(pixel):
     return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
 
 
-### TO SORT
 def randomize_and_select_deck_2(logger):
+    """Main method for randomizing and selecting deck 2
+    args:
+        logger: Logger object
+    returns:
+        restart state upon failure
+    """
+
     logger.change_status("Making a random deck before starting a 2v2. . .")
 
     # get to card page
@@ -375,6 +458,13 @@ def randomize_and_select_deck_2(logger):
 
 
 def randomize_this_deck(logger):
+    """main method for randomizing the current deck
+    args:
+        logger: Logger object
+    returns:    
+        restart state upon failure
+    """
+
     card_coord_list = [
         [75, 271],
         [162, 277],

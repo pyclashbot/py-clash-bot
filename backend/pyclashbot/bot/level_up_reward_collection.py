@@ -7,13 +7,14 @@ from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
 
+"""methods that have to do with the collection of level up rewards"""
+
+
 def check_for_level_up_reward_pixels():
-    """
-    check_for_level_up_reward_pixels looks for level up reward icon pixels while on clash main menu
+    """check_for_level_up_reward_pixels looks for level up reward icon pixels while on clash main menu
 
-    :
-
-    :return: bool: yes if rewards icon exists
+    returns:
+        bool: yes if rewards icon exists
     """
     iar = numpy.asarray(screenshot())
 
@@ -31,11 +32,10 @@ def check_for_level_up_reward_pixels():
 
 
 def check_if_has_level_up_rewards():
-    """
-    test_function spams the check_for_level_up_reward_pixels() pixel check a few
-    times over a few seconds because the animation sometimes obstructs the pixels
+    """method that spams the check_for_level_up_reward_pixels() pixel check a few times over a few seconds because the animation sometimes obstructs the pixels
 
-    :return: bool: yes if rewards icon pixels existed anytime in the last 0.36 seconds
+    returns: 
+        bool: yes if rewards icon pixels existed anytime in the last 0.36 seconds
     """
 
     timer = 0
@@ -49,13 +49,12 @@ def check_if_has_level_up_rewards():
 
 
 def collect_level_up_rewards(logger):
-    """
-    test_function collect_level_up_rewards() checks if the level up reward icon exists,
-    clicks icon, clicks chest, skips through chest rewards, then returns to clash main,
-    all on a loop until the rewards icon no longer appears on the clash main menu
-    :logger: logger from logger class initiaed in main
+    """checks if the level up reward icon exists,clicks icon, clicks chest, skips through chest rewards, then returns to clash main, all on a loop until the rewards icon no longer appears on the clash main menu
+    args:
+        logger: logger from logger class initiaed in main
 
-    :return: "restart" if any failure occurs, else "battlepass reward collection"
+    returns: 
+        "restart" if any failure occurs, else "battlepass reward collection"
     """
     # starts and ends on clash main
     logger.change_status("Collecting level up rewards.")

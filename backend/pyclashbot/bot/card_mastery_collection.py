@@ -13,9 +13,17 @@ from pyclashbot.detection.image_rec import check_for_location, find_references
 from pyclashbot.memu import click, screenshot
 from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
+"""Methods that have to do with the collection of the card mastery rewards
+"""
+
 
 def collect_card_mastery_rewards(logger):
-    # starts on clash main, collects mastery rewards, returns to clash main
+    """Main method for collecting card mastery rewards from the clash main menu
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
 
     reward_coords = [
         [210, 360],
@@ -87,7 +95,12 @@ def collect_card_mastery_rewards(logger):
 
 
 def check_if_can_collect_card_mastery_rewards(logger):
-    # starts clash main , checks if there are mastery rewards, then returns to clash main
+    """Method to check if card mastery rewards are available to collect
+    args:
+        logger: logger object
+    returns:
+        True if there are rewards to collect, False if there are not
+    """
 
     # get to card page
     if get_to_card_page(logger) == "restart":
@@ -115,6 +128,13 @@ def check_if_can_collect_card_mastery_rewards(logger):
 
 
 def check_for_banner_box_popup():
+    """Method to scan for images that indicate a banner box popup is present
+    args:
+        None
+    returns:
+        True if a banner box popup is present, False if not
+    """
+
     current_image = screenshot()
     reference_folder = "check_for_banner_box_popup"
 
@@ -135,6 +155,12 @@ def check_for_banner_box_popup():
 
 
 def handle_banner_box_popup():
+    """Method to handle a banner box popup
+    args:
+        None
+    returns:
+        None"""
+
     if check_for_banner_box_popup():
         print("Found banner box popup")
 
