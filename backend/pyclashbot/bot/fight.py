@@ -17,12 +17,17 @@ from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
 
+"""methods that have to do with the fighting of battles"""
+
+
 #### card playing
 def do_fight(logger):
     """
     do_fight waits until has 6 elixer, then plays a random card, all on a loop until it detects that the battle is over
-    :logger: logger from logger class initialized in main
-    :return: returns "restart" upon any failure. Else returns None
+    args:
+        :logger: logger from logger class initialized in main
+    :returns
+        "restart" upon any failure. Else returns None
     """
 
     logger.change_status("Starting fight")
@@ -55,10 +60,11 @@ def do_fight(logger):
 
 
 def wait_until_has_6_elixer(logger):
-    """
-    wait_until_has_6_elixer does check_if_has_6_elixer() check every 0.1 seconds until it returns True (periodically checking if the battle is over also)
-    :logger: logger object from logger class initialized in main
-    :return: returns "restart" if waited too long, else returns None.
+    """wait_until_has_6_elixer does check_if_has_6_elixer() check every 0.1 seconds until it returns True (periodically checking if the battle is over also)
+    args:
+        logger: logger object from logger class initialized in main
+    returns:
+        "restart" if waited too long, else returns None.
     """
 
     has_6 = check_if_has_6_elixer()
@@ -89,10 +95,11 @@ def wait_until_has_6_elixer(logger):
 
 
 def play_random_card(logger):
-    """
-    play_random_card picks a random card (1-4), identifies it, detemines the play logic for this card, then plays it according to that logic
-    :logger: logger object from logger class initialized in main
-    :return: None
+    """play_random_card picks a random card (1-4), identifies it, detemines the play logic for this card, then plays it according to that logic
+    args:
+        logger: logger object from logger class initialized in main
+    returns:
+        None
     """
 
     # Select which card we're to play
@@ -143,10 +150,11 @@ def play_hero_power():
 
 #### detection
 def check_if_past_game_is_win(logger):
-    """
-    check_if_past_game_is_win scans the pixels across a specific region in the acitvity log that indicate the past game's win or loss.
-    :logger: logger object from logger class initialized
-    :return: bool: true if pixels are blue, else false
+    """check_if_past_game_is_win scans the pixels across a specific region in the acitvity log that indicate the past game's win or loss.
+    args:
+        logger: logger object from logger class initialized
+    returns:
+        bool: true if pixels are blue, else false
     """
 
     logger.change_status("Checking if game was a win")
@@ -166,6 +174,12 @@ def check_if_past_game_is_win(logger):
 
 
 def check_if_pixels_indicate_win_on_activity_log():
+    """method to scan pixels that indicate the previous game was a win or loss
+    args:
+        None
+    returns:
+        bool: true if pixels are blue meaing a win, else false"""
+
     # fill pix list with a list of pixels that scan across the victory/defeat text
     iar = numpy.asarray(screenshot())
     pix_list = [iar[180][x_coord] for x_coord in range(48, 113)]
@@ -184,9 +198,11 @@ def check_if_pixels_indicate_win_on_activity_log():
 
 
 def check_if_has_6_elixer():
-    """
-    check_if_has_6_elixer checks pixels in the bottom elixer bar during a fight to see if it is full to the point of 6 elixer.
-    :return: true if pixels are pink, else false
+    """check_if_has_6_elixer checks pixels in the bottom elixer bar during a fight to see if it is full to the point of 6 elixer.
+    args:
+        None
+    returns:
+        bool, true if pixels are pink, else false
     """
 
     iar = numpy.array(screenshot())
@@ -204,6 +220,13 @@ def check_if_has_6_elixer():
 
 
 def check_if_card_1_is_available():
+    """Method to check if the card in index 1 is available to play based on elixer cost and if the card is greyed out.
+    args:
+        None
+    returns:
+        bool: true if card is available, else false
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[560][120],
@@ -225,6 +248,13 @@ def check_if_card_1_is_available():
 
 
 def check_if_card_2_is_available():
+    """Method to check if the card in index 2 is available to play based on elixer cost and if the card is greyed out.
+    args:
+        None
+    returns:
+        bool: true if card is available, else false
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[565][185],
@@ -249,6 +279,13 @@ def check_if_card_2_is_available():
 
 
 def check_if_card_3_is_available():
+    """Method to check if the card in index 3 is available to play based on elixer cost and if the card is greyed out.
+    args:
+        None
+    returns:
+        bool: true if card is available, else false
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[565][250],
@@ -273,6 +310,13 @@ def check_if_card_3_is_available():
 
 
 def check_if_card_4_is_available():
+    """Method to check if the card in index 4 is available to play based on elixer cost and if the card is greyed out.
+    args:
+        None
+    returns:
+        bool: true if card is available, else false
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[565][320],
@@ -297,6 +341,13 @@ def check_if_card_4_is_available():
 
 
 def check_available_cards():
+    """Methods to check which of the 4 user' current cards are available to play.
+    args:
+        None
+    returns:
+        list: list of bools, true if card is available, else false
+    """
+
     available_cards_return = [False, False, False, False]
     available_cards_return[0] = check_if_card_1_is_available()
     available_cards_return[1] = check_if_card_2_is_available()
@@ -307,11 +358,25 @@ def check_available_cards():
 
 
 def check_if_all_cards_are_available():
+    """method to check if every card is available from the list of available cards.
+    args:
+        None
+    returns:
+        bool: true if all cards are available, else false
+    """
+
     available_cards = check_available_cards()
     return all(available_cards)
 
 
 def check_for_hero_power():
+    """method to check if the hero power button is available to use.
+    args:
+        None
+    returns:
+        bool: true if hero power is available, else false
+    """
+
     # checks for the purple elixer icon of the hero power in the botton left of the screen
     iar = numpy.asarray(screenshot())
     pix_list = [
@@ -328,10 +393,11 @@ def check_for_hero_power():
 
 #### board detection
 def cover_board_image(iar):
-    """
-    cover_board_image covers specific regions in the board image with black that may indicate false positives to make the board detection more accurate.
-    :iar: a numpy image array. This is the image array of the board screenshot.
-    :return: iar: the image array of the board screenshot with the covered regions.
+    """cover_board_image covers specific regions in the board image with black that may indicate false positives to make the board detection more accurate.
+    args:
+        iar: a numpy image array. This is the image array of the board screenshot.
+    returns:
+        iar: the image array of the board screenshot with the covered regions.
     """
 
     # Cover left enemy tower
@@ -387,10 +453,11 @@ def cover_board_image(iar):
 
 
 def get_left_and_right_totals(iar):
-    """
-    get_left_and_right_totals counts the red pixels on the left and right lanes of the board.
-    :iar: a numpy image array. This is the image array of the board screenshot.
-    :return: [left_lane_total, right_lane_total]: integer totals of the red pixels on the left and right lanes of the board.
+    """get_left_and_right_totals counts the red pixels on the left and right lanes of the board.
+    args:
+        iar: a numpy image array. This is the image array of the board screenshot.
+    returns:
+        [left_lane_total, right_lane_total]: integer totals of the red pixels on the left and right lanes of the board.
     """
 
     left_lane_total = 0
@@ -409,9 +476,11 @@ def get_left_and_right_totals(iar):
 
 
 def pick_a_lane():
-    """
-    pick_a_lane gets a numpy image array of the board screenshot, covers the regions that may indicate false positives, and counts the red pixels on the left and right lanes of the board. It then returns the lane with the most red pixels.
-    :return: String: "left" or "right" depending on which lane has the most red pixels. Returns "random" if the lanes are equal within a threshold.
+    """pick_a_lane gets a numpy image array of the board screenshot, covers the regions that may indicate false positives, and counts the red pixels on the left and right lanes of the board. It then returns the lane with the most red pixels.
+    args:
+        None
+    returns:
+        String: "left" or "right" depending on which lane has the most red pixels. Returns "random" if the lanes are equal within a threshold.
     """
 
     iar = numpy.array(screenshot())

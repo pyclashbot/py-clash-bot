@@ -16,10 +16,24 @@ from pyclashbot.utils.caching import check_user_settings
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
 
+"""
+Main for the py-clashbot program
+"""
+
+
 def read_window(
     window: sg.Window, timeout: int = 10
 ) -> tuple[str, dict[str, str | int]]:
-    # Method for reading the attributes of the window
+    """Method for reading the attributes of the window
+    args:
+        window: the window to read
+        timeout: the timeout for the read method
+
+    returns:
+        tuple of the event and the values of the window
+
+    """
+
     # have a timeout so the output can be updated when no events are happening
     read_result = window.read(timeout=timeout)  # ms
     if read_result is None:
@@ -35,6 +49,7 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
     returns:
         list of jobs as str[]
     """
+    # unpacking gui vars into a list of jobs as strings
     jobs = []
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
@@ -82,6 +97,7 @@ def load_last_settings(window):
     returns:
         None
     """
+    # if user settings file exists, load the cached settings
     if check_user_settings():
         read_window(window)  # read the window to edit the layout
         user_settings = read_user_settings()
@@ -106,6 +122,7 @@ def start_button_event(logger: Logger, window, values):
     for key in disable_keys:
         window[key].update(disabled=True)
 
+    # get job list from gui
     jobs = read_job_list(values)
 
     # check if at least one job is selected
@@ -113,7 +130,7 @@ def start_button_event(logger: Logger, window, values):
         logger.change_status("At least one job must be selected")
         return None
 
-    # setup thread and start it
+    # setup the main thread and start it
     acc_count = int(values["-SSID_IN-"])
     args = (jobs, acc_count)
     thread = WorkerThread(logger, args)
@@ -177,16 +194,13 @@ def update_layout(window: sg.Window, logger: Logger):
 
 
 def main_gui():
-    """method for displaying the main gui
-    args:
-        None
-    returns:
-        None
-    """
+    """method for displaying the main gui"""
     console_log = True  # enable/disable console logging
 
+    # create gui window
     window = sg.Window("Py-ClashBot", main_layout)
 
+    # load the last cached settings
     load_last_settings(window)
 
     # track worker thread and logger
@@ -197,26 +211,32 @@ def main_gui():
     while True:
         event, values = read_window(window, timeout=10)
 
+        # on exit event, kill any existing thread
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
             if thread is not None:
                 thread.shutdown(kill=True)
             break
 
+        # on start event, start the thread
         if event == "Start":
             # reset the logger for a new thread
             logger = Logger(console_log=console_log)
             thread = start_button_event(logger, window, values)
 
+        # on stop event, stop the thread
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
 
+        # on pause/resume event, pause/resume the thread
         elif event == "-Pause-Resume-Button-" and thread is not None:
             pause_resume_button_event(logger, window, thread)
 
+        # upon changing any user settings, save the current settings
         elif event in user_config_keys:
             save_current_settings(values)
 
+        # on Donate button event, open the donation link in browser
         elif event == "Donate":
             webbrowser.open(
                 "https://www.paypal.com/donate/"
@@ -226,9 +246,11 @@ def main_gui():
                 + "&currency_code=USD"
             )
 
+        # on Help button event, open the help gui
         elif event == "Help":
             show_help_gui()
 
+        # on issues button event, open the github issues link in browser
         elif event == "issues-link":
             webbrowser.open(
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
@@ -256,6 +278,6 @@ def main_gui():
 
     window.close()
 
-
+#run the main gui
 if __name__ == "__main__":
     main_gui()
