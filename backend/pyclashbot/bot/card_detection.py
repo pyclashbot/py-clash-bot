@@ -5,9 +5,17 @@ from pyclashbot.detection import check_for_location, find_references
 from pyclashbot.memu import get_file_count, make_reference_image_list, screenshot
 
 
-def get_card_images():
-    # Method to get an array of images of the 4 cards
+"""Methods that have to do with the scanning of cards during a battle
+"""
 
+
+def get_card_images():
+    """Method to get the images of the user's 4 current cards
+    args:
+        None
+    returns:
+        list: list of 4 images of the user's current cards
+    """
     return [
         screenshot(region=[105, 550, 70, 90]),
         screenshot(region=[177, 550, 70, 90]),
@@ -17,7 +25,14 @@ def get_card_images():
 
 
 def check_for_card(image, card_name=""):
-    # Method to check for a card in a given image
+    """Method to read the card image and get it's name
+    args:
+        image: image of the card
+        card_name: name of the card to check for
+    returns:
+        bool: True if the card is the given card, False otherwise
+    """
+
     folder_str = f"check_if_card_is_{card_name}"
 
     references = make_reference_image_list(
@@ -34,14 +49,24 @@ def check_for_card(image, card_name=""):
 
 
 def identify_cards():
-    # get card images
+    """Method to check the user's current cards and return a list of their names or "unknown" if the card is not recognized
+    args:
+        None
+    returns:
+        list: list of the names of the user's current cards
+    """
     card_images = get_card_images()
 
     return [identify_card(image) for image in card_images]
 
 
 def identify_card(image):
-    # Method to identify a card given an image
+    """Method to identify the name of the given card image
+    args:
+        image: image of the card
+    returns:
+        str: name of the card"""
+
     # make a list of cards the bot knows about
     card_list = [
         "arrows",
@@ -87,8 +112,12 @@ def identify_card(image):
 
 
 def get_card_group(card_identification):
-    # Method to identify the card group of the given card
-    # make lists of card groups
+    """Method to identify the card group of a given card
+    args:
+        card_identification: name of the card
+    returns:
+        str: name of the card group
+    """
     turret_cards = [
         "turret_cards",
         "bombtower",
@@ -201,7 +230,13 @@ def get_card_group(card_identification):
 
 
 def get_play_coords(card_group, side):
-    # Method to get a list of play coords for a given card group
+    """Method to calculate the coordinates to play a card based on the card type
+    args:
+        card_group: name of the card group
+        side: side of the board to play the card on
+    returns:
+        int[]: coordinates to play the card
+    """
 
     if side == "random":
         n = random.randint(0, 1)

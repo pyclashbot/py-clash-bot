@@ -21,7 +21,17 @@ from pyclashbot.memu.client import (
 )
 
 
+"""methods that have to do with the collection of free offer rewards in the shop"""
+
+
 def collect_free_offer_from_shop(logger):
+    """main method for collecting free offers from the shop
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
+
     logger.change_status("Collecting free offer from shop.")
 
     if not check_if_on_clash_main_menu():
@@ -82,6 +92,11 @@ def collect_free_offer_from_shop(logger):
 
 
 def find_free_button_in_shop():
+    """method to scan for images that indicate the coordinates of a free offer in the shop
+    returns:
+        coordinates of the free offer button if found, None if not found
+    """
+
     current_image = screenshot()
     reference_folder = "find_free_button_in_shop"
 
@@ -103,6 +118,11 @@ def find_free_button_in_shop():
 
 
 def click_find_free_button_in_shop():
+    """method to click the free button in the shop
+    returns:
+        "success" if successful, "fail" if not
+    """
+
     coord = find_free_button_in_shop()
     if coord is None:
         return "fail"
@@ -112,6 +132,10 @@ def click_find_free_button_in_shop():
 
 
 def find_free_offer_icon():
+    """method to scan for images that indicate the coordinates of a free offer in the shop
+    returns:
+        coordinates of the free offer button if found, None if not found
+    """
     current_image = screenshot()
     reference_folder = "find_free_offer_icon"
 
