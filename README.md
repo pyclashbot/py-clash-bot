@@ -2,11 +2,16 @@
 
 [![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
 
+
+
 py-clash-bot is an open-source application that allows users to automate their Clash Royale gameplay on Windows using an emulated Android phone. The bot uses a combination of image recognition, mouse control, and Android emulation to perform a variety of tasks without user intervention.
+
+
+Join the [Discord server](https://discord.gg/mx4W9qRNgF)!
 
 ## Features
 
-- Automated level-up, clan wars and donations
+- Automated level-up, clan wars and card requesting
 - Automatic chest farming
 - Multi-account support
 
