@@ -11,10 +11,18 @@ from pyclashbot.bot.navigation import (
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
-ahk = AHK()
+"""methods that have to do with the collection of battlepass rewards
+"""
 
 
 def check_for_battlepass_reward_pixels():
+    """Method for checking if the battlepass rewards icon on the main menu is lit up
+    args:
+        None
+    returns:
+        bool: True if the battlepass rewards icon is lit up, False if not
+    """
+
     # starts and ends on clash main
     iar = numpy.asarray(screenshot())
 
@@ -30,6 +38,11 @@ def check_for_battlepass_reward_pixels():
 
 
 def check_if_has_battlepass_rewards():
+    """Method to scan for the battlepass rewards icon on the main menu over a period of time
+    args:
+        None
+    returns:
+        bool: True if the battlepass rewards icon on the main menu is lit up, False if not"""
     timer = 0
     while not check_for_battlepass_reward_pixels():
 
@@ -41,6 +54,13 @@ def check_if_has_battlepass_rewards():
 
 
 def collect_battlepass_rewards(logger):
+    """Method to collect battlepass rewards from the battlepass menu
+    args:
+        logger: logger object
+    returns:
+        state string, restart if failure, clashmain if success
+    """
+
     logger.change_status("Collecting battlepass rewards.")
 
     # should be on clash main at this point

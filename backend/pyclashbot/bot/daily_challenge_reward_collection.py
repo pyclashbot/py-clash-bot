@@ -9,8 +9,18 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.memu.launcher import check_if_on_clash_main_menu
 
+"""Methods that have to do with the collecting of the daily challenge rewards
+"""
+
 
 def collect_daily_challenge_rewards(logger):
+    """Main method for collecting the daily challenge rewards
+    args
+        logger: Logger object
+    returns
+        restart state if failed, battlepass_reward_collection state if successful
+    """
+
     logger.change_status("Handling daily challenge rewards...")
 
     # should be on clash main at this point
@@ -57,6 +67,13 @@ def collect_daily_challenge_rewards(logger):
 
 
 def collect_daily_reward(logger, reward_index):
+    """method to collect the daily rewards from the daily challenge page
+    args:
+        logger: logger object
+        reward_index: index of the reward to collect
+    returns:
+        None"""
+
     logger.change_status(
         "Collecting daily challenge reward index: " + str(reward_index)
     )
@@ -102,6 +119,12 @@ def collect_daily_reward(logger, reward_index):
 
 
 def handle_bannerbox_inventory_full_popup():
+    """method to handle the bannerbox inventory full popup
+    args:
+        None
+    returns:
+        None"""
+
     # go to bannerbox
     get_to_bannerbox_from_daily_reward_collection_popup()
 
@@ -127,6 +150,12 @@ def handle_bannerbox_inventory_full_popup():
 
 
 def check_for_bannerbox_inventory_full_popup():
+    """method to scan for pixels that indicate the bannerbox inventory full popup is present
+    args
+        None
+    returns
+        True if the popup is present, False if not
+    """
     iar = numpy.asarray(screenshot())
 
     inventory_full_text_exists = False
@@ -147,6 +176,13 @@ def check_for_bannerbox_inventory_full_popup():
 
 
 def check_if_pixels_indicate_daily_challenge_rewards_to_collect():
+    """Method to scan for pixels that indicate daily challenge rewards are available
+    args
+        None
+    returns
+        True if the pixels indicate rewards are available, False if not
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[209][52],
@@ -162,6 +198,13 @@ def check_if_pixels_indicate_daily_challenge_rewards_to_collect():
 
 
 def check_if_has_daily_challenge_rewards_to_collect():
+    """Method to check for daily challenge rewards across a period of time
+    args
+        None
+    returns
+        True if the pixels indicate rewards are available, False if not
+    """
+
     timer = 0
     while timer < 3:
         time.sleep(0.1)
@@ -172,6 +215,12 @@ def check_if_has_daily_challenge_rewards_to_collect():
 
 
 def check_for_daily_challenge_rewards_in_daily_challenge_page():
+    """Method to check for daily challenge rewards in the daily challenge page
+    args
+        None
+    returns
+        list of bools that indicate if the daily challenge reward task icons are present in the 5 possible locations"""
+
     # list of pixels that pertain to the daily challenge reward task icons in the list of daily challenge rewards
     daily_challenge_reward_coord_list = [
         (105, 225),
