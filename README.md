@@ -11,7 +11,7 @@ Join the [Discord server](https://discord.gg/mx4W9qRNgF)!
 
 ## Features
 
-- Automated level-up, clan wars and card requesting
+- Automated level-up, clan wars, card requesting, battlepass progress, card mastery, card upgrade, chest opening, and MORE!
 - Automatic chest farming
 - Multi-account support
 
