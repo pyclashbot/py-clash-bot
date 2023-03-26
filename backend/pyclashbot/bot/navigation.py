@@ -19,10 +19,17 @@ from pyclashbot.memu.client import (
     scroll_up_fast,
 )
 
+"""methods that have to do with navigating the game's menus"""
+
 
 ####Main navigation methods
 def get_to_card_page(logger):
-    # geting to battledeck page from clash main
+    """main method for getting to the card page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
 
     # click card page
     logger.change_status("Getting to card collection tab...")
@@ -38,6 +45,12 @@ def get_to_card_page(logger):
 
 
 def get_to_war_page_from_main(logger):
+    """main method for getting to the war page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
     print("getting to war page from clash main.")
     if check_if_on_war_page():
         return None
@@ -77,6 +90,13 @@ def get_to_war_page_from_main(logger):
 
 
 def get_to_clash_main_from_shop(logger):
+    """main method for getting to the clash main from the shop page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
+
     logger.change_status("Getting to clash main from shop.")
     # click main
     click(240, 630)
@@ -97,6 +117,13 @@ def get_to_clash_main_from_shop(logger):
 
 
 def get_to_shop_page_from_main(logger):
+    """main method for getting to the shop page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
+
     logger.change_status("Getting to shop from main.")
 
     # check if on main
@@ -119,6 +146,13 @@ def get_to_shop_page_from_main(logger):
 
 
 def get_to_clash_main_from_card_page(logger):
+    """main method for getting to the clash main menu from the card page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
+
     print("Getting to Clash main menu from card page")
 
     # get to card page
@@ -138,6 +172,12 @@ def get_to_clash_main_from_card_page(logger):
 
 
 def get_to_switch_accounts_tab():
+    """main method for getting to the switch accounts tab
+    args:
+    returns:
+        restart state if failed, no other accounts if there's only 1 account, None if else
+    """
+
     # if not on main then failure
     if not check_if_on_clash_main_menu():
         print("Not on main so cant count accounts.")
@@ -158,6 +198,13 @@ def get_to_switch_accounts_tab():
 
 
 def get_to_clash_main_from_clan_page(logger):
+    """main method for getting to the clash main menu from the clan page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
+
     print("getting to main from clan page")
     # Method to return to clash main menu from request page
     click(172, 612)
@@ -178,6 +225,12 @@ def get_to_clash_main_from_clan_page(logger):
 
 
 def get_to_clan_page(logger):
+    """main method for getting to the clan page
+    args:
+        logger: logger object
+    returns:
+        restart state if failed, None if successful
+    """
     # method to get to clan chat page from clash main
     print("getting to clan chat page.")
     click(312, 629)
@@ -218,9 +271,8 @@ def get_to_clan_page(logger):
 
 
 def open_activity_log():
-    """
-    open_activity_log opens the activity log from the clash main
-    :return: None
+    """main method for getting to the activity log menu
+    args:
     """
 
     print("Opening activity log")
@@ -232,11 +284,11 @@ def open_activity_log():
 
 
 def leave_end_battle_window(logger):
-    """
-    leave_end_battle_window checks which end screen case is (there are two),
-    clicks the appropriate button to leave the end battle screen, then waits for clash main.
-    :logger: logger object from logger class initialized in main
-    :return: returns "restart" if it fails to get to clash main, else None
+    """leave_end_battle_window checks which end screen case is (there are two),clicks the appropriate button to leave the end battle screen, then waits for clash main.
+    args:
+        logger: logger object from logger class initialized in main
+    returns:
+        "restart" if it fails to get to clash main, else None
     """
     logger.change_status("Leaving this 2v2 battle. . .")
 
@@ -264,8 +316,14 @@ def leave_end_battle_window(logger):
     return None
 
 
-####Methods for handling popups
 def handle_war_loot_chest():
+    """method for handling the possbiility of a war loot chest in the way of the bot
+    args:
+        None
+    returns:
+        None
+    """
+
     if check_for_war_loot_chest():
         print("Found a war chest in the way...")
         # click open chest
@@ -282,6 +340,12 @@ def handle_war_loot_chest():
 
 
 def handle_card_mastery_notification():
+    """Method to handle the possibility of a card mastery notification obstructing the bot
+    args:
+        None
+    returns:
+        None
+    """
     # Method to handle the possibility of a card mastery notification
     # obstructing the bot
     click(107, 623)
@@ -292,6 +356,12 @@ def handle_card_mastery_notification():
 
 
 def handle_war_loot_menu():
+    """Method to handle the possibility of a war_loot_menu page obstructing the bot
+    args:
+        None
+    returns:
+        None
+    """
     # open chest
     print("Opening war chest")
     click(205, 420)
@@ -304,12 +374,26 @@ def handle_war_loot_menu():
 
 
 def handle_stuck_on_war_final_results_page():
+    """handling the possiblity of the bot getting stuck on the war final results page
+    args:
+        None
+    returns:
+        None
+    """
+
     if check_if_stuck_on_war_final_results_page():
         click(215, 565)
         time.sleep(1)
 
 
 def handle_final_results_popup():
+    """method for handling the final results popup
+    args:
+        None
+    returns:
+        None
+    """
+
     print("Doing final results popup hanlding.")
 
     # click OK
@@ -318,6 +402,13 @@ def handle_final_results_popup():
 
 
 def open_war_chest(logger):
+    """method for opening a war chest that is obstructing the bot
+    args:
+        logger: logger object from logger class initialized in main
+    returns:
+        None
+    """
+
     # click chest
     logger.change_status("Opening the war chest. . .")
     click(210, 440)
@@ -344,13 +435,25 @@ def open_war_chest(logger):
 
 
 def handle_war_chest_obstruction(logger):
+    """method for handling the possiblity of a war chest obstructing the bot
+    args:
+        logger: logger object from logger class initialized in main
+    returns:
+        None
+    """
     if check_for_war_chest_obstruction():
         logger.change_status("Opening war chest.")
         open_war_chest(logger)
 
 
-####Methods for detecting the page
 def check_if_stuck_on_war_final_results_page():
+    """method for scanning for pixels that indicate the bot is stuck on the war final results page
+    args:
+        None
+    returns:
+        bool,True if stuck on war final results page, else False
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[575][235],
@@ -362,6 +465,13 @@ def check_if_stuck_on_war_final_results_page():
 
 
 def check_if_on_first_card_page():
+    """method for checking if the bot is on the first card page
+    args:
+        None
+    returns:
+        bool, True if on first card page, else False
+    """
+
     # Method to check if the elixer icon of your deck's AVG elixer exists when on the
     # card page exists yet
     references = [
@@ -390,13 +500,16 @@ def check_if_on_first_card_page():
 
 
 def check_if_on_clash_main_menu():
+    """method for checking if the bot is on the clash main menu
+    args:
+        None
+    returns:
+        bool, True if on clash main menu, else False
+    """
+
     if not check_for_gem_logo_on_main():
         # print("gem fail")
         return False
-
-    # if not check_for_blue_background_on_main():
-    #     # print("blue fail")
-    #     return False
 
     if not check_for_friends_logo_on_main():
         # print("friends logo")
@@ -409,6 +522,13 @@ def check_if_on_clash_main_menu():
 
 
 def check_if_on_war_page():
+    """method for scanning for pixels that indicate the bot is on the war page
+    args:
+        None
+    returns:
+        bool, True if on war page, else False
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[73][43],
@@ -419,6 +539,13 @@ def check_if_on_war_page():
 
 
 def check_for_gem_logo_on_main():
+    """method for scanning for pixels that indicate the bot is on the clash main menu by checking for the gem logo
+    args:
+        None
+    returns:
+        bool, True if on gem logo exists, else False
+    """
+
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
@@ -436,6 +563,13 @@ def check_for_gem_logo_on_main():
 
 
 def check_for_blue_background_on_main():
+    """method for scanning for pixels that indicate the bot is on the clash main menu by checking for the blue backgound
+    args:
+        None
+    returns:
+        bool, True if on blue background exists, else False
+    """
+
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
@@ -452,6 +586,12 @@ def check_for_blue_background_on_main():
 
 
 def check_for_gold_logo_on_main():
+    """method for scanning for pixels that indicate the bot is on the clash main menu by checking for the gold logo
+    args:
+        None
+    returns:
+        bool, True if on gold logo exists, else False
+    """
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
@@ -470,6 +610,13 @@ def check_for_gold_logo_on_main():
 
 
 def check_for_friends_logo_on_main():
+    """method for scanning for pixels that indicate the bot is on the clash main menu by checking for the friends logo
+    args:
+        None
+    returns:
+        bool, True if on gem friends exists, else False
+    """
+
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot())
 
@@ -491,6 +638,12 @@ def check_for_friends_logo_on_main():
 
 
 def check_for_war_loot_chest():
+    """method for scanning for images that indicate a war_loot_chest is on screen
+    args:
+        None
+    returns:
+        bool, True if on gem logo exists, else False
+    """
     current_image = screenshot()
     reference_folder = "check_for_war_loot_chest"
 
@@ -511,6 +664,12 @@ def check_for_war_loot_chest():
 
 
 def check_if_on_clan_page():
+    """method for scanning pixels to check if they indicate the bot is on the clan page
+    args:
+        None
+    returns:
+        bool, True if on clan page, else False"""
+
     # Method to check if we're on the clan chat page
 
     iar = numpy.array(screenshot())
@@ -526,6 +685,13 @@ def check_if_on_clan_page():
 
 
 def check_for_war_loot_menu():
+    """method for scanning pixels that indicate if the war loot menu is on screen
+    args:
+        None
+    returns:
+        bool, True if on war loot menu, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     pix_list = [
@@ -540,6 +706,13 @@ def check_for_war_loot_menu():
 
 
 def check_for_final_results_popup():
+    """method for scanning pixels that indicate if the final results popup is on screen
+    args:
+        None
+    returns:
+        bool, True if on final results popup, else False
+    """
+
     iar = numpy.asarray(screenshot())
     pix_list = [
         iar[555][170],
@@ -555,6 +728,12 @@ def check_for_final_results_popup():
 
 
 def check_if_on_shop_page_with_delay():
+    """method for checking if the bot is on the shop page with a delay
+    args:
+        None
+    returns:
+        bool, True if on shop page, else False
+    """
     start_time = time.time()
     while time.time() - start_time < 3:
         print("looping thru")
@@ -566,6 +745,12 @@ def check_if_on_shop_page_with_delay():
 
 
 def check_if_on_shop_page():
+    """method for checking if the bot is on the shop page
+    args:
+        None
+    returns:
+        bool, True if on shop page, else False
+    """
     iar = numpy.asarray(screenshot())
 
     pix_list = [
@@ -589,6 +774,13 @@ def check_if_on_shop_page():
 
 
 def find_switch_accouts_button():
+    """method to locate the coordinates of the switch accounts button
+    args:
+        None
+    returns:
+        list, coordinates of the switch accounts button
+    """
+
     current_image = screenshot()
     reference_folder = "find_switch_accouts_button"
 
@@ -610,6 +802,12 @@ def find_switch_accouts_button():
 
 
 def check_for_war_chest_obstruction():
+    """method for scanning for images that indicate a war_chest_obstruction is on screen
+    args:
+        None
+    returns:
+        bool, True if on gem logo exists, else False
+    """
     current_image = screenshot()
     reference_folder = "check_for_war_chest_obstruction"
 
@@ -630,9 +828,9 @@ def check_for_war_chest_obstruction():
 
 
 def check_if_end_screen_is_ok_bottom_middle():
-    """
-    check_if_end_screen_is_ok_bottom_middle checks for one of the end of battle screen cases (OK in bottom middle)
-    :return: bool: True if pixels indicate this is the case, else False
+    """check_if_end_screen_is_ok_bottom_middle checks for one of the end of battle screen cases (OK in bottom middle)
+    returns:
+        bool: True if pixels indicate this is the case, else False
     """
 
     iar = numpy.array(screenshot())
@@ -648,9 +846,9 @@ def check_if_end_screen_is_ok_bottom_middle():
 
 
 def check_if_end_screen_is_exit_bottom_left():
-    """
-    check_if_end_screen_is_exit_bottom_left checks for one of the end of battle screen cases (OK in bottom left)
-    :return: bool: True if pixels indicate this is the case, else False
+    """check_if_end_screen_is_exit_bottom_left checks for one of the end of battle screen cases (OK in bottom left)
+    returns:
+        bool: True if pixels indicate this is the case, else False
     """
 
     iar = numpy.array(screenshot())
@@ -665,6 +863,13 @@ def check_if_end_screen_is_exit_bottom_left():
 
 
 def check_if_stuck_on_trophy_progression_page():
+    """method to scan for pixels that indicate the bot is stuck on the trophy progression page
+    args:
+        None
+    returns:
+        bool, True if stuck on trophy progression page, else False
+    """
+
     iar = numpy.asarray(screenshot())
     color = [85, 177, 255]
     pix_list = [
@@ -677,10 +882,14 @@ def check_if_stuck_on_trophy_progression_page():
     return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
-####Methods to wait
-
-
 def wait_for_clash_main_menu(logger):
+    """method to wait for the clash main menu to appear
+    args:
+        logger: logger object
+    returns:
+        restart state if waited too long, else None
+    """
+
     logger.change_status("Waiting for clash main menu")
     waiting = not check_if_on_clash_main_menu()
 
@@ -720,11 +929,25 @@ def wait_for_clash_main_menu(logger):
 
 
 def get_to_clash_main_settings_page():
+    """method to get to the clash main settings page
+    args:
+        None
+    returns:
+        None
+    """
+
     click(x=364, y=99)
     wait_for_clash_main_settings_page()
 
 
 def check_if_on_clash_main_settings_page():
+    """method to check if the bot is on the clash main settings page by scanning relevant pixels
+    args:
+        None
+    returns:
+        bool, True if on the clash main settings page, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     battle_log_text_exists = False
@@ -745,21 +968,47 @@ def check_if_on_clash_main_settings_page():
 
 
 def wait_for_clash_main_settings_page():
+    """method for waiting for the calsh main settings page to appear
+    args:
+        None
+    returns:
+        None
+    """
     while not check_if_on_clash_main_settings_page():
         pass
 
 
 def wait_for_ssid_switch_page():
+    """method for waiting for the ssid switch page to appear
+    args:
+        None
+    returns:
+        None
+    """
     while not check_for_ssid_switch_page():
         pass
 
 
 def get_to_ssid_switch_page():
+    """method for getting to the ssid switch page (accounts switch page)
+    args:
+        None
+    returns:
+        None
+    """
+
     click(200, 460)
     wait_for_ssid_switch_page()
 
 
 def check_for_ssid_switch_page():
+    """Method for scanning pixels that indicate whether or not the bot is on the ssid switch page
+    args:
+        None
+    returns:
+        bool, True if on the ssid switch page, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     blue_background_color_exists = False
@@ -780,11 +1029,25 @@ def check_for_ssid_switch_page():
 
 
 def get_to_battlepass_rewards_page():
+    """method for getting the to battlepass rewards page
+    args:
+        None
+    returns:
+        None
+    """
+
     click(315, 165)
     wait_for_battlepass_rewards_page()
 
 
 def check_for_battlepass_rewards_page():
+    """method for checking if the bot is on the battlepass rewards page
+    args:
+        None
+    returns:
+        bool, True if on the battlepass rewards page, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     season_timer_clock_icon_exists = False
@@ -805,12 +1068,26 @@ def check_for_battlepass_rewards_page():
 
 
 def wait_for_battlepass_rewards_page():
+    """method for waiting for the battlepass rewards page to appear
+    args:
+        None
+    returns:
+        None
+    """
+
     while not check_for_battlepass_rewards_page():
         if check_for_bonus_bank_popup_in_battlepass_page:
             handle_bonus_bank_popup_in_battlepass_page()
 
 
 def check_for_card_mastery_page():
+    """method to check if the bot is on the card mastery page by scanning relevant pixels
+    args:
+        None
+    returns:
+        bool, True if on the card mastery page, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     card_masteries_text_exists = False
@@ -831,17 +1108,35 @@ def check_for_card_mastery_page():
 
 
 def wait_card_mastery_page():
+    """method for waiting for the card mastery page to appear
+    args:
+        None
+    returns:
+        None
+    """
     while not check_for_card_mastery_page():
         pass
 
 
 def get_to_card_mastery_page():
-
+    """method for getting to the card mastery page
+    args:
+        None
+    returns:
+        None
+    """
     click(257, 505)
     wait_card_mastery_page()
 
 
 def check_if_profile_page_is_open():
+    """method for checking for pixels that indicate whether or not the profile page is open
+    args:
+        None
+    returns:
+        bool, True if the profile page is open, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     profile_page_crown_logo_exists = False
@@ -862,16 +1157,35 @@ def check_if_profile_page_is_open():
 
 
 def open_profile_page():
+    """method for opening the profile page from the clash main menu
+    args:
+        None
+    returns:
+        None
+    """
     click(100, 130)
     wait_for_profile_page()
 
 
 def wait_for_profile_page():
+    """method for waiting for the bot to arrive on the profile page
+    args:
+        None
+    returns:
+        None
+    """
     while not check_if_profile_page_is_open():
         pass
 
 
 def check_if_on_party_mode_page():
+    """method to scan for pixels that indicate the bot is on the party mode page
+    args:
+        None
+    returns:
+        bool, True if on the party mode page, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     party_title_text_exists = False
@@ -892,16 +1206,36 @@ def check_if_on_party_mode_page():
 
 
 def wait_for_party_mode_page():
+    """method for waiting for the party mode page to load
+    args:
+        None
+    returns:
+        None
+    """
     while not check_if_on_party_mode_page():
         pass
 
 
 def get_to_party_mode_page_from_settings_page():
+    """methbod to get to the party mode page from the settings page
+    args:
+        None
+    returns:
+        None
+    """
+
     click(263, 248)
     wait_for_party_mode_page()
 
 
 def wait_for_card_page():
+    """method for waiting for the bot to arrive on the card page
+    args:
+        None
+    returns:
+        fail if the bot times out waiting for the card page, else None
+    """
+
     start_time = time.time()
     while not check_if_on_card_page():
 
@@ -911,6 +1245,13 @@ def wait_for_card_page():
 
 
 def check_if_on_card_page():
+    """method to scan for pixels that indicate the bot is on the card page
+    args:
+        None
+    returns:
+        bool, True if on the card page, else False
+    """
+
     iar = numpy.asarray(screenshot())
 
     left_arrow_exists = False
@@ -937,6 +1278,12 @@ def check_if_on_card_page():
 
 
 def check_if_on_battle_deck_page():
+    """method scans for pixels that indicate the bot is on the battle deck page
+    args:
+        None
+    returns:
+        bool, True if on the battle deck page, else False
+    """
     iar = numpy.asarray(screenshot())
 
     battle_deck_text_exists = False
@@ -957,6 +1304,12 @@ def check_if_on_battle_deck_page():
 
 
 def get_to_battle_deck_page():
+    """method for getting to the battle deck page from the main menu
+    args:
+        None
+    returns:
+        None
+    """
     loops = 0
     while not check_if_on_battle_deck_page():
         loops += 1
@@ -969,11 +1322,23 @@ def get_to_battle_deck_page():
 
 
 def get_to_bannerbox_from_daily_reward_collection_popup():
+    """method for getting to the bannerbox page from the daily reward collection popup
+    args:
+        None
+    returns:
+        None
+    """
     click(200, 450)
     wait_for_bannerbox_page()
 
 
 def check_if_on_bannerbox_page():
+    """method for scanning for pixels that indicate the bot is on the bannerbox page
+    args:
+        None
+    returns:
+        bool, True if on the bannerbox page, else False
+    """
     iar = numpy.asarray(screenshot())
 
     bannerbox_title_text_exists = False
@@ -994,18 +1359,36 @@ def check_if_on_bannerbox_page():
 
 
 def wait_for_bannerbox_page():
+    """method for waiting for the bannerbox page to appear
+    args:
+        None
+    returns:
+        None
+    """
     while not check_if_on_bannerbox_page():
         click(20, 440)
         pass
 
 
 def get_to_bannerbox():
+    """method for gettign to the bannerbox page to appear
+    args:
+        None
+    returns:
+        None
+    """
     click(355, 230)
     wait_for_bannerbox_page()
     print("made it to bannerbox page")
 
 
 def check_for_bonus_bank_popup_in_battlepass_page():
+    """method for scanning for pixels that indicate the bonus bank popup is on the screen
+    args:
+        None
+    returns:
+        bool, True if the bonus bank popup is on the screen, else False
+    """
     iar = numpy.asarray(screenshot())
 
     yellow_background_exists = False
@@ -1037,6 +1420,12 @@ def check_for_bonus_bank_popup_in_battlepass_page():
 
 
 def handle_bonus_bank_popup_in_battlepass_page():
+    """method for handling the possiblity of the bonus bank popup appearing on the battlepass page
+    args:
+        None
+    returns:
+        None
+    """
     print("handling bonus bank popup")
     # click collect
     click(216, 466)

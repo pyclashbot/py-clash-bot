@@ -31,9 +31,17 @@ ahk = AHK()
 logger = Logger()
 
 
+"""Methods that have to do with chest opening, 2v2 battle starts, and account switching
+"""
+
+
 def check_if_on_trophy_progession_rewards_page():
-    # Method to check if the bot is on the trophy progression rewards page in
-    # the given moment
+    """Method to check if the bot is on the trophy progression rewards page which obstructs the clash main menu
+    args:
+        None
+    returns:
+        True if on trophy progression rewards page, False if not
+    """
     iar = numpy.array(screenshot())
     pix_list = [
         iar[629][240],
@@ -46,7 +54,11 @@ def check_if_on_trophy_progession_rewards_page():
 
 
 def find_2v2_quick_match_button():
-    # method to find the 2v2 quickmatch button in the party mode menu
+    """Method to locate images that indicate the coordinates of the 2v2 quickmatch button
+    args:
+        None
+    returns:
+        int[]: coords of the 2v2 quickmatch button"""
     current_image = screenshot()
     reference_folder = "2v2_quick_match"
 
@@ -68,7 +80,12 @@ def find_2v2_quick_match_button():
 
 
 def check_for_reward_limit():
-    # method to find the 2v2 quickmatch button in the party mode menu
+    """Method to check for the reward limit popup
+    args:
+        None
+    returns:
+        True if reward limit popup is present, False if not
+    """
     current_image = screenshot()
     reference_folder = "reward_limit"
 
@@ -93,6 +110,12 @@ def check_for_reward_limit():
 
 
 def check_if_in_battle():
+    """Method to scan for pixels that indicate the bot is in a battle
+    args:
+        None
+    returns:
+        True if in battle, False if not
+    """
     references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
     locations = find_references(
@@ -106,8 +129,12 @@ def check_if_in_battle():
 
 
 def check_if_in_a_clan(logger):
-    # Method to check if the current account has a clan. starts and ends on clash main
-
+    """Method to check if the bot's current account is in a clan
+    args:
+        Logger: logger object
+    returns:
+        True if in a clan, False if not
+    """
     # starts and ends on clash main
     logger.change_status("Checking if in a clan")
 
@@ -145,6 +172,14 @@ def check_if_in_a_clan(logger):
 
 
 def get_to_account(logger, account_number):
+    """method to get to the given account number represetned as a number 0-8 pertaining to which suppercell account to use
+    args:
+        Logger: logger object
+        int: account number to switch to
+    returns:
+        restart state if failure, None if success
+    """
+
     # Method to change account to the given account number using the supercell
     # ID login screen in the options menu in the clash main menu
     # Account number is ints 0-3 for the first 4 accounts
@@ -216,6 +251,12 @@ def get_to_account(logger, account_number):
 
 
 def handle_new_challenge(logger):
+    """method to handle a new challenge notification obstructing the bot
+    args:
+        Logger: logger object
+    returns:
+        None
+    """
     # Method to handle a new challenge notification obstructing the bot
     logger.change_status("Handling new challenge notification")
     click(376, 639)
@@ -231,6 +272,13 @@ def handle_new_challenge(logger):
 
 
 def handle_special_offer(logger):
+    """Method to handle the special offer notification obstructing the bot
+    args:
+        Logger: logger object
+    returns:
+        None
+    """
+
     # Method to handle a special offer notification obstructing the bot
     logger.change_status("Handling special offer notification")
     click(35, 633)
@@ -244,6 +292,13 @@ def handle_special_offer(logger):
 
 
 def start_2v2(logger):
+    """method for starting a 2v2quick match from the clash main menu
+    args:
+        Logger: logger object
+    returns:
+        restart state if failure, None if success
+    """
+
     # Method to start a 2v2 quickmatch through the party mode through the
     # clash main menu
     logger.change_status("Initiating 2v2 match from main menu")
@@ -269,6 +324,13 @@ def start_2v2(logger):
 
 
 def find_and_click_2v2_quickmatch_button(logger):
+    """Method to find and click the 2v2 quickmatch buttom from the party mode menu
+    args:
+        Logger: logger object
+    returns:
+        restart state if failure, None if success
+    """
+
     # method to find and click the 2v2 quickmatch button in the party mode menu
     # starts in the party mode
     # ends when loading a match
@@ -296,6 +358,13 @@ def find_and_click_2v2_quickmatch_button(logger):
 
 
 def wait_for_battle_start(logger):
+    """Method to wait for the loading sequence of a battle to finish
+    args:
+        Logger: logger object
+    returns:
+        restart state if waited too long, None if success
+    """
+
     # Method to wait for a the loading sequence of a battle to finish
 
     logger.change_status("Waiting for battle start. . .")
@@ -311,6 +380,12 @@ def wait_for_battle_start(logger):
 
 
 def check_if_pixels_indicate_in_battle():
+    """Method to scan for images that inidcate the bot is in a battle
+    args:
+        None
+    returns:
+        True if in battle, False if not"""
+
     references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
     locations = find_references(
@@ -325,6 +400,13 @@ def check_if_pixels_indicate_in_battle():
 
 
 def check_if_in_battle_with_delay():
+    """Method to check if the bot is in a battle across a 3 second period
+    args:
+        None
+    returns:
+        True if in battle, False if not
+    """
+
     start_time = time.time()
     while time.time() - start_time < 3:
         if check_if_pixels_indicate_in_battle():
