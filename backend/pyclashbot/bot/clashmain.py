@@ -6,6 +6,7 @@ from ahk import AHK
 
 from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
+    get_to_challenges_tab,
     get_to_clash_main_settings_page,
     get_to_party_mode_page_from_settings_page,
     get_to_ssid_switch_page,
@@ -308,53 +309,54 @@ def start_2v2(logger):
         print("Not on clash main so cant run start_2v2()")
         return "restart"
 
-    # getting to party tab
-    print("Clicking options hamburber icon in clash main to get to party mode")
-    get_to_clash_main_settings_page()
+    #get to challenges tab
+    get_to_challenges_tab()
+    
+    #click 2v2 mode
+    two_v_two_match_icon_coord = find_2v2_match_icon()
+    click(two_v_two_match_icon_coord[0],two_v_two_match_icon_coord[1])
+    time.sleep(1)
 
-    print("getting to party mode page")
-    get_to_party_mode_page_from_settings_page()
+    #click classic
+    click(285,213)
+    time.sleep(1)
 
-    if find_and_click_2v2_quickmatch_button(logger) == "restart":
-        logger.change_status("failed to find 2v2 quickmatch button")
-        return "restart"
+    #click battle
+    click(x=210, y=450)
+    time.sleep(1)
+
+    #click quickmatch
+    click(x=284, y=387)
+    time.sleep(1)
 
     check_for_reward_limit()
     return None
 
 
-def find_and_click_2v2_quickmatch_button(logger):
-    """Method to find and click the 2v2 quickmatch buttom from the party mode menu
-    args:
-        Logger: logger object
+def find_2v2_match_icon():
+    """method to scan for images that indicate the coordinates of the 2v2 match icon in the challenges tab
     returns:
-        restart state if failure, None if success
+        coordinates of the 2v2 match icon in the challenges tab button if found, None if not found
     """
 
-    # method to find and click the 2v2 quickmatch button in the party mode menu
-    # starts in the party mode
-    # ends when loading a match
-    # logger.change_status("Finding and clicking 2v2 quickmatch button")
-    # repeatedly scroll down until we find coords for the 2v2 quickmatch button
-    origin = pyautogui.position()
-    coords = None
-    loops = 0
-    pyautogui.moveTo(200, 200)
-    time.sleep(1)
-    while coords is None:
-        loops += 1
-        if loops > 20:
-            logger.change_status("Could not find 2v2 quickmatch button, restarting")
-            return "restart"
-        scroll_down()
-        time.sleep(1)
-        coords = find_2v2_quick_match_button()
-    time.sleep(0.33)
-    # once we find the coords, click them
-    print("Found 2v2 quickmatch button, clicking it")
-    click(coords[0], coords[1])
-    pyautogui.moveTo(origin[0], origin[1])
-    logger.change_status("Done queueing a 2v2 quickmatch")
+    current_image = screenshot()
+    reference_folder = "2v2_match_icon"
+
+    references = make_reference_image_list(
+        get_file_count(
+            reference_folder,
+        )
+    )
+
+    locations = find_references(
+        screenshot=current_image,
+        folder=reference_folder,
+        names=references,
+        tolerance=0.97,
+    )
+
+    coord = get_first_location(locations)
+    return None if coord is None else [coord[1], coord[0]]
 
 
 def wait_for_battle_start(logger):
