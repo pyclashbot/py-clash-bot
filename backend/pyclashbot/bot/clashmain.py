@@ -373,7 +373,7 @@ def wait_for_battle_start(logger):
 
     start_time = time.time()
 
-    wait_time = 60
+    wait_time = 300
 
     while not check_if_in_battle_with_delay():
         if time.time() - start_time > wait_time:
