@@ -111,7 +111,7 @@ def check_for_reward_limit():
 
 
 def check_if_in_battle():
-    """Method to scan for pixels that indicate the bot is in a battle
+    """Method to scan for images that indicate the bot is in a battle
     args:
         None
     returns:
@@ -327,7 +327,7 @@ def start_2v2(logger):
 
     #click quickmatch
     click(x=284, y=387)
-    time.sleep(1)
+    time.sleep(5)
 
     check_for_reward_limit()
     return None
@@ -388,10 +388,12 @@ def check_if_pixels_indicate_in_battle():
     returns:
         True if in battle, False if not"""
 
+    #make a screenshot that ignores the elixer icon in the loading screen
+
     references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
     locations = find_references(
-        screenshot=screenshot(),
+        screenshot=screenshot(region=[0, 600, 500, 200]),
         folder="check_if_in_battle",
         names=references,
         tolerance=0.97,
