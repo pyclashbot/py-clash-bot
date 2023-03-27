@@ -6,7 +6,6 @@ Welcome to the py-clash-bot project! We appreciate your interest in contributing
 
 To set up a development environment for py-clash-bot, you will need to have the following tools installed:
 
-- [Node.js](https://nodejs.org/)
 - [Python 3.11](https://www.python.org/)
 - [Poetry](https://python-poetry.org/)
 
@@ -18,12 +17,8 @@ Once you have these tools installed, follow these steps to set up the project:
    `cd backend`
 3. Use Poetry to create a virtual environment and install dependencies
    `poetry install --with build,dev`
-4. Navigate to the `frontend` directory
-   `cd ../frontend`
-5. Install Node.js dependencies
-   `npm install`
-
-To start the development environment, run the `dev` script in the `frontend` directory: `npm run dev`. This will start the Python backend server, the React development server, and the Electron app.
+4. Start the project locally
+   `poetry run python pyclashbot/__main__.py`
 
 ## Testing Changes
 
@@ -42,16 +37,13 @@ Please make sure to install and run the [pre-commit](https://pre-commit.com/) ho
 
 ## Building and Releasing the Project
 
-To build the project for production, run the `package` script in the `frontend` directory: `npm run package`. This will build the frontend and backend for production and package them into an installer.
+To build the project for testing or production, follow these steps:
 
-To release a new version of the project, you will need to bump the version number and push a new tag to GitHub. You can do this by running one of the bump scripts in the `frontend` directory:
-
-- `npm run bump` for a prerelease bump (e.g. `1.2.3` -> `1.2.4-0`)
-- `npm run bump-patch` for a patch bump (e.g. `1.2.4-2` -> `1.2.4`)
-- `npm run bump-minor` for a minor bump (e.g. `1.2.4` -> `1.3.0`)
-- `npm run bump-major` for a major bump (e.g. `1.3.0` -> `2.0.0`)
-
-This will update the version number in the `package.json` file, commit the change, and push a new tag to GitHub. The release workflow will then be triggered to build and release the new version. The pre-releases will be published with a pre-release tag on GitHub and not be linked on [the website](https://matthewmiglio.github.io/py-clash-bot). You can view the status of the workflow on the [Actions tab](https://github.com/matthewmiglio/py-clash-bot/actions).
+1. Navigate to the `backend` directory
+   `cd backend`
+2. Use Poetry to build the project
+   `poetry run python setup_msi.py bdist_msi`
+   This will create a `dist` directory containing the built project.
 
 ## Additional Guidelines
 
