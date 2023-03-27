@@ -42,6 +42,7 @@ PySimpleGUI = "^4.60"
 ahk = "^0.14"
 pymemuc = "^0.1"
 wmi = "^1.5.1"
+ahk-binary = "^1.1.33.9"
 
 
 [tool.poetry.group.build]
