@@ -13,6 +13,7 @@ files = [
 ]
 
 [package.dependencies]
+ahk-binary = {version = "1.1.33.9", optional = true, markers = "extra == \"binary\""}
 jinja2 = "*"
 
 [package.extras]
@@ -4881,4 +4882,4 @@ tests = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10.0"
-content-hash = "3efc93a4876e5c94456242b3a918ee3c4cf749e485066531f1d67e8734e35e6f"
+content-hash = "adf491d72b763723f3bd7be220b223ab717b8367f47f3c4fbe55457de2d80930"

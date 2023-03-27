@@ -39,10 +39,9 @@ pygetwindow = "^0.0"
 joblib = "^1.2"
 requests = "^2.28"
 PySimpleGUI = "^4.60"
-ahk = "^0.14"
+ahk = {extras = ["binary"], version = "^0.14.2"}
 pymemuc = "^0.1"
 wmi = "^1.5.1"
-ahk-binary = "^1.1.33.9"
 
 
 [tool.poetry.group.build]
