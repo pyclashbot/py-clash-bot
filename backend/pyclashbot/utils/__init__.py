@@ -22,6 +22,6 @@ __all__ = [
 
 # dependency module is only available on Windows
 with contextlib.suppress(ImportError):
-    from .dependency import setup_ahk, setup_memu  # noqa
+    from .dependency import setup_memu  # noqa
 
-    __all__.extend(["setup_ahk", "setup_memu"])
+    __all__.extend(["setup_memu"])

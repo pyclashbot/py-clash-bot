@@ -7,9 +7,6 @@ import pyautogui
 import pygetwindow
 from ahk import AHK
 
-from pyclashbot.utils import setup_ahk
-
-setup_ahk()  # setup autohotkey, install if necessary
 ahk = AHK()
 
 
