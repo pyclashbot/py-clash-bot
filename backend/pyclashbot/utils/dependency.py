@@ -1,9 +1,5 @@
 """ dependency.py
     This file contains the functions to install dependencies.
-    Callables:
-        setup_tsrct() -> str, tesseract executable path, sets up tesseract environment variables
-        setup_ahk() -> str, ahk executable path, sets up ahk environment variables
-        setup_memu() -> str, memu executable path, sets up memu environment variables
 
     Martin Miglio 2022
 """
@@ -110,77 +106,6 @@ def run_installer(path: str) -> bool:
 # endregion
 
 
-# region autohotkey
-
-
-def get_ahk_link() -> list[str] | None:
-    """retrieves the link to the latest tesseract download
-
-    Returns:
-        list[str] | None: returns a a list of strings as [url, name of file] or None if not found
-    """
-    return [r"https://www.autohotkey.com/download/ahk-install.exe", "ahk-install.exe"]
-
-
-def get_ahk_path() -> str:
-    """gets the path to the ahk install directory
-
-    Returns:
-        str: path to ahk install directory
-    """
-    try:
-        akey = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotKey"
-        areg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
-        akey = OpenKey(areg, akey)
-    except FileNotFoundError:
-        akey = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotKey"
-        areg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
-        akey = OpenKey(areg, akey)
-    return str(normpath(QueryValueEx(akey, "DisplayIcon")[0]))
-
-
-def install_ahk() -> None:
-    """installs ahk"""
-    ahk_link = get_ahk_link()
-    if ahk_link is not None:
-        # delete old ahk installer
-        for file in listdir(make_cache()):
-            if file.startswith("ahk-install"):
-                remove(join(make_cache(), file))
-        ahk_installer_path = download_from_url(ahk_link[0], make_cache(), ahk_link[1])
-        if ahk_installer_path is not None:
-            run_installer(ahk_installer_path)
-
-
-def setup_ahk() -> str:
-    """sets up ahk environment variables"""
-    # install ahk if not found
-    if not check_ahk():
-        install_ahk()
-        setup_ahk()
-
-    ahk_dir = get_ahk_path()
-    if ahk_dir != "":
-        environ["PATH"] += pathsep + ahk_dir
-    return ahk_dir
-
-
-def check_ahk() -> bool:
-    """checks if ahk is installed
-
-    Returns:
-        bool: if ahk is installed
-    """
-    try:
-        get_ahk_path()
-        return True
-    except FileNotFoundError:
-        return False
-
-
-# endregion
-
-
 # region MEmu
 
 
@@ -264,10 +189,5 @@ def setup_memu() -> str:
 
 # endregion
 if __name__ == "__main__":
-    # setup dependencies
-    ahk_path_s = setup_ahk()
     memu_path_s = setup_memu()
-
-    # print the install paths
-    print(f"AutoHotKey path: {ahk_path_s}")
     print(f"MEmu path: {memu_path_s}")
