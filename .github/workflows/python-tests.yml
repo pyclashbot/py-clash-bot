@@ -24,7 +24,7 @@ jobs:
       - name: Install package and dependencies, then run tests
         run: |
           cd backend
-          python -m pip install poetry==1.3.2
+          python -m pip install poetry
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build -vvv
           poetry run python -m unittest discover "tests" -p '*_test.py'
