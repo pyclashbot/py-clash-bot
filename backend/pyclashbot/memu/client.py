@@ -52,6 +52,13 @@ def scroll_up_fast():
     pyautogui.dragTo(x=215, y=350, button="left", duration=0.5)
     pyautogui.moveTo(x=origin[0], y=origin[1])
 
+def scroll_up_super_fast():
+    """Method for scrolling up faster when interacting with a scrollable menu"""
+    origin = pyautogui.position()
+    pyautogui.moveTo(x=215, y=300)
+    pyautogui.dragTo(x=215, y=350, button="left", duration=0.2)
+    pyautogui.moveTo(x=origin[0], y=origin[1])
+
 
 def scroll_down_fast():
     """Method for scrolling down faster when interacting with a scrollable menu"""
