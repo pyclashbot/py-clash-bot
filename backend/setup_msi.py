@@ -1,45 +1,60 @@
 import sys
+from pathlib import Path
 
 from cx_Freeze import Executable, setup
 
-product_name = "py-clash-bot"
+PROJECT_NAME = "py-clash-bot"
+AUTHOR = "Matthew Miglio, Martin Miglio"
+DESCRIPTION = "Automated Clash Royale"
+KEYWORDS = "clash of clans bot"
+COPYRIGHT = "2023 Matthew Miglio"
+ENTRY_POINT = "pyclashbot\\__main__.py"
+ICON_PATH = "..\\docs\\src\\assets\\pixel-pycb.ico"
+GUI = True
+UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
+
 
 try:
-    version = sys.argv[sys.argv.index("--target-version") + 1]
+    VERSION = sys.argv[sys.argv.index("--target-version") + 1]
 except ValueError:
-    version = "dev"
+    VERSION = "dev"
+
+# find AutoHotKey.exe in Scripts folder
+scripts_path = Path(sys.prefix) / "Scripts"
+ahk_path = next(scripts_path.glob("AutoHotKey*.exe"))
+
+build_exe_options = {
+    "excludes": ["test", "setuptools"],
+    "include_files": [ahk_path],
+}
 
 bdist_msi_options = {
-    "upgrade_code": "{494bebef-6fc5-42e5-98c8-d0b2e339750e}",
+    "upgrade_code": UPGRADE_CODE,
     "add_to_path": False,
-    "initial_target_dir": f"[ProgramFilesFolder]\\{product_name}",
+    "initial_target_dir": f"[ProgramFilesFolder]\\{PROJECT_NAME}",
     "summary_data": {
-        "author": "Matthew Miglio, Martin Miglio",
-        "comments": "A bot for the game Clash of Clans",
-        "keywords": "clash of clans bot",
+        "author": AUTHOR,
+        "comments": DESCRIPTION,
+        "keywords": KEYWORDS,
     },
 }
 
-
-# sepccify program as gui so it doesnt open a console (use None for debugging)
-base = "Win32GUI"
-
 exe = Executable(
-    script="pyclashbot\\__main__.py",
-    base=base,
-    shortcut_name=f"{product_name} {version}",
+    script=ENTRY_POINT,
+    base="Win32GUI" if GUI else None,
+    shortcut_name=f"{PROJECT_NAME} {VERSION}",
     shortcut_dir="DesktopFolder",
-    target_name=f"{product_name}.exe",
-    copyright="2022 Matthew Miglio",
-    icon="..\\docs\\src\\assets\\pixel-pycb.ico",
+    target_name=f"{PROJECT_NAME}.exe",
+    copyright=COPYRIGHT,
+    icon=ICON_PATH,
 )
 
 setup(
-    name=product_name,
-    description="Automated Clash Royale",
+    name=PROJECT_NAME,
+    description=DESCRIPTION,
     executables=[exe],
     options={
         "bdist_msi": bdist_msi_options,
-        "build_exe": {"excludes": ["test", "setuptools"]},
+        "build_exe": build_exe_options,
     },
 )
