@@ -9,10 +9,16 @@ on:
 jobs:
   test:
     name: Python Windows Test
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest]
-        python: ["3.10", "3.11"]
+        python: ["3.11"]
+        experimental: [false]
+        include:
+          - python: "3.12"
+            experimental: true
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
