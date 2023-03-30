@@ -1,16 +1,17 @@
 import os
+import sys
 import time
 from os.path import dirname, join
 
-import numpy
 import pyautogui
 import pygetwindow
 from ahk import AHK
 
-from pyclashbot.utils import setup_ahk
-
-setup_ahk()  # setup autohotkey, install if necessary
-ahk = AHK()
+if getattr(sys, "frozen", False):
+    # The application is frozen
+    ahk = AHK(executable_path=os.path.join(sys.frozen_dir, "AutoHotkey.exe"))  # type: ignore
+else:
+    ahk = AHK()
 
 
 def print_pix_list(pix_list):
