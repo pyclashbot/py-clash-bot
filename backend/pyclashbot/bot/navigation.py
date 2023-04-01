@@ -297,7 +297,7 @@ def leave_end_battle_window(logger):
     if check_if_end_screen_is_exit_bottom_left():
         print("Leaving end battle (condition 1)")
         click(79, 625)
-        time.sleep(10)
+        time.sleep(6)
         click(x=173, y=631)
         if wait_for_clash_main_menu(logger) == "restart":
             logger.change_status("waited for clash main too long")
@@ -308,7 +308,7 @@ def leave_end_battle_window(logger):
     if check_if_end_screen_is_ok_bottom_middle():
         print("Leaving end battle (condition 2)")
         click(206, 594)
-        time.sleep(10)
+        time.sleep(6)
         click(x=173, y=631)
         if wait_for_clash_main_menu(logger) == "restart":
             logger.change_status("waited too long for clash main")
