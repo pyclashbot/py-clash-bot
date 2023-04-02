@@ -15,10 +15,10 @@ jobs:
         os: [windows-latest]
         python: ["3.11"]
         experimental: [false]
-        include:
-          - os: windows-latest
-            python: "3.12-dev"
-            experimental: true
+        # include:
+        #   - os: windows-latest
+        #     python: "3.12-dev"
+        #     experimental: true
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
