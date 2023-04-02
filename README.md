@@ -1,6 +1,6 @@
 # py-clash-bot
 
-[![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
+[![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg?branch=master)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
 
 
 
