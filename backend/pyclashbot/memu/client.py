@@ -3,9 +3,9 @@ import sys
 import time
 from os.path import dirname, join
 
-import pyautogui
 import pygetwindow
 from ahk import AHK
+from PIL import Image, ImageGrab
 
 if getattr(sys, "frozen", False):
     # The application is frozen
@@ -19,18 +19,21 @@ def print_pix_list(pix_list):
         print(pix[0], pix[1], pix[2])
 
 
-def screenshot(region=None):
+def screenshot(
+    region: list[int | float] | tuple[int, int, int, int] | None = None
+) -> Image.Image:
     """Method to return a screenshot of a given region
 
     Args:
         region (tuple, optional): Region to take a screenshot of. Defaults to None.
 
     Returns:
-        PIL.Image: Screenshot of the given region
+        PIL.Image.Image: Screenshot of the given region
     """
     if region is None:
         region = [0, 0, 500, 700]
-    return pyautogui.screenshot(region=region)  # type: ignore
+    region = tuple(int(x) for x in region)
+    return ImageGrab.grab(bbox=region)
 
 
 def make_reference_image_list(size):
@@ -43,48 +46,6 @@ def make_reference_image_list(size):
         reference_image_list.append(image_name)
 
     return reference_image_list
-
-
-def scroll_up_fast():
-    """Method for scrolling up faster when interacting with a scrollable menu"""
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=300)
-    pyautogui.dragTo(x=215, y=350, button="left", duration=0.5)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
-
-def scroll_up_super_fast():
-    """Method for scrolling up faster when interacting with a scrollable menu"""
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=300)
-    pyautogui.dragTo(x=215, y=350, button="left", duration=0.2)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
-
-
-def scroll_down_fast():
-    """Method for scrolling down faster when interacting with a scrollable menu"""
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=350)
-    time.sleep(0.1)
-    pyautogui.dragTo(x=215, y=300, button="left", duration=0.5)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
-
-
-def scroll_down_super_fast():
-    """Method for scrolling down even faster when interacting with a scrollable menu"""
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=400)
-    time.sleep(0.1)
-    pyautogui.dragTo(x=215, y=300, button="left", duration=0.2)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
-
-
-def scroll_up_super_fast():
-    """Method for scrolling down even faster when interacting with a scrollable menu"""
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=300)
-    time.sleep(0.1)
-    pyautogui.dragTo(x=215, y=400, button="left", duration=0.2)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
 
 
 def get_file_count(folder):
@@ -171,16 +132,48 @@ def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
 
 def scroll_down():
     """Method for scrolling down when interacting with a scrollable menu"""
-    origin = pyautogui.position()
-    pyautogui.moveTo(x=215, y=350)
-    pyautogui.dragTo(x=215, y=300, button="left", duration=1)
-    pyautogui.moveTo(x=origin[0], y=origin[1])
+    origin = ahk.mouse_position
+    ahk.mouse_move(x=215, y=350)
+    ahk.mouse_drag(x=0, y=-50, relative=True, blocking=False)
+    ahk.mouse_move(x=origin[0], y=origin[1])
+
+
+def scroll_up_fast():
+    """Method for scrolling up faster when interacting with a scrollable menu"""
+    origin = ahk.mouse_position
+    ahk.mouse_move(x=215, y=300)
+    ahk.mouse_drag(x=0, y=50, relative=True, blocking=False)
+    ahk.mouse_move(x=origin[0], y=origin[1])
+
+
+def scroll_down_fast():
+    """Method for scrolling down faster when interacting with a scrollable menu"""
+    origin = ahk.mouse_position
+    ahk.mouse_move(x=215, y=350)
+    ahk.mouse_drag(x=0, y=-50, relative=True, blocking=False)
+    ahk.mouse_move(x=origin[0], y=origin[1])
+
+
+def scroll_down_super_fast():
+    """Method for scrolling down even faster when interacting with a scrollable menu"""
+    origin = ahk.mouse_position
+    ahk.mouse_move(x=215, y=400)
+    ahk.mouse_drag(x=0, y=-100, relative=True, blocking=False)
+    ahk.mouse_move(x=origin[0], y=origin[1])
+
+
+def scroll_up_super_fast():
+    """Method for scrolling down even faster when interacting with a scrollable menu"""
+    origin = ahk.mouse_position
+    ahk.mouse_move(x=215, y=300)
+    ahk.mouse_drag(x=0, y=100, relative=True, blocking=False)
+    ahk.mouse_move(x=origin[0], y=origin[1])
 
 
 def orientate_terminal():
     """Method for orientating the terminal"""
     try:
-        window = pygetwindow.getWindowsWithTitle("Py-ClashBot")[0]
+        window = pygetwindow.getWindowsWithTitle("Py-ClashBot")[0]  # type: ignore
         window.moveTo(732, 0)
     except Exception:
         print("Couldn't orientate terminal")

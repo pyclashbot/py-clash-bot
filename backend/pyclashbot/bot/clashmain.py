@@ -1,7 +1,6 @@
 import time
 
 import numpy
-import pyautogui
 from ahk import AHK
 
 from pyclashbot.bot.navigation import (
@@ -311,7 +310,7 @@ def start_2v2(logger):
 
     #get to challenges tab
     get_to_challenges_tab()
-    
+
     #click 2v2 mode
     two_v_two_match_icon_coord = find_2v2_match_icon()
     click(two_v_two_match_icon_coord[0],two_v_two_match_icon_coord[1])
