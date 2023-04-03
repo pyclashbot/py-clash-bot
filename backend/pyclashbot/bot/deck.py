@@ -17,9 +17,9 @@ from pyclashbot.memu import (
     make_reference_image_list,
     screenshot,
     scroll_down,
-    scroll_down_super_fast,
+    scroll_down_fast,
+    scroll_up,
     scroll_up_fast,
-    scroll_up_super_fast,
 )
 
 """Methods that have to do with the randomization of the current deck"""
@@ -65,7 +65,7 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 
     # Count scrolls
     count: int = 1
-    scroll_down_super_fast()
+    scroll_down_fast()
     loops = 0
     while check_if_can_still_scroll_in_card_page():
         print("Scrolling down in card page: ", count)
@@ -73,7 +73,7 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
         if loops > 40:
             logger.change_status("Failed counting scrolls in card page")
             return "restart"
-        scroll_down_super_fast()
+        scroll_down_fast()
         time.sleep(0.1)
         count += 1
 
@@ -461,7 +461,7 @@ def randomize_this_deck(logger):
     """main method for randomizing the current deck
     args:
         logger: Logger object
-    returns:    
+    returns:
         restart state upon failure
     """
 
@@ -502,7 +502,7 @@ def randomize_this_deck(logger):
 
         # scroll that amount
         for _ in range(random_scroll_amount):
-            scroll_down_super_fast()
+            scroll_down_fast()
             time.sleep(0.1)
 
         # check for scrolling failure
@@ -511,7 +511,7 @@ def randomize_this_deck(logger):
                 "detected a failure when randomly scrolling during deck randomization... attempting to save the bot"
             )
             for _ in range(3):
-                scroll_down_super_fast()
+                scroll_down_fast()
                 time.sleep(0.1)
 
         # click randomly until we get a 'use' button
