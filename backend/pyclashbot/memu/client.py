@@ -31,8 +31,13 @@ def screenshot(
         PIL.Image.Image: Screenshot of the given region
     """
     if region is None:
-        region = [0, 0, 500, 700]
-    region = tuple(int(x) for x in region)
+        region = (0, 0, 500, 700)
+    else:
+        # due to API change, the last two values of the region are now the width and height,
+        # not the bottom right corner like with the old API.
+        # this fix keeps functionality the same in our codebase
+        new_region = (region[0], region[1], region[0] + region[2], region[1] + region[3])
+        region = tuple(int(x) for x in new_region)
     return ImageGrab.grab(bbox=region)
 
 
