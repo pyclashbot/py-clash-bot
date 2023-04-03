@@ -1,6 +1,6 @@
 # py-clash-bot
 
-[![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
+[![Build windows package](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml/badge.svg)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/build-and-package.yaml) [![GitHub Python Tests](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml/badge.svg?branch=master)](https://github.com/matthewmiglio/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot/badge)](https://www.codefactor.io/repository/github/matthewmiglio/py-clash-bot)
 
 
 
@@ -22,6 +22,8 @@ Join the [Discord server](https://discord.gg/mx4W9qRNgF)!
 3. The program will automatically install MEmu and AutoHotKey, just follow the installation prompts.
 4. You must manually install Clash Royale on your new MEmu client.
 5. You must complete the tutorial (takes 30 seconds) then sign into your account using the SuperCell ID login (or use the fresh account).
+
+*Note the program may work incorrectly with [certain display settings](https://github.com/matthewmiglio/py-clash-bot/issues/211).*
 
 ## Usage
 
