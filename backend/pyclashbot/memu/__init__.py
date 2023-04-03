@@ -5,9 +5,9 @@ from .client import (
     orientate_terminal,
     screenshot,
     scroll_down,
-    scroll_down_super_fast,
+    scroll_down_fast,
+    scroll_up,
     scroll_up_fast,
-    scroll_up_super_fast,
 )
 
 __all__ = [
@@ -16,8 +16,8 @@ __all__ = [
     "make_reference_image_list",
     "screenshot",
     "scroll_down",
-    "scroll_down_super_fast",
+    "scroll_down_fast",
+    "scroll_up",
     "scroll_up_fast",
-    "scroll_up_super_fast",
     "orientate_terminal",
 ]
