@@ -130,44 +130,36 @@ def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
     ahk.mouse_move(x=origin[0], y=origin[1], blocking=False)
 
 
-def scroll_down():
-    """Method for scrolling down when interacting with a scrollable menu"""
-    origin = ahk.mouse_position
-    ahk.mouse_move(x=215, y=350)
-    ahk.mouse_drag(x=0, y=-50, relative=True, blocking=False)
-    ahk.mouse_move(x=origin[0], y=origin[1])
-
-
-def scroll_up_fast():
+def scroll_up():
     """Method for scrolling up faster when interacting with a scrollable menu"""
     origin = ahk.mouse_position
-    ahk.mouse_move(x=215, y=300)
-    ahk.mouse_drag(x=0, y=50, relative=True, blocking=False)
-    ahk.mouse_move(x=origin[0], y=origin[1])
+    ahk.mouse_position = (215, 300)
+    ahk.mouse_drag(x=0, y=50, relative=True, blocking=True)
+    ahk.mouse_position = origin
+
+
+def scroll_down():
+    """Method for scrolling down faster when interacting with a scrollable menu"""
+    origin = ahk.mouse_position
+    ahk.mouse_position = (215, 350)
+    ahk.mouse_drag(x=0, y=-50, relative=True, blocking=True)
+    ahk.mouse_position = origin
 
 
 def scroll_down_fast():
-    """Method for scrolling down faster when interacting with a scrollable menu"""
-    origin = ahk.mouse_position
-    ahk.mouse_move(x=215, y=350)
-    ahk.mouse_drag(x=0, y=-50, relative=True, blocking=False)
-    ahk.mouse_move(x=origin[0], y=origin[1])
-
-
-def scroll_down_super_fast():
     """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = ahk.mouse_position
-    ahk.mouse_move(x=215, y=400)
-    ahk.mouse_drag(x=0, y=-100, relative=True, blocking=False)
-    ahk.mouse_move(x=origin[0], y=origin[1])
+    ahk.mouse_position = (215, 400)
+    ahk.mouse_drag(x=0, y=-100, relative=True, blocking=True)
+    ahk.mouse_position = origin
 
 
-def scroll_up_super_fast():
+def scroll_up_fast():
     """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = ahk.mouse_position
-    ahk.mouse_move(x=215, y=300)
-    ahk.mouse_drag(x=0, y=100, relative=True, blocking=False)
-    ahk.mouse_move(x=origin[0], y=origin[1])
+    ahk.mouse_position = (215, 300)
+    ahk.mouse_drag(x=0, y=100, relative=True, blocking=True)
+    ahk.mouse_position = origin
 
 
 def orientate_terminal():

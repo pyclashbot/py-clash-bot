@@ -15,8 +15,9 @@ from pyclashbot.memu.client import (
     make_reference_image_list,
     screenshot,
     scroll_down,
+    scroll_down,
+    scroll_up,
     scroll_up_fast,
-    scroll_up_super_fast,
 )
 
 """methods that have to do with navigating the game's menus"""
@@ -82,7 +83,7 @@ def get_to_war_page_from_main(logger):
             # origin = pyautogui.position()
             # pyautogui.moveTo(300, 300)
             time.sleep(1)
-            scroll_up_fast()
+            scroll_up()
             # pyautogui.moveTo(origin[0], origin[1])
 
         time.sleep(1)
@@ -1242,7 +1243,6 @@ def wait_for_card_page():
 
     start_time = time.time()
     while not check_if_on_card_page():
-
         if time.time() - start_time > 10:
             print("timed out waiting for card page")
             return "fail"
@@ -1435,6 +1435,7 @@ def handle_bonus_bank_popup_in_battlepass_page():
     click(216, 466)
     time.sleep(3)
 
+
 def get_to_challenges_tab():
     """method for getting to the challenges tab
     args:
@@ -1446,6 +1447,6 @@ def get_to_challenges_tab():
     time.sleep(1)
 
     for _ in range(5):
-        scroll_up_super_fast()
+        scroll_up_fast()
     time.sleep(1)
-    print('done')
+    print("done")
