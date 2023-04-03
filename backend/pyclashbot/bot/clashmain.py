@@ -1,7 +1,6 @@
 import time
 
 import numpy
-import pyautogui
 from ahk import AHK
 
 from pyclashbot.bot.navigation import (
@@ -20,11 +19,11 @@ from pyclashbot.detection import (
     get_first_location,
     pixel_is_equal,
 )
-from pyclashbot.memu import click, screenshot, scroll_down, scroll_up_fast
+from pyclashbot.memu import click, screenshot, scroll_down, scroll_up
 from pyclashbot.memu.client import (
     get_file_count,
     make_reference_image_list,
-    scroll_down_fast,
+    scroll_down,
 )
 from pyclashbot.utils.logger import Logger
 
@@ -210,27 +209,27 @@ def get_to_account(logger, account_number):
 
     elif account_number == 4:
         # scroll then click
-        scroll_down_fast()
+        scroll_down()
         click(170, 640)
 
     elif account_number == 5:
         # scroll then click
         for _ in range(4):
-            scroll_down_fast()
+            scroll_down()
             time.sleep(0.5)
         click(230, 585)
 
     elif account_number == 6:
         # scroll then click
         for _ in range(7):
-            scroll_down_fast()
+            scroll_down()
             time.sleep(0.5)
         click(240, 550)
 
     elif account_number == 7:
         # scroll then click
         for _ in range(7):
-            scroll_down_fast()
+            scroll_down()
             time.sleep(0.5)
 
         click(230, 625)
