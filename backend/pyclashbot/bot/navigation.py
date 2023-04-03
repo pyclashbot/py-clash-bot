@@ -1081,7 +1081,7 @@ def wait_for_battlepass_rewards_page():
     """
 
     while not check_for_battlepass_rewards_page():
-        if check_for_bonus_bank_popup_in_battlepass_page:
+        if check_for_bonus_bank_popup_in_battlepass_page():
             handle_bonus_bank_popup_in_battlepass_page()
 
 
