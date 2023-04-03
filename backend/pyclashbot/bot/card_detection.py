@@ -241,16 +241,16 @@ def get_play_coords(card_group, side):
     if side == "random":
         n = random.randint(0, 1)
         side = "left" if n == 0 else "right"
-    left_turret_cards_coords = [[217, 371]]
-    right_turret_cards_coords = [[236, 383]]
+    left_turret_cards_coords = [[198, 402]]
+    right_turret_cards_coords = [[217, 402]]
 
     left_spell_cards_coords = [
-        [132, 210],
-        [136, 161],
+        [87, 189],
+        [129, 198],
     ]
     right_spell_cards_coords = [
-        [314, 173],
-        [312, 210],
+        [270, 205],
+        [321, 201],
     ]
 
     left_hog_cards_coords = [
@@ -264,7 +264,7 @@ def get_play_coords(card_group, side):
 
     left_spawner_cards_coords = [
         [147, 485],
-        [87, 479],
+        [84, 479],
     ]
     right_spawner_cards_coords = [
         [303, 485],
@@ -272,12 +272,12 @@ def get_play_coords(card_group, side):
     ]
 
     left_princess_cards_coords = [
-        [94, 335],
-        [147, 339],
+        [188, 424],
+        [186, 434],
     ]
     right_princess_cards_coords = [
-        [293, 334],
-        [344, 330],
+        [217, 409],
+        [214, 438],
     ]
 
     left_miner_cards_coords = [
@@ -319,10 +319,10 @@ def get_play_coords(card_group, side):
     ]
 
     left_xbow_cards_coords = [
-        [191, 328],
+        [206, 417],
     ]
     right_xbow_cards_coords = [
-        [289, 335],
+        [226, 417],
     ]
 
     left_mortar_cards_coords = [
