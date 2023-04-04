@@ -2,7 +2,6 @@ import random
 import time
 
 import numpy
-import pyautogui
 
 from pyclashbot.detection.image_rec import (
     check_for_location,
@@ -16,8 +15,9 @@ from pyclashbot.memu.client import (
     make_reference_image_list,
     screenshot,
     scroll_down,
+    scroll_down,
+    scroll_up,
     scroll_up_fast,
-    scroll_up_super_fast,
 )
 
 """methods that have to do with navigating the game's menus"""
@@ -80,11 +80,11 @@ def get_to_war_page_from_main(logger):
         click(280, 620)
 
         if random.randint(1, 2) == 2:
-            origin = pyautogui.position()
-            pyautogui.moveTo(300, 300)
+            # origin = pyautogui.position()
+            # pyautogui.moveTo(300, 300)
             time.sleep(1)
-            scroll_up_fast()
-            pyautogui.moveTo(origin[0], origin[1])
+            scroll_up()
+            # pyautogui.moveTo(origin[0], origin[1])
 
         time.sleep(1)
     return None
@@ -297,7 +297,7 @@ def leave_end_battle_window(logger):
     if check_if_end_screen_is_exit_bottom_left():
         print("Leaving end battle (condition 1)")
         click(79, 625)
-        time.sleep(10)
+        time.sleep(6)
         click(x=173, y=631)
         if wait_for_clash_main_menu(logger) == "restart":
             logger.change_status("waited for clash main too long")
@@ -308,7 +308,7 @@ def leave_end_battle_window(logger):
     if check_if_end_screen_is_ok_bottom_middle():
         print("Leaving end battle (condition 2)")
         click(206, 594)
-        time.sleep(10)
+        time.sleep(6)
         click(x=173, y=631)
         if wait_for_clash_main_menu(logger) == "restart":
             logger.change_status("waited too long for clash main")
@@ -963,7 +963,7 @@ def check_if_on_clash_main_settings_page():
 
     tournaments_button_exists = False
     for x_coord in range(185, 210):
-        this_pixel = iar[335][x_coord]
+        this_pixel = iar[287][x_coord]
         if pixel_is_equal(this_pixel, [95, 141, 51], tol=35):
             tournaments_button_exists = True
 
@@ -1002,7 +1002,7 @@ def get_to_ssid_switch_page():
         None
     """
 
-    click(200, 460)
+    click(200,405)
     wait_for_ssid_switch_page()
 
 
@@ -1081,7 +1081,7 @@ def wait_for_battlepass_rewards_page():
     """
 
     while not check_for_battlepass_rewards_page():
-        if check_for_bonus_bank_popup_in_battlepass_page:
+        if check_for_bonus_bank_popup_in_battlepass_page():
             handle_bonus_bank_popup_in_battlepass_page()
 
 
@@ -1243,7 +1243,6 @@ def wait_for_card_page():
 
     start_time = time.time()
     while not check_if_on_card_page():
-
         if time.time() - start_time > 10:
             print("timed out waiting for card page")
             return "fail"
@@ -1436,6 +1435,7 @@ def handle_bonus_bank_popup_in_battlepass_page():
     click(216, 466)
     time.sleep(3)
 
+
 def get_to_challenges_tab():
     """method for getting to the challenges tab
     args:
@@ -1446,6 +1446,7 @@ def get_to_challenges_tab():
     click(x=394, y=634)
     time.sleep(1)
 
-    for _ in range(5):scroll_up_super_fast()
+    for _ in range(5):
+        scroll_up_fast()
     time.sleep(1)
-    print('done')
+    print("done")
