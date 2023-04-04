@@ -148,20 +148,11 @@ def check_if_in_a_clan(logger):
 
     # get image array of flag where clan flag should be.
     iar = numpy.asarray(screenshot())
-    pix_list = []
     for x_coord in range(82, 97):
-        for y_coord in range(471, 481):
-            this_pixel = iar[y_coord][x_coord]
-            pix_list.append(this_pixel)
-
-    # if any of these pixels are NOT grey, we ARE in a clan. Else return False
-    is_in_a_clan = False
-    for pix in pix_list:
-        if not pixel_is_equal(pix, [50, 50, 50], tol=15):
-            # print("Found a pixel that indicates we are in a clan")
+        this_pixel = iar[480][x_coord]
+        if not (pixel_is_equal(this_pixel, [50, 50, 50], tol=35)):
             is_in_a_clan = True
-    if not is_in_a_clan:
-        print("Found no pixels that indicate we are in a clan")
+    is_in_a_clan = False
 
     # return to main after getting this information
     logger.change_status("Returning to main menu")
@@ -308,26 +299,26 @@ def start_2v2(logger):
         print("Not on clash main so cant run start_2v2()")
         return "restart"
 
-    #get to challenges tab
+    # get to challenges tab
     get_to_challenges_tab()
 
-    #click 2v2 mode
+    # click 2v2 mode
     two_v_two_match_icon_coord = find_2v2_match_icon()
     if two_v_two_match_icon_coord is None:
         print("Could not find 2v2 match icon")
         return "restart"
-    click(two_v_two_match_icon_coord[0],two_v_two_match_icon_coord[1])
+    click(two_v_two_match_icon_coord[0], two_v_two_match_icon_coord[1])
     time.sleep(1)
 
-    #click classic
-    click(285,213)
+    # click classic
+    click(285, 213)
     time.sleep(1)
 
-    #click battle
+    # click battle
     click(x=210, y=450)
     time.sleep(1)
 
-    #click quickmatch
+    # click quickmatch
     click(x=284, y=387)
     time.sleep(5)
 
@@ -390,7 +381,7 @@ def check_if_pixels_indicate_in_battle():
     returns:
         True if in battle, False if not"""
 
-    #make a screenshot that ignores the elixer icon in the loading screen
+    # make a screenshot that ignores the elixer icon in the loading screen
 
     references = ["1.png", "2.png", "3.png", "4.png", "5.png"]
 
