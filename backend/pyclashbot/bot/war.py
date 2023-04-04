@@ -14,8 +14,8 @@ from pyclashbot.memu import (
     get_file_count,
     make_reference_image_list,
     screenshot,
-    scroll_down_super_fast,
-    scroll_up_super_fast,
+    scroll_down_fast,
+    scroll_up_fast,
 )
 
 
@@ -190,9 +190,9 @@ def click_war_icon():
             return "failed"
 
         if random.randint(0, 1) == 0:
-            scroll_up_super_fast()
+            scroll_up_fast()
         else:
-            scroll_down_super_fast()
+            scroll_down_fast()
         time.sleep(3)
         coord = find_battle_icon_on_war_page()
     click(coord[0], coord[1])

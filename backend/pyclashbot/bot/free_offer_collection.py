@@ -17,7 +17,7 @@ from pyclashbot.memu.client import (
     get_file_count,
     make_reference_image_list,
     screenshot,
-    scroll_down_super_fast,
+    scroll_down_fast,
 )
 
 
@@ -48,7 +48,7 @@ def collect_free_offer_from_shop(logger):
     loops = 0
     print("Scrolling and looking for a free offer")
     while free_offer_coords is None:
-        scroll_down_super_fast()
+        scroll_down_fast()
         time.sleep(2)
 
         free_offer_coords = find_free_offer_icon()
