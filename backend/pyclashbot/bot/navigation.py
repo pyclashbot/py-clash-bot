@@ -1169,6 +1169,7 @@ def open_profile_page():
     """
     click(100, 130)
     wait_for_profile_page()
+    time.sleep(1)
 
 
 def wait_for_profile_page():
