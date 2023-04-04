@@ -42,10 +42,10 @@ def check_if_has_battlepass_rewards():
     args:
         None
     returns:
-        bool: True if the battlepass rewards icon on the main menu is lit up, False if not"""
+        bool: True if the battlepass rewards icon on the main menu is lit up, False if not
+    """
     timer = 0
     while not check_for_battlepass_reward_pixels():
-
         if timer > 0.36:
             return False
         timer += 0.02
@@ -95,6 +95,8 @@ def collect_battlepass_rewards(logger):
 
         # click battlepass icon on clash main
         get_to_battlepass_rewards_page()
+
+        click(15, 15, clicks=2, interval=1)
 
         # click every chest locations in the chest_locations list
         for coord in chest_locations:
