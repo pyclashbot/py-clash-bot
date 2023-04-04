@@ -68,6 +68,8 @@ def state_tree(
         # DEBUG::: wait forever instead of restarting
         # while True:time.sleep(1000)
         clip_that()
+        for _ in range(15):
+            print("Clipped an error (dev tool)")
 
         # run restart state
         state = state_restart(logger)
@@ -138,8 +140,10 @@ def state_tree(
         state = state_upgrade(logger) if "Upgrade" in jobs else "deck_randomization"
 
     elif state == "deck_randomization":
-        if 'Randomize Deck' in jobs: state = state_deck_randomization(logger, random_deck_bool=True)
-        else: state = 'start_fight'
+        if "Randomize Deck" in jobs:
+            state = state_deck_randomization(logger, random_deck_bool=True)
+        else:
+            state = "start_fight"
 
     elif state == "start_fight":
         state = (
@@ -190,7 +194,6 @@ def state_account_switching(
     ssid_max,
     ssid_order_list,
 ) -> tuple[Literal["chest_reward_collection", "account_switching"], int, list[int]]:
-
     logger.change_status("Switching accounts. . .")
 
     # if order list is empty, make a new one
@@ -202,7 +205,7 @@ def state_account_switching(
     if ssid_max <= 1:
         print("only 1 account selected so skipping accuont switch entirely")
         return "chest_reward_collection", ssid_index, ssid_order_list
-    
+
     # get to this account
     print("account selection range is: 0-", (ssid_max - 1))
     if get_to_account(logger, account_number=ssid_order_list[ssid_index]) == "restart":
@@ -432,10 +435,9 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 
 # FOR OBS RECORDING OF ERRORS
 def clip_that():
-
     print("Saving a clip...")
 
-    click(945, 880)
+    click(943, 923)
     time.sleep(3)
 
 
