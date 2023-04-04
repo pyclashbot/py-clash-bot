@@ -1,7 +1,7 @@
-Open chests:
-Unlock and open the chests on the Clash main menu.
-
 # Descriptions of Each Py-ClashBot Job
+
+## Open chests:
+Unlock and open the chests on the Clash main menu.
 
 ## Fight:
 Fight in a 2v2 quickmatch with the currently selected deck, or fight with a random deck.
