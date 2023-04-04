@@ -49,7 +49,7 @@ def do_fight(logger):
 
         in_battle = check_if_in_battle_with_delay()
 
-        if plays > 100:
+        if plays > 120:
             logger.change_status(
                 "Made too many plays. Match is probably stuck. Ending match"
             )
@@ -159,7 +159,7 @@ def check_if_past_game_is_win(logger):
 
     logger.change_status("Checking if game was a win")
     open_activity_log()
-    time.sleep(3)
+    time.sleep(2)
     if check_if_pixels_indicate_win_on_activity_log():
         logger.change_status("Last game was a win. Incrementing win count.")
         logger.add_win()
