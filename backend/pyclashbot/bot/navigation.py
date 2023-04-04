@@ -963,7 +963,7 @@ def check_if_on_clash_main_settings_page():
 
     tournaments_button_exists = False
     for x_coord in range(185, 210):
-        this_pixel = iar[335][x_coord]
+        this_pixel = iar[287][x_coord]
         if pixel_is_equal(this_pixel, [95, 141, 51], tol=35):
             tournaments_button_exists = True
 
@@ -1002,7 +1002,7 @@ def get_to_ssid_switch_page():
         None
     """
 
-    click(200, 460)
+    click(200,405)
     wait_for_ssid_switch_page()
 
 
