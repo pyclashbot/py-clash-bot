@@ -33,13 +33,12 @@ python = "^3.11"
 pillow = "^9.4.0"
 opencv-python = "^4.7.0"
 numpy = "^1.24.1"
-pyautogui = "^0.9"
 pygetwindow = "^0.0"
 joblib = "^1.2"
 requests = "^2.28"
 PySimpleGUI = "^4.60"
 ahk = {extras = ["binary"], version = "^0.14.2"}
-pymemuc = "^0.1"
+pymemuc = "^0.2"
 wmi = "^1.5.1"
 
 
@@ -49,7 +48,7 @@ optional = true
 
 [tool.poetry.group.build.dependencies]
 cx-logging = "^3.1.0" # specify version of cx_logging for cx_freeze to run with python 3.11
-Cx_Freeze = "^6.14.7"
+Cx_Freeze = "^6.14.8"
 
 
 [tool.poetry.group.dev]

@@ -12,8 +12,8 @@ from pyclashbot.detection import find_references, get_first_location, pixel_is_e
 from pyclashbot.memu import (
     click,
     screenshot,
-    scroll_down_super_fast,
-    scroll_up_super_fast,
+    scroll_down_fast,
+    scroll_up_fast,
 )
 from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
@@ -102,7 +102,7 @@ def request_random_card(logger, maximum_scrolls=10):
     print("Scrolling randomly with maximum scrolls of ", maximum_scrolls)
     random_scroll_amount = Random().randint(0, maximum_scrolls)
     for _ in range(random_scroll_amount):
-        scroll_down_super_fast()
+        scroll_down_fast()
 
     # click random cards in the card list until a request button appears.
     has_card_to_request = False
@@ -189,7 +189,7 @@ def count_maximum_request_scrolls(logger):
     # get to the top of this page
     # b/c on epic sunday it automatically scrolls sorta halfway down to show the epic cards.
     for _ in range(10):
-        scroll_up_super_fast()
+        scroll_up_fast()
 
     # count scrolls
     scrolls = 0
@@ -203,11 +203,11 @@ def count_maximum_request_scrolls(logger):
                 "Failed counting maximum scrolls in request page in count_maximum_request_scrolls()"
             )
             return "restart"
-        scroll_down_super_fast()
+        scroll_down_fast()
         scrolls += 1
 
     for _ in range(10):
-        scroll_up_super_fast()
+        scroll_up_fast()
 
     return scrolls
 
