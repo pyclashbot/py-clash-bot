@@ -15,7 +15,6 @@ from pyclashbot.memu.client import (
     make_reference_image_list,
     screenshot,
     scroll_down,
-    scroll_down,
     scroll_up,
     scroll_up_fast,
 )
@@ -1002,7 +1001,7 @@ def get_to_ssid_switch_page():
         None
     """
 
-    click(200,405)
+    click(200, 405)
     wait_for_ssid_switch_page()
 
 
@@ -1444,9 +1443,37 @@ def get_to_challenges_tab():
         None
     """
     click(x=394, y=634)
-    time.sleep(1)
+    time.sleep(3)
+
+    # check if the user is in a tournament
+    if check_if_account_is_already_in_a_challenge():
+        # click back button
+        click(32, 56)
 
     for _ in range(5):
         scroll_up_fast()
     time.sleep(1)
     print("done")
+
+
+def check_if_account_is_already_in_a_challenge():
+    iar = numpy.asarray(screenshot)
+
+    # look for purple background of win count in this challenge
+    purple_background_exists = False
+    for x in range(100, 200):
+        this_pixel = iar[280][x]
+        if pixel_is_equal(this_pixel, [101, 56, 188], tol=35):
+            purple_background_exists = True
+
+    # look for yellow back button in top left
+    yellow_back_button_exists = False
+    for x in range(10, 40):
+        this_pixel = iar[60][x]
+        if pixel_is_equal(this_pixel, [255, 186, 37], tol=35):
+            yellow_back_button_exists = True
+
+    if purple_background_exists and yellow_back_button_exists:
+        print("account is already in a challenge")
+        return True
+    return False
