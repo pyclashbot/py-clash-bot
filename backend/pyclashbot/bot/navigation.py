@@ -1458,7 +1458,7 @@ def get_to_challenges_tab():
 
 
 def check_if_account_is_already_in_a_challenge():
-    iar = numpy.asarray(screenshot)
+    iar = numpy.asarray(screenshot())
 
     # look for purple background of win count in this challenge
     purple_background_exists = False
