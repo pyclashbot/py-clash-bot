@@ -6,19 +6,20 @@ import numpy
 import pygetwindow
 import pythoncom
 import wmi
-from pymemuc import PyMemuc, PyMemucError, VMInfo
-
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils import setup_memu
 from pyclashbot.utils.dependency import get_memu_path
 from pyclashbot.utils.logger import Logger
+from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
 
 MMIM_TITLE = "Multiple Instance Manager"
+ANDROID_VERSION = "96"  # android 9, 64 bit
+EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 
 #### launcher methods
@@ -32,7 +33,7 @@ def restart_emulator(logger):
 
     # check for the pyclashbot vm, if not found then create it
     vm_index = check_for_vm(logger)
-    print(f'Found vm of index {vm_index}')
+    print(f"Found vm of index {vm_index}")
     configure_vm(logger, vm_index=vm_index)
 
     # start the vm
@@ -54,7 +55,7 @@ def restart_emulator(logger):
         return restart_emulator(logger)
 
     # start clash royale
-    start_clash_royale(logger,vm_index)
+    start_clash_royale(logger, vm_index)
 
     # manually wait for clash main
     sleep_time = 10
@@ -136,7 +137,6 @@ def get_launcher_path():
 
 
 def configure_vm(logger: Logger, vm_index):
-
     logger.change_status("Configuring VM")
 
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
@@ -159,16 +159,15 @@ def configure_vm(logger: Logger, vm_index):
 
 
 def create_vm(logger: Logger):
-
     # create a vm named pyclashbot
     logger.change_status("VM not found, creating VM...")
-    vm_index = pmc.create_vm()
+    vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
     while vm_index == -1:  # handle when vm creation fails
-        vm_index = pmc.create_vm()
+        vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
     configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
-    pmc.rename_vm(vm_index=vm_index, new_name="(pyclashbot)")
-    logger.change_status(f"VM created with index {vm_index}")
+    pmc.rename_vm(vm_index=vm_index, new_name=EMULATOR_NAME)
+    logger.change_status(f"Created VM: {vm_index} - {EMULATOR_NAME}")
     return vm_index
 
 
@@ -189,7 +188,7 @@ def check_for_vm(logger: Logger) -> int:
     vms.sort(key=lambda x: x["index"])
 
     # get the indecies of all vms named pyclashbot
-    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == "(pyclashbot)"]
+    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == EMULATOR_NAME]
 
     # delete all vms except the lowest index, keep looping until there is only one
     while len(vm_indices) > 1:
@@ -232,7 +231,6 @@ def close_everything_memu():
 
 
 def start_clash_royale(logger: Logger, vm_index):
-
     # using pymemuc check if clash royale is installed
     apk_base_name = "com.supercell.clashroyale"
 
@@ -255,7 +253,6 @@ def start_clash_royale(logger: Logger, vm_index):
 
 
 def skip_ads(vm_index):
-
     # Method for skipping the memu ads that popip up when you start memu
 
     print("Trying to skipping ads")
@@ -265,7 +262,7 @@ def skip_ads(vm_index):
             time.sleep(1)
     except Exception as e:
         print(f"Fail sending home clicks to skip ads... Redoing restart...\n{e}")
-        input('Enter to cont')
+        input("Enter to cont")
         return "fail"
 
 
@@ -294,7 +291,7 @@ def wait_for_pyclashbot_window():
     print("Waiting for PyClashBot Memu client window to open")
 
     loops = 0
-    while len(pygetwindow.getWindowsWithTitle("(pyClashBot)")) == 0:
+    while len(pygetwindow.getWindowsWithTitle(EMULATOR_NAME)) == 0:
         loops += 1
         print("Still waiting for PyClashBot Memu client window to open..." + str(loops))
         if loops > 25:
