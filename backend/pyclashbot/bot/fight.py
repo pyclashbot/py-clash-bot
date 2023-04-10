@@ -16,7 +16,6 @@ from pyclashbot.bot.navigation import open_activity_log
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
-
 """methods that have to do with the fighting of battles"""
 
 
@@ -158,7 +157,7 @@ def check_if_past_game_is_win(logger):
     """
 
     logger.change_status("Checking if game was a win")
-    open_activity_log()
+    open_activity_log(logger)
     time.sleep(2)
     if check_if_pixels_indicate_win_on_activity_log():
         logger.change_status("Last game was a win. Incrementing win count.")
@@ -268,8 +267,6 @@ def check_if_card_2_is_available():
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
 
-    # print(grey_bool_list)
-
     is_available = False
     for is_grey in grey_bool_list:
         if not is_grey:
@@ -299,8 +296,6 @@ def check_if_card_3_is_available():
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
 
-    # print(grey_bool_list)
-
     is_available = False
     for is_grey in grey_bool_list:
         if not is_grey:
@@ -329,8 +324,6 @@ def check_if_card_4_is_available():
     for pix in pix_list:
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
-
-    # print(grey_bool_list)
 
     is_available = False
     for is_grey in grey_bool_list:

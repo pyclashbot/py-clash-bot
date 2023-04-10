@@ -35,13 +35,13 @@ def get_to_card_page(logger):
     # click card page
     logger.change_status("Getting to card collection tab...")
     click(105, 630)
-    if wait_for_card_page() == "fail":
-        print("failed waiting for card page")
+    if wait_for_card_page(logger) == "fail":
+        logger.change_status("failed waiting for card page")
         return "restart"
 
     # get to battle deck page
     logger.change_status("Getting to battle deck page...")
-    if get_to_battle_deck_page() == "restart":
+    if get_to_battle_deck_page(logger) == "restart":
         return "restart"
 
 
@@ -52,7 +52,7 @@ def get_to_war_page_from_main(logger):
     returns:
         restart state if failed, None if successful
     """
-    print("getting to war page from clash main.")
+    logger.change_status("getting to war page from clash main.")
     if check_if_on_war_page():
         return None
 
@@ -61,12 +61,12 @@ def get_to_war_page_from_main(logger):
 
     loops = 0
     while not check_if_on_war_page():
-        print("still not on war page. Cycling.")
+        logger.change_status("still not on war page. Cycling.")
         handle_war_chest_obstruction(logger)
 
         # check if stuck on trophy progression page
         if check_if_stuck_on_trophy_progression_page():
-            print("Stuck on trophy progression page. Clicking out")
+            logger.change_status("Stuck on trophy progression page. Clicking out")
             click(210, 621)
             time.sleep(2)
             get_to_war_page_from_main(logger)
@@ -107,7 +107,7 @@ def get_to_clash_main_from_shop(logger):
     while not check_if_on_clash_main_menu():
         loops += 1
         if loops > 20:
-            print(
+            logger.change_status(
                 "Looped through get_to_clash_main_from_shop() too many times. Restarting"
             )
             return "restart"
@@ -139,7 +139,7 @@ def get_to_shop_page_from_main(logger):
     time.sleep(1)
 
     # check if on shop
-    if not check_if_on_shop_page_with_delay():
+    if not check_if_on_shop_page_with_delay(logger):
         logger.change_status("Failed to get to shop page.")
         return "restart"
 
@@ -154,7 +154,7 @@ def get_to_clash_main_from_card_page(logger):
         restart state if failed, None if successful
     """
 
-    print("Getting to Clash main menu from card page")
+    logger.change_status("Getting to Clash main menu from card page")
 
     # get to card page
     click(240, 627)
@@ -172,32 +172,6 @@ def get_to_clash_main_from_card_page(logger):
         time.sleep(1)
 
 
-def get_to_switch_accounts_tab():
-    """main method for getting to the switch accounts tab
-    args:
-    returns:
-        restart state if failed, no other accounts if there's only 1 account, None if else
-    """
-
-    # if not on main then failure
-    if not check_if_on_clash_main_menu():
-        print("Not on main so cant count accounts.")
-        return "restart"
-
-    # click hamburger icon in top right on clash main for options
-    click(365, 95)
-    time.sleep(1)
-
-    # IMPLEMENT CHECK IF SWITHC ACCOUTNS BUTTON IS THERE
-    if find_switch_accouts_button() is None:
-        print("No switch accoutns button")
-        return "no other accounts"
-
-    # click switch accounts button
-    click(200, 455)
-    time.sleep(3)
-
-
 def get_to_clash_main_from_clan_page(logger):
     """main method for getting to the clash main menu from the clan page
     args:
@@ -206,14 +180,14 @@ def get_to_clash_main_from_clan_page(logger):
         restart state if failed, None if successful
     """
 
-    print("getting to main from clan page")
+    logger.change_status("getting to main from clan page")
     # Method to return to clash main menu from request page
     click(172, 612)
     time.sleep(3)
     on_main = check_if_on_clash_main_menu()
     loops = 0
     while not on_main:
-        print("Still not on main page. Cycling")
+        logger.change_status("Still not on main page. Cycling")
         loops += 1
         if loops > 7:
             logger.change_status("Could not get to clash main from request page.")
@@ -221,7 +195,7 @@ def get_to_clash_main_from_clan_page(logger):
         click(208, 636)
         time.sleep(1)
         on_main = check_if_on_clash_main_menu()
-    print("made it to clash main.")
+    logger.change_status("made it to clash main.")
     time.sleep(3)
 
 
@@ -233,25 +207,25 @@ def get_to_clan_page(logger):
         restart state if failed, None if successful
     """
     # method to get to clan chat page from clash main
-    print("getting to clan chat page.")
+    logger.change_status("getting to clan chat page.")
     click(312, 629)
     time.sleep(3)
     on_clan_chat_page = check_if_on_clan_page()
     loops = 0
     while not on_clan_chat_page:
-        print("Still not on clan chat page.")
+        logger.change_status("Still not on clan chat page.")
 
         # handle other war chest popup
-        handle_war_loot_chest()
+        handle_war_loot_chest(logger)
 
         # handle war chest popup
         if check_for_war_loot_menu():
-            print("Found war loot. handling it.")
-            handle_war_loot_menu()
+            logger.change_status("Found war loot. handling it.")
+            handle_war_loot_menu(logger)
 
         # handle final results popup
-        if check_for_final_results_popup():
-            handle_final_results_popup()
+        if check_for_final_results_popup(logger):
+            handle_final_results_popup(logger)
 
         # handling infinite loop
         loops += 1
@@ -271,12 +245,12 @@ def get_to_clan_page(logger):
         on_clan_chat_page = check_if_on_clan_page()
 
 
-def open_activity_log():
+def open_activity_log(logger):
     """main method for getting to the activity log menu
     args:
     """
 
-    print("Opening activity log")
+    logger.change_status("Opening activity log")
     click(x=360, y=99)
     time.sleep(1)
 
@@ -295,7 +269,7 @@ def leave_end_battle_window(logger):
 
     # if end screen condition 1 (exit in bottom left)
     if check_if_end_screen_is_exit_bottom_left():
-        print("Leaving end battle (condition 1)")
+        logger.change_status("Leaving end battle (condition 1)")
         click(79, 625)
         time.sleep(6)
         click(x=173, y=631)
@@ -304,7 +278,7 @@ def leave_end_battle_window(logger):
 
     # if end screen condition 2 (OK in bottom middle)
     if check_if_end_screen_is_ok_bottom_middle():
-        print("Leaving end battle (condition 2)")
+        logger.change_status("Leaving end battle (condition 2)")
         click(206, 594)
         time.sleep(6)
         click(x=173, y=631)
@@ -325,7 +299,7 @@ def leave_end_battle_window(logger):
     return None
 
 
-def handle_war_loot_chest():
+def handle_war_loot_chest(logger):
     """method for handling the possbiility of a war loot chest in the way of the bot
     args:
         None
@@ -334,18 +308,18 @@ def handle_war_loot_chest():
     """
 
     if check_for_war_loot_chest():
-        print("Found a war chest in the way...")
+        logger.change_status("Found a war chest in the way...")
         # click open chest
-        print("Clicking open war chest..")
+        logger.change_status("Clicking open war chest..")
         click(205, 440)
         time.sleep(1)
 
         # skip thru chest
-        print("Skipping thru war chest rewards...")
+        logger.change_status("Skipping thru war chest rewards...")
         click(20, 450, clicks=20, interval=1)
         time.sleep(1)
 
-        print("Done handling war chest...")
+        logger.change_status("Done handling war chest...")
 
 
 def handle_card_mastery_notification():
@@ -364,7 +338,7 @@ def handle_card_mastery_notification():
     time.sleep(0.33)
 
 
-def handle_war_loot_menu():
+def handle_war_loot_menu(logger):
     """Method to handle the possibility of a war_loot_menu page obstructing the bot
     args:
         None
@@ -372,12 +346,12 @@ def handle_war_loot_menu():
         None
     """
     # open chest
-    print("Opening war chest")
+    logger.change_status("Opening war chest")
     click(205, 420)
     time.sleep(1)
 
     # click dead space to skip thru chest
-    print("Skipping thru war chest rewards")
+    logger.change_status("Skipping thru war chest rewards")
     click(20, 440, clicks=20, interval=0.1)
     time.sleep(1)
 
@@ -395,7 +369,7 @@ def handle_stuck_on_war_final_results_page():
         time.sleep(1)
 
 
-def handle_final_results_popup():
+def handle_final_results_popup(logger):
     """method for handling the final results popup
     args:
         None
@@ -403,7 +377,7 @@ def handle_final_results_popup():
         None
     """
 
-    print("Doing final results popup hanlding.")
+    logger.change_status("Doing final results popup hanlding.")
 
     # click OK
     click(220, 555)
@@ -429,17 +403,17 @@ def open_war_chest(logger):
     time.sleep(3)
 
     # Click OK on war results page popup
-    print("Clicking OK on war results page popup")
+    logger.change_status("Clicking OK on war results page popup")
     click(205, 555)
     for n in range(5):
-        print(
+        logger.change_status(
             "Manual wait time after closing war results page popup after opening war chest:",
             n,
         )
         time.sleep(1)
 
     # increment logger
-    print("Incrementing war chest collection counter.")
+    logger.change_status("Incrementing war chest collection counter.")
     logger.add_war_chest_collection()
 
 
@@ -517,15 +491,12 @@ def check_if_on_clash_main_menu():
     """
 
     if not check_for_gem_logo_on_main():
-        # print("gem fail")
         return False
 
     if not check_for_friends_logo_on_main():
-        # print("friends logo")
         return False
 
     if not check_for_gold_logo_on_main():
-        # print("gold logo")
         return False
     return True
 
@@ -714,7 +685,7 @@ def check_for_war_loot_menu():
     return all(pixel_is_equal(color, pix, tol=45) for pix in pix_list)
 
 
-def check_for_final_results_popup():
+def check_for_final_results_popup(logger):
     """method for scanning pixels that indicate if the final results popup is on screen
     args:
         None
@@ -732,11 +703,11 @@ def check_for_final_results_popup():
     for pix in pix_list:
         if not pixel_is_equal(pix, [181, 96, 253], tol=45):
             return False
-    print("Final results popup detected.")
+    logger.change_status("Final results popup detected.")
     return True
 
 
-def check_if_on_shop_page_with_delay():
+def check_if_on_shop_page_with_delay(logger):
     """method for checking if the bot is on the shop page with a delay
     args:
         None
@@ -745,9 +716,9 @@ def check_if_on_shop_page_with_delay():
     """
     start_time = time.time()
     while time.time() - start_time < 3:
-        print("looping thru")
+        logger.change_status("looping thru")
         if check_if_on_shop_page():
-            print("made it")
+            logger.change_status("made it")
             return True
         time.sleep(0.5)
     return False
@@ -906,7 +877,7 @@ def wait_for_clash_main_menu(logger):
 
     loops = 0
     while waiting:
-        print("Still waiting for clash main")
+        logger.change_status("Still waiting for clash main")
         # loop count
         loops += 1
 
@@ -924,7 +895,7 @@ def wait_for_clash_main_menu(logger):
 
         # check if stuck on trophy progression page
         if check_if_stuck_on_trophy_progression_page():
-            print("Stuck on trophy progression page. Clicking out")
+            logger.change_status("Stuck on trophy progression page. Clicking out")
             click(210, 621)
             time.sleep(1)
 
@@ -1037,7 +1008,7 @@ def check_for_ssid_switch_page():
     return False
 
 
-def get_to_battlepass_rewards_page():
+def get_to_battlepass_rewards_page(logger):
     """method for getting the to battlepass rewards page
     args:
         None
@@ -1046,7 +1017,7 @@ def get_to_battlepass_rewards_page():
     """
 
     click(315, 165)
-    wait_for_battlepass_rewards_page()
+    wait_for_battlepass_rewards_page(logger)
 
 
 def check_for_battlepass_rewards_page():
@@ -1076,7 +1047,7 @@ def check_for_battlepass_rewards_page():
     return False
 
 
-def wait_for_battlepass_rewards_page():
+def wait_for_battlepass_rewards_page(logger):
     """method for waiting for the battlepass rewards page to appear
     args:
         None
@@ -1085,8 +1056,8 @@ def wait_for_battlepass_rewards_page():
     """
 
     while not check_for_battlepass_rewards_page():
-        if check_for_bonus_bank_popup_in_battlepass_page():
-            handle_bonus_bank_popup_in_battlepass_page()
+        if check_for_bonus_bank_popup_in_battlepass_page(logger):
+            handle_bonus_bank_popup_in_battlepass_page(logger)
 
 
 def check_for_card_mastery_page():
@@ -1238,7 +1209,7 @@ def get_to_party_mode_page_from_settings_page():
     wait_for_party_mode_page()
 
 
-def wait_for_card_page():
+def wait_for_card_page(logger):
     """method for waiting for the bot to arrive on the card page
     args:
         None
@@ -1249,7 +1220,7 @@ def wait_for_card_page():
     start_time = time.time()
     while not check_if_on_card_page():
         if time.time() - start_time > 10:
-            print("timed out waiting for card page")
+            logger.change_status("timed out waiting for card page")
             return "fail"
 
 
@@ -1312,7 +1283,7 @@ def check_if_on_battle_deck_page():
     return False
 
 
-def get_to_battle_deck_page():
+def get_to_battle_deck_page(logger):
     """method for getting to the battle deck page from the main menu
     args:
         None
@@ -1323,7 +1294,7 @@ def get_to_battle_deck_page():
     while not check_if_on_battle_deck_page():
         loops += 1
         if loops > 25:
-            print("failure with get_to_battle_deck_page()")
+            logger.change_status("failure with get_to_battle_deck_page()")
             return "restart"
 
         click(140, 620)
@@ -1379,7 +1350,7 @@ def wait_for_bannerbox_page():
         pass
 
 
-def get_to_bannerbox():
+def get_to_bannerbox(logger):
     """method for gettign to the bannerbox page to appear
     args:
         None
@@ -1388,10 +1359,10 @@ def get_to_bannerbox():
     """
     click(355, 230)
     wait_for_bannerbox_page()
-    print("made it to bannerbox page")
+    logger.change_status("made it to bannerbox page")
 
 
-def check_for_bonus_bank_popup_in_battlepass_page():
+def check_for_bonus_bank_popup_in_battlepass_page(logger):
     """method for scanning for pixels that indicate the bonus bank popup is on the screen
     args:
         None
@@ -1423,19 +1394,19 @@ def check_for_bonus_bank_popup_in_battlepass_page():
         and green_collect_button_exists
         and grey_background_exists
     ):
-        print("found bonus bank popup")
+        logger.change_status("found bonus bank popup")
         return True
     return False
 
 
-def handle_bonus_bank_popup_in_battlepass_page():
+def handle_bonus_bank_popup_in_battlepass_page(logger):
     """method for handling the possiblity of the bonus bank popup appearing on the battlepass page
     args:
         None
     returns:
         None
     """
-    print("handling bonus bank popup")
+    logger.change_status("handling bonus bank popup")
     # click collect
     click(216, 466)
     time.sleep(3)
@@ -1452,7 +1423,7 @@ def get_to_challenges_tab(logger):
     time.sleep(3)
 
     # check if the user is in a tournament
-    if check_if_account_is_already_in_a_challenge():
+    if check_if_account_is_already_in_a_challenge(logger):
         # click back button
         click(32, 56)
         time.sleep(5)
@@ -1463,10 +1434,10 @@ def get_to_challenges_tab(logger):
     for _ in range(5):
         scroll_up_fast_on_left_side_of_screen()
     time.sleep(1)
-    print("done")
+    logger.change_status("done")
 
 
-def check_if_account_is_already_in_a_challenge():
+def check_if_account_is_already_in_a_challenge(logger):
     iar = numpy.asarray(screenshot())
 
     # look for purple background of win count in this challenge
@@ -1484,6 +1455,6 @@ def check_if_account_is_already_in_a_challenge():
             yellow_back_button_exists = True
 
     if purple_background_exists and yellow_back_button_exists:
-        print("account is already in a challenge")
+        logger.change_status("account is already in a challenge")
         return True
     return False
