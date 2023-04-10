@@ -36,7 +36,12 @@ def screenshot(
         # due to API change, the last two values of the region are now the width and height,
         # not the bottom right corner like with the old API.
         # this fix keeps functionality the same in our codebase
-        new_region = (region[0], region[1], region[0] + region[2], region[1] + region[3])
+        new_region = (
+            region[0],
+            region[1],
+            region[0] + region[2],
+            region[1] + region[3],
+        )
         region = tuple(int(x) for x in new_region)
     return ImageGrab.grab(bbox=region)
 
@@ -163,6 +168,14 @@ def scroll_up_fast():
     """Method for scrolling down even faster when interacting with a scrollable menu"""
     origin = ahk.mouse_position
     ahk.mouse_position = (215, 300)
+    ahk.mouse_drag(x=0, y=100, relative=True, blocking=True)
+    ahk.mouse_position = origin
+
+
+def scroll_up_fast_on_left_side_of_screen():
+    """Method for scrolling down even faster when interacting with a scrollable menu using the left side of the screen"""
+    origin = ahk.mouse_position
+    ahk.mouse_position = (66, 300)
     ahk.mouse_drag(x=0, y=100, relative=True, blocking=True)
     ahk.mouse_position = origin
 
