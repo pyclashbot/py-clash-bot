@@ -300,7 +300,7 @@ def start_2v2(logger):
         return "restart"
 
     # get to challenges tab
-    get_to_challenges_tab()
+    get_to_challenges_tab(logger)
 
     # click 2v2 mode
     two_v_two_match_icon_coord = find_2v2_match_icon()
