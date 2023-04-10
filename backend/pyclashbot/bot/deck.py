@@ -61,14 +61,14 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
         int,the number of scrolls that can be made in the card page
     """
 
-    print("Counting maximum scrolls in card page")
+    logger.change_status("Counting maximum scrolls in card page")
 
     # Count scrolls
     count: int = 1
     scroll_down_fast()
     loops = 0
     while check_if_can_still_scroll_in_card_page():
-        print("Scrolling down in card page: ", count)
+        logger.change_status("Scrolling down in card page: ", count)
         loops += 1
         if loops > 40:
             logger.change_status("Failed counting scrolls in card page")
@@ -82,14 +82,14 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     click(111, 629)
     time.sleep(1)
 
-    print(f"Counted scrolls: {count}")
+    logger.change_status(f"Counted scrolls: {count}")
     return 1 if count == 0 else count - 1
 
 
 #### detection methods
 
 
-def find_random_card_coord():
+def find_random_card_coord(logger):
     """method to find coordinates of a random card on the given page of usable cards using random regions to assure randomness
     args:
         None
@@ -176,9 +176,11 @@ def find_random_card_coord():
                 screenshot(region)
             )
             if coord is not None:
-                print("Found a random card at index: " + str(index))
+                logger.change_status("Found a random card at index: " + str(index))
                 return (coord[0] + region[0], coord[1] + region[1])
-    print("Looped through find_random_card_coord() too many times. Restarting")
+    logger.change_status(
+        "Looped through find_random_card_coord() too many times. Restarting"
+    )
     return "restart"
 
 
@@ -430,14 +432,14 @@ def randomize_and_select_deck_2(logger):
     logger.change_status("Making a random deck before starting a 2v2. . .")
 
     # get to card page
-    print("Getting to card page to randomize deck.")
+    logger.change_status("Getting to card page to randomize deck.")
     if get_to_card_page(logger) == "restart":
-        print("failure with get_to_card_page")
+        logger.change_status("failure with get_to_card_page")
         return "restart"
-    print("Done getting to card page to randomize deck.")
+    logger.change_status("Done getting to card page to randomize deck.")
 
     # click deck 2
-    print("Clicking deck 2")
+    logger.change_status("Clicking deck 2")
     click(173, 190)
     time.sleep(1)
 
@@ -477,11 +479,11 @@ def randomize_this_deck(logger):
     ]
 
     # count maximum scrolls
-    print("Coutning maximum scrolls for deck randomization.")
+    logger.change_status("Counting maximum scrolls for deck randomization.")
     maximum_scrolls = count_scrolls_in_card_page(logger)
 
     if maximum_scrolls == "restart":
-        print("Failure with count_scrolls_in_card_page")
+        logger.change_status("Failure with count_scrolls_in_card_page")
         return "restart"
 
     # calculate  an amount to randomly scroll
@@ -492,11 +494,11 @@ def randomize_this_deck(logger):
         minimum_scrolls = maximum_scrolls
 
     # for each card slot, replace with random card
-    print("Starting card replacement loop")
+    logger.change_status("Starting card replacement loop")
     for card_to_replace_coord in card_coord_list:
         random_scroll_amount = random.randint(minimum_scrolls, maximum_scrolls)
 
-        print(
+        logger.change_status(
             f"This random scroll amount is {random_scroll_amount} within a range of ({minimum_scrolls}, {maximum_scrolls})"
         )
 
@@ -507,7 +509,7 @@ def randomize_this_deck(logger):
 
         # check for scrolling failure
         if check_for_random_scroll_failure_in_deck_randomization():
-            print(
+            logger.change_status(
                 "detected a failure when randomly scrolling during deck randomization... attempting to save the bot"
             )
             for _ in range(3):
@@ -518,12 +520,12 @@ def randomize_this_deck(logger):
         use_card_button_coord = None
         loops = 0
 
-        print("Clicking randomly until we get a use button")
+        logger.change_status("Clicking randomly until we get a use button")
         while use_card_button_coord is None:
-            print("Clicking cards randomly")
+            logger.change_status("Clicking cards randomly")
             loops += 1
             if loops > 30:
-                print(
+                logger.change_status(
                     "Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized."
                 )
                 if get_to_clash_main_from_card_page(logger) == "restart":
@@ -532,7 +534,7 @@ def randomize_this_deck(logger):
                     return "fail"
 
             # find a random card on this page
-            replacement_card_coord = find_random_card_coord()
+            replacement_card_coord = find_random_card_coord(logger)
 
             if replacement_card_coord == "restart":
                 logger.change_status("Failure replacing card")
@@ -543,7 +545,9 @@ def randomize_this_deck(logger):
 
             # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
             if replacement_card_coord[1] < 200:
-                print("replacement_card_coord is too high on the screen. trying again")
+                logger.change_status(
+                    "replacement_card_coord is too high on the screen. trying again"
+                )
                 if random.randint(1, 2) == 2:
                     loops -= 1
                 continue
@@ -555,12 +559,12 @@ def randomize_this_deck(logger):
             use_card_button_coord = find_use_card_button()
 
         # click use card
-        print("Clicking use card button")
+        logger.change_status("Clicking use card button")
         click(use_card_button_coord[0], use_card_button_coord[1])
         time.sleep(1)
 
         # select the card coord in the deck that we're replacing with the random card
-        print("selecting the card to replace")
+        logger.change_status("selecting the card to replace")
         click(card_to_replace_coord[0], card_to_replace_coord[1])
         time.sleep(0.22)
 

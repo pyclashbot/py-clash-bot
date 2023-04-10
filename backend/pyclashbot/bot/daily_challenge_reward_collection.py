@@ -93,19 +93,18 @@ def collect_daily_reward(logger, reward_index):
 
     # increment logger
     logger.add_daily_challenge_reward_collection()
-    print("Incremented logger to", logger.daily_challenge_reward_collections)
 
     # click the given reward coord
     coord = daily_challenge_reward_coord_list[reward_index]
     click(coord[0], coord[1])
     time.sleep(1)
 
-    print("checking for bannerbox inventory full page")
+    logger.change_status("checking for bannerbox inventory full page")
     if check_for_bannerbox_inventory_full_popup():
-        print("Bannerbox inventory  full")
+        logger.change_status("Bannerbox inventory  full")
         handle_bannerbox_inventory_full_popup()
     else:
-        print("Bannerbox inventory not full")
+        logger.change_status("Bannerbox inventory not full")
 
     # daily and weekly coords require skipping thru the rewards in a chest
     if reward_index == 3 or reward_index == 4 or reward_index == 1:
@@ -219,7 +218,8 @@ def check_for_daily_challenge_rewards_in_daily_challenge_page():
     args
         None
     returns
-        list of bools that indicate if the daily challenge reward task icons are present in the 5 possible locations"""
+        list of bools that indicate if the daily challenge reward task icons are present in the 5 possible locations
+    """
 
     # list of pixels that pertain to the daily challenge reward task icons in the list of daily challenge rewards
     daily_challenge_reward_coord_list = [
