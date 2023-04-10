@@ -65,23 +65,23 @@ def collect_card_mastery_rewards(logger):
 
     logger.change_status("Collecting a card mastery reward. . .")
     # click mastery reward button
-    print("Clicking mastery button")
+    logger.change_status("Clicking mastery button")
     get_to_card_mastery_page()
 
     # click topleft most card in card mastery reward list
-    print("Clicking first card in mastery reward table")
+    logger.change_status("Clicking first card in mastery reward table")
     click(104, 224)
     time.sleep(1)
 
     # click all reward regions
-    print("Clicking various reward locations")
+    logger.change_status("Clicking various reward locations")
     for coord in reward_coords:
-        handle_banner_box_popup()
+        handle_banner_box_popup(logger)
         click(coord[0], coord[1])
         time.sleep(1)
 
     # click dead space
-    print("Clicking dead space to exit mastery tabs")
+    logger.change_status("Clicking dead space to exit mastery tabs")
     click(20, 400, clicks=20, interval=0.1)
 
     # get back to clash main
@@ -113,7 +113,6 @@ def check_if_can_collect_card_mastery_rewards(logger):
     has_rewards = False
     while time.time() - start_time < 3:
         pixel = numpy.asarray(screenshot())[499][239]
-        # print(pixel)
         if bool(pixel_is_equal(pixel, [255, 166, 13], tol=45)):
             has_rewards = True
 
@@ -154,7 +153,7 @@ def check_for_banner_box_popup():
     return check_for_location(locations)
 
 
-def handle_banner_box_popup():
+def handle_banner_box_popup(logger):
     """Method to handle a banner box popup
     args:
         None
@@ -162,39 +161,39 @@ def handle_banner_box_popup():
         None"""
 
     if check_for_banner_box_popup():
-        print("Found banner box popup")
+        logger.change_status("Found banner box popup")
 
         # click go to bannerbox
-        print("click go to bannerbox")
+        logger.change_status("click go to bannerbox")
         click(205, 450)
         time.sleep(1)
 
         # click '100 tickets' button in bottom right
-        print("click '100 tickets' button in bottom right")
+        logger.change_status("click '100 tickets' button in bottom right")
         click(330, 610)
         time.sleep(1)
 
         # click '100 tickets' button in the middle of the screen to open the chest
-        print(
+        logger.change_status(
             "click '100 tickets' button in the middle of the screen to open the chest"
         )
         click(215, 505)
         time.sleep(3)
 
         # click deadspace
-        print("Clicking dead space to skip through rewards")
+        logger.change_status("Clicking dead space to skip through rewards")
         click(20, 440, clicks=10, interval=0.1)
 
         # close banner box
-        print("Closing banner box first time")
+        logger.change_status("Closing banner box first time")
         click(99, 999)
         time.sleep(1)
 
         # close banner box
-        print("Closing banner box second time")
+        logger.change_status("Closing banner box second time")
         click(355, 65)
         time.sleep(1)
 
         # close mastery tabs
-        print("Clicking dead space to get to card page main.")
+        logger.change_status("Clicking dead space to get to card page main.")
         click(20, 440, clicks=10, interval=0.1)
