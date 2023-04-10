@@ -1441,7 +1441,7 @@ def handle_bonus_bank_popup_in_battlepass_page():
     time.sleep(3)
 
 
-def get_to_challenges_tab():
+def get_to_challenges_tab(logger):
     """method for getting to the challenges tab
     args:
         None
@@ -1455,7 +1455,11 @@ def get_to_challenges_tab():
     if check_if_account_is_already_in_a_challenge():
         # click back button
         click(32, 56)
+        time.sleep(5)
 
+    logger.change_status(
+        "Scrolling up in the challenges tab to assure the bot is at the top of the page"
+    )
     for _ in range(5):
         scroll_up_fast_on_left_side_of_screen()
     time.sleep(1)
