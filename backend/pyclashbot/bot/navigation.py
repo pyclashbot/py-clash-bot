@@ -1457,7 +1457,7 @@ def get_to_challenges_tab():
         click(32, 56)
 
     for _ in range(5):
-        scroll_up_fast_on_left_side_of_screen()()
+        scroll_up_fast_on_left_side_of_screen()
     time.sleep(1)
     print("done")
 
