@@ -6,7 +6,6 @@ from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
-
 """methods that have to do with the collection of level up rewards"""
 
 
@@ -34,13 +33,12 @@ def check_for_level_up_reward_pixels():
 def check_if_has_level_up_rewards():
     """method that spams the check_for_level_up_reward_pixels() pixel check a few times over a few seconds because the animation sometimes obstructs the pixels
 
-    returns: 
+    returns:
         bool: yes if rewards icon pixels existed anytime in the last 0.36 seconds
     """
 
     timer = 0
     while not check_for_level_up_reward_pixels():
-
         if timer > 0.36:
             return False
         timer += 0.02
@@ -53,7 +51,7 @@ def collect_level_up_rewards(logger):
     args:
         logger: logger from logger class initiaed in main
 
-    returns: 
+    returns:
         "restart" if any failure occurs, else "battlepass reward collection"
     """
     # starts and ends on clash main
@@ -62,7 +60,7 @@ def collect_level_up_rewards(logger):
 
     # should be on clash main at this point
     if not check_if_on_clash_main_menu():
-        print("not on main so cant run collect_level_up_rewards()")
+        logger.change_status("not on main so cant run collect_level_up_rewards()")
         return "restart"
 
     # loop until the level up rewards icon on the main menu indicates there are no more rewards
@@ -72,7 +70,9 @@ def collect_level_up_rewards(logger):
         # loop counter
         loops += 1
         if loops > 20:
-            print("looped through check_if_has_level_up_rewards() too many times")
+            logger.change_status(
+                "looped through check_if_has_level_up_rewards() too many times"
+            )
             return "restart"
 
         # click logo in top left
@@ -100,7 +100,7 @@ def collect_level_up_rewards(logger):
                 time.sleep(0.33)
             # if this didnt help getting to main then return restart
             if not check_if_on_clash_main_menu():
-                print(
+                logger.change_status(
                     "check_if_has_level_up_rewards() didnt finish its loop on clash main. Restarting"
                 )
                 return "restart"

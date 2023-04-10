@@ -65,7 +65,7 @@ def collect_battlepass_rewards(logger):
 
     # should be on clash main at this point
     if not check_if_on_clash_main_menu():
-        print("Not on main so cant run collect_battlepass_rewards()")
+        logger.change_status("Not on main so cant run collect_battlepass_rewards()")
         return "restart"
 
     # declare locations of reward coords
@@ -94,7 +94,7 @@ def collect_battlepass_rewards(logger):
         loops += 1
 
         # click battlepass icon on clash main
-        get_to_battlepass_rewards_page()
+        get_to_battlepass_rewards_page(logger)
 
         click(15, 15, clicks=2, interval=1)
 
@@ -112,7 +112,7 @@ def collect_battlepass_rewards(logger):
         click(210, 630)
 
         if wait_for_clash_main_menu(logger) == "restart":
-            print(
+            logger.change_status(
                 "waited too long for clash main menu to return after closing battlepass"
             )
             return "restart"
@@ -126,7 +126,7 @@ def collect_battlepass_rewards(logger):
     if check_if_on_clash_main_menu():
         return "clashmain"
     else:
-        print(
+        logger.change_status(
             "Not on clash main at the end of collecting battlepass rewards loop. returning restart"
         )
         return "restart"
