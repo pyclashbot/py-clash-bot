@@ -6,7 +6,6 @@ from pyclashbot.bot.navigation import get_to_bannerbox, wait_for_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 
-
 """Methods that have to do with the collection of the bannerbox rewards
 
 """
@@ -16,11 +15,13 @@ def collect_bannerbox_chests(logger):
     """main method for collecing the bannerbox chests from the clash main menu"""
 
     # get to the bannerbox menu
-    print("Opening bannerbox menu from main")
-    get_to_bannerbox()
+    logger.change_status("Opening bannerbox menu from main")
+    get_to_bannerbox(logger)
 
     # click '100 tickets' button
-    print("clicking 100 tickets button in the bottom left to buy a chest")
+    logger.change_status(
+        "clicking 100 tickets button in the bottom left to buy a chest"
+    )
     get_to_confrim_battlebox_purchase_page()
 
     # handle welcome to bannerbox popup
@@ -28,25 +29,27 @@ def collect_bannerbox_chests(logger):
         handle_welcome_to_bannerbox_popup()
 
     # buy a chest if possible
-    print("checking if can buy a chest this time")
+    logger.change_status("checking if can buy a chest this time")
     if check_if_can_purchase_a_battlebox():
-        print("can buy a chest this time")
+        logger.change_status("can buy a chest this time")
         buy_a_battlebox()
     # if cant purchase a chest, close the confirm purchase page
     else:
-        print("cant buy a chest this time")
+        logger.change_status("cant buy a chest this time")
         # close confirm purchase page
         click(353, 177)
         time.sleep(0.33)
 
     # close page
-    print("closing bannerbox menu to get back to clash main")
+    logger.change_status("closing bannerbox menu to get back to clash main")
     click(354, 67)
 
     # return to the clash main menu
-    print("waiting for main to return")
+    logger.change_status("waiting for main to return")
     if wait_for_clash_main_menu(logger) == "restart":
-        print("Failure wiht wait_for_clash_main_menu() in collect_bannerbox_chests()")
+        logger.change_status(
+            "Failure wiht wait_for_clash_main_menu() in collect_bannerbox_chests()"
+        )
         return "restart"
 
 
