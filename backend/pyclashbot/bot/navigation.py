@@ -17,6 +17,7 @@ from pyclashbot.memu.client import (
     scroll_down,
     scroll_up,
     scroll_up_fast,
+    scroll_up_fast_on_left_side_of_screen,
 )
 
 """methods that have to do with navigating the game's menus"""
@@ -298,9 +299,7 @@ def leave_end_battle_window(logger):
         click(79, 625)
         time.sleep(6)
         click(x=173, y=631)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited for clash main too long")
-            return "restart"
+
         return None
 
     # if end screen condition 2 (OK in bottom middle)
@@ -309,10 +308,16 @@ def leave_end_battle_window(logger):
         click(206, 594)
         time.sleep(6)
         click(x=173, y=631)
-        if wait_for_clash_main_menu(logger) == "restart":
-            logger.change_status("waited too long for clash main")
-            return "restart"
+
         return None
+
+    manual_wait_time = 10
+    logger.change_status(f"Manual wait time of {manual_wait_time} seconds")
+    time.sleep(manual_wait_time)
+
+    # click clash main icon in bottom middle of page icon list
+    logger.change_status("Returning to clash main from events page")
+    click(183, 629)
 
     if wait_for_clash_main_menu(logger) == "restart":
         logger.change_status("Waited too long for clash main")
@@ -1452,7 +1457,7 @@ def get_to_challenges_tab():
         click(32, 56)
 
     for _ in range(5):
-        scroll_up_fast()
+        scroll_up_fast_on_left_side_of_screen()()
     time.sleep(1)
     print("done")
 
