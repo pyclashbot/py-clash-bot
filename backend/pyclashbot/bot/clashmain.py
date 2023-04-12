@@ -177,14 +177,16 @@ def get_to_account(logger, account_number):
     logger.change_status(f"Switching accounts to account number {str(account_number)}")
 
     # open settings
-    print("Opening settings tab from clash main to get to account switch")
+    logger.change_status(
+        "Opening settings tab from clash main to get to account switch"
+    )
     get_to_clash_main_settings_page()
 
     # click switch accounts
-    print("Clicking the switch accounts button.")
+    logger.change_status("Clicking the switch accounts button.")
     get_to_ssid_switch_page()
 
-    print("getting to then clicking the appropriate account")
+    logger.change_status("getting to then clicking the appropriate account")
 
     if account_number == 0:
         click(155, 350)
@@ -296,16 +298,16 @@ def start_2v2(logger):
 
     # if not on clash main at this point then this failed
     if not check_if_on_clash_main_menu():
-        print("Not on clash main so cant run start_2v2()")
+        logger.change_status("Not on clash main so cant run start_2v2()")
         return "restart"
 
     # get to challenges tab
-    get_to_challenges_tab()
+    get_to_challenges_tab(logger)
 
     # click 2v2 mode
     two_v_two_match_icon_coord = find_2v2_match_icon()
     if two_v_two_match_icon_coord is None:
-        print("Could not find 2v2 match icon")
+        logger.change_status("Could not find 2v2 match icon")
         return "restart"
     click(two_v_two_match_icon_coord[0], two_v_two_match_icon_coord[1])
     time.sleep(1)
