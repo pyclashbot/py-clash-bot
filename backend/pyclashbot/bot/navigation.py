@@ -1017,6 +1017,7 @@ def get_to_battlepass_rewards_page(logger):
     """
 
     click(315, 165)
+
     wait_for_battlepass_rewards_page(logger)
 
 
@@ -1030,19 +1031,19 @@ def check_for_battlepass_rewards_page():
 
     iar = numpy.asarray(screenshot())
 
-    season_timer_clock_icon_exists = False
-    for x_coord in range(235, 265):
-        this_pixel = iar[155][x_coord]
-        if pixel_is_equal(this_pixel, [212, 204, 204], tol=35):
-            season_timer_clock_icon_exists = True
+    boot_camp_text_exists = False
+    for x_coord in range(150, 160):
+        this_pixel = iar[72][x_coord]
+        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
+            boot_camp_text_exists = True
 
     ok_button_exists = False
-    for x_coord in range(180, 240):
-        this_pixel = iar[630][x_coord]
-        if pixel_is_equal(this_pixel, [104, 187, 255], tol=35):
+    for x_coord in range(177, 197):
+        this_pixel = iar[638][x_coord]
+        if pixel_is_equal(this_pixel, [78, 175, 255], tol=35):
             ok_button_exists = True
 
-    if ok_button_exists and season_timer_clock_icon_exists:
+    if ok_button_exists and boot_camp_text_exists:
         return True
     return False
 
@@ -1056,6 +1057,10 @@ def wait_for_battlepass_rewards_page(logger):
     """
 
     while not check_for_battlepass_rewards_page():
+        if random.randint(0, 1) == 1:
+            click(20, 630)
+        else:
+            click(171, 333)
         if check_for_bonus_bank_popup_in_battlepass_page(logger):
             handle_bonus_bank_popup_in_battlepass_page(logger)
 
