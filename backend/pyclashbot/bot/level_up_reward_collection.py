@@ -104,4 +104,4 @@ def collect_level_up_rewards(logger):
                     "check_if_has_level_up_rewards() didnt finish its loop on clash main. Restarting"
                 )
                 return "restart"
-        logger.change_status("Done collecting battlepass rewards.")
+        logger.change_status("Done collecting level-up rewards.")
