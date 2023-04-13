@@ -22,7 +22,9 @@ def collect_bannerbox_chests(logger):
     logger.change_status(
         "clicking 100 tickets button in the bottom left to buy a chest"
     )
-    get_to_confrim_battlebox_purchase_page()
+    if get_to_confrim_battlebox_purchase_page() == "restart":
+        logger.change_status("Failure with get_to_confrim_battlebox_purchase_page()")
+        return "restart"
 
     # handle welcome to bannerbox popup
     if check_for_welcome_to_bannerbox_popup():
@@ -93,7 +95,8 @@ def get_to_confrim_battlebox_purchase_page():
         None
     """
     click(312, 606)
-    wait_for_confirm_battlebox_purchase_page()
+    if wait_for_confirm_battlebox_purchase_page() == "restart":
+        return "restart"
 
 
 def wait_for_confirm_battlebox_purchase_page():
@@ -103,8 +106,11 @@ def wait_for_confirm_battlebox_purchase_page():
     returns:
         None
     """
+    start_time = time.time()
     while not check_for_confirm_battlebox_purchase_page():
-        pass
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            return "restart"
 
 
 def check_for_confirm_battlebox_purchase_page():

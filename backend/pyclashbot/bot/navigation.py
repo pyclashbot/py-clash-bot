@@ -908,7 +908,7 @@ def wait_for_clash_main_menu(logger):
 #### TO SORT
 
 
-def get_to_clash_main_settings_page():
+def get_to_clash_main_settings_page(logger):
     """method to get to the clash main settings page
     args:
         None
@@ -917,7 +917,8 @@ def get_to_clash_main_settings_page():
     """
 
     click(x=364, y=99)
-    wait_for_clash_main_settings_page()
+    if wait_for_clash_main_settings_page(logger) == "restart":
+        return "restart"
 
 
 def check_if_on_clash_main_settings_page():
@@ -947,15 +948,21 @@ def check_if_on_clash_main_settings_page():
     return False
 
 
-def wait_for_clash_main_settings_page():
+def wait_for_clash_main_settings_page(logger):
     """method for waiting for the calsh main settings page to appear
     args:
         None
     returns:
         None
     """
+    start_time = time.time()
     while not check_if_on_clash_main_settings_page():
-        pass
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            logger.change_status(
+                "Waited more than 10 sec for clash main settings page. Restarting"
+            )
+            return "restart"
 
 
 def wait_for_ssid_switch_page():
@@ -965,8 +972,12 @@ def wait_for_ssid_switch_page():
     returns:
         None
     """
+    start_time = time.time()
     while not check_for_ssid_switch_page():
-        pass
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            print("Waited more than 10 sec for ssid switch page. Restarting")
+            return "restart"
 
 
 def get_to_ssid_switch_page():
@@ -978,7 +989,8 @@ def get_to_ssid_switch_page():
     """
 
     click(200, 405)
-    wait_for_ssid_switch_page()
+    if wait_for_ssid_switch_page() == "restart":
+        return "restart"
 
 
 def check_for_ssid_switch_page():
