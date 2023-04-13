@@ -68,7 +68,7 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     scroll_down_fast()
     loops = 0
     while check_if_can_still_scroll_in_card_page():
-        logger.change_status("Scrolling down in card page: ", count)
+        logger.change_status(f"Scrolling down in card page: {count}")
         loops += 1
         if loops > 40:
             logger.change_status("Failed counting scrolls in card page")
