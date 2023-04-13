@@ -193,7 +193,9 @@ def state_account_switching(
     ssid_index,
     ssid_max,
     ssid_order_list,
-) -> tuple[Literal["chest_reward_collection", "account_switching"], int, list[int]]:
+) -> tuple[
+    Literal["chest_reward_collection", "account_switching", "restart"], int, list[int]
+]:
     logger.change_status("Switching accounts. . .")
 
     # if order list is empty, make a new one
@@ -210,7 +212,7 @@ def state_account_switching(
     print("account selection range is: 0-", (ssid_max - 1))
     if get_to_account(logger, account_number=ssid_order_list[ssid_index]) == "restart":
         print("Failure with get_to_account() in state_clashmain()")
-        return "chest_reward_collection", ssid_index, ssid_order_list
+        return "restart", ssid_index, ssid_order_list
     ssid_index += 1
 
     # if at maximum index, make a new list, and reset to 0
