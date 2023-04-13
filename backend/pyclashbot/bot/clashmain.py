@@ -147,12 +147,15 @@ def check_if_in_a_clan(logger):
     open_profile_page()
 
     # get image array of flag where clan flag should be.
-    iar = numpy.asarray(screenshot())
-    for x_coord in range(82, 97):
-        this_pixel = iar[480][x_coord]
-        if not (pixel_is_equal(this_pixel, [50, 50, 50], tol=35)):
-            is_in_a_clan = True
     is_in_a_clan = False
+    iar = numpy.asarray(screenshot())
+    for x_coord in range(81, 96):
+        this_pixel = iar[480][x_coord]
+        if pixel_is_equal(this_pixel, [50, 50, 50], tol=20):
+            continue
+        else:
+            is_in_a_clan = True
+            break
 
     # return to main after getting this information
     logger.change_status("Returning to main menu")
