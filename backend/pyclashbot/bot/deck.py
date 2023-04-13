@@ -67,7 +67,7 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     count: int = 1
     scroll_down_fast()
     loops = 0
-    while check_if_can_still_scroll_in_card_page():
+    while find_card_elixer_icon_in_card_list_in_given_image(screenshot()) is not None:
         logger.change_status(f"Scrolling down in card page: {count}")
         loops += 1
         if loops > 40:
@@ -84,9 +84,6 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 
     logger.change_status(f"Counted scrolls: {count}")
     return 1 if count == 0 else count - 1
-
-
-#### detection methods
 
 
 def find_random_card_coord(logger):
@@ -240,187 +237,6 @@ def find_use_card_button():
     return None if coord is None else [coord[1], coord[0]]
 
 
-def check_if_can_still_scroll_in_card_page_2():
-    """method to check if pixels indicate that the card page can still be scrolled while still seeing usable cards
-    args:
-        none
-    returns:
-        bool, True if the card page can still be scrolled, False if not
-    """
-
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[552][341],
-        iar[529][363],
-        iar[561][237],
-        iar[530][271],
-    ]
-
-    # print_pix_list(pix_list)
-
-    # classify this pix list
-    color_blue = [15, 70, 125]
-    color_purple = [204, 102, 255]
-
-    classified_pix_list = []
-    for pix in pix_list:
-        if pixel_is_equal(pix, color_blue, tol=45):
-            classified_pix_list.append("Blue")
-        elif check_if_pixel_is_grey(pix):
-            classified_pix_list.append("Grey")
-        elif pixel_is_equal(pix, color_purple, tol=45):
-            classified_pix_list.append("Purple")
-        else:
-            classified_pix_list.append("Other")
-
-    # if any of the pixels aren't grey or blue, we can keep scrolling
-    for color in classified_pix_list:
-        if color != "Grey" and color != "Blue" and color != "Purple":
-            return True
-    return False
-
-
-def check_if_can_still_scroll_in_card_page_3():
-    """another method to check if pixels indicate that the card page can still be scrolled while still seeing usable cards
-    args:
-        none
-    returns:
-        bool, True if the card page can still be scrolled, False if not
-    """
-
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[489][66],
-        iar[500][94],
-        iar[495][155],
-        iar[546][176],
-    ]
-
-    # print_pix_list(pix_list)
-
-    # classify this pix list
-    color_blue = [15, 70, 125]
-    color_purple = [204, 102, 255]
-
-    classified_pix_list = []
-    for pix in pix_list:
-        if pixel_is_equal(pix, color_blue, tol=45):
-            classified_pix_list.append("Blue")
-        elif check_if_pixel_is_grey(pix):
-            classified_pix_list.append("Grey")
-        elif pixel_is_equal(pix, color_purple, tol=45):
-            classified_pix_list.append("Purple")
-        else:
-            classified_pix_list.append("Other")
-
-    # if any of the pixels aren't grey or blue, we can keep scrolling
-    for color in classified_pix_list:
-        if color != "Grey" and color != "Blue" and color != "Purple":
-            return True
-    return False
-
-
-def check_if_can_still_scroll_in_card_page_4():
-    """method to check if pixels indicate that the card page can still be scrolled while still seeing usable cards
-    args:
-        none
-    returns:
-        bool, True if the card page can still be scrolled, False if not
-    """
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[313][147],
-        iar[371][161],
-        iar[306][235],
-        iar[346][275],
-    ]
-
-    # print_pix_list(pix_list)
-
-    # classify this pix list
-    color_blue = [15, 70, 125]
-    color_purple = [204, 102, 255]
-
-    classified_pix_list = []
-    for pix in pix_list:
-        if pixel_is_equal(pix, color_blue, tol=45):
-            classified_pix_list.append("Blue")
-        elif check_if_pixel_is_grey(pix):
-            classified_pix_list.append("Grey")
-        elif pixel_is_equal(pix, color_purple, tol=45):
-            classified_pix_list.append("Purple")
-        else:
-            classified_pix_list.append("Other")
-
-    # if any of the pixels aren't grey or blue, we can keep scrolling
-    for color in classified_pix_list:
-        if color != "Grey" and color != "Blue" and color != "Purple":
-            return True
-    return False
-
-
-def check_if_can_still_scroll_in_card_page():
-    """Main method for checking if the bot can still scroll in the card page while seeing usable cards
-    args:
-        none
-    returns:
-        bool, True if the bot can still scroll, False if not
-    """
-    if not check_if_can_still_scroll_in_card_page_2():
-        return False
-    if not check_if_can_still_scroll_in_card_page_3():
-        return False
-    if not check_if_can_still_scroll_in_card_page_4():
-        return False
-    return True
-
-
-def check_for_random_scroll_failure_in_deck_randomization():
-    """ "Method to check for pixels that indicate a failure when randomly scrolling through the deck
-    args
-        none
-    returns:
-        bool, True if the bot can still scroll, False if not
-    """
-
-    card_level_boost_icon_coord_height = find_seasonal_card_boost_icon()
-    if card_level_boost_icon_coord_height is None:
-        return False
-    else:
-        return True
-
-
-def check_if_pix_list_is_blue(pix_list):
-    """method to check a given pixel list to see if it is blue
-    args:
-        pix_list: list of pixels to check
-    returns:
-        bool, True if all pixels in the list are blue, False if not
-    """
-    color_blue = [15, 70, 120]
-    return all(pixel_is_equal(color_blue, pix, tol=45) for pix in pix_list)
-
-
-def check_if_pixel_is_grey(pixel):
-    """Method to check if a given pixel is greyscale or not
-    args:
-        pixel: list of 3 ints, representing the RGB values of the pixel
-    returns:
-        bool, True if the pixel is greyscale, False if not
-    """
-    r: int = pixel[0]
-    g: int = pixel[1]
-    b: int = pixel[2]
-
-    # pixel to ignore
-    ignore_pixel = [41, 40, 47]
-
-    if pixel_is_equal(ignore_pixel, pixel, tol=10):
-        return False
-
-    return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
-
-
 def randomize_and_select_deck_2(logger):
     """Main method for randomizing and selecting deck 2
     args:
@@ -506,15 +322,6 @@ def randomize_this_deck(logger):
         for _ in range(random_scroll_amount):
             scroll_down_fast()
             time.sleep(0.1)
-
-        # check for scrolling failure
-        if check_for_random_scroll_failure_in_deck_randomization():
-            logger.change_status(
-                "detected a failure when randomly scrolling during deck randomization... attempting to save the bot"
-            )
-            for _ in range(3):
-                scroll_down_fast()
-                time.sleep(0.1)
 
         # click randomly until we get a 'use' button
         use_card_button_coord = None
