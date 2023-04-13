@@ -183,11 +183,13 @@ def get_to_account(logger, account_number):
     logger.change_status(
         "Opening settings tab from clash main to get to account switch"
     )
-    get_to_clash_main_settings_page()
+    if get_to_clash_main_settings_page(logger) == "restart":
+        return "restart"
 
     # click switch accounts
     logger.change_status("Clicking the switch accounts button.")
-    get_to_ssid_switch_page()
+    if get_to_ssid_switch_page() == "restart":
+        return "restart"
 
     logger.change_status("getting to then clicking the appropriate account")
 

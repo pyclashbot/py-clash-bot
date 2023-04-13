@@ -87,7 +87,7 @@ def wait_until_has_6_elixer(logger):
 
     has_6 = check_if_has_6_elixer()
     logger.change_status("Waiting for 6 elixer. . .")
-    loops = 0
+    start_time = time.time()
     while not has_6:
         # if the hero power is available, use it
         if check_for_hero_power():
@@ -100,8 +100,8 @@ def wait_until_has_6_elixer(logger):
             break
 
         # if waiting too long, restart
-        loops += 1
-        if loops > 250:
+        time_taken = time.time() - start_time
+        if time_taken > 20:
             logger.change_status("Waited too long to get to 6 elixer. Restarting. . .")
             return "restart"
 
