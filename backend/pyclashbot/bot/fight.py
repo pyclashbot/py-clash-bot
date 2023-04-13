@@ -11,7 +11,6 @@ from pyclashbot.bot.card_detection import (
     identify_card,
 )
 from pyclashbot.bot.clashmain import check_if_in_battle, check_if_in_battle_with_delay
-from pyclashbot.bot.deck import check_if_pixel_is_grey
 from pyclashbot.bot.navigation import open_activity_log
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
@@ -56,6 +55,26 @@ def do_fight(logger):
 
     logger.change_status("Done fighting.")
     time.sleep(10)
+
+
+def check_if_pixel_is_grey(pixel):
+    """Method to check if a given pixel is greyscale or not
+    args:
+        pixel: list of 3 ints, representing the RGB values of the pixel
+    returns:
+        bool, True if the pixel is greyscale, False if not
+    """
+    r: int = pixel[0]
+    g: int = pixel[1]
+    b: int = pixel[2]
+
+    # pixel to ignore
+    ignore_pixel = [41, 40, 47]
+
+    if pixel_is_equal(ignore_pixel, pixel, tol=10):
+        return False
+
+    return abs(r - g) <= 10 and abs(r - b) <= 10 and abs(g - b) <= 10
 
 
 def wait_until_has_6_elixer(logger):
