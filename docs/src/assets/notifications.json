@@ -1,0 +1,14 @@
+[
+    {
+        "date": "2023-04-09",
+        "header": "The Latest Notification",
+        "body": "This is the latest notification.",
+        "level": "info"
+    },
+    {
+        "date": "2023-04-08",
+        "header": "An older Notification",
+        "body": "This is an older notification, but a warning",
+        "level": "warn"
+    }
+]
