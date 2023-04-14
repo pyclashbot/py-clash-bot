@@ -1,7 +1,7 @@
 import ReactGA from "react-ga4";
 import { process } from "process";
 
-const GA_MEASUREMENT_ID = "G-Y7520HNKMG";
+export const GA_MEASUREMENT_ID = "G-Y7520HNKMG";
 
 /**
  * Initialize google analytics with tracking ID and settings
