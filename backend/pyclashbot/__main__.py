@@ -13,8 +13,8 @@ from pyclashbot.interface import (
 )
 from pyclashbot.utils import Logger, cache_user_settings, read_user_settings
 from pyclashbot.utils.caching import check_user_settings
+from pyclashbot.utils.server_notifications import Notification, get_latest_notification
 from pyclashbot.utils.thread import PausableThread, StoppableThread
-
 
 """
 Main for the py-clashbot program
@@ -207,6 +207,13 @@ def main_gui():
     thread: WorkerThread | None = None
     logger = Logger(console_log=console_log, timed=False)
 
+    # read any notifications from the server to display in the gui
+    latest_notification: Notification | None = get_latest_notification()
+    if latest_notification is not None:
+        logger.change_status(
+            f'{latest_notification["header"]}: {latest_notification["body"]}'
+        )
+
     # run the gui
     while True:
         event, values = read_window(window, timeout=10)
@@ -278,6 +285,7 @@ def main_gui():
 
     window.close()
 
-#run the main gui
+
+# run the main gui
 if __name__ == "__main__":
     main_gui()
