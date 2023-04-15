@@ -86,7 +86,7 @@ profile = "black"
 
 
 [tool.pylint.main]
-ignore = ["build", "debug.py"]
+ignore = ["build", "debug"]
 py-version = "3.10"
 suggestion-mode = true
 disable = [

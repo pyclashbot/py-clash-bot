@@ -3,6 +3,7 @@
         "**/node_modules",
         "**/__pycache__",
         "**/build",
-        "**/dist"
+        "**/dist",
+        "**/debug"
     ]
 }
