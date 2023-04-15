@@ -66,7 +66,8 @@ def collect_card_mastery_rewards(logger):
     logger.change_status("Collecting a card mastery reward. . .")
     # click mastery reward button
     logger.change_status("Clicking mastery button")
-    get_to_card_mastery_page()
+    if get_to_card_mastery_page() == "restart":
+        return "restart"
 
     # click topleft most card in card mastery reward list
     logger.change_status("Clicking first card in mastery reward table")

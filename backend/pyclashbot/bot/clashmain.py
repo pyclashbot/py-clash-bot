@@ -7,7 +7,6 @@ from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
     get_to_challenges_tab,
     get_to_clash_main_settings_page,
-    get_to_party_mode_page_from_settings_page,
     get_to_ssid_switch_page,
     handle_card_mastery_notification,
     open_profile_page,
@@ -144,7 +143,8 @@ def check_if_in_a_clan(logger):
         return "restart"
 
     # click profile
-    open_profile_page()
+    if open_profile_page() == "restart":
+        return "restart"
 
     # get image array of flag where clan flag should be.
     is_in_a_clan = False

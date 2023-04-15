@@ -1030,7 +1030,8 @@ def get_to_battlepass_rewards_page(logger):
 
     click(315, 165)
 
-    wait_for_battlepass_rewards_page(logger)
+    if wait_for_battlepass_rewards_page(logger) == "restart":
+        return "restart"
 
 
 def check_for_battlepass_rewards_page():
@@ -1067,8 +1068,13 @@ def wait_for_battlepass_rewards_page(logger):
     returns:
         None
     """
+    start_time = time.time()
 
     while not check_for_battlepass_rewards_page():
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            return "restart"
+
         if random.randint(0, 1) == 1:
             click(20, 630)
         else:
@@ -1111,7 +1117,12 @@ def wait_card_mastery_page():
     returns:
         None
     """
+    start_time = time.time()
     while not check_for_card_mastery_page():
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            print("Waited more than 10 sec for card mastery page. Restarting")
+            return "restart"
         pass
 
 
@@ -1123,7 +1134,8 @@ def get_to_card_mastery_page():
         None
     """
     click(257, 505)
-    wait_card_mastery_page()
+    if wait_card_mastery_page() == "restart":
+        return "restart"
 
 
 def check_if_profile_page_is_open():
@@ -1161,7 +1173,8 @@ def open_profile_page():
         None
     """
     click(100, 130)
-    wait_for_profile_page()
+    if wait_for_profile_page() == "restart":
+        return "restart"
 
 
 def wait_for_profile_page():
@@ -1171,7 +1184,14 @@ def wait_for_profile_page():
     returns:
         None
     """
+    start_time = time.time()
+
     while not check_if_profile_page_is_open():
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            print("Waited more than 10 sec for profile page. Restarting")
+            return "restart"
+
         pass
 
 
@@ -1209,20 +1229,12 @@ def wait_for_party_mode_page():
     returns:
         None
     """
+    start_time = time.time()
     while not check_if_on_party_mode_page():
-        pass
-
-
-def get_to_party_mode_page_from_settings_page():
-    """methbod to get to the party mode page from the settings page
-    args:
-        None
-    returns:
-        None
-    """
-
-    click(263, 248)
-    wait_for_party_mode_page()
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            print("Waited more than 10 sec for party mode page. Restarting")
+            return "restart"
 
 
 def wait_for_card_page(logger):
@@ -1325,7 +1337,8 @@ def get_to_bannerbox_from_daily_reward_collection_popup():
         None
     """
     click(200, 450)
-    wait_for_bannerbox_page()
+    if wait_for_bannerbox_page() == "restart":
+        return "restart"
 
 
 def check_if_on_bannerbox_page():
@@ -1361,7 +1374,12 @@ def wait_for_bannerbox_page():
     returns:
         None
     """
+    start_time = time.time()
     while not check_if_on_bannerbox_page():
+        time_taken = time.time() - start_time
+        if time_taken > 10:
+            print("Waited more than 10 sec for bannerbox page. Restarting")
+            return "restart"
         click(20, 440)
         pass
 
@@ -1374,7 +1392,8 @@ def get_to_bannerbox(logger):
         None
     """
     click(355, 230)
-    wait_for_bannerbox_page()
+    if wait_for_bannerbox_page() == "restart":
+        return "restart"
     logger.change_status("made it to bannerbox page")
 
 
