@@ -34,7 +34,7 @@ Py-Clash-Bot is an open-source application that allows users to automate their C
 
 ## Demo
 
-<img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/demo-game.gif?raw=true" width="50%"/><img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/docs/src/assets/demo-gui.gif?raw=true" width="50%"/>
+<img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%"/><img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%"/>
 
 
 ## Contribute
