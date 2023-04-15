@@ -52,13 +52,14 @@ main_layout = [
     ],
     [
         stat_box("time_since_start", size=(7, 1)),
-        sg.InputText(
+        sg.Input(
             "Idle",
             key="current_status",
             use_readonly_for_disable=True,
             disabled=True,
             text_color="blue",
             expand_x=True,
+            tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
         ),
     ],
 ]
