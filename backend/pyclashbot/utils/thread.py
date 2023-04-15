@@ -29,7 +29,7 @@ class StoppableThread(threading.Thread):
         # ... Clean shutdown code here ...
         print(f"Thread #{self.ident} stopped")  # doesnt print for some reason
 
-    def shutdown(self, kill=False):
+    def shutdown(self, kill=True):
         self.shutdown_flag.set()
         if kill:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(
