@@ -274,7 +274,7 @@ def leave_end_battle_window(logger):
         time.sleep(6)
         click(x=173, y=631)
 
-        return None
+        return
 
     # if end screen condition 2 (OK in bottom middle)
     if check_if_end_screen_is_ok_bottom_middle():
@@ -283,7 +283,7 @@ def leave_end_battle_window(logger):
         time.sleep(6)
         click(x=173, y=631)
 
-        return None
+        return
 
     manual_wait_time = 10
     logger.change_status(f"Manual wait time of {manual_wait_time} seconds")

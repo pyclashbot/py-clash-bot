@@ -23,6 +23,7 @@ from pyclashbot.bot.navigation import (
     get_to_card_page,
     get_to_clash_main_from_card_page,
     leave_end_battle_window,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.bot.open_chests import open_chests
 from pyclashbot.bot.request import request_random_card_from_clash_main
@@ -410,6 +411,10 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
 
     # wait so that the card mastery progress notification doesnt obstruct clicking the options menu on clashmain
     time.sleep(7)
+
+    if wait_for_clash_main_menu(logger) == "restart":
+        print("Failure with wait_for_clash_main() in state_fight()")
+        return "restart"
 
     return "endfight"
 
