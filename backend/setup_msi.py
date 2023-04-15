@@ -9,7 +9,7 @@ DESCRIPTION = "Automated Clash Royale"
 KEYWORDS = "clash of clans bot"
 COPYRIGHT = "2023 Matthew Miglio"
 ENTRY_POINT = "pyclashbot\\__main__.py"
-ICON_PATH = "..\\docs\\src\\assets\\pixel-pycb.ico"
+ICON_PATH = "..\\assets\\pixel-pycb.ico"
 GUI = True
 UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
 
