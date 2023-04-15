@@ -94,7 +94,8 @@ def collect_battlepass_rewards(logger):
         loops += 1
 
         # click battlepass icon on clash main
-        get_to_battlepass_rewards_page(logger)
+        if get_to_battlepass_rewards_page(logger) == "restart":
+            return "restart"
 
         click(15, 15, clicks=2, interval=1)
 

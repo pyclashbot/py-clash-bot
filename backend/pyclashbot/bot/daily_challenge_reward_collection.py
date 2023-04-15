@@ -125,7 +125,8 @@ def handle_bannerbox_inventory_full_popup():
         None"""
 
     # go to bannerbox
-    get_to_bannerbox_from_daily_reward_collection_popup()
+    if get_to_bannerbox_from_daily_reward_collection_popup() == "restart":
+        return "restart"
 
     # click the '100 tickets' button
     click(300, 600)
