@@ -1,20 +1,18 @@
+"""Checks if the program is running in administrator mode."""
 import ctypes
-import os
 import sys
 import tkinter.messagebox
 
 
 def check_if_program_is_running_in_admin():
-    try:
-        is_admin = os.getuid() == 0
-    except AttributeError:
-        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    return is_admin
+    """Checks if the program is running in administrator mode."""
+    return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 
 if not check_if_program_is_running_in_admin():
     tkinter.messagebox.showinfo(
         "CRITICAL ERROR",
-        "This program MUST be running in administrator mode!\n\nClose the running program and restart it as administrator.",
+        "This program MUST be running in administrator mode!\n\n"
+        "Close the running program and restart it as administrator.",
     )
     sys.exit()
