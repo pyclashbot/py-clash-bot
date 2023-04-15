@@ -16,7 +16,8 @@ def collect_bannerbox_chests(logger):
 
     # get to the bannerbox menu
     logger.change_status("Opening bannerbox menu from main")
-    get_to_bannerbox(logger)
+    if get_to_bannerbox(logger) == "restart":
+        return "restart"
 
     # click '100 tickets' button
     logger.change_status(
