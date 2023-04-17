@@ -4,7 +4,7 @@ from typing import TypedDict
 
 import requests
 
-SERVER_NOTIFICATIONS_URL = "https://py-clash-bot.vercel.app/api/notification"
+SERVER_NOTIFICATIONS_URL = "https://pyclashbot.app/api/notification"
 TIMEOUT = 5
 
 Notification = TypedDict(
