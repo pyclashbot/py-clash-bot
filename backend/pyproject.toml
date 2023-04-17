@@ -7,9 +7,9 @@ authors = [
   "Matthew Miglio <matthew@martinmiglio.dev>",
   "Martin Miglio <code@martinmiglio.dev>",
 ]
-homepage = "https://matthewmiglio.github.io/py-clash-bot"
+homepage = "https://pyclashbot.app"
 repository = "https://github.com/matthewmiglio/py-clash-bot"
-documentation = "https://matthewmiglio.github.io/py-clash-bot"
+documentation = "https://pyclashbot.app"
 classifiers = [
   "Intended Audience :: End Users/Desktop",
   "Environment :: Win32 (MS Windows)",
@@ -32,7 +32,7 @@ pygetwindow = "^0.0"
 joblib = "^1.2"
 requests = "^2.28"
 PySimpleGUI = "^4.60"
-ahk = {extras = ["binary"], version = "^0.14.2"}
+ahk = { extras = ["binary"], version = "^0.14.2" }
 pymemuc = "^0.2"
 wmi = "^1.5.1"
 
