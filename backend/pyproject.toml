@@ -30,7 +30,7 @@ opencv-python = "^4.7.0"
 numpy = "^1.24.3"
 pygetwindow = "^0.0"
 joblib = "^1.2"
-requests = "^2.28"
+requests = "^2.30"
 PySimpleGUI = "^4.60"
 ahk = { extras = ["binary"], version = "^0.14.2" }
 pymemuc = "^0.2"
