@@ -54,7 +54,7 @@ optional = true
 pre-commit = "^3.3.1"
 black = "^23.3.0"
 matplotlib = "^3.7.1" # used in debug.py
-ipykernel = "^6.22.0"
+ipykernel = "^6.23.0"
 vulture = "^2.6"
 isort = "^5.12.0"
 
