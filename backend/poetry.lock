@@ -2,19 +2,19 @@
 
 [[package]]
 name = "ahk"
-version = "0.14.2"
+version = "1.1.3"
 description = "A Python wrapper for AHK"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8.0"
 files = [
-    {file = "ahk-0.14.2-py3-none-any.whl", hash = "sha256:a2cf1601083ca614a485c4b89f577e4c8fdd6bfe85a743acc4470efd8ba80949"},
-    {file = "ahk-0.14.2.tar.gz", hash = "sha256:fbd7fc5f64cb4c4255d88ec9cf022896fa7b76e920f9d4f6169e4c2b32eac91b"},
+    {file = "ahk-1.1.3-py3-none-any.whl", hash = "sha256:6daba157c7e64bf3a442ed70107e7ee9728c727de1c28872b3ac29e0a30ed2e4"},
+    {file = "ahk-1.1.3.tar.gz", hash = "sha256:47ab19dfa74e811e0af1272a48fa6eee6ceb2ed18e365f6527653d2b6a69575c"},
 ]
 
 [package.dependencies]
 ahk-binary = {version = "1.1.33.9", optional = true, markers = "extra == \"binary\""}
-jinja2 = "*"
+jinja2 = ">=3.0"
 
 [package.extras]
 binary = ["ahk-binary (==1.1.33.9)"]
@@ -1973,4 +1973,4 @@ tests = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "542285ba7061574ceb17a4a450bfb9504322e41ab86e82f3fb79f21b438e40b8"
+content-hash = "d2921140e2de0d46ca9995581534db390a26d5791730bf841779c93e488db719"
