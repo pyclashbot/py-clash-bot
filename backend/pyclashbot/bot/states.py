@@ -266,7 +266,7 @@ def state_free_offer_collection(
 
 def state_bannerbox_collection(logger):
     if collect_bannerbox_chests(logger) == "restart":
-        print("Error withc ollect_bannerbox_chests() in state_bannerbox_collection()")
+        print("Error with collect_bannerbox_chests() in state_bannerbox_collection()")
         return "restart"
     return "daily_challenge_reward_collection"
 
