@@ -1463,6 +1463,11 @@ def get_to_challenges_tab(logger):
         click(32, 56)
         time.sleep(5)
 
+    if check_for_new_season_reset_popup():
+        #click OK button
+        click(211,479)
+        time.sleep(5)
+
     logger.change_status(
         "Scrolling up in the challenges tab to assure the bot is at the top of the page"
     )
@@ -1470,6 +1475,33 @@ def get_to_challenges_tab(logger):
         scroll_up_fast_on_left_side_of_screen()
     time.sleep(1)
     logger.change_status("done")
+
+
+def check_for_new_season_reset_popup():
+    iar = numpy.asarray(screenshot())
+
+    yellow_top_banner_exists = False
+    for x in range(160,210):
+        this_pixel = iar[174][x]
+        if pixel_is_equal(this_pixel, [239,173,0], tol=25):
+            yellow_top_banner_exists = True
+            break
+    blue_ok_button_exists = False
+    for x in range(177,197):
+        this_pixel = iar[487][x]
+        if pixel_is_equal(this_pixel, [76,174,255], tol=25):
+            blue_ok_button_exists = True
+            break
+    white_new_season_reset_text_exists = False
+    for x in range(250,290):
+        this_pixel = iar[194][x]
+        if pixel_is_equal(this_pixel, [255,255,255], tol=25):
+            white_new_season_reset_text_exists = True
+            break
+
+    if yellow_top_banner_exists and blue_ok_button_exists and white_new_season_reset_text_exists:
+        return True
+    return False
 
 
 def check_if_account_is_already_in_a_challenge(logger):
