@@ -46,12 +46,12 @@ jobs_checklist = [
                         "Level Up Reward Collection", "-Level-Up-Reward-Collection-in-"
                     ),
                 ],
-                [
-                    job_check_box(
-                        "Battlepass Reward Collection",
-                        "-Battlepass-Reward-Collection-in-",
-                    ),
-                ],
+                # [
+                #     job_check_box(
+                #         "Battlepass Reward Collection",
+                #         "-Battlepass-Reward-Collection-in-",
+                #     ),
+                # ],
                 [
                     job_check_box(
                         "Free Offer Collection",
