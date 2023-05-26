@@ -276,9 +276,8 @@ def state_daily_challenge_reward_collection(
 ) -> Literal["restart", "battlepass_reward_collection"]:
     print("state is :state_daily_challenge_reward_collection")
 
-    # return collect_daily_challenge_rewards(logger)
+    return collect_daily_challenge_rewards(logger)
 
-    return
 
 
 def state_battlepass_collection(
@@ -291,6 +290,8 @@ def state_battlepass_collection(
         return "restart"
     else:
         return "level_up_reward_collection"
+    
+
 
 
 def state_level_up_reward_collection(
