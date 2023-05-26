@@ -199,20 +199,12 @@ def check_if_pixels_indicate_win_on_activity_log():
         bool: true if pixels are blue meaing a win, else false"""
 
     # fill pix list with a list of pixels that scan across the victory/defeat text
-    iar = numpy.asarray(screenshot())
-    pix_list = [iar[180][x_coord] for x_coord in range(48, 113)]
-    # cast this list to ints
-    int_pix_list = []
-    for pix in pix_list:
-        this_int_pix = [int(pix[0]), int(pix[1]), int(pix[2])]
-        int_pix_list.append(this_int_pix)
-
-    # count red pixels
-    red_count = sum(
-        bool(pixel_is_equal(pix, [255, 50, 100], tol=35)) for pix in int_pix_list
-    )
-
-    return red_count <= 10
+    iar=numpy.asarray(screenshot())
+    for x in range(50,120):
+        this_pixel = iar[180][x]
+        if pixel_is_equal(this_pixel, [103,202,251],tol=20):
+            return True
+    return False
 
 
 def check_if_has_6_elixer():
