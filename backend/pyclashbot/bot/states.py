@@ -114,11 +114,13 @@ def state_tree(
             state = "battlepass_reward_collection"
 
     elif state == "battlepass_reward_collection":
-        state = (
-            state_battlepass_collection(logger)
-            if "battlepass reward collection" in jobs
-            else "level_up_reward_collection"
-        )
+        # state = (
+        #     state_battlepass_collection(logger)
+        #     if "battlepass reward collection" in jobs
+        #     else "level_up_reward_collection"
+        # )
+
+        state = "level_up_reward_collection"
 
     elif state == "level_up_reward_collection":
         state = (
@@ -274,7 +276,9 @@ def state_daily_challenge_reward_collection(
 ) -> Literal["restart", "battlepass_reward_collection"]:
     print("state is :state_daily_challenge_reward_collection")
 
-    return collect_daily_challenge_rewards(logger)
+    # return collect_daily_challenge_rewards(logger)
+
+    return
 
 
 def state_battlepass_collection(

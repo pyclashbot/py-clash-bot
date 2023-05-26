@@ -68,22 +68,6 @@ def collect_battlepass_rewards(logger):
         logger.change_status("Not on main so cant run collect_battlepass_rewards()")
         return "restart"
 
-    # declare locations of reward coords
-    chest_locations = [
-        [300, 280],
-        [300, 340],
-        [300, 380],
-        [300, 430],
-        [300, 480],
-        [300, 540],
-        [125, 280],
-        [125, 340],
-        [125, 380],
-        [125, 430],
-        [125, 480],
-        [125, 540],
-    ]
-
     # loop until the battlepass rewards icon on the main menu indicates there are no more rewards
     loops = 0
     while check_if_has_battlepass_rewards():
