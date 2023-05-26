@@ -2,24 +2,18 @@ import random
 import time
 from typing import Literal
 
-import numpy
 
 from pyclashbot.bot.navigation import get_to_card_page, get_to_clash_main_from_card_page
 from pyclashbot.detection import (
-    check_for_location,
     find_references,
     get_first_location,
-    pixel_is_equal,
 )
 from pyclashbot.memu import (
     click,
     get_file_count,
     make_reference_image_list,
     screenshot,
-    scroll_down,
     scroll_down_fast,
-    scroll_up,
-    scroll_up_fast,
 )
 
 """Methods that have to do with the randomization of the current deck"""
@@ -60,29 +54,38 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     returns:
         int,the number of scrolls that can be made in the card page
     """
+    start_time = time.time()
+
+    sleep_time = 1
 
     logger.change_status("Counting maximum scrolls in card page")
 
     # Count scrolls
     count: int = 1
     scroll_down_fast()
+    time.sleep(sleep_time)
     loops = 0
     while find_card_elixer_icon_in_card_list_in_given_image(screenshot()) is not None:
+        print(f"Looping in count scrolls: {count}")
         logger.change_status(f"Scrolling down in card page: {count}")
         loops += 1
         if loops > 40:
+            print("Failed counting scrolls in card page")
             logger.change_status("Failed counting scrolls in card page")
             return "restart"
         scroll_down_fast()
-        time.sleep(0.1)
+        time.sleep(sleep_time)
         count += 1
 
     # get back to top of page
+    print("returning top of card page")
     click(240, 621)
     click(111, 629)
     time.sleep(1)
 
-    logger.change_status(f"Counted scrolls: {count}")
+    logger.change_status(
+        f"Counted scrolls: {count} in {str(time.time() - start_time)[:5]} seconds"
+    )
     return 1 if count == 0 else count - 1
 
 
@@ -160,6 +163,8 @@ def find_random_card_coord(logger):
         (293, 488, 81, 71),
     ]
 
+    start_time = time.time()
+
     # loop through the region list in random order 3 times
     index = 0
     for _ in range(3):
@@ -168,6 +173,9 @@ def find_random_card_coord(logger):
             region_list, len(region_list)
         )
         for region in this_random_region_list:
+            if time.time() - start_time > 7:
+                return "restart"
+
             index += 1
             coord = find_card_elixer_icon_in_card_list_in_given_image(
                 screenshot(region)
@@ -295,8 +303,15 @@ def randomize_this_deck(logger):
     ]
 
     # count maximum scrolls
+    print("counting scrolls")
     logger.change_status("Counting maximum scrolls for deck randomization.")
-    maximum_scrolls = count_scrolls_in_card_page(logger)
+
+    # calculate maximum scrolls, -4 represents a buffer at the bottom of the card list in case scrolling is inconsistent
+    counted_scrolls = count_scrolls_in_card_page(logger)
+    print(f"Counted scrolls: {counted_scrolls}")
+
+    maximum_scrolls = counted_scrolls - 3
+    print(f"Calculated maximum scrolls: {maximum_scrolls}")
 
     if maximum_scrolls == "restart":
         logger.change_status("Failure with count_scrolls_in_card_page")
@@ -321,7 +336,7 @@ def randomize_this_deck(logger):
         # scroll that amount
         for _ in range(random_scroll_amount):
             scroll_down_fast()
-            time.sleep(0.1)
+            time.sleep(1)
 
         # click randomly until we get a 'use' button
         use_card_button_coord = None
