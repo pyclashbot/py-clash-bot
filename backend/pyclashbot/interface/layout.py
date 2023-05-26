@@ -75,7 +75,7 @@ user_config_keys = [
     "-Random-Decks-in-",
     "-Card-Mastery-Collection-in-",
     "-Level-Up-Reward-Collection-in-",
-    "-Battlepass-Reward-Collection-in-",
+    # "-Battlepass-Reward-Collection-in-",
     "-Free-Offer-Collection-in-",
     "-Daily-Challenge-Reward-Collection-",
 ]

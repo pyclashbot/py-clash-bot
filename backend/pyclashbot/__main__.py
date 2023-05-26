@@ -65,8 +65,8 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
         jobs.append("card mastery collection")
     if values["-Level-Up-Reward-Collection-in-"]:
         jobs.append("level up reward collection")
-    if values["-Battlepass-Reward-Collection-in-"]:
-        jobs.append("battlepass reward collection")
+    # if values["-Battlepass-Reward-Collection-in-"]:
+    #     jobs.append("battlepass reward collection")
     if values["-War-Participation-in-"]:
         jobs.append("war")
     if values["-Free-Offer-Collection-in-"]:
