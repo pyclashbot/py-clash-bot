@@ -308,14 +308,15 @@ def randomize_this_deck(logger):
 
     # calculate maximum scrolls, -4 represents a buffer at the bottom of the card list in case scrolling is inconsistent
     counted_scrolls = count_scrolls_in_card_page(logger)
+
+    if counted_scrolls == "restart":
+        logger.change_status("Failure with count_scrolls_in_card_page")
+        return "restart"
+
     print(f"Counted scrolls: {counted_scrolls}")
 
     maximum_scrolls = counted_scrolls - 3
     print(f"Calculated maximum scrolls: {maximum_scrolls}")
-
-    if maximum_scrolls == "restart":
-        logger.change_status("Failure with count_scrolls_in_card_page")
-        return "restart"
 
     # calculate  an amount to randomly scroll
     minimum_scrolls = 3
