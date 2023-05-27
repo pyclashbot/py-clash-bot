@@ -449,7 +449,7 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 def clip_that():
     print("Saving a clip...")
 
-    click(943, 923)
+    click(1903,942)
     time.sleep(3)
 
 
