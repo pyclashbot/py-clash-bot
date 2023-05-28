@@ -1,5 +1,6 @@
 import sys
 import webbrowser
+from os import path
 
 import PySimpleGUI as sg
 
@@ -197,8 +198,12 @@ def main_gui():
     """method for displaying the main gui"""
     console_log = True  # enable/disable console logging
 
+    icon_path = "pixel-pycb.ico"
+    if not path.isfile(icon_path):
+        icon_path = path.join("..\\..\\assets\\", icon_path)
+
     # create gui window
-    window = sg.Window("Py-ClashBot", main_layout)
+    window = sg.Window("Py-ClashBot", main_layout, icon=icon_path)
 
     # load the last cached settings
     load_last_settings(window)
