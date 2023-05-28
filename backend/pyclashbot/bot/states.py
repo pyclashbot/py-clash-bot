@@ -143,14 +143,14 @@ def state_tree(
         state = state_upgrade(logger) if "Upgrade" in jobs else "deck_randomization"
 
     elif state == "deck_randomization":
-        if "Randomize Deck" in jobs:
+        if "Randomize Deck" in jobs and "Fight" in jobs:
             state = state_deck_randomization(logger, random_deck_bool=True)
         else:
             state = "start_fight"
 
     elif state == "start_fight":
         state = (
-            state_startfight(logger, random_deck="Randomize Deck" in jobs)
+            state_startfight(logger)
             if "Fight" in jobs
             else "war"
         )
@@ -279,7 +279,6 @@ def state_daily_challenge_reward_collection(
     return collect_daily_challenge_rewards(logger)
 
 
-
 def state_battlepass_collection(
     logger,
 ) -> Literal["restart", "level_up_reward_collection"]:
@@ -290,8 +289,6 @@ def state_battlepass_collection(
         return "restart"
     else:
         return "level_up_reward_collection"
-    
-
 
 
 def state_level_up_reward_collection(
@@ -375,7 +372,7 @@ def state_deck_randomization(
         return "start_fight"
 
 
-def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]:
+def state_startfight(logger) -> Literal["restart", "fighting"]:
     print("state is :state_startfight")
 
     # Method for the starting of a fight state of the program
@@ -384,10 +381,6 @@ def state_startfight(logger, random_deck=True) -> Literal["restart", "fighting"]
 
     logger.change_status("Starting a fight")
 
-    # make a random deck
-    if random_deck and randomize_and_select_deck_2(logger) == "restart":
-        print("Failure with randomize_and_select_deck_2() in state_startfight()")
-        return "restart"
     # Start 2v2 quickmatch
     if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":
         print("Failure with start_2v2() in state_startfight()")
@@ -449,7 +442,7 @@ def state_war(logger) -> Literal["restart", "account_switching"]:
 def clip_that():
     print("Saving a clip...")
 
-    click(1903,942)
+    click(1903, 942)
     time.sleep(3)
 
 
