@@ -25,7 +25,7 @@ ahk_path = next(scripts_path.glob("AutoHotKey*.exe"))
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
-    "include_files": [ahk_path],
+    "include_files": [ahk_path, "..\\assets\\pixel-pycb.ico"],
 }
 
 bdist_msi_options = {
@@ -42,6 +42,7 @@ bdist_msi_options = {
 exe = Executable(
     script=ENTRY_POINT,
     base="Win32GUI" if GUI else None,
+    uac_admin=True,
     shortcut_name=f"{PROJECT_NAME} {VERSION}",
     shortcut_dir="DesktopFolder",
     target_name=f"{PROJECT_NAME}.exe",
