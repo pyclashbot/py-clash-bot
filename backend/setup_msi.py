@@ -26,6 +26,7 @@ ahk_path = next(scripts_path.glob("AutoHotKey*.exe"))
 build_exe_options = {
     "excludes": ["test", "setuptools"],
     "include_files": [ahk_path, "..\\assets\\pixel-pycb.ico"],
+    "include_msvcr": True,
 }
 
 bdist_msi_options = {
