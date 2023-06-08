@@ -43,7 +43,7 @@ optional = true
 
 [tool.poetry.group.build.dependencies]
 cx-logging = "^3.1.0" # specify version of cx_logging for cx_freeze to run with python 3.11
-Cx_Freeze = "^6.15.0"
+Cx_Freeze = "^6.15.1"
 
 
 [tool.poetry.group.dev]
