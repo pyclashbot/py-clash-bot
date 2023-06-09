@@ -22,7 +22,7 @@ jobs:
       - name: Install package and dependencies, then build package
         run: |
           cd backend
-          python -m pip install poetry
+          pipx install "poetry>=1.3.0,<1.4.0"
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build --without dev
           poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
