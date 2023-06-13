@@ -1466,13 +1466,13 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pymemuc"
-version = "0.3.5"
+version = "0.4.0"
 description = "A Memuc.exe wrapper for Python"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "pymemuc-0.3.5-py3-none-any.whl", hash = "sha256:b63ecb16eefd1d9ff13b62165b0286c5868f594778e34c76962f9ce4a6a3d6ca"},
-    {file = "pymemuc-0.3.5.tar.gz", hash = "sha256:a6c7807d7648a2e46a93d8689350951a9eaefa89d703df97b0fdbd98c14b9dec"},
+    {file = "pymemuc-0.4.0-py3-none-any.whl", hash = "sha256:8f4e930791890e2f2bb73a27f60928ddd1b4426a1d41c7fa967593ceffe8c57f"},
+    {file = "pymemuc-0.4.0.tar.gz", hash = "sha256:1020742d328a673ed055d137a180dbab2a1bc855013293c2f5b5b1d3b22adf87"},
 ]
 
 [[package]]
@@ -1884,4 +1884,4 @@ tests = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3610535de7a899739b8b14741d3f47e2e50553ece4743d1e54cfbcd279aa0624"
+content-hash = "34112e6813934c6d031e0685c651f4a0e94edb12e0ab592b6a40d4a27be2f8b7"
