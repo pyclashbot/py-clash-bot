@@ -33,7 +33,7 @@ joblib = "^1.2"
 requests = "^2.31"
 PySimpleGUI = "^4.60"
 ahk = { extras = ["binary"], version = "^0.14.2" }
-pymemuc = "^0.3.5"
+pymemuc = "^0.4.0"
 wmi = "^1.5.1"
 
 
