@@ -25,7 +25,6 @@ class Logger:
         file_log: bool = True,
         timed: bool = True,
     ):
-
         # setup console log
         self.console_log = console_log
         # print buffer for console

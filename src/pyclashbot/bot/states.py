@@ -149,11 +149,7 @@ def state_tree(
             state = "start_fight"
 
     elif state == "start_fight":
-        state = (
-            state_startfight(logger)
-            if "Fight" in jobs
-            else "war"
-        )
+        state = state_startfight(logger) if "Fight" in jobs else "war"
 
     elif state == "fighting":
         state = state_fight(logger)
