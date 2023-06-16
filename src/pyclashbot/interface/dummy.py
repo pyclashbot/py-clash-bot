@@ -13,7 +13,6 @@ from pyclashbot.interface.theme import THEME
 sg.theme(THEME)
 
 if __name__ == "__main__":
-
     # some sample statistics
     statistics: dict[str, Any] = {
         "current_status": "Idle",

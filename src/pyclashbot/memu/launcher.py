@@ -6,13 +6,14 @@ import numpy
 import pygetwindow
 import pythoncom
 import wmi
+from pymemuc import PyMemuc, PyMemucError, VMInfo
+
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils import setup_memu
 from pyclashbot.utils.dependency import get_memu_path
 from pyclashbot.utils.logger import Logger
-from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 launcher_path = setup_memu()  # setup memu, install if necessary
 pmc = PyMemuc(debug=True)
