@@ -57,6 +57,36 @@ matplotlib = "^3.7.1" # used in debug.py
 ipykernel = "^6.23.2"
 vulture = "^2.6"
 isort = "^5.12.0"
+prospector = "^1.10.2"
+
+
+[tool.poe.tasks.tag]
+shell = """
+git push origin master
+git tag -a $Env:tagname -m "Release $Env:tagname"
+git push origin $Env:tagname
+"""
+interpreter = "pwsh"
+
+
+[[tool.poe.tasks.tag.args]]
+name = "tagname"
+default = "dev"
+positional = true
+required = true
+
+
+[tool.poe.tasks.vulture]
+shell = """
+poetry run vulture src --min-confidence 60
+"""
+interpreter = "pwsh"
+
+[tool.poe.tasks.lint]
+shell = """
+poetry run prospector src
+"""
+interpreter = "pwsh"
 
 
 [tool.black]
