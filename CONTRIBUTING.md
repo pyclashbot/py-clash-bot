@@ -13,8 +13,8 @@ Once you have these tools installed, follow these steps to set up the project:
 
 1. Clone the py-clash-bot repository
    `git clone https://github.com/matthewmiglio/py-clash-bot.git; cd py-clash-bot`
-2. Navigate to the `backend` directory
-   `cd backend`
+2. Navigate to the `src` directory
+   `cd src`
 3. Use Poetry to create a virtual environment and install dependencies
    `poetry install --with build,dev`
 4. Start the project locally
@@ -39,8 +39,8 @@ Please make sure to install and run the [pre-commit](https://pre-commit.com/) ho
 
 To build the project for testing or production, follow these steps:
 
-1. Navigate to the `backend` directory
-   `cd backend`
+1. Navigate to the `src` directory
+   `cd src`
 2. Use Poetry to build the project
    `poetry run python setup_msi.py bdist_msi`
    This will create a `dist` directory containing the built project.

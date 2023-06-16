@@ -30,7 +30,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install package and dependencies, then run tests
         run: |
-          cd backend
+          cd src
           python -m pip install poetry
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build -vvv
