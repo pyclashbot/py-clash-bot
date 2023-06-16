@@ -145,7 +145,7 @@ def check_if_in_a_clan(logger):
     # click profile
     if open_profile_page() == "restart":
         return "restart"
-    
+
     time.sleep(3)
 
     # get image array of flag where clan flag should be.

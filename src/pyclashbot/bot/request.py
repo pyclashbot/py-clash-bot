@@ -9,12 +9,7 @@ from pyclashbot.bot.clashmain import (
 )
 from pyclashbot.bot.navigation import get_to_clan_page, get_to_clash_main_from_clan_page
 from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
-from pyclashbot.memu import (
-    click,
-    screenshot,
-    scroll_down_fast,
-    scroll_up_fast,
-)
+from pyclashbot.memu import click, screenshot, scroll_down_fast, scroll_up_fast
 from pyclashbot.memu.client import get_file_count, make_reference_image_list
 
 
