@@ -40,9 +40,7 @@ def do_debug_state_tree(logger):
 
 
 def debug_state_tree(logger, ssid_max, jobs, ssid, state):
-
     if state == "clashmain":
-
         state = state_clashmain(
             logger=logger, ssid_max=ssid_max, account_number=ssid, jobs=jobs
         )

@@ -2,12 +2,8 @@ import random
 import time
 from typing import Literal
 
-
 from pyclashbot.bot.navigation import get_to_card_page, get_to_clash_main_from_card_page
-from pyclashbot.detection import (
-    find_references,
-    get_first_location,
-)
+from pyclashbot.detection import find_references, get_first_location
 from pyclashbot.memu import (
     click,
     get_file_count,
