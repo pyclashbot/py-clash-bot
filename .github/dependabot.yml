@@ -6,6 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory: "/backend/"
+    directory: "/src/"
     schedule:
       interval: "daily"
