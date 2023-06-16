@@ -4,7 +4,6 @@ import time
 from pyclashbot.detection import check_for_location, find_references
 from pyclashbot.memu import get_file_count, make_reference_image_list, screenshot
 
-
 """Methods that have to do with the scanning of cards during a battle
 """
 

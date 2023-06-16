@@ -199,10 +199,10 @@ def check_if_pixels_indicate_win_on_activity_log():
         bool: true if pixels are blue meaing a win, else false"""
 
     # fill pix list with a list of pixels that scan across the victory/defeat text
-    iar=numpy.asarray(screenshot())
-    for x in range(50,120):
+    iar = numpy.asarray(screenshot())
+    for x in range(50, 120):
         this_pixel = iar[180][x]
-        if pixel_is_equal(this_pixel, [103,202,251],tol=20):
+        if pixel_is_equal(this_pixel, [103, 202, 251], tol=20):
             return True
     return False
 

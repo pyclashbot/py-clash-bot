@@ -56,8 +56,8 @@ def check_for_upgradable_cards():
         if pixel_is_equal(this_pixel, green_color, tol=35):
             upgrade_card_bool_list.append(card_index)
 
-    #click deadspace
-    click(13,309)
+    # click deadspace
+    click(13, 309)
 
     return upgrade_card_bool_list
 
