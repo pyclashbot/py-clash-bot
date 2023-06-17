@@ -124,6 +124,8 @@ def configure_vm(logger: Logger, vm_index):
         "resolution_width": "419",
         "resolution_height": "633",
         "vbox_dpi": "160",
+        "cpucap": "50",
+        "cpus": "4",
         "fps": "30",
         "enable_audio": "0",
     }
