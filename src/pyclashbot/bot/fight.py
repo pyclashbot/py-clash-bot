@@ -18,8 +18,30 @@ from pyclashbot.memu import click, screenshot
 """methods that have to do with the fighting of battles"""
 
 
+def do_1v1_fight(logger):
+    plays = 0
+
+    while check_if_in_battle_with_delay():
+        if plays > 120:
+            logger.change_status(
+                "#735546 Made too many plays. Match is probably stuck. Ending match"
+            )
+            return "restart"
+
+        # wait for 6 elixer
+        if wait_until_has_6_elixer(logger) == "restart":
+            logger.change_status("#6346346 Waited for 6 elixer too long. Restarting.")
+            return "restart"
+
+        # play a random card
+        play_random_card(logger)
+
+    logger.change_status("Done 1v1 fighting.")
+    time.sleep(15)
+
+
 #### card playing
-def do_fight(logger):
+def do_2v2_fight(logger):
     """
     do_fight waits until has 6 elixer, then plays a random card, all on a loop until it detects that the battle is over
     args:
@@ -35,7 +57,7 @@ def do_fight(logger):
     while in_battle:
         print("plays: ", plays)
         if wait_until_has_6_elixer(logger) == "restart":
-            logger.change_status("Waited for 6 elixer too long. Restarting.")
+            logger.change_status("#7347456 Waited for 6 elixer too long. Restarting.")
             return "restart"
 
         play_random_card(logger)
@@ -49,12 +71,12 @@ def do_fight(logger):
 
         if plays > 120:
             logger.change_status(
-                "Made too many plays. Match is probably stuck. Ending match"
+                "#51353 Made too many playsin 2v2. Match is probably stuck. Ending match"
             )
             return "restart"
 
-    logger.change_status("Done fighting.")
-    time.sleep(10)
+    logger.change_status("Done 2v2 fighting.")
+    time.sleep(15)
 
 
 def check_if_pixel_is_grey(pixel):
