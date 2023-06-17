@@ -14,11 +14,6 @@ else:
     ahk = AHK()
 
 
-def print_pix_list(pix_list):
-    for pix in pix_list:
-        print(pix[0], pix[1], pix[2])
-
-
 def screenshot(
     region: list[int | float] | tuple[int, int, int, int] | None = None
 ) -> Image.Image:
@@ -69,20 +64,7 @@ def get_file_count(folder):
     """
     directory = join(dirname(__file__)[:-4], "detection", "reference_images", folder)
 
-    return sum(len(files) for root_dir, cur_dir, files in os.walk(directory))
-
-
-def compare_coords(coord1, coord2):
-    """Method to compare the equality of two coords
-
-    Args:
-        coord1 (tuple): First coord
-        coord2 (tuple): Second coord
-
-    Returns:
-        bool: True if the coords are equal, False otherwise
-    """
-    return coord1[0] == coord2[0] and coord1[1] == coord2[1]
+    return sum(len(files) for _, _, files in os.walk(directory))
 
 
 class MouseMoveException(Exception):

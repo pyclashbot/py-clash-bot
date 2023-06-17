@@ -4,7 +4,6 @@ from os import path
 
 import PySimpleGUI as sg
 
-import pyclashbot.utils.admin_check
 from pyclashbot.bot import WorkerThread
 from pyclashbot.interface import (
     disable_keys,
@@ -13,13 +12,12 @@ from pyclashbot.interface import (
     user_config_keys,
 )
 from pyclashbot.utils import Logger, cache_user_settings, read_user_settings
+from pyclashbot.utils.admin_check import admin_check
 from pyclashbot.utils.caching import check_user_settings
 from pyclashbot.utils.server_notifications import Notification, get_latest_notification
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
-"""
-Main for the py-clashbot program
-"""
+admin_check()
 
 
 def read_window(

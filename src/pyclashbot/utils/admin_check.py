@@ -9,10 +9,11 @@ def check_if_program_is_running_in_admin():
     return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 
-if not check_if_program_is_running_in_admin():
-    tkinter.messagebox.showinfo(
-        "CRITICAL ERROR",
-        "This program MUST be running in administrator mode!\n\n"
-        "Close the running program and restart it as administrator.",
-    )
-    sys.exit()
+def admin_check():
+    if not check_if_program_is_running_in_admin():
+        tkinter.messagebox.showinfo(
+            "CRITICAL ERROR",
+            "This program MUST be running in administrator mode!\n\n"
+            "Close the running program and restart it as administrator.",
+        )
+        sys.exit()

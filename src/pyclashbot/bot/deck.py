@@ -12,36 +12,6 @@ from pyclashbot.memu import (
     scroll_down_fast,
 )
 
-"""Methods that have to do with the randomization of the current deck"""
-
-
-def find_seasonal_card_boost_icon():
-    """Method to check for images that indicate a seasonal card boost is active (which obstructs the bot)
-    args:
-        None
-    returns:
-        None if no boost is active, or the coordinates of the boost icon if it is active
-    """
-
-    current_image = screenshot()
-    reference_folder = "check_for_seasonal_card_boosts_icon"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "check_for_seasonal_card_boosts_icon",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
-
 
 def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
     """Method to cound the number of times the bot can scroll down in the card page while still having usable cards

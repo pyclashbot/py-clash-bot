@@ -356,19 +356,6 @@ def handle_war_loot_menu(logger):
     time.sleep(1)
 
 
-def handle_stuck_on_war_final_results_page():
-    """handling the possiblity of the bot getting stuck on the war final results page
-    args:
-        None
-    returns:
-        None
-    """
-
-    if check_if_stuck_on_war_final_results_page():
-        click(215, 565)
-        time.sleep(1)
-
-
 def handle_final_results_popup(logger):
     """method for handling the final results popup
     args:
@@ -429,59 +416,6 @@ def handle_war_chest_obstruction(logger):
         open_war_chest(logger)
 
 
-def check_if_stuck_on_war_final_results_page():
-    """method for scanning for pixels that indicate the bot is stuck on the war final results page
-    args:
-        None
-    returns:
-        bool,True if stuck on war final results page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[575][235],
-        iar[567][245],
-        iar[575][255],
-    ]
-
-    return all(pixel_is_equal([180, 96, 253], pix, tol=45) for pix in pix_list)
-
-
-def check_if_on_first_card_page():
-    """method for checking if the bot is on the first card page
-    args:
-        None
-    returns:
-        bool, True if on first card page, else False
-    """
-
-    # Method to check if the elixer icon of your deck's AVG elixer exists when on the
-    # card page exists yet
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png",
-        "9.png",
-        "10.png",
-        "11.png",
-        "12.png",
-    ]
-
-    locations = find_references(
-        screenshot=screenshot(),
-        folder="card_page_elixer_icon",
-        names=references,
-        tolerance=0.97,
-    )
-
-    return check_for_location(locations)
-
-
 def check_if_on_clash_main_menu():
     """method for checking if the bot is on the clash main menu
     args:
@@ -537,29 +471,6 @@ def check_for_gem_logo_on_main():
     color = [75, 180, 35]
 
     # print_pix_list(pix_list)
-
-    for pix in pix_list:
-        return bool(pixel_is_equal(pix, color, tol=45))
-
-
-def check_for_blue_background_on_main():
-    """method for scanning for pixels that indicate the bot is on the clash main menu by checking for the blue backgound
-    args:
-        None
-    returns:
-        bool, True if on blue background exists, else False
-    """
-
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[350][3],
-        iar[360][6],
-        iar[368][7],
-        iar[372][9],
-    ]
-    color = [9, 69, 119]
 
     for pix in pix_list:
         return bool(pixel_is_equal(pix, color, tol=45))
@@ -751,34 +662,6 @@ def check_if_on_shop_page():
         if not pixel_is_equal(this_pixel, this_color, tol=35):
             return False
     return True
-
-
-def find_switch_accouts_button():
-    """method to locate the coordinates of the switch accounts button
-    args:
-        None
-    returns:
-        list, coordinates of the switch accounts button
-    """
-
-    current_image = screenshot()
-    reference_folder = "find_switch_accouts_button"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "find_switch_accouts_button",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1], coord[0]]
 
 
 def check_for_war_chest_obstruction():
@@ -1193,48 +1076,6 @@ def wait_for_profile_page():
             return "restart"
 
         pass
-
-
-def check_if_on_party_mode_page():
-    """method to scan for pixels that indicate the bot is on the party mode page
-    args:
-        None
-    returns:
-        bool, True if on the party mode page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    party_title_text_exists = False
-    for x_coord in range(180, 240):
-        this_pixel = iar[140][x_coord]
-        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
-            party_title_text_exists = True
-
-    close_button_exists = False
-    for x_coord in range(340, 365):
-        this_pixel = iar[130][x_coord]
-        if pixel_is_equal(this_pixel, [253, 132, 133], tol=35):
-            close_button_exists = True
-
-    if close_button_exists and party_title_text_exists:
-        return True
-    return False
-
-
-def wait_for_party_mode_page():
-    """method for waiting for the party mode page to load
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-    while not check_if_on_party_mode_page():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            print("Waited more than 10 sec for party mode page. Restarting")
-            return "restart"
 
 
 def wait_for_card_page(logger):
