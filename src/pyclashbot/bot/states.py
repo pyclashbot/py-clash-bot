@@ -454,7 +454,7 @@ def make_random_ssid_list(max_ssid):
 # method to randomize a given list of ints
 def randomize_list(list_to_randomize):
     randomized_list = list_to_randomize.copy()
-    for i, item in enumerate(randomized_list):
+    for i, _ in enumerate(randomized_list):
         random_index = random.randint(0, len(randomized_list) - 1)
         randomized_list[i], randomized_list[random_index] = (
             randomized_list[random_index],

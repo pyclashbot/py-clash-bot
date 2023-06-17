@@ -47,18 +47,6 @@ def check_for_card(image, card_name=""):
     return check_for_location(locations)
 
 
-def identify_cards():
-    """Method to check the user's current cards and return a list of their names or "unknown" if the card is not recognized
-    args:
-        None
-    returns:
-        list: list of the names of the user's current cards
-    """
-    card_images = get_card_images()
-
-    return [identify_card(image) for image in card_images]
-
-
 def identify_card(image):
     """Method to identify the name of the given card image
     args:
