@@ -5,6 +5,8 @@ from os import path
 import PySimpleGUI as sg
 
 from pyclashbot.bot import WorkerThread
+from pyclashbot.bot.clashmain import find_2v2_match_icon, start_2v2
+from pyclashbot.bot.navigation import check_if_account_is_already_in_a_challenge, check_if_on_clash_main_menu
 from pyclashbot.interface import (
     disable_keys,
     main_layout,
@@ -289,6 +291,28 @@ def main_gui():
     window.close()
 
 
+def dummy_main():
+    logger=Logger()
+    pass
+
+
+    # print(start_2v2(logger))
+
+    # print(find_2v2_match_icon())
+
+    # print(check_if_on_clash_main_menu())
+
+    # print(check_if_account_is_already_in_a_challenge(logger))
+
+    # orientate_cleint()
+
+
+
 # run the main gui
 if __name__ == "__main__":
     main_gui()
+    # dummy_main()
+
+
+
+
