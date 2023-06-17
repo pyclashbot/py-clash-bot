@@ -51,6 +51,11 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
     """
     # unpacking gui vars into a list of jobs as strings
     jobs = []
+
+    # check if both 1v1 mode and 2v2 mode are selected
+    if values["1v1_battle_in"] and values["2v2_battle_in"]:
+        return ["dupe jobs"]
+
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
     if values["-Requesting-in-"]:
@@ -73,6 +78,7 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
         jobs.append("1v1 battle")
     if values["2v2_battle_in"]:
         jobs.append("2v2 battle")
+
     return jobs
 
 
@@ -107,6 +113,62 @@ def load_last_settings(window):
         window.refresh()  # refresh the window to update the layout
 
 
+def dupe_jobs_popup():
+    # Define the layout of the GUI
+    layout = [
+        [
+            sg.Text(
+                "You cannot select both 1v1 \nand 2v2 jobs at the same time!",
+                size=(25, 2),
+                justification="center",
+            )
+        ],
+        [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
+    ]
+
+    # Create the window
+    window = sg.Window("Critical Error!", layout)
+
+    # Event loop to process events and get user input
+    while True:
+        event, values = window.read()  # type: ignore
+
+        # Exit the program if the "Exit" button is clicked or window is closed
+        if event == sg.WINDOW_CLOSED or event == "Exit":
+            break
+
+    # Close the window
+    window.close()
+
+
+def no_jobs_popup():
+    # Define the layout of the GUI
+    layout = [
+        [
+            sg.Text(
+                "You must select at least one job!",
+                size=(25, 2),
+                justification="center",
+            )
+        ],
+        [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
+    ]
+
+    # Create the window
+    window = sg.Window("Critical Error!", layout)
+
+    # Event loop to process events and get user input
+    while True:
+        event, values = window.read()  # type: ignore
+
+        # Exit the program if the "Exit" button is clicked or window is closed
+        if event == sg.WINDOW_CLOSED or event == "Exit":
+            break
+
+    # Close the window
+    window.close()
+
+
 def start_button_event(logger: Logger, window, values):
     """method for starting the main bot thread
     args:
@@ -118,16 +180,22 @@ def start_button_event(logger: Logger, window, values):
     """
     logger.change_status("Start Button Event")
 
-    for key in disable_keys:
-        window[key].update(disabled=True)
-
     # get job list from gui
     jobs = read_job_list(values)
+
+    if jobs[0] == "dupe jobs":
+        logger.change_status("1v1 and 2v2 cannot be selected at the same time")
+        dupe_jobs_popup()
+        return None
 
     # check if at least one job is selected
     if len(jobs) == 0:
         logger.change_status("At least one job must be selected")
+        no_jobs_popup()
         return None
+
+    for key in disable_keys:
+        window[key].update(disabled=True)
 
     # setup the main thread and start it
     acc_count = int(values["-SSID_IN-"])
@@ -292,33 +360,6 @@ def main_gui():
 def dummy_main():
     logger = Logger()
     pass
-
-    # print(start_2v2(logger))
-
-    # print(find_2v2_match_icon())
-
-    # print(check_if_on_clash_main_menu())
-
-    # print(check_if_account_is_already_in_a_challenge(logger))
-
-    # orientate_cleint()
-
-    # wait_for_1v1_battle(logger)
-
-    # while 1:print(check_if_has_6_elixer())
-
-    # state_1v1_fight(logger)
-
-    # state_endfight(logger)
-
-    # print(
-    #     "check_if_end_screen_is_ok_bottom_middle: ",
-    #     check_if_end_screen_is_exit_bottom_left(),
-    # )
-    # print(
-    #     "check_if_end_screen_is_ok_bottom_middle: ",
-    #     check_if_end_screen_is_ok_bottom_middle(),
-    # )
 
 
 # run the main gui
