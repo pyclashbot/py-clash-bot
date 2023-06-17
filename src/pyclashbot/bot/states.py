@@ -183,8 +183,7 @@ def state_restart(logger) -> Literal["account_switching", "restart"]:
     # restart until it works, then return 'clashmain' as the next state
     if restart_emulator(logger) == "restart":
         return "restart"
-    else:
-        return "account_switching"
+    return "account_switching"
 
 
 def state_account_switching(
@@ -283,8 +282,7 @@ def state_battlepass_collection(
     if collect_battlepass_rewards(logger) == "restart":
         print("Failure with collect_battlepass_rewards()")
         return "restart"
-    else:
-        return "level_up_reward_collection"
+    return "level_up_reward_collection"
 
 
 def state_level_up_reward_collection(
@@ -364,8 +362,7 @@ def state_deck_randomization(
     if random_deck_bool and randomize_and_select_deck_2(logger) == "restart":
         print("Failure with randomize_and_select_deck_2() in state_startfight()")
         return "restart"
-    else:
-        return "start_fight"
+    return "start_fight"
 
 
 def state_startfight(logger) -> Literal["restart", "fighting"]:
