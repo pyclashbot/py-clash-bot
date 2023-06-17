@@ -93,6 +93,21 @@ def stop_memuc_console(process_id: int) -> None:
 #### making and configuring VMs
 
 
+def set_vm_language(vm_index: int):
+    """Set the language of the vm to english"""
+    settings_uri = "--uri content://settings/system"
+    set_language_commands = [
+        f"shell content query {settings_uri} --where \"name='system_locales'\"",
+        f"shell content delete {settings_uri} --where \"name='system_locales'\"",
+        f"shell content insert {settings_uri} --bind name:s:system_locales --bind value:s:en-US",
+        "shell setprop ctl.restart zygote",
+    ]
+
+    for command in set_language_commands:
+        pmc.send_adb_command_vm(vm_index=vm_index, command=command)
+        time.sleep(0.1)
+
+
 def configure_vm(logger: Logger, vm_index):
     logger.change_status("Configuring VM")
 
@@ -116,6 +131,10 @@ def configure_vm(logger: Logger, vm_index):
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
+    time.sleep(3)
+    set_vm_language(vm_index=vm_index)
+    time.sleep(10)
+
     stop_memuc_console(memuc_pid)
 
 
@@ -127,32 +146,41 @@ def create_vm(logger: Logger):
     vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
     while vm_index == -1:  # handle when vm creation fails
         vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
+        time.sleep(1)
+    time.sleep(5)
     configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
-    pmc.rename_vm(vm_index=vm_index, new_name=EMULATOR_NAME)
+    rename_vm(logger, vm_index, EMULATOR_NAME)
     stop_memuc_console(memuc_pid)
     logger.change_status(f"Created VM: {vm_index} - {EMULATOR_NAME}")
     return vm_index
 
 
-def check_for_vm(logger: Logger) -> int:
-    """Check for a vm named pyclashbot, create one if it doesn't exist
+def rename_vm(
+    logger: Logger,
+    vm_index: int,
+    name: str,
+):
+    """rename the vm to name"""
+    count = 0
+    while get_vm_index(logger, name) != vm_index:
+        logger.change_status(
+            f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
+        )
+        pmc.rename_vm(vm_index=vm_index, new_name=name)
+        count += 1
 
-    Args:
-        logger (Logger): Logger object
 
-    Returns:
-        int: index of the vm
-    """
-
+def get_vm_index(logger: Logger, name: str) -> int:
+    """Get the index of the vm with the given name"""
     # get list of vms on machine
     vms: list[VMInfo] = pmc.list_vm_info()
 
     # sorted by index, lowest to highest
     vms.sort(key=lambda x: x["index"])
 
-    # get the indecies of all vms named pyclashbot
-    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == EMULATOR_NAME]
+    # get the indecies of all vms named clanspam
+    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == name]
 
     # delete all vms except the lowest index, keep looping until there is only one
     while len(vm_indices) > 1:
@@ -166,8 +194,24 @@ def check_for_vm(logger: Logger) -> int:
                 # don't raise error, just continue to loop until its deleted
                 # raise err # if program hangs on deleting vm then uncomment this line
 
+    # return the index. if no vms named clanspam exist, return -1
+    return vm_indices[0] if vm_indices else -1
+
+
+def check_for_vm(logger: Logger) -> int:
+    """Check for a vm named pyclashbot, create one if it doesn't exist
+
+    Args:
+        logger (Logger): Logger object
+
+    Returns:
+        int: index of the vm
+    """
+
+    vm_index = get_vm_index(logger, EMULATOR_NAME)
+
     # return the index. if no vms named pyclashbot exist, create one.
-    return vm_indices[0] if vm_indices else create_vm(logger)
+    return vm_index if vm_index != -1 else create_vm(logger)
 
 
 def close_everything_memu():
