@@ -73,7 +73,6 @@ class Logger:
         self.auto_restarts = 0
         self.restarts_after_failure = 0
         self.most_recent_restart_time = 0
-        self.app_restarts = 0
 
         # bot stats
         self.account_switches = 0
@@ -221,16 +220,6 @@ class Logger:
 
         return str(self.make_time_str(output_time))
 
-    def make_win_loss_str(self):
-        """creates scoreboard for log output
-
-        Returns:
-            str: log scoreboard
-        """
-        losses_str = f"{str(self.losses)}L"
-        wins_str = f"{str(self.wins)}W"
-        return f"{wins_str}|{losses_str}"
-
     def make_time_str(self, seconds):
         """convert epoch to time
 
@@ -367,8 +356,3 @@ class Logger:
     def change_most_recent_restart_time(self, time):
         """add request to log"""
         self.most_recent_restart_time = time
-
-    @_updates_log
-    def add_app_restart(self):
-        """add request to log"""
-        self.app_restarts += 1
