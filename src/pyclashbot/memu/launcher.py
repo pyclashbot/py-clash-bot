@@ -1,8 +1,9 @@
-import os
+import subprocess
 import time
+from os.path import join
 
 import numpy
-import pygetwindow
+import psutil
 import pythoncom
 import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
@@ -10,7 +11,6 @@ from pymemuc import PyMemuc, PyMemucError, VMInfo
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.interface import show_clash_royale_setup_gui
 from pyclashbot.memu.client import click, screenshot
-from pyclashbot.utils.dependency import get_memu_path
 from pyclashbot.utils.logger import Logger
 
 pmc = PyMemuc(debug=True)
@@ -69,11 +69,34 @@ def restart_emulator(logger):
     return True
 
 
+def start_memuc_console() -> int:
+    """Start the memuc console and return the process ID"""
+    # pylint: disable=protected-access
+    console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
+    # pylint: disable=consider-using-with
+    process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
+
+    print(f"Started memu console with PID {process.pid}")
+
+    return process.pid
+
+
+def stop_memuc_console(process_id: int) -> None:
+    """Stop the memuc console with the given process ID"""
+    try:
+        process = psutil.Process(process_id)
+        process.terminate()
+    except psutil.NoSuchProcess:
+        print("#975627345 Failure to stop memuc console")
+
+
 #### making and configuring VMs
 
 
 def configure_vm(logger: Logger, vm_index):
     logger.change_status("Configuring VM")
+
+    memuc_pid = start_memuc_console()
 
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
 
@@ -93,16 +116,21 @@ def configure_vm(logger: Logger, vm_index):
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
+    stop_memuc_console(memuc_pid)
+
 
 def create_vm(logger: Logger):
     # create a vm named pyclashbot
     logger.change_status("VM not found, creating VM...")
+    memuc_pid = start_memuc_console()
+
     vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
     while vm_index == -1:  # handle when vm creation fails
         vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
     configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
     pmc.rename_vm(vm_index=vm_index, new_name=EMULATOR_NAME)
+    stop_memuc_console(memuc_pid)
     logger.change_status(f"Created VM: {vm_index} - {EMULATOR_NAME}")
     return vm_index
 
