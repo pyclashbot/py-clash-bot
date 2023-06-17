@@ -18,16 +18,14 @@ from pyclashbot.detection import (
     get_first_location,
     pixel_is_equal,
 )
-from pyclashbot.memu import click, screenshot, scroll_down, scroll_up
+from pyclashbot.memu import click, screenshot
 from pyclashbot.memu.client import (
     get_file_count,
     make_reference_image_list,
     scroll_down,
 )
-from pyclashbot.utils.logger import Logger
 
 ahk = AHK()
-logger = Logger()
 
 
 """Methods that have to do with chest opening, 2v2 battle starts, and account switching
@@ -129,9 +127,8 @@ def check_if_in_a_clan(logger):
         this_pixel = iar[480][x_coord]
         if pixel_is_equal(this_pixel, [50, 50, 50], tol=20):
             continue
-        else:
-            is_in_a_clan = True
-            break
+        is_in_a_clan = True
+        break
 
     # return to main after getting this information
     logger.change_status("Returning to main menu")

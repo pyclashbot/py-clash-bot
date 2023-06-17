@@ -6,7 +6,6 @@ import numpy
 from pyclashbot.detection.image_rec import (
     check_for_location,
     find_references,
-    get_first_location,
     pixel_is_equal,
 )
 from pyclashbot.memu.client import (
@@ -16,7 +15,6 @@ from pyclashbot.memu.client import (
     screenshot,
     scroll_down,
     scroll_up,
-    scroll_up_fast,
     scroll_up_fast_on_left_side_of_screen,
 )
 
