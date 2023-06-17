@@ -256,7 +256,7 @@ def open_activity_log(logger):
     time.sleep(1)
 
 
-def leave_end_battle_window(logger):
+def leave_2v2_end_battle_window(logger):
     """leave_end_battle_window checks which end screen case is (there are two),clicks the appropriate button to leave the end battle screen, then waits for clash main.
     args:
         logger: logger object from logger class initialized in main
@@ -272,29 +272,15 @@ def leave_end_battle_window(logger):
         time.sleep(6)
         click(x=173, y=631)
 
-        return
-
     # if end screen condition 2 (OK in bottom middle)
-    if check_if_end_screen_is_ok_bottom_middle():
+    elif check_if_end_screen_is_ok_bottom_middle():
         logger.change_status("Leaving end battle (condition 2)")
         click(206, 594)
         time.sleep(6)
         click(x=173, y=631)
-
-        return
-
-    manual_wait_time = 10
-    logger.change_status(f"Manual wait time of {manual_wait_time} seconds")
-    time.sleep(manual_wait_time)
-
-    # click clash main icon in bottom middle of page icon list
-    logger.change_status("Returning to clash main from events page")
-    click(183, 629)
-
-    if wait_for_clash_main_menu(logger) == "restart":
-        logger.change_status("Waited too long for clash main")
+    else:
+        logger.change_status("#5927324958 Failure leaving this battle")
         return "restart"
-    return None
 
 
 def handle_war_loot_chest(logger):
@@ -1315,7 +1301,6 @@ def get_to_challenges_tab(logger):
         click(32, 56)
         time.sleep(5)
 
-
     logger.change_status(
         "Scrolling up in the challenges tab to assure the bot is at the top of the page"
     )
@@ -1375,5 +1360,48 @@ def check_if_account_is_already_in_a_challenge(logger):
 
     if purple_background_exists and yellow_back_button_exists:
         logger.change_status("account is already in a challenge")
+        return True
+    return False
+
+
+def wait_for_1v1_battle(logger):
+    logger.change_status("waiting for 1v1 battle")
+    start_time = time.time()
+
+    while not check_for_1v1_battle():
+        if time.time() - start_time > 60:
+            logger.change_status("#624564 Failure waiting for 1v1 battle")
+            return "restart"
+
+        click(200, 200)
+        time.sleep(3)
+    logger.change_status("Done waiting for 1v1 battle")
+
+
+def check_for_1v1_battle():
+    iar = numpy.asarray(screenshot())
+
+    enemy_name_exists = False
+    for x in range(30, 90):
+        this_pixel = iar[44][x]
+        if pixel_is_equal([255, 51, 153], this_pixel, tol=35):
+            enemy_name_exists = True
+            break
+
+    emote_bubble_exists = False
+    for x in range(40, 90):
+        this_pixel = iar[551][x]
+        if pixel_is_equal([255, 255, 255], this_pixel, tol=35):
+            emote_bubble_exists = True
+            break
+
+    elixer_icon_exists = False
+    for x in range(110, 125):
+        this_pixel = iar[654][x]
+        if pixel_is_equal(this_pixel, [255, 28, 216], tol=35):
+            elixer_icon_exists = True
+            break
+
+    if enemy_name_exists and emote_bubble_exists and elixer_icon_exists:
         return True
     return False
