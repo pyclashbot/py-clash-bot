@@ -78,13 +78,13 @@ required = true
 
 [tool.poe.tasks.vulture]
 shell = """
-poetry run vulture src --min-confidence 60
+poetry run vulture pyclashbot --min-confidence 60
 """
 interpreter = "pwsh"
 
 [tool.poe.tasks.lint]
 shell = """
-poetry run prospector src
+poetry run prospector pyclashbot
 """
 interpreter = "pwsh"
 
