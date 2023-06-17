@@ -52,32 +52,6 @@ def check_if_on_trophy_progession_rewards_page():
     return all((pixel_is_equal(pix, color, tol=35)) for pix in pix_list)
 
 
-def find_2v2_quick_match_button():
-    """Method to locate images that indicate the coordinates of the 2v2 quickmatch button
-    args:
-        None
-    returns:
-        int[]: coords of the 2v2 quickmatch button"""
-    current_image = screenshot()
-    reference_folder = "2v2_quick_match"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "2v2_quick_match",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    coord = get_first_location(locations)
-    return None if coord is None else [coord[1] + 200, coord[0] + 50]
-
-
 def check_for_reward_limit():
     """Method to check for the reward limit popup
     args:
