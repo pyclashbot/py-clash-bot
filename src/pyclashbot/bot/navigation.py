@@ -422,14 +422,16 @@ def check_if_on_clash_main_menu():
         bool, True if on clash main menu, else False
     """
 
-    if not check_for_gem_logo_on_main():
-        return False
+    gem_logo = check_for_gem_logo_on_main()
+    friends_logo = check_for_friends_logo_on_main()
+    gold_logo = check_for_gold_logo_on_main()
 
-    if not check_for_friends_logo_on_main():
-        return False
+    # print(gem_logo, friends_logo, gold_logo)
 
-    if not check_for_gold_logo_on_main():
-        return False
+    if gem_logo and friends_logo and gold_logo:
+        return True
+    return False
+
     return True
 
 
@@ -1306,6 +1308,13 @@ def get_to_challenges_tab(logger):
         # click OK button
         click(211, 479)
         time.sleep(5)
+
+    # check if the user is in a tournament
+    if check_if_account_is_already_in_a_challenge(logger):
+        # click back button
+        click(32, 56)
+        time.sleep(5)
+
 
     logger.change_status(
         "Scrolling up in the challenges tab to assure the bot is at the top of the page"

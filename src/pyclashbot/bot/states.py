@@ -66,11 +66,12 @@ def state_tree(
         # increment the restart_after_failure counter
         logger.add_restart_after_failure()
 
-        # DEBUG::: wait forever instead of restarting
+        ### DEBUG::: wait forever instead of restarting
         # while True:time.sleep(1000)
-        clip_that()
-        for _ in range(15):
-            print("Clipped an error (dev tool)")
+        
+        # clip_that()
+        # for _ in range(15):
+        #     print("Clipped an error (dev tool)")
 
         # run restart state
         state = state_restart(logger)
