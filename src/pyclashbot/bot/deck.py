@@ -319,8 +319,7 @@ def randomize_this_deck(logger):
                 )
                 if get_to_clash_main_from_card_page(logger) == "restart":
                     return "restart"
-                else:
-                    return "fail"
+                return "fail"
 
             # find a random card on this page
             replacement_card_coord = find_random_card_coord(logger)
@@ -329,8 +328,7 @@ def randomize_this_deck(logger):
                 logger.change_status("Failure replacing card")
                 if get_to_clash_main_from_card_page(logger) == "restart":
                     return "restart"
-                else:
-                    return
+                return
 
             # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
             if replacement_card_coord[1] < 200:
