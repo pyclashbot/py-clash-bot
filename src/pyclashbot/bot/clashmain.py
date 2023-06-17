@@ -277,6 +277,7 @@ def start_2v2(logger):
     # if not on clash main at this point then this failed
     if not check_if_on_clash_main_menu():
         logger.change_status("Not on clash main so cant run start_2v2()")
+        print(f'#4589234985 Fail')
         return "restart"
 
     # get to challenges tab
