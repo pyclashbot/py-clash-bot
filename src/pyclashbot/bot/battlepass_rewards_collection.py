@@ -1,7 +1,6 @@
 import time
 
 import numpy
-from ahk import AHK
 
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.bot.navigation import (
@@ -84,8 +83,8 @@ def collect_battlepass_rewards(logger):
         click(15, 15, clicks=2, interval=1)
 
         # click every chest locations in the chest_locations list
-        for coord in chest_locations:
-            click(coord[0], coord[1], duration=0.1)
+        # for coord in chest_locations:
+        #     click(coord[0], coord[1], duration=0.1)
 
         # close 'buy battlepass' popup that occurs on accounts without battlepass
         click(353, 153)
@@ -110,8 +109,7 @@ def collect_battlepass_rewards(logger):
     # should be on clash main at this point
     if check_if_on_clash_main_menu():
         return "clashmain"
-    else:
-        logger.change_status(
-            "Not on clash main at the end of collecting battlepass rewards loop. returning restart"
-        )
-        return "restart"
+    logger.change_status(
+        "Not on clash main at the end of collecting battlepass rewards loop. returning restart"
+    )
+    return "restart"
