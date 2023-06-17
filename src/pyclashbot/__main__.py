@@ -5,8 +5,7 @@ from os import path
 import PySimpleGUI as sg
 
 from pyclashbot.bot import WorkerThread
-from pyclashbot.bot.clashmain import find_2v2_match_icon, start_2v2
-from pyclashbot.bot.navigation import check_if_account_is_already_in_a_challenge, check_if_on_clash_main_menu
+
 from pyclashbot.interface import (
     disable_keys,
     main_layout,
@@ -54,8 +53,6 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
     jobs = []
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
-    if values["-Fight-in-"]:
-        jobs.append("Fight")
     if values["-Requesting-in-"]:
         jobs.append("Request")
     if values["-Upgrade_cards-in-"]:
@@ -66,15 +63,16 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
         jobs.append("card mastery collection")
     if values["-Level-Up-Reward-Collection-in-"]:
         jobs.append("level up reward collection")
-    # if values["-Battlepass-Reward-Collection-in-"]:
-    #     jobs.append("battlepass reward collection")
     if values["-War-Participation-in-"]:
         jobs.append("war")
     if values["-Free-Offer-Collection-in-"]:
         jobs.append("free offer collection")
     if values["-Daily-Challenge-Reward-Collection-"]:
         jobs.append("daily challenge reward collection")
-
+    if values["1v1_battle_in"]:
+        jobs.append("1v1 battle")
+    if values["2v2_battle_in"]:
+        jobs.append("2v2 battle")
     return jobs
 
 
@@ -292,9 +290,8 @@ def main_gui():
 
 
 def dummy_main():
-    logger=Logger()
+    logger = Logger()
     pass
-
 
     # print(start_2v2(logger))
 
@@ -306,13 +303,25 @@ def dummy_main():
 
     # orientate_cleint()
 
+    # wait_for_1v1_battle(logger)
+
+    # while 1:print(check_if_has_6_elixer())
+
+    # state_1v1_fight(logger)
+
+    # state_endfight(logger)
+
+    # print(
+    #     "check_if_end_screen_is_ok_bottom_middle: ",
+    #     check_if_end_screen_is_exit_bottom_left(),
+    # )
+    # print(
+    #     "check_if_end_screen_is_ok_bottom_middle: ",
+    #     check_if_end_screen_is_ok_bottom_middle(),
+    # )
 
 
 # run the main gui
 if __name__ == "__main__":
     main_gui()
     # dummy_main()
-
-
-
-

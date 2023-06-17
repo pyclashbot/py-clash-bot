@@ -68,16 +68,16 @@ main_layout = [
 user_config_keys = [
     "-SSID_IN-",
     "-Open-Chests-in-",
-    "-Fight-in-",
     "-Requesting-in-",
     "-Upgrade_cards-in-",
     "-War-Participation-in-",
     "-Random-Decks-in-",
     "-Card-Mastery-Collection-in-",
     "-Level-Up-Reward-Collection-in-",
-    # "-Battlepass-Reward-Collection-in-",
     "-Free-Offer-Collection-in-",
     "-Daily-Challenge-Reward-Collection-",
+    "2v2_battle_in",
+    "1v1_battle_in",
 ]
 
 # list of button and checkbox keys to disable when the bot is running

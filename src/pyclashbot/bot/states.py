@@ -16,13 +16,14 @@ from pyclashbot.bot.daily_challenge_reward_collection import (
     collect_daily_challenge_rewards,
 )
 from pyclashbot.bot.deck import randomize_and_select_deck_2
-from pyclashbot.bot.fight import check_if_past_game_is_win, do_fight
+from pyclashbot.bot.fight import check_if_past_game_is_win, do_1v1_fight, do_2v2_fight
 from pyclashbot.bot.free_offer_collection import collect_free_offer_from_shop
 from pyclashbot.bot.level_up_reward_collection import collect_level_up_rewards
 from pyclashbot.bot.navigation import (
     get_to_card_page,
     get_to_clash_main_from_card_page,
-    leave_end_battle_window,
+    leave_2v2_end_battle_window,
+    wait_for_1v1_battle,
     wait_for_clash_main_menu,
 )
 from pyclashbot.bot.open_chests import open_chests
@@ -68,7 +69,7 @@ def state_tree(
 
         ### DEBUG::: wait forever instead of restarting
         # while True:time.sleep(1000)
-        
+
         # clip_that()
         # for _ in range(15):
         #     print("Clipped an error (dev tool)")
@@ -144,16 +145,24 @@ def state_tree(
         state = state_upgrade(logger) if "Upgrade" in jobs else "deck_randomization"
 
     elif state == "deck_randomization":
-        if "Randomize Deck" in jobs and "Fight" in jobs:
+        if "Randomize Deck" in jobs:
             state = state_deck_randomization(logger, random_deck_bool=True)
         else:
             state = "start_fight"
 
     elif state == "start_fight":
-        state = state_startfight(logger) if "Fight" in jobs else "war"
+        if "2v2 battle" in jobs:
+            state = state_start_2v2_fight(logger)
+        elif "1v1 battle" in jobs:
+            state = state_start_1v1_fight(logger)
+        else:
+            state = "war"
 
-    elif state == "fighting":
-        state = state_fight(logger)
+    elif state == "1v1_fighting":
+        state = state_1v1_fight(logger)
+
+    elif state == "2v2_fighting":
+        state = state_2v2_fight(logger)
 
     elif state == "endfight":
         state = state_endfight(logger)
@@ -366,9 +375,24 @@ def state_deck_randomization(
     return "start_fight"
 
 
-def state_startfight(logger) -> Literal["restart", "fighting"]:
-    print("state is :state_startfight")
+def state_start_1v1_fight(logger):
+    logger.change_status("Starting a 1v1 fight")
 
+    if not check_if_on_clash_main_menu():
+        logger.change_status(
+            "#198573 Failure! Not on clash main at start of state_start_1v1_fight()"
+        )
+        return "restart"
+
+    # click battle button
+    logger.change_status("Clicking 1v1 battle button")
+    click(211, 433)
+    time.sleep(3)
+
+    return "1v1_fighting"
+
+
+def state_start_2v2_fight(logger) -> Literal["restart", "2v2_fighting"]:
     # Method for the starting of a fight state of the program
 
     # Begins on clash main, ends in the beginning of a fight
@@ -379,10 +403,36 @@ def state_startfight(logger) -> Literal["restart", "fighting"]:
     if start_2v2(logger) == "restart" or wait_for_battle_start(logger) == "restart":
         print("Failure with start_2v2() in state_startfight()")
         return "restart"
-    return "fighting"
+    return "2v2_fighting"
 
 
-def state_fight(logger) -> Literal["restart", "endfight"]:
+def state_1v1_fight(logger):
+    logger.change_status("1v1 Fighting")
+    logger.add_fight()
+
+    # wait for battle to start
+    if wait_for_1v1_battle(logger) == "restart":
+        return "restart"
+
+    # play the fight
+    do_1v1_fight(logger)
+
+    # leave the battle
+    if leave_2v2_end_battle_window(logger) == "restart":
+        print("Failure with leave_end_battle_window() in state_fight()")
+        return "restart"
+
+    # wait for clash main
+    if wait_for_clash_main_menu(logger) == "restart":
+        logger.change_status(
+            "#59281375 Failure with wait_for_clash_main_menu() in state_1v1_fight()"
+        )
+        return "restart"
+
+    return "endfight"
+
+
+def state_2v2_fight(logger) -> Literal["restart", "endfight"]:
     print("state is :state_fight")
 
     # Method for the state of the program when fighting
@@ -393,11 +443,11 @@ def state_fight(logger) -> Literal["restart", "endfight"]:
     logger.change_status("Fighting")
     logger.add_fight()
 
-    if do_fight(logger) == "restart":
+    if do_2v2_fight(logger) == "restart":
         print("Failure with do_fight() in state_fight()")
         return "restart"
 
-    if leave_end_battle_window(logger) == "restart":
+    if leave_2v2_end_battle_window(logger) == "restart":
         print("Failure with leave_end_battle_window() in state_fight()")
         return "restart"
 
