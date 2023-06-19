@@ -98,7 +98,7 @@ def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
 
     # timer for mouse movement
     start = time.time()
-    ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
+    ahk.mouse_move(x=x, y=y, speed=int(speed), blocking=False)
 
     attempts = 0
 
@@ -111,7 +111,7 @@ def click(x, y, duration: float = 1, max_attempts=3, clicks=1, interval=0.1):
             if time.time() - start > duration + tol:
                 start = time.time()
                 time.sleep(duration + tol)
-                ahk.mouse_move(x=x, y=y, speed=speed, blocking=False)
+                ahk.mouse_move(x=x, y=y, speed=int(speed), blocking=False)
                 attempts += 1
         for _ in range(clicks):
             ahk.click()
