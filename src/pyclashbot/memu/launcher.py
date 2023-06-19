@@ -285,7 +285,7 @@ def wait_for_clash_main_menu(logger):
     while waiting:
         # loop count
         loops += 1
-        if loops > 25:
+        if loops > 50:
             logger.change_status("Looped through getting to clash main too many times")
             print(
                 "wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
