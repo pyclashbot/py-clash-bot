@@ -92,6 +92,21 @@ def identify_card(image):
         "tornado",
         "xbow",
         "zap",
+
+
+        "balloon",
+        "archers",
+        "babydragon",
+        "bats",
+        "icegolem",
+        "icespirit",
+        "infernodragon",
+        "lavahound",
+        "megaminion",
+        "minions",
+        "skeletons",
+        "speargoblins",
+
     ]
 
     return next((card for card in card_list if check_for_card(image, card)), "unknown")
@@ -104,6 +119,32 @@ def get_card_group(card_identification):
     returns:
         str: name of the card group
     """
+
+    mini_cards = [
+        "bats",
+        "icespirit",
+        "megaminion",
+        "minions",
+        "skeletons",
+        "speargoblins",
+        "archers",
+        "icegolem",
+
+
+    ]
+    
+    tank_cards = [
+        "lavahound",
+    ]
+
+
+    attack_cards = [
+        "babydragon",
+        "infernodragon",
+    ]
+
+
+
     turret_cards = [
         "turret_cards",
         "bombtower",
@@ -150,6 +191,7 @@ def get_card_group(card_identification):
         "princess",
         "barbbarrel",
         "log",
+        "balloon",
     ]
 
     miner_cards = [
@@ -203,6 +245,9 @@ def get_card_group(card_identification):
         xbow_cards,
         mortar_cards,
         elixer_pump_cards,
+        mini_cards,
+        tank_cards,
+        attack_cards,
     ]
 
     return next(
@@ -229,6 +274,44 @@ def get_play_coords(card_group, side):
         side = "left" if n == 0 else "right"
     left_turret_cards_coords = [[198, 402]]
     right_turret_cards_coords = [[217, 402]]
+
+
+    left_mini_cards_coords = [
+        [71, 423],
+        [151, 428],
+        [188, 413],
+    ]
+
+    right_mini_cards_coords = [
+        [342, 426],
+        [257, 421],
+        [222, 414],
+    ]
+
+    left_tank_cards_coords = [
+        [80, 481],
+        [121, 477],
+        [153, 478],
+    ]
+
+    right_tank_cards_coords = [
+        [253, 483],
+        [297, 481],
+        [336, 481],
+    ]
+
+    left_attack_cards_coords = [
+        [154, 363],
+        [69, 359],
+    ]
+
+    right_attack_cards_coords = [
+        [240, 384],
+        [340, 382],
+    ]
+
+# Added New Part
+
 
     left_spell_cards_coords = [
         [87, 189],
@@ -331,6 +414,26 @@ def get_play_coords(card_group, side):
                 [87, 479],
             ]
 
+    elif card_group == "mini_cards":
+        if side == "left":
+            return left_mini_spell_cards_coords
+        if side == "right":
+            return right_mini_spell_cards_coords
+
+    elif card_group == "tank_cards":
+        if side == "left":
+            return left_tank_spell_cards_coords
+        if side == "right":
+            return right_tank_spell_cards_coords
+
+
+    elif card_group == "attack_cards":
+        if side == "left":
+            return left_attack_spell_cards_coords
+        if side == "right":
+            return right_attack_spell_cards_coords
+
+
     elif card_group == "friendly_spell_cards":
         if side == "left":
             return left_friendly_spell_cards_coords
@@ -339,21 +442,21 @@ def get_play_coords(card_group, side):
 
     elif card_group == "goblin_barrel_cards":
         if side == "left":
-            return right_goblin_barrel_cards_coords
-        if side == "right":
             return left_goblin_barrel_cards_coords
+        if side == "right":
+            return right_goblin_barrel_cards_coords
 
     elif card_group == "hog_cards":
         if side == "left":
-            return right_hog_cards_coords
-        if side == "right":
             return left_hog_cards_coords
+        if side == "right":
+            return right_hog_cards_coords
 
     elif card_group == "miner_cards":
         if side == "left":
-            return right_miner_cards_coords
-        if side == "right":
             return left_miner_cards_coords
+        if side == "right":
+            return right_miner_cards_coords
 
     elif card_group == "mortar_cards":
         if side == "left":
@@ -393,9 +496,9 @@ def get_play_coords(card_group, side):
 
     elif card_group == "xbow_cards":
         if side == "left":
-            return right_xbow_cards_coords
-        if side == "right":
             return left_xbow_cards_coords
+        if side == "right":
+            return right_xbow_cards_coords
 
     if side == "left":
         return [
