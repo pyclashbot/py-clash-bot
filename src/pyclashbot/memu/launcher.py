@@ -25,7 +25,6 @@ def restart_emulator(logger):
 
     # stop all vms
     logger.change_status("Closing everything Memu related. . .")
-    pmc.stop_all_vm(timeout=10)
     close_everything_memu()
 
     # check for the pyclashbot vm, if not found then create it
