@@ -38,9 +38,13 @@ class Logger:
         if file_log:
             if not exists(top_level):
                 makedirs(top_level)
-            self._log_file = open(
-                join(top_level, "log.txt"), "w", encoding="utf-8"
-            )  # noqa
+            # log should be named todays date, append if already exists
+            log_name = join(
+                top_level, time.strftime("%Y-%m-%d", time.localtime()) + ".txt"
+            )
+
+            # pylint: disable=consider-using-with
+            self._log_file = open(log_name, "a", encoding="utf-8")
 
         # stats for threaded communication
         self.stats = stats
