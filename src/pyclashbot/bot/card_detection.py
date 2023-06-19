@@ -92,8 +92,6 @@ def identify_card(image):
         "tornado",
         "xbow",
         "zap",
-
-
         "balloon",
         "archers",
         "babydragon",
@@ -106,7 +104,6 @@ def identify_card(image):
         "minions",
         "skeletons",
         "speargoblins",
-
     ]
 
     return next((card for card in card_list if check_for_card(image, card)), "unknown")
@@ -129,21 +126,16 @@ def get_card_group(card_identification):
         "speargoblins",
         "archers",
         "icegolem",
-
-
     ]
-    
+
     tank_cards = [
         "lavahound",
     ]
-
 
     attack_cards = [
         "babydragon",
         "infernodragon",
     ]
-
-
 
     turret_cards = [
         "turret_cards",
@@ -275,7 +267,6 @@ def get_play_coords(card_group, side):
     left_turret_cards_coords = [[198, 402]]
     right_turret_cards_coords = [[217, 402]]
 
-
     left_mini_cards_coords = [
         [71, 423],
         [151, 428],
@@ -310,8 +301,7 @@ def get_play_coords(card_group, side):
         [340, 382],
     ]
 
-# Added New Part
-
+    # Added New Part
 
     left_spell_cards_coords = [
         [87, 189],
@@ -426,13 +416,11 @@ def get_play_coords(card_group, side):
         if side == "right":
             return right_tank_spell_cards_coords
 
-
     elif card_group == "attack_cards":
         if side == "left":
             return left_attack_spell_cards_coords
         if side == "right":
             return right_attack_spell_cards_coords
-
 
     elif card_group == "friendly_spell_cards":
         if side == "left":
