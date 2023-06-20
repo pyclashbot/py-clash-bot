@@ -25,7 +25,6 @@ def restart_emulator(logger):
 
     # stop all vms
     logger.change_status("Closing everything Memu related. . .")
-    pmc.stop_all_vm(timeout=10)
     close_everything_memu()
 
     # check for the pyclashbot vm, if not found then create it
@@ -113,8 +112,14 @@ def configure_vm(logger: Logger, vm_index):
 
     memuc_pid = start_memuc_console()
 
-    # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
+    cpu_count: int = psutil.cpu_count(logical=False)
+    cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
+    c_interface = wmi.WMI()
+    total_mem = int(c_interface.Win32_ComputerSystem()[0].TotalPhysicalMemory)
+    total_mem = total_mem // 1024 // 1024
+    total_mem: int = numpy.clip(total_mem // 2, 2048, 4096)
 
+    # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
     configuration: dict[str, str] = {
         "start_window_mode": "2",  # custom window position
         "win_x": "0",
@@ -125,7 +130,8 @@ def configure_vm(logger: Logger, vm_index):
         "resolution_height": "633",
         "vbox_dpi": "160",
         "cpucap": "50",
-        "cpus": "4",
+        "cpus": str(cpu_count),
+        "memory": str(total_mem),
         "fps": "30",
         "enable_audio": "0",
     }
