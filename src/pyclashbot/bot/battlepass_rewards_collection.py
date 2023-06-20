@@ -1,3 +1,6 @@
+"""
+This module contains functions for collecting battlepass rewards in Clash of Clans.
+"""
 import time
 
 import numpy
@@ -9,9 +12,6 @@ from pyclashbot.bot.navigation import (
 )
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
-
-"""methods that have to do with the collection of battlepass rewards
-"""
 
 
 def check_for_battlepass_reward_pixels():

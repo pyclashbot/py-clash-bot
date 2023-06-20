@@ -6,11 +6,10 @@ from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
 
-"""methods that have to do with the collection of level up rewards"""
-
 
 def check_for_level_up_reward_pixels():
-    """check_for_level_up_reward_pixels looks for level up reward icon pixels while on clash main menu
+    """check_for_level_up_reward_pixels looks for level
+    up reward icon pixels while on clash main menu
 
     returns:
         bool: yes if rewards icon exists
@@ -31,7 +30,8 @@ def check_for_level_up_reward_pixels():
 
 
 def check_if_has_level_up_rewards():
-    """method that spams the check_for_level_up_reward_pixels() pixel check a few times over a few seconds because the animation sometimes obstructs the pixels
+    """method that spams the check_for_level_up_reward_pixels() pixel check a
+        few times over a few seconds because the animation sometimes obstructs the pixels
 
     returns:
         bool: yes if rewards icon pixels existed anytime in the last 0.36 seconds
@@ -47,7 +47,9 @@ def check_if_has_level_up_rewards():
 
 
 def collect_level_up_rewards(logger):
-    """checks if the level up reward icon exists,clicks icon, clicks chest, skips through chest rewards, then returns to clash main, all on a loop until the rewards icon no longer appears on the clash main menu
+    """checks if the level up reward icon exists,clicks icon, clicks chest,
+        skips through chest rewards, then returns to clash main,
+        all on a loop until the rewards icon no longer appears on the clash main menu
     args:
         logger: logger from logger class initiaed in main
 
@@ -101,7 +103,9 @@ def collect_level_up_rewards(logger):
             # if this didnt help getting to main then return restart
             if not check_if_on_clash_main_menu():
                 logger.change_status(
-                    "check_if_has_level_up_rewards() didnt finish its loop on clash main. Restarting"
+                    "check_if_has_level_up_rewards() didnt finish "
+                    "its loop on clash main. Restarting"
                 )
                 return "restart"
         logger.change_status("Done collecting level-up rewards.")
+    return "continue"

@@ -26,7 +26,8 @@ from pyclashbot.memu.client import (
 
 
 def check_if_on_trophy_progession_rewards_page():
-    """Method to check if the bot is on the trophy progression rewards page which obstructs the clash main menu
+    """Method to check if the bot is on the trophy progression
+    rewards page which obstructs the clash main menu
     args:
         None
     returns:
@@ -132,7 +133,9 @@ def check_if_in_a_clan(logger):
 
 
 def get_to_account(logger, account_number):
-    """method to get to the given account number represetned as a number 0-8 pertaining to which suppercell account to use
+    # pylint: disable=too-many-branches
+    """method to get to the given account number represetned as a
+    number 0-8 pertaining to which suppercell account to use
     args:
         Logger: logger object
         int: account number to switch to
@@ -270,7 +273,7 @@ def start_2v2(logger):
     # if not on clash main at this point then this failed
     if not check_if_on_clash_main_menu():
         logger.change_status("Not on clash main so cant run start_2v2()")
-        print(f"#4589234985 Fail")
+        print("#4589234985 Fail")
         return "restart"
 
     # get to challenges tab
@@ -301,7 +304,8 @@ def start_2v2(logger):
 
 
 def find_2v2_match_icon():
-    """method to scan for images that indicate the coordinates of the 2v2 match icon in the challenges tab
+    """method to scan for images that indicate the coordinates
+    of the 2v2 match icon in the challenges tab
     returns:
         coordinates of the 2v2 match icon in the challenges tab button if found, None if not found
     """
@@ -346,6 +350,7 @@ def wait_for_battle_start(logger):
         if time.time() - start_time > wait_time:
             logger.change_status(f"Waited longer than {wait_time} sec for a fight")
             return "restart"
+    return "continue"
 
 
 def check_if_pixels_indicate_in_battle():
@@ -366,8 +371,7 @@ def check_if_pixels_indicate_in_battle():
         tolerance=0.97,
     )
 
-    if check_for_location(locations):
-        return True
+    return check_for_location(locations)
 
 
 def check_if_in_battle_with_delay():
