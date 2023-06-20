@@ -22,9 +22,3 @@ __all__ = [
     "get_latest_notification",
     "Notification",
 ]
-
-# dependency module is only available on Windows
-with contextlib.suppress(ImportError):
-    from .dependency import setup_memu  # noqa
-
-    __all__.extend(["setup_memu"])
