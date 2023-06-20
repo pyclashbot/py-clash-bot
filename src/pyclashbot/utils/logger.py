@@ -39,12 +39,9 @@ class Logger:
             if not exists(top_level):
                 makedirs(top_level)
             # log should be named todays date, append if already exists
-            log_name = join(
+            self._log_name = join(
                 top_level, time.strftime("%Y-%m-%d", time.localtime()) + ".txt"
             )
-
-            # pylint: disable=consider-using-with
-            self._log_file = open(log_name, "a", encoding="utf-8")
 
         # stats for threaded communication
         self.stats = stats
@@ -87,10 +84,6 @@ class Logger:
 
         # write initial values to queue
         self._update_stats()
-
-    def __del__(self):
-        if self.file_log:
-            self._log_file.close()
 
     def _update_log(self):
         self._update_stats()
@@ -154,9 +147,10 @@ class Logger:
         self.file_add_row(f"{self.make_timestamp()} | {self.current_status}")
 
         # log to file
-        self._log_file.write(self.file_buffer)
-
-        self._log_file.flush()
+        # pylint: disable=consider-using-with
+        with open(self._log_name, "a", encoding="utf-8") as file:
+            file.write(self.file_buffer)
+            file.flush()
 
         # clear buffer
         self.file_buffer = ""
