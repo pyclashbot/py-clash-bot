@@ -1,8 +1,10 @@
+"""Methods that have to do with the collection of the card mastery rewards
+"""
+
 import time
 
 import numpy
 
-from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.bot.navigation import (
     get_to_card_mastery_page,
     get_to_card_page,
@@ -12,9 +14,6 @@ from pyclashbot.detection import pixel_is_equal
 from pyclashbot.detection.image_rec import check_for_location, find_references
 from pyclashbot.memu import click, screenshot
 from pyclashbot.memu.client import get_file_count, make_reference_image_list
-
-"""Methods that have to do with the collection of the card mastery rewards
-"""
 
 
 def collect_card_mastery_rewards(logger):

@@ -25,16 +25,9 @@ def open_chests(logger):
         [349, 551],
     ]
 
-    # for each chest that exists
-    # click current chest
-    # check if unlock appears
-    # if unlock appears unlock the chest
-    # else click dead space 15 times to skip thru rewards
-    # then close this chest menu.
-    index = 0
-    for chest in existing_chests_array:
+    for index, chest in enumerate(existing_chests_array):
         if chest:
-            logger.change_status("Handling chest number: " + str(index + 1))
+            logger.change_status(f"Handling chest number: {str(index + 1)}")
             # click chest
             chest_coord = chest_coord_list[index]
             click(chest_coord[0], chest_coord[1])
@@ -50,8 +43,6 @@ def open_chests(logger):
             # close chest menu
             print("Closing chest index", index + 1)
             click(20, 556)
-
-        index += 1
 
     logger.change_status("Done collecting chests.")
 

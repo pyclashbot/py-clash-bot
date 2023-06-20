@@ -1,3 +1,6 @@
+"""
+This module contains functions for collecting bannerbox chests from the Clash of Clans main menu.
+"""
 import time
 
 import numpy
@@ -5,10 +8,6 @@ import numpy
 from pyclashbot.bot.navigation import get_to_bannerbox, wait_for_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
-
-"""Methods that have to do with the collection of the bannerbox rewards
-
-"""
 
 
 def collect_bannerbox_chests(logger):
@@ -54,6 +53,7 @@ def collect_bannerbox_chests(logger):
             "Failure wiht wait_for_clash_main_menu() in collect_bannerbox_chests()"
         )
         return "restart"
+    return "continue"
 
 
 def buy_a_battlebox():
@@ -98,6 +98,7 @@ def get_to_confrim_battlebox_purchase_page():
     click(312, 606)
     if wait_for_confirm_battlebox_purchase_page() == "restart":
         return "restart"
+    return "continue"
 
 
 def wait_for_confirm_battlebox_purchase_page():
@@ -112,6 +113,7 @@ def wait_for_confirm_battlebox_purchase_page():
         time_taken = time.time() - start_time
         if time_taken > 10:
             return "restart"
+    return "continue"
 
 
 def check_for_confirm_battlebox_purchase_page():
@@ -135,9 +137,7 @@ def check_for_confirm_battlebox_purchase_page():
         if pixel_is_equal(this_pixel, [76, 174, 255], tol=35):
             info_button_exists = True
 
-    if info_button_exists and confirm_purchase_text_exists:
-        return True
-    return False
+    return bool(info_button_exists and confirm_purchase_text_exists)
 
 
 def handle_welcome_to_bannerbox_popup():
@@ -172,6 +172,4 @@ def check_for_welcome_to_bannerbox_popup():
         if pixel_is_equal(this_pixel, [255, 210, 155], tol=35):
             king_crown_graphic_exists = True
 
-    if king_crown_graphic_exists and welcome_to_bannerbox_text_exists:
-        return True
-    return False
+    return bool(king_crown_graphic_exists and welcome_to_bannerbox_text_exists)
