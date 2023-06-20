@@ -20,6 +20,7 @@ from pyclashbot.memu import (
 
 
 def handle_war_attacks(logger):
+    # sourcery skip: extract-duplicate-method, extract-method
     logger.change_status("Handling war attacks")
 
     # check if in a clan
@@ -32,8 +33,7 @@ def handle_war_attacks(logger):
             )
             return "restart"
         return "clashmain"
-    else:
-        print("Youre in a clan.")
+    print("Youre in a clan.")
 
     # get to war page
     logger.change_status("Getting to war page.")
@@ -65,7 +65,8 @@ def handle_war_attacks(logger):
     # if you STILL done have a deck, return to main
     if not check_if_has_a_deck_for_this_war_battle():
         logger.change_status(
-            "Fight not avialable yet/Not enough cards to complete deck. Skipping war attack this time."
+            "Fight not avialable yet/Not enough cards to "
+            "complete deck. Skipping war attack this time."
         )
         print("Clicking deadspace to clear popups second time.")
         click(20, 440, clicks=5, interval=0.1)
@@ -134,14 +135,16 @@ def fight_war_battle(logger):
         click(random.randint(70, 140), random.randint(180, 480))
         time.sleep(0.17)
 
-        print("Played a card randomly. War loops: " + str(loops))
+        print(f"Played a card randomly. War loops: {loops}")
 
     for n in range(15):
         logger.change_status(f"Manual wait for end battle...{n}")
         time.sleep(1)
+    return "continue"
 
 
 def make_a_random_deck_for_this_war_battle():
+    # sourcery skip: extract-duplicate-method
     # Click edit deck
     print("Clicking edit war deck")
     click(155, 450)
@@ -237,9 +240,11 @@ def wait_for_war_battle_loading(logger):
         loops += 1
         if loops > 100:
             logger.change_status(
-                "Waited for war battle loading too long using wait_for_war_battle_loading(). Restarting."
+                "Waited for war battle loading too long using "
+                "wait_for_war_battle_loading(). Restarting."
             )
             return "restart"
         time.sleep(0.5)
-        print("waiting for war battle to start loading. Loops: " + str(loops))
+        print(f"waiting for war battle to start loading. Loops: {loops}")
     logger.change_status("Done waiting for battle to load.")
+    return "continue"

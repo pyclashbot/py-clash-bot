@@ -1,3 +1,9 @@
+"""
+This module contains functions for automating the management of a Clash Royale deck.
+It provides methods for counting the number of times the bot can scroll down in
+the card page while still having usable cards, and for finding the coordinates
+of a random card on the given page of usable cards using random regions to assure randomness.
+"""
 import random
 import time
 from typing import Literal
@@ -14,7 +20,8 @@ from pyclashbot.memu import (
 
 
 def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
-    """Method to cound the number of times the bot can scroll down in the card page while still having usable cards
+    """Method to cound the number of times the bot can scroll down
+        in the card page while still having usable cards
     args:
         logger: the logger object
     returns:
@@ -56,7 +63,8 @@ def count_scrolls_in_card_page(logger) -> int | Literal["restart"]:
 
 
 def find_random_card_coord(logger):
-    """method to find coordinates of a random card on the given page of usable cards using random regions to assure randomness
+    """method to find coordinates of a random card on the given
+        page of usable cards using random regions to assure randomness
     args:
         None
     returns:
@@ -106,7 +114,8 @@ def find_random_card_coord(logger):
         (250, 430, 50, 50),
         (300, 430, 50, 50),
         (350, 430, 50, 50),
-        # cover the region that cards' elixer values can appear in twice (this time with different increments of regions)
+        # cover the region that cards' elixer values can appear in
+        #   twice (this time with different increments of regions)
         (50, 130, 81, 71),
         (131, 130, 81, 71),
         (212, 130, 81, 71),
@@ -147,7 +156,7 @@ def find_random_card_coord(logger):
                 screenshot(region)
             )
             if coord is not None:
-                logger.change_status("Found a random card at index: " + str(index))
+                logger.change_status(f"Found a random card at index: {index}")
                 return (coord[0] + region[0], coord[1] + region[1])
     logger.change_status(
         "Looped through find_random_card_coord() too many times. Restarting"
@@ -247,9 +256,10 @@ def randomize_and_select_deck_2(logger):
         logger.change_status("Failure getting to clash main")
         return "restart"
     time.sleep(1)
+    return "continue"
 
 
-def randomize_this_deck(logger):
+def randomize_this_deck(logger):  # sourcery skip: extract-duplicate-method
     """main method for randomizing the current deck
     args:
         logger: Logger object
@@ -272,7 +282,8 @@ def randomize_this_deck(logger):
     print("counting scrolls")
     logger.change_status("Counting maximum scrolls for deck randomization.")
 
-    # calculate maximum scrolls, -4 represents a buffer at the bottom of the card list in case scrolling is inconsistent
+    # calculate maximum scrolls, -4 represents a buffer at the
+    #   bottom of the card list in case scrolling is inconsistent
     counted_scrolls = count_scrolls_in_card_page(logger)
 
     if counted_scrolls == "restart":
@@ -288,16 +299,15 @@ def randomize_this_deck(logger):
     minimum_scrolls = 3
 
     # handle possiblity of minimum being higher than maximum
-    if minimum_scrolls > maximum_scrolls:
-        minimum_scrolls = maximum_scrolls
-
+    minimum_scrolls = min(minimum_scrolls, maximum_scrolls)
     # for each card slot, replace with random card
     logger.change_status("Starting card replacement loop")
     for card_to_replace_coord in card_coord_list:
         random_scroll_amount = random.randint(minimum_scrolls, maximum_scrolls)
 
         logger.change_status(
-            f"This random scroll amount is {random_scroll_amount} within a range of ({minimum_scrolls}, {maximum_scrolls})"
+            f"This random scroll amount is {random_scroll_amount} "
+            f"within a range of ({minimum_scrolls}, {maximum_scrolls})"
         )
 
         # scroll that amount
@@ -315,7 +325,8 @@ def randomize_this_deck(logger):
             loops += 1
             if loops > 30:
                 logger.change_status(
-                    "Clicked around for a random card too many times. Returning to main regardless of how well this deck is randomized."
+                    "Clicked around for a random card too many times. "
+                    "Returning to main regardless of how well this deck is randomized."
                 )
                 if get_to_clash_main_from_card_page(logger) == "restart":
                     return "restart"
@@ -328,9 +339,10 @@ def randomize_this_deck(logger):
                 logger.change_status("Failure replacing card")
                 if get_to_clash_main_from_card_page(logger) == "restart":
                     return "restart"
-                return
+                return "continue"
 
-            # if replacement_card_coord is too high, we are at risk of clicking numbers on the top of the screen
+            # if replacement_card_coord is too high, we are at
+            #   risk of clicking numbers on the top of the screen
             if replacement_card_coord[1] < 200:
                 logger.change_status(
                     "replacement_card_coord is too high on the screen. trying again"
@@ -355,4 +367,4 @@ def randomize_this_deck(logger):
         click(card_to_replace_coord[0], card_to_replace_coord[1])
         time.sleep(0.22)
 
-    return None
+    return "continue"

@@ -1,17 +1,13 @@
-import time
+"""methods that have to do with the collection of free offer rewards in the shop"""
 
-import numpy
+import time
 
 from pyclashbot.bot.clashmain import check_if_on_clash_main_menu
 from pyclashbot.bot.navigation import (
     get_to_clash_main_from_shop,
     get_to_shop_page_from_main,
 )
-from pyclashbot.detection.image_rec import (
-    find_references,
-    get_first_location,
-    pixel_is_equal,
-)
+from pyclashbot.detection.image_rec import find_references, get_first_location
 from pyclashbot.memu.client import (
     click,
     get_file_count,
@@ -19,8 +15,6 @@ from pyclashbot.memu.client import (
     screenshot,
     scroll_down_fast,
 )
-
-"""methods that have to do with the collection of free offer rewards in the shop"""
 
 
 def collect_free_offer_from_shop(logger):
@@ -68,7 +62,7 @@ def collect_free_offer_from_shop(logger):
                 "failed to get to clash main from shop page in collect_free_offer_from_shop()"
             )
             return "restart"
-        return
+        return "continue"
 
     # click free offer
     logger.change_status("Found free offer. Clicking this free offer.")
@@ -90,6 +84,7 @@ def collect_free_offer_from_shop(logger):
             "failed to get to clash main from shop page in collect_free_offer_from_shop()"
         )
         return "restart"
+    return "continue"
 
 
 def find_free_button_in_shop():

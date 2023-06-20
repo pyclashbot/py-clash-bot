@@ -42,7 +42,7 @@ def state_tree(
     ssid: int,
     state: str,
     ssid_order_list: list[int] | None,
-) -> tuple[str, int, list[int] | None]:
+) -> tuple[str, int, list[int] | None]:  # sourcery skip: low-code-quality
     """
     Method for the state tree of the program
 
@@ -170,7 +170,8 @@ def state_tree(
     elif state == "war":
         state = state_war(logger) if "war" in jobs else "account_switching"
 
-        # if this time - most recent time in restart_log is more than an hour, always pass to restart
+        # if this time - most recent time in restart_log
+        #   is more than an hour, always pass to restart
         if abs(logger.most_recent_restart_time - time.time()) > 3600:
             state = "auto_restart"
 
@@ -181,7 +182,8 @@ def state_restart(logger) -> Literal["account_switching", "restart"]:
     print("state is :state_restart")
     # Method for the restart state of the program
 
-    # Restart state restarts Memu and MeMU Multi Manager, opens clash, and waits for the clash main menu to appear.
+    # Restart state restarts Memu and MeMU Multi Manager,
+    #   opens clash, and waits for the clash main menu to appear.
 
     # update most recent restart time
     logger.change_most_recent_restart_time(int(time.time()))
@@ -451,7 +453,8 @@ def state_2v2_fight(logger) -> Literal["restart", "endfight"]:
         print("Failure with leave_end_battle_window() in state_fight()")
         return "restart"
 
-    # wait so that the card mastery progress notification doesnt obstruct clicking the options menu on clashmain
+    # wait so that the card mastery progress notification
+    #   doesnt obstruct clicking the options menu on clashmain
     time.sleep(7)
 
     if wait_for_clash_main_menu(logger) == "restart":
@@ -492,11 +495,8 @@ def clip_that():
 
 # making the random order of accout switching
 def make_random_ssid_list(max_ssid):
-    ssid_list = []
-    for n in range(max_ssid):
-        ssid_list.append(n)
-    new_list = randomize_list(ssid_list)
-    return new_list
+    ssid_list = list(range(max_ssid))
+    return randomize_list(ssid_list)
 
 
 # method to randomize a given list of ints

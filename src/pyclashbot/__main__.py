@@ -5,7 +5,6 @@ from os import path
 import PySimpleGUI as sg
 
 from pyclashbot.bot import WorkerThread
-
 from pyclashbot.interface import (
     disable_keys,
     main_layout,
@@ -131,10 +130,10 @@ def dupe_jobs_popup():
 
     # Event loop to process events and get user input
     while True:
-        event, values = window.read()  # type: ignore
+        event, _ = window.read()  # type: ignore
 
         # Exit the program if the "Exit" button is clicked or window is closed
-        if event == sg.WINDOW_CLOSED or event == "Exit":
+        if event in [sg.WINDOW_CLOSED, "Exit"]:
             break
 
     # Close the window
@@ -159,10 +158,10 @@ def no_jobs_popup():
 
     # Event loop to process events and get user input
     while True:
-        event, values = window.read()  # type: ignore
+        event, _ = window.read()  # type: ignore
 
         # Exit the program if the "Exit" button is clicked or window is closed
-        if event == sg.WINDOW_CLOSED or event == "Exit":
+        if event in [sg.WINDOW_CLOSED, "Exit"]:
             break
 
     # Close the window
