@@ -1,7 +1,6 @@
 import time
 
 import numpy
-from ahk import AHK
 
 from pyclashbot.bot.navigation import (
     check_if_on_clash_main_menu,
@@ -24,12 +23,6 @@ from pyclashbot.memu.client import (
     make_reference_image_list,
     scroll_down,
 )
-
-ahk = AHK()
-
-
-"""Methods that have to do with chest opening, 2v2 battle starts, and account switching
-"""
 
 
 def check_if_on_trophy_progession_rewards_page():
@@ -277,7 +270,7 @@ def start_2v2(logger):
     # if not on clash main at this point then this failed
     if not check_if_on_clash_main_menu():
         logger.change_status("Not on clash main so cant run start_2v2()")
-        print(f'#4589234985 Fail')
+        print(f"#4589234985 Fail")
         return "restart"
 
     # get to challenges tab
