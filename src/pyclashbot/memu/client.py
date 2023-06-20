@@ -5,13 +5,17 @@ from os.path import dirname, join
 
 import pygetwindow
 from ahk import AHK
+from ahk.directives import NoTrayIcon
 from PIL import Image, ImageGrab
 
 if getattr(sys, "frozen", False):
     # The application is frozen
-    ahk = AHK(executable_path=os.path.join(sys.frozen_dir, "AutoHotkey.exe"))  # type: ignore
+    ahk = AHK(
+        executable_path=os.path.join(sys.frozen_dir, "AutoHotkey.exe"),  # type: ignore
+        directives=[NoTrayIcon],
+    )
 else:
-    ahk = AHK()
+    ahk = AHK(directives=[NoTrayIcon])
 
 
 def screenshot(
