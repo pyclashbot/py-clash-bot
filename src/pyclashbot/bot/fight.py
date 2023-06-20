@@ -1,3 +1,6 @@
+"""
+This module contains functions for fighting in Clash Royale.
+"""
 import itertools
 import random
 import time
@@ -14,8 +17,6 @@ from pyclashbot.bot.clashmain import check_if_in_battle, check_if_in_battle_with
 from pyclashbot.bot.navigation import open_activity_log
 from pyclashbot.detection import pixel_is_equal
 from pyclashbot.memu import click, screenshot
-
-"""methods that have to do with the fighting of battles"""
 
 
 def do_1v1_fight(logger):
@@ -38,12 +39,14 @@ def do_1v1_fight(logger):
 
     logger.change_status("Done 1v1 fighting.")
     time.sleep(15)
+    return "continue"
 
 
 #### card playing
 def do_2v2_fight(logger):
     """
-    do_fight waits until has 6 elixer, then plays a random card, all on a loop until it detects that the battle is over
+    do_fight waits until has 6 elixer, then plays a random card,
+        all on a loop until it detects that the battle is over
     args:
         :logger: logger from logger class initialized in main
     :returns
@@ -77,6 +80,7 @@ def do_2v2_fight(logger):
 
     logger.change_status("Done 2v2 fighting.")
     time.sleep(15)
+    return "continue"
 
 
 def check_if_pixel_is_grey(pixel):
@@ -100,7 +104,8 @@ def check_if_pixel_is_grey(pixel):
 
 
 def wait_until_has_6_elixer(logger):
-    """wait_until_has_6_elixer does check_if_has_6_elixer() check every 0.1 seconds until it returns True (periodically checking if the battle is over also)
+    """wait_until_has_6_elixer does check_if_has_6_elixer() check every 0.1 seconds
+        until it returns True (periodically checking if the battle is over also)
     args:
         logger: logger object from logger class initialized in main
     returns:
@@ -132,10 +137,12 @@ def wait_until_has_6_elixer(logger):
         # if we're not in a battle, break from this loop.
         if not check_if_in_battle():
             return None
+    return "continue"
 
 
 def play_random_card(logger):
-    """play_random_card picks a random card (1-4), identifies it, detemines the play logic for this card, then plays it according to that logic
+    """play_random_card picks a random card (1-4), identifies it,
+        detemines the play logic for this card, then plays it according to that logic
     args:
         logger: logger object from logger class initialized in main
     returns:
@@ -190,7 +197,8 @@ def play_hero_power():
 
 #### detection
 def check_if_past_game_is_win(logger):
-    """check_if_past_game_is_win scans the pixels across a specific region in the acitvity log that indicate the past game's win or loss.
+    """check_if_past_game_is_win scans the pixels across a specific region
+        in the acitvity log that indicate the past game's win or loss.
     args:
         logger: logger object from logger class initialized
     returns:
@@ -230,7 +238,8 @@ def check_if_pixels_indicate_win_on_activity_log():
 
 
 def check_if_has_6_elixer():
-    """check_if_has_6_elixer checks pixels in the bottom elixer bar during a fight to see if it is full to the point of 6 elixer.
+    """check_if_has_6_elixer checks pixels in the bottom elixer bar
+        during a fight to see if it is full to the point of 6 elixer.
     args:
         None
     returns:
@@ -252,7 +261,8 @@ def check_if_has_6_elixer():
 
 
 def check_if_card_1_is_available():
-    """Method to check if the card in index 1 is available to play based on elixer cost and if the card is greyed out.
+    """Method to check if the card in index 1 is available to
+        play based on elixer cost and if the card is greyed out.
     args:
         None
     returns:
@@ -271,16 +281,12 @@ def check_if_card_1_is_available():
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
 
-    is_available = False
-    for is_grey in grey_bool_list:
-        if not is_grey:
-            is_available = True
-
-    return is_available
+    return not all(grey_bool_list)
 
 
 def check_if_card_2_is_available():
-    """Method to check if the card in index 2 is available to play based on elixer cost and if the card is greyed out.
+    """Method to check if the card in index 2 is available to
+    play based on elixer cost and if the card is greyed out.
     args:
         None
     returns:
@@ -300,16 +306,12 @@ def check_if_card_2_is_available():
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
 
-    is_available = False
-    for is_grey in grey_bool_list:
-        if not is_grey:
-            is_available = True
-
-    return is_available
+    return not all(grey_bool_list)
 
 
 def check_if_card_3_is_available():
-    """Method to check if the card in index 3 is available to play based on elixer cost and if the card is greyed out.
+    """Method to check if the card in index 3 is available to play
+    based on elixer cost and if the card is greyed out.
     args:
         None
     returns:
@@ -329,16 +331,12 @@ def check_if_card_3_is_available():
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
 
-    is_available = False
-    for is_grey in grey_bool_list:
-        if not is_grey:
-            is_available = True
-
-    return is_available
+    return not all(grey_bool_list)
 
 
 def check_if_card_4_is_available():
-    """Method to check if the card in index 4 is available to play based on elixer cost and if the card is greyed out.
+    """Method to check if the card in index 4 is available
+        to play based on elixer cost and if the card is greyed out.
     args:
         None
     returns:
@@ -358,12 +356,7 @@ def check_if_card_4_is_available():
         grey_bool = check_if_pixel_is_grey(pix)
         grey_bool_list.append(grey_bool)
 
-    is_available = False
-    for is_grey in grey_bool_list:
-        if not is_grey:
-            is_available = True
-
-    return is_available
+    return not all(grey_bool_list)
 
 
 def check_available_cards():
@@ -411,15 +404,13 @@ def check_for_hero_power():
     ]
     color = [255, 65, 242]
 
-    for pix in pix_list:
-        if pixel_is_equal(pix, color, tol=45):
-            return True
-    return False
+    return any(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
 
 
 #### board detection
 def cover_board_image(iar):
-    """cover_board_image covers specific regions in the board image with black that may indicate false positives to make the board detection more accurate.
+    """cover_board_image covers specific regions in the board image
+        with black that may indicate false positives to make the board detection more accurate.
     args:
         iar: a numpy image array. This is the image array of the board screenshot.
     returns:
@@ -483,7 +474,8 @@ def get_left_and_right_totals(iar):
     args:
         iar: a numpy image array. This is the image array of the board screenshot.
     returns:
-        [left_lane_total, right_lane_total]: integer totals of the red pixels on the left and right lanes of the board.
+        [left_lane_total, right_lane_total]: integer totals of the red pixels
+            on the left and right lanes of the board.
     """
 
     left_lane_total = 0
@@ -502,11 +494,14 @@ def get_left_and_right_totals(iar):
 
 
 def pick_a_lane():
-    """pick_a_lane gets a numpy image array of the board screenshot, covers the regions that may indicate false positives, and counts the red pixels on the left and right lanes of the board. It then returns the lane with the most red pixels.
+    """pick_a_lane gets a numpy image array of the board screenshot, covers the regions that may
+        indicate false positives, and counts the red pixels on the left and right lanes of the board
+        It then returns the lane with the most red pixels.
     args:
         None
     returns:
-        String: "left" or "right" depending on which lane has the most red pixels. Returns "random" if the lanes are equal within a threshold.
+        String: "left" or "right" depending on which lane has the most red pixels.
+            Returns "random" if the lanes are equal within a threshold.
     """
 
     iar = numpy.array(screenshot())

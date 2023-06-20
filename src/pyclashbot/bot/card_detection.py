@@ -1,10 +1,10 @@
+"""
+This module contains functions for detecting and identifying cards in the game Clash Royale.
+"""
 import random
 
 from pyclashbot.detection import check_for_location, find_references
 from pyclashbot.memu import get_file_count, make_reference_image_list, screenshot
-
-"""Methods that have to do with the scanning of cards during a battle
-"""
 
 
 def get_card_images():
@@ -110,6 +110,7 @@ def identify_card(image):
 
 
 def get_card_group(card_identification):
+    # pylint: disable=too-many-locals
     """Method to identify the card group of a given card
     args:
         card_identification: name of the card
@@ -253,6 +254,7 @@ def get_card_group(card_identification):
 
 
 def get_play_coords(card_group, side):
+    # pylint: disable=too-many-locals
     """Method to calculate the coordinates to play a card based on the card type
     args:
         card_group: name of the card group
@@ -262,8 +264,8 @@ def get_play_coords(card_group, side):
     """
 
     if side == "random":
-        n = random.randint(0, 1)
-        side = "left" if n == 0 else "right"
+        number = random.randint(0, 1)
+        side = "left" if number == 0 else "right"
     left_turret_cards_coords = [[198, 402]]
     right_turret_cards_coords = [[217, 402]]
 
@@ -406,21 +408,21 @@ def get_play_coords(card_group, side):
 
     elif card_group == "mini_cards":
         if side == "left":
-            return left_mini_spell_cards_coords
+            return left_mini_cards_coords
         if side == "right":
-            return right_mini_spell_cards_coords
+            return right_mini_cards_coords
 
     elif card_group == "tank_cards":
         if side == "left":
-            return left_tank_spell_cards_coords
+            return left_tank_cards_coords
         if side == "right":
-            return right_tank_spell_cards_coords
+            return right_tank_cards_coords
 
     elif card_group == "attack_cards":
         if side == "left":
-            return left_attack_spell_cards_coords
+            return left_attack_cards_coords
         if side == "right":
-            return right_attack_spell_cards_coords
+            return right_attack_cards_coords
 
     elif card_group == "friendly_spell_cards":
         if side == "left":

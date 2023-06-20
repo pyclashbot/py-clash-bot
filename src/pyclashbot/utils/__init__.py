@@ -1,5 +1,3 @@
-import contextlib
-
 from .caching import (
     _cache_data,
     _load_data,

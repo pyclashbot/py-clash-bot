@@ -2,12 +2,7 @@ import time
 
 import numpy
 
-from pyclashbot.detection import (
-    check_for_location,
-    find_references,
-    get_first_location,
-    pixel_is_equal,
-)
+from pyclashbot.detection import find_references, get_first_location, pixel_is_equal
 from pyclashbot.memu import click, get_file_count, screenshot
 from pyclashbot.memu.client import make_reference_image_list, scroll_up
 
@@ -95,6 +90,7 @@ def upgrade_current_cards(logger):
 
 
 def upgrade_card(logger, card_coord, upgrade_coord):
+    # sourcery skip: extract-duplicate-method
     logger.change_status("Upgrading a card")
 
     if check_for_level_up_popup_page():
@@ -169,9 +165,7 @@ def find_first_upgrade_button_in_upgrade_menu():
     )
 
     coord = get_first_location(locations)
-    if coord is None:
-        return None
-    return [coord[1], coord[0]]
+    return None if coord is None else [coord[1], coord[0]]
 
 
 def find_second_upgrade_button_in_upgrade_menu():
@@ -193,9 +187,7 @@ def find_second_upgrade_button_in_upgrade_menu():
     )
 
     coord = get_first_location(locations)
-    if coord is None:
-        return None
-    return [coord[1], coord[0]]
+    return None if coord is None else [coord[1], coord[0]]
 
 
 def check_if_buy_missing_gold_popup_exists():
@@ -216,9 +208,9 @@ def check_if_buy_missing_gold_popup_exists():
         if pixel_is_equal(iar[424][x], [250, 250, 250], tol=35):
             white_text_exists = True
 
-    if top_green_background_exists and bottom_green_background and white_text_exists:
-        return True
-    return False
+    return bool(
+        top_green_background_exists and bottom_green_background and white_text_exists
+    )
 
 
 def close_buy_missing_gold_popup():
@@ -243,10 +235,9 @@ def check_for_level_up_popup_page():
         if pixel_is_equal(iar[395][x], [255, 204, 102], tol=35):
             king_tower_text_exists = True
 
-    if white_level_up_text_exists and blue_ok_button_exists and king_tower_text_exists:
-        return True
-
-    return False
+    return bool(
+        white_level_up_text_exists and blue_ok_button_exists and king_tower_text_exists
+    )
 
 
 def handle_level_up_popup_page():
