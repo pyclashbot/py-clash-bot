@@ -110,9 +110,9 @@ def find_reference(
     """
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images"))
-    return compare_images(
-        screenshot, Image.open(join(reference_folder, folder, name)), tolerance
-    )
+    image_path = join(reference_folder, folder, name)
+    with Image.open(image_path) as image:
+        return compare_images(screenshot, image, tolerance)
 
 
 def pixel_is_equal(pix1, pix2, tol):
