@@ -112,12 +112,12 @@ def configure_vm(logger: Logger, vm_index):
 
     memuc_pid = start_memuc_console()
 
-    cpu_count = psutil.cpu_count(logical=False)
-    cpu_count = numpy.clip(cpu_count // 2, 2, 6)
+    cpu_count: int = psutil.cpu_count(logical=False)
+    cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
     c_interface = wmi.WMI()
-    total_mem = c_interface.Win32_ComputerSystem()[0].TotalPhysicalMemory
+    total_mem = int(c_interface.Win32_ComputerSystem()[0].TotalPhysicalMemory)
     total_mem = total_mem // 1024 // 1024
-    total_mem = numpy.clip(total_mem // 2, 2048, 4096)
+    total_mem: int = numpy.clip(total_mem // 2, 2048, 4096)
 
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
     configuration: dict[str, str] = {
