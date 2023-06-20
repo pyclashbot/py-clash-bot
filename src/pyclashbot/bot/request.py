@@ -33,10 +33,9 @@ def request_random_card_from_clash_main(logger):
         return "restart"
     if not in_a_clan_return_string:
         logger.change_status("Skipping request because we are not in a clan.")
-        return
-    else:
-        logger.change_status("We are in a clan. Continuing with request.")
-        print("We are in a clan. Continuing with request.")
+        return "continue"
+    logger.change_status("We are in a clan. Continuing with request.")
+    print("We are in a clan. Continuing with request.")
 
     time.sleep(1)
     logger.change_status("Checking if request is available.")
@@ -46,19 +45,21 @@ def request_random_card_from_clash_main(logger):
         # if request isnt available, go back to main and return
         if get_to_clash_main_from_clan_page(logger) == "restart":
             logger.change_status(
-                "failure getting to clash main from clan page in request_random_card_from_clash_main()"
+                "failure getting to clash main from clan "
+                "page in request_random_card_from_clash_main()"
             )
             return "restart"
-        return None
-    else:
-        print("Request IS available.")
+        return "continue"
+
+    print("Request IS available.")
 
     # Click request button (getting to page of requestable cards)
     print("Clicking request button.")
     click(75, 565)
     time.sleep(1)
 
-    # Count maximum scrolls (starts on requestable cards page, ends on top of requestable cards page)
+    # Count maximum scrolls
+    # (starts on requestable cards page, ends on top of requestable cards page)
     logger.change_status(
         "Checking how much the bot can randomly scroll in the request page. . ."
     )
@@ -84,7 +85,7 @@ def request_random_card_from_clash_main(logger):
             "failed getting to clash main from clan page in request_random_card_from_clash_main()"
         )
         return "restart"
-    return None
+    return "continue"
 
 
 def request_random_card(logger, maximum_scrolls=10):
@@ -127,6 +128,7 @@ def request_random_card(logger, maximum_scrolls=10):
 
             # increment request counter
             logger.add_request()
+    return "continue"
 
 
 def look_for_request_button():

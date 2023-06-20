@@ -237,7 +237,7 @@ def close_everything_memu():
             if process.name in name_list:
                 print("Closing process", process.name)
                 process.Terminate()
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             print("Couldnt close process", process.name)
             print("This error occured:", e)
     print("Exiting close_everything_memu(). . .")
@@ -276,10 +276,11 @@ def skip_ads(vm_index):
         for _ in range(4):
             pmc.trigger_keystroke_vm("home", vm_index=vm_index)
             time.sleep(1)
-    except Exception as e:
-        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{e}")
+    except Exception as err:  # pylint: disable=broad-except
+        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
         input("Enter to cont")
         return "fail"
+    return "success"
 
 
 #### copy of clashmain's wait_for_clash_main_menu methods
@@ -319,6 +320,7 @@ def wait_for_clash_main_menu(logger):
         waiting = not check_if_on_clash_main_menu()
 
     logger.change_status("Done waiting for clash main menu")
+    return "continue"
 
 
 def check_if_stuck_on_lightning_chest():
@@ -342,13 +344,13 @@ def check_if_stuck_on_lightning_chest():
         if pixel_is_equal(this_pixel, [200, 49, 48], tol=35):
             red_card_count_exists = True
 
-    if (
-        yellow_question_mark_exists
-        and lightning_symbol_exists
-        and red_card_count_exists
-    ):
-        return True
-    return False
+    return bool(
+        (
+            yellow_question_mark_exists
+            and lightning_symbol_exists
+            and red_card_count_exists
+        )
+    )
 
 
 def handle_stuck_on_lightning_chest():
@@ -388,10 +390,7 @@ def check_if_on_clash_main_menu():
         # print("friends logo")
         return False
 
-    if not check_for_gold_logo_on_main():
-        # print("gold logo")
-        return False
-    return True
+    return bool(check_for_gold_logo_on_main())
 
 
 def check_for_gem_logo_on_main():

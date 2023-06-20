@@ -13,7 +13,8 @@ class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
-        stats (dict[str, str | int] | None, optional): stats to communicate between threads. Defaults to None.
+        stats (dict[str, str | int] | None, optional): stats to communicate
+            between threads. Defaults to None.
         console_log (bool, optional): Enable console logging. Defaults to False.
         file_log (bool, optional): Enable file logging. Defaults to True.
     """
@@ -352,6 +353,6 @@ class Logger:
         self.restarts_after_failure += 1
 
     @_updates_log
-    def change_most_recent_restart_time(self, time):
+    def change_most_recent_restart_time(self, restart_time):
         """add request to log"""
-        self.most_recent_restart_time = time
+        self.most_recent_restart_time = restart_time
