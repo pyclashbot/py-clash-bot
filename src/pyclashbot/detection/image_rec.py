@@ -94,6 +94,13 @@ def find_all_references(
     )
 
 
+class ReferenceImageError(Exception):
+    """error for reference image"""
+
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def find_reference(
     screenshot: np.ndarray | Image.Image, folder: str, name: str, tolerance=0.97
 ) -> list[int] | None:
@@ -111,8 +118,13 @@ def find_reference(
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images"))
     image_path = join(reference_folder, folder, name)
-    with Image.open(image_path) as image:
-        return compare_images(screenshot, image, tolerance)
+    try:
+        with Image.open(image_path) as image:
+            return compare_images(screenshot, image, tolerance)
+    except OSError as err:
+        raise ReferenceImageError(
+            f"Could not find reference image {image_path}"
+        ) from err
 
 
 def pixel_is_equal(pix1, pix2, tol):
