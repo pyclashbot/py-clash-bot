@@ -2,7 +2,9 @@ import threading
 import time
 from functools import wraps
 from os import makedirs
-from os.path import exists, expandvars, join
+from os.path import basename, exists, expandvars, join
+
+import psutil
 
 MODULE_NAME = "py-clash-bot"
 
@@ -148,10 +150,19 @@ class Logger:
         self.file_add_row(f"{self.make_timestamp()} | {self.current_status}")
 
         # log to file
-        # pylint: disable=consider-using-with
-        with open(self._log_name, "a", encoding="utf-8") as file:
-            file.write(self.file_buffer)
-            file.flush()
+        try:
+            with open(self._log_name, "a", encoding="utf-8") as file:
+                file.write(self.file_buffer)
+                file.flush()
+        except OSError as err:
+            # check if Errorno24 (too many open files)
+            if err.errno == 24:
+                proc = psutil.Process()
+                files = proc.open_files()
+                files = [basename(file.path) for file in files]
+                raise OSError(
+                    f"[Errno 24] Too many open files, files open: {files}"
+                ) from err
 
         # clear buffer
         self.file_buffer = ""
