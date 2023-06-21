@@ -285,7 +285,7 @@ def skip_ads(vm_index):
 
 #### copy of clashmain's wait_for_clash_main_menu methods
 def wait_for_clash_main_menu(logger):
-    logger.change_status("Waiting for clash main menu")
+    logger.change_status("Waiting for clash main menu in Launcher")
     waiting = not check_if_on_clash_main_menu()
 
     loops = 0
@@ -403,8 +403,7 @@ def check_for_gem_logo_on_main():
         iar[48][410],
     ]
 
-    for pix in pix_list:
-        return bool(pixel_is_equal(pix, [75, 180, 35], tol=45))
+    return any(pixel_is_equal(pix, [75, 180, 35], tol=45) for pix in pix_list)
 
 
 def check_for_gold_logo_on_main():
@@ -419,8 +418,7 @@ def check_for_gold_logo_on_main():
     ]
     color = [201, 177, 56]
 
-    for pix in pix_list:
-        return bool(pixel_is_equal(pix, color, tol=85))
+    return any(pixel_is_equal(pix, color, tol=85) for pix in pix_list)
 
 
 def check_for_friends_logo_on_main():
@@ -436,7 +434,4 @@ def check_for_friends_logo_on_main():
     ]
     color = [177, 228, 252]
 
-    # pixel check
-    for pix in pix_list:
-        return bool(pixel_is_equal(pix, color, tol=65))
-    return False
+    return any(pixel_is_equal(pix, color, tol=65) for pix in pix_list)
