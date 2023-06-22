@@ -14,10 +14,12 @@ from pyclashbot.interface import (
 from pyclashbot.utils import Logger, cache_user_settings, read_user_settings
 from pyclashbot.utils.admin_check import admin_check
 from pyclashbot.utils.caching import check_user_settings
+from pyclashbot.utils.logger import initalize_pylogging
 from pyclashbot.utils.server_notifications import Notification, get_latest_notification
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
 admin_check()
+initalize_pylogging()
 
 
 def read_window(
@@ -261,7 +263,6 @@ def update_layout(window: sg.Window, logger: Logger):
 
 def main_gui():
     """method for displaying the main gui"""
-    console_log = True  # enable/disable console logging
 
     icon_path = "pixel-pycb.ico"
     if not path.isfile(icon_path):
@@ -275,7 +276,7 @@ def main_gui():
 
     # track worker thread and logger
     thread: WorkerThread | None = None
-    logger = Logger(console_log=console_log, timed=False)
+    logger = Logger(timed=False)
 
     # read any notifications from the server to display in the gui
     latest_notification: Notification | None = get_latest_notification()
@@ -298,7 +299,7 @@ def main_gui():
         # on start event, start the thread
         if event == "Start":
             # reset the logger for a new thread
-            logger = Logger(console_log=console_log)
+            logger = Logger()
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
@@ -343,7 +344,7 @@ def main_gui():
                 window["-Pause-Resume-Button-"].update(disabled=True)
             else:
                 # reset the logger
-                logger = Logger(console_log=console_log, timed=False)
+                logger = Logger(timed=False)
                 thread = None
 
         update_layout(window, logger)
