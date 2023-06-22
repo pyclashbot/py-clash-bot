@@ -1,14 +1,27 @@
+import logging
 import threading
 import time
 from functools import wraps
 from os import makedirs
-from os.path import basename, exists, expandvars, join
-
-import psutil
+from os.path import exists, expandvars, join
 
 MODULE_NAME = "py-clash-bot"
 
 top_level = join(expandvars("%appdata%"), MODULE_NAME)
+log_dir = join(top_level, "logs")
+if not exists(log_dir):
+    makedirs(log_dir)
+_log_name = join(log_dir, time.strftime("%Y-%m-%d", time.localtime()) + ".txt")
+
+
+def initalize_pylogging():
+    """method to be called once to initalize python logging"""
+    logging.basicConfig(
+        filename=_log_name,
+        encoding="utf-8",
+        level=logging.DEBUG,
+        format="%(levelname)s:%(asctime)s %(message)s",
+    )
 
 
 class Logger:
@@ -17,35 +30,14 @@ class Logger:
     Args:
         stats (dict[str, str | int] | None, optional): stats to communicate
             between threads. Defaults to None.
-        console_log (bool, optional): Enable console logging. Defaults to False.
-        file_log (bool, optional): Enable file logging. Defaults to True.
+        timed (bool, optional): whether to time the bot. Defaults to True.
     """
 
     def __init__(
         self,
         stats: dict[str, str | int] | None = None,
-        console_log: bool = False,
-        file_log: bool = True,
         timed: bool = True,
     ):
-        # setup console log
-        self.console_log = console_log
-        # print buffer for console
-        self.console_buffer = ""
-
-        # setup log file
-        self.file_log = file_log
-        # print buffer for file
-        self.file_buffer = ""
-        # open log file
-        if file_log:
-            if not exists(top_level):
-                makedirs(top_level)
-            # log should be named todays date, append if already exists
-            self._log_name = join(
-                top_level, time.strftime("%Y-%m-%d", time.localtime()) + ".txt"
-            )
-
         # stats for threaded communication
         self.stats = stats
         self.stats_mutex = threading.Lock()
@@ -90,10 +82,7 @@ class Logger:
 
     def _update_log(self):
         self._update_stats()
-        if self.console_log:
-            self.log_to_console()
-        if self.file_log:
-            self.log_to_file()
+        logging.info(self.current_status)
 
     def _update_stats(self):
         """updates the stats with a dictionary of mutable statistics"""
@@ -131,125 +120,12 @@ class Logger:
         """decorator to specify functions which update the queue with statistics"""
 
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self: "Logger", *args, **kwargs):
             result = func(self, *args, **kwargs)
             self._update_log()  # pylint: disable=protected-access
             return result
 
         return wrapper
-
-    def log_to_console(self):
-        """log to console"""
-
-        self.console_add_row(f"{self.make_timestamp()} | {self.current_status}")
-        self.print_buffer()
-
-    def log_to_file(self):
-        """log to file"""
-
-        self.file_add_row(f"{self.make_timestamp()} | {self.current_status}")
-
-        # log to file
-        try:
-            with open(self._log_name, "a", encoding="utf-8") as file:
-                file.write(self.file_buffer)
-                file.flush()
-        except OSError as err:
-            # check if Errorno24 (too many open files)
-            if err.errno == 24:
-                proc = psutil.Process()
-                files = proc.open_files()
-                files = [basename(file.path) for file in files]
-                raise OSError(
-                    f"[Errno 24] Too many open files, files open: {files}"
-                ) from err
-
-        # clear buffer
-        self.file_buffer = ""
-
-    def console_add_row(self, row: str) -> None:
-        """add row to log
-
-        Args:
-            row (str): row to add to log
-        """
-        if row is not None:
-            row = self.line_wrap(row, 85)
-            self.console_buffer += row + "\n"
-
-    def file_add_row(self, row: str) -> None:
-        """add row to log
-
-        Args:
-            row (str): row to add to log
-        """
-        if row is not None:
-            self.file_buffer += row + "\n"
-
-    def line_wrap(self, line: str, width: int) -> str:
-        """wrap line to width
-
-        Args:
-            line (str): line to wrap
-            width (int): width to wrap line to
-
-        Returns:
-            str: wrapped line
-        """
-
-        new_line = "\n|                           | "
-
-        # split line into words
-        words = line.split(" ")
-
-        # wrap line
-        wrapped_line = ""
-        current_line = ""
-        for word in words:
-            if len(current_line) + len(word) < width:
-                current_line += f"{word} "
-            else:
-                wrapped_line += current_line + new_line
-                current_line = f"{word} "
-
-        # add last line
-        wrapped_line += current_line
-
-        return wrapped_line
-
-    def make_timestamp(self):
-        """creates a time stamp for log output
-
-        Returns:
-            str: log time stamp
-        """
-        if self.start_time is None:
-            return "00:00:00"
-        output_time = time.time() - self.start_time
-        output_time = int(output_time)
-
-        return str(self.make_time_str(output_time))
-
-    def make_time_str(self, seconds):
-        """convert epoch to time
-
-        Args:
-            seconds (int): epoch time in int
-
-        Returns:
-            str: human readable time
-        """
-        seconds = seconds % (24 * 3600)
-        hour = seconds // 3600
-        seconds %= 3600
-        minutes = seconds // 60
-        seconds %= 60
-        return f"{hour}:{minutes:02}:{seconds:02}"
-
-    def print_buffer(self):
-        """print log buffer"""
-        print(self.console_buffer)
-        self.console_buffer = ""  # clear buffer
 
     def calc_time_since_start(self) -> str:
         if self.start_time is not None:
@@ -287,7 +163,7 @@ class Logger:
             message (str): error message
         """
         self.errored = True
-        self.current_status = f"Error: {message}"
+        logging.error(message)
 
     @_updates_log
     def add_level_up_chest_collection(self):
