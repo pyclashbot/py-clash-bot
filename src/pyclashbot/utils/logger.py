@@ -5,23 +5,21 @@ from functools import wraps
 from os import makedirs
 from os.path import exists, expandvars, join
 
-MODULE_NAME = "py-clash-bot"
-
-top_level = join(expandvars("%appdata%"), MODULE_NAME)
-log_dir = join(top_level, "logs")
-if not exists(log_dir):
-    makedirs(log_dir)
-_log_name = join(log_dir, time.strftime("%Y-%m-%d", time.localtime()) + ".txt")
-
 
 def initalize_pylogging():
     """method to be called once to initalize python logging"""
+    module_name = "py-clash-bot"
+    log_dir = join(expandvars("%appdata%"), module_name, "logs")
+    if not exists(log_dir):
+        makedirs(log_dir)
+    log_name = join(log_dir, time.strftime("%Y-%m-%d", time.localtime()) + ".txt")
     logging.basicConfig(
-        filename=_log_name,
+        filename=log_name,
         encoding="utf-8",
         level=logging.DEBUG,
         format="%(levelname)s:%(asctime)s %(message)s",
     )
+    logging.getLogger("PIL").setLevel(logging.INFO)
 
 
 class Logger:
