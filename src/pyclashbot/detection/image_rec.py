@@ -1,10 +1,11 @@
 import multiprocessing
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from os.path import abspath, dirname, join
+from typing import Iterable
 
 import cv2
 import numpy as np
-from joblib import Parallel, delayed
 from PIL import Image
 
 
@@ -59,39 +60,18 @@ def find_references(
     """
     num_cores = multiprocessing.cpu_count()
     with ThreadPoolExecutor(num_cores) as ex:
-        futures = [
-            ex.submit(find_reference, screenshot, folder, name, tolerance)
-            for name in names
-        ]
+        futures: Iterable[Future] = []
+        for name in names:
+            futures.append(
+                ex.submit(find_reference, screenshot, folder, name, tolerance)
+            )
+            time.sleep(0.05)
+
         for future in as_completed(futures):
             result = future.result()
             if result is not None:
                 return [result]
     return [None]
-
-
-def find_all_references(
-    screenshot: np.ndarray | Image.Image,
-    folder: str,
-    names: list[str],
-    tolerance=0.97,
-) -> list[list[int] | None] | None:
-    """find all reference images in a screenshot
-
-    Args:
-        screenshot (np.ndarray | Image.Image): find references in screenshot
-        folder (str): folder to find references (from within reference_images)
-        names (list[str]): names of references
-        tolerance (float, optional): tolerance. Defaults to 0.97.
-
-    Returns:
-        list[list[int] | None]: coordinate locations
-    """
-    num_cores = multiprocessing.cpu_count()
-
-    return Parallel(n_jobs=num_cores, prefer="threads")(
-        delayed(find_reference)(screenshot, folder, name, tolerance) for name in names
-    )
 
 
 class ReferenceImageError(Exception):
@@ -121,7 +101,6 @@ def find_reference(
     try:
         with Image.open(image_path, mode="r") as image:
             comparison = compare_images(screenshot, image, tolerance)
-            image.close()
         assert image.fp is None
         return comparison
     except OSError as err:
