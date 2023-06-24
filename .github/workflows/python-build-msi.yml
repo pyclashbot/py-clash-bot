@@ -32,18 +32,10 @@ jobs:
         run: |
           cd src
           poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
-      - name: Publish Pre-Release
-        uses: softprops/action-gh-release@master
-        if: startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')
-        with:
-          prerelease: true
-          generate_release_notes: true
-          files: |
-            ./src/dist/py-clash-bot*.msi
       - name: Publish Release
         uses: softprops/action-gh-release@master
-        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'rc')
         with:
+          prerelease: startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')
           generate_release_notes: true
           files: |
             ./src/dist/py-clash-bot*.msi
