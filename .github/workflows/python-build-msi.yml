@@ -15,16 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Set up Python 3.11
-        uses: actions/setup-python@master
         id: pysetup
+        uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - name: Install package and dependencies, then build package
+          cache: "poetry"
+      - name: Install package and dependencies
         run: |
           cd src
           pipx install "poetry>=1.3.0,<1.4.0"
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build --without dev
+      - name: Build package
+        run: |
           poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
       - name: Publish Pre-Release
         uses: softprops/action-gh-release@master
