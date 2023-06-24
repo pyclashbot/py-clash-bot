@@ -119,11 +119,18 @@ def find_reference(
     reference_folder = abspath(join(top_level, "reference_images"))
     image_path = join(reference_folder, folder, name)
     try:
-        with Image.open(image_path) as image:
-            return compare_images(screenshot, image, tolerance)
+        with Image.open(image_path, mode="r") as image:
+            comparison = compare_images(screenshot, image, tolerance)
+            image.close()
+        assert image.fp is None
+        return comparison
     except OSError as err:
         raise ReferenceImageError(
-            f"Could not find reference image {image_path}"
+            f"Error opening ref image {image_path} - {err}"
+        ) from err
+    except AssertionError as err:
+        raise ReferenceImageError(
+            f"File pointer not closed for {image_path} - {err}"
         ) from err
 
 
