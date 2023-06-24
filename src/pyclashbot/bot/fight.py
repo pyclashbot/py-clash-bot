@@ -90,9 +90,9 @@ def check_if_pixel_is_grey(pixel):
     returns:
         bool, True if the pixel is greyscale, False if not
     """
-    r: int = pixel[0]
-    g: int = pixel[1]
-    b: int = pixel[2]
+    r = numpy.int64(pixel[0])
+    g = numpy.int64(pixel[1])
+    b = numpy.int64(pixel[2])
 
     # pixel to ignore
     ignore_pixel = [41, 40, 47]
