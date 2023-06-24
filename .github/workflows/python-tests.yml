@@ -25,17 +25,10 @@ jobs:
       - uses: actions/checkout@master
       - name: Set up Python ${{ matrix.python }}
         id: pysetup
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-      - name: Cache pip packages
-        uses: actions/cache@v2
-        id: cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          cache: "poetry"
       - name: Install package and dependencies, then run tests
         run: |
           cd src
