@@ -30,6 +30,7 @@ jobs:
           poetry install --with build --without dev
       - name: Build package
         run: |
+          cd src
           poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
       - name: Publish Pre-Release
         uses: softprops/action-gh-release@master
