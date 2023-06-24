@@ -25,7 +25,7 @@ include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pillow = "^9.4.0"
+pillow = "^9.5.0"
 opencv-python = "^4.7.0"
 numpy = "^1.25.0"
 pygetwindow = "^0.0"
