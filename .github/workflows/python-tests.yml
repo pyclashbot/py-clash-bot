@@ -23,6 +23,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
+      - name: Install Poetry
+        run: |
+          pipx install "poetry>=1.3.0,<1.4.0"
       - name: Set up Python ${{ matrix.python }}
         id: pysetup
         uses: actions/setup-python@v4
@@ -32,7 +35,6 @@ jobs:
       - name: Install package and dependencies, then run tests
         run: |
           cd src
-          python -m pip install poetry
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build -vvv
       - name: Run Tests
