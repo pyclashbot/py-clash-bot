@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pyclashbot"
+version = "0.1.0"
+description = ""
+authors = ["Matt Main_PC <matmigg0804@gmail.com>"]
+readme = "../README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygetwindow = "^0.0.9"
+pillow = "^9.5.0"
+pymemuc = "^0.4.2"
+pysimplegui = "^4.60.5"
+numpy = "^1.25.0"
+wmi = "^1.5.1"
+psutil = "^5.9.5"
+joblib = "^1.2.0"
+opencv-python = "^4.7.0.72"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
