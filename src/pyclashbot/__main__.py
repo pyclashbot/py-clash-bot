@@ -114,7 +114,7 @@ def no_jobs_popup():
         [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
     ]
 
-    # Create the window
+    # Create the windo
     window = sg.Window("Critical Error!", layout)
 
     # Event loop to process events and get user input
