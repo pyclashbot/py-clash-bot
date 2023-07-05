@@ -62,12 +62,7 @@ class Logger:
         self.chests_unlocked = 0
         self.cards_upgraded = 0
         self.card_mastery_reward_collections = 0
-        self.battlepass_rewards_collections = 0
-        self.level_up_chest_collections = 0
-        self.war_battles_fought = 0
         self.free_offer_collections = 0
-        self.war_chest_collections = 0
-        self.daily_challenge_reward_collections = 0
 
         # restart stats
         self.auto_restarts = 0
@@ -169,24 +164,9 @@ class Logger:
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
     @_updates_log
-    def add_war_chest_collection(self):
-        """add level up chest collection to log"""
-        self.war_chest_collections += 1
-
-    @_updates_log
-    def add_daily_challenge_reward_collection(self):
-        """daily_challenge_reward_collection to log"""
-        self.daily_challenge_reward_collections += 1
-
-    @_updates_log
     def add_free_offer_collection(self):
         """add level up chest collection to log"""
         self.free_offer_collections += 1
-
-    @_updates_log
-    def add_battlepass_reward_collection(self):
-        """add battlepass collection to log"""
-        self.battlepass_rewards_collections += 1
 
     @_updates_log
     def error(self, message: str):
@@ -197,16 +177,6 @@ class Logger:
         """
         self.errored = True
         self.current_status = f"Error: {message}"
-
-    @_updates_log
-    def add_level_up_chest_collection(self):
-        """add level up chest collection to log"""
-        self.level_up_chest_collections += 1
-
-    @_updates_log
-    def add_war_battle_fought(self):
-        """add war battle fought to log"""
-        self.war_battles_fought += 1
 
     @_updates_log
     def add_card_mastery_reward_collection(self):
