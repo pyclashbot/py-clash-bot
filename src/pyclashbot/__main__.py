@@ -5,6 +5,7 @@ from os import path
 
 from interface import user_config_keys, disable_keys, main_layout
 from bot.worker import WorkerThread
+from memu.client import screenshot
 from utils.caching import cache_user_settings, check_user_settings, read_user_settings
 from utils.logger import Logger
 from utils.thread import PausableThread, StoppableThread
@@ -296,4 +297,7 @@ def main_gui():
 
 
 if __name__ == "__main__":
-    main_gui()
+    screenshot(1)
+   
+   
+    # main_gui()

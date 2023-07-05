@@ -10,6 +10,7 @@ from memu.client import (
     screenshot,
     scroll_down_fast_on_left_side_of_screen,
 )
+from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
 from utils.logger import Logger
 import numpy
 
@@ -17,6 +18,7 @@ import numpy
 SHOP_PAGE_BUTTON = (33, 603)
 CLASH_MAIN_ICON_FROM_SHOP_PAGE = (243, 603)
 FREE_BUTTON = (216, 425)
+FREE_BUTTON_CONDITION_1_COORD = (207, 398)
 
 
 def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
@@ -61,12 +63,19 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
 
         # click the 'Free!' button
         logger.log("Cliking the free! price button")
-        click(vm_index, FREE_BUTTON[0], FREE_BUTTON[1])
+        if check_for_free_button_condition_1(vm_index):
+            click(
+                vm_index,
+                FREE_BUTTON_CONDITION_1_COORD[0],
+                FREE_BUTTON_CONDITION_1_COORD[1],
+            )
+        else:
+            click(vm_index, FREE_BUTTON[0], FREE_BUTTON[1])
         logger.add_free_offer_collection()
         time.sleep(2)
 
         # click deadspace for if its a chest
-        logger.log('Clicking deadspace if its a chest')
+        logger.log("Clicking deadspace if its a chest")
         click(vm_index, 10, 344, clicks=15, interval=0.75)
 
     # return to clash main
@@ -82,6 +91,24 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
     time.sleep(3)
 
     return NEXT_STATE
+
+
+def check_for_free_button_condition_1(vm_index):
+    if not check_line_for_color(
+        vm_index, x1=186, y1=389, x2=187, y2=407, color=(255, 255, 255)
+    ):
+        return False
+    if not check_line_for_color(
+        vm_index, x1=222, y1=389, x2=221, y2=406, color=(255, 255, 255)
+    ):
+        return False
+
+    if not region_is_color(vm_index, [236, 400, 9, 6], (56, 228, 72)):
+        return False
+    if not region_is_color(vm_index, [171, 398, 11, 10], (56, 228, 72)):
+        return False
+
+    return True
 
 
 def find_free_offer_coords(vm_index):
