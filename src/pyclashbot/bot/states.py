@@ -12,7 +12,10 @@ from bot.switch_account_state import switch_account_state
 
 from memu.launcher import restart_vm
 from memu.launcher import restart_emulator
+from bot.navigation import wait_for_clash_main_menu
+from memu.launcher import close_clash_royale_app, start_clash_royale
 from utils.logger import Logger
+import time
 
 
 def state_tree(
@@ -25,7 +28,7 @@ def state_tree(
 ):
     print(f"This state is {state}")
     if state is None:
-        print('Error! State is None!!')
+        print("Error! State is None!!")
         while 1:
             pass
 
@@ -36,7 +39,15 @@ def state_tree(
         return "open_chests", account_index_to_switch_to
 
     elif state == "restart":  # --> open_chests
-        restart_vm(logger, vm_index)
+        # close app
+        close_clash_royale_app(logger, vm_index)
+        time.sleep(10)
+
+        # start app
+        start_clash_royale(logger, vm_index)
+
+        # wait for clash main
+        wait_for_clash_main_menu(vm_index, logger)
 
         # restart_vm(logger, vm_index)
         return "open_chests", account_index_to_switch_to

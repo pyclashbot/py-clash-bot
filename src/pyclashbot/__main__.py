@@ -221,7 +221,7 @@ def main_gui():
 
     # track worker thread and logger
     thread: WorkerThread | None = None
-    logger = Logger(console_log=console_log, timed=False)
+    logger = Logger(console_log=console_log, timed=True)
 
     # run the gui
     while True:
