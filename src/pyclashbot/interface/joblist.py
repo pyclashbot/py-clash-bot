@@ -34,6 +34,11 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
+                        "Card Upgrading", "card_upgrading_in"
+                    ),
+                ],
+                [
+                    job_check_box(
                         "Free Offer Collection",
                         "-Free-Offer-Collection-in-",
                     ),

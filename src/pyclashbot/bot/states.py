@@ -14,6 +14,7 @@ from memu.launcher import restart_vm
 from memu.launcher import restart_emulator
 from bot.navigation import wait_for_clash_main_menu
 from memu.launcher import close_clash_royale_app, start_clash_royale
+from bot.upgrade_state import upgrade_cards_state
 from utils.logger import Logger
 import time
 
@@ -52,8 +53,8 @@ def state_tree(
         # restart_vm(logger, vm_index)
         return "open_chests", account_index_to_switch_to
 
-    elif state == "open_chests":  # --> request
-        NEXT_STATE = "request"
+    elif state == "open_chests":  # --> upgrade
+        NEXT_STATE = "upgrade"
 
         if "Open Chests" in job_list:
             return (
@@ -63,6 +64,15 @@ def state_tree(
         else:
             return NEXT_STATE, account_index_to_switch_to
 
+    elif state == 'upgrade': # --> request
+        NEXT_STATE = "request"
+        if "upgrade" in job_list:
+            return upgrade_cards_state(vm_index, logger, NEXT_STATE)
+        else:
+            return NEXT_STATE, account_index_to_switch_to
+
+
+
     elif state == "request":  # --> free_offer_collection
         NEXT_STATE = "free_offer_collection"
         if "request" in job_list:
@@ -71,6 +81,7 @@ def state_tree(
                 account_index_to_switch_to,
             )
         return NEXT_STATE, account_index_to_switch_to
+    
     elif state == "free_offer_collection":  # --> start_fight
         NEXT_STATE = "start_fight"
         if "free offer collection" in job_list:

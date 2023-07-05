@@ -34,20 +34,25 @@ UPGRADE_PIXEL_COORDS = [
 GREEN_COLOR = [56, 228, 72]
 
 UPGRADE_BUTTON_COORDS = [
-    (77, 333),
-    (170, 327),
-    (250, 327),
-    (335, 327),
-    (70, 447),
-    (160, 447),
-    (245, 447),
-    (340, 447),
+    (80, 290),
+    (163, 290),
+    (252, 290),
+    (337, 290),
+    (74, 440),
+    (164, 440),
+    (250, 440),
+    (334, 440),
 ]
 
 
 SECOND_UPGRADE_BUTTON_COORDS = (236, 574)
 CONFIRM_UPGRADE_BUTTON_COORDS = (232, 508)
 DEADSPACE_COORD = (10, 323)
+
+
+CLOSE_BUY_GOLD_POPUP_COORD = (350, 208)
+
+CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
@@ -124,6 +129,17 @@ def upgrade_card(vm_index, logger, index, upgrade_list):
             CONFIRM_UPGRADE_BUTTON_COORDS[0],
             CONFIRM_UPGRADE_BUTTON_COORDS[1],
         )
+        time.sleep(2)
+
+        #if gold popup doesnt exists: add to logger's upgrade stat
+
+
+        # close buy gold popup
+        click(vm_index, CLOSE_BUY_GOLD_POPUP_COORD[0], CLOSE_BUY_GOLD_POPUP_COORD[1])
+        time.sleep(2)
+
+        # close card page
+        click(vm_index, CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
         time.sleep(2)
 
         # click deadspace
