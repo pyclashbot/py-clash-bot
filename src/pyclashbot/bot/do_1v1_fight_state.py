@@ -168,7 +168,7 @@ def fight_loop(vm_index, logger: Logger):
             continue
 
         id_string = "Regular card"
-        if id is not "Unknown":
+        if id != "Unknown":
             id_string = id
         logger.change_status(f"Playing card: {id_string} on {this_play_side} side")
 

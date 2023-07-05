@@ -22,10 +22,10 @@ CARD_COORDS = [
 ]
 
 UPGRADE_PIXEL_COORDS = [
-    (75, 327),
-    (192, 341),
+    (44, 340),
+    (133, 338),
     (284, 340),
-    (364, 340),
+    (306, 340),
     (112, 448),
     (199, 447),
     (287, 454),
@@ -34,14 +34,14 @@ UPGRADE_PIXEL_COORDS = [
 GREEN_COLOR = [56, 228, 72]
 
 UPGRADE_BUTTON_COORDS = [
-    (81, 327),
-    (175, 327),
-    (254, 327),
-    (341, 327),
-    (74, 447),
-    (163, 447),
-    (252, 447),
-    (344, 447),
+    (77, 333),
+    (170, 327),
+    (250, 327),
+    (335, 327),
+    (70, 447),
+    (160, 447),
+    (245, 447),
+    (340, 447),
 ]
 
 
@@ -55,7 +55,9 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Error 31570138 Not on clash main to being upgrade cards state")
+        logger.change_status(
+            "Error 31570138 Not on clash main to being upgrade cards state"
+        )
         return "restart"
 
     # get to card page
@@ -70,51 +72,10 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status("Reading which cards are upgradable")
     upgrade_list = get_upgradable_card_bool_list(vm_index, logger)
 
-
     # for each upgradeable card, upgrade the card
     logger.change_status("Upgrading cards...")
     for index in range(8):
-        logger.change_status(f"Handling card index: {index}")
-
-        # if this card index is upgradable
-        if upgrade_list[index]:
-            logger.change_status("This card is upgradable")
-
-            # click the card
-            logger.change_status("Clicking the card")
-            click(vm_index, CARD_COORDS[index][0], CARD_COORDS[index][1])
-            time.sleep(1)
-
-            # click the upgrade button
-            logger.change_status("Clicking the upgrade button for this card")
-            click(vm_index, UPGRADE_BUTTON_COORDS[index][0], CARD_COORDS[index][1])
-            time.sleep(1)
-
-            # click second upgrade button
-            logger.change_status("Clicking the second upgrade button")
-            click(
-                vm_index,
-                SECOND_UPGRADE_BUTTON_COORDS[0],
-                SECOND_UPGRADE_BUTTON_COORDS[1],
-            )
-            time.sleep(1)
-
-            # click confirm upgrade button
-            logger.change_status("Clicking the confirm upgrade button")
-            click(
-                vm_index,
-                CONFIRM_UPGRADE_BUTTON_COORDS[0],
-                CONFIRM_UPGRADE_BUTTON_COORDS[1],
-            )
-            time.sleep(1)
-
-            # click deadspace
-            logger.change_status("Clicking deadspace")
-            for _ in range(21):
-                click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
-                time.sleep(0.33)
-
-            logger.change_status("Upgraded this card...")
+        upgrade_card(vm_index, logger, index, upgrade_list)
 
     logger.change_status("Done upgrading cards")
 
@@ -128,6 +89,52 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     return next_state
 
 
+def upgrade_card(vm_index, logger, index, upgrade_list):
+    logger.change_status(f"Handling card index: {index}")
+    print(f"Handling card index: {index}")
+
+    # if this card index is upgradable
+    if upgrade_list[index]:
+        logger.change_status("This card is upgradable")
+
+        # click the card
+        logger.change_status("Clicking the card")
+        click(vm_index, CARD_COORDS[index][0], CARD_COORDS[index][1])
+        time.sleep(2)
+
+        # click the upgrade button
+        logger.change_status("Clicking the upgrade button for this card")
+        coord = UPGRADE_BUTTON_COORDS[index]
+        click(vm_index, coord[0], coord[1])
+        time.sleep(2)
+
+        # click second upgrade button
+        logger.change_status("Clicking the second upgrade button")
+        click(
+            vm_index,
+            SECOND_UPGRADE_BUTTON_COORDS[0],
+            SECOND_UPGRADE_BUTTON_COORDS[1],
+        )
+        time.sleep(2)
+
+        # click confirm upgrade button
+        logger.change_status("Clicking the confirm upgrade button")
+        click(
+            vm_index,
+            CONFIRM_UPGRADE_BUTTON_COORDS[0],
+            CONFIRM_UPGRADE_BUTTON_COORDS[1],
+        )
+        time.sleep(2)
+
+        # click deadspace
+        logger.change_status("Clicking deadspace")
+        for _ in range(21):
+            click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
+            time.sleep(0.33)
+
+        logger.change_status("Upgraded this card...")
+
+
 def get_upgradable_card_bool_list(vm_index, logger: Logger):
     bool_list = []
 
@@ -139,12 +146,13 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
 
         # click the card
         click(vm_index, this_card_coord[0], this_card_coord[1])
-        time.sleep(1)
+        time.sleep(2)
 
         # read the pixel
         this_pixel = numpy.asarray(screenshot(vm_index))[this_upgrade_pixel_coord[1]][
             this_upgrade_pixel_coord[0]
         ]
+
         if pixel_is_equal(this_pixel, GREEN_COLOR, tol=35):  # type: ignore
             bool_list.append(True)
         else:

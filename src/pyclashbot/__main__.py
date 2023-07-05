@@ -5,7 +5,7 @@ from os import path
 
 from interface import user_config_keys, disable_keys, main_layout
 from bot.worker import WorkerThread
-from memu.client import screenshot
+from bot.upgrade_state import upgrade_cards_state
 from utils.caching import cache_user_settings, check_user_settings, read_user_settings
 from utils.logger import Logger
 from utils.thread import PausableThread, StoppableThread
@@ -295,5 +295,20 @@ def main_gui():
     window.close()
 
 
+def dummy():
+    # screenshot(1)
+
+    logger = Logger()
+    vm_index=1
+
+    # index=0
+    # upgrade_list=[True, True, True, True, True, True, False, False]
+
+
+
+    upgrade_cards_state(vm_index, logger, None)
+
+
 if __name__ == "__main__":
-    main_gui()
+    # main_gui()
+    dummy()
