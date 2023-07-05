@@ -660,7 +660,4 @@ def check_for_gold_logo_on_main(vm_index):
 
 
 if __name__ == "__main__":
-    # screenshot(vm_index=1)
-
-    while 1:
-        print(check_if_on_card_page(1))
+    pass

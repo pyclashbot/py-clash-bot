@@ -260,7 +260,4 @@ def check_enemy_tower_statuses(vm_index):
 
 
 if __name__ == "__main__":
-    # do_1v1_fight_state(1, Logger())
-
-    while 1:
-        print(check_enemy_tower_statuses(1))
+    pass

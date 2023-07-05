@@ -43,23 +43,17 @@ PLAY_COORDS = {
 
 
 def get_play_coords_for_card(
-    vm_index: int, card_index: int, side_preference: str, debug=False
+    vm_index: int, card_index: int, side_preference: str
 ):
-    if debug:
-        print(f"Checking out card inded: {card_index}")
 
     # get this card image(PIL image)
     image = get_card_images(vm_index)[card_index]
 
     # get the ID of this card(ram_rider, zap, etc)
     id = identify_card(image)
-    if debug:
-        print("This card is: ", id)
 
     # get the grouping of this card (hog, turret, spell, etc)
     group = get_card_group(id)
-    if debug:
-        print(f"This card's group is: {group}")
 
     # get the play coords of this grouping
     coords = calculate_play_coords(group, side_preference)
@@ -232,7 +226,6 @@ def image_saver(vm_index, card_name, card_index):
 
     card_image = get_card_images(vm_index)[card_index]
 
-    print(card_image.size)
 
     while len(images) < 10:
         left = random.randint(5, 60)
@@ -286,51 +279,13 @@ def save_image(image, location, filename):
     image.save(file_path, "PNG")
 
 
-def card_id_tester():
-    while 1:
-        images = get_card_images(1)
-
-        ids = []
-        for image in images:
-            id = identify_card(image)
-            ids.append(id)
-
-        print(ids)
 
 
-def card_coord_debug():
-    while 1:
-        coord_list = []
-        for index in range(4):
-            coord_list.append(get_play_coords_for_card(1, index, "left"))
-
-        print(coord_list)
 
 
-def print_card_name_list():
-    card_names = get_card_name_list()
-
-    for name in card_names:
-        print(name)
 
 
 if __name__ == "__main__":
     screenshot(1)
 
-    # card_coord_tester
-    # print(
-    #     "Coord: ",
-    #     get_play_coords_for_card(1, card_index=3, side_preference="left", debug=True),
-    # )
-
-    # name list printout
-    # print_card_name_list()
-
-    # card detection debug
-    # card_id_tester()
-
-    # image saver
-    # image_saver(1, 'poison', 3)
-
-    # coords debug
-    # card_coord_debug()
+  

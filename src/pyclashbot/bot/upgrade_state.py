@@ -70,7 +70,6 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.log("Reading which cards are upgradable")
     upgrade_list = get_upgradable_card_bool_list(vm_index, logger)
 
-    print('Upgrade bool list is: ', upgrade_list)
 
     # for each upgradeable card, upgrade the card
     logger.log("Upgrading cards...")
@@ -155,9 +154,4 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
 
 
 if __name__ == "__main__":
-    print(upgrade_cards_state(1, Logger(), "next_state"))
-
-    # screenshot(1)
-
-    # list = get_upgradable_card_bool_list(1, Logger())
-    # print(list)
+    pass

@@ -133,7 +133,6 @@ def start_button_event(logger: Logger, window, values):
 
     # get job list from gui
     jobs = read_job_list(values)
-    print(f" start_button_event: {jobs}")
 
     # check if at least one job is selected
     if len(jobs) == 0:
@@ -267,10 +266,7 @@ def main_gui():
         # on Help button event, open the help gui
         elif event == "Help":
             print("Help button event")
-            print("Help button event")
-            print("Help button event")
-            print("Help button event")
-
+            
         # on issues button event, open the github issues link in browser
         elif event == "issues-link":
             webbrowser.open(
@@ -301,9 +297,7 @@ def main_gui():
 
 
 def dummy():
-    print('starting app')
     start_clash_royale_app(Logger(), 1)
-    print('Done starting app')
 
 
 if __name__ == "__main__":

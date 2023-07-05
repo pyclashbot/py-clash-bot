@@ -114,7 +114,4 @@ def check_for_card_mastery_rewards_icon(vm_index):
 
 
 if __name__ == "__main__":
-    print(card_mastery_collection_state(1, Logger(), "NEXT_STATE"))
-
-    # while 1:
-    #     print(check_for_card_mastery_rewards_icon(1))
+    pass

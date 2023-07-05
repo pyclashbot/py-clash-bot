@@ -25,7 +25,6 @@ def get_file_count(folder):
     """
     directory = join(dirname(__file__), "reference_images", folder)
 
-    print(directory)
 
     return sum(len(files) for _, _, files in os.walk(directory))
 

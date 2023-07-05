@@ -25,6 +25,7 @@ def state_tree(
 ):
     print(f"This state is {state}")
     if state is None:
+        print('Error! State is None!!')
         while 1:
             pass
 
@@ -35,7 +36,6 @@ def state_tree(
         return "open_chests", account_index_to_switch_to
 
     elif state == "restart":  # --> open_chests
-        print("Got to restart state")
         restart_vm(logger, vm_index)
 
         # restart_vm(logger, vm_index)

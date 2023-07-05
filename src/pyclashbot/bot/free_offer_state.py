@@ -94,7 +94,6 @@ def find_free_offer_coords_1(vm_index):
 
     GREEN_COLOR = (99, 238, 153)
 
-    # print(iar[403][49])
 
     for y in range(34, 538):
         this_pixel = iar[y][49]

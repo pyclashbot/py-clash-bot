@@ -101,12 +101,9 @@ def check_for_switch_account_button(vm_index):
 
     time_taken = time.time() - start_time
 
-    print(f"Took {str(time_taken)[:5]} seconds")
 
     return True
 
 
 if __name__ == "__main__":
-    # switch_account_state(1, Logger(), account_index_to_switch_to=0)
-    # print(check_for_switch_account_button(1))
     pass
