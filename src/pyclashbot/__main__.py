@@ -238,7 +238,7 @@ def main_gui():
         # on start event, start the thread
         if event == "Start":
             # reset the logger for a new thread
-            logger = Logger(console_log=console_log)
+            # logger = Logger(console_log=console_log)
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
