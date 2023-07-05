@@ -311,16 +311,14 @@ def stop_vm(logger, vm_index):
     """Stops the VM with the given index."""
     logger.change_status(f"Stopping VM {vm_index}")
     pmc.stop_vm(vm_index=vm_index)
-    time.sleep(10)
+    time.sleep(5)
 
 
 def launch_vm(logger, vm_index):
     """Launches the VM with the given index."""
     logger.change_status(f"Launching VM {vm_index}")
     pmc.start_vm(vm_index=vm_index)
-    time.sleep(10)
     set_vm_language(vm_index=vm_index)
-    time.sleep(10)
 
 
 def restart_vm(logger, vm_index):

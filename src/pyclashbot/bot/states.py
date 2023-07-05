@@ -22,6 +22,7 @@ def state_tree(
     account_index_to_switch_to,
     account_switch_order,
 ):
+    print(f"This state is {state}")
     if state == "start":  # --> open_chests
         # open clash
         restart_vm(logger, vm_index)
@@ -39,7 +40,7 @@ def state_tree(
     elif state == "open_chests":  # --> request
         NEXT_STATE = "request"
 
-        if "open_chests" in job_list:
+        if "Open Chests" in job_list:
             return (
                 open_chests_state(vm_index, logger, NEXT_STATE),
                 account_index_to_switch_to,
@@ -47,7 +48,7 @@ def state_tree(
         else:
             return NEXT_STATE, account_index_to_switch_to
 
-    elif state == "request":  # --> free_offer_collection
+    elif state == "Request":  # --> free_offer_collection
         NEXT_STATE = "free_offer_collection"
         if "request" in job_list:
             return (
@@ -57,7 +58,7 @@ def state_tree(
         return NEXT_STATE, account_index_to_switch_to
     elif state == "free_offer_collection":  # --> start_fight
         NEXT_STATE = "start_fight"
-        if "free_offer_collection" in job_list:
+        if "free offer collection" in job_list:
             return (
                 free_offer_collection_state(vm_index, logger, NEXT_STATE),
                 account_index_to_switch_to,
@@ -67,7 +68,7 @@ def state_tree(
 
     elif state == "start_fight":  # --> 1v1_fight, account_switch
         NEXT_STATE = "account_switch"
-        if "1v1_fight" in job_list:
+        if "1v1 battle" in job_list:
             return start_1v1_fight_state(vm_index, logger), account_index_to_switch_to
         return NEXT_STATE, account_index_to_switch_to
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
     state = "open_chests"
 
     # account_switch_order = [1, 0]
-    account_switch_order=[0]
+    account_switch_order = [0]
     account_index_to_switch_to = 0
 
     while 1:

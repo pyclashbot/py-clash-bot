@@ -5,6 +5,7 @@ from os import path
 
 from interface import user_config_keys, disable_keys, main_layout
 from bot.worker import WorkerThread
+from memu.launcher import restart_emulator, restart_vm
 from utils.caching import cache_user_settings, check_user_settings, read_user_settings
 from utils.logger import Logger
 from utils.thread import PausableThread, StoppableThread
@@ -103,7 +104,7 @@ def no_jobs_popup():
         [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
     ]
 
-    # Create the window 
+    # Create the window
     window = sg.Window("Critical Error!", layout)
 
     # Event loop to process events and get user input
@@ -131,6 +132,7 @@ def start_button_event(logger: Logger, window, values):
 
     # get job list from gui
     jobs = read_job_list(values)
+    print(f" start_button_event: {jobs}")
 
     # check if at least one job is selected
     if len(jobs) == 0:
@@ -263,10 +265,10 @@ def main_gui():
 
         # on Help button event, open the help gui
         elif event == "Help":
-            print('Help button event')
-            print('Help button event')
-            print('Help button event')
-            print('Help button event')
+            print("Help button event")
+            print("Help button event")
+            print("Help button event")
+            print("Help button event")
 
         # on issues button event, open the github issues link in browser
         elif event == "issues-link":
@@ -297,6 +299,9 @@ def main_gui():
     window.close()
 
 
-# run the main gui
+def dummy():
+    restart_emulator(Logger())
+
 if __name__ == "__main__":
     main_gui()
+    # dummy()
