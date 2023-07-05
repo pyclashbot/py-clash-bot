@@ -10,7 +10,7 @@ from memu.client import (
     screenshot,
     scroll_down_fast_on_left_side_of_screen,
 )
-from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
+from detection.image_rec import check_line_for_color, region_is_color
 from utils.logger import Logger
 import numpy
 
