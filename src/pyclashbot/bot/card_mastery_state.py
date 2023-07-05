@@ -21,11 +21,11 @@ CARD_PAGE_DEADSPACE = (21, 355)
 
 
 def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str):
-    logger.log("Card mastery collection state")
+    logger.change_status("Card mastery collection state")
 
     # if not on clash main, return fail
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log("Error 1983513 Not on clash main for card mastery state")
+        logger.change_status("Error 1983513 Not on clash main for card mastery state")
         return "restart"
 
     # get to card page
@@ -34,10 +34,10 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
 
     # while there are rewards to collect, run the collect loop
     while check_for_card_mastery_rewards_icon_with_delay(vm_index):
-        logger.log("There are mastery rewards to collect")
+        logger.change_status("There are mastery rewards to collect")
 
         # click card mastery reward button
-        logger.log("Clicking card mastery reward button")
+        logger.change_status("Clicking card mastery reward button")
         click(
             vm_index,
             CARD_MASTERY_ICON[0],
@@ -46,7 +46,7 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
         time.sleep(1.5)
 
         # click first card
-        logger.log("Clicking first card mastery reward")
+        logger.change_status("Clicking first card mastery reward")
         click(
             vm_index,
             FIRST_CARD_MASTERY_REWARD_CARD[0],
@@ -55,13 +55,13 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
         time.sleep(1.5)
 
         # click the reward coords
-        logger.log("Clicking rewards")
+        logger.change_status("Clicking rewards")
         for coord in CARD_MASTERY_REWARD_COORD_LIST:
             click(vm_index, coord[0], coord[1])
             time.sleep(0.5)
 
         # click deadspace a bunch
-        logger.log("Clicking deadspace to skip through mastery rewards")
+        logger.change_status("Clicking deadspace to skip through mastery rewards")
         click(
             vm_index,
             CARD_PAGE_DEADSPACE[0],
@@ -70,10 +70,10 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
             interval=0.33,
         )
 
-    logger.log("Done collecting mastery rewards")
+    logger.change_status("Done collecting mastery rewards")
 
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 9856723985 Failure getting to clash main from card page (mastery mode)"
         )
         return "restart"

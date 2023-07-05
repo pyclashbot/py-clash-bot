@@ -20,11 +20,11 @@ import numpy
 
 
 def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
-    logger.log("War state")
+    logger.change_status("War state")
 
     # if not on clash main: return
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log("Error 4069852734098 Not on clash main to begin war state")
+        logger.change_status("Error 4069852734098 Not on clash main to begin war state")
 
     # if in a clan:
     if war_state_check_if_in_a_clan(vm_index, logger):
@@ -53,7 +53,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
 
 
 def click_war_icon(vm_index, logger: Logger):
-    logger.log("Finding a war battle icon to play in")
+    logger.change_status("Finding a war battle icon to play in")
 
 
 def find_war_icon(vm_index):
@@ -94,12 +94,12 @@ def check_if_on_war_page(vm_index):
 def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     # if not on clash main, reutnr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log(f"ERROR 385423562623 Not on clash main menu")
+        logger.change_status(f"ERROR 385423562623 Not on clash main menu")
         return "restart"
 
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
-        logger.log("Error 90723563485 Failure with get_to_profile_page")
+        logger.change_status("Error 90723563485 Failure with get_to_profile_page")
         return "restart"
 
     # check pixels for in a clan
@@ -108,7 +108,7 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     # click deadspace to leave
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.log("Error 872356739 Failure with wait_for_clash_main_menu")
+        logger.change_status("Error 872356739 Failure with wait_for_clash_main_menu")
         return "restart"
 
     return in_a_clan

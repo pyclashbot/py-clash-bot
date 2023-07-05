@@ -25,14 +25,14 @@ HAND_CARDS_COORDS = [
 
 
 def start_1v1_fight_state(vm_index, logger: Logger):
-    logger.log("Start fight state")
-    logger.log("Starting 1v1 mode")
+    logger.change_status("Start fight state")
+    logger.change_status("Starting 1v1 mode")
 
     next_state = "1v1_fight"
 
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log(
+        logger.change_status(
             f"ERROR 24537265435 Not on clash main menu, returning to start state"
         )
         return "restart"
@@ -44,10 +44,10 @@ def start_1v1_fight_state(vm_index, logger: Logger):
 
 
 def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
-    logger.log("end fight state")
-    logger.log("Waiting for the leave battle screen to pop up ")
+    logger.change_status("end fight state")
+    logger.change_status("Waiting for the leave battle screen to pop up ")
     if wait_for_end_1v1_battle_screen(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 98573429805 Waiting too long for end 1v1 battle in end fight state()"
         )
         return "restart"
@@ -56,23 +56,23 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     click(vm_index, LEAVE_1V1_BATTLE_OK_BUTTON[0], LEAVE_1V1_BATTLE_OK_BUTTON[1])
 
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             f"Error 353216346 wait_for_clash_main_menu)() fail in end_fight_state()"
         )
         return "restart"
 
     game_was_win_return = check_if_previous_game_was_win(vm_index, logger)
     if game_was_win_return == "restart":
-        logger.log(
+        logger.change_status(
             "Erropr 498573204985 Failure with check_if_previous_game_was_win() in end_fight_state()"
         )
         return "restart"
 
     if game_was_win_return:
-        logger.log("Last game was a win")
+        logger.change_status("Last game was a win")
         logger.add_win()
     else:
-        logger.log("Last game was a loss")
+        logger.change_status("Last game was a loss")
         logger.add_loss()
 
     time.sleep(3)
@@ -83,17 +83,17 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
 def do_1v1_fight_state(vm_index, logger: Logger):
     NEXT_STATE = "end_fight"
 
-    logger.log("do_1v1_fight_state state")
-    logger.log("waiting for battle start")
+    logger.change_status("do_1v1_fight_state state")
+    logger.change_status("waiting for battle start")
 
     # wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
-        logger.log("Error 0195736 wait_for_1v1_battle_start() in do_1v1_fight_state()")
+        logger.change_status("Error 0195736 wait_for_1v1_battle_start() in do_1v1_fight_state()")
         return "restart"
 
-    logger.log("Battle started!")
+    logger.change_status("Battle started!")
 
-    logger.log("Starting fight loop")
+    logger.change_status("Starting fight loop")
     fight_loop(vm_index, logger)
 
     logger.add_fight()
@@ -121,28 +121,28 @@ def choose_play_side(vm_index, favorite_side):
 
 
 def fight_loop(vm_index, logger: Logger):
-    logger.log("Starting battle loop")
+    logger.change_status("Starting battle loop")
 
     # choose a side to favor this fight
     favorite_side = random.choice(["left", "right"])
 
-    logger.log(f"Going to favor {favorite_side} this fight...")
+    logger.change_status(f"Going to favor {favorite_side} this fight...")
 
     # count plays
     plays = 0
 
     # while in battle:
     while check_for_in_1v1_battle(vm_index):
-        logger.log(f"Battle play #{plays}:")
+        logger.change_status(f"Battle play #{plays}:")
 
         # wait for 6 elixer
-        logger.log("Waiting for 6 elixer")
+        logger.change_status("Waiting for 6 elixer")
         if wait_for_6_elixer(vm_index, logger) == "no battle":
             break
 
         # choose random card to play
         random_card_index = random.randint(0, 3)
-        logger.log(f"Clicking card index {random_card_index}")
+        logger.change_status(f"Clicking card index {random_card_index}")
 
         # choose play coord but favor a side according to favorite_side var
         play_coord = get_play_coords_for_card(
@@ -166,30 +166,30 @@ def fight_loop(vm_index, logger: Logger):
 
 
 def check_if_previous_game_was_win(vm_index, logger: Logger):
-    logger.log("Checking if last game was a win/loss")
+    logger.change_status("Checking if last game was a win/loss")
 
     # if not on main, return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log('534594784234 Error Not on main menu, returning "restart"')
+        logger.change_status('534594784234 Error Not on main menu, returning "restart"')
         return "restart"
 
     # get to clash main options menu
     if get_to_activity_log(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 8967203948 get_to_activity_log() in check_if_previous_game_was_win()"
         )
 
         return "restart"
 
-    logger.log("Checking if last game was a win...")
+    logger.change_status("Checking if last game was a win...")
     is_a_win = check_pixels_for_win_in_battle_log(vm_index)
-    logger.log(f"Last game is win: {is_a_win}")
+    logger.change_status(f"Last game is win: {is_a_win}")
 
     # close battle log
-    logger.log("Returning to clash main")
+    logger.change_status("Returning to clash main")
     click(vm_index, CLOSE_BATTLE_LOG_BUTTON[0], CLOSE_BATTLE_LOG_BUTTON[1])
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()"
         )
         return "restart"
@@ -216,7 +216,7 @@ def check_pixels_for_win_in_battle_log(vm_index):
 def wait_for_6_elixer(vm_index, logger: Logger):
     while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
         if not check_for_in_1v1_battle(vm_index):
-            logger.log("Not in battle, stopping waiting for 6 elixer")
+            logger.change_status("Not in battle, stopping waiting for 6 elixer")
             return "no battle"
 
 

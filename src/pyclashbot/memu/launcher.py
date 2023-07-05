@@ -352,14 +352,14 @@ def start_clash_royale_app(logger: Logger, vm_index):
     try:
         check_for_clash_royale_installed(logger, vm_index)
     except FileNotFoundError as exc:
-        logger.log("Clash royale is not installed. Please install it and restart")
+        logger.change_status("Clash royale is not installed. Please install it and restart")
         for _ in range(3):
             print(f"CRITICAL ERROR!! CLASH ROYALE NOT INSTALLED ON VM #{vm_index} !!!")
         raise FileNotFoundError from exc
 
     # start clash royale
     pmc.start_app_vm("com.supercell.clashroyale", vm_index)
-    logger.log("Clash Royale started")
+    logger.change_status("Clash Royale started")
 
 
 def close_everything_memu():

@@ -20,17 +20,17 @@ from utils.logger import Logger
 
 
 def request_state(vm_index, logger: Logger, NEXT_STATE: str):
-    logger.log("Request state")
+    logger.change_status("Request state")
 
     # if not on main retunr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log(f"ERROR 62543636 Not on clash main menu")
+        logger.change_status(f"ERROR 62543636 Not on clash main menu")
         return "restart"
 
     # if not in a clan, return
     in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
     if in_a_clan_return == "restart":
-        logger.log("Error 05708425 Failure with check_if_in_a_clan")
+        logger.change_status("Error 05708425 Failure with check_if_in_a_clan")
         return "restart"
 
     if not in_a_clan_return:
@@ -38,7 +38,7 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
 
     # get to clan page
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
-        logger.log(f"ERROR 74842744443 Not on clan tab")
+        logger.change_status(f"ERROR 74842744443 Not on clan tab")
         return "restart"
 
     # check if request exists
@@ -46,21 +46,21 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
         # do request
         do_request(vm_index, logger)
     else:
-        logger.log("Cant request right now.")
+        logger.change_status("Cant request right now.")
 
     # return to clash main
     if get_to_clash_main_from_clan_page(vm_index, logger) == "restart":
-        logger.log("Error 876208476 Failure with get_to_clash_main_from_clan_page")
+        logger.change_status("Error 876208476 Failure with get_to_clash_main_from_clan_page")
         return "restart"
     return NEXT_STATE
 
 
 def do_random_scrolling_in_request_page(vm_index, logger, scrolls):
-    logger.log("Doing random scrolling in request page")
+    logger.change_status("Doing random scrolling in request page")
     for _ in range(scrolls):
         scroll_down(vm_index)
         time.sleep(2)
-    logger.log("Done with random scrolling in request page")
+    logger.change_status("Done with random scrolling in request page")
 
 
 def count_scrolls_in_request_page(vm_index):
@@ -87,12 +87,12 @@ def check_if_can_scroll_in_request_page(vm_index):
 def request_state_check_if_in_a_clan(vm_index, logger: Logger):
     # if not on clash main, reutnr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log(f"ERROR 385462623 Not on clash main menu")
+        logger.change_status(f"ERROR 385462623 Not on clash main menu")
         return "restart"
 
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
-        logger.log("Error 9076092860923485 Failure with get_to_profile_page")
+        logger.change_status("Error 9076092860923485 Failure with get_to_profile_page")
         return "restart"
 
     # check pixels for in a clan
@@ -101,7 +101,7 @@ def request_state_check_if_in_a_clan(vm_index, logger: Logger):
     # click deadspace to leave
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.log("Error 87258301758939 Failure with wait_for_clash_main_menu")
+        logger.change_status("Error 87258301758939 Failure with wait_for_clash_main_menu")
         return "restart"
 
     return in_a_clan
@@ -288,30 +288,30 @@ def find_yellow_request_button_in_request_page(vm_index):
 
 
 def do_request(vm_index, logger: Logger):
-    logger.log("Doing request")
+    logger.change_status("Doing request")
 
     # click request button
-    logger.log("Clicking request button")
+    logger.change_status("Clicking request button")
     click(vm_index, 77, 536)
     time.sleep(3)
 
     # max scrolls
-    logger.log("Counting the maximum scrolls in the request page")
+    logger.change_status("Counting the maximum scrolls in the request page")
     max_scrolls = count_scrolls_in_request_page(vm_index)
     random_scroll_amount = random.randint(0, max_scrolls)
     do_random_scrolling_in_request_page(vm_index, logger, scrolls=random_scroll_amount)
 
     # click card
-    logger.log("Clicking random card to request")
+    logger.change_status("Clicking random card to request")
     click(vm_index, random.randint(67, 358), random.randint(211, 547))
     time.sleep(3)
 
-    logger.log("Clicking request")
+    logger.change_status("Clicking request")
 
     # get request button coord
     coord = find_yellow_request_button_in_request_page(vm_index)
     if coord is None:
-        logger.log("Error 987359835 Couldnt find request button")
+        logger.change_status("Error 987359835 Couldnt find request button")
         return
 
     # Click request button coord

@@ -260,7 +260,7 @@ class Logger:
             status (str): status of bot
         """
         self.current_status = status
-        print(status)
+        self.log(status)
 
     @_updates_log
     def add_auto_restart(self):

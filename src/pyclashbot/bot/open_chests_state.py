@@ -68,16 +68,16 @@ def get_chest_statuses(vm_index):
 
 
 def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
-    logger.log(f"Opening chests state")
+    logger.change_status(f"Opening chests state")
 
-    logger.log("Handling clash main tab notifications")
+    logger.change_status("Handling clash main tab notifications")
     if handle_clash_main_tab_notifications(vm_index, logger) == "restart":
-        logger.log("Error 07531083150 Failure with handle_clash_main_tab_notifications")
+        logger.change_status("Error 07531083150 Failure with handle_clash_main_tab_notifications")
         return "restart"
 
     # if not on clash main return
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log(f"ERROR 827358235 Not on clash main menu, returning to start state")
+        logger.change_status(f"ERROR 827358235 Not on clash main menu, returning to start state")
         return "restart"
 
     # check which chests are available
@@ -85,7 +85,7 @@ def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
 
     chest_index = 0
     for status in statuses:
-        logger.log(f'Investigating chest #{chest_index} with status "{status}"')
+        logger.change_status(f'Investigating chest #{chest_index} with status "{status}"')
         if status == "available":
             open_chest(vm_index, chest_index)
 

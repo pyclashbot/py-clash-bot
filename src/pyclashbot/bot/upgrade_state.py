@@ -51,47 +51,47 @@ DEADSPACE_COORD = (10, 323)
 
 
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
-    logger.log("Upgrade cards state")
+    logger.change_status("Upgrade cards state")
 
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log("Error 31570138 Not on clash main to being upgrade cards state")
+        logger.change_status("Error 31570138 Not on clash main to being upgrade cards state")
         return "restart"
 
     # get to card page
-    logger.log("Getting to card page")
+    logger.change_status("Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 0751389 Failure getting to card page from clash main in Upgrade State"
         )
         return "restart"
 
     # get upgrade list
-    logger.log("Reading which cards are upgradable")
+    logger.change_status("Reading which cards are upgradable")
     upgrade_list = get_upgradable_card_bool_list(vm_index, logger)
 
 
     # for each upgradeable card, upgrade the card
-    logger.log("Upgrading cards...")
+    logger.change_status("Upgrading cards...")
     for index in range(8):
-        logger.log(f"Handling card index: {index}")
+        logger.change_status(f"Handling card index: {index}")
 
         # if this card index is upgradable
         if upgrade_list[index]:
-            logger.log("This card is upgradable")
+            logger.change_status("This card is upgradable")
 
             # click the card
-            logger.log("Clicking the card")
+            logger.change_status("Clicking the card")
             click(vm_index, CARD_COORDS[index][0], CARD_COORDS[index][1])
             time.sleep(1)
 
             # click the upgrade button
-            logger.log("Clicking the upgrade button for this card")
+            logger.change_status("Clicking the upgrade button for this card")
             click(vm_index, UPGRADE_BUTTON_COORDS[index][0], CARD_COORDS[index][1])
             time.sleep(1)
 
             # click second upgrade button
-            logger.log("Clicking the second upgrade button")
+            logger.change_status("Clicking the second upgrade button")
             click(
                 vm_index,
                 SECOND_UPGRADE_BUTTON_COORDS[0],
@@ -100,7 +100,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
             time.sleep(1)
 
             # click confirm upgrade button
-            logger.log("Clicking the confirm upgrade button")
+            logger.change_status("Clicking the confirm upgrade button")
             click(
                 vm_index,
                 CONFIRM_UPGRADE_BUTTON_COORDS[0],
@@ -109,18 +109,18 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
             time.sleep(1)
 
             # click deadspace
-            logger.log("Clicking deadspace")
+            logger.change_status("Clicking deadspace")
             for _ in range(21):
                 click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
                 time.sleep(0.33)
 
-            logger.log("Upgraded this card...")
+            logger.change_status("Upgraded this card...")
 
-    logger.log("Done upgrading cards")
+    logger.change_status("Done upgrading cards")
 
     # return to clash main
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 13984713 Failure getting to clash main from card page after card upgrading"
         )
         return "restart"
@@ -131,7 +131,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 def get_upgradable_card_bool_list(vm_index, logger: Logger):
     bool_list = []
 
-    logger.log("Checking out which cards are upgradable")
+    logger.change_status("Checking out which cards are upgradable")
 
     for index in range(8):
         this_card_coord = CARD_COORDS[index]

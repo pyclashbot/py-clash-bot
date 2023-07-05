@@ -46,7 +46,7 @@ def get_screenshot_folder() -> str:
 
 def configure_vm(logger: Logger, vm_index):
     """Configure the vm"""
-    logger.log("Configuring VM")
+    logger.change_status("Configuring VM")
 
     # see https://pymemuc.martinmiglio.dev/en/latest/pymemuc.html#the-vm-configuration-keys-table
 
@@ -74,7 +74,7 @@ def configure_vm(logger: Logger, vm_index):
             pmc.get_configuration_vm(key, vm_index=vm_index).replace('"', "") == value
         ), f"Failed to set {key} to {value}"
 
-    logger.log("Configured VM")
+    logger.change_status("Configured VM")
 
 
 def set_vm_language(vm_index: int):
@@ -97,14 +97,14 @@ def create_vm(
     name: str,
 ) -> int:
     """Create a vm with the given name and version"""
-    logger.log("VM not found, creating VM...")
+    logger.change_status("VM not found, creating VM...")
     vm_index = -1
     while vm_index == -1:
         vm_index = pmc.create_vm(vm_version="96")
         time.sleep(1)
     time.sleep(5)
     rename_vm(logger, vm_index, name)
-    logger.log(f"Created and renamed VM: {vm_index} - {name}")
+    logger.change_status(f"Created and renamed VM: {vm_index} - {name}")
     return vm_index
 
 
@@ -116,7 +116,7 @@ def rename_vm(
     """rename the vm to name"""
     count = 0
     while get_vm_index(logger, name) != vm_index:
-        logger.log(
+        logger.change_status(
             f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
         )
         pmc.rename_vm(vm_index=vm_index, new_name=name)

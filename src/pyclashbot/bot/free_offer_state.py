@@ -20,16 +20,16 @@ FREE_BUTTON = (216, 425)
 
 
 def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE:str):
-    logger.log("Free offer collection state")
+    logger.change_status("Free offer collection state")
 
     if not check_if_on_clash_main_menu(vm_index):
-        logger.log(f"ERROR 625436252356 Not on clash main menu")
+        logger.change_status(f"ERROR 625436252356 Not on clash main menu")
         return "restart"
 
     # get to shop page
     click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
     if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
-        logger.log(f"Error 085708235 Failure waiting for clash main shop page ")
+        logger.change_status(f"Error 085708235 Failure waiting for clash main shop page ")
         return "restart"
 
     start_time = time.time()
@@ -65,7 +65,7 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE:str):
         vm_index, CLASH_MAIN_ICON_FROM_SHOP_PAGE[0], CLASH_MAIN_ICON_FROM_SHOP_PAGE[1]
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.log(
+        logger.change_status(
             "Error 925878946724 Failure waiting for clash main after free offer collection loops"
         )
         return "restart"
