@@ -128,7 +128,7 @@ def find_all_references(
 
     return Parallel(n_jobs=num_cores, prefer="threads")(
         delayed(find_reference)(screenshot, folder, name, tolerance) for name in names
-    )
+    ) # type: ignore
 
 
 def find_reference(

@@ -20,14 +20,9 @@ class WorkerThread(PausableThread):
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
                 #code to run
-                state, account_index_to_switch_to = state_tree(
-                vm_index=vm_index,
-                logger=logger,
-                state=state,
-                job_list=jobs,
-                account_index_to_switch_to=account_index_to_switch_to,
-                account_switch_order=account_switch_order,
-            )
+                
+
+                pass
 
 
                 while self.pause_flag.is_set():
