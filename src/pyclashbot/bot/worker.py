@@ -5,6 +5,7 @@ from utils.logger import Logger
 from utils.thread import PausableThread, ThreadKilled
 import random
 
+
 class WorkerThread(PausableThread):
     def __init__(self, logger: Logger, args, kwargs=None):
         super().__init__(args, kwargs)
@@ -13,17 +14,15 @@ class WorkerThread(PausableThread):
     def run(self):
         try:
             jobs, ssid_max = self.args  # parse thread args
-            logger=Logger()
-            account_switch_order=self.make_account_switch_order(ssid_max)
-            state = 'start'
+            logger = Logger()
+            account_switch_order = self.make_account_switch_order(ssid_max)
+            state = "start"
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
-                #code to run
-                
-
-                pass
-
+                # code to run
+                print("Running worker thread")
+                time.sleep(10)
 
                 while self.pause_flag.is_set():
                     time.sleep(0.1)  # sleep for 100ms until pause flag is unset

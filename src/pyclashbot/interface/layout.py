@@ -72,7 +72,6 @@ user_config_keys = [
     "-Requesting-in-",
     "-Card-Mastery-Collection-in-",
     "-Free-Offer-Collection-in-",
-    "-Daily-Challenge-Reward-Collection-",
     "1v1_battle_in",
 ]
 
