@@ -265,7 +265,7 @@ def main_gui():
         # on Help button event, open the help gui
         elif event == "Help":
             print("Help button event")
-            
+
         # on issues button event, open the github issues link in browser
         elif event == "issues-link":
             webbrowser.open(
@@ -295,9 +295,5 @@ def main_gui():
     window.close()
 
 
-
 if __name__ == "__main__":
-    screenshot(1)
-   
-   
-    # main_gui()
+    main_gui()
