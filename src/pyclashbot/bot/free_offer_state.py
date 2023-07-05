@@ -19,7 +19,7 @@ CLASH_MAIN_ICON_FROM_SHOP_PAGE = (243, 603)
 FREE_BUTTON = (216, 425)
 
 
-def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE:str):
+def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
     logger.change_status("Free offer collection state")
 
     if not check_if_on_clash_main_menu(vm_index):
@@ -29,8 +29,12 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE:str):
     # get to shop page
     click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
     if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
-        logger.change_status(f"Error 085708235 Failure waiting for clash main shop page ")
+        logger.change_status(
+            f"Error 085708235 Failure waiting for clash main shop page "
+        )
         return "restart"
+
+    logger.change_status("Searching for free offer")
 
     start_time = time.time()
     while 1:
@@ -39,25 +43,30 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE:str):
         if time_taken > 35:
             break
 
-        # scroll
-        scroll_down_fast_on_left_side_of_screen(vm_index)
-        time.sleep(1)
+        logger.change_status(f"Searching for free offer: {str(time_taken)[:4]}")
 
         # look for free offer
         coord = find_free_offer_coords(vm_index)
         if coord is None:
+            # scroll
+            scroll_down_fast_on_left_side_of_screen(vm_index)
+            time.sleep(1)
             continue
 
         # click the offer
+        logger.change_status("Collecting an available free offer!")
+        logger.log("Clicking this free offer: " + str(coord))
         click(vm_index, coord[0], coord[1])
         time.sleep(2)
 
         # click the 'Free!' button
+        logger.log("Cliking the free! price button")
         click(vm_index, FREE_BUTTON[0], FREE_BUTTON[1])
         logger.add_free_offer_collection()
         time.sleep(2)
 
         # click deadspace for if its a chest
+        logger.log('Clicking deadspace if its a chest')
         click(vm_index, 10, 344, clicks=15, interval=0.75)
 
     # return to clash main
@@ -93,7 +102,6 @@ def find_free_offer_coords_1(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     GREEN_COLOR = (99, 238, 153)
-
 
     for y in range(34, 538):
         this_pixel = iar[y][49]

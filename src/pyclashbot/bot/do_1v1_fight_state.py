@@ -88,7 +88,9 @@ def do_1v1_fight_state(vm_index, logger: Logger):
 
     # wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
-        logger.change_status("Error 0195736 wait_for_1v1_battle_start() in do_1v1_fight_state()")
+        logger.change_status(
+            "Error 0195736 wait_for_1v1_battle_start() in do_1v1_fight_state()"
+        )
         return "restart"
 
     logger.change_status("Battle started!")
@@ -136,20 +138,27 @@ def fight_loop(vm_index, logger: Logger):
         logger.change_status(f"Battle play #{plays}:")
 
         # wait for 6 elixer
-        logger.change_status("Waiting for 6 elixer")
+        logger.log("Waiting for 6 elixer")
         if wait_for_6_elixer(vm_index, logger) == "no battle":
             break
 
         # choose random card to play
         random_card_index = random.randint(0, 3)
-        logger.change_status(f"Clicking card index {random_card_index}")
+        logger.log(f"Clicking card index {random_card_index}")
 
         # choose play coord but favor a side according to favorite_side var
-        play_coord = get_play_coords_for_card(
-            vm_index, random_card_index, choose_play_side(vm_index, favorite_side)
+        this_play_side = choose_play_side(vm_index, favorite_side)
+
+        # get a coord based on the selected side
+        id, play_coord = get_play_coords_for_card(
+            vm_index, random_card_index, this_play_side
         )
+
+        # if coord is none for whatever reason, just skip this play
         if play_coord is None:
             continue
+
+        logger.change_status(f"Playing card: {id} on {this_play_side} side")
 
         # click that random card coord
         random_card_coord = HAND_CARDS_COORDS[random_card_index]

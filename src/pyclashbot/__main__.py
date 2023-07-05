@@ -5,8 +5,6 @@ from os import path
 
 from interface import user_config_keys, disable_keys, main_layout
 from bot.worker import WorkerThread
-from memu.launcher import restart_emulator, restart_vm
-from memu.launcher import start_clash_royale_app
 from utils.caching import cache_user_settings, check_user_settings, read_user_settings
 from utils.logger import Logger
 from utils.thread import PausableThread, StoppableThread
@@ -296,10 +294,6 @@ def main_gui():
     window.close()
 
 
-def dummy():
-    start_clash_royale_app(Logger(), 1)
-
 
 if __name__ == "__main__":
     main_gui()
-    # dummy()

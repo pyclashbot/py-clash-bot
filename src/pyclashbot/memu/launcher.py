@@ -30,6 +30,9 @@ EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 # launcher specific methods
 
+MANUAL_VM_WAIT_TIME = 10
+MANUAL_CLASH_MAIN_WAIT_TIME = 10
+
 
 def restart_emulator(logger):
     # restart the game, including the launcher and emulator
@@ -50,12 +53,9 @@ def restart_emulator(logger):
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    sleep_time = 10
-    for n in range(sleep_time):
-        print(f"Waiting for VM to load {n}/{sleep_time}")
+    for n in range(MANUAL_VM_WAIT_TIME):
+        print(f"Waiting for VM to load {n}/{MANUAL_VM_WAIT_TIME}")
         time.sleep(1)
-
-    # wait_for_memu_window(logger)
 
     # skip ads
     if skip_ads(vm_index) == "fail":
@@ -65,9 +65,10 @@ def restart_emulator(logger):
     start_clash_royale(logger, vm_index)
 
     # manually wait for clash main
-    sleep_time = 10
-    for n in range(sleep_time):
-        print(f"Manually waiting for clash main page. {n}/{sleep_time}")
+    for n in range(MANUAL_CLASH_MAIN_WAIT_TIME):
+        print(
+            f"Manually waiting for clash main page. {n}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
+        )
         time.sleep(1)
 
     # check-wait for clash main if need to wait longer
@@ -129,7 +130,7 @@ def start_clash_royale(logger: Logger, vm_index):
 
     # start clash royale
     pmc.start_app_vm(apk_base_name, vm_index)
-    logger.change_status("Clash Royale started")
+    logger.change_status("Successfully initialized Clash app")
 
 
 # making/configuring emulator methods
@@ -347,19 +348,6 @@ def close_clash_royale_app(logger, vm_index):
     logger.change_status(f"Clash Royale stopped on vm {vm_index}")
 
 
-def start_clash_royale_app(logger: Logger, vm_index):
-    """using pymemuc check if clash royale is installed"""
-    try:
-        check_for_clash_royale_installed(logger, vm_index)
-    except FileNotFoundError as exc:
-        logger.change_status("Clash royale is not installed. Please install it and restart")
-        for _ in range(3):
-            print(f"CRITICAL ERROR!! CLASH ROYALE NOT INSTALLED ON VM #{vm_index} !!!")
-        raise FileNotFoundError from exc
-
-    # start clash royale
-    pmc.start_app_vm("com.supercell.clashroyale", vm_index)
-    logger.change_status("Clash Royale started")
 
 
 def close_everything_memu():

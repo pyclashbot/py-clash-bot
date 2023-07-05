@@ -58,7 +58,7 @@ def get_play_coords_for_card(
     # get the play coords of this grouping
     coords = calculate_play_coords(group, side_preference)
 
-    return coords
+    return id, coords
 
 
 def get_card_group(card_id) -> str:
