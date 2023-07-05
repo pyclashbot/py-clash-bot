@@ -135,7 +135,7 @@ def fight_loop(vm_index, logger: Logger):
 
     # while in battle:
     while check_for_in_1v1_battle(vm_index):
-        logger.change_status(f"Battle play #{plays}:")
+        logger.log(f"Battle play #{plays}:")
 
         # wait for 6 elixer
         logger.log("Waiting for 6 elixer")
@@ -158,7 +158,10 @@ def fight_loop(vm_index, logger: Logger):
         if play_coord is None:
             continue
 
-        logger.change_status(f"Playing card: {id} on {this_play_side} side")
+        id_string = "generic"
+        if id is not "Unknown":
+            id_string = id
+        logger.change_status(f"Playing card: {id_string} on {this_play_side} side")
 
         # click that random card coord
         random_card_coord = HAND_CARDS_COORDS[random_card_index]

@@ -77,6 +77,7 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
         # click deadspace for if its a chest
         logger.log("Clicking deadspace if its a chest")
         click(vm_index, 10, 344, clicks=15, interval=0.75)
+        break
 
     # return to clash main
     click(

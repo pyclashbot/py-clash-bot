@@ -54,10 +54,11 @@ def restart_emulator(logger):
 
     # wait for the window to appear
     for n in range(MANUAL_VM_WAIT_TIME):
-        print(f"Waiting for VM to load {n}/{MANUAL_VM_WAIT_TIME}")
+        logger.log(f"Waiting for VM to load {n}/{MANUAL_VM_WAIT_TIME}")
         time.sleep(1)
 
     # skip ads
+    logger.log("Skipping ads")
     if skip_ads(vm_index) == "fail":
         return restart_emulator(logger)
 
@@ -346,8 +347,6 @@ def close_clash_royale_app(logger, vm_index):
 
     pmc.stop_app_vm(apk_base_name, vm_index)
     logger.change_status(f"Clash Royale stopped on vm {vm_index}")
-
-
 
 
 def close_everything_memu():
