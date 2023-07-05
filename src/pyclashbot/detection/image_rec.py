@@ -25,7 +25,6 @@ def get_file_count(folder):
     """
     directory = join(dirname(__file__), "reference_images", folder)
 
-
     return sum(len(files) for _, _, files in os.walk(directory))
 
 
@@ -127,7 +126,7 @@ def find_all_references(
 
     return Parallel(n_jobs=num_cores, prefer="threads")(
         delayed(find_reference)(screenshot, folder, name, tolerance) for name in names
-    ) # type: ignore
+    )  # type: ignore
 
 
 def find_reference(
@@ -148,6 +147,8 @@ def find_reference(
     reference_folder = abspath(join(top_level, "reference_images"))
 
     path = join(reference_folder, folder, name)
+
+    print("path: ", path)
 
     return compare_images(screenshot, Image.open(path), tolerance)
 
@@ -192,6 +193,17 @@ def compare_images(
 
 
 # pixel comparison
+
+def line_is_color(vm_index, x1, y1, x2, y2, color):
+    coordinates = get_line_coordinates(x1, y1, x2, y2)
+    iar = np.asarray(screenshot(vm_index))
+
+    for coordinate in coordinates:
+        pixel = iar[coordinate[1]][coordinate[0]]
+
+        if not pixel_is_equal(color, pixel, tol=35):
+            return False
+    return True
 
 
 def check_line_for_color(vm_index, x1, y1, x2, y2, color: tuple[int, int, int]) -> bool:

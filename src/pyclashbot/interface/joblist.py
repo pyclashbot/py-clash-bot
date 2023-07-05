@@ -43,6 +43,12 @@ jobs_checklist = [
                         "-Free-Offer-Collection-in-",
                     ),
                 ],
+                [
+                    job_check_box(
+                        "War Participation",
+                        "war_checkbox_in",
+                    ),
+                ],
             ],
             scrollable=True,
             vertical_scroll_only=True,

@@ -5,8 +5,8 @@ from os import path
 
 from interface import user_config_keys, disable_keys, main_layout
 from bot.worker import WorkerThread
-from bot.upgrade_state import upgrade_cards_state
 from memu.client import screenshot
+
 from utils.caching import cache_user_settings, check_user_settings, read_user_settings
 from utils.logger import Logger
 from utils.thread import PausableThread, StoppableThread
@@ -60,6 +60,9 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
 
     if values["card_upgrading_in"]:
         jobs.append("upgrade")
+
+    if values["war_checkbox_in"]:
+        jobs.append("war")
     return jobs
 
 
@@ -298,14 +301,5 @@ def main_gui():
     window.close()
 
 
-def dummy():
-    # screenshot(1)
-
-    logger = Logger()
-    vm_index = 1
-    upgrade_cards_state(vm_index, logger, None)
-
-
 if __name__ == "__main__":
     main_gui()
-    # dummy()

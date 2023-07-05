@@ -15,6 +15,7 @@ from memu.launcher import restart_emulator
 from bot.navigation import wait_for_clash_main_menu
 from memu.launcher import close_clash_royale_app, start_clash_royale
 from bot.upgrade_state import upgrade_cards_state
+from bot.war_state import war_state
 from utils.logger import Logger
 import time
 
@@ -64,14 +65,12 @@ def state_tree(
         else:
             return NEXT_STATE, account_index_to_switch_to
 
-    elif state == 'upgrade': # --> request
+    elif state == "upgrade":  # --> request
         NEXT_STATE = "request"
         if "upgrade" in job_list:
-            return upgrade_cards_state(vm_index, logger, NEXT_STATE)
+            return upgrade_cards_state(vm_index, logger, NEXT_STATE), account_index_to_switch_to
         else:
             return NEXT_STATE, account_index_to_switch_to
-
-
 
     elif state == "request":  # --> free_offer_collection
         NEXT_STATE = "free_offer_collection"
@@ -81,7 +80,7 @@ def state_tree(
                 account_index_to_switch_to,
             )
         return NEXT_STATE, account_index_to_switch_to
-    
+
     elif state == "free_offer_collection":  # --> start_fight
         NEXT_STATE = "start_fight"
         if "free offer collection" in job_list:
@@ -105,8 +104,8 @@ def state_tree(
         NEXT_STATE = "card_mastery"
         return end_fight_state(vm_index, logger, NEXT_STATE), account_index_to_switch_to
 
-    elif state == "card_mastery":  # --> account_switch
-        NEXT_STATE = "account_switch"
+    elif state == "card_mastery":  # --> war
+        NEXT_STATE = "war"
         if "card_mastery" in job_list:
             return (
                 card_mastery_collection_state(vm_index, logger, NEXT_STATE),
@@ -115,6 +114,13 @@ def state_tree(
         else:
             return NEXT_STATE, account_index_to_switch_to
 
+    elif state == "war":  # --> account_switch
+        NEXT_STATE = "account_switch"
+        if "war" in job_list:
+            return war_state(vm_index, logger, NEXT_STATE), account_index_to_switch_to
+        else:
+            return NEXT_STATE, account_index_to_switch_to
+    
     elif state == "account_switch":  # --> open_chests
         NEXT_STATE = "open_chests"
         if "account_switch" in job_list:

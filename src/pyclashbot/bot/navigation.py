@@ -519,35 +519,19 @@ def check_if_on_clan_chat_page(vm_index):
 
 
 def check_if_on_profile_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    trophy_icon_exists = False
-    for x in range(110, 150):
-        this_pixel = iar[333][x]
-        if pixel_is_equal([239, 163, 48], this_pixel, tol=35):
-            trophy_icon_exists = True
-            break
-
-    yellow_crown_icon_exists = False
-    for x in range(175, 210):
-        this_pixel = iar[50][x]
-        if pixel_is_equal([255, 229, 0], this_pixel, tol=35):
-            yellow_crown_icon_exists = True
-
-    green_edit_color_button_exists = False
-    for x in range(325, 342):
-        this_pixel = iar[192][x]
-        if pixel_is_equal([0, 199, 56], this_pixel, tol=35):
-            green_edit_color_button_exists = True
-            break
-
-    if (
-        trophy_icon_exists
-        and yellow_crown_icon_exists
-        and green_edit_color_button_exists
+    if not check_line_for_color(
+        vm_index, x1=329, y1=188, x2=339, y2=195, color=(4, 244, 88)
     ):
-        return True
-    return False
+        return False
+    if not check_line_for_color(
+        vm_index, x1=169, y1=50, x2=189, y2=50, color=(255, 222, 0)
+    ):
+        return False
+    if not check_line_for_color(
+        vm_index, x1=369, y1=63, x2=351, y2=71, color=(228, 36, 36)
+    ):
+        return False
+    return True
 
 
 def wait_for_profile_page(vm_index, logger: Logger):

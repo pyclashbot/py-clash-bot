@@ -73,6 +73,8 @@ user_config_keys = [
     "-Card-Mastery-Collection-in-",
     "-Free-Offer-Collection-in-",
     "1v1_battle_in",
+    "card_upgrading_in",
+    "war_checkbox_in",
 ]
 
 # list of button and checkbox keys to disable when the bot is running
