@@ -11,6 +11,7 @@ from bot.request_state import request_state
 from bot.switch_account_state import switch_account_state
 
 from memu.launcher import restart_vm
+from memu.launcher import restart_emulator
 from utils.logger import Logger
 
 
@@ -23,16 +24,19 @@ def state_tree(
     account_switch_order,
 ):
     print(f"This state is {state}")
+    if state is None:
+        while 1:
+            pass
+
     if state == "start":  # --> open_chests
         # open clash
-        restart_vm(logger, vm_index)
+        restart_emulator(logger)
 
         return "open_chests", account_index_to_switch_to
 
     elif state == "restart":  # --> open_chests
         print("Got to restart state")
-        while 1:
-            pass
+        restart_vm(logger, vm_index)
 
         # restart_vm(logger, vm_index)
         return "open_chests", account_index_to_switch_to
@@ -48,7 +52,7 @@ def state_tree(
         else:
             return NEXT_STATE, account_index_to_switch_to
 
-    elif state == "Request":  # --> free_offer_collection
+    elif state == "request":  # --> free_offer_collection
         NEXT_STATE = "free_offer_collection"
         if "request" in job_list:
             return (
