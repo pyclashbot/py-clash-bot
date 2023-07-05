@@ -148,7 +148,7 @@ def configure_vm(logger: Logger, vm_index):
 
 def create_vm(logger: Logger):
     # create a vm named pyclashbot
-    logger.change_status("VM not found, creating VM...")
+    logger.change_status("Creating VM...")
     memuc_pid = start_memuc_console()
 
     vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
