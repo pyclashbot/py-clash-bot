@@ -1,6 +1,7 @@
 import time
 
 from bot.states import state_tree
+from memu.launcher import check_for_vm
 from utils.logger import Logger
 from utils.thread import PausableThread, ThreadKilled
 import random
@@ -18,11 +19,20 @@ class WorkerThread(PausableThread):
             account_switch_order = self.make_account_switch_order(ssid_max)
             state = "start"
 
+            vm_index = check_for_vm(logger)
+            account_index_to_switch_to = account_switch_order[0]
+
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
                 # code to run
-                print("Running worker thread")
-                time.sleep(10)
+                state, account_index_to_switch_to = state_tree(
+                    vm_index,
+                    logger,
+                    state,
+                    jobs,
+                    account_index_to_switch_to,
+                    account_switch_order,
+                )
 
                 while self.pause_flag.is_set():
                     time.sleep(0.1)  # sleep for 100ms until pause flag is unset

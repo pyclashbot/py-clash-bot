@@ -17,12 +17,119 @@ from detection.image_rec import pixel_is_equal
 from memu.app_handler import check_for_clash_royale_installed
 from memu.client import screenshot
 from memu.emulator import set_vm_language
+from bot.navigation import wait_for_clash_main_menu
 from utils.logger import Logger
+import sys
+import PySimpleGUI as sg
 
 pmc = PyMemuc(debug=False)
 
 ANDROID_VERSION = "96"  # android 9, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
+
+
+# launcher specific methods
+
+
+def restart_emulator(logger):
+    # restart the game, including the launcher and emulator
+
+    # stop all vms
+    logger.change_status("Closing everything Memu related. . .")
+    close_everything_memu()
+
+    # check for the pyclashbot vm, if not found then create it
+    vm_index = check_for_vm(logger)
+    print(f"Found vm of index {vm_index}")
+    configure_vm(logger, vm_index=vm_index)
+
+    # start the vm
+    # logger.change_status("Starting a new Memu Client using the launcher. . .")
+    # start_emulator_without_pmc(logger) # this is the old way
+    logger.change_status("Starting emulator...")
+    pmc.start_vm(vm_index=vm_index)
+
+    # wait for the window to appear
+    sleep_time = 10
+    for n in range(sleep_time):
+        print(f"Waiting for VM to load {n}/{sleep_time}")
+        time.sleep(1)
+
+    # wait_for_memu_window(logger)
+
+    # skip ads
+    if skip_ads(vm_index) == "fail":
+        return restart_emulator(logger)
+
+    # start clash royale
+    start_clash_royale(logger, vm_index)
+
+    # manually wait for clash main
+    sleep_time = 10
+    for n in range(sleep_time):
+        print(f"Manually waiting for clash main page. {n}/{sleep_time}")
+        time.sleep(1)
+
+    # check-wait for clash main if need to wait longer
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        return restart_emulator(logger)
+
+    time.sleep(5)
+
+    return True
+
+
+def skip_ads(vm_index):
+    # Method for skipping the memu ads that popip up when you start memu
+
+    print("Trying to skipping ads")
+    try:
+        for _ in range(4):
+            pmc.trigger_keystroke_vm("home", vm_index=vm_index)
+            time.sleep(1)
+    except Exception as err:  # pylint: disable=broad-except
+        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
+        input("Enter to cont")
+        return "fail"
+    return "success"
+
+
+def check_for_vm(logger: Logger) -> int:
+    """Check for a vm named pyclashbot, create one if it doesn't exist
+
+    Args:
+        logger (Logger): Logger object
+
+    Returns:
+        int: index of the vm
+    """
+
+    vm_index = get_vm_index(logger, EMULATOR_NAME)
+
+    # return the index. if no vms named pyclashbot exist, create one.
+    return vm_index if vm_index != -1 else create_vm(logger)
+
+
+def start_clash_royale(logger: Logger, vm_index):
+    # using pymemuc check if clash royale is installed
+    apk_base_name = "com.supercell.clashroyale"
+
+    # get list of installed apps
+    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
+
+    # check list of installed apps for names containing base name
+    found = [app for app in installed_apps if apk_base_name in app]
+
+    if not found:
+        # notify user that clash royale is not installed, program will exit
+        logger.change_status(
+            "Clash royale is not installed. Please install it and restart"
+        )
+        show_clash_royale_setup_gui()
+
+    # start clash royale
+    pmc.start_app_vm(apk_base_name, vm_index)
+    logger.change_status("Clash Royale started")
 
 
 # making/configuring emulator methods
@@ -288,3 +395,28 @@ def stop_memuc_console(process_id: int) -> None:
         process.terminate()
     except psutil.NoSuchProcess:
         print("#975627345 Failure to stop memuc console")
+
+
+# error popup guis
+
+
+def show_clash_royale_setup_gui():
+    # a method to notify the user that clashroayle is not installed or setup
+
+    out_text = """Clash Royale is not installed or setup.
+Please install Clash Royale, finish the in-game tutorial
+and login before using this bot."""
+
+    _layout = [
+        [sg.Text(out_text)],
+    ]
+    _window = sg.Window("Clash Royale Not Setup!", _layout)
+    while True:
+        read = _window.read()
+        if read is None:
+            break
+        _event, _ = read
+        if _event in [sg.WIN_CLOSED]:
+            break
+    _window.close()
+    sys.exit(0)
