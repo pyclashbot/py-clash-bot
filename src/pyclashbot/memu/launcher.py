@@ -74,6 +74,7 @@ def restart_emulator(logger):
 
     # check-wait for clash main if need to wait longer
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.log("#34646 Looping restart_emulator() bc fail")
         return restart_emulator(logger)
 
     time.sleep(5)

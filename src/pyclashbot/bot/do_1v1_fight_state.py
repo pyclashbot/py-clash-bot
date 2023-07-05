@@ -96,7 +96,9 @@ def do_1v1_fight_state(vm_index, logger: Logger):
     logger.change_status("Battle started!")
 
     logger.change_status("Starting fight loop")
-    fight_loop(vm_index, logger)
+    if fight_loop(vm_index, logger) == "restart":
+        logger.log("Error 698245 Failuring in fight loop")
+        return "restart"
 
     logger.add_fight()
     return NEXT_STATE
@@ -139,7 +141,14 @@ def fight_loop(vm_index, logger: Logger):
 
         # wait for 6 elixer
         logger.log("Waiting for 6 elixer")
-        if wait_for_6_elixer(vm_index, logger) == "no battle":
+
+        elixer_wait_return = wait_for_6_elixer(vm_index, logger)
+
+        if elixer_wait_return == "restart":
+            logger.change_status("Error 788455 wait_for_6_elixer() in fight_loop()")
+            return "restart"
+
+        elif elixer_wait_return == "no battle":
             break
 
         # choose random card to play
@@ -226,7 +235,11 @@ def check_pixels_for_win_in_battle_log(vm_index):
 
 
 def wait_for_6_elixer(vm_index, logger: Logger):
+    start_time = time.time()
     while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
+        if time.time() - start_time > 15:
+            return "restart"
+
         if not check_for_in_1v1_battle(vm_index):
             logger.change_status("Not in battle, stopping waiting for 6 elixer")
             return "no battle"
