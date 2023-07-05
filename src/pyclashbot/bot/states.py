@@ -1,17 +1,17 @@
-from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
-from pyclashbot.bot.do_1v1_fight_state import (
+from bot.card_mastery_state import card_mastery_collection_state
+from bot.do_1v1_fight_state import (
     do_1v1_fight_state,
     end_fight_state,
     start_1v1_fight_state,
 )
-from pyclashbot.bot.free_offer_state import free_offer_collection_state
-from pyclashbot.bot.open_chests_state import open_chests_state
+from bot.free_offer_state import free_offer_collection_state
+from bot.open_chests_state import open_chests_state
 
-from pyclashbot.bot.request_state import request_state
-from pyclashbot.bot.switch_account_state import switch_account_state
+from bot.request_state import request_state
+from bot.switch_account_state import switch_account_state
 
-from pyclashbot.memu.launcher import restart_vm
-from pyclashbot.utils.logger import Logger
+from memu.launcher import restart_vm
+from utils.logger import Logger
 
 
 def state_tree(

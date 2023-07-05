@@ -1,10 +1,10 @@
-from pyclashbot.detection.image_rec import (
+from detection.image_rec import (
     check_for_location,
     find_references,
     get_file_count,
     make_reference_image_list,
 )
-from pyclashbot.memu.client import screenshot
+from memu.client import screenshot
 from PIL import Image
 import os
 import random

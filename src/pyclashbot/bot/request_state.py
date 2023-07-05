@@ -2,7 +2,7 @@ import math
 import random
 import numpy
 import time
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
     get_to_clash_main_from_clan_page,
@@ -10,13 +10,13 @@ from pyclashbot.bot.navigation import (
     wait_for_clash_main_menu,
 )
 
-from pyclashbot.detection.image_rec import (
+from detection.image_rec import (
     check_line_for_color,
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
-from pyclashbot.utils.logger import Logger
+from memu.client import click, screenshot, scroll_down, scroll_up
+from utils.logger import Logger
 
 
 def request_state(vm_index, logger: Logger, NEXT_STATE: str):

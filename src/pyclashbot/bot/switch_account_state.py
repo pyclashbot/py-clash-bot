@@ -1,15 +1,15 @@
 import time
 import numpy
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_clash_main_burger_button_options_menu,
     check_if_on_clash_main_menu,
     wait_for_clash_main_burger_button_options_menu,
     wait_for_clash_main_menu,
     wait_for_switch_accounts_page,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal, region_is_color
-from pyclashbot.memu.client import click, screenshot
-from pyclashbot.utils.logger import Logger
+from detection.image_rec import pixel_is_equal, region_is_color
+from memu.client import click, screenshot
+from utils.logger import Logger
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (365, 62)
 SWITCH_ACCOUNTS_BUTTON = (198, 371)

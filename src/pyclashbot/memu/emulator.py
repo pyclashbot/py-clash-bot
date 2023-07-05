@@ -8,7 +8,7 @@ from os.path import exists, join
 import psutil
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.utils.logger import Logger
+from utils.logger import Logger
 
 
 pmc = PyMemuc(debug=False)

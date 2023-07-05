@@ -8,7 +8,7 @@ import numpy as np
 from joblib import Parallel, delayed
 from PIL import Image
 
-from pyclashbot.memu.client import screenshot
+from memu.client import screenshot
 
 
 # file stuff

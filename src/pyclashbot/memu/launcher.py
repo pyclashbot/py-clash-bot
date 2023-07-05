@@ -13,11 +13,11 @@ import pythoncom
 import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.app_handler import check_for_clash_royale_installed
-from pyclashbot.memu.client import screenshot
-from pyclashbot.memu.emulator import set_vm_language
-from pyclashbot.utils.logger import Logger
+from detection.image_rec import pixel_is_equal
+from memu.app_handler import check_for_clash_royale_installed
+from memu.client import screenshot
+from memu.emulator import set_vm_language
+from utils.logger import Logger
 
 pmc = PyMemuc(debug=False)
 

@@ -10,7 +10,7 @@ from os.path import exists, join
 
 from pymemuc import PyMemuc, PyMemucError, PyMemucException
 
-from pyclashbot.utils.logger import Logger
+from utils.logger import Logger
 
 
 pmc = PyMemuc(debug=False)

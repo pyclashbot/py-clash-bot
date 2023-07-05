@@ -1,14 +1,14 @@
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_card_page,
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
     get_to_clash_main_from_card_page,
 )
-from pyclashbot.detection.image_rec import check_line_for_color
-from pyclashbot.memu.client import click
+from detection.image_rec import check_line_for_color
+from memu.client import click
 import time
 
-from pyclashbot.utils.logger import Logger
+from utils.logger import Logger
 
 CARD_MASTERY_ICON = (257, 504)
 FIRST_CARD_MASTERY_REWARD_CARD = (99, 182)

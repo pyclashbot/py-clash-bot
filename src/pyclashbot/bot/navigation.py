@@ -1,14 +1,14 @@
 import numpy
 import time
 
-from pyclashbot.detection.image_rec import (
+from detection.image_rec import (
     check_line_for_color,
     get_line_coordinates,
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
-from pyclashbot.utils.logger import Logger
+from memu.client import click, screenshot, scroll_up
+from utils.logger import Logger
 
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [
     315,

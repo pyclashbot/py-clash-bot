@@ -1,10 +1,10 @@
-from pyclashbot.bot.states import (
+from bot.states import (
     state_tree,
 )
-from pyclashbot.memu.client import screenshot
-from pyclashbot.memu.emulator import get_vm_index
-from pyclashbot.memu.launcher import EMULATOR_NAME
-from pyclashbot.utils.logger import Logger
+from memu.client import screenshot
+from memu.emulator import get_vm_index
+from memu.launcher import EMULATOR_NAME
+from utils.logger import Logger
 
 
 def main():

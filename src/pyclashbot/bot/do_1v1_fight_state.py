@@ -1,7 +1,7 @@
 import random
 import time
-from pyclashbot.bot.card_detection import get_play_coords_for_card
-from pyclashbot.bot.navigation import (
+from bot.card_detection import get_play_coords_for_card
+from bot.navigation import (
     check_for_in_1v1_battle,
     check_if_on_clash_main_menu,
     get_to_activity_log,
@@ -9,9 +9,9 @@ from pyclashbot.bot.navigation import (
     wait_for_clash_main_menu,
     wait_for_end_1v1_battle_screen,
 )
-from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
-from pyclashbot.memu.client import click, screenshot
-from pyclashbot.utils.logger import Logger
+from detection.image_rec import check_line_for_color, region_is_color
+from memu.client import click, screenshot
+from utils.logger import Logger
 
 LEAVE_1V1_BATTLE_OK_BUTTON = (210, 554)
 CLOSE_BATTLE_LOG_BUTTON = (365, 72)

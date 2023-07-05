@@ -1,16 +1,16 @@
 import time
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_clash_main_menu,
     wait_for_clash_main_menu,
     wait_for_clash_main_shop_page,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import (
+from detection.image_rec import pixel_is_equal
+from memu.client import (
     click,
     screenshot,
     scroll_down_fast_on_left_side_of_screen,
 )
-from pyclashbot.utils.logger import Logger
+from utils.logger import Logger
 import numpy
 
 

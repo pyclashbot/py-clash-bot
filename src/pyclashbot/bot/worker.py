@@ -1,8 +1,8 @@
 import time
 
-from pyclashbot.bot.states import state_tree
-from pyclashbot.utils.logger import Logger
-from pyclashbot.utils.thread import PausableThread, ThreadKilled
+from bot.states import state_tree
+from utils.logger import Logger
+from utils.thread import PausableThread, ThreadKilled
 import random
 
 class WorkerThread(PausableThread):

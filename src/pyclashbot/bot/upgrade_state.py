@@ -1,13 +1,13 @@
 import numpy
 import time
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
     get_to_clash_main_from_card_page,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
-from pyclashbot.utils.logger import Logger
+from detection.image_rec import pixel_is_equal
+from memu.client import click, screenshot
+from utils.logger import Logger
 
 
 CARD_COORDS = [

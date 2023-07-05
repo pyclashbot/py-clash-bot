@@ -1,14 +1,14 @@
 import PySimpleGUI as sg
 
-from pyclashbot.interface.controls import controls
-from pyclashbot.interface.joblist import jobs_checklist
-from pyclashbot.interface.stats import (
+from interface.controls import controls
+from interface.joblist import jobs_checklist
+from interface.stats import (
     battle_stats,
     collections_stats,
     progress_stats,
     stat_box,
 )
-from pyclashbot.interface.theme import THEME
+from interface.theme import THEME
 
 sg.theme(THEME)
 

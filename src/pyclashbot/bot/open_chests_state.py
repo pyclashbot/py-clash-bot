@@ -1,14 +1,14 @@
 import time
 
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_clash_main_menu,
     handle_clash_main_tab_notifications,
 )
-from pyclashbot.detection.image_rec import check_line_for_color, pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
+from detection.image_rec import check_line_for_color, pixel_is_equal
+from memu.client import click, screenshot
 import numpy
 
-from pyclashbot.utils.logger import Logger
+from utils.logger import Logger
 
 
 def get_chest_statuses(vm_index):

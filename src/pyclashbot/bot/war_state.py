@@ -1,10 +1,10 @@
-from pyclashbot.bot.navigation import (
+from bot.navigation import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
     get_to_profile_page,
     wait_for_clash_main_menu,
 )
-from pyclashbot.detection.image_rec import (
+from detection.image_rec import (
     check_for_location,
     check_line_for_color,
     find_reference,
@@ -14,8 +14,8 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.memu.client import click, screenshot
-from pyclashbot.utils.logger import Logger
+from memu.client import click, screenshot
+from utils.logger import Logger
 import numpy
 
 

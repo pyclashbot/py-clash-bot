@@ -3,22 +3,11 @@ import PySimpleGUI as sg
 import sys
 from os import path
 
-from pyclashbot.utils.thread import PausableThread, StoppableThread
-from pyclashbot.bot.worker import WorkerThread
-
-from pyclashbot.utils.logger import Logger
-
-from pyclashbot.utils.caching import (
-    cache_user_settings,
-    check_user_settings,
-    read_user_settings,
-)
-from pyclashbot.interface import (
-    disable_keys,
-    main_layout,
-    show_help_gui,
-    user_config_keys,
-)
+from interface import user_config_keys, disable_keys, main_layout
+from bot.worker import WorkerThread
+from utils.caching import cache_user_settings, check_user_settings, read_user_settings
+from utils.logger import Logger
+from utils.thread import PausableThread, StoppableThread
 
 
 def read_window(
@@ -274,7 +263,10 @@ def main_gui():
 
         # on Help button event, open the help gui
         elif event == "Help":
-            show_help_gui()
+            print('Help button event')
+            print('Help button event')
+            print('Help button event')
+            print('Help button event')
 
         # on issues button event, open the github issues link in browser
         elif event == "issues-link":

@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 
-from pyclashbot.interface.theme import THEME
+from interface.theme import THEME
 
 sg.theme(THEME)
 
