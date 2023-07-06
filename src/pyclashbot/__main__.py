@@ -3,6 +3,7 @@ import webbrowser
 from os import path
 
 import PySimpleGUI as sg
+from pyclashbot.bot.navigation import check_if_on_clash_main_challenges_tab
 
 
 from pyclashbot.bot.worker import WorkerThread
@@ -336,6 +337,8 @@ def dummy_bot():
             account_switch_order,
         )
         print(f"state = {state}")
+
+
 
 
 if __name__ == "__main__":

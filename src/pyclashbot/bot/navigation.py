@@ -236,13 +236,9 @@ def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False
 
 
 def check_if_on_clash_main_challenges_tab(vm_index):
-    if not region_is_color(vm_index, region=[307, 583, 15, 36], color=(75, 111, 146)):
+    if not region_is_color(vm_index, [380, 580, 30, 45], (76, 111, 145)):
         return False
-
-    if not region_is_color(vm_index, region=[61, 578, 19, 40], color=(70, 84, 104)):
-        return False
-
-    if not region_is_color(vm_index, region=[212, 620, 24, 10], color=(63, 75, 94)):
+    if not region_is_color(vm_index, [290, 610, 25, 15], (80, 118, 153)):
         return False
 
     return True
