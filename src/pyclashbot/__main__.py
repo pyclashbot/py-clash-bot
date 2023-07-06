@@ -3,7 +3,7 @@ import webbrowser
 from os import path
 
 import PySimpleGUI as sg
-from pyclashbot.bot.do_1v1_fight_state import fight_loop
+from pyclashbot.bot.do_1v1_fight_state import _1v1_fight_loop
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys

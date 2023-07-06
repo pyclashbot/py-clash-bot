@@ -25,6 +25,30 @@ HAND_CARDS_COORDS = [
 ]
 
 
+def do_1v1_fight_state(vm_index, logger: Logger):
+    NEXT_STATE = "end_fight"
+
+    logger.change_status("do_1v1_fight_state state")
+    logger.change_status("waiting for battle start")
+
+    # wait for battle start
+    if wait_for_1v1_battle_start(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 0195736 wait_for_1v1_battle_start() in do_1v1_fight_state()"
+        )
+        return "restart"
+
+    logger.change_status("Battle started!")
+
+    logger.change_status("Starting fight loop")
+    if _1v1_fight_loop(vm_index, logger) == "restart":
+        logger.log("Error 698245 Failuring in fight loop")
+        return "restart"
+
+    logger.add_1v1_fight()
+    return NEXT_STATE
+
+
 def start_1v1_fight_state(vm_index, logger: Logger):
     logger.change_status("Start fight state")
     logger.change_status("Starting 1v1 mode")
@@ -81,30 +105,6 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     return NEXT_STATE
 
 
-def do_1v1_fight_state(vm_index, logger: Logger):
-    NEXT_STATE = "end_fight"
-
-    logger.change_status("do_1v1_fight_state state")
-    logger.change_status("waiting for battle start")
-
-    # wait for battle start
-    if wait_for_1v1_battle_start(vm_index, logger) == "restart":
-        logger.change_status(
-            "Error 0195736 wait_for_1v1_battle_start() in do_1v1_fight_state()"
-        )
-        return "restart"
-
-    logger.change_status("Battle started!")
-
-    logger.change_status("Starting fight loop")
-    if fight_loop(vm_index, logger) == "restart":
-        logger.log("Error 698245 Failuring in fight loop")
-        return "restart"
-
-    logger.add_fight()
-    return NEXT_STATE
-
-
 def choose_play_side(vm_index, favorite_side):
     # get tower_statuses
     tower_statuses = check_enemy_tower_statuses(vm_index)
@@ -125,7 +125,7 @@ def choose_play_side(vm_index, favorite_side):
     return random.choice(choices)
 
 
-def fight_loop(vm_index, logger: Logger):
+def _1v1_fight_loop(vm_index, logger: Logger):
     logger.change_status("Starting battle loop")
 
     # choose a side to favor this fight

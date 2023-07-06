@@ -54,7 +54,7 @@ class Logger:
         # fight stats
         self.wins = 0
         self.losses = 0
-        self.fights = 0
+        self._1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
 
@@ -94,7 +94,7 @@ class Logger:
             self.stats = {
                 "wins": self.wins,
                 "losses": self.losses,
-                "fights": self.fights,
+                "1v1_fights": self._1v1_fights,
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
                 "restarts_after_failure": self.restarts_after_failure,
@@ -210,9 +210,9 @@ class Logger:
         self.losses += 1
 
     @_updates_log
-    def add_fight(self):
+    def add_1v1_fight(self):
         """add fight to log"""
-        self.fights += 1
+        self._1v1_fights += 1
 
     @_updates_log
     def add_request(self):
