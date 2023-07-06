@@ -1,41 +1,47 @@
-import logging
 import threading
 import time
 from functools import wraps
 from os import makedirs
 from os.path import exists, expandvars, join
 
+MODULE_NAME = "py-clash-bot"
 
-def initalize_pylogging():
-    """method to be called once to initalize python logging"""
-    module_name = "py-clash-bot"
-    log_dir = join(expandvars("%appdata%"), module_name, "logs")
-    if not exists(log_dir):
-        makedirs(log_dir)
-    log_name = join(log_dir, time.strftime("%Y-%m-%d", time.localtime()) + ".txt")
-    logging.basicConfig(
-        filename=log_name,
-        encoding="utf-8",
-        level=logging.DEBUG,
-        format="%(levelname)s:%(asctime)s %(message)s",
-    )
-    logging.getLogger("PIL").setLevel(logging.INFO)
+top_level = join(expandvars("%appdata%"), MODULE_NAME)
 
 
 class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
-        stats (dict[str, str | int] | None, optional): stats to communicate
-            between threads. Defaults to None.
-        timed (bool, optional): whether to time the bot. Defaults to True.
+        stats (dict[str, str | int] | None, optional): stats to communicate between threads. Defaults to None.
+        console_log (bool, optional): Enable console logging. Defaults to False.
+        file_log (bool, optional): Enable file logging. Defaults to True.
     """
 
     def __init__(
         self,
         stats: dict[str, str | int] | None = None,
+        console_log: bool = False,
+        file_log: bool = True,
         timed: bool = True,
     ):
+        # setup console log
+        self.console_log = console_log
+        # print buffer for console
+        self.console_buffer = ""
+
+        # setup log file
+        self.file_log = file_log
+        # print buffer for file
+        self.file_buffer = ""
+        # open log file
+        if file_log:
+            if not exists(top_level):
+                makedirs(top_level)
+            self._log_file = open(
+                join(top_level, "log.txt"), "w", encoding="utf-8"
+            )  # noqa
+
         # stats for threaded communication
         self.stats = stats
         self.stats_mutex = threading.Lock()
@@ -56,12 +62,7 @@ class Logger:
         self.chests_unlocked = 0
         self.cards_upgraded = 0
         self.card_mastery_reward_collections = 0
-        self.battlepass_rewards_collections = 0
-        self.level_up_chest_collections = 0
-        self.war_battles_fought = 0
         self.free_offer_collections = 0
-        self.war_chest_collections = 0
-        self.daily_challenge_reward_collections = 0
 
         # restart stats
         self.auto_restarts = 0
@@ -78,9 +79,13 @@ class Logger:
         # write initial values to queue
         self._update_stats()
 
+    def __del__(self):
+        if self.file_log:
+            self._log_file.close()
+
     def _update_log(self):
         self._update_stats()
-        logging.info(self.current_status)
+        pass
 
     def _update_stats(self):
         """updates the stats with a dictionary of mutable statistics"""
@@ -90,19 +95,12 @@ class Logger:
                 "losses": self.losses,
                 "fights": self.fights,
                 "requests": self.requests,
-                "auto_restarts": self.auto_restarts,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
                 "cards_played": self.cards_played,
-                "cards_upgraded": self.cards_upgraded,
                 "account_switches": self.account_switches,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
-                "battlepass_rewards_collections": self.battlepass_rewards_collections,
-                "level_up_chest_collections": self.level_up_chest_collections,
-                "war_battles_fought": self.war_battles_fought,
                 "free_offer_collections": self.free_offer_collections,
-                "daily_challenge_reward_collections": self.daily_challenge_reward_collections,
-                "war_chest_collections": self.war_chest_collections,
                 "current_status": self.current_status,
                 "time_since_start": self.calc_time_since_start(),
             }
@@ -118,12 +116,44 @@ class Logger:
         """decorator to specify functions which update the queue with statistics"""
 
         @wraps(func)
-        def wrapper(self: "Logger", *args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             result = func(self, *args, **kwargs)
             self._update_log()  # pylint: disable=protected-access
             return result
 
         return wrapper
+
+    def log(self, message):
+        wins_string = self.wins
+        losses_string = self.losses
+
+        win_loss_string = f"[{wins_string}/{losses_string}]"
+        fights_string = f"[{self.fights} Fights]"
+        cards_played_string = f"[{self.cards_played} Cards Played]"
+        requests_string = f"[{self.requests} Requests]"
+        free_offers_string = f"[{self.free_offer_collections} Free Offers]"
+
+        time_running_string = self.calc_time_since_start()
+
+        print(
+            f"[{time_running_string}] {win_loss_string} {fights_string} {cards_played_string} {requests_string} {free_offers_string} {message}"
+        )
+
+    def make_time_str(self, seconds):
+        """convert epoch to time
+
+        Args:
+            seconds (int): epoch time in int
+
+        Returns:
+            str: human readable time
+        """
+        seconds = seconds % (24 * 3600)
+        hour = seconds // 3600
+        seconds %= 3600
+        minutes = seconds // 60
+        seconds %= 60
+        return f"{hour}:{minutes:02}:{seconds:02}"
 
     def calc_time_since_start(self) -> str:
         if self.start_time is not None:
@@ -134,24 +164,9 @@ class Logger:
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
     @_updates_log
-    def add_war_chest_collection(self):
-        """add level up chest collection to log"""
-        self.war_chest_collections += 1
-
-    @_updates_log
-    def add_daily_challenge_reward_collection(self):
-        """daily_challenge_reward_collection to log"""
-        self.daily_challenge_reward_collections += 1
-
-    @_updates_log
     def add_free_offer_collection(self):
         """add level up chest collection to log"""
         self.free_offer_collections += 1
-
-    @_updates_log
-    def add_battlepass_reward_collection(self):
-        """add battlepass collection to log"""
-        self.battlepass_rewards_collections += 1
 
     @_updates_log
     def error(self, message: str):
@@ -161,17 +176,7 @@ class Logger:
             message (str): error message
         """
         self.errored = True
-        logging.error(message)
-
-    @_updates_log
-    def add_level_up_chest_collection(self):
-        """add level up chest collection to log"""
-        self.level_up_chest_collections += 1
-
-    @_updates_log
-    def add_war_battle_fought(self):
-        """add war battle fought to log"""
-        self.war_battles_fought += 1
+        self.current_status = f"Error: {message}"
 
     @_updates_log
     def add_card_mastery_reward_collection(self):
@@ -225,7 +230,7 @@ class Logger:
             status (str): status of bot
         """
         self.current_status = status
-        print(status)
+        self.log(status)
 
     @_updates_log
     def add_auto_restart(self):
@@ -238,6 +243,6 @@ class Logger:
         self.restarts_after_failure += 1
 
     @_updates_log
-    def change_most_recent_restart_time(self, restart_time):
+    def change_most_recent_restart_time(self, time):
         """add request to log"""
-        self.most_recent_restart_time = restart_time
+        self.most_recent_restart_time = time

@@ -1,507 +1,280 @@
-"""
-This module contains functions for detecting and identifying cards in the game Clash Royale.
-"""
+import os
 import random
 
-from pyclashbot.detection import check_for_location, find_references
-from pyclashbot.memu import get_file_count, make_reference_image_list, screenshot
+from PIL import Image
+
+from pyclashbot.detection.image_rec import (
+    check_for_location,
+    find_references,
+    get_file_count,
+    make_reference_image_list,
+)
+from pyclashbot.memu.client import screenshot
+
+PLAY_COORDS = {
+    "spell": {
+        "left": [(94, 151), (95, 151), (86, 117)],
+        "right": [(327, 153), (327, 105)],
+    },
+    "hog": {
+        "left": [(77, 281), (113, 286), (154, 283)],
+        "right": [(257, 283), (300, 284), (353, 283)],
+    },
+    "turret": {
+        "left": [(224, 300), (224, 334)],
+        "right": [(224, 300), (224, 334)],
+    },
+    "miner": {
+        "left": [(86, 156), (90, 104), (143, 113), (142, 153)],
+        "right": [(274, 152), (276, 111), (339, 111), (323, 157)],
+    },
+    "goblin_barrel": {
+        "left": [(115, 134), (115, 134), (60, 96)],
+        "right": [(300, 137), (300, 137), (356, 106)],
+    },
+    "xbow": {
+        "left": [(170, 288)],
+        "right": [(254, 284)],
+    },
+    "spawner": {
+        "left": [(69, 442), (158, 444), (166, 394)],
+        "right": [(247, 396), (264, 440), (343, 442)],
+    },
+}
 
 
-def get_card_images():
-    """Method to get the images of the user's 4 current cards
-    args:
-        None
-    returns:
-        list: list of 4 images of the user's current cards
+def get_play_coords_for_card(vm_index: int, card_index: int, side_preference: str):
+    # get this card image(PIL image)
+    image = get_card_images(vm_index)[card_index]
+
+    # get the ID of this card(ram_rider, zap, etc)
+    id = identify_card(image)
+
+    # get the grouping of this card (hog, turret, spell, etc)
+    group = get_card_group(id)
+
+    # get the play coords of this grouping
+    coords = calculate_play_coords(group, side_preference)
+
+    return id, coords
+
+
+def get_card_group(card_id) -> str:
+    card_groups = {
+        "spell": [
+            "earthquake",
+            "fireball",
+            "freeze",
+            "poison",
+            "arrows",
+            "snowball",
+            "zap",
+            "rocket",
+            "lightning",
+            "log",
+        ],
+        "turret": [
+            "bomb_tower",
+            "cannon",
+            "tesla",
+            "goblin_cage",
+            "inferno_tower",
+        ],
+        "hog": [
+            "battle_ram",
+            "wall_breakers",
+            "princess",
+            "ram_rider",
+            "skeleton_barrel",
+            "hog",
+            "royal_hogs",
+        ],
+        "miner": [
+            "goblin_drill",
+            "miner",
+        ],
+        "goblin_barrel": [
+            "goblin_barrel",
+        ],
+        "xbow": [
+            "xbow",
+            "mortar",
+        ],
+        "spawner": [
+            "tombstone",
+            "goblin_hut",
+            "barb_hut",
+            "furnace",
+        ],
+    }
+
+    for group, cards in card_groups.items():
+        if card_id in cards:
+            return group
+
+    return "No group"
+
+
+def calculate_play_coords(card_grouping: str, side_preference: str):
+    if card_grouping in PLAY_COORDS:
+        group_datum = PLAY_COORDS[card_grouping]
+        if side_preference == "left" and "left" in group_datum:
+            return random.choice(group_datum["left"])
+        elif side_preference == "right" and "right" in group_datum:
+            return random.choice(group_datum["right"])
+        elif "coords" in group_datum:
+            return random.choice(group_datum["coords"])
+
+    if side_preference == "left":
+        return (random.randint(60, 206), random.randint(281, 456))
+    else:
+        return (random.randint(210, 351), random.randint(281, 456))
+
+
+def get_card_images(vm_index):
+    whole_image = screenshot(vm_index)
+
+    card_images = []
+
+    for region in [
+        [104, 520, 76, 87],
+        [175, 521, 67, 83],
+        [241, 521, 68, 82],
+        [309, 526, 64, 74],
+    ]:
+        card_image = crop_image(whole_image, region)
+        card_images.append(card_image)
+
+    return card_images
+
+
+def crop_image(image: Image.Image, region: list[int]) -> Image.Image:
+    """Method to crop a Pillow image based on a given region
+
+    Args:
+        image (PIL.Image.Image): The original image to be cropped
+        region (list[int]): List defining the region as [left, top, width, height]
+
+    Returns:
+        PIL.Image.Image: Cropped image based on the given region
     """
-    return [
-        screenshot(region=[105, 550, 70, 90]),
-        screenshot(region=[177, 550, 70, 90]),
-        screenshot(region=[245, 550, 70, 90]),
-        screenshot(region=[311, 550, 70, 90]),
-    ]
+    left, top, width, height = region
+    right = left + width
+    bottom = top + height
+
+    cropped_image = image.crop((left, top, right, bottom))
+    return cropped_image
 
 
-def check_for_card(image, card_name=""):
-    """Method to read the card image and get it's name
-    args:
-        image: image of the card
-        card_name: name of the card to check for
-    returns:
-        bool: True if the card is the given card, False otherwise
-    """
-
-    folder_str = f"check_if_card_is_{card_name}"
-
-    references = make_reference_image_list(
-        get_file_count(
-            f"check_if_card_is_{card_name}",
+def get_card_name_list():
+    card_names = []
+    for n in get_file_names(
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__))[:-4],
+            "detection",
+            "reference_images",
         )
-    )
+    ):
+        if "card_" in n:
+            n = n.replace("card_", "")
+            card_names.append(n)
 
-    locations = find_references(
-        screenshot=image, folder=folder_str, names=references, tolerance=0.97
-    )
+    return card_names
 
-    return check_for_location(locations)
+
+def get_file_names(directory):
+    file_names = []
+
+    for item_name in os.listdir(directory):
+        item_path = os.path.join(directory, item_name)
+        if os.path.isfile(item_path) or os.path.isdir(item_path):
+            file_names.append(item_name)
+
+    return file_names
 
 
 def identify_card(image):
-    """Method to identify the name of the given card image
-    args:
-        image: image of the card
-    returns:
-        str: name of the card"""
+    card_names = get_card_name_list()
 
-    # make a list of cards the bot knows about
-    card_list = [
-        "arrows",
-        "barbbarrel",
-        "wallbreakers",
-        "princess",
-        "miner",
-        "skeletonbarrel",
-        "goblinbarrel",
-        "hog",
-        "battleram",
-        "bombtower",
-        "cannon",
-        "clone",
-        "earthquake",
-        "goblindrill",
-        "goblincage",
-        "ramrider",
-        "royalhogs",
-        "graveyard",
-        "elixerpump",
-        "furnace",
-        "barbhut",
-        "fireball",
-        "freeze",
-        "tombstone",
-        "goblinhut",
-        "infernotower",
-        "lightning",
-        "log",
-        "mortar",
-        "poison",
-        "rage",
-        "rocket",
-        "snowball",
-        "tesla",
-        "tornado",
-        "xbow",
-        "zap",
-        "balloon",
-        "archers",
-        "babydragon",
-        "bats",
-        "icegolem",
-        "icespirit",
-        "infernodragon",
-        "lavahound",
-        "megaminion",
-        "minions",
-        "skeletons",
-        "speargoblins",
-    ]
+    for card_name in card_names:
+        folder_str = f"card_{card_name}"
 
-    return next((card for card in card_list if check_for_card(image, card)), "unknown")
+        file_count = get_file_count(folder_str)
+
+        references = make_reference_image_list(file_count)
+
+        locations = find_references(
+            screenshot=image, folder=folder_str, names=references, tolerance=0.97
+        )
+
+        if check_for_location(locations):
+            return card_name
+
+    return "Unknown"
 
 
-def get_card_group(card_identification):
-    # pylint: disable=too-many-locals
-    """Method to identify the card group of a given card
-    args:
-        card_identification: name of the card
-    returns:
-        str: name of the card group
-    """
-
-    mini_cards = [
-        "bats",
-        "icespirit",
-        "megaminion",
-        "minions",
-        "skeletons",
-        "speargoblins",
-        "archers",
-        "icegolem",
-    ]
-
-    tank_cards = [
-        "lavahound",
-    ]
-
-    attack_cards = [
-        "babydragon",
-        "infernodragon",
-    ]
-
-    turret_cards = [
-        "turret_cards",
-        "bombtower",
-        "cannon",
-        "infernotower",
-        "tesla",
-        "goblincage",
-    ]
-
-    spell_cards = [
-        "spell_cards",
-        "arrows",
-        "earthquake",
-        "fireball",
-        "freeze",
-        "lightning",
-        "poison",
-        "rocket",
-        "snowball",
-        "tornado",
-        "zap",
-        "freeze",
-    ]
-
-    hog_cards = [
-        "hog_cards",
-        "hog",
-        "battleram",
-        "ramrider",
-        "royalhogs",
-    ]
-
-    spawner_cards = [
-        "spawner_cards",
-        "goblinhut",
-        "tombstone",
-        "barbhut",
-        "furnace",
-    ]
-
-    princess_cards = [
-        "princess_cards",
-        "skeletonbarrel",
-        "princess",
-        "barbbarrel",
-        "log",
-        "balloon",
-    ]
-
-    miner_cards = [
-        "miner_cards",
-        "miner",
-        "goblindrill",
-    ]
-
-    goblin_barrel_cards = [
-        "goblin_barrel_cards",
-        "goblinbarrel",
-        "graveyard",
-    ]
-
-    wall_breaker_cards = [
-        "wall_breaker_cards",
-        "wallbreakers",
-    ]
-
-    friendly_spell_cards = [
-        "friendly_spell_cards",
-        "clone",
-        "rage",
-    ]
-
-    xbow_cards = [
-        "xbow_cards",
-        "xbow",
-    ]
-
-    mortar_cards = [
-        "mortar_cards",
-        "mortar",
-    ]
-
-    elixer_pump_cards = [
-        "elixer_pump_cards",
-        "elixerpump",
-    ]
-
-    card_list_list = [
-        turret_cards,
-        spell_cards,
-        hog_cards,
-        spawner_cards,
-        princess_cards,
-        miner_cards,
-        goblin_barrel_cards,
-        wall_breaker_cards,
-        friendly_spell_cards,
-        xbow_cards,
-        mortar_cards,
-        elixer_pump_cards,
-        mini_cards,
-        tank_cards,
-        attack_cards,
-    ]
-
-    return next(
-        (
-            card_list[0]
-            for card_list in card_list_list
-            if card_identification in card_list
-        ),
-        "regular",
-    )
+# dev methods
 
 
-def get_play_coords(card_group, side):
-    # pylint: disable=too-many-locals
-    """Method to calculate the coordinates to play a card based on the card type
-    args:
-        card_group: name of the card group
-        side: side of the board to play the card on
-    returns:
-        int[]: coordinates to play the card
-    """
+def image_saver(vm_index, card_name, card_index):
+    folder_str = f"card_{card_name}"
 
-    if side == "random":
-        number = random.randint(0, 1)
-        side = "left" if number == 0 else "right"
-    left_turret_cards_coords = [[198, 402]]
-    right_turret_cards_coords = [[217, 402]]
+    # make random images
+    images = []
 
-    left_mini_cards_coords = [
-        [71, 423],
-        [151, 428],
-        [188, 413],
-    ]
+    card_image = get_card_images(vm_index)[card_index]
 
-    right_mini_cards_coords = [
-        [342, 426],
-        [257, 421],
-        [222, 414],
-    ]
+    while len(images) < 10:
+        left = random.randint(5, 60)
+        top = random.randint(5, 60)
+        width = random.randint(10, 50)
+        height = random.randint(10, 50)
 
-    left_tank_cards_coords = [
-        [80, 481],
-        [121, 477],
-        [153, 478],
-    ]
+        if left + width > 64:
+            continue
 
-    right_tank_cards_coords = [
-        [253, 483],
-        [297, 481],
-        [336, 481],
-    ]
+        if top + height > 74:
+            continue
 
-    left_attack_cards_coords = [
-        [154, 363],
-        [69, 359],
-    ]
+        random_region = [left, top, width, height]
 
-    right_attack_cards_coords = [
-        [240, 384],
-        [340, 382],
-    ]
+        random_image = crop_image(card_image, random_region)
+        images.append(random_image)
 
-    # Added New Part
+    # count the files in the directory for this card name
+    count = get_file_count(folder_str)
 
-    left_spell_cards_coords = [
-        [87, 189],
-        [129, 198],
-    ]
-    right_spell_cards_coords = [
-        [270, 205],
-        [321, 201],
-    ]
+    # get a list of names for the new images
+    names = []
+    for i in range(10):
+        names.append(count + i + 1)
 
-    left_hog_cards_coords = [
-        [94, 335],
-        [147, 339],
-    ]
-    right_hog_cards_coords = [
-        [293, 334],
-        [344, 330],
-    ]
+    # create the directory if it doesn't exist
 
-    left_spawner_cards_coords = [
-        [147, 485],
-        [84, 479],
-    ]
-    right_spawner_cards_coords = [
-        [303, 485],
-        [375, 491],
-    ]
+    directory_path = r"C:\My Files\my Programs\new-Py-Clash-Bot\src\pyclashbot\detection\reference_images\card"
+    directory_path += f"_{card_name}"
 
-    left_princess_cards_coords = [
-        [188, 424],
-        [186, 434],
-    ]
-    right_princess_cards_coords = [
-        [217, 409],
-        [214, 438],
-    ]
+    os.makedirs(directory_path, exist_ok=True)
 
-    left_miner_cards_coords = [
-        [94, 190],
-        [140, 210],
-        [155, 184],
-    ]
-    right_miner_cards_coords = [
-        [310, 210],
-        [342, 188],
-        [285, 188],
-    ]
+    # save the images in the directory for this card name with those names
+    for i in range(10):
+        image_to_save = images[i]
 
-    left_goblin_barrel_cards_coords = [
-        [135, 192],
-    ]
-    right_goblin_barrel_cards_coords = [
-        [308, 192],
-    ]
+        name = f"{names[i]}.png"
 
-    left_wall_breaker_cards_coords = [
-        [221, 330],
-        [221, 330],
-        [221, 330],
-        [138, 328],
-    ]
-    right_wall_breaker_cards_coords = [
-        [221, 330],
-        [221, 330],
-        [221, 330],
-        [306, 332],
-    ]
+        save_image(image_to_save, directory_path, name)
 
-    left_friendly_spell_cards_coords = [
-        [134, 398],
-    ]
-    right_friendly_spell_cards_coords = [
-        [315, 405],
-    ]
 
-    left_xbow_cards_coords = [
-        [206, 417],
-    ]
-    right_xbow_cards_coords = [
-        [226, 417],
-    ]
+def save_image(image, location, filename):
+    # Ensure the location directory exists
+    os.makedirs(location, exist_ok=True)
 
-    left_mortar_cards_coords = [
-        [179, 332],
-    ]
-    right_mortar_cards_coords = [
-        [289, 335],
-    ]
+    # Construct the file path
+    file_path = os.path.join(location, filename)
 
-    if card_group == "elixer_pump_cards":
-        if side == "left":
-            return [
-                [303, 485],
-                [375, 491],
-            ]
+    # Save the image as PNG
+    image.save(file_path, "PNG")
 
-        if side == "right":
-            return [
-                [147, 485],
-                [87, 479],
-            ]
 
-    elif card_group == "mini_cards":
-        if side == "left":
-            return left_mini_cards_coords
-        if side == "right":
-            return right_mini_cards_coords
-
-    elif card_group == "tank_cards":
-        if side == "left":
-            return left_tank_cards_coords
-        if side == "right":
-            return right_tank_cards_coords
-
-    elif card_group == "attack_cards":
-        if side == "left":
-            return left_attack_cards_coords
-        if side == "right":
-            return right_attack_cards_coords
-
-    elif card_group == "friendly_spell_cards":
-        if side == "left":
-            return left_friendly_spell_cards_coords
-        if side == "right":
-            return right_friendly_spell_cards_coords
-
-    elif card_group == "goblin_barrel_cards":
-        if side == "left":
-            return left_goblin_barrel_cards_coords
-        if side == "right":
-            return right_goblin_barrel_cards_coords
-
-    elif card_group == "hog_cards":
-        if side == "left":
-            return left_hog_cards_coords
-        if side == "right":
-            return right_hog_cards_coords
-
-    elif card_group == "miner_cards":
-        if side == "left":
-            return left_miner_cards_coords
-        if side == "right":
-            return right_miner_cards_coords
-
-    elif card_group == "mortar_cards":
-        if side == "left":
-            return left_mortar_cards_coords
-        if side == "right":
-            return right_mortar_cards_coords
-
-    elif card_group == "princess_cards":
-        if side == "left":
-            return left_princess_cards_coords
-        if side == "right":
-            return right_princess_cards_coords
-
-    elif card_group == "spawner_cards":
-        if side == "left":
-            return left_spawner_cards_coords
-        if side == "right":
-            return right_spawner_cards_coords
-
-    elif card_group == "spell_cards":
-        if side == "left":
-            return left_spell_cards_coords
-        if side == "right":
-            return right_spell_cards_coords
-
-    elif card_group == "turret_cards":
-        if side == "left":
-            return left_turret_cards_coords
-        if side == "right":
-            return right_turret_cards_coords
-
-    elif card_group == "wall_breaker_cards":
-        if side == "left":
-            return left_wall_breaker_cards_coords
-        if side == "right":
-            return right_wall_breaker_cards_coords
-
-    elif card_group == "xbow_cards":
-        if side == "left":
-            return left_xbow_cards_coords
-        if side == "right":
-            return right_xbow_cards_coords
-
-    if side == "left":
-        return [
-            [94, 335],
-            [147, 339],
-            [147, 485],
-            [87, 479],
-        ]
-    if side == "right":
-        return [
-            [293, 334],
-            [344, 330],
-            [303, 485],
-            [375, 491],
-        ]
-    return None
+if __name__ == "__main__":
+    screenshot(1)

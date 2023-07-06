@@ -40,6 +40,7 @@ main_layout = [
         sg.Frame(
             layout=progress_stats,
             title="Progress Stats",
+            expand_x=True,
         ),
     ],
     [
@@ -69,15 +70,11 @@ user_config_keys = [
     "-SSID_IN-",
     "-Open-Chests-in-",
     "-Requesting-in-",
-    "-Upgrade_cards-in-",
-    "-War-Participation-in-",
-    "-Random-Decks-in-",
     "-Card-Mastery-Collection-in-",
-    "-Level-Up-Reward-Collection-in-",
     "-Free-Offer-Collection-in-",
-    "-Daily-Challenge-Reward-Collection-",
-    "2v2_battle_in",
     "1v1_battle_in",
+    "card_upgrading_in",
+    "war_checkbox_in",
 ]
 
 # list of button and checkbox keys to disable when the bot is running

@@ -8,34 +8,20 @@ authors = [
   "Martin Miglio <code@martinmiglio.dev>",
 ]
 homepage = "https://pyclashbot.app"
-repository = "https://github.com/matthewmiglio/py-clash-bot"
-documentation = "https://pyclashbot.app"
-classifiers = [
-  "Intended Audience :: End Users/Desktop",
-  "Environment :: Win32 (MS Windows)",
-  "License :: OSI Approved :: MIT License",
-  "Natural Language :: English",
-  "Operating System :: Microsoft :: Windows",
-  "Programming Language :: Python :: 3.11",
-  "Topic :: Games/Entertainment",
-]
-keywords = ["clash royale", "bot", "automation"]
 include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
 
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pillow = "^9.5.0"
-opencv-python = "^4.8.0"
+pysimplegui = "^4.60.5"
 numpy = "^1.25.0"
-pygetwindow = "^0.0"
-joblib = "^1.3"
-requests = "^2.31"
-PySimpleGUI = "^4.60"
-ahk = { extras = ["binary"], version = "^1.1.3" }
+joblib = "^1.3.1"
+pillow = "^10.0.0"
 pymemuc = "^0.4.2"
-wmi = "^1.5.1"
+opencv-python = "^4.8.0.74"
 psutil = "^5.9.5"
+pywin32 = "^306"
+wmi = "^1.5.1"
 
 
 [tool.poetry.group.build]

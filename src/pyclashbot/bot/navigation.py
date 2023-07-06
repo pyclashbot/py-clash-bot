@@ -1,1401 +1,669 @@
-import random
 import time
 
 import numpy
 
 from pyclashbot.detection.image_rec import (
-    check_for_location,
-    find_references,
+    check_line_for_color,
+    get_line_coordinates,
     pixel_is_equal,
+    region_is_color,
 )
-from pyclashbot.memu.client import (
-    click,
-    get_file_count,
-    make_reference_image_list,
-    screenshot,
-    scroll_down,
-    scroll_up,
-    scroll_up_fast_on_left_side_of_screen,
-)
+from pyclashbot.memu.client import click, screenshot, scroll_up
+from pyclashbot.utils.logger import Logger
+
+CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [
+    315,
+    597,
+]  # coords of clan tab icon on the bottom of the clash main menu, when on the clash main menu
+
+PROFILE_PAGE_COORD = [88, 93]
+CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
+
+CLASH_MAIN_OPTIONS_BURGER_BUTTON = (365, 62)
+BATTLE_LOG_BUTTON = (241, 43)
 
 
-####Main navigation methods
-def get_to_card_page(logger):
-    """main method for getting to the card page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
+CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
+CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
 
-    # click card page
-    logger.change_status("Getting to card collection tab...")
-    click(105, 630)
-    if wait_for_card_page(logger) == "fail":
-        logger.change_status("failed waiting for card page")
+CLASH_MAIN_ICON_FROM_CARD_PAGE = (247, 601)
+
+
+def get_to_clash_main_from_card_page(vm_index, logger):
+    logger.change_status("Getting to clash main from card page")
+
+    # click clash main icon
+    click(
+        vm_index, CLASH_MAIN_ICON_FROM_CARD_PAGE[0], CLASH_MAIN_ICON_FROM_CARD_PAGE[1]
+    )
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.change_status(
+            "error 08572380572308 Failure gettting to clash main from card page"
+        )
         return "restart"
 
-    # get to battle deck page
-    logger.change_status("Getting to battle deck page...")
-    if get_to_battle_deck_page(logger) == "restart":
-        return "restart"
-    return "continue"
+
+def get_to_card_page_from_clash_main(vm_index, logger):
+    start_time = time.time()
+
+    logger.change_status("Getting to card page from clash main")
+
+    # click card page icon
+    click(
+        vm_index, CARD_PAGE_ICON_FROM_CLASH_MAIN[0], CARD_PAGE_ICON_FROM_CLASH_MAIN[1]
+    )
+    time.sleep(1)
+
+    # while not on the card page, cycle the card page
+    while not check_if_on_card_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 60:
+            return "restart"
+
+        click(
+            vm_index, CARD_PAGE_ICON_FROM_CARD_PAGE[0], CARD_PAGE_ICON_FROM_CARD_PAGE[1]
+        )
+        time.sleep(1)
+
+    logger.change_status("Made it to card page")
 
 
-def get_to_war_page_from_main(logger):
-    """main method for getting to the war page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
-    logger.change_status("getting to war page from clash main.")
-    if check_if_on_war_page():
-        return "continue"
+def check_if_on_card_page(vm_index):
+    if not region_is_color(vm_index, region=[75, 579, 31, 11], color=(73, 105, 139)):
+        return False
+    if not region_is_color(vm_index, region=[170, 577, 29, 10], color=(72, 105, 138)):
+        return False
 
-    click(315, 635)
-    time.sleep(3)
+    lines = [
+        check_line_for_color(
+            vm_index, x1=393, y1=9, x2=410, y2=29, color=(66, 198, 24)
+        ),
+        check_line_for_color(
+            vm_index, x1=67, y1=54, x2=99, y2=84, color=(96, 196, 255)
+        ),
+    ]
 
-    loops = 0
-    while not check_if_on_war_page():
-        logger.change_status("still not on war page. Cycling.")
-        handle_war_chest_obstruction(logger)
+    return all(lines)
 
-        # check if stuck on trophy progression page
-        if check_if_stuck_on_trophy_progression_page():
-            logger.change_status("Stuck on trophy progression page. Clicking out")
-            click(210, 621)
-            time.sleep(2)
-            get_to_war_page_from_main(logger)
 
-        loops += 1
-        if loops > 20:
+def wait_for_switch_accounts_page(vm_index, logger: Logger):
+    start_time = time.time()
+    logger.change_status("Waiting for switch accounts page")
+    while not check_for_switch_accounts_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
             logger.change_status(
-                "failure getting to war page using get_to_war_page_from_main()"
+                "Error 368375367 Waited too long for switch accounts page"
             )
             return "restart"
-        click(280, 620)
+    logger.change_status("Done waiting for switch accounts page")
 
-        if random.randint(1, 2) == 2:
-            # origin = pyautogui.position()
-            # pyautogui.moveTo(300, 300)
-            time.sleep(1)
-            scroll_up()
-            # pyautogui.moveTo(origin[0], origin[1])
 
-        time.sleep(1)
-    return "continue"
+def check_for_switch_accounts_page(vm_index):
+    if not region_is_color(vm_index, region=[255, 108, 7, 5], color=(255, 255, 255)):
+        return False
 
+    if not check_line_for_color(
+        vm_index, x1=127, y1=232, x2=171, y2=232, color=(47, 243, 198)
+    ):
+        return False
 
-def get_to_clash_main_from_shop(logger):
-    """main method for getting to the clash main from the shop page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
+    if not check_line_for_color(
+        vm_index, x1=155, y1=221, x2=154, y2=244, color=(47, 244, 199)
+    ):
+        return False
 
-    logger.change_status("Getting to clash main from shop.")
-    # click main
-    click(240, 630)
-    time.sleep(2)
+    if not check_line_for_color(
+        vm_index, x1=381, y1=46, x2=398, y2=64, color=(255, 255, 255)
+    ):
+        return False
 
-    loops = 0
-    while not check_if_on_clash_main_menu():
-        loops += 1
-        if loops > 20:
-            logger.change_status(
-                "Looped through get_to_clash_main_from_shop() too many times. Restarting"
-            )
-            return "restart"
-        click(200, 620)
-        time.sleep(2)
+    if not check_line_for_color(
+        vm_index, x1=398, y1=46, x2=381, y2=63, color=(255, 255, 255)
+    ):
+        return False
 
-    logger.change_status("Made it to clash main from shop.")
-    return "continue"
-
-
-def get_to_shop_page_from_main(logger):
-    """main method for getting to the shop page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
-
-    logger.change_status("Getting to shop from main.")
-
-    # check if on main
-    if not check_if_on_clash_main_menu():
-        logger.change_status(
-            "not no clash main so cant run get_to_shop_page_from_main()"
-        )
-        return "restart"
-
-    # click shop icon
-    click(35, 636)
-    time.sleep(1)
-
-    # check if on shop
-    if not check_if_on_shop_page_with_delay(logger):
-        logger.change_status("Failed to get to shop page.")
-        return "restart"
-
-    logger.change_status("Made it to shop from main.")
-    return "continue"
-
-
-def get_to_clash_main_from_card_page(logger):
-    """main method for getting to the clash main menu from the card page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
-
-    logger.change_status("Getting to Clash main menu from card page")
-
-    # get to card page
-    click(240, 627)
-    time.sleep(3)
-
-    loops = 0
-    while not check_if_on_clash_main_menu():
-        loops += 1
-        if loops > 15:
-            logger.change_status("Couldn't get to Clash main menu from card page")
-            return "restart"
-
-        # if not on menu at this point cycle the screen off trophy progression page and back on
-        click(212, 637)
-        time.sleep(1)
-    return "continue"
-
-
-def get_to_clash_main_from_clan_page(logger):
-    """main method for getting to the clash main menu from the clan page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
-
-    logger.change_status("getting to main from clan page")
-    # Method to return to clash main menu from request page
-    click(172, 612)
-    time.sleep(3)
-    on_main = check_if_on_clash_main_menu()
-    loops = 0
-    while not on_main:
-        logger.change_status("Still not on main page. Cycling")
-        loops += 1
-        if loops > 7:
-            logger.change_status("Could not get to clash main from request page.")
-            return "restart"
-        click(208, 636)
-        time.sleep(1)
-        on_main = check_if_on_clash_main_menu()
-    logger.change_status("made it to clash main.")
-    time.sleep(3)
-    return "continue"
-
-
-def get_to_clan_page(logger):
-    """main method for getting to the clan page
-    args:
-        logger: logger object
-    returns:
-        restart state if failed, None if successful
-    """
-    # method to get to clan chat page from clash main
-    logger.change_status("getting to clan chat page.")
-    click(312, 629)
-    time.sleep(3)
-    on_clan_chat_page = check_if_on_clan_page()
-    loops = 0
-    while not on_clan_chat_page:
-        logger.change_status("Still not on clan chat page.")
-
-        # handle other war chest popup
-        handle_war_loot_chest(logger)
-
-        # handle war chest popup
-        if check_for_war_loot_menu():
-            logger.change_status("Found war loot. handling it.")
-            handle_war_loot_menu(logger)
-
-        # handle final results popup
-        if check_for_final_results_popup(logger):
-            handle_final_results_popup(logger)
-
-        # handling infinite loop
-        loops += 1
-        if loops > 7:
-            logger.change_status("Could not get to clan page.")
-            return "restart"
-
-        # cycle page
-        click(278, 631)
-        time.sleep(1)
-
-        # scroll down because page wont cycle otherwise idk why. dumb game
-        scroll_down()
-        time.sleep(1)
-
-        # update on_clan_chat_page
-        on_clan_chat_page = check_if_on_clan_page()
-    return "continue"
-
-
-def open_activity_log(logger):
-    """main method for getting to the activity log menu
-    args:
-    """
-
-    logger.change_status("Opening activity log")
-    click(x=360, y=99)
-    time.sleep(1)
-
-    click(x=255, y=75)
-    time.sleep(1)
-
-
-def leave_2v2_end_battle_window(logger):
-    # sourcery skip: extract-duplicate-method
-    """leave_end_battle_window checks which end screen case is (there are two),
-    clicks the appropriate button to leave the end battle screen, then waits for clash main.
-    args:
-        logger: logger object from logger class initialized in main
-    returns:
-        "restart" if it fails to get to clash main, else None
-    """
-    logger.change_status("Leaving this 2v2 battle. . .")
-
-    # if end screen condition 1 (exit in bottom left)
-    if check_if_end_screen_is_exit_bottom_left():
-        logger.change_status("Leaving end battle (condition 1)")
-        click(79, 625)
-        time.sleep(6)
-        click(x=173, y=631)
-
-    # if end screen condition 2 (OK in bottom middle)
-    elif check_if_end_screen_is_ok_bottom_middle():
-        logger.change_status("Leaving end battle (condition 2)")
-        click(206, 594)
-        time.sleep(6)
-        click(x=173, y=631)
-    else:
-        logger.change_status("#5927324958 Failure leaving this battle")
-        return "restart"
-    return "continue"
-
-
-def handle_war_loot_chest(logger):
-    """method for handling the possbiility of a war loot chest in the way of the bot
-    args:
-        None
-    returns:
-        None
-    """
-
-    if check_for_war_loot_chest():
-        logger.change_status("Found a war chest in the way...")
-        # click open chest
-        logger.change_status("Clicking open war chest..")
-        click(205, 440)
-        time.sleep(1)
-
-        # skip thru chest
-        logger.change_status("Skipping thru war chest rewards...")
-        click(20, 450, clicks=20, interval=1)
-        time.sleep(1)
-
-        logger.change_status("Done handling war chest...")
-
-
-def handle_card_mastery_notification():
-    """Method to handle the possibility of a card mastery notification obstructing the bot
-    args:
-        None
-    returns:
-        None
-    """
-    # Method to handle the possibility of a card mastery notification
-    # obstructing the bot
-    click(107, 623)
-    time.sleep(1)
-
-    click(240, 630)
-    time.sleep(0.33)
-
-
-def handle_war_loot_menu(logger):
-    """Method to handle the possibility of a war_loot_menu page obstructing the bot
-    args:
-        None
-    returns:
-        None
-    """
-    # open chest
-    logger.change_status("Opening war chest")
-    click(205, 420)
-    time.sleep(1)
-
-    # click dead space to skip thru chest
-    logger.change_status("Skipping thru war chest rewards")
-    click(20, 440, clicks=20, interval=0.1)
-    time.sleep(1)
-
-
-def handle_final_results_popup(logger):
-    """method for handling the final results popup
-    args:
-        None
-    returns:
-        None
-    """
-
-    logger.change_status("Doing final results popup hanlding.")
-
-    # click OK
-    click(220, 555)
-    time.sleep(5)
-
-
-def open_war_chest(logger):
-    """method for opening a war chest that is obstructing the bot
-    args:
-        logger: logger object from logger class initialized in main
-    returns:
-        None
-    """
-
-    # click chest
-    logger.change_status("Opening the war chest. . .")
-    click(210, 440)
-    time.sleep(1)
-
-    # open it
-    logger.change_status("Skipping through rewards. . .")
-    click(10, 220, clicks=20, interval=1)
-    time.sleep(3)
-
-    # Click OK on war results page popup
-    logger.change_status("Clicking OK on war results page popup")
-    click(205, 555)
-    for n in range(5):
-        logger.change_status(
-            "Manual wait time after closing war results page popup after opening war chest:",
-            n,
-        )
-        time.sleep(1)
-
-    # increment logger
-    logger.change_status("Incrementing war chest collection counter.")
-    logger.add_war_chest_collection()
-
-
-def handle_war_chest_obstruction(logger):
-    """method for handling the possiblity of a war chest obstructing the bot
-    args:
-        logger: logger object from logger class initialized in main
-    returns:
-        None
-    """
-    if check_for_war_chest_obstruction():
-        logger.change_status("Opening war chest.")
-        open_war_chest(logger)
-
-
-def check_if_on_clash_main_menu():
-    """method for checking if the bot is on the clash main menu
-    args:
-        None
-    returns:
-        bool, True if on clash main menu, else False
-    """
-
-    gem_logo = check_for_gem_logo_on_main()
-    friends_logo = check_for_friends_logo_on_main()
-    gold_logo = check_for_gold_logo_on_main()
-
-    # print(gem_logo, friends_logo, gold_logo)
-
-    return bool(gem_logo and friends_logo and gold_logo)
-
-
-def check_if_on_war_page():
-    """method for scanning for pixels that indicate the bot is on the war page
-    args:
-        None
-    returns:
-        bool, True if on war page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[73][43],
-        iar[83][43],
-    ]
-    color = [232, 225, 236]
-    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
-
-
-def check_for_gem_logo_on_main():
-    """method for scanning for pixels that indicate the bot
-    is on the clash main menu by checking for the gem logo
-    args:
-        None
-    returns:
-        bool, True if on gem logo exists, else False
-    """
-
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[46][402],
-        iar[52][403],
-        iar[48][410],
-    ]
-    color = [75, 180, 35]
-
-    # print_pix_list(pix_list)
-
-    return any(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
-
-
-def check_for_gold_logo_on_main():
-    """method for scanning for pixels that indicate the
-    bot is on the clash main menu by checking for the gold logo
-    args:
-        None
-    returns:
-        bool, True if on gold logo exists, else False
-    """
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[48][299],
-        iar[52][300],
-        iar[44][302],
-        iar[49][297],
-    ]
-    color = [201, 177, 56]
-
-    # print_pix_list(pix_list)
-
-    return any(pixel_is_equal(pix, color, tol=85) for pix in pix_list)
-
-
-def check_for_friends_logo_on_main():
-    """method for scanning for pixels that indicate the bot
-    is on the clash main menu by checking for the friends logo
-    args:
-        None
-    returns:
-        bool, True if on gem friends exists, else False
-    """
-
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[90][269],
-        iar[105][265],
-        iar[103][272],
-        iar[89][270],
-        iar[107][266],
-    ]
-    color = [177, 228, 252]
-
-    # print_pix_list(pix_list)
-
-    # pixel check
-
-    return any(pixel_is_equal(pix, color, tol=65) for pix in pix_list)
-
-
-def check_for_war_loot_chest():
-    """method for scanning for images that indicate a war_loot_chest is on screen
-    args:
-        None
-    returns:
-        bool, True if on gem logo exists, else False
-    """
-    current_image = screenshot()
-    reference_folder = "check_for_war_loot_chest"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "check_for_war_loot_chest",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    return check_for_location(locations)
-
-
-def check_if_on_clan_page():
-    """method for scanning pixels to check if they indicate the bot is on the clan page
-    args:
-        None
-    returns:
-        bool, True if on clan page, else False"""
-
-    # Method to check if we're on the clan chat page
-
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[570][216],
-        iar[575][149],
-        iar[557][150],
-        iar[575][215],
-    ]
-    color = [183, 105, 253]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def check_for_war_loot_menu():
-    """method for scanning pixels that indicate if the war loot menu is on screen
-    args:
-        None
-    returns:
-        bool, True if on war loot menu, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    pix_list = [
-        iar[414][210],
-        iar[418][217],
-        iar[423][227],
-        iar[427][237],
-    ]
-    color = [255, 190, 48]
-
-    return all(pixel_is_equal(color, pix, tol=45) for pix in pix_list)
-
-
-def check_for_final_results_popup(logger):
-    """method for scanning pixels that indicate if the final results popup is on screen
-    args:
-        None
-    returns:
-        bool, True if on final results popup, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        iar[555][170],
-        iar[565][180],
-        iar[569][187],
-        iar[575][195],
-    ]
-    for pix in pix_list:
-        if not pixel_is_equal(pix, [181, 96, 253], tol=45):
-            return False
-    logger.change_status("Final results popup detected.")
     return True
 
 
-def check_if_on_shop_page_with_delay(logger):
-    """method for checking if the bot is on the shop page with a delay
-    args:
-        None
-    returns:
-        bool, True if on shop page, else False
-    """
+def handle_clash_main_tab_notifications(vm_index, logger: Logger):
     start_time = time.time()
-    while time.time() - start_time < 3:
-        logger.change_status("looping thru")
-        if check_if_on_shop_page():
-            logger.change_status("made it")
-            return True
-        time.sleep(0.5)
+
+    # if not on clash main, return restart
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.change_status("Error 08725652389 Not on clash main menu, restarting vm")
+        return "restart"
+
+    CARD_TAB_FROM_CLASH_MAIN = (105, 591)
+    SHOP_TAB_FROM_CARD_TAB = (29, 601)
+    CHALLENGES_TAB_FROM_SHOP_TAB = (385, 600)
+    CLASH_MAIN_TAB_FROM_CHALLENGES_TAB = (173, 591)
+
+    # click card tab
+    click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
+    if wait_for_clash_main_card_page(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 0675248 Waited too long for clash main card page, restarting vm"
+        )
+        return "restart"
+
+    # click shop tab
+    click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1])
+    if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 086720845 Waited too long for clash main shop page, restarting vm"
+        )
+        return "restart"
+
+    # click challenges tab
+    click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1])
+    if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 956842835 Waited too long for clash main challenged tab page, restarting vm"
+        )
+
+        return "restart"
+
+    # get back to main
+    click(
+        vm_index,
+        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
+        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
+    )
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 358971935813 Waited too long for clash main menu, restarting vm"
+        )
+        return "restart"
+
+    logger.change_status(
+        f"Handled clash main notifications in {str(time.time() - start_time)[:5]} seconds"
+    )
+
+
+def wait_for_clash_main_challenges_tab(vm_index, logger: Logger):
+    start_time = time.time()
+
+    logger.change_status("Waiting for clash main challenges tab")
+    while not check_if_on_clash_main_challenges_tab(vm_index):
+        if time.time() - start_time > 10:
+            logger.change_status(
+                "Error 8884613 Waited too long for clash main challenges tab"
+            )
+            return "restart"
+
+    logger.change_status("Done waiting for clash main challenges tab")
+
+
+def check_if_on_clash_main_challenges_tab(vm_index):
+    if not region_is_color(vm_index, region=[307, 583, 15, 36], color=(75, 111, 146)):
+        return False
+
+    if not region_is_color(vm_index, region=[61, 578, 19, 40], color=(70, 84, 104)):
+        return False
+
+    if not region_is_color(vm_index, region=[212, 620, 24, 10], color=(63, 75, 94)):
+        return False
+
+    return True
+
+
+def wait_for_clash_main_card_page(vm_index, logger: Logger):
+    start_time = time.time()
+
+    logger.change_status("Waiting for clash main card page")
+    while not check_if_on_clash_main_card_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
+            logger.change_status(
+                "Error 23958623975 Waiting too long for clash main card page"
+            )
+            return "restart"
+
+    logger.change_status("Done waiting for clash main card page")
+
+
+def check_if_on_clash_main_card_page(vm_index):
+    if not region_is_color(vm_index, region=[14, 45, 20, 20], color=(13, 56, 105)):
+        return False
+
+    if not region_is_color(vm_index, region=[80, 575, 25, 13], color=(71, 105, 138)):
+        return False
+
+    lines = [
+        check_line_for_color(
+            vm_index, x1=388, y1=16, x2=415, y2=17, color=(60, 189, 21)
+        ),
+        check_line_for_color(vm_index, x1=4, y1=5, x2=28, y2=26, color=(25, 177, 255)),
+    ]
+    return all(lines)
+
+
+def check_if_on_clash_main_shop_page(vm_index):
+    if not region_is_color(vm_index, region=[9, 580, 30, 45], color=(76, 112, 146)):
+        return False
+
+    if not region_is_color(vm_index, region=[90, 580, 18, 40], color=(75, 111, 146)):
+        return False
+
+    lines = [
+        check_line_for_color(
+            vm_index, x1=393, y1=7, x2=414, y2=29, color=(44, 144, 21)
+        ),
+        check_line_for_color(
+            vm_index, x1=48, y1=593, x2=83, y2=594, color=(102, 236, 56)
+        ),
+    ]
+
+    return all(lines)
+
+
+def wait_for_clash_main_shop_page(vm_index, logger: Logger):
+    start_time = time.time()
+    logger.change_status("Waiting for clash main shop page")
+    while not check_if_on_clash_main_shop_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
+            logger.change_status(
+                "Error 764527546 Waiting too long for clash main shop page"
+            )
+            return "restart"
+    logger.change_status("Done waiting for clash main shop page")
+
+
+def get_to_activity_log(vm_index, logger: Logger):
+    logger.change_status("Getting to activity log")
+
+    # if not on main return restart
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.change_status("Eror 08752389 Not on clash main menu, restarting vm")
+        return "restart"
+
+    # click clash main burger options button
+    logger.change_status("Opening clash main options menu")
+    click(
+        vm_index,
+        CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
+        CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
+    )
+    if wait_for_clash_main_burger_button_options_menu(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 30571038573 Waited too long for calsh main burger button options menu, restarting vm"
+        )
+        return "restart"
+
+    # click battle log button
+    logger.change_status("Clicking activity log button")
+    click(vm_index, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
+    wait_for_battle_log_page(vm_index, logger)
+
+
+def wait_for_battle_log_page(vm_index, logger: Logger):
+    start_time = time.time()
+    logger.change_status("Waiting for battle log page to appear")
+    while not check_if_on_battle_log_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
+            logger.change_status(
+                "Error 2457245645 Waiting too long for battle log page"
+            )
+            return "restart"
+
+    logger.change_status("Done waiting for battle log page to appear")
+
+
+def check_if_on_battle_log_page(vm_index):
+    line1 = check_line_for_color(
+        vm_index, x1=353, y1=62, x2=376, y2=83, color=(231, 28, 28)
+    )
+    line2 = check_line_for_color(
+        vm_index, x1=154, y1=64, x2=173, y2=83, color=(255, 255, 255)
+    )
+    line3 = check_line_for_color(
+        vm_index, x1=248, y1=67, x2=262, y2=83, color=(255, 255, 255)
+    )
+    line4 = check_line_for_color(
+        vm_index, x1=9, y1=208, x2=27, y2=277, color=(11, 45, 67)
+    )
+
+    if line1 and line2 and line3 and line4:
+        return True
     return False
 
 
-def check_if_on_shop_page():
-    """method for checking if the bot is on the shop page
-    args:
-        None
-    returns:
-        bool, True if on shop page, else False
-    """
-    iar = numpy.asarray(screenshot())
+def check_if_on_clash_main_burger_button_options_menu(vm_index):
+    if (
+        check_line_for_color(
+            vm_index, x1=182, y1=78, x2=208, y2=101, color=(208, 144, 43)
+        )
+        and check_line_for_color(
+            vm_index, x1=184, y1=196, x2=206, y2=215, color=(255, 255, 255)
+        )
+        and check_line_for_color(
+            vm_index, x1=182, y1=360, x2=210, y2=384, color=(255, 255, 255)
+        )
+        and check_line_for_color(
+            vm_index, x1=182, y1=128, x2=208, y2=151, color=(192, 135, 80)
+        )
+    ):
+        return True
+    return False
 
-    pix_list = [
-        iar[624][71],
-        iar[636][55],
-        iar[623][85],
-        iar[625][71],
-    ]
-    color_list = [
-        [103, 234, 56],
-        [56, 85, 101],
-        [247, 194, 75],
-        [103, 236, 56],
-    ]
-    for n in range(4):
-        this_pixel = pix_list[n]
-        this_color = color_list[n]
-        if not pixel_is_equal(this_pixel, this_color, tol=35):
-            return False
+
+def wait_for_clash_main_burger_button_options_menu(vm_index, logger: Logger):
+    start_time = time.time()
+
+    logger.change_status("Waiting for clash main optinos menu to appear")
+    while not check_if_on_clash_main_burger_button_options_menu(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
+            logger.change_status(
+                "Error 57245645362 Waiting too long for clash main optinos menu to appear"
+            )
+            return "restart"
+    logger.change_status("Done waiting for clash main options menu to appear")
+
+
+def check_for_end_1v1_battle_screen(vm_index):
+    line1 = check_line_for_color(
+        vm_index, x1=52, y1=515, x2=78, y2=532, color=(255, 255, 255)
+    )
+    line2 = check_line_for_color(
+        vm_index, x1=173, y1=555, x2=194, y2=564, color=(78, 175, 255)
+    )
+    line3 = check_line_for_color(
+        vm_index, x1=198, y1=545, x2=222, y2=562, color=(255, 255, 255)
+    )
+
+    if line1 and line2 and line3:
+        return True
+    return False
+
+
+def wait_for_end_1v1_battle_screen(vm_index, logger: Logger):
+    start_time = time.time()
+    logger.change_status("waiting for end 1v1 battle screen")
+    while not check_for_end_1v1_battle_screen(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
+            logger.change_status(
+                "Error 8734572456 Waiting too long for end 1v1 battle screen"
+            )
+            return "restart"
+
+    logger.change_status("done waiting for end 1v1 battle screen")
+
+
+def wait_for_1v1_battle_start(vm_index, logger: Logger):
+    start_time = time.time()
+    logger.change_status("Waiting for 1v1 battle to start")
+    while not check_for_in_1v1_battle(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 60:
+            logger.change_status(
+                "Error 8734572456 Waiting too long for 1v1 battle to start"
+            )
+            return "restart"
+
+        click(vm_index, 200, 200)
+        time.sleep(1)
+
+    logger.change_status("Done waiting for 1v1 battle to start")
+
+
+def check_for_in_1v1_battle(vm_index):
+    # look for red enemy name
+    red_enemy_name_exists = check_line_for_color(
+        vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+    )
+
+    # look for purple elixer thing
+    purple_exlier_icon_exists = check_line_for_color(
+        vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+    )
+
+    # look for white chat bubble
+    white_chat_bubble_exists = check_line_for_color(
+        vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+    )
+
+    # look for tan time left text
+    tan_time_left_text_exists = check_line_for_color(
+        vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+    )
+
+    if (
+        tan_time_left_text_exists
+        and white_chat_bubble_exists
+        and red_enemy_name_exists
+        and purple_exlier_icon_exists
+    ):
+        return True
+
+    return False
+
+
+def get_to_clash_main_from_clan_page(vm_index, logger: Logger):
+    logger.change_status("Getting to clash main from clan page")
+
+    # click clash main coord
+    logger.change_status("Clicking clash main icon")
+    click(
+        vm_index, CLASH_MAIN_COORD_FROM_CLAN_PAGE[0], CLASH_MAIN_COORD_FROM_CLAN_PAGE[1]
+    )
+
+    # wait for clash main menu
+    logger.change_status("Waiting for clash main")
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.change_status("Error 23422464342342, failure waiting for clash main")
+        return "restart"
+
+
+def get_to_clan_tab_from_clash_main(vm_index, logger: Logger):
+    logger.change_status("Getting to clan tab from clash main menu")
+
+    # if not on main, restart
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.change_status(
+            "ERROR 7346722 Not on clash main menu, returning to start state"
+        )
+        return "restart"
+
+    # click clan tab button
+    click(
+        vm_index,
+        CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+        CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
+    )
+
+    while not check_if_on_clan_chat_page(vm_index):
+        logger.change_status(f"Cycling to clan tab")
+        click(
+            vm_index,
+            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
+        )
+
+        scroll_up(vm_index)
+
+        time.sleep(3)
+
+    logger.change_status("Made it to clan chat page")
+
+
+def check_if_on_clan_chat_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    friend_battle_button_exists = False
+    for x in range(140, 157):
+        this_pixel = iar[541][x]
+        if pixel_is_equal([183, 96, 252], this_pixel, tol=35):
+            friend_battle_button_exists = True
+            break
+
+    blue_chat_button_exists = False
+    for x in range(300, 320):
+        this_pixel = iar[539][x]
+        if pixel_is_equal([76, 174, 255], this_pixel, tol=35):
+            blue_chat_button_exists = True
+
+    red_x_button_exists = False
+    for x in range(343, 348):
+        this_pixel = iar[44][x]
+        if pixel_is_equal([228, 28, 28], this_pixel, tol=35):
+            red_x_button_exists = True
+            break
+
+    if friend_battle_button_exists and blue_chat_button_exists and red_x_button_exists:
+        return True
+    return False
+
+
+def check_if_on_profile_page(vm_index):
+    if not check_line_for_color(
+        vm_index, x1=329, y1=188, x2=339, y2=195, color=(4, 244, 88)
+    ):
+        return False
+    if not check_line_for_color(
+        vm_index, x1=169, y1=50, x2=189, y2=50, color=(255, 222, 0)
+    ):
+        return False
+    if not check_line_for_color(
+        vm_index, x1=369, y1=63, x2=351, y2=71, color=(228, 36, 36)
+    ):
+        return False
     return True
 
 
-def check_for_war_chest_obstruction():
-    """method for scanning for images that indicate a war_chest_obstruction is on screen
-    args:
-        None
-    returns:
-        bool, True if on gem logo exists, else False
-    """
-    current_image = screenshot()
-    reference_folder = "check_for_war_chest_obstruction"
-
-    references = make_reference_image_list(
-        get_file_count(
-            "check_for_war_chest_obstruction",
-        )
-    )
-
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97,
-    )
-
-    return check_for_location(locations)
-
-
-def check_if_end_screen_is_ok_bottom_middle():
-    """check_if_end_screen_is_ok_bottom_middle checks for one
-    of the end of battle screen cases (OK in bottom middle)
-    returns:
-        bool: True if pixels indicate this is the case, else False
-    """
-
-    iar = numpy.array(screenshot())
-    # (210,589)
-    pix_list = [
-        iar[591][234],
-        iar[595][178],
-        iar[588][192],
-        iar[591][233],
-    ]
-    color = [78, 175, 255]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def check_if_end_screen_is_exit_bottom_left():
-    """check_if_end_screen_is_exit_bottom_left checks for
-    one of the end of battle screen cases (OK in bottom left)
-    returns:
-        bool: True if pixels indicate this is the case, else False
-    """
-
-    iar = numpy.array(screenshot())
-    pix_list = [
-        iar[638][57],
-        iar[640][110],
-        iar[622][59],
-        iar[621][110],
-    ]
-    color = [87, 186, 255]
-    return all((pixel_is_equal(pix, color, tol=45)) for pix in pix_list)
-
-
-def check_if_stuck_on_trophy_progression_page():
-    """method to scan for pixels that indicate the bot is stuck on the trophy progression page
-    args:
-        None
-    returns:
-        bool, True if stuck on trophy progression page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-    color = [85, 177, 255]
-    pix_list = [
-        # iar[620][225],
-        iar[625][230],
-        iar[630][238],
-        iar[635][245],
-    ]
-
-    return all(pixel_is_equal(pix, color, tol=45) for pix in pix_list)
-
-
-def wait_for_clash_main_menu(logger):
-    """method to wait for the clash main menu to appear
-    args:
-        logger: logger object
-    returns:
-        restart state if waited too long, else None
-    """
-
-    logger.change_status("Waiting for clash main menu")
-    waiting = not check_if_on_clash_main_menu()
-
+def wait_for_profile_page(vm_index, logger: Logger):
+    logger.change_status("Waiting for profile page")
     start_time = time.time()
 
-    loops = 0
-    while waiting:
-        logger.change_status("Still waiting for clash main")
+    while not check_if_on_profile_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 20:
+            logger.change_status("Error 8734572456 Waiting too long for profile page")
+            return "restart"
+
+    logger.change_status("Done waiting for profile page")
+
+
+def get_to_profile_page(vm_index, logger: Logger):
+    # if not on clash main, return
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.change_status(
+            f"ERROR 732457256 Not on clash main menu, returning to start state"
+        )
+        return "restart"
+
+    # click profile button
+    click(vm_index, PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
+
+    # wait for profile page
+    if wait_for_profile_page(vm_index, logger) == "restart":
+        logger.change_status("Error 0573085 Waited too long for clash profile page")
+        return "restart"
+
+
+def check_for_trophy_reward_menu(vm_index):
+    if not region_is_color(vm_index, region=[172, 599, 22, 12], color=(78, 175, 255)):
+        return False
+    if not region_is_color(vm_index, region=[226, 601, 18, 10], color=(78, 175, 255)):
+        return False
+
+    lines = [
+        check_line_for_color(
+            vm_index, x1=199, y1=590, x2=206, y2=609, color=(255, 255, 255)
+        ),
+        check_line_for_color(
+            vm_index, x1=211, y1=590, x2=220, y2=609, color=(255, 255, 255)
+        ),
+    ]
+
+    return all(lines)
+
+
+def handle_trophy_reward_menu(vm_index, logger: Logger):
+    logger.change_status("Handling trophy reward menu ")
+    OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
+    click(
+        vm_index,
+        OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
+        OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
+    )
+    time.sleep(1)
+
+
+def wait_for_clash_main_menu(vm_index, logger: Logger):
+    logger.change_status("Waiting for clash main menu")
+
+    start_time = time.time()
+    while not check_if_on_clash_main_menu(vm_index):
         # loop count
-        loops += 1
 
-        wait_time = 60
+        if check_for_trophy_reward_menu(vm_index):
+            handle_trophy_reward_menu(vm_index, logger)
 
-        if time.time() - start_time > wait_time:
+        if time.time() - start_time > 60:
+            logger.change_status("Looped through getting to clash main too many times")
             logger.change_status(
-                f"Waited more than {wait_time} sec for clashmain. restarting"
+                "wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
             )
             return "restart"
 
         # click dead space
-        if loops % 5 == 0:
-            click(32, 364)
+        click(vm_index, 32, 364)
 
-        # check if stuck on trophy progression page
-        if check_if_stuck_on_trophy_progression_page():
-            logger.change_status("Stuck on trophy progression page. Clicking out")
-            click(210, 621)
-            time.sleep(1)
-
-        # check if still waiting
-        waiting = not check_if_on_clash_main_menu()
+        # wait 1 sec
+        time.sleep(1)
 
     logger.change_status("Done waiting for clash main menu")
-    return "continue"
 
 
-#### TO SORT
+def check_if_on_clash_main_menu(vm_index):
+    if not check_for_gem_logo_on_main(vm_index):
+        return False
 
+    if not check_for_friends_logo_on_main(vm_index):
+        return False
 
-def get_to_clash_main_settings_page(logger):
-    """method to get to the clash main settings page
-    args:
-        None
-    returns:
-        None
-    """
+    if not check_for_gold_logo_on_main(vm_index):
+        return False
+    return True
 
-    click(x=364, y=99)
-    if wait_for_clash_main_settings_page(logger) == "restart":
-        return "restart"
-    return "continue"
 
+def check_for_gem_logo_on_main(vm_index):
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot(vm_index))
 
-def check_if_on_clash_main_settings_page():
-    """method to check if the bot is on the clash main settings page by scanning relevant pixels
-    args:
-        None
-    returns:
-        bool, True if on the clash main settings page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    battle_log_text_exists = False
-    for x_coord in range(230, 250):
-        this_pixel = iar[75][x_coord]
-        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
-            battle_log_text_exists = True
-
-    tournaments_button_exists = False
-    for x_coord in range(185, 210):
-        this_pixel = iar[287][x_coord]
-        if pixel_is_equal(this_pixel, [95, 141, 51], tol=35):
-            tournaments_button_exists = True
-
-    return bool(battle_log_text_exists and tournaments_button_exists)
-
-
-def wait_for_clash_main_settings_page(logger):
-    """method for waiting for the calsh main settings page to appear
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-    while not check_if_on_clash_main_settings_page():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            logger.change_status(
-                "Waited more than 10 sec for clash main settings page. Restarting"
-            )
-            return "restart"
-    return "continue"
-
-
-def wait_for_ssid_switch_page():
-    """method for waiting for the ssid switch page to appear
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-    while not check_for_ssid_switch_page():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            print("Waited more than 10 sec for ssid switch page. Restarting")
-            return "restart"
-    return "continue"
-
-
-def get_to_ssid_switch_page():
-    """method for getting to the ssid switch page (accounts switch page)
-    args:
-        None
-    returns:
-        None
-    """
-
-    click(200, 405)
-    return "restart" if wait_for_ssid_switch_page() == "restart" else "continue"
-
-
-def check_for_ssid_switch_page():
-    """Method for scanning pixels that indicate whether or not the bot is on the ssid switch page
-    args:
-        None
-    returns:
-        bool, True if on the ssid switch page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    blue_background_color_exists = False
-    for x_coord in range(30, 70):
-        this_pixel = iar[110][x_coord]
-        if pixel_is_equal(this_pixel, [50, 118, 182], tol=35):
-            blue_background_color_exists = True
-
-    switch_accounts_logo_exists = False
-    for x_coord in range(150, 165):
-        this_pixel = iar[265][x_coord]
-        if pixel_is_equal(this_pixel, [47, 243, 198], tol=35):
-            switch_accounts_logo_exists = True
-
-    return bool(switch_accounts_logo_exists and blue_background_color_exists)
-
-
-def get_to_battlepass_rewards_page(logger):
-    """method for getting the to battlepass rewards page
-    args:
-        None
-    returns:
-        None
-    """
-
-    click(315, 165)
-
-    if wait_for_battlepass_rewards_page(logger) == "restart":
-        return "restart"
-    return "continue"
-
-
-def check_for_battlepass_rewards_page():
-    """method for checking if the bot is on the battlepass rewards page
-    args:
-        None
-    returns:
-        bool, True if on the battlepass rewards page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    boot_camp_text_exists = False
-    for x_coord in range(150, 160):
-        this_pixel = iar[72][x_coord]
-        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
-            boot_camp_text_exists = True
-
-    ok_button_exists = False
-    for x_coord in range(177, 197):
-        this_pixel = iar[638][x_coord]
-        if pixel_is_equal(this_pixel, [78, 175, 255], tol=35):
-            ok_button_exists = True
-
-    return bool(ok_button_exists and boot_camp_text_exists)
-
-
-def wait_for_battlepass_rewards_page(logger):
-    """method for waiting for the battlepass rewards page to appear
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-
-    while not check_for_battlepass_rewards_page():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            return "restart"
-
-        if random.randint(0, 1) == 1:
-            click(20, 630)
-        else:
-            click(171, 333)
-        if check_for_bonus_bank_popup_in_battlepass_page(logger):
-            handle_bonus_bank_popup_in_battlepass_page(logger)
-
-    return "continue"
-
-
-def check_for_card_mastery_page():
-    """method to check if the bot is on the card mastery page by scanning relevant pixels
-    args:
-        None
-    returns:
-        bool, True if on the card mastery page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    card_masteries_text_exists = False
-    for x_coord in range(150, 275):
-        this_pixel = iar[135][x_coord]
-        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
-            card_masteries_text_exists = True
-
-    close_button_exists = False
-    for x_coord in range(345, 365):
-        this_pixel = iar[145][x_coord]
-        if pixel_is_equal(this_pixel, [228, 24, 24], tol=35):
-            close_button_exists = True
-
-    return bool(close_button_exists and card_masteries_text_exists)
-
-
-def wait_card_mastery_page():
-    """method for waiting for the card mastery page to appear
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-    while not check_for_card_mastery_page():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            print("Waited more than 10 sec for card mastery page. Restarting")
-            return "restart"
-    return "continue"
-
-
-def get_to_card_mastery_page():
-    """method for getting to the card mastery page
-    args:
-        None
-    returns:
-        None
-    """
-    click(257, 505)
-    return "restart" if wait_card_mastery_page() == "restart" else "continue"
-
-
-def check_if_profile_page_is_open():
-    """method for checking for pixels that indicate whether or not the profile page is open
-    args:
-        None
-    returns:
-        bool, True if the profile page is open, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    profile_page_crown_logo_exists = False
-    for x_coord in range(180, 240):
-        this_pixel = iar[80][x_coord]
-        if pixel_is_equal(this_pixel, [255, 220, 0], tol=35):
-            profile_page_crown_logo_exists = True
-
-    close_button_exists = False
-    for x_coord in range(350, 370):
-        this_pixel = iar[90][x_coord]
-        if pixel_is_equal(this_pixel, [253, 132, 133], tol=35):
-            close_button_exists = True
-
-    return bool(profile_page_crown_logo_exists and close_button_exists)
-
-
-def open_profile_page():
-    """method for opening the profile page from the clash main menu
-    args:
-        None
-    returns:
-        None
-    """
-    click(100, 130)
-    return "restart" if wait_for_profile_page() == "restart" else "continue"
-
-
-def wait_for_profile_page():
-    """method for waiting for the bot to arrive on the profile page
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-
-    while not check_if_profile_page_is_open():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            print("Waited more than 10 sec for profile page. Restarting")
-            return "restart"
-
-    return "continue"
-
-
-def wait_for_card_page(logger):
-    """method for waiting for the bot to arrive on the card page
-    args:
-        None
-    returns:
-        fail if the bot times out waiting for the card page, else None
-    """
-
-    start_time = time.time()
-    while not check_if_on_card_page():
-        if time.time() - start_time > 10:
-            logger.change_status("timed out waiting for card page")
-            return "fail"
-    return "continue"
-
-
-def check_if_on_card_page():
-    """method to scan for pixels that indicate the bot is on the card page
-    args:
-        None
-    returns:
-        bool, True if on the card page, else False
-    """
-
-    iar = numpy.asarray(screenshot())
-
-    left_arrow_exists = False
-    for x_coord in range(85, 95):
-        this_pixel = iar[635][x_coord]
-        if pixel_is_equal(this_pixel, [137, 224, 255], tol=35):
-            left_arrow_exists = True
-
-    right_arrow_exists = False
-    for x_coord in range(185, 195):
-        this_pixel = iar[635][x_coord]
-        if pixel_is_equal(this_pixel, [137, 224, 255], tol=35):
-            right_arrow_exists = True
-
-    collection_text_exists = False
-    for x_coord in range(110, 170):
-        this_pixel = iar[655][x_coord]
-        if pixel_is_equal(this_pixel, [253, 253, 253], tol=35):
-            collection_text_exists = True
-
-    return bool(collection_text_exists and right_arrow_exists and left_arrow_exists)
-
-
-def check_if_on_battle_deck_page():
-    """method scans for pixels that indicate the bot is on the battle deck page
-    args:
-        None
-    returns:
-        bool, True if on the battle deck page, else False
-    """
-    iar = numpy.asarray(screenshot())
-
-    battle_deck_text_exists = False
-    for x_coord in range(180, 240):
-        this_pixel = iar[140][x_coord]
-        if pixel_is_equal(this_pixel, [248, 250, 253], tol=35):
-            battle_deck_text_exists = True
-
-    elixer_icon_exists = False
-    for x_coord in range(40, 60):
-        this_pixel = iar[500][x_coord]
-        if pixel_is_equal(this_pixel, [237, 53, 225], tol=35):
-            elixer_icon_exists = True
-
-    return bool(battle_deck_text_exists and elixer_icon_exists)
-
-
-def get_to_battle_deck_page(logger):
-    """method for getting to the battle deck page from the main menu
-    args:
-        None
-    returns:
-        None
-    """
-    loops = 0
-    while not check_if_on_battle_deck_page():
-        loops += 1
-        if loops > 25:
-            logger.change_status("failure with get_to_battle_deck_page()")
-            return "restart"
-
-        click(140, 620)
-        time.sleep(1)
-    return "continue"
-
-
-def get_to_bannerbox_from_daily_reward_collection_popup():
-    """method for getting to the bannerbox page from the daily reward collection popup
-    args:
-        None
-    returns:
-        None
-    """
-    click(200, 450)
-    return "restart" if wait_for_bannerbox_page() == "restart" else "continue"
-
-
-def check_if_on_bannerbox_page():
-    """method for scanning for pixels that indicate the bot is on the bannerbox page
-    args:
-        None
-    returns:
-        bool, True if on the bannerbox page, else False
-    """
-    iar = numpy.asarray(screenshot())
-
-    bannerbox_title_text_exists = False
-    for x_coord in range(160, 280):
-        this_pixel = iar[140][x_coord]
-        if pixel_is_equal(this_pixel, [255, 255, 255], tol=35):
-            bannerbox_title_text_exists = True
-
-    info_button_exists = False
-    for x_coord in range(70, 90):
-        this_pixel = iar[612][x_coord]
-        if pixel_is_equal(this_pixel, [76, 172, 255], tol=35):
-            info_button_exists = True
-
-    return bool(bannerbox_title_text_exists and info_button_exists)
-
-
-def wait_for_bannerbox_page():
-    """method for waiting for the bannerbox page to appear
-    args:
-        None
-    returns:
-        None
-    """
-    start_time = time.time()
-    while not check_if_on_bannerbox_page():
-        time_taken = time.time() - start_time
-        if time_taken > 10:
-            print("Waited more than 10 sec for bannerbox page. Restarting")
-            return "restart"
-        click(20, 440)
-    return "continue"
-
-
-def get_to_bannerbox(logger):
-    """method for gettign to the bannerbox page to appear
-    args:
-        None
-    returns:
-        None
-    """
-    click(355, 230)
-    if wait_for_bannerbox_page() == "restart":
-        return "restart"
-    logger.change_status("made it to bannerbox page")
-    return "continue"
-
-
-def check_for_bonus_bank_popup_in_battlepass_page(logger):
-    """method for scanning for pixels that indicate the bonus bank popup is on the screen
-    args:
-        None
-    returns:
-        bool, True if the bonus bank popup is on the screen, else False
-    """
-    iar = numpy.asarray(screenshot())
-
-    yellow_background_exists = False
-    for x_coord in range(90, 100):
-        this_pixel = iar[265][x_coord]
-        if pixel_is_equal(this_pixel, [253, 204, 52], tol=35):
-            yellow_background_exists = True
-
-    green_collect_button_exists = False
-    for x_coord in range(200, 220):
-        this_pixel = iar[450][x_coord]
-        if pixel_is_equal(this_pixel, [86, 228, 100], tol=35):
-            green_collect_button_exists = True
-
-    grey_background_exists = False
-    for x_coord in range(320, 330):
-        this_pixel = iar[470][x_coord]
-        if pixel_is_equal(this_pixel, [80, 81, 110], tol=35):
-            grey_background_exists = True
-
-    if (
-        yellow_background_exists
-        and green_collect_button_exists
-        and grey_background_exists
-    ):
-        logger.change_status("found bonus bank popup")
-        return True
+    for x in range(390, 410):
+        this_pixel = iar[16][x]
+        if pixel_is_equal([65, 198, 24], this_pixel, tol=35):
+            return True
     return False
 
 
-def handle_bonus_bank_popup_in_battlepass_page(logger):
-    """method for handling the possiblity of the bonus bank popup appearing on the battlepass page
-    args:
-        None
-    returns:
-        None
-    """
-    logger.change_status("handling bonus bank popup")
-    # click collect
-    click(216, 466)
-    time.sleep(3)
+def check_for_friends_logo_on_main(vm_index):
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot(vm_index))
 
-
-def get_to_challenges_tab(logger):
-    """method for getting to the challenges tab
-    args:
-        None
-    returns:
-        None
-    """
-    click(x=394, y=634)
-    time.sleep(3)
-
-    # check if the user is in a tournament
-    if check_if_account_is_already_in_a_challenge(logger):
-        # click back button
-        click(32, 56)
-        time.sleep(5)
-
-    if check_for_new_season_reset_popup():
-        # click OK button
-        click(211, 479)
-        time.sleep(5)
-
-    # check if the user is in a tournament
-    if check_if_account_is_already_in_a_challenge(logger):
-        # click back button
-        click(32, 56)
-        time.sleep(5)
-
-    logger.change_status(
-        "Scrolling up in the challenges tab to assure the bot is at the top of the page"
-    )
-    for _ in range(5):
-        scroll_up_fast_on_left_side_of_screen()
-    time.sleep(1)
-    logger.change_status("done")
-
-
-def check_for_new_season_reset_popup():
-    iar = numpy.asarray(screenshot())
-
-    yellow_top_banner_exists = False
-    for x in range(160, 210):
-        this_pixel = iar[174][x]
-        if pixel_is_equal(this_pixel, [239, 173, 0], tol=25):
-            yellow_top_banner_exists = True
-            break
-    blue_ok_button_exists = False
-    for x in range(177, 197):
-        this_pixel = iar[487][x]
-        if pixel_is_equal(this_pixel, [76, 174, 255], tol=25):
-            blue_ok_button_exists = True
-            break
-    white_new_season_reset_text_exists = False
     for x in range(250, 290):
-        this_pixel = iar[194][x]
-        if pixel_is_equal(this_pixel, [255, 255, 255], tol=25):
-            white_new_season_reset_text_exists = True
-            break
-
-    return bool(
-        (
-            yellow_top_banner_exists
-            and blue_ok_button_exists
-            and white_new_season_reset_text_exists
-        )
-    )
-
-
-def check_if_account_is_already_in_a_challenge(logger):
-    iar = numpy.asarray(screenshot())
-
-    # look for purple background of win count in this challenge
-    purple_background_exists = False
-    for x in range(100, 200):
-        this_pixel = iar[280][x]
-        if pixel_is_equal(this_pixel, [101, 56, 188], tol=35):
-            purple_background_exists = True
-
-    # look for yellow back button in top left
-    yellow_back_button_exists = False
-    for x in range(10, 40):
-        this_pixel = iar[60][x]
-        if pixel_is_equal(this_pixel, [255, 186, 37], tol=35):
-            yellow_back_button_exists = True
-
-    if purple_background_exists and yellow_back_button_exists:
-        logger.change_status("account is already in a challenge")
-        return True
+        this_pixel = iar[69][x]
+        if pixel_is_equal([228, 244, 255], this_pixel, tol=35):
+            return True
     return False
 
 
-def wait_for_1v1_battle(logger):
-    logger.change_status("waiting for 1v1 battle")
-    start_time = time.time()
+def check_for_gold_logo_on_main(vm_index):
+    # Method to check if the clash main menu is on screen
+    iar = numpy.array(screenshot(vm_index))
 
-    while not check_for_1v1_battle():
-        if time.time() - start_time > 60:
-            logger.change_status("#624564 Failure waiting for 1v1 battle")
-            return "restart"
-
-        click(200, 200)
-        time.sleep(3)
-    logger.change_status("Done waiting for 1v1 battle")
-    return "continue"
+    for x in range(290, 310):
+        this_pixel = iar[17][x]
+        if pixel_is_equal([224, 180, 56], this_pixel, tol=35):
+            return True
+    return False
 
 
-def check_for_1v1_battle():
-    iar = numpy.asarray(screenshot())
-
-    enemy_name_exists = False
-    for x in range(30, 90):
-        this_pixel = iar[44][x]
-        if pixel_is_equal([255, 51, 153], this_pixel, tol=35):
-            enemy_name_exists = True
-            break
-
-    emote_bubble_exists = False
-    for x in range(40, 90):
-        this_pixel = iar[551][x]
-        if pixel_is_equal([255, 255, 255], this_pixel, tol=35):
-            emote_bubble_exists = True
-            break
-
-    elixer_icon_exists = False
-    for x in range(110, 125):
-        this_pixel = iar[654][x]
-        if pixel_is_equal(this_pixel, [255, 28, 216], tol=35):
-            elixer_icon_exists = True
-            break
-
-    return bool(enemy_name_exists and emote_bubble_exists and elixer_icon_exists)
+if __name__ == "__main__":
+    pass
