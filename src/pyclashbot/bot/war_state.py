@@ -43,6 +43,7 @@ LEAVE_WAR_BATTLE_BUTTON_COORD = (204, 553)
 
 
 WAR_PAGE_DEADSPACE_COORD = (15, 315)
+POST_WAR_FIGHT_WAIT = 10  # seconds
 
 
 def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
@@ -53,6 +54,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         logger.change_status("Error 4069852734098 Not on clash main to begin war state")
         return "restart"
 
+    logger.change_status("Making sure in a clan before war battle")
     in_a_clan_check = war_state_check_if_in_a_clan(vm_index, logger)
 
     if in_a_clan_check == "restart":
@@ -67,16 +69,18 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         return
 
     # get to clan page
+    logger.change_status("Starting a war battle")
+
     get_to_clan_tab_from_clash_main(vm_index, logger)
 
     # find battle icon
     find_and_click_war_battle_icon(vm_index, logger)
 
     # make deck if needed
-    handle_make_deck(vm_index)
+    handle_make_deck(vm_index, logger)
 
     if not check_if_deck_is_ready_for_this_battle(vm_index):
-        logger.change_status("Exhausted war decks")
+        logger.change_status("Not more war decks for today!")
         # click deadspace a little to close war battle windows
         click(
             vm_index,
@@ -87,6 +91,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         )
         time.sleep(0.3)
 
+        logger.change_status("Getting back to clash main")
         get_to_clash_main_from_clan_page(vm_index, logger)
 
         if wait_for_clash_main_menu(vm_index, logger) == "restart":
@@ -98,6 +103,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         return NEXT_STATE
 
     # start battle
+    logger.change_status("Starting a war battle")
     click(vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
 
@@ -108,8 +114,8 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     if do_war_battle(vm_index, logger) == "restart":
         logger.change_status("Error 58734 Failed doing war battle")
         return "restart"
-    logger.change_status("Done with war battle. Waiting 10s")
-    time.sleep(10)
+    logger.change_status(f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
+    time.sleep(POST_WAR_FIGHT_WAIT)
 
     # when battle end, leave battle
     click(vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
@@ -152,16 +158,15 @@ def do_war_battle(vm_index, logger):
         # click a random card
         logger.change_status("Doing a random war play")
 
-        logger.log("Clicking random card")
         random_card_coord = random.choice(CARD_COORDS)
         click(vm_index, random_card_coord[0], random_card_coord[1])
         time.sleep(1)
 
         # click a random play coord
-        logger.log("Clicking random play coord")
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
         click(vm_index, random_play_coord[0], random_play_coord[1])
         time.sleep(2.4)
+    logger.change_status("Done with this war fight")
 
 
 def wait_for_war_battle_start(vm_index, logger):
@@ -201,11 +206,12 @@ def check_if_deck_is_ready_for_this_battle(vm_index):
     return True
 
 
-def handle_make_deck(vm_index):
+def handle_make_deck(vm_index, logger: Logger):
     # if the deck is ready to go, just return
     if check_if_deck_is_ready_for_this_battle(vm_index):
         return
 
+    logger.change_status("Setting up a deck for this war match")
     # click edit deck button
     click(vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
