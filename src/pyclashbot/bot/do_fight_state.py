@@ -3,6 +3,7 @@ import time
 
 from pyclashbot.bot.card_detection import get_play_coords_for_card
 from pyclashbot.bot.navigation import (
+    check_for_end_2v2_battle_screen,
     check_for_in_1v1_battle,
     check_for_in_2v2_battle,
     check_if_on_clash_main_menu,
@@ -11,7 +12,7 @@ from pyclashbot.bot.navigation import (
     wait_for_1v1_battle_start,
     wait_for_2v2_battle_start,
     wait_for_clash_main_menu,
-    wait_for_end_1v1_battle_screen,
+    wait_for_end_battle_screen,
 )
 from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
 from pyclashbot.memu.client import click, screenshot, scroll_up
@@ -180,17 +181,30 @@ def start_1v1_fight_state(vm_index, logger: Logger):
     return next_state
 
 
+def check_for_exit_battle_button_condition_1(vm_index):
+    if not check_for_end_2v2_battle_screen(vm_index):
+        return False
+
+    if not region_is_color(vm_index, [44, 600, 11, 9], (76, 173, 255)):return False
+
+    return True
+
+LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON = (71,600)
 def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     logger.change_status("end fight state")
     logger.change_status("Waiting for the leave battle screen to pop up ")
-    if wait_for_end_1v1_battle_screen(vm_index, logger) == "restart":
+    if wait_for_end_battle_screen(vm_index, logger) == "restart":
         logger.change_status(
             "Error 98573429805 Waiting too long for end 1v1 battle in end fight state()"
         )
         return "restart"
 
     # click leave button OK button
-    click(vm_index, LEAVE_1V1_BATTLE_OK_BUTTON[0], LEAVE_1V1_BATTLE_OK_BUTTON[1])
+    if check_for_exit_battle_button_condition_1(vm_index):
+        click(vm_index, LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[0], LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[1])
+    else:
+        click(vm_index, LEAVE_1V1_BATTLE_OK_BUTTON[0], LEAVE_1V1_BATTLE_OK_BUTTON[1])
+
 
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(

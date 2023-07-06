@@ -25,7 +25,7 @@ BATTLE_LOG_BUTTON = (241, 43)
 
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
-CHALLENGES_TAB_ICON_FROM_CLASH_MAIN = (380,598)
+CHALLENGES_TAB_ICON_FROM_CLASH_MAIN = (380, 598)
 
 CLASH_MAIN_ICON_FROM_CARD_PAGE = (247, 601)
 
@@ -142,14 +142,17 @@ def check_for_switch_accounts_page(vm_index):
     return True
 
 
-
-
-
-def get_to_challenges_tab_from_main(vm_index,logger):
-    click(vm_index,CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1])
-    if wait_for_clash_main_challenges_tab(vm_index, logger)=='restart':
-        logger.change_status('Error 892572938 waited for challenges tab too long, restarting vm')
-        return 'restart'
+def get_to_challenges_tab_from_main(vm_index, logger):
+    click(
+        vm_index,
+        CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
+        CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1],
+    )
+    if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
+        logger.change_status(
+            "Error 892572938 waited for challenges tab too long, restarting vm"
+        )
+        return "restart"
 
 
 def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=False):
@@ -452,17 +455,29 @@ def check_for_end_1v1_battle_screen(vm_index):
     return False
 
 
-def wait_for_end_1v1_battle_screen(vm_index, logger: Logger, printmode=False):
+def check_for_end_2v2_battle_screen(vm_index):
+    if not check_line_for_color(vm_index, 392, 4, 391, 29, (253, 133, 134)):
+        return False
+    if not check_line_for_color(vm_index, 406, 4, 406, 30, (253, 132, 133)):
+        return False
+    if not region_is_color(vm_index, [6, 580, 24, 40], (52, 66, 83)):
+        return False
+    return True
+
+
+def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False):
     start_time = time.time()
     if printmode:
         logger.change_status("waiting for end 1v1 battle screen")
     else:
         logger.log("waiting for end 1v1 battle screen")
-    while not check_for_end_1v1_battle_screen(vm_index):
+    while not check_for_end_1v1_battle_screen(vm_index) and not (
+        check_for_end_2v2_battle_screen(vm_index)
+    ):
         time_taken = time.time() - start_time
         if time_taken > 20:
             logger.change_status(
-                "Error 8734572456 Waiting too long for end 1v1 battle screen"
+                "Error 8734572456 Waiting too long for end battle screen"
             )
             return "restart"
 

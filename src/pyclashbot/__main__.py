@@ -3,12 +3,10 @@ import webbrowser
 from os import path
 
 import PySimpleGUI as sg
-from pyclashbot.bot.do_fight_state import _1v1_fight_loop, _2v2_fight_loop, check_for_challenge_page_on_events_tab
-from pyclashbot.bot.navigation import check_for_in_1v1_battle, check_for_in_2v2_battle
+
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
-from pyclashbot.memu.client import screenshot, scroll_up
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -65,7 +63,6 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
         jobs.append("1v1 battle")
     if values["2v2_battle_in"]:
         jobs.append("2v2 battle")
-
 
     if values["card_upgrading_in"]:
         jobs.append("upgrade")
@@ -339,8 +336,6 @@ def dummy_bot():
             account_switch_order,
         )
         print(f"state = {state}")
-
-
 
 
 if __name__ == "__main__":
