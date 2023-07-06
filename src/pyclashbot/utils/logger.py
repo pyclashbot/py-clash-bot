@@ -124,20 +124,9 @@ class Logger:
         return wrapper
 
     def log(self, message):
-        wins_string = self.wins
-        losses_string = self.losses
-
-        win_loss_string = f"[{wins_string}/{losses_string}]"
-        fights_string = f"[{self.fights} Fights]"
-        cards_played_string = f"[{self.cards_played} Cards Played]"
-        requests_string = f"[{self.requests} Requests]"
-        free_offers_string = f"[{self.free_offer_collections} Free Offers]"
-
         time_running_string = self.calc_time_since_start()
 
-        print(
-            f"[{time_running_string}] {win_loss_string} {fights_string} {cards_played_string} {requests_string} {free_offers_string} {message}"
-        )
+        print(f"[{time_running_string}] {message}")
 
     def make_time_str(self, seconds):
         """convert epoch to time

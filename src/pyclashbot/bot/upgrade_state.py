@@ -97,7 +97,6 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
 def upgrade_card(vm_index, logger, index, upgrade_list):
     logger.change_status(f"Handling card index: {index}")
-    print(f"Handling card index: {index}")
 
     # if this card index is upgradable
     if upgrade_list[index]:

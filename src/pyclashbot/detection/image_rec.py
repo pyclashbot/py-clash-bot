@@ -147,7 +147,6 @@ def find_reference(
 
     path = join(reference_folder, folder, name)
 
-    print("path: ", path)
 
     return compare_images(screenshot, Image.open(path), tolerance)
 
