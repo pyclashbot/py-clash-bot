@@ -56,6 +56,7 @@ class Logger:
         self.losses = 0
         self.fights = 0
         self.cards_played = 0
+        self.war_fights = 0
 
         # job stats
         self.requests = 0
@@ -94,11 +95,12 @@ class Logger:
                 "wins": self.wins,
                 "losses": self.losses,
                 "fights": self.fights,
-                'upgrades':self.cards_upgraded,
+                "upgrades": self.cards_upgraded,
                 "requests": self.requests,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
                 "cards_played": self.cards_played,
+                "war_fights": self.war_fights,
                 "account_switches": self.account_switches,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "free_offer_collections": self.free_offer_collections,
@@ -176,6 +178,11 @@ class Logger:
     def add_chest_unlocked(self):
         """add chest unlocked to log"""
         self.chests_unlocked += 1
+
+    @_updates_log
+    def add_war_fight(self):
+        """add card played to log"""
+        self.war_fights += 1
 
     @_updates_log
     def add_card_played(self):

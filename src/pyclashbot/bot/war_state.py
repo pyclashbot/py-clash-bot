@@ -106,6 +106,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     logger.change_status("Starting a war battle")
     click(vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
+    logger.add_war_fight()
 
     # wait for battle start
     wait_for_war_battle_start(vm_index, logger)

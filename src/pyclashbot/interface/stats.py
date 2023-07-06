@@ -28,6 +28,9 @@ battle_stats_title = [
     [
         sg.Text("Fights: "),
     ],
+    [
+        sg.Text("War Fights: "),
+    ],
 ]
 
 battle_stats_values = [
@@ -42,6 +45,9 @@ battle_stats_values = [
     ],
     [
         stat_box("fights"),
+    ],
+    [
+        stat_box("war_fights"),
     ],
 ]
 
