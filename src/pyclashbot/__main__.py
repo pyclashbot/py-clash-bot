@@ -341,21 +341,8 @@ def dummy_bot():
         print(f"state = {state}")
 
 
-def debug_():
-    # _2v2_fight_loop(1, Logger())
-
-    # while 1:print(check_for_in_2v2_battle(1))
-
-    screenshot(1)
-
-    # while 1:print(check_for_challenge_page_on_events_tab(1))
-
-    # for _ in range(10):scroll_up(1)
-
-    # while 1:print(check_for_in_1v1_battle(1))
 
 
 if __name__ == "__main__":
-    # debug_()
     # dummy_bot()
     main_gui()
