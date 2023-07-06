@@ -16,7 +16,6 @@ from pyclashbot.bot.war_state import war_state
 from pyclashbot.memu.launcher import (
     close_clash_royale_app,
     restart_emulator,
-    restart_vm,
     start_clash_royale,
 )
 from pyclashbot.utils.logger import Logger
