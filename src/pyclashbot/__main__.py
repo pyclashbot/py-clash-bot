@@ -3,6 +3,7 @@ import webbrowser
 from os import path
 
 import PySimpleGUI as sg
+from pyclashbot.bot.do_1v1_fight_state import fight_loop
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
@@ -304,5 +305,42 @@ def main_gui():
     window.close()
 
 
+def dummy_bot():
+    from pyclashbot.bot.states import state_tree
+    from pyclashbot.memu.launcher import check_for_vm
+
+    logger = Logger()
+    vm_index = check_for_vm(logger)
+    jobs = [
+        "Open Chests",
+        "upgrade",
+        "request",
+        "free offer collection",
+        "1v1 battle",
+        "card_mastery",
+        "account_switch",
+    ]
+    state = "start"
+    account_switch_order = [0]
+    account_index_to_switch_to = account_switch_order[0]
+
+    while 1:
+        state, account_index_to_switch_to = state_tree(
+            vm_index,
+            logger,
+            state,
+            jobs,
+            account_index_to_switch_to,
+            account_switch_order,
+        )
+        print(f"state = {state}")
+
+
+def debug():
+    fight_loop(1, Logger())
+
+
 if __name__ == "__main__":
-    main_gui()
+    debug()
+    # dummy_bot()
+    # main_gui()

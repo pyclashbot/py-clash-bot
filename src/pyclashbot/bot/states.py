@@ -127,7 +127,7 @@ def state_tree(
 
     elif state == "account_switch":  # --> open_chests
         NEXT_STATE = "open_chests"
-        if "account_switch" in job_list:
+        if "account_switch" in job_list and len(account_switch_order) > 1:
             return (
                 switch_account_state(
                     vm_index, logger, account_index_to_switch_to, account_switch_order
