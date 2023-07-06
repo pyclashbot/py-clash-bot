@@ -73,6 +73,7 @@ user_config_keys = [
     "-Card-Mastery-Collection-in-",
     "-Free-Offer-Collection-in-",
     "1v1_battle_in",
+    "2v2_battle_in",
     "card_upgrading_in",
     "war_checkbox_in",
 ]

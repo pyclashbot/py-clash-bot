@@ -1,10 +1,12 @@
 import time
 
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
-from pyclashbot.bot.do_1v1_fight_state import (
+from pyclashbot.bot.do_fight_state import (
     do_1v1_fight_state,
+    do_2v2_fight_state,
     end_fight_state,
     start_1v1_fight_state,
+    start_2v2_fight_state,
 )
 from pyclashbot.bot.free_offer_state import free_offer_collection_state
 from pyclashbot.bot.navigation import wait_for_clash_main_menu
@@ -19,6 +21,7 @@ from pyclashbot.memu.launcher import (
     start_clash_royale,
 )
 from pyclashbot.utils.logger import Logger
+import random
 
 
 def state_tree(
@@ -97,9 +100,33 @@ def state_tree(
 
     elif state == "start_fight":  # --> 1v1_fight, account_switch
         NEXT_STATE = "account_switch"
-        if "1v1 battle" in job_list:
+        #if both 1v1 and 2v2, pick a random one
+        if "1v1 battle" in job_list and "2v2 battle" in job_list:
+            if random.randint(0, 1) == 1:
+                return (
+                    start_1v1_fight_state(vm_index, logger),
+                    account_index_to_switch_to,
+                )
+            else:
+                return (
+                    start_2v2_fight_state(vm_index, logger),
+                    account_index_to_switch_to,
+                )
+
+        #if only 1v1, do 1v1
+        elif "1v1 battle" in job_list:
             return start_1v1_fight_state(vm_index, logger), account_index_to_switch_to
-        return NEXT_STATE, account_index_to_switch_to
+        
+        #if only 2v2, do 2v2
+        elif "2v2 battle" in job_list:
+            return start_2v2_fight_state(vm_index, logger), account_index_to_switch_to
+        
+        #if neither, go to account switch
+        else:
+            return NEXT_STATE, account_index_to_switch_to
+
+    elif state == "2v2_fight":  # --> end_fight
+        return do_2v2_fight_state(vm_index, logger), account_index_to_switch_to
 
     elif state == "1v1_fight":  # --> end_fight
         return do_1v1_fight_state(vm_index, logger), account_index_to_switch_to

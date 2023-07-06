@@ -25,6 +25,7 @@ BATTLE_LOG_BUTTON = (241, 43)
 
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
+CHALLENGES_TAB_ICON_FROM_CLASH_MAIN = (380,598)
 
 CLASH_MAIN_ICON_FROM_CARD_PAGE = (247, 601)
 
@@ -139,6 +140,16 @@ def check_for_switch_accounts_page(vm_index):
         return False
 
     return True
+
+
+
+
+
+def get_to_challenges_tab_from_main(vm_index,logger):
+    click(vm_index,CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1])
+    if wait_for_clash_main_challenges_tab(vm_index, logger)=='restart':
+        logger.change_status('Error 892572938 waited for challenges tab too long, restarting vm')
+        return 'restart'
 
 
 def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=False):
@@ -461,6 +472,29 @@ def wait_for_end_1v1_battle_screen(vm_index, logger: Logger, printmode=False):
         logger.log("done waiting for end 1v1 battle screen")
 
 
+def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False):
+    start_time = time.time()
+    if printmode:
+        logger.change_status("Waiting for 2v2 battle to start")
+    else:
+        logger.log("Waiting for 2v2 battle to start")
+    while not check_for_in_2v2_battle(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > 60:
+            logger.change_status(
+                "Error 88884572456 Waiting too long for 1v1 battle to start"
+            )
+            return "restart"
+
+        click(vm_index, 200, 200)
+        time.sleep(1)
+
+    if printmode:
+        logger.change_status("Done waiting for 2v2 battle to start")
+    else:
+        logger.log("Done waiting for 2v2 battle to star")
+
+
 def wait_for_1v1_battle_start(vm_index, logger: Logger, printmode=False):
     start_time = time.time()
     if printmode:
@@ -482,6 +516,16 @@ def wait_for_1v1_battle_start(vm_index, logger: Logger, printmode=False):
         logger.change_status("Done waiting for 1v1 battle to start")
     else:
         logger.log("Done waiting for 1v1 battle to star")
+
+
+def check_for_in_2v2_battle(vm_index):
+    if not check_line_for_color(vm_index, 104, 605, 122, 624, (249, 88, 235)):
+        return False
+    if not check_line_for_color(vm_index, 57, 515, 76, 519, (255, 255, 255)):
+        return False
+    if not check_line_for_color(vm_index, 108, 620, 122, 613, (248, 80, 236)):
+        return False
+    return True
 
 
 def check_for_in_1v1_battle(vm_index):
