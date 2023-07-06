@@ -336,11 +336,6 @@ def dummy_bot():
         print(f"state = {state}")
 
 
-def debug():
-    fight_loop(1, Logger())
-
-
 if __name__ == "__main__":
-    debug()
     # dummy_bot()
-    # main_gui()
+    main_gui()
