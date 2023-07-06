@@ -29,6 +29,9 @@ battle_stats_title = [
         sg.Text("1v1 Fights: "),
     ],
     [
+        sg.Text("2v2 Fights: "),
+    ],
+    [
         sg.Text("War Fights: "),
     ],
 ]
@@ -45,6 +48,9 @@ battle_stats_values = [
     ],
     [
         stat_box("1v1_fights"),
+    ],
+    [
+        stat_box("2v2_fights"),
     ],
     [
         stat_box("war_fights"),
