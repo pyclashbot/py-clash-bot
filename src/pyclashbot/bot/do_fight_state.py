@@ -189,6 +189,9 @@ def check_for_exit_battle_button_condition_1(vm_index):
 
     return True
 
+CLASH_MAIN_ICON_FROM_CHALLENGES_TAB = (170,590)
+
+
 LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON = (71,600)
 def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     logger.change_status("end fight state")
@@ -202,6 +205,8 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     # click leave button OK button
     if check_for_exit_battle_button_condition_1(vm_index):
         click(vm_index, LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[0], LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[1])
+        time.sleep(10)
+        click(vm_index, CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[0], CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[1])
     else:
         click(vm_index, LEAVE_1V1_BATTLE_OK_BUTTON[0], LEAVE_1V1_BATTLE_OK_BUTTON[1])
 
