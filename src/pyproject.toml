@@ -53,7 +53,7 @@ git push origin master
 git tag -a $Env:tagname -m "Release $Env:tagname"
 git push origin $Env:tagname
 """
-interpreter = "pwsh"
+interpreter = "powershell"
 
 
 [[tool.poe.tasks.tag.args]]
@@ -67,13 +67,13 @@ required = true
 shell = """
 poetry run vulture pyclashbot --min-confidence 60
 """
-interpreter = "pwsh"
+interpreter = "powershell"
 
 [tool.poe.tasks.lint]
 shell = """
 poetry run prospector pyclashbot
 """
-interpreter = "pwsh"
+interpreter = "powershell"
 
 
 [tool.black]
