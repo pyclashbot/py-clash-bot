@@ -94,6 +94,7 @@ class Logger:
                 "wins": self.wins,
                 "losses": self.losses,
                 "fights": self.fights,
+                'upgrades':self.cards_upgraded,
                 "requests": self.requests,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,

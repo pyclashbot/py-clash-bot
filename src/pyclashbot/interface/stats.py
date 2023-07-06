@@ -60,6 +60,9 @@ progress_stats_titles = [
         sg.Text("Chests Unlocked: "),
     ],
     [
+        sg.Text("Cards Upgraded: "),
+    ],
+    [
         sg.Text("Account Switches: "),
     ],
     [
@@ -73,6 +76,9 @@ progress_stats_values = [
     ],
     [
         stat_box("chests_unlocked"),
+    ],
+    [
+        stat_box("upgrades"),
     ],
     [
         stat_box("account_switches"),

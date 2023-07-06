@@ -7,9 +7,10 @@ from pyclashbot.bot.navigation import (
     get_to_card_page_from_clash_main,
     get_to_clash_main_from_card_page,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.detection.image_rec import pixel_is_equal, check_line_for_color, region_is_color
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
+
 
 CARD_COORDS = [
     (74, 252),
@@ -56,6 +57,7 @@ CLOSE_BUY_GOLD_POPUP_COORD = (350, 208)
 CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
+
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status("Upgrade cards state")
 
@@ -95,7 +97,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     return next_state
 
 
-def upgrade_card(vm_index, logger, index, upgrade_list):
+def upgrade_card(vm_index, logger: Logger, index, upgrade_list):
     logger.change_status(f"Handling card index: {index}")
 
     # if this card index is upgradable
@@ -132,6 +134,8 @@ def upgrade_card(vm_index, logger, index, upgrade_list):
         time.sleep(2)
 
         # if gold popup doesnt exists: add to logger's upgrade stat
+        if not check_for_missing_gold_popup(vm_index):
+            logger.add_card_upgraded()
 
         # close buy gold popup
         click(vm_index, CLOSE_BUY_GOLD_POPUP_COORD[0], CLOSE_BUY_GOLD_POPUP_COORD[1])
@@ -174,6 +178,27 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
             bool_list.append(False)
 
     return bool_list
+
+
+
+def check_for_missing_gold_popup(vm_index):
+    if not check_line_for_color(
+        vm_index, x1=338, y1=215, x2=361, y2=221, color=(153, 20, 17)
+    ):
+        return False
+    if not check_line_for_color(
+        vm_index, x1=124, y1=201, x2=135, y2=212, color=(255, 255, 255)
+    ):
+        return False
+
+    if not check_line_for_color(vm_index, 224, 368, 236, 416, (56, 228, 72)):
+        return False
+
+    if not region_is_color(vm_index, [70, 330, 60, 70], (227, 238, 243)):
+        return False
+
+    return True
+
 
 
 if __name__ == "__main__":

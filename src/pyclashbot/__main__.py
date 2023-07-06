@@ -2,17 +2,13 @@ import sys
 import webbrowser
 from os import path
 
-import PySimpleGUI as sg
+from interface import user_config_keys, disable_keys, main_layout
+from bot.worker import WorkerThread
+from memu.client import screenshot
 
-from pyclashbot.bot.worker import WorkerThread
-from pyclashbot.interface import disable_keys, main_layout, user_config_keys
-from pyclashbot.utils.caching import (
-    cache_user_settings,
-    check_user_settings,
-    read_user_settings,
-)
-from pyclashbot.utils.logger import Logger
-from pyclashbot.utils.thread import PausableThread, StoppableThread
+from utils.caching import cache_user_settings, check_user_settings, read_user_settings
+from utils.logger import Logger
+from utils.thread import PausableThread, StoppableThread
 
 
 def read_window(
