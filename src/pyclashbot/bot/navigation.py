@@ -5,30 +5,34 @@ import numpy
 
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    get_line_coordinates,
     pixel_is_equal,
     region_is_color,
 )
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [
+CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [
     315,
     597,
 ]  # coords of clan tab icon on the bottom of the clash main menu, when on the clash main menu
 
-PROFILE_PAGE_COORD = [88, 93]
-CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
+PROFILE_PAGE_COORD: list[int] = [88, 93]
+CLASH_MAIN_COORD_FROM_CLAN_PAGE: list[int] = [178, 593]
 
-CLASH_MAIN_OPTIONS_BURGER_BUTTON = (365, 62)
-BATTLE_LOG_BUTTON = (241, 43)
+CLASH_MAIN_OPTIONS_BURGER_BUTTON: tuple[Literal[365], Literal[62]] = (365, 62)
+BATTLE_LOG_BUTTON: tuple[Literal[241], Literal[43]] = (241, 43)
 
 
-CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
-CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
-CHALLENGES_TAB_ICON_FROM_CLASH_MAIN = (380, 598)
+CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[108], Literal[598]] = (108, 598)
+CARD_PAGE_ICON_FROM_CARD_PAGE: tuple[Literal[147], Literal[598]] = (147, 598)
+CHALLENGES_TAB_ICON_FROM_CLASH_MAIN: tuple[Literal[380], Literal[598]] = (380, 598)
 
-CLASH_MAIN_ICON_FROM_CARD_PAGE = (247, 601)
+CLASH_MAIN_ICON_FROM_CARD_PAGE: tuple[Literal[247], Literal[601]] = (247, 601)
+
+CARD_TAB_FROM_CLASH_MAIN: tuple[Literal[105], Literal[591]] = (105, 591)
+SHOP_TAB_FROM_CARD_TAB: tuple[Literal[29], Literal[601]] = (29, 601)
+CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
+CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 591)
 
 
 def get_to_clash_main_from_card_page(vm_index, logger, printmode=False):
@@ -42,10 +46,11 @@ def get_to_clash_main_from_card_page(vm_index, logger, printmode=False):
         vm_index, CLASH_MAIN_ICON_FROM_CARD_PAGE[0], CLASH_MAIN_ICON_FROM_CARD_PAGE[1]
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "error 08572380572308 Failure gettting to clash main from card page"
+        logger.change_status(
+            status="error 08572380572308 Failure gettting to clash main from card page"
         )
         return "restart"
+    return "good"
 
 
 def get_to_card_page_from_clash_main(vm_index, logger, printmode=False):
@@ -77,9 +82,10 @@ def get_to_card_page_from_clash_main(vm_index, logger, printmode=False):
         logger.change_status(status="Made it to card page")
     else:
         logger.log("Made it to card page")
+    return "good"
 
 
-def check_if_on_card_page(vm_index):
+def check_if_on_card_page(vm_index) -> bool:
     if not region_is_color(vm_index, region=[75, 579, 31, 11], color=(73, 105, 139)):
         return False
     if not region_is_color(vm_index, region=[170, 577, 29, 10], color=(72, 105, 138)):
@@ -97,7 +103,9 @@ def check_if_on_card_page(vm_index):
     return all(lines)
 
 
-def wait_for_switch_accounts_page(vm_index, logger: Logger, printmode=False):
+def wait_for_switch_accounts_page(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
     if printmode:
         logger.change_status(status="Waiting for switch accounts page")
@@ -106,14 +114,15 @@ def wait_for_switch_accounts_page(vm_index, logger: Logger, printmode=False):
     while not check_for_switch_accounts_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status=
-                "Error 368375367 Waited too long for switch accounts page"
+            logger.change_status(
+                status="Error 368375367 Waited too long for switch accounts page"
             )
             return "restart"
     if printmode:
         logger.change_status(status="Done waiting for switch accounts page")
     else:
         logger.log("Done waiting for switch accounts page")
+    return "good"
 
 
 def check_for_switch_accounts_page(vm_index):
@@ -150,10 +159,11 @@ def get_to_challenges_tab_from_main(vm_index, logger):
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1],
     )
     if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 892572938 waited for challenges tab too long, restarting vm"
+        logger.change_status(
+            status="Error 892572938 waited for challenges tab too long, restarting vm"
         )
         return "restart"
+    return "good"
 
 
 def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=False):
@@ -161,35 +171,32 @@ def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=Fals
 
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status="Error 08725652389 Not on clash main menu, restarting vm")
+        logger.change_status(
+            status="Error 08725652389 Not on clash main menu, restarting vm"
+        )
         return "restart"
-
-    CARD_TAB_FROM_CLASH_MAIN = (105, 591)
-    SHOP_TAB_FROM_CARD_TAB = (29, 601)
-    CHALLENGES_TAB_FROM_SHOP_TAB = (385, 600)
-    CLASH_MAIN_TAB_FROM_CHALLENGES_TAB = (173, 591)
 
     # click card tab
     click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
     if wait_for_clash_main_card_page(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 0675248 Waited too long for clash main card page, restarting vm"
+        logger.change_status(
+            status="Error 0675248 Waited too long for clash main card page, restarting vm"
         )
         return "restart"
 
     # click shop tab
     click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1])
     if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 086720845 Waited too long for clash main shop page, restarting vm"
+        logger.change_status(
+            status="Error 086720845 Waited too long for clash main shop page, restarting vm"
         )
         return "restart"
 
     # click challenges tab
     click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1])
     if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 956842835 Waited too long for clash main challenged tab page, restarting vm"
+        logger.change_status(
+            status="Error 956842835 Waited too long for clash main challenged tab page, restarting vm"
         )
 
         return "restart"
@@ -201,19 +208,20 @@ def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=Fals
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
     )
     if wait_for_clash_main_menu(vm_index, logger, printmode=False) == "restart":
-        logger.change_status(status=
-            "Error 358971935813 Waited too long for clash main menu, restarting vm"
+        logger.change_status(
+            status="Error 358971935813 Waited too long for clash main menu, restarting vm"
         )
         return "restart"
 
     if printmode:
-        logger.change_status(status=
-            f"Handled clash main notifications in {str(time.time() - start_time)[:5]} seconds"
+        logger.change_status(
+            status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]} seconds"
         )
     else:
         logger.log(
             f"Handled clash main notifications in {str(time.time() - start_time)[:5]} seconds"
         )
+    return "good"
 
 
 def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False):
@@ -225,8 +233,8 @@ def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False
         logger.log("Waiting for clash main challenges tab")
     while not check_if_on_clash_main_challenges_tab(vm_index):
         if time.time() - start_time > 10:
-            logger.change_status(status=
-                "Error 8884613 Waited too long for clash main challenges tab"
+            logger.change_status(
+                status="Error 8884613 Waited too long for clash main challenges tab"
             )
             return "restart"
 
@@ -234,6 +242,7 @@ def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False
         logger.change_status(status="Done waiting for clash main challenges tab")
     else:
         logger.log("Done waiting for clash main challenges tab")
+    return "good"
 
 
 def check_if_on_clash_main_challenges_tab(vm_index):
@@ -255,8 +264,8 @@ def wait_for_clash_main_card_page(vm_index, logger: Logger, printmode=False):
     while not check_if_on_clash_main_card_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status=
-                "Error 23958623975 Waiting too long for clash main card page"
+            logger.change_status(
+                status="Error 23958623975 Waiting too long for clash main card page"
             )
             return "restart"
 
@@ -264,6 +273,7 @@ def wait_for_clash_main_card_page(vm_index, logger: Logger, printmode=False):
         logger.change_status(status="Done waiting for clash main card page")
     else:
         logger.log("Done waiting for clash main card page")
+    return "good"
 
 
 def check_if_on_clash_main_card_page(vm_index):
@@ -310,14 +320,15 @@ def wait_for_clash_main_shop_page(vm_index, logger: Logger, printmode=False):
     while not check_if_on_clash_main_shop_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status=
-                "Error 764527546 Waiting too long for clash main shop page"
+            logger.change_status(
+                status="Error 764527546 Waiting too long for clash main shop page"
             )
             return "restart"
     if printmode:
         logger.change_status(status="Done waiting for clash main shop page")
     else:
         logger.log("Done waiting for clash main shop page")
+    return "good"
 
 
 def get_to_activity_log(vm_index, logger: Logger, printmode=False):
@@ -328,7 +339,9 @@ def get_to_activity_log(vm_index, logger: Logger, printmode=False):
 
     # if not on main return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status="Eror 08752389 Not on clash main menu, restarting vm")
+        logger.change_status(
+            status="Eror 08752389 Not on clash main menu, restarting vm"
+        )
         return "restart"
 
     # click clash main burger options button
@@ -342,8 +355,8 @@ def get_to_activity_log(vm_index, logger: Logger, printmode=False):
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
     )
     if wait_for_clash_main_burger_button_options_menu(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 30571038573 Waited too long for calsh main burger button options menu, restarting vm"
+        logger.change_status(
+            status="Error 30571038573 Waited too long for calsh main burger button options menu, restarting vm"
         )
         return "restart"
 
@@ -355,6 +368,8 @@ def get_to_activity_log(vm_index, logger: Logger, printmode=False):
     click(vm_index, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
     wait_for_battle_log_page(vm_index, logger)
 
+    return "good"
+
 
 def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False):
     start_time = time.time()
@@ -365,8 +380,8 @@ def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False):
     while not check_if_on_battle_log_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status=
-                "Error 2457245645 Waiting too long for battle log page"
+            logger.change_status(
+                status="Error 2457245645 Waiting too long for battle log page"
             )
             return "restart"
 
@@ -374,6 +389,8 @@ def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False):
         logger.change_status(status="Done waiting for battle log page to appear")
     else:
         logger.log("Done waiting for battle log page to appear")
+
+    return "good"
 
 
 def check_if_on_battle_log_page(vm_index):
@@ -426,14 +443,17 @@ def wait_for_clash_main_burger_button_options_menu(
     while not check_if_on_clash_main_burger_button_options_menu(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status=
-                "Error 57245645362 Waiting too long for clash main optinos menu to appear"
+            logger.change_status(
+                status="Error 57245645362 Waiting too long for clash main optinos menu to appear"
             )
             return "restart"
     if printmode:
-        logger.change_status(status="Done waiting for clash main options menu to appear")
+        logger.change_status(
+            status="Done waiting for clash main options menu to appear"
+        )
     else:
         logger.log("Done waiting for clash main options menu to appear")
+    return "good"
 
 
 def check_for_end_1v1_battle_screen(vm_index):
@@ -453,16 +473,22 @@ def check_for_end_1v1_battle_screen(vm_index):
 
 
 def check_for_end_2v2_battle_screen(vm_index) -> bool:
-    if not check_line_for_color(vm_index=vm_index, x1=392, y1=4, x2=391, y2=29, color=(253, 133, 134)):
+    if not check_line_for_color(
+        vm_index=vm_index, x1=392, y1=4, x2=391, y2=29, color=(253, 133, 134)
+    ):
         return False
-    if not check_line_for_color(vm_index=vm_index, x1=406, y1=4, x2=406, y2=30, color=(253, 132, 133)):
+    if not check_line_for_color(
+        vm_index=vm_index, x1=406, y1=4, x2=406, y2=30, color=(253, 132, 133)
+    ):
         return False
-    if not region_is_color(vm_index=vm_index, region=[6, 580, 24, 40], color=(52, 66, 83)):
+    if not region_is_color(
+        vm_index=vm_index, region=[6, 580, 24, 40], color=(52, 66, 83)
+    ):
         return False
     return True
 
 
-def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False) -> Literal['restart'] | None:
+def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False):
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="waiting for end 1v1 battle screen")
@@ -473,7 +499,7 @@ def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False) -> Lit
     ):
         time_taken: float = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status=
+            logger.change_status(
                 status="Error 8734572456 Waiting too long for end battle screen"
             )
             return "restart"
@@ -482,9 +508,10 @@ def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False) -> Lit
         logger.change_status(status="done waiting for end 1v1 battle screen")
     else:
         logger.log(message="done waiting for end 1v1 battle screen")
+    return "good"
 
 
-def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False) -> Literal['restart'] | None:
+def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False):
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="Waiting for 2v2 battle to start")
@@ -493,7 +520,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False) -> Lite
     while not check_for_in_2v2_battle(vm_index=vm_index):
         time_taken: float = time.time() - start_time
         if time_taken > 60:
-            logger.change_status(status=
+            logger.change_status(
                 status="Error 88884572456 Waiting too long for 1v1 battle to start"
             )
             return "restart"
@@ -505,9 +532,12 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False) -> Lite
         logger.change_status(status="Done waiting for 2v2 battle to start")
     else:
         logger.log(message="Done waiting for 2v2 battle to star")
+    return "good"
 
 
-def wait_for_1v1_battle_start(vm_index, logger: Logger, printmode=False) -> Literal['restart'] | None:
+def wait_for_1v1_battle_start(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="Waiting for 1v1 battle to start")
@@ -516,7 +546,7 @@ def wait_for_1v1_battle_start(vm_index, logger: Logger, printmode=False) -> Lite
     while not check_for_in_1v1_battle(vm_index=vm_index):
         time_taken: float = time.time() - start_time
         if time_taken > 60:
-            logger.change_status(status=
+            logger.change_status(
                 status="Error 8734572456 Waiting too long for 1v1 battle to start"
             )
             return "restart"
@@ -528,14 +558,21 @@ def wait_for_1v1_battle_start(vm_index, logger: Logger, printmode=False) -> Lite
         logger.change_status(status="Done waiting for 1v1 battle to start")
     else:
         logger.log(message="Done waiting for 1v1 battle to star")
+    return "good"
 
 
 def check_for_in_2v2_battle(vm_index) -> bool:
-    if not check_line_for_color(vm_index=vm_index, x1=104, y1=605, x2=122, y2=624, color=(249, 88, 235)):
+    if not check_line_for_color(
+        vm_index=vm_index, x1=104, y1=605, x2=122, y2=624, color=(249, 88, 235)
+    ):
         return False
-    if not check_line_for_color(vm_index=vm_index, x1=57, y1=515, x2=76, y2=519, color=(255, 255, 255)):
+    if not check_line_for_color(
+        vm_index=vm_index, x1=57, y1=515, x2=76, y2=519, color=(255, 255, 255)
+    ):
         return False
-    if not check_line_for_color(vm_index=vm_index, x1=108, y1=620, x2=122, y2=613, color=(248, 80, 236)):
+    if not check_line_for_color(
+        vm_index=vm_index, x1=108, y1=620, x2=122, y2=613, color=(248, 80, 236)
+    ):
         return False
     return True
 
@@ -572,7 +609,7 @@ def check_for_in_1v1_battle(vm_index) -> bool:
     return False
 
 
-def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False) -> Literal['restart'] | None:
+def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False):
     if printmode:
         logger.change_status(status="Getting to clash main from clan page")
     else:
@@ -593,8 +630,11 @@ def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False) 
     else:
         logger.log("Waiting for clash main")
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(status="Error 23422464342342, failure waiting for clash main")
+        logger.change_status(
+            status="Error 23422464342342, failure waiting for clash main"
+        )
         return "restart"
+    return "good"
 
 
 def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False):
@@ -605,8 +645,8 @@ def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False):
 
     # if not on main, restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=
-            "ERROR 7346722 Not on clash main menu, returning to start state"
+        logger.change_status(
+            status="ERROR 7346722 Not on clash main menu, returning to start state"
         )
         return "restart"
 
@@ -619,9 +659,9 @@ def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False):
 
     while not check_if_on_clan_chat_page(vm_index):
         if printmode:
-            logger.change_status(status=f"Cycling to clan tab")
+            logger.change_status(status="Cycling to clan tab")
         else:
-            logger.log(f"Cycling to clan tab")
+            logger.log("Cycling to clan tab")
         click(
             vm_index,
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
@@ -636,27 +676,28 @@ def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False):
         logger.change_status(status="Made it to clan chat page")
     else:
         logger.log("Made it to clan chat page")
+    return "good"
 
 
 def check_if_on_clan_chat_page(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     friend_battle_button_exists = False
-    for x in range(140, 157):
-        this_pixel = iar[541][x]
+    for x_coord in range(140, 157):
+        this_pixel = iar[541][x_coord]
         if pixel_is_equal([183, 96, 252], this_pixel, tol=35):
             friend_battle_button_exists = True
             break
 
     blue_chat_button_exists = False
-    for x in range(300, 320):
-        this_pixel = iar[539][x]
+    for x_coord in range(300, 320):
+        this_pixel = iar[539][x_coord]
         if pixel_is_equal([76, 174, 255], this_pixel, tol=35):
             blue_chat_button_exists = True
 
     red_x_button_exists = False
-    for x in range(343, 348):
-        this_pixel = iar[44][x]
+    for x_coord in range(343, 348):
+        this_pixel = iar[44][x_coord]
         if pixel_is_equal([228, 28, 28], this_pixel, tol=35):
             red_x_button_exists = True
             break
@@ -692,20 +733,23 @@ def wait_for_profile_page(vm_index, logger: Logger, printmode=False):
     while not check_if_on_profile_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(status="Error 8734572456 Waiting too long for profile page")
+            logger.change_status(
+                status="Error 8734572456 Waiting too long for profile page"
+            )
             return "restart"
 
     if printmode:
         logger.change_status(status="Done waiting for profile page")
     else:
         logger.log("Done waiting for profile page")
+    return "good"
 
 
 def get_to_profile_page(vm_index, logger: Logger):
     # if not on clash main, return
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=
-            f"ERROR 732457256 Not on clash main menu, returning to start state"
+        logger.change_status(
+            status="ERROR 732457256 Not on clash main menu, returning to start state"
         )
         return "restart"
 
@@ -714,8 +758,11 @@ def get_to_profile_page(vm_index, logger: Logger):
 
     # wait for profile page
     if wait_for_profile_page(vm_index, logger) == "restart":
-        logger.change_status(status="Error 0573085 Waited too long for clash profile page")
+        logger.change_status(
+            status="Error 0573085 Waited too long for clash profile page"
+        )
         return "restart"
+    return "good"
 
 
 def check_for_trophy_reward_menu(vm_index):
@@ -749,6 +796,8 @@ def handle_trophy_reward_menu(vm_index, logger: Logger, printmode=False):
     )
     time.sleep(1)
 
+    return "good"
+
 
 def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False):
     if printmode:
@@ -764,9 +813,11 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False):
             handle_trophy_reward_menu(vm_index, logger)
 
         if time.time() - start_time > 60:
-            logger.change_status(status="Looped through getting to clash main too many times")
-            logger.change_status(status=
-                "wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
+            logger.change_status(
+                status="Looped through getting to clash main too many times"
+            )
+            logger.change_status(
+                status="wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
             )
             return "restart"
 
@@ -780,6 +831,8 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False):
         logger.change_status(status="Done waiting for clash main menu")
     else:
         logger.log("Done waiting for clash main menu")
+
+    return "good"
 
 
 def check_if_on_clash_main_menu(vm_index):
@@ -798,8 +851,8 @@ def check_for_gem_logo_on_main(vm_index):
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot(vm_index))
 
-    for x in range(390, 410):
-        this_pixel = iar[16][x]
+    for x_index in range(390, 410):
+        this_pixel = iar[16][x_index]
         if pixel_is_equal([65, 198, 24], this_pixel, tol=35):
             return True
     return False
@@ -809,8 +862,8 @@ def check_for_friends_logo_on_main(vm_index):
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot(vm_index))
 
-    for x in range(250, 290):
-        this_pixel = iar[69][x]
+    for x_coord in range(250, 290):
+        this_pixel = iar[69][x_coord]
         if pixel_is_equal([228, 244, 255], this_pixel, tol=35):
             return True
     return False

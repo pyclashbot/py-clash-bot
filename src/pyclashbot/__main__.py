@@ -1,12 +1,14 @@
 import sys
 import webbrowser
 from os import path
+from typing import LiteralString
 
 import PySimpleGUI as sg
 
-
+from pyclashbot.bot.states import state_tree
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
+from pyclashbot.memu.launcher import check_for_vm
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -121,17 +123,17 @@ def no_jobs_popup():
 
     # Event loop to process events and get user input
     while True:
-        event, values = window.read()  # type: ignore
+        event, *_ = window.read()  # type: ignore
 
         # Exit the program if the "Exit" button is clicked or window is closed
-        if event == sg.WINDOW_CLOSED or event == "Exit":
+        if event in (sg.WINDOW_CLOSED, "Exit"):
             break
 
     # Close the window
     window.close()
 
 
-def start_button_event(logger: Logger, window, values):
+def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -156,7 +158,7 @@ def start_button_event(logger: Logger, window, values):
 
     # setup the main thread and start it
     acc_count = int(values["-SSID_IN-"])
-    args = (jobs, acc_count)
+    args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, args)
     thread.start()
 
@@ -168,7 +170,7 @@ def start_button_event(logger: Logger, window, values):
     return thread
 
 
-def stop_button_event(logger: Logger, window, thread: StoppableThread):
+def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     """method for stopping the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -184,7 +186,7 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread):
     thread.shutdown()  # send the shutdown flag to the thread
 
 
-def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
+def pause_resume_button_event(logger: Logger, window, thread: PausableThread) -> None:
     """method for temporarily stopping the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -201,7 +203,7 @@ def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
         window["-Pause-Resume-Button-"].update(text="Pause")
 
 
-def update_layout(window: sg.Window, logger: Logger):
+def update_layout(window: sg.Window, logger: Logger) -> None:
     """method for updaing the values in the gui's window
     args:
         window, the gui window
@@ -217,19 +219,25 @@ def update_layout(window: sg.Window, logger: Logger):
             window[stat].update(val)  # type: ignore
 
 
-def main_gui():
+def exit_button_event(thread) -> None:
+    # shut down the thread if it is still running
+    if thread is not None:
+        thread.shutdown(kill=True)
+
+
+def main_gui() -> None:
     """method for displaying the main gui"""
     console_log = True  # enable/disable console logging
 
     icon_path = "pixel-pycb.ico"
-    if not path.isfile(icon_path):
-        icon_path = path.join("..\\..\\assets\\", icon_path)
+    if not path.isfile(path=icon_path):
+        icon_path: LiteralString = path.join("..\\..\\assets\\", icon_path)
 
     # create gui window
-    window = sg.Window("Py-ClashBot", main_layout, icon=icon_path)
+    window = sg.Window(title="Py-ClashBot", layout=main_layout, icon=icon_path)
 
     # load the last cached settings
-    load_last_settings(window)
+    load_last_settings(window=window)
 
     # track worker thread and logger
     thread: WorkerThread | None = None
@@ -242,14 +250,11 @@ def main_gui():
         # on exit event, kill any existing thread
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
-            if thread is not None:
-                thread.shutdown(kill=True)
+            exit_button_event(thread)
             break
 
         # on start event, start the thread
         if event == "Start":
-            # reset the logger for a new thread
-            # logger = Logger(console_log=console_log)
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
@@ -308,9 +313,6 @@ def main_gui():
 
 
 def dummy_bot():
-    from pyclashbot.bot.states import state_tree
-    from pyclashbot.memu.launcher import check_for_vm
-
     logger = Logger()
     vm_index = check_for_vm(logger)
     jobs = [
