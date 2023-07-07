@@ -218,7 +218,7 @@ def get_vm_index(logger: Logger, name: str) -> int:
     # sorted by index, lowest to highest
     vms.sort(key=lambda x: x["index"])
 
-    # get the indecies of all vms named clanspam
+    # get the indecies of all vms with the given name
     vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == name]
 
     # delete all vms except the lowest index, keep looping until there is only one
@@ -233,7 +233,7 @@ def get_vm_index(logger: Logger, name: str) -> int:
                 # don't raise error, just continue to loop until its deleted
                 # raise err # if program hangs on deleting vm then uncomment this line
 
-    # return the index. if no vms named clanspam exist, return -1
+    # return the index. if no vms with name exist, return -1
     return vm_indices[0] if vm_indices else -1
 
 
