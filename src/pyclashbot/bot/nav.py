@@ -526,7 +526,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False):
             return "restart"
 
         click(vm_index=vm_index, x_coord=200, y_coord=200)
-        time.sleep(secs=1)
+        time.sleep(1)
 
     if printmode:
         logger.change_status(status="Done waiting for 2v2 battle to start")
@@ -552,7 +552,7 @@ def wait_for_1v1_battle_start(
             return "restart"
 
         click(vm_index=vm_index, x_coord=200, y_coord=200)
-        time.sleep(secs=1)
+        time.sleep(1)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")

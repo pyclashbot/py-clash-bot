@@ -26,11 +26,14 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
 
     # if not on clash main, return fail
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status="Error 1983513 Not on clash main for card mastery state")
+        logger.change_status(
+            status="Error 1983513 Not on clash main for card mastery state"
+        )
         return "restart"
 
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
+        logger.log('Failure 528973589  getting to card page for card mastery collection state')
         return "restart"
 
     # while there are rewards to collect, run the collect loop
@@ -64,7 +67,9 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
         logger.add_card_mastery_reward_collection()
 
         # click deadspace a bunch
-        logger.change_status(status="Clicking deadspace to skip through mastery rewards")
+        logger.change_status(
+            status="Clicking deadspace to skip through mastery rewards"
+        )
         click(
             vm_index=vm_index,
             x_coord=CARD_PAGE_DEADSPACE[0],
@@ -76,8 +81,8 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
     logger.change_status(status="Done collecting mastery rewards")
 
     if get_to_clash_main_from_card_page(vm_index=vm_index, logger=logger) == "restart":
-        logger.change_status(status=
-            "Error 9856723985 Failure getting to clash main from card page (mastery mode)"
+        logger.change_status(
+            status="Error 9856723985 Failure getting to clash main from card page (mastery mode)"
         )
         return "restart"
 

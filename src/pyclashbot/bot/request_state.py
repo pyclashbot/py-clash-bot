@@ -303,7 +303,7 @@ def do_request(vm_index, logger: Logger) -> None:
     # click request button
     logger.change_status(status="Clicking request button")
     click(vm_index=vm_index, x_coord=77, y_coord=536)
-    time.sleep(secs=3)
+    time.sleep(3)
 
     # max scrolls
     logger.change_status(status="Counting the maximum scrolls in the request page")
@@ -314,7 +314,7 @@ def do_request(vm_index, logger: Logger) -> None:
     # click card
     logger.change_status(status="Clicking random card to request")
     click(vm_index=vm_index, x_coord=random.randint(a=67, b=358), y_coord=random.randint(a=211, b=547))
-    time.sleep(secs=3)
+    time.sleep(3)
 
     logger.change_status(status="Clicking request")
 

@@ -99,8 +99,8 @@ def state_tree(
 
         return NEXT_STATE, account_index_to_switch_to
 
-    elif state == "start_fight":  # --> 1v1_fight, account_switch
-        NEXT_STATE = "account_switch"
+    elif state == "start_fight":  # --> 1v1_fight, card_mastery
+        NEXT_STATE = "card_mastery"
         # if both 1v1 and 2v2, pick a random one
         if "1v1 battle" in job_list and "2v2 battle" in job_list:
             if logger._1v1_fights < logger._2v2_fights:
@@ -122,7 +122,7 @@ def state_tree(
         elif "2v2 battle" in job_list:
             return start_2v2_fight_state(vm_index, logger), account_index_to_switch_to
 
-        # if neither, go to account switch
+        # if neither, go to NEXT_STATE
         else:
             return NEXT_STATE, account_index_to_switch_to
 

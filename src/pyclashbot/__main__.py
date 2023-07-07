@@ -4,6 +4,10 @@ from os import path
 from typing import LiteralString
 
 import PySimpleGUI as sg
+from pyclashbot.bot.card_mastery_state import (
+    card_mastery_collection_state,
+    check_for_card_mastery_rewards_icon_with_delay,
+)
 
 from pyclashbot.bot.states import state_tree
 from pyclashbot.bot.worker import WorkerThread
