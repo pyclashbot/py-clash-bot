@@ -116,19 +116,18 @@ def get_card_group(card_id) -> str:
 
 
 def calculate_play_coords(card_grouping: str, side_preference: str):
-    if card_grouping in PLAY_COORDS:
+    if PLAY_COORDS.get(card_grouping):
         group_datum = PLAY_COORDS[card_grouping]
         if side_preference == "left" and "left" in group_datum:
             return random.choice(group_datum["left"])
-        elif side_preference == "right" and "right" in group_datum:
+        if side_preference == "right" and "right" in group_datum:
             return random.choice(group_datum["right"])
-        elif "coords" in group_datum:
+        if "coords" in group_datum:
             return random.choice(group_datum["coords"])
 
     if side_preference == "left":
         return (random.randint(60, 206), random.randint(281, 456))
-    else:
-        return (random.randint(210, 351), random.randint(281, 456))
+    return (random.randint(210, 351), random.randint(281, 456))
 
 
 def get_card_images(vm_index):
@@ -225,6 +224,13 @@ def image_saver(vm_index, card_name, card_index):
     card_image = get_card_images(vm_index)[card_index]
 
     while len(images) < 10:
+        region = [
+            random.randint(5, 60),
+            random.randint(5, 60),
+            random.randint(10, 50),
+            random.randint(10, 50),
+        ]
+
         left = random.randint(5, 60)
         top = random.randint(5, 60)
         width = random.randint(10, 50)
@@ -236,9 +242,7 @@ def image_saver(vm_index, card_name, card_index):
         if top + height > 74:
             continue
 
-        random_region = [left, top, width, height]
-
-        random_image = crop_image(card_image, random_region)
+        random_image = crop_image(image=card_image, region=region)
         images.append(random_image)
 
     # count the files in the directory for this card name

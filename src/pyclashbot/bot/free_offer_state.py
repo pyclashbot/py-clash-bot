@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 import numpy
 
-from pyclashbot.bot.navigation import (
+from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     wait_for_clash_main_menu,
     wait_for_clash_main_shop_page,

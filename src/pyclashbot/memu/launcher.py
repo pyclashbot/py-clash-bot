@@ -15,7 +15,7 @@ import pythoncom
 import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.bot.navigation import wait_for_clash_main_menu
+from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import screenshot
 from pyclashbot.memu.emulator import set_vm_language

@@ -1,10 +1,11 @@
 import math
 import random
 import time
+from typing import Any
 
 import numpy
 
-from pyclashbot.bot.navigation import (
+from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
     get_to_clash_main_from_clan_page,
@@ -25,7 +26,7 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
 
     # if not on main retunr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=f"ERROR 62543636 Not on clash main menu")
+        logger.change_status(status="ERROR 62543636 Not on clash main menu")
         return "restart"
 
     # if not in a clan, return
@@ -39,7 +40,7 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
 
     # get to clan page
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
-        logger.change_status(status=f"ERROR 74842744443 Not on clan tab")
+        logger.change_status(status="ERROR 74842744443 Not on clan tab")
         return "restart"
 
     # check if request exists
@@ -51,8 +52,8 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
 
     # return to clash main
     if get_to_clash_main_from_clan_page(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 876208476 Failure with get_to_clash_main_from_clan_page"
+        logger.change_status(
+            status="Error 876208476 Failure with get_to_clash_main_from_clan_page"
         )
         return "restart"
     return NEXT_STATE
@@ -90,12 +91,14 @@ def check_if_can_scroll_in_request_page(vm_index):
 def request_state_check_if_in_a_clan(vm_index, logger: Logger):
     # if not on clash main, reutnr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=f"ERROR 385462623 Not on clash main menu")
+        logger.change_status(status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
-        logger.change_status(status="Error 9076092860923485 Failure with get_to_profile_page")
+        logger.change_status(
+            status="Error 9076092860923485 Failure with get_to_profile_page"
+        )
         return "restart"
 
     # check pixels for in a clan
@@ -104,8 +107,8 @@ def request_state_check_if_in_a_clan(vm_index, logger: Logger):
     # click deadspace to leave
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 87258301758939 Failure with wait_for_clash_main_menu"
+        logger.change_status(
+            status="Error 87258301758939 Failure with wait_for_clash_main_menu"
         )
         return "restart"
 
@@ -128,12 +131,14 @@ def request_state_check_pixels_for_clan_flag(vm_index):
     return False
 
 
-def find_yellow_request_button_in_request_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+def find_yellow_request_button_in_request_page(vm_index) -> Any:
+    iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(
+        a=screenshot(vm_index=vm_index)
+    )
 
-    COLOR_WHITE = [255, 255, 255]
-    YELLOW_1 = [255, 203, 85]
-    YELLOW_2 = [255, 190, 43]
+    COLOR_WHITE: list[int] = [255, 255, 255]
+    YELLOW_1: list[int] = [255, 203, 85]
+    YELLOW_2: list[int] = [255, 190, 43]
 
     REQUEST_BUTTON_COORD_LIST = {
         "1": [
@@ -156,7 +161,7 @@ def find_yellow_request_button_in_request_page(vm_index):
         ],
     }
 
-    bool_lists = [
+    bool_lists: list[list[bool]] = [
         # row 1
         [
             pixel_is_equal(YELLOW_1, iar[345][74], tol=25),
@@ -289,27 +294,27 @@ def find_yellow_request_button_in_request_page(vm_index):
 
     row, col = ((math.ceil(index / 4)), (((index - 1) % 4) + 1))
 
-    return REQUEST_BUTTON_COORD_LIST[str(row)][col - 1]
+    return REQUEST_BUTTON_COORD_LIST[str(object=row)][col - 1]
 
 
-def do_request(vm_index, logger: Logger):
+def do_request(vm_index, logger: Logger) -> None:
     logger.change_status(status="Doing request")
 
     # click request button
     logger.change_status(status="Clicking request button")
-    click(vm_index, 77, 536)
-    time.sleep(3)
+    click(vm_index=vm_index, x_coord=77, y_coord=536)
+    time.sleep(secs=3)
 
     # max scrolls
     logger.change_status(status="Counting the maximum scrolls in the request page")
-    max_scrolls = count_scrolls_in_request_page(vm_index)
-    random_scroll_amount = random.randint(0, max_scrolls)
-    do_random_scrolling_in_request_page(vm_index, logger, scrolls=random_scroll_amount)
+    max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
+    random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
+    do_random_scrolling_in_request_page(vm_index=vm_index, logger=logger, scrolls=random_scroll_amount)
 
     # click card
     logger.change_status(status="Clicking random card to request")
-    click(vm_index, random.randint(67, 358), random.randint(211, 547))
-    time.sleep(3)
+    click(vm_index=vm_index, x_coord=random.randint(a=67, b=358), y_coord=random.randint(a=211, b=547))
+    time.sleep(secs=3)
 
     logger.change_status(status="Clicking request")
 

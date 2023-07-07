@@ -3,7 +3,7 @@ import time
 from typing import Literal
 
 from pyclashbot.bot.card_detection import get_play_coords_for_card
-from pyclashbot.bot.navigation import (
+from pyclashbot.bot.nav import (
     check_for_end_2v2_battle_screen,
     check_for_in_1v1_battle,
     check_for_in_2v2_battle,

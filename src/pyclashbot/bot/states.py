@@ -9,7 +9,7 @@ from pyclashbot.bot.do_fight_state import (
     start_2v2_fight_state,
 )
 from pyclashbot.bot.free_offer_state import free_offer_collection_state
-from pyclashbot.bot.navigation import wait_for_clash_main_menu
+from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.bot.open_chests_state import open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.switch_account_state import switch_account_state
@@ -21,7 +21,6 @@ from pyclashbot.memu.launcher import (
     start_clash_royale,
 )
 from pyclashbot.utils.logger import Logger
-import random
 
 
 def state_tree(
@@ -38,7 +37,7 @@ def state_tree(
         while 1:
             pass
 
-    if state == "start":  # --> open_chests
+    elif state == "start":  # --> open_chests
         # open clash
         restart_emulator(logger)
 

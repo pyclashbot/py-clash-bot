@@ -2,7 +2,7 @@ import time
 
 import numpy
 
-from pyclashbot.bot.navigation import (
+from pyclashbot.bot.nav import (
     check_if_on_clash_main_burger_button_options_menu,
     check_if_on_clash_main_menu,
     wait_for_clash_main_burger_button_options_menu,
