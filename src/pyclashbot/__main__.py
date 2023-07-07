@@ -4,14 +4,13 @@ from os import path
 from typing import LiteralString
 
 import PySimpleGUI as sg
-from pyclashbot.bot.card_mastery_state import (
-    card_mastery_collection_state,
-    check_for_card_mastery_rewards_icon_with_delay,
-)
+
 
 from pyclashbot.bot.states import state_tree
+from pyclashbot.bot.upgrade_state import upgrade_card
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
+from pyclashbot.memu.client import screenshot
 from pyclashbot.memu.launcher import check_for_vm
 from pyclashbot.utils.caching import (
     cache_user_settings,

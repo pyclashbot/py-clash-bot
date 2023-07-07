@@ -7,7 +7,11 @@ from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
     get_to_clash_main_from_card_page,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal, check_line_for_color, region_is_color
+from pyclashbot.detection.image_rec import (
+    pixel_is_equal,
+    check_line_for_color,
+    region_is_color,
+)
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
@@ -48,7 +52,13 @@ UPGRADE_BUTTON_COORDS = [
 
 
 SECOND_UPGRADE_BUTTON_COORDS = (236, 574)
+SECOND_UPGRADE_BUTTON_COORDS_CONDITION_1 = (239, 488)
+
+
 CONFIRM_UPGRADE_BUTTON_COORDS = (232, 508)
+CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1 = (242, 413)
+
+
 DEADSPACE_COORD = (10, 323)
 
 
@@ -57,22 +67,21 @@ CLOSE_BUY_GOLD_POPUP_COORD = (350, 208)
 CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
-
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Upgrade cards state")
 
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=
-            "Error 31570138 Not on clash main to being upgrade cards state"
+        logger.change_status(
+            status="Error 31570138 Not on clash main to being upgrade cards state"
         )
         return "restart"
 
     # get to card page
     logger.change_status(status="Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 0751389 Failure getting to card page from clash main in Upgrade State"
+        logger.change_status(
+            status="Error 0751389 Failure getting to card page from clash main in Upgrade State"
         )
         return "restart"
 
@@ -89,12 +98,34 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     # return to clash main
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 13984713 Failure getting to clash main from card page after card upgrading"
+        logger.change_status(
+            status="Error 13984713 Failure getting to clash main from card page after card upgrading"
         )
         return "restart"
 
     return next_state
+
+
+def check_for_second_upgrade_button_condition_1(vm_index) -> bool:
+    if not check_line_for_color(vm_index, 201, 473, 203, 503, (56, 228, 72)):
+        return False
+    if not check_line_for_color(vm_index, 275, 477, 276, 501, (56, 228, 72)):
+        return False
+    if not check_line_for_color(vm_index, 348, 153, 361, 153, (229, 36, 36)):
+        return False
+
+    return True
+
+
+def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
+    if not check_line_for_color(vm_index, 201, 401, 201, 432, (56, 228, 72)):
+        return False
+    if not check_line_for_color(vm_index, 277, 399, 277, 431, (56, 228, 72)):
+        return False
+    if not check_line_for_color(vm_index, 347, 153, 361, 154, (111, 22, 29)):
+        return False
+
+    return True
 
 
 def upgrade_card(vm_index, logger: Logger, index, upgrade_list):
@@ -117,20 +148,35 @@ def upgrade_card(vm_index, logger: Logger, index, upgrade_list):
 
         # click second upgrade button
         logger.change_status(status="Clicking the second upgrade button")
-        click(
-            vm_index,
-            SECOND_UPGRADE_BUTTON_COORDS[0],
-            SECOND_UPGRADE_BUTTON_COORDS[1],
-        )
+        if check_for_second_upgrade_button_condition_1(vm_index):
+            click(
+                vm_index,
+                SECOND_UPGRADE_BUTTON_COORDS_CONDITION_1[0],
+                SECOND_UPGRADE_BUTTON_COORDS_CONDITION_1[1],
+            )
+        else:
+            click(
+                vm_index,
+                SECOND_UPGRADE_BUTTON_COORDS[0],
+                SECOND_UPGRADE_BUTTON_COORDS[1],
+            )
         time.sleep(2)
 
         # click confirm upgrade button
         logger.change_status(status="Clicking the confirm upgrade button")
-        click(
-            vm_index,
-            CONFIRM_UPGRADE_BUTTON_COORDS[0],
-            CONFIRM_UPGRADE_BUTTON_COORDS[1],
-        )
+
+        if check_for_confirm_upgrade_button_condition_1(vm_index):
+            click(
+                vm_index,
+                CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1[0],
+                CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1[1],
+            )
+        else:
+            click(
+                vm_index,
+                CONFIRM_UPGRADE_BUTTON_COORDS[0],
+                CONFIRM_UPGRADE_BUTTON_COORDS[1],
+            )
         time.sleep(2)
 
         # if gold popup doesnt exists: add to logger's upgrade stat
@@ -180,7 +226,6 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
     return bool_list
 
 
-
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
         vm_index, x1=338, y1=215, x2=361, y2=221, color=(153, 20, 17)
@@ -198,7 +243,6 @@ def check_for_missing_gold_popup(vm_index):
         return False
 
     return True
-
 
 
 if __name__ == "__main__":
