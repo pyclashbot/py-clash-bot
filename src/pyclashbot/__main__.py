@@ -339,8 +339,6 @@ def dummy_bot():
         print(f"state = {state}")
 
 
-
-
 if __name__ == "__main__":
     # dummy_bot()
     main_gui()

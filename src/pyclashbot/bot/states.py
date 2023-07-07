@@ -104,7 +104,7 @@ def state_tree(
         NEXT_STATE = "account_switch"
         # if both 1v1 and 2v2, pick a random one
         if "1v1 battle" in job_list and "2v2 battle" in job_list:
-            if random.randint(0, 1) == 1:
+            if logger._1v1_fights < logger._2v2_fights:
                 return (
                     start_1v1_fight_state(vm_index, logger),
                     account_index_to_switch_to,
