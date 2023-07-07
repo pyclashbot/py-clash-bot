@@ -30,7 +30,6 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-logging = "^3.1.0" # specify version of cx_logging for cx_freeze to run with python 3.11
 Cx_Freeze = "^6.15.2"
 
 
@@ -41,11 +40,10 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
 black = "^23.3.0"
-matplotlib = "^3.7.1" # used in debug.py
-ipykernel = "^6.23.3"
 vulture = "^2.6"
 isort = "^5.12.0"
 prospector = "^1.10.2"
+poethepoet = "^0.20.0"
 
 
 [tool.poe.tasks.tag]
