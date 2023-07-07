@@ -60,6 +60,8 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
             click(vm_index, coord[0], coord[1])
             time.sleep(0.5)
 
+        logger.add_card_mastery_reward_collection()
+
         # click deadspace a bunch
         logger.change_status("Clicking deadspace to skip through mastery rewards")
         click(
