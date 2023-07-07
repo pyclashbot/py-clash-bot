@@ -60,7 +60,7 @@ def get_play_coords_for_card(vm_index: int, card_index: int, side_preference: st
 
 
 def get_card_group(card_id) -> str:
-    card_groups = {
+    card_groups: dict[str, list[str]] = {
         "spell": [
             "earthquake",
             "fireball",
@@ -167,16 +167,16 @@ def crop_image(image: Image.Image, region: list[int]) -> Image.Image:
 
 def get_card_name_list():
     card_names = []
-    for n in get_file_names(
+    for name in get_file_names(
         os.path.join(
             os.path.dirname(os.path.abspath(__file__))[:-4],
             "detection",
             "reference_images",
         )
     ):
-        if "card_" in n:
-            n = n.replace("card_", "")
-            card_names.append(n)
+        if "card_" in name:
+            name = name.replace("card_", "")
+            card_names.append(name)
 
     return card_names
 
@@ -196,14 +196,14 @@ def identify_card(image):
     card_names = get_card_name_list()
 
     for card_name in card_names:
-        folder_str = f"card_{card_name}"
+        folder_str: str = f"card_{card_name}"
 
-        file_count = get_file_count(folder_str)
+        file_count: int = get_file_count(folder_str)
 
         references = make_reference_image_list(file_count)
 
-        locations = find_references(
-            screenshot=image, folder=folder_str, names=references, tolerance=0.97
+        locations: list[list[int] | None] = find_references(
+            image=image, folder=folder_str, names=references, tolerance=0.97
         )
 
         if check_for_location(locations):
@@ -215,70 +215,7 @@ def identify_card(image):
 # dev methods
 
 
-def image_saver(vm_index, card_name, card_index):
-    folder_str = f"card_{card_name}"
-
-    # make random images
-    images = []
-
-    card_image = get_card_images(vm_index)[card_index]
-
-    while len(images) < 10:
-        region = [
-            random.randint(5, 60),
-            random.randint(5, 60),
-            random.randint(10, 50),
-            random.randint(10, 50),
-        ]
-
-        left = random.randint(5, 60)
-        top = random.randint(5, 60)
-        width = random.randint(10, 50)
-        height = random.randint(10, 50)
-
-        if left + width > 64:
-            continue
-
-        if top + height > 74:
-            continue
-
-        random_image = crop_image(image=card_image, region=region)
-        images.append(random_image)
-
-    # count the files in the directory for this card name
-    count = get_file_count(folder_str)
-
-    # get a list of names for the new images
-    names = []
-    for i in range(10):
-        names.append(count + i + 1)
-
-    # create the directory if it doesn't exist
-
-    directory_path = r"C:\My Files\my Programs\new-Py-Clash-Bot\src\pyclashbot\detection\reference_images\card"
-    directory_path += f"_{card_name}"
-
-    os.makedirs(directory_path, exist_ok=True)
-
-    # save the images in the directory for this card name with those names
-    for i in range(10):
-        image_to_save = images[i]
-
-        name = f"{names[i]}.png"
-
-        save_image(image_to_save, directory_path, name)
-
-
-def save_image(image, location, filename):
-    # Ensure the location directory exists
-    os.makedirs(location, exist_ok=True)
-
-    # Construct the file path
-    file_path = os.path.join(location, filename)
-
-    # Save the image as PNG
-    image.save(file_path, "PNG")
 
 
 if __name__ == "__main__":
-    screenshot(1)
+    pass

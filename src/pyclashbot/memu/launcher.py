@@ -52,8 +52,8 @@ def restart_emulator(logger):
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    for n in range(MANUAL_VM_WAIT_TIME):
-        logger.log(f"Waiting for VM to load {n}/{MANUAL_VM_WAIT_TIME}")
+    for second in range(MANUAL_VM_WAIT_TIME):
+        logger.log(f"Waiting for VM to load {second}/{MANUAL_VM_WAIT_TIME}")
         time.sleep(1)
 
     # skip ads
@@ -65,9 +65,9 @@ def restart_emulator(logger):
     start_clash_royale(logger, vm_index)
 
     # manually wait for clash main
-    for n in range(MANUAL_CLASH_MAIN_WAIT_TIME):
+    for second in range(MANUAL_CLASH_MAIN_WAIT_TIME):
         print(
-            f"Manually waiting for clash main page. {n}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
+            f"Manually waiting for clash main page. {second}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
         )
         time.sleep(1)
 
@@ -249,22 +249,22 @@ def check_if_clash_banned(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     red_okay_text_exists = False
-    for x in range(140, 190):
-        this_pixel = iar[405][x]
+    for x_index in range(140, 190):
+        this_pixel = iar[405][x_index]
         if pixel_is_equal([252, 67, 69], this_pixel, tol=35):
             red_okay_text_exists = True
             break
 
     blue_loading_bar_exists = False
-    for x in range(40, 120):
-        this_pixel = iar[623][x]
+    for x_index in range(40, 120):
+        this_pixel = iar[623][x_index]
         if pixel_is_equal([25, 113, 214], this_pixel, tol=35):
             blue_loading_bar_exists = True
             break
 
     white_account_information_text_exists = False
-    for x in range(100, 180):
-        this_pixel = iar[209][x]
+    for x_index in range(100, 180):
+        this_pixel = iar[209][x_index]
         if pixel_is_equal([255, 255, 255], this_pixel, tol=35):
             white_account_information_text_exists = True
             break

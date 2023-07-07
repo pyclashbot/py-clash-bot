@@ -1,7 +1,7 @@
 import math
 import random
 import time
-from typing import Any
+from typing import Any, Literal
 
 import numpy
 
@@ -21,7 +21,33 @@ from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
 from pyclashbot.utils.logger import Logger
 
 
-def request_state(vm_index, logger: Logger, NEXT_STATE: str):
+COLOR_WHITE: list[int] = [255, 255, 255]
+YELLOW_1: list[int] = [255, 203, 85]
+YELLOW_2: list[int] = [255, 190, 43]
+
+REQUEST_BUTTON_COORD_LIST = {
+    "1": [
+        (100, 353),
+        (163, 353),
+        (240, 353),
+        (330, 353),
+    ],
+    "2": [
+        (100, 493),
+        (163, 493),
+        (240, 493),
+        (330, 493),
+    ],
+    "3": [
+        (100, 521),
+        (163, 521),
+        (240, 521),
+        (330, 521),
+    ],
+}
+
+
+def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.change_status(status="Request state")
 
     # if not on main retunr
@@ -36,7 +62,7 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
         return "restart"
 
     if not in_a_clan_return:
-        return NEXT_STATE
+        return next_state
 
     # get to clan page
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
@@ -56,10 +82,10 @@ def request_state(vm_index, logger: Logger, NEXT_STATE: str):
             status="Error 876208476 Failure with get_to_clash_main_from_clan_page"
         )
         return "restart"
-    return NEXT_STATE
+    return next_state
 
 
-def do_random_scrolling_in_request_page(vm_index, logger, scrolls):
+def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
     logger.change_status(status="Doing random scrolling in request page")
     for _ in range(scrolls):
         scroll_down(vm_index)
@@ -67,7 +93,7 @@ def do_random_scrolling_in_request_page(vm_index, logger, scrolls):
     logger.change_status(status="Done with random scrolling in request page")
 
 
-def count_scrolls_in_request_page(vm_index):
+def count_scrolls_in_request_page(vm_index) -> int:
     # scroll down, counting each scroll, until cant scroll anymore
     scrolls = 0
     while check_if_can_scroll_in_request_page(vm_index):
@@ -82,13 +108,15 @@ def count_scrolls_in_request_page(vm_index):
     return scrolls
 
 
-def check_if_can_scroll_in_request_page(vm_index):
+def check_if_can_scroll_in_request_page(vm_index) -> bool:
     if not region_is_color(vm_index, region=[64, 500, 293, 55], color=(222, 235, 241)):
         return True
     return False
 
 
-def request_state_check_if_in_a_clan(vm_index, logger: Logger):
+def request_state_check_if_in_a_clan(
+    vm_index, logger: Logger
+) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(status="ERROR 385462623 Not on clash main menu")
@@ -115,17 +143,17 @@ def request_state_check_if_in_a_clan(vm_index, logger: Logger):
     return in_a_clan
 
 
-def request_state_check_pixels_for_clan_flag(vm_index):
+def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))  # type: ignore
 
-    for x in range(78, 97):
-        this_pixel = iar[446][x]
-        if not (pixel_is_equal([51, 51, 51], this_pixel, tol=25)):
+    for x_index in range(78, 97):
+        this_pixel = iar[446][x_index]
+        if not pixel_is_equal([51, 51, 51], this_pixel, tol=25):
             return True
 
-    for y in range(437, 455):
-        this_pixel = iar[y][87]
-        if not (pixel_is_equal([51, 51, 51], this_pixel, tol=25)):
+    for y_index in range(437, 455):
+        this_pixel = iar[y_index][87]
+        if not pixel_is_equal([51, 51, 51], this_pixel, tol=25):
             return True
 
     return False
@@ -135,31 +163,6 @@ def find_yellow_request_button_in_request_page(vm_index) -> Any:
     iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(
         a=screenshot(vm_index=vm_index)
     )
-
-    COLOR_WHITE: list[int] = [255, 255, 255]
-    YELLOW_1: list[int] = [255, 203, 85]
-    YELLOW_2: list[int] = [255, 190, 43]
-
-    REQUEST_BUTTON_COORD_LIST = {
-        "1": [
-            (100, 353),
-            (163, 353),
-            (240, 353),
-            (330, 353),
-        ],
-        "2": [
-            (100, 493),
-            (163, 493),
-            (240, 493),
-            (330, 493),
-        ],
-        "3": [
-            (100, 521),
-            (163, 521),
-            (240, 521),
-            (330, 521),
-        ],
-    }
 
     bool_lists: list[list[bool]] = [
         # row 1
@@ -309,11 +312,17 @@ def do_request(vm_index, logger: Logger) -> None:
     logger.change_status(status="Counting the maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
-    do_random_scrolling_in_request_page(vm_index=vm_index, logger=logger, scrolls=random_scroll_amount)
+    do_random_scrolling_in_request_page(
+        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
+    )
 
     # click card
     logger.change_status(status="Clicking random card to request")
-    click(vm_index=vm_index, x_coord=random.randint(a=67, b=358), y_coord=random.randint(a=211, b=547))
+    click(
+        vm_index=vm_index,
+        x_coord=random.randint(a=67, b=358),
+        y_coord=random.randint(a=211, b=547),
+    )
     time.sleep(3)
 
     logger.change_status(status="Clicking request")
@@ -330,44 +339,44 @@ def do_request(vm_index, logger: Logger) -> None:
     time.sleep(3)
 
 
-def check_for_trade_cards_icon(vm_index):
+def check_for_trade_cards_icon(vm_index) -> bool:
     lines = [
         check_line_for_color(
-            vm_index, x1=33, y1=502, x2=56, y2=502, color=(47, 69, 105)
+            vm_index, x_1=33, y_1=502, x_2=56, y_2=502, color=(47, 69, 105)
         ),
         check_line_for_color(
-            vm_index, x1=56, y1=507, x2=108, y2=506, color=(253, 253, 203)
+            vm_index, x_1=56, y_1=507, x_2=108, y_2=506, color=(253, 253, 203)
         ),
         check_line_for_color(
-            vm_index, x1=37, y1=515, x2=125, y2=557, color=(255, 188, 42)
+            vm_index, x_1=37, y_1=515, x_2=125, y_2=557, color=(255, 188, 42)
         ),
     ]
 
     return all(lines)
 
 
-def check_if_can_request(vm_index):
+def check_if_can_request(vm_index) -> bool:
     if check_for_trade_cards_icon(vm_index):
         return False
 
     iar = numpy.asarray(screenshot(vm_index))
 
     region_is_white = True
-    for x in range(48, 55):
-        this_pixel = iar[530][x]
+    for x_index in range(48, 55):
+        this_pixel = iar[530][x_index]
         if not pixel_is_equal([212, 228, 255], this_pixel, tol=25):
             region_is_white = False
             break
 
-    for y in range(528, 535):
-        this_pixel = iar[y][52]
+    for y_index in range(528, 535):
+        this_pixel = iar[y_index][52]
         if not pixel_is_equal([212, 228, 255], this_pixel, tol=25):
             region_is_white = False
             break
 
     yellow_button_exists = False
-    for x in range(106, 118):
-        this_pixel = iar[542][x]
+    for x_index in range(106, 118):
+        this_pixel = iar[542][x_index]
         if pixel_is_equal([255, 188, 42], this_pixel, tol=25):
             yellow_button_exists = True
             break

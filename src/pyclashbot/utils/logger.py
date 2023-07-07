@@ -13,7 +13,7 @@ class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
-        stats (dict[str, str | int] | None, optional): stats to communicate between threads. Defaults to None.
+        stats (dict[str, str | int] | None, optional): stats to talk between threads. Default=None.
         console_log (bool, optional): Enable console logging. Defaults to False.
         file_log (bool, optional): Enable file logging. Defaults to True.
     """
@@ -24,7 +24,7 @@ class Logger:
         console_log: bool = False,
         file_log: bool = True,
         timed: bool = True,
-    ):
+    ) -> None:
         # setup console log
         self.console_log = console_log
         # print buffer for console
@@ -38,9 +38,9 @@ class Logger:
         if file_log:
             if not exists(top_level):
                 makedirs(top_level)
-            self._log_file = open(
-                join(top_level, "log.txt"), "w", encoding="utf-8"
-            )  # noqa
+            log_file_path = join(top_level, "log.txt")
+            with open(log_file_path, "w", encoding="utf-8") as log_file:
+                self._log_file = log_file  # noqa
 
         # stats for threaded communication
         self.stats = stats
@@ -55,7 +55,7 @@ class Logger:
         self.wins = 0
         self.losses = 0
         self._1v1_fights = 0
-        self._2v2_fights=0
+        self._2v2_fights = 0
         self.cards_played = 0
         self.war_fights = 0
 
@@ -85,18 +85,17 @@ class Logger:
         if self.file_log:
             self._log_file.close()
 
-    def _update_log(self):
+    def _update_log(self) -> None:
         self._update_stats()
-        pass
 
-    def _update_stats(self):
+    def _update_stats(self) -> None:
         """updates the stats with a dictionary of mutable statistics"""
         with self.stats_mutex:
             self.stats = {
                 "wins": self.wins,
                 "losses": self.losses,
                 "1v1_fights": self._1v1_fights,
-                '2v2_fights':self._2v2_fights,
+                "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
                 "restarts_after_failure": self.restarts_after_failure,
@@ -128,12 +127,12 @@ class Logger:
 
         return wrapper
 
-    def log(self, message):
-        time_running_string = self.calc_time_since_start()
+    def log(self, message) -> None:
+        time_running_string: str = self.calc_time_since_start()
 
         print(f"[{time_running_string}] {message}")
 
-    def make_time_str(self, seconds):
+    def make_time_str(self, seconds) -> str:
         """convert epoch to time
 
         Args:
@@ -158,12 +157,12 @@ class Logger:
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
     @_updates_log
-    def add_free_offer_collection(self):
+    def add_free_offer_collection(self) -> None:
         """add level up chest collection to log"""
         self.free_offer_collections += 1
 
     @_updates_log
-    def error(self, message: str):
+    def error(self, message: str) -> None:
         """log error message
 
         Args:
@@ -173,21 +172,21 @@ class Logger:
         self.current_status = f"Error: {message}"
 
     @_updates_log
-    def add_card_mastery_reward_collection(self):
+    def add_card_mastery_reward_collection(self) -> None:
         self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
 
     @_updates_log
-    def add_chest_unlocked(self):
+    def add_chest_unlocked(self) -> None:
         """add chest unlocked to log"""
         self.chests_unlocked += 1
 
     @_updates_log
-    def add_war_fight(self):
+    def add_war_fight(self) -> None:
         """add card played to log"""
         self.war_fights += 1
 
     @_updates_log
-    def add_card_played(self):
+    def add_card_played(self) -> None:
         """add card played to log"""
         self.cards_played += 1
 
@@ -215,13 +214,11 @@ class Logger:
     def add_1v1_fight(self):
         """add fight to log"""
         self._1v1_fights += 1
-    
+
     @_updates_log
     def add_2v2_fight(self):
         """add fight to log"""
         self._2v2_fights += 1
-    
-    
 
     @_updates_log
     def add_request(self):
@@ -249,6 +246,12 @@ class Logger:
         self.restarts_after_failure += 1
 
     @_updates_log
-    def change_most_recent_restart_time(self, time):
+    def change_most_recent_restart_time(self, time_to_set):
         """add request to log"""
-        self.most_recent_restart_time = time
+        self.most_recent_restart_time = time_to_set
+
+    def get_1v1_fights(self):
+        return self._1v1_fights
+
+    def get_2v2_fights(self):
+        return self._2v2_fights

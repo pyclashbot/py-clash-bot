@@ -92,7 +92,7 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 925878946724 Failure waiting for clash main after free offer collection loops"
+            status="Error 777724 Failure waiting for clash main after free offer collection loops"
         )
         return "restart"
 
@@ -103,17 +103,21 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
 
 def check_for_free_button_condition_1(vm_index) -> bool:
     if not check_line_for_color(
-        vm_index=vm_index, x1=186, y1=389, x2=187, y2=407, color=(255, 255, 255)
+        vm_index=vm_index, x_1=186, y_1=389, x_2=187, y_2=407, color=(255, 255, 255)
     ):
         return False
     if not check_line_for_color(
-        vm_index=vm_index, x1=222, y1=389, x2=221, y2=406, color=(255, 255, 255)
+        vm_index=vm_index, x_1=222, y_1=389, x_2=221, y_2=406, color=(255, 255, 255)
     ):
         return False
 
-    if not region_is_color(vm_index=vm_index, region=[236, 400, 9, 6], color=(56, 228, 72)):
+    if not region_is_color(
+        vm_index=vm_index, region=[236, 400, 9, 6], color=(56, 228, 72)
+    ):
         return False
-    if not region_is_color(vm_index=vm_index, region=[171, 398, 11, 10], color=(56, 228, 72)):
+    if not region_is_color(
+        vm_index=vm_index, region=[171, 398, 11, 10], color=(56, 228, 72)
+    ):
         return False
 
     return True
@@ -135,7 +139,6 @@ def find_free_offer_coords_1(vm_index):
     green_pixel_coords = []
     iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(screenshot(vm_index))
 
-
     for y_coord in range(34, 538):
         this_pixel = iar[y_coord][49]
 
@@ -151,7 +154,7 @@ def find_free_offer_coords_1(vm_index):
     return "fail"
 
 
-def find_free_offer_coords_2(vm_index):
+def find_free_offer_coords_2(vm_index) -> tuple[Literal[132], int] | Literal['fail']:
     green_pixel_coords = []
     iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(
         screenshot(vm_index=vm_index)

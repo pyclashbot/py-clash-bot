@@ -15,7 +15,7 @@ def stat_box(stat_name: str, size=(5, 1)) -> sg.Text:
     )
 
 
-battle_stats_title = [
+battle_stats_title: list[list[sg.Text]] = [
     [
         sg.Text("Wins: "),
     ],

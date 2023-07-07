@@ -18,9 +18,9 @@ def get_chest_statuses(vm_index):
 
     # check chest 1
     chest_1_exists = False
-    for x in range(66, 87):
-        this_pixel = iar[533][x]
-        if not (pixel_is_equal([13, 92, 136], this_pixel, tol=35)):
+    for x_index in range(66, 87):
+        this_pixel = iar[533][x_index]
+        if not pixel_is_equal([13, 92, 136], this_pixel, tol=35):
             statuses.append("available")
             chest_1_exists = True
             break
@@ -30,9 +30,9 @@ def get_chest_statuses(vm_index):
 
     # check chest 2
     chest_2_exists = False
-    for x in range(137, 168):
-        this_pixel = iar[537][x]
-        if not (pixel_is_equal([31, 118, 158], this_pixel, tol=35)):
+    for x_index in range(137, 168):
+        this_pixel = iar[537][x_index]
+        if not pixel_is_equal([31, 118, 158], this_pixel, tol=35):
             chest_2_exists = True
             statuses.append("available")
             break
@@ -42,9 +42,9 @@ def get_chest_statuses(vm_index):
 
     # check chest 3
     chest_3_exists = False
-    for x in range(248, 280):
-        this_pixel = iar[536][x]
-        if not (pixel_is_equal([32, 117, 160], this_pixel, tol=35)):
+    for x_index in range(248, 280):
+        this_pixel = iar[536][x_index]
+        if not pixel_is_equal([32, 117, 160], this_pixel, tol=35):
             chest_3_exists = True
             statuses.append("available")
             break
@@ -54,9 +54,9 @@ def get_chest_statuses(vm_index):
 
     # check chest 4
     chest_4_exists = False
-    for x in range(315, 348):
-        this_pixel = iar[536][x]
-        if not (pixel_is_equal([20, 96, 142], this_pixel, tol=35)):
+    for x_index in range(315, 348):
+        this_pixel = iar[536][x_index]
+        if not pixel_is_equal([20, 96, 142], this_pixel, tol=35):
             chest_4_exists = True
             statuses.append("available")
             break
@@ -67,8 +67,8 @@ def get_chest_statuses(vm_index):
     return statuses
 
 
-def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
-    logger.change_status(status=f"Opening chests state")
+def open_chests_state(vm_index, logger: Logger, next_state: str):
+    logger.change_status(status="Opening chests state")
 
     logger.change_status(status="Handling obstructing notifications")
     if handle_clash_main_tab_notifications(vm_index, logger) == "restart":
@@ -80,7 +80,7 @@ def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
     # if not on clash main return
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(status=
-            f"ERROR 827358235 Not on clash main menu, returning to start state"
+            "ERROR 827358235 Not on clash main menu, returning to start state"
         )
         return "restart"
 
@@ -98,7 +98,7 @@ def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
 
     time.sleep(3)
 
-    return NEXT_STATE
+    return next_state
 
 
 def open_chest(vm_index, logger, chest_index):
@@ -126,10 +126,10 @@ def open_chest(vm_index, logger, chest_index):
 
 def check_if_chest_is_unlockable(vm_index):
     line1 = check_line_for_color(
-        vm_index, x1=163, y1=392, x2=186, y2=423, color=(255, 190, 43)
+        vm_index, x_1=163, y_1=392, x_2=186, y_2=423, color=(255, 190, 43)
     )
     line2 = check_line_for_color(
-        vm_index, x1=254, y1=408, x2=231, y2=426, color=(255, 190, 43)
+        vm_index, x_1=254, y_1=408, x_2=231, y_2=426, color=(255, 190, 43)
     )
     if line1 and line2:
         return True

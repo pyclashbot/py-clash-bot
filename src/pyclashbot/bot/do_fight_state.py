@@ -31,7 +31,7 @@ HAND_CARDS_COORDS = [
 
 
 def do_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "end_fight"]:
-    NEXT_STATE = "end_fight"
+    next_state = "end_fight"
 
     logger.change_status(status="do_1v1_fight_state state")
     logger.change_status(status="waiting for 1v1 battle start")
@@ -51,11 +51,11 @@ def do_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "end_figh
         return "restart"
 
     logger.add_1v1_fight()
-    return NEXT_STATE
+    return next_state
 
 
 def do_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "end_fight"]:
-    NEXT_STATE = "end_fight"
+    next_state = "end_fight"
 
     logger.change_status(status="do_1v1_fight_state state")
     logger.change_status(status="waiting for 2v2 battle start")
@@ -75,7 +75,7 @@ def do_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "end_figh
         return "restart"
 
     logger.add_2v2_fight()
-    return NEXT_STATE
+    return next_state
 
 
 def check_for_challenge_page_on_events_tab(vm_index):
@@ -102,7 +102,7 @@ QUICKMATCH_BUTTON_COORD = (
 )  # coord of the quickmatch button after you click the battle button
 
 
-def close_this_challenge_page(vm_index):
+def close_this_challenge_page(vm_index) -> None:
     click(
         vm_index,
         CLOSE_THIS_CHALLENGE_PAGE_BUTTON[0],
@@ -110,19 +110,19 @@ def close_this_challenge_page(vm_index):
     )
 
 
-def click_2v2_icon_button(vm_index):
+def click_2v2_icon_button(vm_index) -> None:
     click(vm_index, _2V2_BATTLE_ICON_COORD[0], _2V2_BATTLE_ICON_COORD[1])
 
 
-def click_2v2_battle_button(vm_index):
+def click_2v2_battle_button(vm_index) -> None:
     click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
 
 
-def click_quickmatch_button(vm_index):
+def click_quickmatch_button(vm_index) -> None:
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
-def start_2v2_fight_state(vm_index, logger: Logger):
+def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_fight"]:
     logger.change_status(status="Start fight state")
     logger.change_status(status="Starting 2v2 mode")
 
@@ -163,7 +163,7 @@ def start_2v2_fight_state(vm_index, logger: Logger):
     return next_state
 
 
-def start_1v1_fight_state(vm_index, logger: Logger):
+def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_fight"]:
     logger.change_status(status="Start fight state")
     logger.change_status(status="Starting 1v1 mode")
 
@@ -182,7 +182,7 @@ def start_1v1_fight_state(vm_index, logger: Logger):
     return next_state
 
 
-def check_for_exit_battle_button_condition_1(vm_index):
+def check_for_exit_battle_button_condition_1(vm_index) -> bool:
     if not check_for_end_2v2_battle_screen(vm_index):
         return False
 
@@ -192,13 +192,13 @@ def check_for_exit_battle_button_condition_1(vm_index):
     return True
 
 
-CLASH_MAIN_ICON_FROM_CHALLENGES_TAB = (170, 590)
+CLASH_MAIN_ICON_FROM_CHALLENGES_TAB: tuple[Literal[170], Literal[590]] = (170, 590)
 
 
-LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON = (71, 600)
+LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON: tuple[Literal[71], Literal[600]] = (71, 600)
 
 
-def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
+def end_fight_state(vm_index: int, logger: Logger, next_state: str) -> str:
     logger.change_status(status="end fight state")
     logger.change_status(status="Waiting for the leave battle screen to pop up ")
     if wait_for_end_battle_screen(vm_index, logger) == "restart":
@@ -232,7 +232,7 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     game_was_win_return = check_if_previous_game_was_win(vm_index, logger)
     if game_was_win_return == "restart":
         logger.change_status(
-            status="Erropr 498573204985 Failure with check_if_previous_game_was_win() in end_fight_state()"
+            status="Erropr 115 Failure with check_if_previous_game_was_win() in end_fight_state()"
         )
         return "restart"
 
@@ -245,7 +245,7 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
 
     time.sleep(3)
 
-    return NEXT_STATE
+    return next_state
 
 
 def choose_play_side(vm_index, favorite_side):
@@ -268,7 +268,7 @@ def choose_play_side(vm_index, favorite_side):
     return random.choice(choices)
 
 
-def _2v2_fight_loop(vm_index, logger: Logger):
+def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     logger.change_status(status="Starting 2v2 battle loop")
 
     # choose a side to favor this fight
@@ -336,7 +336,7 @@ def _2v2_fight_loop(vm_index, logger: Logger):
     return "good"
 
 
-def _1v1_fight_loop(vm_index, logger: Logger):
+def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     logger.change_status(status="Starting battle loop")
 
     # choose a side to favor this fight
@@ -404,7 +404,9 @@ def _1v1_fight_loop(vm_index, logger: Logger):
     return "good"
 
 
-def check_if_previous_game_was_win(vm_index, logger: Logger):
+def check_if_previous_game_was_win(
+    vm_index, logger: Logger
+) -> bool | Literal["restart"]:
     logger.change_status(status="Checking if last game was a win/loss")
 
     # if not on main, return restart
@@ -438,15 +440,15 @@ def check_if_previous_game_was_win(vm_index, logger: Logger):
     return is_a_win
 
 
-def check_pixels_for_win_in_battle_log(vm_index):
+def check_pixels_for_win_in_battle_log(vm_index) -> bool:
     line1 = check_line_for_color(
-        vm_index, x1=47, y1=135, x2=109, y2=154, color=(255, 51, 102)
+        vm_index, x_1=47, y_1=135, x_2=109, y_2=154, color=(255, 51, 102)
     )
     line2 = check_line_for_color(
-        vm_index, x1=46, y1=152, x2=115, y2=137, color=(255, 51, 102)
+        vm_index, x_1=46, y_1=152, x_2=115, y_2=137, color=(255, 51, 102)
     )
     line3 = check_line_for_color(
-        vm_index, x1=47, y1=144, x2=110, y2=147, color=(255, 51, 102)
+        vm_index, x_1=47, y_1=144, x_2=110, y_2=147, color=(255, 51, 102)
     )
 
     if line1 and line2 and line3:
@@ -454,7 +456,9 @@ def check_pixels_for_win_in_battle_log(vm_index):
     return True
 
 
-def wait_for_6_elixer(vm_index, logger: Logger, mode="1v1"):
+def wait_for_6_elixer(
+    vm_index, logger: Logger, mode="1v1"
+) -> Literal["restart", "no battle", "good"]:
     start_time = time.time()
     while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
         if time.time() - start_time > 25:
@@ -469,7 +473,7 @@ def wait_for_6_elixer(vm_index, logger: Logger, mode="1v1"):
     return "good"
 
 
-def check_for_6_elixer_with_delay(vm_index):
+def check_for_6_elixer_with_delay(vm_index) -> bool:
     start_time = time.time()
     while time.time() - start_time < 3:
         if check_for_6_elixer(vm_index):
@@ -478,12 +482,12 @@ def check_for_6_elixer_with_delay(vm_index):
     return False
 
 
-def check_for_6_elixer(vm_index):
+def check_for_6_elixer(vm_index) -> bool:
     line2 = check_line_for_color(
-        vm_index, x1=253, y1=611, x2=273, y2=622, color=(207, 33, 213)
+        vm_index, x_1=253, y_1=611, x_2=273, y_2=622, color=(207, 33, 213)
     )
     line3 = check_line_for_color(
-        vm_index, x1=254, y1=622, x2=273, y2=612, color=(207, 33, 213)
+        vm_index, x_1=254, y_1=622, x_2=273, y_2=612, color=(207, 33, 213)
     )
 
     if line2 and line3:
@@ -491,15 +495,17 @@ def check_for_6_elixer(vm_index):
     return False
 
 
-def check_enemy_tower_statuses(vm_index):
+def check_enemy_tower_statuses(
+    vm_index,
+) -> tuple[Literal["alive", "destroyed"], Literal["alive", "destroyed"]]:
     left_tower_color = (232, 188, 43)
     right_tower_color = (232, 188, 42)
 
     left_tower_alive = check_line_for_color(
-        vm_index, x1=89, y1=92, x2=101, y2=101, color=left_tower_color
+        vm_index, x_1=89, y_1=92, x_2=101, y_2=101, color=left_tower_color
     )
     right_tower_alive = check_line_for_color(
-        vm_index, x1=276, y1=90, x2=289, y2=102, color=right_tower_color
+        vm_index, x_1=276, y_1=90, x_2=289, y_2=102, color=right_tower_color
     )
 
     left_status = "alive" if left_tower_alive else "destroyed"

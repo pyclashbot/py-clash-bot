@@ -1,5 +1,6 @@
 import random
 import time
+from typing import Any
 
 from pyclashbot.bot.states import state_tree
 from pyclashbot.memu.launcher import check_for_vm
@@ -8,11 +9,11 @@ from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
 
 class WorkerThread(PausableThread):
-    def __init__(self, logger: Logger, args, kwargs=None):
+    def __init__(self, logger: Logger, args, kwargs=None) -> None:
         super().__init__(args, kwargs)
-        self.logger = logger
+        self.logger: Logger = logger
 
-    def run(self):
+    def run(self) -> None:
         try:
             jobs, ssid_max = self.args  # parse thread args
             # logger = Logger()
@@ -46,7 +47,7 @@ class WorkerThread(PausableThread):
             # raise e
             self.logger.error(str(err))
 
-    def make_account_switch_order(self, account_count):
+    def make_account_switch_order(self, account_count) -> Any:
         # Generate a list of numbers from 0 to account_count - 1
         account_numbers = list(range(account_count))
         # Shuffle the list randomly

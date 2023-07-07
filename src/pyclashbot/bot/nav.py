@@ -1,5 +1,5 @@
 import time
-from typing import Literal
+from typing import Any, Literal
 
 import numpy
 
@@ -33,9 +33,10 @@ CARD_TAB_FROM_CLASH_MAIN: tuple[Literal[105], Literal[591]] = (105, 591)
 SHOP_TAB_FROM_CARD_TAB: tuple[Literal[29], Literal[601]] = (29, 601)
 CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 591)
+OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 
 
-def get_to_clash_main_from_card_page(vm_index, logger, printmode=False):
+def get_to_clash_main_from_card_page(vm_index, logger, printmode=False) -> Literal['restart', 'good']:
     if printmode:
         logger.change_status(status="Getting to clash main from card page")
     else:
@@ -53,7 +54,7 @@ def get_to_clash_main_from_card_page(vm_index, logger, printmode=False):
     return "good"
 
 
-def get_to_card_page_from_clash_main(vm_index, logger, printmode=False):
+def get_to_card_page_from_clash_main(vm_index, logger, printmode=False) -> Literal['restart', 'good']:
     start_time = time.time()
 
     if printmode:
@@ -93,10 +94,10 @@ def check_if_on_card_page(vm_index) -> bool:
 
     lines = [
         check_line_for_color(
-            vm_index, x1=393, y1=9, x2=410, y2=29, color=(66, 198, 24)
+            vm_index, x_1=393, y_1=9, x_2=410, y_2=29, color=(66, 198, 24)
         ),
         check_line_for_color(
-            vm_index, x1=67, y1=54, x2=99, y2=84, color=(96, 196, 255)
+            vm_index, x_1=67, y_1=54, x_2=99, y_2=84, color=(96, 196, 255)
         ),
     ]
 
@@ -106,7 +107,7 @@ def check_if_on_card_page(vm_index) -> bool:
 def wait_for_switch_accounts_page(
     vm_index, logger: Logger, printmode=False
 ) -> Literal["restart", "good"]:
-    start_time = time.time()
+    start_time: float = time.time()
     if printmode:
         logger.change_status(status="Waiting for switch accounts page")
     else:
@@ -125,34 +126,34 @@ def wait_for_switch_accounts_page(
     return "good"
 
 
-def check_for_switch_accounts_page(vm_index):
+def check_for_switch_accounts_page(vm_index) -> bool:
     if not region_is_color(vm_index, region=[255, 108, 7, 5], color=(255, 255, 255)):
         return False
 
     if not check_line_for_color(
-        vm_index, x1=127, y1=232, x2=171, y2=232, color=(47, 243, 198)
+        vm_index, x_1=127, y_1=232, x_2=171, y_2=232, color=(47, 243, 198)
     ):
         return False
 
     if not check_line_for_color(
-        vm_index, x1=155, y1=221, x2=154, y2=244, color=(47, 244, 199)
+        vm_index, x_1=155, y_1=221, x_2=154, y_2=244, color=(47, 244, 199)
     ):
         return False
 
     if not check_line_for_color(
-        vm_index, x1=381, y1=46, x2=398, y2=64, color=(255, 255, 255)
+        vm_index, x_1=381, y_1=46, x_2=398, y_2=64, color=(255, 255, 255)
     ):
         return False
 
     if not check_line_for_color(
-        vm_index, x1=398, y1=46, x2=381, y2=63, color=(255, 255, 255)
+        vm_index, x_1=398, y_1=46, x_2=381, y_2=63, color=(255, 255, 255)
     ):
         return False
 
     return True
 
 
-def get_to_challenges_tab_from_main(vm_index, logger):
+def get_to_challenges_tab_from_main(vm_index, logger) -> Literal['restart', 'good']:
     click(
         vm_index,
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
@@ -166,7 +167,7 @@ def get_to_challenges_tab_from_main(vm_index, logger):
     return "good"
 
 
-def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=False):
+def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time = time.time()
 
     # if not on clash main, return restart
@@ -196,7 +197,7 @@ def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=Fals
     click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1])
     if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 956842835 Waited too long for clash main challenged tab page, restarting vm"
+            status="Error 922225 Waited too long for clash main challenged tab page, restarting vm"
         )
 
         return "restart"
@@ -215,16 +216,16 @@ def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=Fals
 
     if printmode:
         logger.change_status(
-            status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]} seconds"
+            status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
         )
     else:
         logger.log(
-            f"Handled clash main notifications in {str(time.time() - start_time)[:5]} seconds"
+            f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
         )
     return "good"
 
 
-def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False):
+def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time = time.time()
 
     if printmode:
@@ -245,7 +246,7 @@ def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False
     return "good"
 
 
-def check_if_on_clash_main_challenges_tab(vm_index):
+def check_if_on_clash_main_challenges_tab(vm_index) -> bool:
     if not region_is_color(vm_index, [380, 580, 30, 45], (76, 111, 145)):
         return False
     if not region_is_color(vm_index, [290, 610, 25, 15], (80, 118, 153)):
@@ -254,7 +255,7 @@ def check_if_on_clash_main_challenges_tab(vm_index):
     return True
 
 
-def wait_for_clash_main_card_page(vm_index, logger: Logger, printmode=False):
+def wait_for_clash_main_card_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time = time.time()
 
     if printmode:
@@ -276,7 +277,7 @@ def wait_for_clash_main_card_page(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def check_if_on_clash_main_card_page(vm_index):
+def check_if_on_clash_main_card_page(vm_index) -> bool:
     if not region_is_color(vm_index, region=[14, 45, 20, 20], color=(13, 56, 105)):
         return False
 
@@ -285,14 +286,16 @@ def check_if_on_clash_main_card_page(vm_index):
 
     lines = [
         check_line_for_color(
-            vm_index, x1=388, y1=16, x2=415, y2=17, color=(60, 189, 21)
+            vm_index, x_1=388, y_1=16, x_2=415, y_2=17, color=(60, 189, 21)
         ),
-        check_line_for_color(vm_index, x1=4, y1=5, x2=28, y2=26, color=(25, 177, 255)),
+        check_line_for_color(
+            vm_index, x_1=4, y_1=5, x_2=28, y_2=26, color=(25, 177, 255)
+        ),
     ]
     return all(lines)
 
 
-def check_if_on_clash_main_shop_page(vm_index):
+def check_if_on_clash_main_shop_page(vm_index) -> bool:
     if not region_is_color(vm_index, region=[9, 580, 30, 45], color=(76, 112, 146)):
         return False
 
@@ -301,17 +304,17 @@ def check_if_on_clash_main_shop_page(vm_index):
 
     lines = [
         check_line_for_color(
-            vm_index, x1=393, y1=7, x2=414, y2=29, color=(44, 144, 21)
+            vm_index, x_1=393, y_1=7, x_2=414, y_2=29, color=(44, 144, 21)
         ),
         check_line_for_color(
-            vm_index, x1=48, y1=593, x2=83, y2=594, color=(102, 236, 56)
+            vm_index, x_1=48, y_1=593, x_2=83, y_2=594, color=(102, 236, 56)
         ),
     ]
 
     return all(lines)
 
 
-def wait_for_clash_main_shop_page(vm_index, logger: Logger, printmode=False):
+def wait_for_clash_main_shop_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time = time.time()
     if printmode:
         logger.change_status(status="Waiting for clash main shop page")
@@ -331,7 +334,7 @@ def wait_for_clash_main_shop_page(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def get_to_activity_log(vm_index, logger: Logger, printmode=False):
+def get_to_activity_log(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     if printmode:
         logger.change_status(status="Getting to activity log")
     else:
@@ -356,7 +359,7 @@ def get_to_activity_log(vm_index, logger: Logger, printmode=False):
     )
     if wait_for_clash_main_burger_button_options_menu(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 30571038573 Waited too long for calsh main burger button options menu, restarting vm"
+            status="Error 99993 Waited too long for calsh main options menu, restarting vm"
         )
         return "restart"
 
@@ -371,7 +374,7 @@ def get_to_activity_log(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False):
+def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time = time.time()
     if printmode:
         logger.change_status(status="Waiting for battle log page to appear")
@@ -393,18 +396,18 @@ def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def check_if_on_battle_log_page(vm_index):
+def check_if_on_battle_log_page(vm_index) -> bool:
     line1 = check_line_for_color(
-        vm_index, x1=353, y1=62, x2=376, y2=83, color=(231, 28, 28)
+        vm_index, x_1=353, y_1=62, x_2=376, y_2=83, color=(231, 28, 28)
     )
     line2 = check_line_for_color(
-        vm_index, x1=154, y1=64, x2=173, y2=83, color=(255, 255, 255)
+        vm_index, x_1=154, y_1=64, x_2=173, y_2=83, color=(255, 255, 255)
     )
     line3 = check_line_for_color(
-        vm_index, x1=248, y1=67, x2=262, y2=83, color=(255, 255, 255)
+        vm_index, x_1=248, y_1=67, x_2=262, y_2=83, color=(255, 255, 255)
     )
     line4 = check_line_for_color(
-        vm_index, x1=9, y1=208, x2=27, y2=277, color=(11, 45, 67)
+        vm_index, x_1=9, y_1=208, x_2=27, y_2=277, color=(11, 45, 67)
     )
 
     if line1 and line2 and line3 and line4:
@@ -412,19 +415,19 @@ def check_if_on_battle_log_page(vm_index):
     return False
 
 
-def check_if_on_clash_main_burger_button_options_menu(vm_index):
+def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
     if (
         check_line_for_color(
-            vm_index, x1=182, y1=78, x2=208, y2=101, color=(208, 144, 43)
+            vm_index, x_1=182, y_1=78, x_2=208, y_2=101, color=(208, 144, 43)
         )
         and check_line_for_color(
-            vm_index, x1=184, y1=196, x2=206, y2=215, color=(255, 255, 255)
+            vm_index, x_1=184, y_1=196, x_2=206, y_2=215, color=(255, 255, 255)
         )
         and check_line_for_color(
-            vm_index, x1=182, y1=360, x2=210, y2=384, color=(255, 255, 255)
+            vm_index, x_1=182, y_1=360, x_2=210, y_2=384, color=(255, 255, 255)
         )
         and check_line_for_color(
-            vm_index, x1=182, y1=128, x2=208, y2=151, color=(192, 135, 80)
+            vm_index, x_1=182, y_1=128, x_2=208, y_2=151, color=(192, 135, 80)
         )
     ):
         return True
@@ -456,15 +459,15 @@ def wait_for_clash_main_burger_button_options_menu(
     return "good"
 
 
-def check_for_end_1v1_battle_screen(vm_index):
+def check_for_end_1v1_battle_screen(vm_index) -> bool:
     line1 = check_line_for_color(
-        vm_index, x1=52, y1=515, x2=78, y2=532, color=(255, 255, 255)
+        vm_index, x_1=52, y_1=515, x_2=78, y_2=532, color=(255, 255, 255)
     )
     line2 = check_line_for_color(
-        vm_index, x1=173, y1=555, x2=194, y2=564, color=(78, 175, 255)
+        vm_index, x_1=173, y_1=555, x_2=194, y_2=564, color=(78, 175, 255)
     )
     line3 = check_line_for_color(
-        vm_index, x1=198, y1=545, x2=222, y2=562, color=(255, 255, 255)
+        vm_index, x_1=198, y_1=545, x_2=222, y_2=562, color=(255, 255, 255)
     )
 
     if line1 and line2 and line3:
@@ -474,11 +477,11 @@ def check_for_end_1v1_battle_screen(vm_index):
 
 def check_for_end_2v2_battle_screen(vm_index) -> bool:
     if not check_line_for_color(
-        vm_index=vm_index, x1=392, y1=4, x2=391, y2=29, color=(253, 133, 134)
+        vm_index=vm_index, x_1=392, y_1=4, x_2=391, y_2=29, color=(253, 133, 134)
     ):
         return False
     if not check_line_for_color(
-        vm_index=vm_index, x1=406, y1=4, x2=406, y2=30, color=(253, 132, 133)
+        vm_index=vm_index, x_1=406, y_1=4, x_2=406, y_2=30, color=(253, 132, 133)
     ):
         return False
     if not region_is_color(
@@ -488,7 +491,7 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
     return True
 
 
-def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False):
+def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="waiting for end 1v1 battle screen")
@@ -511,7 +514,7 @@ def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False):
+def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="Waiting for 2v2 battle to start")
@@ -563,15 +566,15 @@ def wait_for_1v1_battle_start(
 
 def check_for_in_2v2_battle(vm_index) -> bool:
     if not check_line_for_color(
-        vm_index=vm_index, x1=104, y1=605, x2=122, y2=624, color=(249, 88, 235)
+        vm_index=vm_index, x_1=104, y_1=605, x_2=122, y_2=624, color=(249, 88, 235)
     ):
         return False
     if not check_line_for_color(
-        vm_index=vm_index, x1=57, y1=515, x2=76, y2=519, color=(255, 255, 255)
+        vm_index=vm_index, x_1=57, y_1=515, x_2=76, y_2=519, color=(255, 255, 255)
     ):
         return False
     if not check_line_for_color(
-        vm_index=vm_index, x1=108, y1=620, x2=122, y2=613, color=(248, 80, 236)
+        vm_index=vm_index, x_1=108, y_1=620, x_2=122, y_2=613, color=(248, 80, 236)
     ):
         return False
     return True
@@ -580,22 +583,22 @@ def check_for_in_2v2_battle(vm_index) -> bool:
 def check_for_in_1v1_battle(vm_index) -> bool:
     # look for red enemy name
     red_enemy_name_exists: bool = check_line_for_color(
-        vm_index=vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
     )
 
     # look for purple elixer thing
     purple_exlier_icon_exists: bool = check_line_for_color(
-        vm_index=vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
     )
 
     # look for white chat bubble
     white_chat_bubble_exists: bool = check_line_for_color(
-        vm_index=vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
     )
 
     # look for tan time left text
     tan_time_left_text_exists: bool = check_line_for_color(
-        vm_index=vm_index, x1=30, y1=7, x2=80, y2=21, color=(255, 51, 153)
+        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
     )
 
     if (
@@ -609,7 +612,7 @@ def check_for_in_1v1_battle(vm_index) -> bool:
     return False
 
 
-def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False):
+def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     if printmode:
         logger.change_status(status="Getting to clash main from clan page")
     else:
@@ -637,7 +640,7 @@ def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False):
+def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     if printmode:
         logger.change_status(status="Getting to clan tab from clash main menu")
     else:
@@ -679,7 +682,7 @@ def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def check_if_on_clan_chat_page(vm_index):
+def check_if_on_clan_chat_page(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))
 
     friend_battle_button_exists = False
@@ -707,23 +710,23 @@ def check_if_on_clan_chat_page(vm_index):
     return False
 
 
-def check_if_on_profile_page(vm_index):
+def check_if_on_profile_page(vm_index) -> bool:
     if not check_line_for_color(
-        vm_index, x1=329, y1=188, x2=339, y2=195, color=(4, 244, 88)
+        vm_index, x_1=329, y_1=188, x_2=339, y_2=195, color=(4, 244, 88)
     ):
         return False
     if not check_line_for_color(
-        vm_index, x1=169, y1=50, x2=189, y2=50, color=(255, 222, 0)
+        vm_index, x_1=169, y_1=50, x_2=189, y_2=50, color=(255, 222, 0)
     ):
         return False
     if not check_line_for_color(
-        vm_index, x1=369, y1=63, x2=351, y2=71, color=(228, 36, 36)
+        vm_index, x_1=369, y_1=63, x_2=351, y_2=71, color=(228, 36, 36)
     ):
         return False
     return True
 
 
-def wait_for_profile_page(vm_index, logger: Logger, printmode=False):
+def wait_for_profile_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     if printmode:
         logger.change_status(status="Waiting for profile page")
     else:
@@ -745,7 +748,7 @@ def wait_for_profile_page(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def get_to_profile_page(vm_index, logger: Logger):
+def get_to_profile_page(vm_index, logger: Logger) -> Literal['restart', 'good']:
     # if not on clash main, return
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
@@ -765,7 +768,7 @@ def get_to_profile_page(vm_index, logger: Logger):
     return "good"
 
 
-def check_for_trophy_reward_menu(vm_index):
+def check_for_trophy_reward_menu(vm_index) -> bool:
     if not region_is_color(vm_index, region=[172, 599, 22, 12], color=(78, 175, 255)):
         return False
     if not region_is_color(vm_index, region=[226, 601, 18, 10], color=(78, 175, 255)):
@@ -773,22 +776,21 @@ def check_for_trophy_reward_menu(vm_index):
 
     lines = [
         check_line_for_color(
-            vm_index, x1=199, y1=590, x2=206, y2=609, color=(255, 255, 255)
+            vm_index, x_1=199, y_1=590, x_2=206, y_2=609, color=(255, 255, 255)
         ),
         check_line_for_color(
-            vm_index, x1=211, y1=590, x2=220, y2=609, color=(255, 255, 255)
+            vm_index, x_1=211, y_1=590, x_2=220, y_2=609, color=(255, 255, 255)
         ),
     ]
 
     return all(lines)
 
 
-def handle_trophy_reward_menu(vm_index, logger: Logger, printmode=False):
+def handle_trophy_reward_menu(vm_index, logger: Logger, printmode=False) -> Literal['good']:
     if printmode:
         logger.change_status(status="Handling trophy reward menu")
     else:
         logger.log("Handling trophy reward menu")
-    OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
     click(
         vm_index,
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
@@ -799,7 +801,7 @@ def handle_trophy_reward_menu(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False):
+def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
     if printmode:
         logger.change_status(status="Waiting for clash main menu")
     else:
@@ -817,7 +819,7 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False):
                 status="Looped through getting to clash main too many times"
             )
             logger.change_status(
-                status="wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
+                status="wait_for_clash_main_menu() took too long waiting for clash main."
             )
             return "restart"
 
@@ -835,7 +837,7 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False):
     return "good"
 
 
-def check_if_on_clash_main_menu(vm_index):
+def check_if_on_clash_main_menu(vm_index) -> bool:
     if not check_for_gem_logo_on_main(vm_index):
         return False
 
@@ -847,9 +849,9 @@ def check_if_on_clash_main_menu(vm_index):
     return True
 
 
-def check_for_gem_logo_on_main(vm_index):
+def check_for_gem_logo_on_main(vm_index) -> bool:
     # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot(vm_index))
+    iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.array(screenshot(vm_index))
 
     for x_index in range(390, 410):
         this_pixel = iar[16][x_index]
@@ -858,7 +860,7 @@ def check_for_gem_logo_on_main(vm_index):
     return False
 
 
-def check_for_friends_logo_on_main(vm_index):
+def check_for_friends_logo_on_main(vm_index) -> bool:
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot(vm_index))
 
@@ -869,12 +871,12 @@ def check_for_friends_logo_on_main(vm_index):
     return False
 
 
-def check_for_gold_logo_on_main(vm_index):
+def check_for_gold_logo_on_main(vm_index) -> bool:
     # Method to check if the clash main menu is on screen
     iar = numpy.array(screenshot(vm_index))
 
-    for x in range(290, 310):
-        this_pixel = iar[17][x]
+    for x_index in range(290, 310):
+        this_pixel = iar[17][x_index]
         if pixel_is_equal([224, 180, 56], this_pixel, tol=35):
             return True
     return False

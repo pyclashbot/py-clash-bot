@@ -1,9 +1,9 @@
 import time
+from typing import Literal
 
 import numpy
 
 from pyclashbot.bot.nav import (
-    check_if_on_clash_main_burger_button_options_menu,
     check_if_on_clash_main_menu,
     wait_for_clash_main_burger_button_options_menu,
     wait_for_clash_main_menu,
@@ -11,24 +11,23 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import pixel_is_equal, region_is_color
 from pyclashbot.memu.client import click, screenshot
-from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_OPTIONS_BURGER_BUTTON = (365, 62)
-SWITCH_ACCOUNTS_BUTTON = (198, 371)
-ACCOUNT_1_COORD = (166, 312)
-ACCOUNT_2_COORD = (171, 384)
+CLASH_MAIN_OPTIONS_BURGER_BUTTON: tuple[Literal[365], Literal[62]] = (365, 62)
+SWITCH_ACCOUNTS_BUTTON: tuple[Literal[198], Literal[371]] = (198, 371)
+ACCOUNT_1_COORD: tuple[Literal[166], Literal[312]] = (166, 312)
+ACCOUNT_2_COORD: tuple[Literal[171], Literal[384]] = (171, 384)
 
 
 def switch_account_state(
     vm_index, logger, account_index_to_switch_to, account_switch_order
 ):
-    NEXT_STATE = "open_chests"
+    next_state = "open_chests"
 
     logger.change_status(status="Switch Account State")
 
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=
-            "Error 597623485 Not on Clash main to begin switch account state"
+        logger.change_status(
+            status="Error 597623485 Not on Clash main to begin switch account state"
         )
         return "restart", account_index_to_switch_to
 
@@ -40,23 +39,25 @@ def switch_account_state(
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
     )
     if wait_for_clash_main_burger_button_options_menu(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 547625624572457 Waited too long for calsh main burger button options menu, restarting vm"
+        logger.change_status(
+            status="Error 555 Waited too long for calsh main options menu, restarting vm"
         )
         return "restart", account_index_to_switch_to
 
     # if switch accounts button dosnt exist return to main and return
     if not check_for_switch_account_button(vm_index):
-        logger.change_status(status="Cant switch accounts bc only one account is logged in")
+        logger.change_status(
+            status="Cant switch accounts bc only one account is logged in"
+        )
         click(vm_index, 15, 300)
         time.sleep(1)
 
         if not check_if_on_clash_main_menu(vm_index):
-            logger.change_status(status=
-                "Error 87365345745 Not on Clash main to begin switch account state"
+            logger.change_status(
+                status="Error 87365345745 Not on Clash main to begin switch account state"
             )
             return "restart", account_index_to_switch_to
-        return NEXT_STATE, account_index_to_switch_to
+        return next_state, account_index_to_switch_to
 
     # click switch accounts button
     logger.change_status(status="Clicking switch accounts button")
@@ -78,17 +79,15 @@ def switch_account_state(
 
     # wait for main
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(status=
-            f"Error 3452566345 Waited too long for clash main menu, restarting vm"
+        logger.change_status(
+            status="Error 3452566345 Waited too long for clash main menu, restarting vm"
         )
         return "restart", account_index_to_switch_to
 
-    return NEXT_STATE, account_index_to_switch_to
+    return next_state, account_index_to_switch_to
 
 
-def check_for_switch_account_button(vm_index):
-    start_time = time.time()
-
+def check_for_switch_account_button(vm_index) -> bool:
     if not region_is_color(vm_index, region=[204, 357, 6, 4], color=(104, 187, 255)):
         return False
 
@@ -102,8 +101,6 @@ def check_for_switch_account_button(vm_index):
         return False
     if not pixel_is_equal(iar[376][203], [255, 255, 255], tol=30):
         return False
-
-    time_taken = time.time() - start_time
 
     return True
 

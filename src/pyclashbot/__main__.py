@@ -6,12 +6,8 @@ from typing import LiteralString
 import PySimpleGUI as sg
 
 
-from pyclashbot.bot.states import state_tree
-from pyclashbot.bot.upgrade_state import upgrade_card
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
-from pyclashbot.memu.client import screenshot
-from pyclashbot.memu.launcher import check_for_vm
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -77,7 +73,7 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
     return jobs
 
 
-def save_current_settings(values):
+def save_current_settings(values) -> None:
     """method for caching the user's current settings
     args:
         values: dictionary of the values of the window
@@ -90,7 +86,7 @@ def save_current_settings(values):
     cache_user_settings(user_settings)
 
 
-def load_last_settings(window):
+def load_last_settings(window) -> None:
     """method for accessing chacned user settings and updating the gui
     args:
         window,the gui window
@@ -108,7 +104,7 @@ def load_last_settings(window):
         window.refresh()  # refresh the window to update the layout
 
 
-def no_jobs_popup():
+def no_jobs_popup() -> None:
     # Define the layout of the GUI
     layout = [
         [
@@ -315,32 +311,32 @@ def main_gui() -> None:
     window.close()
 
 
-def dummy_bot():
-    logger = Logger()
-    vm_index = check_for_vm(logger)
-    jobs = [
-        "Open Chests",
-        "upgrade",
-        "request",
-        "free offer collection",
-        "1v1 battle",
-        "card_mastery",
-        "account_switch",
-    ]
-    state = "start"
-    account_switch_order = [0]
-    account_index_to_switch_to = account_switch_order[0]
+# def dummy_bot() -> None:
+#     logger = Logger()
+#     vm_index: int = check_for_vm(logger)
+#     jobs: list[str] = [
+#         "Open Chests",
+#         "upgrade",
+#         "request",
+#         "free offer collection",
+#         "1v1 battle",
+#         "card_mastery",
+#         "account_switch",
+#     ]
+#     state = "start"
+#     account_switch_order: list[int] = [0]
+#     account_index_to_switch_to: int = account_switch_order[0]
 
-    while 1:
-        state, account_index_to_switch_to = state_tree(
-            vm_index,
-            logger,
-            state,
-            jobs,
-            account_index_to_switch_to,
-            account_switch_order,
-        )
-        print(f"state = {state}")
+#     while 1:
+#         state, account_index_to_switch_to = state_tree(
+#             vm_index,
+#             logger,
+#             state,
+#             jobs,
+#             account_index_to_switch_to,
+#             account_switch_order,
+#         )
+#         print(f"state = {state}")
 
 
 if __name__ == "__main__":

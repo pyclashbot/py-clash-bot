@@ -13,7 +13,7 @@ from pyclashbot.memu.client import screenshot
 # file stuff
 
 
-def get_file_count(folder):
+def get_file_count(folder) -> int:
     """Method to return the amount of a files in a given directory
 
     Args:
@@ -31,9 +31,9 @@ def make_reference_image_list(size):
     # Method to make a reference array of a given size
     reference_image_list = []
 
-    for n in range(size):
-        n = n + 1
-        image_name = f"{n}.png"
+    for index in range(size):
+        index: int = index + 1
+        image_name: str = f"{index}.png"
         reference_image_list.append(image_name)
 
     return reference_image_list
@@ -42,7 +42,7 @@ def make_reference_image_list(size):
 # image comparison
 
 
-def get_first_location(locations: list[list[int] | None], flip=False):
+def get_first_location(locations: list[list[int] | None], flip=False) -> list[int] | None:
     """get the first location from a list of locations
 
     Args:
@@ -75,7 +75,7 @@ def check_for_location(locations: list[list[int] | None]):
 
 
 def find_references(
-    screenshot: np.ndarray | Image.Image,
+    image: np.ndarray | Image.Image,
     folder: str,
     names: list[str],
     tolerance=0.97,
@@ -94,7 +94,7 @@ def find_references(
     num_cores = multiprocessing.cpu_count()
     with ThreadPoolExecutor(num_cores) as ex:
         futures = [
-            ex.submit(find_reference, screenshot, folder, name, tolerance)
+            ex.submit(find_reference, image, folder, name, tolerance)
             for name in names
         ]
         for future in as_completed(futures):
@@ -105,7 +105,7 @@ def find_references(
 
 
 def find_all_references(
-    screenshot: np.ndarray | Image.Image,
+    image: np.ndarray | Image.Image,
     folder: str,
     names: list[str],
     tolerance=0.97,
@@ -124,12 +124,12 @@ def find_all_references(
     num_cores = multiprocessing.cpu_count()
 
     return Parallel(n_jobs=num_cores, prefer="threads")(
-        delayed(find_reference)(screenshot, folder, name, tolerance) for name in names
+        delayed(find_reference)(image, folder, name, tolerance) for name in names
     )  # type: ignore
 
 
 def find_reference(
-    screenshot: np.ndarray | Image.Image, folder: str, name: str, tolerance=0.97
+    image: np.ndarray | Image.Image, folder: str, name: str, tolerance=0.97
 ) -> list[int] | None:
     """find a reference image in a screenshot
 
@@ -148,7 +148,7 @@ def find_reference(
     path = join(reference_folder, folder, name)
 
 
-    return compare_images(screenshot, Image.open(path), tolerance)
+    return compare_images(image, Image.open(path), tolerance)
 
 
 def compare_images(
@@ -193,8 +193,8 @@ def compare_images(
 # pixel comparison
 
 
-def line_is_color(vm_index, x1, y1, x2, y2, color):
-    coordinates = get_line_coordinates(x1, y1, x2, y2)
+def line_is_color(vm_index, x_1, y_1, x_2, y_2, color) -> bool: # pylint: disable=too-many-arguments
+    coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
 
     for coordinate in coordinates:
@@ -205,8 +205,8 @@ def line_is_color(vm_index, x1, y1, x2, y2, color):
     return True
 
 
-def check_line_for_color(vm_index, x1, y1, x2, y2, color: tuple[int, int, int]) -> bool:
-    coordinates = get_line_coordinates(x1, y1, x2, y2)
+def check_line_for_color(vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int]) -> bool: #pylint: disable=too-many-arguments
+    coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
 
     for coordinate in coordinates:
@@ -222,9 +222,9 @@ def check_region_for_color(vm_index, region, color):
 
     iar = np.asarray(screenshot(vm_index))
 
-    for x in range(left, left + width):
-        for y in range(top, top + height):
-            pixel = iar[y][x]
+    for x_index in range(left, left + width):
+        for y_index in range(top, top + height):
+            pixel = iar[y_index][x_index]
             if pixel_is_equal(color, pixel, tol=35):
                 return True
 
@@ -236,10 +236,10 @@ def region_is_color(vm_index, region, color):
 
     iar = np.asarray(screenshot(vm_index))
 
-    for x in range(left, left + width, 2):
-        for y in range(top, top + height, 2):
-            pixel = iar[y][x]
-            if not (pixel_is_equal(color, pixel, tol=35)):
+    for x_index in range(left, left + width, 2):
+        for y_index in range(top, top + height, 2):
+            pixel = iar[y_index][x_index]
+            if not pixel_is_equal(color, pixel, tol=35):
                 return False
 
     return True
@@ -266,30 +266,27 @@ def pixel_is_equal(
     return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
 
-def get_line_coordinates(x1, y1, x2, y2) -> list[tuple[int, int]]:
+def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
     coordinates = []
-    dx = abs(x2 - x1)
-    dy = abs(y2 - y1)
-    sx = -1 if x1 > x2 else 1
-    sy = -1 if y1 > y2 else 1
-    err = dx - dy
+    delta_x = abs(x_2 - x_1)
+    delta_y = abs(y_2 - y_1)
+    step_x = -1 if x_1 > x_2 else 1
+    step_y = -1 if y_1 > y_2 else 1
+    error = delta_x - delta_y
 
-    while x1 != x2 or y1 != y2:
-        coordinates.append((x1, y1))
-        e2 = 2 * err
-        if e2 > -dy:
-            err -= dy
-            x1 += sx
-        if e2 < dx:
-            err += dx
-            y1 += sy
+    while x_1 != x_2 or y_1 != y_2:
+        coordinates.append((x_1, y_1))
+        double_error = 2 * error
+        if double_error > -delta_y:
+            error -= delta_y
+            x_1 += step_x
+        if double_error < delta_x:
+            error += delta_x
+            y_1 += step_y
 
-    coordinates.append((x1, y1))
+    coordinates.append((x_1, y_1))
     return coordinates
 
 
 if __name__ == "__main__":
-    x1 = 5
-    y1 = 5
-    x2 = 10
-    y2 = 6
+    pass

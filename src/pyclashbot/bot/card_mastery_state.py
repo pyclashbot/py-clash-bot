@@ -21,7 +21,7 @@ CARD_MASTERY_REWARD_COORD_LIST = [
 CARD_PAGE_DEADSPACE: tuple[Literal[21], Literal[355]] = (21, 355)
 
 
-def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str):
+def card_mastery_collection_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="Card mastery collection state")
 
     # if not on clash main, return fail
@@ -86,7 +86,7 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, NEXT_STATE: str
         )
         return "restart"
 
-    return NEXT_STATE
+    return next_state
 
 
 def check_for_card_mastery_rewards_icon_with_delay(vm_index) -> bool | None:
@@ -105,16 +105,16 @@ def check_for_card_mastery_rewards_icon(vm_index) -> bool:
 
     lines: list[bool] = [
         check_line_for_color(
-            vm_index=vm_index, x1=241, y1=483, x2=242, y2=527, color=(255, 188, 42)
+            vm_index=vm_index, x_1=241, y_1=483, x_2=242, y_2=527, color=(255, 188, 42)
         ),
         check_line_for_color(
-            vm_index=vm_index, x1=234, y1=520, x2=281, y2=519, color=(255, 160, 8)
+            vm_index=vm_index, x_1=234, y_1=520, x_2=281, y_2=519, color=(255, 160, 8)
         ),
         check_line_for_color(
-            vm_index=vm_index, x1=264, y1=482, x2=283, y2=500, color=(236, 8, 56)
+            vm_index=vm_index, x_1=264, y_1=482, x_2=283, y_2=500, color=(236, 8, 56)
         ),
         check_line_for_color(
-            vm_index=vm_index, x1=263, y1=499, x2=283, y2=481, color=(236, 8, 56)
+            vm_index=vm_index, x_1=263, y_1=499, x_2=283, y_2=481, color=(236, 8, 56)
         ),
     ]
 

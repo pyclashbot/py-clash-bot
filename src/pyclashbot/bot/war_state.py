@@ -1,5 +1,6 @@
 import random
 import time
+from typing import Literal
 
 import numpy
 
@@ -11,14 +12,8 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
-    check_for_location,
     check_line_for_color,
-    find_reference,
-    find_references,
-    get_file_count,
-    get_first_location,
     line_is_color,
-    make_reference_image_list,
     pixel_is_equal,
     region_is_color,
 )
@@ -46,27 +41,29 @@ WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
 
 
-def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
+def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="War state")
 
     # if not on clash main: return
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status="Error 4069852734098 Not on clash main to begin war state")
+        logger.change_status(
+            status="Error 4069852734098 Not on clash main to begin war state"
+        )
         return "restart"
 
     logger.change_status(status="Making sure in a clan before war battle")
     in_a_clan_check = war_state_check_if_in_a_clan(vm_index, logger)
 
     if in_a_clan_check == "restart":
-        logger.change_status(status=
-            "Error 502835 Failure while checking if in a clan before war battle"
+        logger.change_status(
+            status="Error 502835 Failure while checking if in a clan before war battle"
         )
         return "restart"
 
     if not in_a_clan_check:
         logger.change_status(status="Not in a clan so skipping war...")
 
-        return
+        return "no clan"
 
     # get to clan page
     logger.change_status(status="Starting a war battle")
@@ -95,12 +92,12 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         get_to_clash_main_from_clan_page(vm_index, logger)
 
         if wait_for_clash_main_menu(vm_index, logger) == "restart":
-            logger.change_status(status=
-                "Erorr 77 84278 failed to get to clash main after exhausting war battle decks"
+            logger.change_status(
+                status="Erorr 7784278 failed to get to clash main after exhausting war battle decks"
             )
             return "restart"
 
-        return NEXT_STATE
+        return next_state
 
     # start battle
     logger.change_status(status="Starting a war battle")
@@ -126,28 +123,29 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         return "restart"
 
     if get_to_clash_main_from_clan_page(vm_index, logger) == "restart":
-        logger.change_status(status=
-            "Error 116135 Failed return to clash main after war battle"
+        logger.change_status(
+            status="Error 116135 Failed return to clash main after war battle"
         )
         return "restart"
 
-    return NEXT_STATE
+    return next_state
 
 
-def wait_for_war_page(vm_index, logger):
+def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
     logger.change_status(status="Waiting for war page")
-    start_time = time.time()
+    start_time: float = time.time()
     while not check_if_on_war_page(vm_index):
-        time_taken = time.time() - start_time
+        time_taken: float = time.time() - start_time
         if time_taken > 45:
-            logger.change_status(status=
-                "Error 1109572435 WAited too long for war page after leaving war battle"
+            logger.change_status(
+                status="Error 1109572435 WAited too long for war page after leaving war battle"
             )
             return "restart"
     logger.log("Done waiting for war page")
+    return "good"
 
 
-def do_war_battle(vm_index, logger):
+def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
     start_time = time.time()
     logger.change_status(status="Starting war fighting")
     while check_if_in_war_battle(vm_index):
@@ -168,9 +166,10 @@ def do_war_battle(vm_index, logger):
         click(vm_index, random_play_coord[0], random_play_coord[1])
         time.sleep(2.4)
     logger.change_status(status="Done with this war fight")
+    return "good"
 
 
-def wait_for_war_battle_start(vm_index, logger):
+def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
     logger.change_status(status="Waiting for war battle start")
 
     start_time = time.time()
@@ -181,33 +180,37 @@ def wait_for_war_battle_start(vm_index, logger):
         time_taken = time.time() - start_time
 
         if time_taken > 45:
-            logger.change_status(status="Error 98246572 Failure waiting for war battle start")
+            logger.change_status(
+                status="Error 98246572 Failure waiting for war battle start"
+            )
             return "restart"
 
     logger.log("Waiting for war battle start")
+    return "good"
 
 
-def check_if_in_war_battle(vm_index):
+def check_if_in_war_battle(vm_index) -> bool:
     if not check_line_for_color(
-        vm_index, x1=104, y1=606, x2=123, y2=626, color=(224, 28, 215)
+        vm_index, x_1=104, y_1=606, x_2=123, y_2=626, color=(224, 28, 215)
     ):
         return False
-    if not line_is_color(vm_index, x1=51, y1=515, x2=68, y2=520, color=(255, 255, 255)):
+    if not line_is_color(
+        vm_index, x_1=51, y_1=515, x_2=68, y_2=520, color=(255, 255, 255)
+    ):
         return False
 
     return True
 
 
-def check_if_deck_is_ready_for_this_battle(vm_index):
-    r2 = region_is_color(vm_index, [289, 400, 10, 5], (201, 201, 201))
-    r3 = region_is_color(vm_index, [116, 398, 36, 6], (76, 172, 255))
-
-    if r2 and r3:
+def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
+    if not region_is_color(vm_index, [289, 400, 10, 5], (201, 201, 201)):
+        return False
+    if not region_is_color(vm_index, [116, 398, 36, 6], (76, 172, 255)):
         return False
     return True
 
 
-def handle_make_deck(vm_index, logger: Logger):
+def handle_make_deck(vm_index, logger: Logger) -> None:
     # if the deck is ready to go, just return
     if check_if_deck_is_ready_for_this_battle(vm_index):
         return
@@ -247,6 +250,7 @@ def find_and_click_war_battle_icon(vm_index, logger):
         coord = find_war_battle_icon_coords(vm_index)
 
     click(vm_index, coord[0], coord[1])
+    return "good"
 
 
 def find_war_battle_icon_coords(vm_index):
@@ -255,8 +259,6 @@ def find_war_battle_icon_coords(vm_index):
 
 
 def find_battle_from_pix_list(pix_list):
-    TOLERANCE = 15
-
     index_of_last_bad = 0
     index = 0
     result_coord = None
@@ -276,7 +278,7 @@ def find_battle_from_pix_list(pix_list):
         else:
             index_of_last_bad = index
 
-        if index - index_of_last_bad > TOLERANCE:
+        if index - index_of_last_bad > 15:
             result_coord = bool_datum["coord"]
             break
 
@@ -293,11 +295,11 @@ def get_war_battle_pix_list(vm_index):
 
     iar = numpy.asarray(screenshot(vm_index))
 
-    for y in range(182, 480):
+    for y_index in range(182, 480):
         data.append(
             {
-                "coord": (325, y),
-                "color": iar[y][325],
+                "coord": (325, y_index),
+                "color": iar[y_index][325],
             }
         )
 
@@ -306,15 +308,15 @@ def get_war_battle_pix_list(vm_index):
 
 def check_if_on_war_page(vm_index):
     if not check_line_for_color(
-        vm_index, x1=19, y1=16, x2=59, y2=59, color=(144, 108, 255)
+        vm_index, x_1=19, y_1=16, x_2=59, y_2=59, color=(144, 108, 255)
     ):
         return False
     if not check_line_for_color(
-        vm_index, x1=61, y1=18, x2=51, y2=58, color=(144, 107, 255)
+        vm_index, x_1=61, y_1=18, x_2=51, y_2=58, color=(144, 107, 255)
     ):
         return False
     if not check_line_for_color(
-        vm_index, x1=31, y1=43, x2=51, y2=45, color=(226, 219, 228)
+        vm_index, x_1=31, y_1=43, x_2=51, y_2=45, color=(226, 219, 228)
     ):
         return False
 
@@ -329,12 +331,14 @@ def check_if_on_war_page(vm_index):
 def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     # if not on clash main, reutnr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status=f"ERROR 385423562623 Not on clash main menu")
+        logger.change_status(status="ERROR 385423562623 Not on clash main menu")
         return "restart"
 
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
-        logger.change_status(status="Error 90723563485 Failure with get_to_profile_page")
+        logger.change_status(
+            status="Error 90723563485 Failure with get_to_profile_page"
+        )
         return "restart"
 
     # check pixels for in a clan
@@ -343,7 +347,9 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     # click deadspace to leave
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(status="Error 872356739 Failure with wait_for_clash_main_menu")
+        logger.change_status(
+            status="Error 872356739 Failure with wait_for_clash_main_menu"
+        )
         return "restart"
 
     return in_a_clan
@@ -352,14 +358,14 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
 def war_state_check_pixels_for_clan_flag(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
-    for x in range(78, 97):
-        this_pixel = iar[446][x]
-        if not (pixel_is_equal([51, 51, 51], this_pixel, tol=25)):
+    for x_index in range(78, 97):
+        this_pixel = iar[446][x_index]
+        if not pixel_is_equal([51, 51, 51], this_pixel, tol=25):
             return True
 
-    for y in range(437, 455):
-        this_pixel = iar[y][87]
-        if not (pixel_is_equal([51, 51, 51], this_pixel, tol=25)):
+    for y_index in range(437, 455):
+        this_pixel = iar[y_index][87]
+        if not pixel_is_equal([51, 51, 51], this_pixel, tol=25):
             return True
 
     return False

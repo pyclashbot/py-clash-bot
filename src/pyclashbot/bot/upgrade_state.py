@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 import numpy
 
@@ -16,7 +17,7 @@ from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
-CARD_COORDS = [
+CARD_COORDS: list[Any] = [
     (74, 252),
     (168, 247),
     (250, 247),
@@ -27,7 +28,7 @@ CARD_COORDS = [
     (339, 406),
 ]
 
-UPGRADE_PIXEL_COORDS = [
+UPGRADE_PIXEL_COORDS: list[Any] = [
     (44, 340),
     (133, 338),
     (284, 340),
@@ -99,7 +100,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     # return to clash main
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 13984713 Failure getting to clash main from card page after card upgrading"
+            status="Error 1666713 Failure getting to clash main from card page after card upgrading"
         )
         return "restart"
 
@@ -128,7 +129,7 @@ def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
     return True
 
 
-def upgrade_card(vm_index, logger: Logger, index, upgrade_list):
+def upgrade_card(vm_index, logger: Logger, index, upgrade_list) -> None:
     logger.change_status(status=f"Handling card index: {index}")
 
     # if this card index is upgradable
@@ -214,7 +215,7 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
         time.sleep(2)
 
         # read the pixel
-        this_pixel = numpy.asarray(screenshot(vm_index))[this_upgrade_pixel_coord[1]][
+        this_pixel: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(screenshot(vm_index))[this_upgrade_pixel_coord[1]][
             this_upgrade_pixel_coord[0]
         ]
 
@@ -228,11 +229,11 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
 
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
-        vm_index, x1=338, y1=215, x2=361, y2=221, color=(153, 20, 17)
+        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17)
     ):
         return False
     if not check_line_for_color(
-        vm_index, x1=124, y1=201, x2=135, y2=212, color=(255, 255, 255)
+        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255)
     ):
         return False
 
