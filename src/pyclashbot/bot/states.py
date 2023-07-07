@@ -139,7 +139,7 @@ def state_tree(
 
     elif state == "card_mastery":  # --> war
         NEXT_STATE = "war"
-        if "card_mastery" in job_list:
+        if "card mastery collection" in job_list:
             return (
                 card_mastery_collection_state(vm_index, logger, NEXT_STATE),
                 account_index_to_switch_to,

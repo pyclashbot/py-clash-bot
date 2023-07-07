@@ -80,7 +80,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     handle_make_deck(vm_index, logger)
 
     if not check_if_deck_is_ready_for_this_battle(vm_index):
-        logger.change_status("Not more war decks for today!")
+        logger.change_status("No more war decks for today!")
         # click deadspace a little to close war battle windows
         click(
             vm_index,

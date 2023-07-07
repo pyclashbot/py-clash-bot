@@ -92,7 +92,7 @@ def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
     for status in statuses:
         logger.log(f'Investigating chest #{chest_index} with status "{status}"')
         if status == "available":
-            open_chest(vm_index, chest_index)
+            open_chest(vm_index, logger, chest_index)
 
         chest_index += 1
 
@@ -101,7 +101,7 @@ def open_chests_state(vm_index, logger: Logger, NEXT_STATE: str):
     return NEXT_STATE
 
 
-def open_chest(vm_index, chest_index):
+def open_chest(vm_index, logger, chest_index):
     chest_coords = [
         (77, 497),
         (164, 509),
@@ -116,6 +116,7 @@ def open_chest(vm_index, chest_index):
 
     # if its unlockable, unlock it
     if check_if_chest_is_unlockable(vm_index):
+        logger.add_chest_unlocked()
         click(vm_index, 207, 412)
         time.sleep(3)
 
