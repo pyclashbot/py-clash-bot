@@ -1,9 +1,12 @@
+import contextlib
 import timeit
 import unittest
 
 from PIL import Image
+from pymemuc import PyMemucError
 
-from pyclashbot.detection import compare_images
+with contextlib.suppress(PyMemucError):
+    from pyclashbot.detection import compare_images
 
 
 class ImageRecTest(unittest.TestCase):
