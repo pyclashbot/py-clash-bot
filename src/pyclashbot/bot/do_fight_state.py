@@ -185,14 +185,18 @@ def check_for_exit_battle_button_condition_1(vm_index):
     if not check_for_end_2v2_battle_screen(vm_index):
         return False
 
-    if not region_is_color(vm_index, [44, 600, 11, 9], (76, 173, 255)):return False
+    if not region_is_color(vm_index, [44, 600, 11, 9], (76, 173, 255)):
+        return False
 
     return True
 
-CLASH_MAIN_ICON_FROM_CHALLENGES_TAB = (170,590)
+
+CLASH_MAIN_ICON_FROM_CHALLENGES_TAB = (170, 590)
 
 
-LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON = (71,600)
+LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON = (71, 600)
+
+
 def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     logger.change_status("end fight state")
     logger.change_status("Waiting for the leave battle screen to pop up ")
@@ -204,12 +208,19 @@ def end_fight_state(vm_index: int, logger: Logger, NEXT_STATE: str):
 
     # click leave button OK button
     if check_for_exit_battle_button_condition_1(vm_index):
-        click(vm_index, LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[0], LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[1])
+        click(
+            vm_index,
+            LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[0],
+            LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[1],
+        )
         time.sleep(10)
-        click(vm_index, CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[0], CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[1])
+        click(
+            vm_index,
+            CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[0],
+            CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[1],
+        )
     else:
         click(vm_index, LEAVE_1V1_BATTLE_OK_BUTTON[0], LEAVE_1V1_BATTLE_OK_BUTTON[1])
-
 
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(
@@ -277,7 +288,7 @@ def _2v2_fight_loop(vm_index, logger: Logger):
         elixer_wait_return = wait_for_6_elixer(vm_index, logger, "2v2")
 
         if elixer_wait_return == "restart":
-            logger.change_status("Error 788455 wait_for_6_elixer() in fight_loop()")
+            logger.change_status("Error 99765684 wait_for_6_elixer() in fight_loop()")
             return "restart"
 
         elif elixer_wait_return == "no battle":
@@ -433,7 +444,7 @@ def check_pixels_for_win_in_battle_log(vm_index):
 def wait_for_6_elixer(vm_index, logger: Logger, mode="1v1"):
     start_time = time.time()
     while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
-        if time.time() - start_time > 15:
+        if time.time() - start_time > 25:
             return "restart"
 
         if mode == "1v1" and not check_for_in_1v1_battle(vm_index):
