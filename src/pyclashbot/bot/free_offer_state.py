@@ -26,21 +26,21 @@ FREE_BUTTON_CONDITION_1_COORD = (207, 398)
 
 
 def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
-    logger.change_status("Free offer collection state")
+    logger.change_status(status="Free offer collection state")
 
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(f"ERROR 625436252356 Not on clash main menu")
+        logger.change_status(status=f"ERROR 625436252356 Not on clash main menu")
         return "restart"
 
     # get to shop page
     click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
     if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(status=
             f"Error 085708235 Failure waiting for clash main shop page "
         )
         return "restart"
 
-    logger.change_status("Searching for free offer")
+    logger.change_status(status="Searching for free offer")
 
     start_time = time.time()
     while 1:
@@ -49,7 +49,7 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
         if time_taken > 35:
             break
 
-        logger.change_status(f"Searching for free offer: {str(time_taken)[:4]}")
+        logger.change_status(status=f"Searching for free offer: {str(time_taken)[:4]}")
 
         # look for free offer
         coord = find_free_offer_coords(vm_index)
@@ -60,7 +60,7 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
             continue
 
         # click the offer
-        logger.change_status("Collecting an available free offer!")
+        logger.change_status(status="Collecting an available free offer!")
         logger.log("Clicking this free offer: " + str(coord))
         click(vm_index, coord[0], coord[1])
         time.sleep(2)
@@ -88,7 +88,7 @@ def free_offer_collection_state(vm_index, logger: Logger, NEXT_STATE: str):
         vm_index, CLASH_MAIN_ICON_FROM_SHOP_PAGE[0], CLASH_MAIN_ICON_FROM_SHOP_PAGE[1]
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(status=
             "Error 925878946724 Failure waiting for clash main after free offer collection loops"
         )
         return "restart"

@@ -48,15 +48,15 @@ def get_play_coords_for_card(vm_index: int, card_index: int, side_preference: st
     image = get_card_images(vm_index)[card_index]
 
     # get the ID of this card(ram_rider, zap, etc)
-    id = identify_card(image)
+    identity = identify_card(image)
 
     # get the grouping of this card (hog, turret, spell, etc)
-    group = get_card_group(id)
+    group = get_card_group(identity)
 
     # get the play coords of this grouping
     coords = calculate_play_coords(group, side_preference)
 
-    return id, coords
+    return identity, coords
 
 
 def get_card_group(card_id) -> str:

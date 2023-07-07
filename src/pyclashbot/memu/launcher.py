@@ -37,7 +37,7 @@ def restart_emulator(logger):
     # restart the game, including the launcher and emulator
 
     # stop all vms
-    logger.change_status("Closing everything Memu related. . .")
+    logger.change_status(status="Closing everything Memu related. . .")
     close_everything_memu()
 
     # check for the pyclashbot vm, if not found then create it
@@ -46,9 +46,9 @@ def restart_emulator(logger):
     configure_vm(logger, vm_index=vm_index)
 
     # start the vm
-    # logger.change_status("Starting a new Memu Client using the launcher. . .")
+    # logger.change_status(status="Starting a new Memu Client using the launcher. . .")
     # start_emulator_without_pmc(logger) # this is the old way
-    logger.change_status("Starting emulator...")
+    logger.change_status(status="Starting emulator...")
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
@@ -124,20 +124,20 @@ def start_clash_royale(logger: Logger, vm_index):
 
     if not found:
         # notify user that clash royale is not installed, program will exit
-        logger.change_status(
+        logger.change_status(status=
             "Clash royale is not installed. Please install it and restart"
         )
         show_clash_royale_setup_gui()
 
     # start clash royale
     pmc.start_app_vm(apk_base_name, vm_index)
-    logger.change_status("Successfully initialized Clash app")
+    logger.change_status(status="Successfully initialized Clash app")
 
 
 # making/configuring emulator methods
 def create_vm(logger: Logger):
     # create a vm named pyclashbot
-    logger.change_status("Creating VM...")
+    logger.change_status(status="Creating VM...")
     memuc_pid = start_memuc_console()
 
     vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
@@ -149,7 +149,7 @@ def create_vm(logger: Logger):
     # rename the vm to pyclashbot
     rename_vm(logger, vm_index, EMULATOR_NAME)
     stop_memuc_console(memuc_pid)
-    logger.change_status(f"Created VM: {vm_index} - {EMULATOR_NAME}")
+    logger.change_status(status=f"Created VM: {vm_index} - {EMULATOR_NAME}")
     return vm_index
 
 
@@ -161,7 +161,7 @@ def rename_vm(
     """rename the vm to name"""
     count = 0
     while get_vm_index(logger, name) != vm_index:
-        logger.change_status(
+        logger.change_status(status=
             f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
         )
         pmc.rename_vm(vm_index=vm_index, new_name=name)
@@ -169,7 +169,7 @@ def rename_vm(
 
 
 def configure_vm(logger: Logger, vm_index):
-    logger.change_status("Configuring VM")
+    logger.change_status(status="Configuring VM")
 
     memuc_pid = start_memuc_console()
 
@@ -311,14 +311,14 @@ def check_if_on_clash_main_menu(vm_index):
 
 def stop_vm(logger, vm_index):
     """Stops the VM with the given index."""
-    logger.change_status(f"Stopping VM {vm_index}")
+    logger.change_status(status=f"Stopping VM {vm_index}")
     pmc.stop_vm(vm_index=vm_index)
     time.sleep(5)
 
 
 def launch_vm(logger, vm_index):
     """Launches the VM with the given index."""
-    logger.change_status(f"Launching VM {vm_index}")
+    logger.change_status(status=f"Launching VM {vm_index}")
     pmc.start_vm(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
 
@@ -346,7 +346,7 @@ def close_clash_royale_app(logger, vm_index):
     apk_base_name = "com.supercell.clashroyale"
 
     pmc.stop_app_vm(apk_base_name, vm_index)
-    logger.change_status(f"Clash Royale stopped on vm {vm_index}")
+    logger.change_status(status=f"Clash Royale stopped on vm {vm_index}")
 
 
 def close_everything_memu():

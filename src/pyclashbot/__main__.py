@@ -3,7 +3,6 @@ import webbrowser
 from os import path
 
 import PySimpleGUI as sg
-from pyclashbot.bot.navigation import check_if_on_clash_main_challenges_tab
 
 
 from pyclashbot.bot.worker import WorkerThread
@@ -141,14 +140,14 @@ def start_button_event(logger: Logger, window, values):
     returns:
         None
     """
-    logger.change_status("Start Button Event")
+    logger.change_status(status="Start Button Event")
 
     # get job list from gui
     jobs = read_job_list(values)
 
     # check if at least one job is selected
     if len(jobs) == 0:
-        logger.change_status("At least one job must be selected")
+        logger.change_status(status="At least one job must be selected")
         no_jobs_popup()
         return None
 
@@ -178,7 +177,7 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread):
     returns:
         None
     """
-    logger.change_status("Stopping")
+    logger.change_status(status="Stopping")
     window["Stop"].update(disabled=True)
     window["-Pause-Resume-Button-"].update(text="Pause")
     window["-Pause-Resume-Button-"].update(disabled=True)
@@ -195,10 +194,10 @@ def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
         None
     """
     if thread.toggle_pause():
-        logger.change_status("Pausing")
+        logger.change_status(status="Pausing")
         window["-Pause-Resume-Button-"].update(text="Resume")
     else:
-        logger.change_status("Resuming")
+        logger.change_status(status="Resuming")
         window["-Pause-Resume-Button-"].update(text="Pause")
 
 

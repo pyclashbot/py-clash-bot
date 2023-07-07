@@ -47,29 +47,29 @@ POST_WAR_FIGHT_WAIT = 10  # seconds
 
 
 def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
-    logger.change_status("War state")
+    logger.change_status(status="War state")
 
     # if not on clash main: return
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Error 4069852734098 Not on clash main to begin war state")
+        logger.change_status(status="Error 4069852734098 Not on clash main to begin war state")
         return "restart"
 
-    logger.change_status("Making sure in a clan before war battle")
+    logger.change_status(status="Making sure in a clan before war battle")
     in_a_clan_check = war_state_check_if_in_a_clan(vm_index, logger)
 
     if in_a_clan_check == "restart":
-        logger.change_status(
+        logger.change_status(status=
             "Error 502835 Failure while checking if in a clan before war battle"
         )
         return "restart"
 
     if not in_a_clan_check:
-        logger.change_status("Not in a clan so skipping war...")
+        logger.change_status(status="Not in a clan so skipping war...")
 
         return
 
     # get to clan page
-    logger.change_status("Starting a war battle")
+    logger.change_status(status="Starting a war battle")
 
     get_to_clan_tab_from_clash_main(vm_index, logger)
 
@@ -80,7 +80,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
     handle_make_deck(vm_index, logger)
 
     if not check_if_deck_is_ready_for_this_battle(vm_index):
-        logger.change_status("No more war decks for today!")
+        logger.change_status(status="No more war decks for today!")
         # click deadspace a little to close war battle windows
         click(
             vm_index,
@@ -91,11 +91,11 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         )
         time.sleep(0.3)
 
-        logger.change_status("Getting back to clash main")
+        logger.change_status(status="Getting back to clash main")
         get_to_clash_main_from_clan_page(vm_index, logger)
 
         if wait_for_clash_main_menu(vm_index, logger) == "restart":
-            logger.change_status(
+            logger.change_status(status=
                 "Erorr 77 84278 failed to get to clash main after exhausting war battle decks"
             )
             return "restart"
@@ -103,7 +103,7 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
         return NEXT_STATE
 
     # start battle
-    logger.change_status("Starting a war battle")
+    logger.change_status(status="Starting a war battle")
     click(vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
     logger.add_war_fight()
@@ -113,20 +113,20 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
 
     # do fight
     if do_war_battle(vm_index, logger) == "restart":
-        logger.change_status("Error 58734 Failed doing war battle")
+        logger.change_status(status="Error 58734 Failed doing war battle")
         return "restart"
-    logger.change_status(f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
+    logger.change_status(status=f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
     time.sleep(POST_WAR_FIGHT_WAIT)
 
     # when battle end, leave battle
     click(vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
 
     if wait_for_war_page(vm_index, logger) == "restart":
-        logger.change_status("Error 5135 Waited too long for war page")
+        logger.change_status(status="Error 5135 Waited too long for war page")
         return "restart"
 
     if get_to_clash_main_from_clan_page(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(status=
             "Error 116135 Failed return to clash main after war battle"
         )
         return "restart"
@@ -135,12 +135,12 @@ def war_state(vm_index: int, logger: Logger, NEXT_STATE: str):
 
 
 def wait_for_war_page(vm_index, logger):
-    logger.change_status("Waiting for war page")
+    logger.change_status(status="Waiting for war page")
     start_time = time.time()
     while not check_if_on_war_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 45:
-            logger.change_status(
+            logger.change_status(status=
                 "Error 1109572435 WAited too long for war page after leaving war battle"
             )
             return "restart"
@@ -149,15 +149,15 @@ def wait_for_war_page(vm_index, logger):
 
 def do_war_battle(vm_index, logger):
     start_time = time.time()
-    logger.change_status("Starting war fighting")
+    logger.change_status(status="Starting war fighting")
     while check_if_in_war_battle(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 120:
-            logger.change_status("Error 658725 Ran war fight loop too long")
+            logger.change_status(status="Error 658725 Ran war fight loop too long")
             return "restart"
 
         # click a random card
-        logger.change_status("Doing a random war play")
+        logger.change_status(status="Doing a random war play")
 
         random_card_coord = random.choice(CARD_COORDS)
         click(vm_index, random_card_coord[0], random_card_coord[1])
@@ -167,11 +167,11 @@ def do_war_battle(vm_index, logger):
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
         click(vm_index, random_play_coord[0], random_play_coord[1])
         time.sleep(2.4)
-    logger.change_status("Done with this war fight")
+    logger.change_status(status="Done with this war fight")
 
 
 def wait_for_war_battle_start(vm_index, logger):
-    logger.change_status("Waiting for war battle start")
+    logger.change_status(status="Waiting for war battle start")
 
     start_time = time.time()
 
@@ -181,7 +181,7 @@ def wait_for_war_battle_start(vm_index, logger):
         time_taken = time.time() - start_time
 
         if time_taken > 45:
-            logger.change_status("Error 98246572 Failure waiting for war battle start")
+            logger.change_status(status="Error 98246572 Failure waiting for war battle start")
             return "restart"
 
     logger.log("Waiting for war battle start")
@@ -212,7 +212,7 @@ def handle_make_deck(vm_index, logger: Logger):
     if check_if_deck_is_ready_for_this_battle(vm_index):
         return
 
-    logger.change_status("Setting up a deck for this war match")
+    logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
     click(vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
@@ -329,12 +329,12 @@ def check_if_on_war_page(vm_index):
 def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     # if not on clash main, reutnr
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(f"ERROR 385423562623 Not on clash main menu")
+        logger.change_status(status=f"ERROR 385423562623 Not on clash main menu")
         return "restart"
 
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
-        logger.change_status("Error 90723563485 Failure with get_to_profile_page")
+        logger.change_status(status="Error 90723563485 Failure with get_to_profile_page")
         return "restart"
 
     # check pixels for in a clan
@@ -343,7 +343,7 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     # click deadspace to leave
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status("Error 872356739 Failure with wait_for_clash_main_menu")
+        logger.change_status(status="Error 872356739 Failure with wait_for_clash_main_menu")
         return "restart"
 
     return in_a_clan
