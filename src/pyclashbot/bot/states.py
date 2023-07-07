@@ -44,6 +44,12 @@ def state_tree(
         return "open_chests", account_index_to_switch_to
 
     elif state == "restart":  # --> open_chests
+        ####DEBUG
+        for _ in range(5):
+            print("ENTERED RESTART STATE. INFINITE LOOP")
+        while 1:
+            pass
+
         # close app
         close_clash_royale_app(logger, vm_index)
         time.sleep(10)
