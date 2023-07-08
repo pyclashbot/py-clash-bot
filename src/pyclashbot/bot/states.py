@@ -48,10 +48,10 @@ def state_tree(
 
     elif state == "restart":  # --> open_chests
         # ####DEBUG
-        # for _ in range(5):
-        #     print("ENTERED RESTART STATE. INFINITE LOOP")
-        # while 1:
-        #     pass
+        for _ in range(5):
+            print("ENTERED RESTART STATE. INFINITE LOOP")
+        while 1:
+            pass
 
         # close app
         close_clash_royale_app(logger, vm_index)

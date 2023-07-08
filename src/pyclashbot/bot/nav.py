@@ -36,7 +36,9 @@ CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 59
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 
 
-def get_to_clash_main_from_card_page(vm_index, logger, printmode=False) -> Literal['restart', 'good']:
+def get_to_clash_main_from_card_page(
+    vm_index, logger, printmode=False
+) -> Literal["restart", "good"]:
     if printmode:
         logger.change_status(status="Getting to clash main from card page")
     else:
@@ -54,7 +56,9 @@ def get_to_clash_main_from_card_page(vm_index, logger, printmode=False) -> Liter
     return "good"
 
 
-def get_to_card_page_from_clash_main(vm_index, logger, printmode=False) -> Literal['restart', 'good']:
+def get_to_card_page_from_clash_main(
+    vm_index, logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
 
     if printmode:
@@ -153,7 +157,7 @@ def check_for_switch_accounts_page(vm_index) -> bool:
     return True
 
 
-def get_to_challenges_tab_from_main(vm_index, logger) -> Literal['restart', 'good']:
+def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "good"]:
     click(
         vm_index,
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
@@ -167,7 +171,9 @@ def get_to_challenges_tab_from_main(vm_index, logger) -> Literal['restart', 'goo
     return "good"
 
 
-def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def handle_clash_main_tab_notifications(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
 
     # if not on clash main, return restart
@@ -225,7 +231,9 @@ def handle_clash_main_tab_notifications(vm_index, logger: Logger, printmode=Fals
     return "good"
 
 
-def wait_for_clash_main_challenges_tab(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_clash_main_challenges_tab(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
 
     if printmode:
@@ -255,7 +263,9 @@ def check_if_on_clash_main_challenges_tab(vm_index) -> bool:
     return True
 
 
-def wait_for_clash_main_card_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_clash_main_card_page(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
 
     if printmode:
@@ -314,7 +324,9 @@ def check_if_on_clash_main_shop_page(vm_index) -> bool:
     return all(lines)
 
 
-def wait_for_clash_main_shop_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_clash_main_shop_page(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
     if printmode:
         logger.change_status(status="Waiting for clash main shop page")
@@ -334,7 +346,9 @@ def wait_for_clash_main_shop_page(vm_index, logger: Logger, printmode=False) -> 
     return "good"
 
 
-def get_to_activity_log(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def get_to_activity_log(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     if printmode:
         logger.change_status(status="Getting to activity log")
     else:
@@ -374,7 +388,9 @@ def get_to_activity_log(vm_index, logger: Logger, printmode=False) -> Literal['r
     return "good"
 
 
-def wait_for_battle_log_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_battle_log_page(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time = time.time()
     if printmode:
         logger.change_status(status="Waiting for battle log page to appear")
@@ -476,22 +492,16 @@ def check_for_end_1v1_battle_screen(vm_index) -> bool:
 
 
 def check_for_end_2v2_battle_screen(vm_index) -> bool:
-    if not check_line_for_color(
-        vm_index=vm_index, x_1=392, y_1=4, x_2=391, y_2=29, color=(253, 133, 134)
-    ):
+    if not region_is_color(vm_index, [44, 590, 5, 6], (104, 188, 255)):
         return False
-    if not check_line_for_color(
-        vm_index=vm_index, x_1=406, y_1=4, x_2=406, y_2=30, color=(253, 132, 133)
-    ):
-        return False
-    if not region_is_color(
-        vm_index=vm_index, region=[6, 580, 24, 40], color=(52, 66, 83)
-    ):
+    if not region_is_color(vm_index, [355, 600, 17, 5], (76, 176, 255)):
         return False
     return True
 
 
-def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_end_battle_screen(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="waiting for end 1v1 battle screen")
@@ -514,7 +524,9 @@ def wait_for_end_battle_screen(vm_index, logger: Logger, printmode=False) -> Lit
     return "good"
 
 
-def wait_for_2v2_battle_start(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_2v2_battle_start(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     start_time: float = time.time()
     if printmode:
         logger.change_status(status="Waiting for 2v2 battle to start")
@@ -612,7 +624,9 @@ def check_for_in_1v1_battle(vm_index) -> bool:
     return False
 
 
-def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def get_to_clash_main_from_clan_page(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     if printmode:
         logger.change_status(status="Getting to clash main from clan page")
     else:
@@ -640,7 +654,9 @@ def get_to_clash_main_from_clan_page(vm_index, logger: Logger, printmode=False) 
     return "good"
 
 
-def get_to_clan_tab_from_clash_main(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def get_to_clan_tab_from_clash_main(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     if printmode:
         logger.change_status(status="Getting to clan tab from clash main menu")
     else:
@@ -726,7 +742,9 @@ def check_if_on_profile_page(vm_index) -> bool:
     return True
 
 
-def wait_for_profile_page(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_profile_page(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     if printmode:
         logger.change_status(status="Waiting for profile page")
     else:
@@ -748,7 +766,7 @@ def wait_for_profile_page(vm_index, logger: Logger, printmode=False) -> Literal[
     return "good"
 
 
-def get_to_profile_page(vm_index, logger: Logger) -> Literal['restart', 'good']:
+def get_to_profile_page(vm_index, logger: Logger) -> Literal["restart", "good"]:
     # if not on clash main, return
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
@@ -786,7 +804,9 @@ def check_for_trophy_reward_menu(vm_index) -> bool:
     return all(lines)
 
 
-def handle_trophy_reward_menu(vm_index, logger: Logger, printmode=False) -> Literal['good']:
+def handle_trophy_reward_menu(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["good"]:
     if printmode:
         logger.change_status(status="Handling trophy reward menu")
     else:
@@ -801,7 +821,9 @@ def handle_trophy_reward_menu(vm_index, logger: Logger, printmode=False) -> Lite
     return "good"
 
 
-def wait_for_clash_main_menu(vm_index, logger: Logger, printmode=False) -> Literal['restart', 'good']:
+def wait_for_clash_main_menu(
+    vm_index, logger: Logger, printmode=False
+) -> Literal["restart", "good"]:
     if printmode:
         logger.change_status(status="Waiting for clash main menu")
     else:
