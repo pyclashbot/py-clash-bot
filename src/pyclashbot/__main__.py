@@ -4,7 +4,6 @@ from os import path
 from typing import LiteralString
 
 import PySimpleGUI as sg
-from pyclashbot.bot.nav import check_for_end_1v1_battle_screen, check_for_end_2v2_battle_screen
 
 
 from pyclashbot.bot.worker import WorkerThread
@@ -338,12 +337,6 @@ def main_gui() -> None:
 #             account_switch_order,
 #         )
 #         print(f"state = {state}")
-
-
-def debug():
-    # print(1,check_for_end_2v2_battle_screen(vm_index=1))
-    # print(2,check_for_end_1v1_battle_screen(vm_index=1))
-    pass
 
 
 if __name__ == "__main__":

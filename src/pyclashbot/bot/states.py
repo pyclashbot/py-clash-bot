@@ -23,6 +23,15 @@ from pyclashbot.memu.launcher import (
 from pyclashbot.utils.logger import Logger
 
 
+
+def clip_that():
+    import pyautogui
+    time.sleep(5)
+    print('Clipping this error!')
+    pyautogui.click(2535,1253)
+    time.sleep(5)
+
+
 def state_tree(
     vm_index,
     logger: Logger,
@@ -50,6 +59,7 @@ def state_tree(
         # ####DEBUG
         for _ in range(5):
             print("ENTERED RESTART STATE. INFINITE LOOP")
+        clip_that()
         while 1:
             pass
 

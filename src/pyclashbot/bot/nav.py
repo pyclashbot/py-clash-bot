@@ -829,7 +829,7 @@ def wait_for_clash_main_menu(
     else:
         logger.log("Waiting for clash main menu")
 
-    start_time = time.time()
+    start_time: float = time.time()
     while not check_if_on_clash_main_menu(vm_index):
         # loop count
 
