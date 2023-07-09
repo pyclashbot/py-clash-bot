@@ -16,6 +16,8 @@ from pyclashbot.utils.caching import (
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
+initalize_pylogging()
+
 
 def read_window(
     window: sg.Window, timeout: int = 10
@@ -252,7 +254,6 @@ def main_gui() -> None:
 
         # on start event, start the thread
         if event == "Start":
-            initalize_pylogging()
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
