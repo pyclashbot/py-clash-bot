@@ -5,16 +5,14 @@ from typing import LiteralString
 
 import PySimpleGUI as sg
 
-
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
-from pyclashbot.memu.client import screenshot
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
     read_user_settings,
 )
-from pyclashbot.utils.logger import Logger
+from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
 
@@ -227,8 +225,6 @@ def exit_button_event(thread) -> None:
 
 def main_gui() -> None:
     """method for displaying the main gui"""
-    console_log = True  # enable/disable console logging
-
     icon_path = "pixel-pycb.ico"
     if not path.isfile(path=icon_path):
         icon_path: LiteralString = path.join("..\\..\\assets\\", icon_path)
@@ -241,7 +237,7 @@ def main_gui() -> None:
 
     # track worker thread and logger
     thread: WorkerThread | None = None
-    logger = Logger(console_log=console_log, timed=True)
+    logger = Logger(timed=True)
 
     # run the gui
     while True:
@@ -299,7 +295,7 @@ def main_gui() -> None:
                 window["-Pause-Resume-Button-"].update(disabled=True)
             else:
                 # reset the logger
-                logger = Logger(console_log=console_log, timed=False)
+                logger = Logger(timed=False)
                 thread = None
 
         update_layout(window, logger)
@@ -340,8 +336,7 @@ def main_gui() -> None:
 #         print(f"state = {state}")
 
 
-
-
 if __name__ == "__main__":
+    initalize_pylogging()
     # dummy_bot()
     main_gui()

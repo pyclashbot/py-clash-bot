@@ -1,12 +1,49 @@
+import logging
 import threading
 import time
+import zipfile
 from functools import wraps
-from os import makedirs
-from os.path import exists, expandvars, join
+from os import listdir, makedirs, remove
+from os.path import exists, expandvars, getmtime, join
 
 MODULE_NAME = "py-clash-bot"
+LOGS_TO_KEEP = 10
 
-top_level = join(expandvars("%appdata%"), MODULE_NAME)
+log_dir = join(expandvars("%appdata%"), MODULE_NAME, "logs")
+archive_name = join(log_dir, "logs.zip")
+
+
+def compress_logs():
+    # archive will contain a large text file, all old logs appended together
+    # extract the file and read the text to get the old logs
+
+    logs = sorted(
+        [join(log_dir, log) for log in listdir(log_dir) if log.endswith(".txt")],
+        key=getmtime,
+    )
+    if len(logs) >= LOGS_TO_KEEP:
+        with zipfile.ZipFile(
+            archive_name, "a" if exists(archive_name) else "w"
+        ) as archive:
+            for log in logs[:-LOGS_TO_KEEP]:
+                archive.write(log, log.split("\\")[-1])
+                remove(log)
+
+
+def initalize_pylogging():
+    """method to be called once to initalize python logging"""
+
+    if not exists(log_dir):
+        makedirs(log_dir)
+    log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
+    logging.basicConfig(
+        filename=log_name,
+        encoding="utf-8",
+        level=logging.DEBUG,
+        format="%(levelname)s:%(asctime)s %(message)s",
+    )
+    logging.getLogger("PIL").setLevel(logging.INFO)
+    compress_logs()
 
 
 class Logger:
@@ -21,27 +58,8 @@ class Logger:
     def __init__(
         self,
         stats: dict[str, str | int] | None = None,
-        console_log: bool = False,
-        file_log: bool = True,
         timed: bool = True,
     ) -> None:
-        # setup console log
-        self.console_log = console_log
-        # print buffer for console
-        self.console_buffer = ""
-
-        # setup log file
-        self.file_log = file_log
-        # print buffer for file
-        self.file_buffer = ""
-        # open log file
-        if file_log:
-            if not exists(top_level):
-                makedirs(top_level)
-            log_file_path = join(top_level, "log.txt")
-            with open(log_file_path, "w", encoding="utf-8") as log_file:
-                self._log_file = log_file  # noqa
-
         # stats for threaded communication
         self.stats = stats
         self.stats_mutex = threading.Lock()
@@ -81,12 +99,9 @@ class Logger:
         # write initial values to queue
         self._update_stats()
 
-    def __del__(self):
-        if self.file_log:
-            self._log_file.close()
-
     def _update_log(self) -> None:
         self._update_stats()
+        logging.info(self.current_status)
 
     def _update_stats(self) -> None:
         """updates the stats with a dictionary of mutable statistics"""
@@ -121,7 +136,7 @@ class Logger:
         """decorator to specify functions which update the queue with statistics"""
 
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self: "Logger", *args, **kwargs):
             result = func(self, *args, **kwargs)
             self._update_log()  # pylint: disable=protected-access
             return result
@@ -129,9 +144,7 @@ class Logger:
         return wrapper
 
     def log(self, message) -> None:
-        time_running_string: str = self.calc_time_since_start()
-
-        print(f"[{time_running_string}] {message}")
+        logging.info(message)
 
     def make_time_str(self, seconds) -> str:
         """convert epoch to time
