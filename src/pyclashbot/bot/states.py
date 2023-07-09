@@ -61,7 +61,7 @@ def state_tree(
         ####DEBUG
         for _ in range(5):
             print("ENTERED RESTART STATE. INFINITE LOOP")
-        clip_that()
+        # clip_that()
         # while 1:
         #     pass
 
