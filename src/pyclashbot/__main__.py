@@ -340,11 +340,8 @@ def main_gui() -> None:
 #         print(f"state = {state}")
 
 
-def debug() -> None:
-    screenshot(1)
 
 
 if __name__ == "__main__":
     # dummy_bot()
-    # main_gui()
-    debug()
+    main_gui()
