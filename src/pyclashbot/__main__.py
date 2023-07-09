@@ -279,7 +279,7 @@ def main_gui() -> None:
 
         # on Help button event, open the help gui
         elif event == "Help":
-            print("Help button event")
+            webbrowser.open("https://www.pyclashbot.app/")
 
         # on issues button event, open the github issues link in browser
         elif event == "issues-link":
