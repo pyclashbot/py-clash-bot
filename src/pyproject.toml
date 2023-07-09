@@ -22,7 +22,6 @@ opencv-python = "^4.8.0.74"
 psutil = "^5.9.5"
 pywin32 = "^306"
 wmi = "^1.5.1"
-cx-freeze = "^6.15.2"
 
 
 [tool.poetry.group.build]
@@ -30,7 +29,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-Cx_Freeze = "^6.15.2"
+cx-freeze = "^6.15.2"
 
 
 [tool.poetry.group.dev]
