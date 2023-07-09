@@ -50,9 +50,9 @@ class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
-        stats (dict[str, str | int] | None, optional): stats to talk between threads. Default=None.
-        console_log (bool, optional): Enable console logging. Defaults to False.
-        file_log (bool, optional): Enable file logging. Defaults to True.
+        stats (dict[str, str | int] | None, optional): stats to communicate
+            between threads. Defaults to None.
+        timed (bool, optional): whether to time the bot. Defaults to True.
     """
 
     def __init__(
