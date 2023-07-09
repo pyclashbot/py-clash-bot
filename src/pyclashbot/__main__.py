@@ -8,6 +8,7 @@ import PySimpleGUI as sg
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
+from pyclashbot.memu.client import screenshot
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -339,7 +340,11 @@ def main_gui() -> None:
 #         print(f"state = {state}")
 
 
+def debug() -> None:
+    screenshot(1)
+
+
 if __name__ == "__main__":
     # dummy_bot()
-    main_gui()
-    # debug()
+    # main_gui()
+    debug()

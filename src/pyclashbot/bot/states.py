@@ -28,7 +28,9 @@ def clip_that():
     import pyautogui
     time.sleep(5)
     print('Clipping this error!')
-    pyautogui.click(2535,1253)
+    pyautogui.moveTo(2535,1253)
+    time.sleep(1)
+    pyautogui.click()
     time.sleep(5)
 
 
@@ -56,12 +58,12 @@ def state_tree(
         return "open_chests", account_index_to_switch_to
 
     elif state == "restart":  # --> open_chests
-        # ####DEBUG
+        ####DEBUG
         for _ in range(5):
             print("ENTERED RESTART STATE. INFINITE LOOP")
         clip_that()
-        while 1:
-            pass
+        # while 1:
+        #     pass
 
         # close app
         close_clash_royale_app(logger, vm_index)

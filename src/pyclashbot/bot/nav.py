@@ -507,8 +507,10 @@ def wait_for_end_battle_screen(
         logger.change_status(status="waiting for end 1v1 battle screen")
     else:
         logger.log(message="waiting for end 1v1 battle screen")
-    while not check_for_end_1v1_battle_screen(vm_index=vm_index) and not (
-        check_for_end_2v2_battle_screen(vm_index=vm_index)
+    while (
+        (not check_for_end_1v1_battle_screen(vm_index=vm_index))
+        and not (check_for_end_2v2_battle_screen(vm_index=vm_index))
+        and not (check_for_end_2v2_battle_screen_2(vm_index))
     ):
         time_taken: float = time.time() - start_time
         if time_taken > 20:
@@ -522,6 +524,19 @@ def wait_for_end_battle_screen(
     else:
         logger.log(message="done waiting for end 1v1 battle screen")
     return "good"
+
+
+def check_for_end_2v2_battle_screen_2(vm_index) -> bool:
+    if not check_line_for_color(vm_index, 46, 587, 46, 609, (76, 175, 255)):
+        return False
+    if not check_line_for_color(vm_index, 58, 591, 96, 608, (255, 255, 255)):
+        return False
+    if not check_line_for_color(vm_index, 106, 589, 105, 611, (76, 173, 255)):
+        return False
+    if not check_line_for_color(vm_index, 391, 26, 406, 26, (156, 20, 20)):
+        return False
+
+    return True
 
 
 def wait_for_2v2_battle_start(
