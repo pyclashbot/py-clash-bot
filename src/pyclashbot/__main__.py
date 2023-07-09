@@ -1,25 +1,20 @@
 import sys
 import webbrowser
 from os import path
+from typing import LiteralString
 
 import PySimpleGUI as sg
 
-from pyclashbot.bot import WorkerThread
-from pyclashbot.interface import (
-    disable_keys,
-    main_layout,
-    show_help_gui,
-    user_config_keys,
-)
-from pyclashbot.utils import Logger, cache_user_settings, read_user_settings
-from pyclashbot.utils.admin_check import admin_check
-from pyclashbot.utils.caching import check_user_settings
-from pyclashbot.utils.logger import initalize_pylogging
-from pyclashbot.utils.server_notifications import Notification, get_latest_notification
-from pyclashbot.utils.thread import PausableThread, StoppableThread
 
-admin_check()
-initalize_pylogging()
+from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.interface import disable_keys, main_layout, user_config_keys
+from pyclashbot.utils.caching import (
+    cache_user_settings,
+    check_user_settings,
+    read_user_settings,
+)
+from pyclashbot.utils.logger import Logger, initalize_pylogging
+from pyclashbot.utils.thread import PausableThread, StoppableThread
 
 
 def read_window(
@@ -53,37 +48,32 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
     # unpacking gui vars into a list of jobs as strings
     jobs = []
 
-    # check if both 1v1 mode and 2v2 mode are selected
-    if values["1v1_battle_in"] and values["2v2_battle_in"]:
-        return ["dupe jobs"]
-
     if values["-Open-Chests-in-"]:
         jobs.append("Open Chests")
+
     if values["-Requesting-in-"]:
         jobs.append("Request")
-    if values["-Upgrade_cards-in-"]:
-        jobs.append("Upgrade")
-    if values["-Random-Decks-in-"]:
-        jobs.append("Randomize Deck")
+
     if values["-Card-Mastery-Collection-in-"]:
         jobs.append("card mastery collection")
-    if values["-Level-Up-Reward-Collection-in-"]:
-        jobs.append("level up reward collection")
-    if values["-War-Participation-in-"]:
-        jobs.append("war")
+
     if values["-Free-Offer-Collection-in-"]:
         jobs.append("free offer collection")
-    if values["-Daily-Challenge-Reward-Collection-"]:
-        jobs.append("daily challenge reward collection")
+
     if values["1v1_battle_in"]:
         jobs.append("1v1 battle")
     if values["2v2_battle_in"]:
         jobs.append("2v2 battle")
 
+    if values["card_upgrading_in"]:
+        jobs.append("upgrade")
+
+    if values["war_checkbox_in"]:
+        jobs.append("war")
     return jobs
 
 
-def save_current_settings(values):
+def save_current_settings(values) -> None:
     """method for caching the user's current settings
     args:
         values: dictionary of the values of the window
@@ -96,7 +86,7 @@ def save_current_settings(values):
     cache_user_settings(user_settings)
 
 
-def load_last_settings(window):
+def load_last_settings(window) -> None:
     """method for accessing chacned user settings and updating the gui
     args:
         window,the gui window
@@ -114,35 +104,7 @@ def load_last_settings(window):
         window.refresh()  # refresh the window to update the layout
 
 
-def dupe_jobs_popup():
-    # Define the layout of the GUI
-    layout = [
-        [
-            sg.Text(
-                "You cannot select both 1v1 \nand 2v2 jobs at the same time!",
-                size=(25, 2),
-                justification="center",
-            )
-        ],
-        [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
-    ]
-
-    # Create the window
-    window = sg.Window("Critical Error!", layout)
-
-    # Event loop to process events and get user input
-    while True:
-        event, _ = window.read()  # type: ignore
-
-        # Exit the program if the "Exit" button is clicked or window is closed
-        if event in [sg.WINDOW_CLOSED, "Exit"]:
-            break
-
-    # Close the window
-    window.close()
-
-
-def no_jobs_popup():
+def no_jobs_popup() -> None:
     # Define the layout of the GUI
     layout = [
         [
@@ -160,17 +122,17 @@ def no_jobs_popup():
 
     # Event loop to process events and get user input
     while True:
-        event, _ = window.read()  # type: ignore
+        event, *_ = window.read()  # type: ignore
 
         # Exit the program if the "Exit" button is clicked or window is closed
-        if event in [sg.WINDOW_CLOSED, "Exit"]:
+        if event in (sg.WINDOW_CLOSED, "Exit"):
             break
 
     # Close the window
     window.close()
 
 
-def start_button_event(logger: Logger, window, values):
+def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -179,19 +141,14 @@ def start_button_event(logger: Logger, window, values):
     returns:
         None
     """
-    logger.change_status("Start Button Event")
+    logger.change_status(status="Start Button Event")
 
     # get job list from gui
     jobs = read_job_list(values)
 
-    if jobs[0] == "dupe jobs":
-        logger.change_status("1v1 and 2v2 cannot be selected at the same time")
-        dupe_jobs_popup()
-        return None
-
     # check if at least one job is selected
     if len(jobs) == 0:
-        logger.change_status("At least one job must be selected")
+        logger.change_status(status="At least one job must be selected")
         no_jobs_popup()
         return None
 
@@ -200,7 +157,7 @@ def start_button_event(logger: Logger, window, values):
 
     # setup the main thread and start it
     acc_count = int(values["-SSID_IN-"])
-    args = (jobs, acc_count)
+    args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, args)
     thread.start()
 
@@ -212,7 +169,7 @@ def start_button_event(logger: Logger, window, values):
     return thread
 
 
-def stop_button_event(logger: Logger, window, thread: StoppableThread):
+def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     """method for stopping the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -221,14 +178,14 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread):
     returns:
         None
     """
-    logger.change_status("Stopping")
+    logger.change_status(status="Stopping")
     window["Stop"].update(disabled=True)
     window["-Pause-Resume-Button-"].update(text="Pause")
     window["-Pause-Resume-Button-"].update(disabled=True)
     thread.shutdown()  # send the shutdown flag to the thread
 
 
-def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
+def pause_resume_button_event(logger: Logger, window, thread: PausableThread) -> None:
     """method for temporarily stopping the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -238,14 +195,14 @@ def pause_resume_button_event(logger: Logger, window, thread: PausableThread):
         None
     """
     if thread.toggle_pause():
-        logger.change_status("Pausing")
+        logger.change_status(status="Pausing")
         window["-Pause-Resume-Button-"].update(text="Resume")
     else:
-        logger.change_status("Resuming")
+        logger.change_status(status="Resuming")
         window["-Pause-Resume-Button-"].update(text="Pause")
 
 
-def update_layout(window: sg.Window, logger: Logger):
+def update_layout(window: sg.Window, logger: Logger) -> None:
     """method for updaing the values in the gui's window
     args:
         window, the gui window
@@ -261,29 +218,27 @@ def update_layout(window: sg.Window, logger: Logger):
             window[stat].update(val)  # type: ignore
 
 
-def main_gui():
-    """method for displaying the main gui"""
+def exit_button_event(thread) -> None:
+    # shut down the thread if it is still running
+    if thread is not None:
+        thread.shutdown(kill=True)
 
+
+def main_gui() -> None:
+    """method for displaying the main gui"""
     icon_path = "pixel-pycb.ico"
-    if not path.isfile(icon_path):
-        icon_path = path.join("..\\..\\assets\\", icon_path)
+    if not path.isfile(path=icon_path):
+        icon_path: LiteralString = path.join("..\\..\\assets\\", icon_path)
 
     # create gui window
-    window = sg.Window("Py-ClashBot", main_layout, icon=icon_path)
+    window = sg.Window(title="Py-ClashBot", layout=main_layout, icon=icon_path)
 
     # load the last cached settings
-    load_last_settings(window)
+    load_last_settings(window=window)
 
     # track worker thread and logger
     thread: WorkerThread | None = None
-    logger = Logger(timed=False)
-
-    # read any notifications from the server to display in the gui
-    latest_notification: Notification | None = get_latest_notification()
-    if latest_notification is not None:
-        logger.change_status(
-            f'{latest_notification["header"]}: {latest_notification["body"]}'
-        )
+    logger = Logger(timed=True)
 
     # run the gui
     while True:
@@ -292,14 +247,12 @@ def main_gui():
         # on exit event, kill any existing thread
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
-            if thread is not None:
-                thread.shutdown(kill=True)
+            exit_button_event(thread)
             break
 
         # on start event, start the thread
         if event == "Start":
-            # reset the logger for a new thread
-            logger = Logger()
+            initalize_pylogging()
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
@@ -326,7 +279,7 @@ def main_gui():
 
         # on Help button event, open the help gui
         elif event == "Help":
-            show_help_gui()
+            webbrowser.open("https://www.pyclashbot.app/")
 
         # on issues button event, open the github issues link in browser
         elif event == "issues-link":
@@ -357,12 +310,5 @@ def main_gui():
     window.close()
 
 
-def dummy_main():
-    logger = Logger()
-    pass
-
-
-# run the main gui
 if __name__ == "__main__":
     main_gui()
-    # dummy_main()

@@ -31,23 +31,12 @@ jobs_checklist = [
                     job_check_box("Random Requesting", "-Requesting-in-"),
                 ],
                 [
-                    job_check_box("Upgrade cards", "-Upgrade_cards-in-"),
-                ],
-                [
-                    job_check_box("War Participation", "-War-Participation-in-"),
-                ],
-                [
-                    job_check_box("Random decks", "-Random-Decks-in-"),
-                ],
-                [
                     job_check_box(
                         "Card Mastery Collection", "-Card-Mastery-Collection-in-"
                     ),
                 ],
                 [
-                    job_check_box(
-                        "Level Up Reward Collection", "-Level-Up-Reward-Collection-in-"
-                    ),
+                    job_check_box("Card Upgrading", "card_upgrading_in"),
                 ],
                 [
                     job_check_box(
@@ -57,15 +46,15 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
-                        "Daily Challenge Reward Collection",
-                        "-Daily-Challenge-Reward-Collection-",
+                        "War Participation",
+                        "war_checkbox_in",
                     ),
                 ],
             ],
             scrollable=True,
             vertical_scroll_only=True,
             expand_x=True,
-            size=(None, 90),
+            size=(None, 150),
         )
     ],
 ]
