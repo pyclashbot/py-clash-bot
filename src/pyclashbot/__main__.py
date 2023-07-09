@@ -5,6 +5,7 @@ from typing import LiteralString
 
 import PySimpleGUI as sg
 
+
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
 from pyclashbot.utils.caching import (
@@ -307,10 +308,6 @@ def main_gui() -> None:
         thread.join()
 
     window.close()
-
-
-def debug():
-    pass
 
 
 if __name__ == "__main__":

@@ -50,7 +50,7 @@ REQUEST_BUTTON_COORD_LIST = {
 def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.change_status(status="Request state")
 
-    # if not on main retunr
+    # if not on main: return
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(status="ERROR 62543636 Not on clash main menu")
         return "restart"
@@ -70,7 +70,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         return "restart"
 
     # check if request exists
-    if check_if_can_request(vm_index):
+    if check_if_can_request_wrapper(vm_index):
         # do request
         do_request(vm_index, logger)
     else:
@@ -355,6 +355,14 @@ def check_for_trade_cards_icon(vm_index) -> bool:
     return all(lines)
 
 
+def check_if_can_request_wrapper(vm_index):
+    if check_if_can_request(vm_index):
+        return True
+    if check_if_can_request_2(vm_index):
+        return True
+    return False
+
+
 def check_if_can_request(vm_index) -> bool:
     if check_for_trade_cards_icon(vm_index):
         return False
@@ -384,6 +392,22 @@ def check_if_can_request(vm_index) -> bool:
     if region_is_white and yellow_button_exists:
         return True
     return False
+
+
+def check_if_can_request_2(vm_index) -> bool:
+    if not check_line_for_color(vm_index, 300, 522, 300, 544, (76, 176, 255)):
+        return False
+    if not check_line_for_color(vm_index, 362, 522, 362, 544, (76, 174, 255)):
+        return False
+    if not check_line_for_color(vm_index, 106, 537, 106, 545, (255, 188, 42)):
+        return False
+    if not check_line_for_color(vm_index, 107, 537, 119, 545, (255, 188, 42)):
+        return False
+    if not check_line_for_color(vm_index, 46, 529, 57, 539, (178, 79, 244)):
+        return False
+    if not check_line_for_color(vm_index, 50, 540, 54, 527, (176, 79, 244)):
+        return False
+    return True
 
 
 if __name__ == "__main__":

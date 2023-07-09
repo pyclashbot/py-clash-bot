@@ -1,6 +1,7 @@
 import logging
 import threading
 import time
+from typing import Literal
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
@@ -145,6 +146,10 @@ class Logger:
 
     def log(self, message) -> None:
         logging.info(message)
+        time_string: str = str(time.time() - self.start_time if self.start_time else 0)[
+            :5
+        ]
+        print(f"[{time_string}] {message}")
 
     def make_time_str(self, seconds) -> str:
         """convert epoch to time
