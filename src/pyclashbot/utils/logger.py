@@ -106,13 +106,14 @@ class Logger:
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "free_offer_collections": self.free_offer_collections,
                 "current_status": self.current_status,
-                "time_since_start": self.calc_time_since_start(),
             }
 
     def get_stats(self):
         """get stats"""
         with self.stats_mutex:
             stats = self.stats
+        if stats is not None:
+            stats["time_since_start"] = self.calc_time_since_start()
         return stats
 
     @staticmethod
