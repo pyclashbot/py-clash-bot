@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 from cx_Freeze import Executable, setup
 
@@ -19,13 +18,10 @@ try:
 except ValueError:
     VERSION = "dev"
 
-# find AutoHotKey.exe in Scripts folder
-scripts_path = Path(sys.prefix) / "Scripts"
-ahk_path = next(scripts_path.glob("AutoHotKey*.exe"))
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
-    "include_files": [ahk_path, "..\\assets\\pixel-pycb.ico"],
+    "include_files": ["..\\assets\\pixel-pycb.ico"],
     "include_msvcr": True,
 }
 

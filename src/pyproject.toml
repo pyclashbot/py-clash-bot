@@ -8,18 +8,6 @@ authors = [
   "Martin Miglio <code@martinmiglio.dev>",
 ]
 homepage = "https://pyclashbot.app"
-repository = "https://github.com/matthewmiglio/py-clash-bot"
-documentation = "https://pyclashbot.app"
-classifiers = [
-  "Intended Audience :: End Users/Desktop",
-  "Environment :: Win32 (MS Windows)",
-  "License :: OSI Approved :: MIT License",
-  "Natural Language :: English",
-  "Operating System :: Microsoft :: Windows",
-  "Programming Language :: Python :: 3.11",
-  "Topic :: Games/Entertainment",
-]
-keywords = ["clash royale", "bot", "automation"]
 include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
 
 
@@ -28,11 +16,8 @@ python = "^3.11"
 pillow = "^10.0.0"
 opencv-python = "^4.8.0"
 numpy = "^1.25.0"
-pygetwindow = "^0.0"
-joblib = "^1.3"
-requests = "^2.31"
-PySimpleGUI = "^4.60"
-ahk = { extras = ["binary"], version = "^1.1.3" }
+joblib = "^1.3.1"
+pysimplegui = "^4.60.5"
 pymemuc = "^0.4.2"
 wmi = "^1.5.1"
 psutil = "^5.9.5"
@@ -43,8 +28,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-logging = "^3.1.0" # specify version of cx_logging for cx_freeze to run with python 3.11
-Cx_Freeze = "^6.15.3"
+cx-freeze = "^6.15.3"
 
 
 [tool.poetry.group.dev]
@@ -54,11 +38,10 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
 black = "^23.3.0"
-matplotlib = "^3.7.2" # used in debug.py
-ipykernel = "^6.24.0"
 vulture = "^2.6"
 isort = "^5.12.0"
 prospector = "^1.10.2"
+poethepoet = "^0.20.0"
 
 
 [tool.poe.tasks.tag]
@@ -67,7 +50,7 @@ git push origin master
 git tag -a $Env:tagname -m "Release $Env:tagname"
 git push origin $Env:tagname
 """
-interpreter = "pwsh"
+interpreter = "powershell"
 
 
 [[tool.poe.tasks.tag.args]]
@@ -81,13 +64,13 @@ required = true
 shell = """
 poetry run vulture pyclashbot --min-confidence 60
 """
-interpreter = "pwsh"
+interpreter = "powershell"
 
 [tool.poe.tasks.lint]
 shell = """
 poetry run prospector pyclashbot
 """
-interpreter = "pwsh"
+interpreter = "powershell"
 
 
 [tool.black]

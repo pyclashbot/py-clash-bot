@@ -15,9 +15,9 @@ _Join the [Discord server](https://discord.gg/mx4W9qRNgF)!_
 
 ## Installation
 
-1. Download and run the latest windows installer [here](https://github.com/matthewmiglio/py-clash-bot/releases/latest).
-2. Run the shortcut on the desktop.
-3. The program will automatically install MEmu, just follow the installation prompts.
+1. Download and install the latest version of [MEmu](https://www.memuplay.com/).
+2. Download and run the latest windows installer [here](https://github.com/matthewmiglio/py-clash-bot/releases/latest).
+3. Run the `py-clash-bot` shortcut on the desktop.
 4. You must manually install Clash Royale on your new MEmu client.
 5. You must complete the tutorial (takes 30 seconds) then sign into your account using the SuperCell ID login (or use the fresh account).
 
