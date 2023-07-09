@@ -251,6 +251,7 @@ def main_gui() -> None:
 
         # on start event, start the thread
         if event == "Start":
+            initalize_pylogging()
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
@@ -308,35 +309,9 @@ def main_gui() -> None:
     window.close()
 
 
-# def dummy_bot() -> None:
-#     logger = Logger()
-#     vm_index: int = check_for_vm(logger)
-#     jobs: list[str] = [
-#         "Open Chests",
-#         "upgrade",
-#         "request",
-#         "free offer collection",
-#         "1v1 battle",
-#         "card_mastery",
-#         "account_switch",
-#     ]
-#     state = "start"
-#     account_switch_order: list[int] = [0]
-#     account_index_to_switch_to: int = account_switch_order[0]
-
-#     while 1:
-#         state, account_index_to_switch_to = state_tree(
-#             vm_index,
-#             logger,
-#             state,
-#             jobs,
-#             account_index_to_switch_to,
-#             account_switch_order,
-#         )
-#         print(f"state = {state}")
+def debug():
+    pass
 
 
 if __name__ == "__main__":
-    initalize_pylogging()
-    # dummy_bot()
     main_gui()
