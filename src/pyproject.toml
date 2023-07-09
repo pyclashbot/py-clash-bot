@@ -13,15 +13,14 @@ include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pysimplegui = "^4.60.5"
+pillow = "^10.0.0"
+opencv-python = "^4.8.0.74"
 numpy = "^1.25.0"
 joblib = "^1.3.1"
-pillow = "^10.0.0"
+pysimplegui = "^4.60.5"
 pymemuc = "^0.4.2"
-opencv-python = "^4.8.0.74"
-psutil = "^5.9.5"
-pywin32 = "^306"
 wmi = "^1.5.1"
+psutil = "^5.9.5"
 
 
 [tool.poetry.group.build]
@@ -29,7 +28,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.2"
+cx-freeze = "^6.15.3"
 
 
 [tool.poetry.group.dev]
