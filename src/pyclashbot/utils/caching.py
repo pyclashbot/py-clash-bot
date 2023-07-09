@@ -5,9 +5,9 @@ from typing import Any
 
 # a module to cache and load program data to and from the disk
 
-module_name = "py-clash-bot"
+MODULE_NAME = "py-clash-bot"
 
-top_level = join(expandvars("%appdata%"), module_name)
+top_level = join(expandvars("%appdata%"), MODULE_NAME)
 
 
 def _cache_data(data, file_name) -> None:
@@ -15,8 +15,8 @@ def _cache_data(data, file_name) -> None:
     file_path = join(top_level, file_name)
     if not exists(top_level):
         makedirs(top_level)
-    with open(file_path, "wb") as f:
-        pickle.dump(data, f)
+    with open(file_path, "wb") as this_file:
+        pickle.dump(data, this_file)
 
 
 def _load_data(file_name) -> Any | None:
@@ -24,9 +24,9 @@ def _load_data(file_name) -> Any | None:
     file_path = join(top_level, file_name)
     if not exists(file_path):
         return None
-    with open(file_path, "rb") as f:
+    with open(file_path, "rb") as this_file:
         try:
-            return pickle.load(f)
+            return pickle.load(this_file)
         except pickle.UnpicklingError:
             return None
 

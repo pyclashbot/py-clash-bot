@@ -1,30 +1,43 @@
+"""
+This module contains functions for launching and controlling MEmu virtual machines,
+as well as starting and stopping the Clash Royale app within them.
+"""
+
 import subprocess
+import sys
 import time
 from os.path import join
 
 import numpy
 import psutil
+import PySimpleGUI as sg
 import pythoncom
 import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
+from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.interface import show_clash_royale_setup_gui
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.memu.client import screenshot
+from pyclashbot.memu.emulator import set_vm_language
 from pyclashbot.utils.logger import Logger
 
-pmc = PyMemuc(debug=True)
+pmc = PyMemuc(debug=False)
 
 ANDROID_VERSION = "96"  # android 9, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 
-#### launcher methods
+# launcher specific methods
+
+MANUAL_VM_WAIT_TIME = 10
+MANUAL_CLASH_MAIN_WAIT_TIME = 10
+
+
 def restart_emulator(logger):
     # restart the game, including the launcher and emulator
 
     # stop all vms
-    logger.change_status("Closing everything Memu related. . .")
+    logger.change_status(status="Closing everything Memu related. . .")
     close_everything_memu()
 
     # check for the pyclashbot vm, if not found then create it
@@ -33,20 +46,18 @@ def restart_emulator(logger):
     configure_vm(logger, vm_index=vm_index)
 
     # start the vm
-    # logger.change_status("Starting a new Memu Client using the launcher. . .")
+    # logger.change_status(status="Starting a new Memu Client using the launcher. . .")
     # start_emulator_without_pmc(logger) # this is the old way
-    logger.change_status("Starting emulator...")
+    logger.change_status(status="Starting emulator...")
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    sleep_time = 10
-    for n in range(sleep_time):
-        print(f"Waiting for VM to load {n}/{sleep_time}")
+    for second in range(MANUAL_VM_WAIT_TIME):
+        logger.log(f"Waiting for VM to load {second}/{MANUAL_VM_WAIT_TIME}")
         time.sleep(1)
 
-    # wait_for_memu_window(logger)
-
     # skip ads
+    logger.log("Skipping ads")
     if skip_ads(vm_index) == "fail":
         return restart_emulator(logger)
 
@@ -54,13 +65,15 @@ def restart_emulator(logger):
     start_clash_royale(logger, vm_index)
 
     # manually wait for clash main
-    sleep_time = 10
-    for n in range(sleep_time):
-        print(f"Manually waiting for clash main page. {n}/{sleep_time}")
+    for second in range(MANUAL_CLASH_MAIN_WAIT_TIME):
+        print(
+            f"Manually waiting for clash main page. {second}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
+        )
         time.sleep(1)
 
     # check-wait for clash main if need to wait longer
-    if wait_for_clash_main_menu(logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.log("#34646 Looping restart_emulator() bc fail")
         return restart_emulator(logger)
 
     time.sleep(5)
@@ -68,47 +81,95 @@ def restart_emulator(logger):
     return True
 
 
-def start_memuc_console() -> int:
-    """Start the memuc console and return the process ID"""
-    # pylint: disable=protected-access
-    console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
-    # pylint: disable=consider-using-with
-    process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
+def skip_ads(vm_index):
+    # Method for skipping the memu ads that popip up when you start memu
 
-    print(f"Started memu console with PID {process.pid}")
-
-    return process.pid
-
-
-def stop_memuc_console(process_id: int) -> None:
-    """Stop the memuc console with the given process ID"""
+    print("Trying to skipping ads")
     try:
-        process = psutil.Process(process_id)
-        process.terminate()
-    except psutil.NoSuchProcess:
-        print("#975627345 Failure to stop memuc console")
+        for _ in range(4):
+            pmc.trigger_keystroke_vm("home", vm_index=vm_index)
+            time.sleep(1)
+    except Exception as err:  # pylint: disable=broad-except
+        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
+        input("Enter to cont")
+        return "fail"
+    return "success"
 
 
-#### making and configuring VMs
+def check_for_vm(logger: Logger) -> int:
+    """Check for a vm named pyclashbot, create one if it doesn't exist
+
+    Args:
+        logger (Logger): Logger object
+
+    Returns:
+        int: index of the vm
+    """
+
+    vm_index = get_vm_index(logger, EMULATOR_NAME)
+
+    # return the index. if no vms named pyclashbot exist, create one.
+    return vm_index if vm_index != -1 else create_vm(logger)
 
 
-def set_vm_language(vm_index: int):
-    """Set the language of the vm to english"""
-    settings_uri = "--uri content://settings/system"
-    set_language_commands = [
-        f"shell content query {settings_uri} --where \"name='system_locales'\"",
-        f"shell content delete {settings_uri} --where \"name='system_locales'\"",
-        f"shell content insert {settings_uri} --bind name:s:system_locales --bind value:s:en-US",
-        "shell setprop ctl.restart zygote",
-    ]
+def start_clash_royale(logger: Logger, vm_index):
+    # using pymemuc check if clash royale is installed
+    apk_base_name = "com.supercell.clashroyale"
 
-    for command in set_language_commands:
-        pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-        time.sleep(0.1)
+    # get list of installed apps
+    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
+
+    # check list of installed apps for names containing base name
+    found = [app for app in installed_apps if apk_base_name in app]
+
+    if not found:
+        # notify user that clash royale is not installed, program will exit
+        logger.change_status(status=
+            "Clash royale is not installed. Please install it and restart"
+        )
+        show_clash_royale_setup_gui()
+
+    # start clash royale
+    pmc.start_app_vm(apk_base_name, vm_index)
+    logger.change_status(status="Successfully initialized Clash app")
+
+
+# making/configuring emulator methods
+def create_vm(logger: Logger):
+    # create a vm named pyclashbot
+    logger.change_status(status="Creating VM...")
+    memuc_pid = start_memuc_console()
+
+    vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
+    while vm_index == -1:  # handle when vm creation fails
+        vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
+        time.sleep(1)
+    time.sleep(5)
+    configure_vm(logger, vm_index)
+    # rename the vm to pyclashbot
+    rename_vm(logger, vm_index, EMULATOR_NAME)
+    stop_memuc_console(memuc_pid)
+    logger.change_status(status=f"Created VM: {vm_index} - {EMULATOR_NAME}")
+    return vm_index
+
+
+def rename_vm(
+    logger: Logger,
+    vm_index: int,
+    name: str,
+):
+    """rename the vm to name"""
+    count = 0
+    while get_vm_index(logger, name) != vm_index:
+        logger.change_status(status=
+            f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
+        )
+        pmc.rename_vm(vm_index=vm_index, new_name=name)
+        count += 1
 
 
 def configure_vm(logger: Logger, vm_index):
-    logger.change_status("Configuring VM")
+    logger.change_status(status="Configuring VM")
 
     memuc_pid = start_memuc_console()
 
@@ -146,37 +207,7 @@ def configure_vm(logger: Logger, vm_index):
     stop_memuc_console(memuc_pid)
 
 
-def create_vm(logger: Logger):
-    # create a vm named pyclashbot
-    logger.change_status("Creating VM...")
-    memuc_pid = start_memuc_console()
-
-    vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
-    while vm_index == -1:  # handle when vm creation fails
-        vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
-        time.sleep(1)
-    time.sleep(5)
-    configure_vm(logger, vm_index)
-    # rename the vm to pyclashbot
-    rename_vm(logger, vm_index, EMULATOR_NAME)
-    stop_memuc_console(memuc_pid)
-    logger.change_status(f"Created VM: {vm_index} - {EMULATOR_NAME}")
-    return vm_index
-
-
-def rename_vm(
-    logger: Logger,
-    vm_index: int,
-    name: str,
-):
-    """rename the vm to name"""
-    count = 0
-    while get_vm_index(logger, name) != vm_index:
-        logger.change_status(
-            f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
-        )
-        pmc.rename_vm(vm_index=vm_index, new_name=name)
-        count += 1
+# emulator interaction methods
 
 
 def get_vm_index(logger: Logger, name: str) -> int:
@@ -187,7 +218,7 @@ def get_vm_index(logger: Logger, name: str) -> int:
     # sorted by index, lowest to highest
     vms.sort(key=lambda x: x["index"])
 
-    # get the indecies of all vms named clanspam
+    # get the indecies of all vms with the given name
     vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == name]
 
     # delete all vms except the lowest index, keep looping until there is only one
@@ -202,27 +233,126 @@ def get_vm_index(logger: Logger, name: str) -> int:
                 # don't raise error, just continue to loop until its deleted
                 # raise err # if program hangs on deleting vm then uncomment this line
 
-    # return the index. if no vms named clanspam exist, return -1
+    # return the index. if no vms with name exist, return -1
     return vm_indices[0] if vm_indices else -1
 
 
-def check_for_vm(logger: Logger) -> int:
-    """Check for a vm named pyclashbot, create one if it doesn't exist
+def home_button_press(vm_index, clicks=4):
+    """Method for skipping the memu ads that popip up when you start memu"""
+    for _ in range(clicks):
+        print("ad skip...")
+        pmc.trigger_keystroke_vm("home", vm_index=vm_index)
+        time.sleep(1)
 
-    Args:
-        logger (Logger): Logger object
 
-    Returns:
-        int: index of the vm
+def check_if_clash_banned(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    red_okay_text_exists = False
+    for x_index in range(140, 190):
+        this_pixel = iar[405][x_index]
+        if pixel_is_equal([252, 67, 69], this_pixel, tol=35):
+            red_okay_text_exists = True
+            break
+
+    blue_loading_bar_exists = False
+    for x_index in range(40, 120):
+        this_pixel = iar[623][x_index]
+        if pixel_is_equal([25, 113, 214], this_pixel, tol=35):
+            blue_loading_bar_exists = True
+            break
+
+    white_account_information_text_exists = False
+    for x_index in range(100, 180):
+        this_pixel = iar[209][x_index]
+        if pixel_is_equal([255, 255, 255], this_pixel, tol=35):
+            white_account_information_text_exists = True
+            break
+
+    if (
+        red_okay_text_exists
+        and blue_loading_bar_exists
+        and white_account_information_text_exists
+    ):
+        return True
+    return False
+
+
+def check_if_on_clash_main_menu(vm_index):
     """
+    Checks if the user is on the clash main menu.
+    Returns True if on main menu, False if not.
+    """
+    iar = numpy.asarray(screenshot(vm_index))
 
-    vm_index = get_vm_index(logger, EMULATOR_NAME)
+    gem_icon_exists = False
+    for x_val in range(395, 412):
+        this_pixel = iar[17][x_val]
+        if pixel_is_equal([65, 198, 24], this_pixel, tol=35):
+            gem_icon_exists = True
 
-    # return the index. if no vms named pyclashbot exist, create one.
-    return vm_index if vm_index != -1 else create_vm(logger)
+    friends_icon_exists = False
+    for x_val in range(255, 280):
+        this_pixel = iar[72][x_val]
+        if pixel_is_equal([244, 244, 255], this_pixel, tol=35):
+            friends_icon_exists = True
+
+    gold_icon_exists = False
+    for x_val in range(290, 310):
+        this_pixel = iar[13][x_val]
+        if pixel_is_equal([223, 175, 56], this_pixel, tol=35):
+            gold_icon_exists = True
+
+    return bool(gem_icon_exists and friends_icon_exists and gold_icon_exists)
+
+
+# starting/closing memu vms/apps
+
+
+def stop_vm(logger, vm_index):
+    """Stops the VM with the given index."""
+    logger.change_status(status=f"Stopping VM {vm_index}")
+    pmc.stop_vm(vm_index=vm_index)
+    time.sleep(5)
+
+
+def launch_vm(logger, vm_index):
+    """Launches the VM with the given index."""
+    logger.change_status(status=f"Launching VM {vm_index}")
+    pmc.start_vm(vm_index=vm_index)
+    set_vm_language(vm_index=vm_index)
+
+
+def restart_vm(logger, vm_index):
+    """Restarts the VM with the given index."""
+    stop_vm(logger, vm_index)
+    launch_vm(logger, vm_index)
+
+
+def start_memuc_console() -> int:
+    """Start the memuc console and return the process ID"""
+    # pylint: disable=protected-access
+    console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
+    # pylint: disable=consider-using-with
+    process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
+
+    print(f"Started memu console with PID {process.pid}")
+
+    return process.pid
+
+
+def close_clash_royale_app(logger, vm_index):
+    """using pymemuc check if clash royale is installed"""
+    apk_base_name = "com.supercell.clashroyale"
+
+    pmc.stop_app_vm(apk_base_name, vm_index)
+    logger.change_status(status=f"Clash Royale stopped on vm {vm_index}")
 
 
 def close_everything_memu():
+    """
+    Closes all MEmu processes.
+    """
     name_list = [
         "MEmuConsole.exe",
         "MEmu.exe",
@@ -230,208 +360,48 @@ def close_everything_memu():
     ]
 
     pythoncom.CoInitialize()  # pylint: disable=no-member
-    c = wmi.WMI()
+    win_interface = wmi.WMI()
     print("Entered close_everything_memu()")
-    for process in c.Win32_Process():
+    for process in win_interface.Win32_Process():
         try:
             if process.name in name_list:
                 print("Closing process", process.name)
                 process.Terminate()
-        except Exception as e:  # pylint: disable=broad-except
+        except wmi.x_wmi as err:
             print("Couldnt close process", process.name)
-            print("This error occured:", e)
+            print("This error occured:", err)
     print("Exiting close_everything_memu(). . .")
 
 
-#### interacting with the vm
-
-
-def start_clash_royale(logger: Logger, vm_index):
-    # using pymemuc check if clash royale is installed
-    apk_base_name = "com.supercell.clashroyale"
-
-    # get list of installed apps
-    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
-
-    # check list of installed apps for names containing base name
-    found = [app for app in installed_apps if apk_base_name in app]
-
-    if not found:
-        # notify user that clash royale is not installed, program will exit
-        logger.change_status(
-            "Clash royale is not installed. Please install it and restart"
-        )
-        show_clash_royale_setup_gui()
-
-    # start clash royale
-    pmc.start_app_vm(apk_base_name, vm_index)
-    logger.change_status("Clash Royale started")
-
-
-def skip_ads(vm_index):
-    # Method for skipping the memu ads that popip up when you start memu
-
-    print("Trying to skipping ads")
+def stop_memuc_console(process_id: int) -> None:
+    """Stop the memuc console with the given process ID"""
     try:
-        for _ in range(4):
-            pmc.trigger_keystroke_vm("home", vm_index=vm_index)
-            time.sleep(1)
-    except Exception as err:  # pylint: disable=broad-except
-        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
-        input("Enter to cont")
-        return "fail"
-    return "success"
+        process = psutil.Process(process_id)
+        process.terminate()
+    except psutil.NoSuchProcess:
+        print("#975627345 Failure to stop memuc console")
 
 
-#### copy of clashmain's wait_for_clash_main_menu methods
-def wait_for_clash_main_menu(logger):
-    logger.change_status("Waiting for clash main menu in Launcher")
-    waiting = not check_if_on_clash_main_menu()
-
-    loops = 0
-    while waiting:
-        # loop count
-        loops += 1
-        if loops > 50:
-            logger.change_status("Looped through getting to clash main too many times")
-            print(
-                "wait_for_clash_main_menu() took too long waiting for clash main. Restarting."
-            )
-            return "restart"
-
-        # wait 1 sec
-        time.sleep(1)
-
-        # click dead space
-        click(32, 364)
-
-        # check if stuck on trophy progression page
-        if check_if_stuck_on_trophy_progression_page():
-            logger.change_status("Stuck on trophy progression page. Trying to fix...")
-            time.sleep(1)
-            click(210, 621)
-
-        # check if stuck in the middle of opening a lightning chest
-        if check_if_stuck_on_lightning_chest():
-            logger.change_status("Stuck on lightning chest. Trying to fix...")
-            handle_stuck_on_lightning_chest()
-
-        # check if still waiting
-        waiting = not check_if_on_clash_main_menu()
-
-    logger.change_status("Done waiting for clash main menu")
-    return "continue"
+# error popup guis
 
 
-def check_if_stuck_on_lightning_chest():
-    iar = numpy.asarray(screenshot())
+def show_clash_royale_setup_gui():
+    # a method to notify the user that clashroayle is not installed or setup
 
-    yellow_question_mark_exists = False
-    for x in range(335, 355):
-        this_pixel = iar[625][x]
-        if pixel_is_equal(this_pixel, [255, 188, 40], tol=35):
-            yellow_question_mark_exists = True
+    out_text = """Clash Royale is not installed or setup.
+Please install Clash Royale, finish the in-game tutorial
+and login before using this bot."""
 
-    lightning_symbol_exists = False
-    for x in range(70, 80):
-        this_pixel = iar[610][x]
-        if pixel_is_equal(this_pixel, [120, 224, 255], tol=35):
-            lightning_symbol_exists = True
-
-    red_card_count_exists = False
-    for x in range(260, 290):
-        this_pixel = iar[339][x]
-        if pixel_is_equal(this_pixel, [200, 49, 48], tol=35):
-            red_card_count_exists = True
-
-    return bool(
-        (
-            yellow_question_mark_exists
-            and lightning_symbol_exists
-            and red_card_count_exists
-        )
-    )
-
-
-def handle_stuck_on_lightning_chest():
-    # skip thru chest
-    click(20, 440, clicks=10, interval=1)
-
-    # click skip strikes
-    click(212, 610)
-    time.sleep(1)
-
-    # click deadspace a few times
-    click(20, 440, clicks=5, interval=1)
-
-
-def check_if_stuck_on_trophy_progression_page():
-    iar = numpy.asarray(screenshot())
-    pix_list = [
-        # iar[620][225],
-        iar[625][230],
-        iar[630][238],
-        iar[635][245],
+    _layout = [
+        [sg.Text(out_text)],
     ]
-
-    return all(pixel_is_equal(pix, [85, 177, 255], tol=45) for pix in pix_list)
-
-
-def check_if_on_clash_main_menu():
-    if not check_for_gem_logo_on_main():
-        # print("gem fail")
-        return False
-
-    # if not check_for_blue_background_on_main():
-    #     # print("blue fail")
-    #     return False
-
-    if not check_for_friends_logo_on_main():
-        # print("friends logo")
-        return False
-
-    return bool(check_for_gold_logo_on_main())
-
-
-def check_for_gem_logo_on_main():
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[46][402],
-        iar[52][403],
-        iar[48][410],
-    ]
-
-    return any(pixel_is_equal(pix, [75, 180, 35], tol=45) for pix in pix_list)
-
-
-def check_for_gold_logo_on_main():
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[48][299],
-        iar[52][300],
-        iar[44][302],
-        iar[49][297],
-    ]
-    color = [201, 177, 56]
-
-    return any(pixel_is_equal(pix, color, tol=85) for pix in pix_list)
-
-
-def check_for_friends_logo_on_main():
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot())
-
-    pix_list = [
-        iar[90][269],
-        iar[105][265],
-        iar[103][272],
-        iar[89][270],
-        iar[107][266],
-    ]
-    color = [177, 228, 252]
-
-    return any(pixel_is_equal(pix, color, tol=65) for pix in pix_list)
+    _window = sg.Window("Clash Royale Not Setup!", _layout)
+    while True:
+        read = _window.read()
+        if read is None:
+            break
+        _event, _ = read
+        if _event in [sg.WIN_CLOSED]:
+            break
+    _window.close()
+    sys.exit(0)

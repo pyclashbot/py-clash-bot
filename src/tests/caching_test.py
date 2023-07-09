@@ -2,7 +2,7 @@ import unittest
 from os.path import join
 from tempfile import TemporaryDirectory
 
-from pyclashbot.utils import _cache_data, _load_data
+from pyclashbot.utils.caching import _cache_data, _load_data
 
 iterations = 50000
 
