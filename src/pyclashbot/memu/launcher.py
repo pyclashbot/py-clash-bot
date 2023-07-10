@@ -126,6 +126,41 @@ def start_clash_royale(logger: Logger, vm_index):
             status="Clash royale is not installed. Please install it and restart"
         )
         show_clash_royale_setup_gui()
+    component_names = [
+    "com.supercell.clashroyale/com.supercell.titan.TimeAlarm",
+    "com.supercell.clashroyale/com.google.firebase.iid.FirebaseInstanceIdReceiver",
+    "com.supercell.clashroyale/com.supercell.id.SharedDataBroadcastReceiver",
+    "com.supercell.clashroyale/com.supercell.id.SharedDataReceiverBroadcastReceiver",
+    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
+    "com.supercell.clashroyale/com.supercell.titan.PushMessageService",
+    "com.supercell.clashroyale/com.google.firebase.messaging.FirebaseMessagingService",
+    "com.supercell.clashroyale/com.google.firebase.components.ComponentDiscoveryService",
+    "com.supercell.clashroyale/com.google.android.gms.auth.api.signin.RevocationBoundService",
+    "com.supercell.clashroyale/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService",
+    "com.supercell.clashroyale/com.supercell.titan.GameApp",
+    "com.supercell.clashroyale/com.supercell.id.ui.MainActivity",
+    "com.supercell.clashroyale/com.google.android.gms.auth.api.signin.internal.SignInHubActivity",
+    "com.supercell.clashroyale/com.helpshift.activities.HSMainActivity",
+    "com.supercell.clashroyale/com.helpshift.activities.HSDebugActivity",
+    "com.supercell.clashroyale/com.android.billingclient.api.ProxyBillingActivity",
+    "com.supercell.clashroyale/com.google.android.gms.common.api.GoogleApiActivity",
+    "com.supercell.clashroyale/com.google.android.play.core.common.PlayCoreDialogWrapperActivity",
+    "com.supercell.clashroyale/com.journeyapps.barcodescanner.CaptureActivity",
+    "com.supercell.clashroyale/io.sentry.android.core.SentryInitProvider",
+    "com.supercell.clashroyale/io.sentry.android.core.SentryPerformanceProvider",
+    "com.supercell.clashroyale/com.google.firebase.provider.FirebaseInitProvider",
+    "com.supercell.clashroyale/androidx.lifecycle.ProcessLifecycleOwnerInitializer"
+    ]
+
+
+# Generate the command to disable the components
+    command = " && ".join([f"shell pm disable {component}" for component in component_names])
+
+# Execute the command
+    pmc.send_adb_command_vm(vm_index=vm_index, command=command)
+
+
 
     # start clash royale
     pmc.start_app_vm(apk_base_name, vm_index)
