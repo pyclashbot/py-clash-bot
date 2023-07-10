@@ -1,7 +1,7 @@
 import os
 import random
 
-from PIL import Image
+import numpy as np
 
 from pyclashbot.detection.image_rec import (
     check_for_location,
@@ -44,7 +44,6 @@ PLAY_COORDS = {
 
 
 def get_play_coords_for_card(vm_index: int, card_index: int, side_preference: str):
-    # get this card image(PIL image)
     image = get_card_images(vm_index)[card_index]
 
     # get the ID of this card(ram_rider, zap, etc)
@@ -147,22 +146,21 @@ def get_card_images(vm_index):
     return card_images
 
 
-def crop_image(image: Image.Image, region: list[int]) -> Image.Image:
-    """Method to crop a Pillow image based on a given region
+def crop_image(image: np.ndarray, region: list[int]) -> np.ndarray:
+    """Method to crop an image based on a given region
 
     Args:
-        image (PIL.Image.Image): The original image to be cropped
+        image (numpy.ndarray): The original image to be cropped
         region (list[int]): List defining the region as [left, top, width, height]
 
     Returns:
-        PIL.Image.Image: Cropped image based on the given region
+        numpy.ndarray: Cropped image based on the given region
     """
     left, top, width, height = region
     right = left + width
     bottom = top + height
 
-    cropped_image = image.crop((left, top, right, bottom))
-    return cropped_image
+    return image[top:bottom, left:right]
 
 
 def get_card_name_list():
@@ -202,20 +200,11 @@ def identify_card(image):
 
         references = make_reference_image_list(file_count)
 
-        locations: list[list[int] | None] = find_references(
+        locations: list[list[int] | None] | None = find_references(
             image=image, folder=folder_str, names=references, tolerance=0.97
         )
 
-        if check_for_location(locations):
+        if locations is not None and check_for_location(locations):
             return card_name
 
     return "Unknown"
-
-
-# dev methods
-
-
-
-
-if __name__ == "__main__":
-    pass

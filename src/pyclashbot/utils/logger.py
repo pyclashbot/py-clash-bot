@@ -43,7 +43,6 @@ def initalize_pylogging():
         level=logging.DEBUG,
         format="%(levelname)s:%(asctime)s %(message)s",
     )
-    logging.getLogger("PIL").setLevel(logging.INFO)
     compress_logs()
 
 
