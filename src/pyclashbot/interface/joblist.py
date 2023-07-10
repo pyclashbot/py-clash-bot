@@ -4,6 +4,33 @@ from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
 
+def no_jobs_popup() -> None:
+    # Define the layout of the GUI
+    layout = [
+        [
+            sg.Text(
+                "You must select at least one job!",
+                size=(25, 2),
+                justification="center",
+            )
+        ],
+        [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
+    ]
+
+    # Create the window
+    window = sg.Window("Critical Error!", layout)
+
+    # Event loop to process events and get user input
+    while True:
+        event, *_ = window.read()  # type: ignore
+
+        # Exit the program if the "Exit" button is clicked or window is closed
+        if event in (sg.WINDOW_CLOSED, "Exit"):
+            break
+
+    # Close the window
+    window.close()
+
 
 def job_check_box(text: str, element_key: str) -> sg.Checkbox:
     return sg.Checkbox(
