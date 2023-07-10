@@ -65,8 +65,8 @@ def state_tree(
 
     elif state == "restart":  # --> open_chests
         ####DEBUG
-        for _ in range(5):
-            print("ENTERED RESTART STATE. INFINITE LOOP")
+        # for _ in range(5):
+        #     print("ENTERED RESTART STATE. INFINITE LOOP")
         # clip_that()
         # while 1:
         #     pass

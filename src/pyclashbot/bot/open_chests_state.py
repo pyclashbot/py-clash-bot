@@ -77,6 +77,8 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
         )
         return "restart"
 
+    time.sleep(3)
+
     # if not on clash main return
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(status=
