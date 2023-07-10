@@ -4,7 +4,7 @@ version = "v0.0.0"
 description = "Automated Clash Royale"
 readme = "../README.md"
 authors = [
-  "Matthew Miglio <matthew@martinmiglio.dev>",
+  "Matthew Miglio <matthew@pyclashbot.app>",
   "Martin Miglio <code@martinmiglio.dev>",
 ]
 homepage = "https://pyclashbot.app"
