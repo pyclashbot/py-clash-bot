@@ -4,6 +4,7 @@ from os import path
 from typing import LiteralString
 
 import PySimpleGUI as sg
+from pyclashbot.bot.states import state_tree
 
 
 from pyclashbot.bot.worker import WorkerThread
@@ -309,6 +310,27 @@ def main_gui() -> None:
         thread.join()
 
     window.close()
+
+
+def dummy_bot():
+    vm_index = 1
+    logger=Logger()
+    state = ''
+    jobs=[
+        '',
+    ]
+
+
+
+    while 1:
+        # code to run
+        state  = state_tree(
+            vm_index,
+            logger,
+            state,
+            jobs,
+
+        )
 
 
 if __name__ == "__main__":
