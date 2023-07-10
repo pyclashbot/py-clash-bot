@@ -36,6 +36,20 @@ CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 59
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 
 
+def get_to_main_from_challenges_tab(vm_index, logger, printmode = False):
+    if printmode:logger.change_status(status="Getting to main from challenges tab")
+    else:logger.log("Getting to main from challenges tab")
+
+    click(vm_index,CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1])
+
+    if wait_for_clash_main_menu(vm_index, logger)=='restart':
+        if printmode:logger.change_status('Erorr 356325 Failed to get to main from challenges tab')
+        else:logger.log('Erorr 356325 Failed to get to main from challenges tab')
+    return 'good'
+
+
+
+
 def get_to_clash_main_from_card_page(
     vm_index, logger, printmode=False
 ) -> Literal["restart", "good"]:
@@ -155,6 +169,9 @@ def check_for_switch_accounts_page(vm_index) -> bool:
         return False
 
     return True
+
+
+
 
 
 def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "good"]:
