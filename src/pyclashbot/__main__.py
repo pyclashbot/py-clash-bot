@@ -1,19 +1,15 @@
 import sys
 import webbrowser
 from os import path
-from typing import Literal, LiteralString
+from typing import LiteralString
 
 import PySimpleGUI as sg
-from pyclashbot.bot.nav import (
-    check_if_on_clash_main_challenges_tab,
-    get_to_main_from_challenges_tab,
-)
+
 from pyclashbot.bot.states import state_tree
 
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
-from pyclashbot.memu.client import screenshot
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -347,15 +343,6 @@ def dummy_bot():
             break
 
 
-def debug():
-    # print(check_if_on_clash_main_challenges_tab(1))
-    pass
-
-    # while 1:
-    #     screenshot(1)
-
-
 if __name__ == "__main__":
-    dummy_bot()
-    # debug()
-    # main_gui()
+    # dummy_bot()
+    main_gui()
