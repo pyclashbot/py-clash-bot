@@ -147,6 +147,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
     # scroll up
     for _ in range(10):
         scroll_up(vm_index)
+    time.sleep(1)
 
     # click 2v2 icon location
     click_2v2_icon_button(vm_index)

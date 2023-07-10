@@ -15,7 +15,7 @@ class WorkerThread(PausableThread):
 
     def run(self) -> None:
         try:
-            jobs, ssid_max = self.args  # parse thread args
+            jobs, *_ = self.args  # parse thread args
             # logger = Logger()
             state = "start"
 
@@ -24,7 +24,7 @@ class WorkerThread(PausableThread):
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
                 # code to run
-                state, account_index_to_switch_to = state_tree(
+                state: str | tuple[None, None] = state_tree(
                     vm_index,
                     self.logger,
                     state,

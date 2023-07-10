@@ -38,19 +38,18 @@ def state_tree(
     logger: Logger,
     state,
     job_list,
-):
-    joblist = [
-        "Open Chests",
-        "upgrade",
-        "request",
-        "free offer collection",
-        "1v1 battle",
-        "2v2 battle",
-        "card mastery collection",
-        "war",
-        "",
-    ]
-    print(joblist)
+) -> str | tuple[None, None]:
+    # [
+    #     "Open Chests",
+    #     "upgrade",
+    #     "request",
+    #     "free offer collection",
+    #     "1v1 battle",
+    #     "2v2 battle",
+    #     "card mastery collection",
+    #     "war",
+    #     "",
+    # ]
 
     print(f"This state is {state}")
     if state is None:
@@ -98,7 +97,7 @@ def state_tree(
     elif state == "upgrade":  # --> request
         next_state = "request"
         if "upgrade" in job_list:
-            return (upgrade_cards_state(vm_index, logger, next_state))
+            return upgrade_cards_state(vm_index, logger, next_state)
 
         return next_state
 
@@ -114,8 +113,6 @@ def state_tree(
         if "free offer collection" in job_list:
             return free_offer_collection_state(vm_index, logger, next_state)
 
-
-
         return next_state
 
     elif state == "start_fight":  # --> 1v1_fight, card_mastery
@@ -126,7 +123,6 @@ def state_tree(
                 return start_1v1_fight_state(vm_index, logger)
 
             return start_2v2_fight_state(vm_index, logger)
-
 
         # if only 1v1, do 1v1
         if "1v1 battle" in job_list:
@@ -163,7 +159,6 @@ def state_tree(
         return next_state
 
     print("Failure in state tree")
-    return None, None
 
 
 if __name__ == "__main__":
