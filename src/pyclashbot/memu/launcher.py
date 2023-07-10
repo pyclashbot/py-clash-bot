@@ -11,8 +11,6 @@ from os.path import join
 import numpy
 import psutil
 import PySimpleGUI as sg
-import pythoncom
-import wmi
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import wait_for_clash_main_menu
@@ -124,8 +122,8 @@ def start_clash_royale(logger: Logger, vm_index):
 
     if not found:
         # notify user that clash royale is not installed, program will exit
-        logger.change_status(status=
-            "Clash royale is not installed. Please install it and restart"
+        logger.change_status(
+            status="Clash royale is not installed. Please install it and restart"
         )
         show_clash_royale_setup_gui()
 
@@ -161,8 +159,8 @@ def rename_vm(
     """rename the vm to name"""
     count = 0
     while get_vm_index(logger, name) != vm_index:
-        logger.change_status(status=
-            f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
+        logger.change_status(
+            status=f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
         )
         pmc.rename_vm(vm_index=vm_index, new_name=name)
         count += 1
@@ -175,9 +173,7 @@ def configure_vm(logger: Logger, vm_index):
 
     cpu_count: int = psutil.cpu_count(logical=False)
     cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
-    c_interface = wmi.WMI()
-    total_mem = int(c_interface.Win32_ComputerSystem()[0].TotalPhysicalMemory)
-    total_mem = total_mem // 1024 // 1024
+    total_mem = psutil.virtual_memory()[0] // 1024 // 1024
     total_mem: int = numpy.clip(total_mem // 2, 2048, 4096)
 
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
@@ -359,17 +355,14 @@ def close_everything_memu():
         "MEmuHeadless.exe",
     ]
 
-    pythoncom.CoInitialize()  # pylint: disable=no-member
-    win_interface = wmi.WMI()
     print("Entered close_everything_memu()")
-    for process in win_interface.Win32_Process():
+    for proc in psutil.process_iter():
         try:
-            if process.name in name_list:
-                print("Closing process", process.name)
-                process.Terminate()
-        except wmi.x_wmi as err:
-            print("Couldnt close process", process.name)
-            print("This error occured:", err)
+            if proc.name() in name_list:
+                print("Closing process", proc.name())
+                proc.kill()
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            print("Couldnt close process", proc.name())
     print("Exiting close_everything_memu(). . .")
 
 
