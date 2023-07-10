@@ -41,7 +41,7 @@ black = "^23.3.0"
 vulture = "^2.6"
 isort = "^5.12.0"
 prospector = "^1.10.2"
-poethepoet = "^0.20.0"
+poethepoet = "^0.21.0"
 
 
 [tool.poe.tasks.tag]
