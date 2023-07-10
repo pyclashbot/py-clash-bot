@@ -10,10 +10,11 @@ from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_activity_log,
     get_to_challenges_tab_from_main,
+    get_to_main_from_challenges_tab,
     wait_for_1v1_battle_start,
     wait_for_2v2_battle_start,
+    wait_for_clash_main_challenges_tab,
     wait_for_clash_main_menu,
-    wait_for_end_battle_screen,
 )
 from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
 from pyclashbot.memu.client import click, scroll_up
@@ -28,6 +29,94 @@ HAND_CARDS_COORDS = [
     (272, 561),
     (341, 563),
 ]
+CLOSE_THIS_CHALLENGE_PAGE_BUTTON = (27, 22)
+_2V2_BATTLE_ICON_COORD = (327, 483)  # coord of the button on the challenges tab
+_2V2_BATTLE_BUTTON_COORD_2 = (
+    209,
+    433,
+)  # coord of the battle button after you click the 2v2 battle icon
+
+QUICKMATCH_BUTTON_COORD = (
+    274,
+    353,
+)  # coord of the quickmatch button after you click the battle button
+CLASH_MAIN_ICON_FROM_CHALLENGES_TAB: tuple[Literal[170], Literal[590]] = (170, 590)
+END_1V1_BATTLE_OK_BUTTON_COORD = (211, 553)
+END_2V2_BATTLE_EXIT_BUTTON_COORD = (82, 596)
+
+
+LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON: tuple[Literal[71], Literal[600]] = (71, 600)
+
+
+def end_fight_state(vm_index: int, logger: Logger, next_state: str) -> str:
+    logger.change_status("End fight state")
+    wait_return: Literal["restart", "good", "2v2", "1v1"] = wait_for_end_battle_screen(
+        vm_index, logger
+    )
+
+    if wait_return == "restart":
+        logger.log("Error 5987235 Failure with waitign for end battle screen")
+        return "restart"
+
+    if wait_return == "1v1":
+        if leave_1v1_battle(vm_index, logger) == "restart":
+            logger.log("Error 928579823 Failure leaving 1v1 match.")
+            return "restart"
+
+    if wait_return == "2v2":
+        if leave_2v2_battle(vm_index, logger) == "restart":
+            logger.log("Error 777533 Failure leaving 2v2 match.")
+            return "restart"
+
+    time.sleep(3)
+
+    game_was_win_return: bool | Literal['restart'] = check_if_previous_game_was_win(vm_index, logger)
+    if game_was_win_return == "restart":
+        logger.change_status(
+            status="Erropr 115 Failure with check_if_previous_game_was_win() in end_fight_state()"
+        )
+        return "restart"
+
+    if game_was_win_return:
+        logger.change_status(status="Last game was a win")
+        logger.add_win()
+    else:
+        logger.change_status(status="Last game was a loss")
+        logger.add_loss()
+
+    time.sleep(3)
+
+    return next_state
+
+
+def leave_1v1_battle(vm_index, logger) -> Literal["restart", "good"]:
+    click(
+        vm_index, END_1V1_BATTLE_OK_BUTTON_COORD[0], END_1V1_BATTLE_OK_BUTTON_COORD[1]
+    )
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.log(
+            "error 587325 Failure waiting for clash main after leaving 1v1 battle"
+        )
+        return "restart"
+
+    return "good"
+
+
+def leave_2v2_battle(vm_index, logger):
+    click(
+        vm_index,
+        END_2V2_BATTLE_EXIT_BUTTON_COORD[0],
+        END_2V2_BATTLE_EXIT_BUTTON_COORD[1],
+    )
+    wait_for_clash_main_challenges_tab(vm_index, logger)
+
+    if get_to_main_from_challenges_tab(vm_index, logger) == "restart":
+        logger.change_status("Error 96872 Failed to get to clash main after 2v2 match")
+        return "restart"
+
+
+def check_for_challenges_page():
+    pass
 
 
 def do_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "end_fight"]:
@@ -76,50 +165,6 @@ def do_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "end_figh
 
     logger.add_2v2_fight()
     return next_state
-
-
-def check_for_challenge_page_on_events_tab(vm_index):
-    if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 188, 40)):
-        return False
-    if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 255, 255)):
-        return False
-    if not region_is_color(vm_index, [380, 580, 30, 40], (76, 111, 146)):
-        return False
-
-    return True
-
-
-CLOSE_THIS_CHALLENGE_PAGE_BUTTON = (27, 22)
-_2V2_BATTLE_ICON_COORD = (327, 483)  # coord of the button on the challenges tab
-_2V2_BATTLE_BUTTON_COORD_2 = (
-    209,
-    433,
-)  # coord of the battle button after you click the 2v2 battle icon
-
-QUICKMATCH_BUTTON_COORD = (
-    274,
-    353,
-)  # coord of the quickmatch button after you click the battle button
-
-
-def close_this_challenge_page(vm_index) -> None:
-    click(
-        vm_index,
-        CLOSE_THIS_CHALLENGE_PAGE_BUTTON[0],
-        CLOSE_THIS_CHALLENGE_PAGE_BUTTON[1],
-    )
-
-
-def click_2v2_icon_button(vm_index) -> None:
-    click(vm_index, _2V2_BATTLE_ICON_COORD[0], _2V2_BATTLE_ICON_COORD[1])
-
-
-def click_2v2_battle_button(vm_index) -> None:
-    click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
-
-
-def click_quickmatch_button(vm_index) -> None:
-    click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
 def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_fight"]:
@@ -183,6 +228,126 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
     return next_state
 
 
+def wait_for_end_battle_screen(
+    vm_index, logger
+) -> Literal["restart", "good", "2v2", "1v1"]:
+    logger.change_status("Waiting for end battle screen to appear")
+
+    start_time = time.time()
+
+    while 1:
+        if check_for_end_battle_screen_2(vm_index) or check_for_end_battle_screen_1(
+            vm_index
+        ):
+            return "2v2"
+
+        if check_for_end_battle_screen_3(vm_index):
+            return "1v1"
+
+        time_taken = time.time() - start_time
+        if time_taken > 60:
+            logger.log("Error 666895 Failure waiting for end battle screen to appear")
+            return "restart"
+        time.sleep(3)
+
+    logger.log("Done waiting for end battle screen to appear")
+
+    return "good"
+
+
+def check_for_end_battle_screen_3(vm_index):  # 1v1 end battle
+    if not region_is_color(
+        vm_index, [170, 555, 25, 15], (77, 174, 255)
+    ):  # blue OK button
+        return False
+    if not region_is_color(
+        vm_index, [175, 555, 15, 10], (73, 172, 255)
+    ):  # blue OK button
+        return False
+    if not region_is_color(
+        vm_index, [55, 515, 20, 5], (255, 255, 255)
+    ):  # white emote button region
+        return False
+    return True
+
+
+def check_for_end_battle_screen_2(vm_index):  # 2v2 end battle, teammate hasn't left
+    if not check_line_for_color(
+        vm_index, 50, 588, 50, 611, (76, 176, 255)
+    ):  # blue exit button
+        return False
+    if not check_line_for_color(
+        vm_index, 105, 589, 105, 609, (76, 172, 255)
+    ):  # blue exit button
+        return False
+    if not check_line_for_color(
+        vm_index, 59, 590, 96, 606, (255, 255, 255)
+    ):  # blue exit button
+        return False
+
+    if not check_line_for_color(vm_index, 133, 589, 200, 589, (255, 200, 80)):
+        return False
+
+    if not region_is_color(vm_index, [309, 588, 10, 19], (76, 178, 255)):
+        return False
+    return True
+
+
+def check_for_end_battle_screen_1(vm_index):  # 2v2 end battle, teammate has left
+    if not check_line_for_color(
+        vm_index, 50, 588, 50, 611, (76, 176, 255)
+    ):  # blue exit button
+        return False
+    if not check_line_for_color(
+        vm_index, 105, 589, 105, 609, (76, 172, 255)
+    ):  # blue exit button
+        return False
+    if not check_line_for_color(
+        vm_index, 59, 590, 96, 606, (255, 255, 255)
+    ):  # blue exit button
+        return False
+    if not region_is_color(
+        vm_index, [150, 590, 17, 2], (203, 203, 203)
+    ):  # grey play again button
+        return False
+    if not check_line_for_color(
+        vm_index, 391, 23, 405, 23, (232, 36, 36)
+    ):  # close button
+        return False
+    return True
+
+
+def check_for_challenge_page_on_events_tab(vm_index):
+    if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 188, 40)):
+        return False
+    if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 255, 255)):
+        return False
+    if not region_is_color(vm_index, [380, 580, 30, 40], (76, 111, 146)):
+        return False
+
+    return True
+
+
+def close_this_challenge_page(vm_index) -> None:
+    click(
+        vm_index,
+        CLOSE_THIS_CHALLENGE_PAGE_BUTTON[0],
+        CLOSE_THIS_CHALLENGE_PAGE_BUTTON[1],
+    )
+
+
+def click_2v2_icon_button(vm_index) -> None:
+    click(vm_index, _2V2_BATTLE_ICON_COORD[0], _2V2_BATTLE_ICON_COORD[1])
+
+
+def click_2v2_battle_button(vm_index) -> None:
+    click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
+
+
+def click_quickmatch_button(vm_index) -> None:
+    click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
+
+
 def check_for_exit_battle_button_condition_1(vm_index) -> bool:
     if not check_for_end_2v2_battle_screen(vm_index):
         return False
@@ -191,62 +356,6 @@ def check_for_exit_battle_button_condition_1(vm_index) -> bool:
         return False
 
     return True
-
-
-CLASH_MAIN_ICON_FROM_CHALLENGES_TAB: tuple[Literal[170], Literal[590]] = (170, 590)
-
-
-LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON: tuple[Literal[71], Literal[600]] = (71, 600)
-
-
-def end_fight_state(vm_index: int, logger: Logger, next_state: str) -> str:
-    logger.change_status(status="end fight state")
-    logger.change_status(status="Waiting for the leave battle screen to pop up ")
-    if wait_for_end_battle_screen(vm_index, logger) == "restart":
-        logger.change_status(
-            status="Error 98573429805 Waiting too long for end 1v1 battle in end fight state()"
-        )
-        return "restart"
-
-    # click leave button OK button
-    if check_for_exit_battle_button_condition_1(vm_index):
-        click(
-            vm_index,
-            LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[0],
-            LEAVE_1V1_BATTLE_CONDITION_1_EXIT_BUTTON[1],
-        )
-        time.sleep(10)
-        click(
-            vm_index,
-            CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[0],
-            CLASH_MAIN_ICON_FROM_CHALLENGES_TAB[1],
-        )
-    else:
-        click(vm_index, LEAVE_1V1_BATTLE_OK_BUTTON[0], LEAVE_1V1_BATTLE_OK_BUTTON[1])
-
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.change_status(
-            status="Error 353216346 wait_for_clash_main_menu)() fail in end_fight_state()"
-        )
-        return "restart"
-
-    game_was_win_return = check_if_previous_game_was_win(vm_index, logger)
-    if game_was_win_return == "restart":
-        logger.change_status(
-            status="Erropr 115 Failure with check_if_previous_game_was_win() in end_fight_state()"
-        )
-        return "restart"
-
-    if game_was_win_return:
-        logger.change_status(status="Last game was a win")
-        logger.add_win()
-    else:
-        logger.change_status(status="Last game was a loss")
-        logger.add_loss()
-
-    time.sleep(3)
-
-    return next_state
 
 
 def choose_play_side(vm_index, favorite_side):
