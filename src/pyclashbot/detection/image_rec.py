@@ -1,16 +1,12 @@
 import multiprocessing
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from os.path import abspath, dirname, join
 
 import cv2
 import numpy as np
 from joblib import Parallel, delayed
-from PIL import Image
 
 from pyclashbot.memu.client import screenshot
-
-# file stuff
 
 
 def get_file_count(folder) -> int:
@@ -32,7 +28,7 @@ def make_reference_image_list(size):
     reference_image_list = []
 
     for index in range(size):
-        index: int = index + 1
+        index += 1
         image_name: str = f"{index}.png"
         reference_image_list.append(image_name)
 
@@ -42,7 +38,9 @@ def make_reference_image_list(size):
 # image comparison
 
 
-def get_first_location(locations: list[list[int] | None], flip=False) -> list[int] | None:
+def get_first_location(
+    locations: list[list[int] | None], flip=False
+) -> list[int] | None:
     """get the first location from a list of locations
 
     Args:
@@ -75,113 +73,61 @@ def check_for_location(locations: list[list[int] | None]):
 
 
 def find_references(
-    image: np.ndarray | Image.Image,
+    image: np.ndarray,
     folder: str,
     names: list[str],
     tolerance=0.97,
 ) -> list[list[int] | None]:
-    """find reference images in a screenshot
-
-    Args:
-        screenshot (np.ndarray | Image.Image): find references in screenshot
-        folder (str): folder to find references (from within reference_images)
-        names (list[str]): names of references
-        tolerance (float, optional): tolerance. Defaults to 0.97.
-
-    Returns:
-        list[list[int] | None]: coordinate locations
-    """
-    num_cores = multiprocessing.cpu_count()
-    with ThreadPoolExecutor(num_cores) as ex:
-        futures = [
-            ex.submit(find_reference, image, folder, name, tolerance)
-            for name in names
-        ]
-        for future in as_completed(futures):
-            result = future.result()
-            if result is not None:
-                return [result]
-    return [None]
-
-
-def find_all_references(
-    image: np.ndarray | Image.Image,
-    folder: str,
-    names: list[str],
-    tolerance=0.97,
-) -> list[list[int] | None] | None:
     """find all reference images in a screenshot
 
     Args:
-        screenshot (np.ndarray | Image.Image): find references in screenshot
+        screenshot (numpy.ndarray): find references in screenshot
         folder (str): folder to find references (from within reference_images)
         names (list[str]): names of references
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
         list[list[int] | None]: coordinate locations
-    """
-    num_cores = multiprocessing.cpu_count()
-
-    return Parallel(n_jobs=num_cores, prefer="threads")(
-        delayed(find_reference)(image, folder, name, tolerance) for name in names
-    )  # type: ignore
-
-
-def find_reference(
-    image: np.ndarray | Image.Image, folder: str, name: str, tolerance=0.97
-) -> list[int] | None:
-    """find a reference image in a screenshot
-
-    Args:
-        screenshot (np.ndarray | Image.Image): find reference in screenshot
-        folder (str): folder to find reference (from within reference_images)
-        name (str): name of reference
-        tolerance (float, optional): tolerance. Defaults to 0.97.
-
-    Returns:
-        list[list[int] | None] | None: coordinate location
     """
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images"))
 
-    path = join(reference_folder, folder, name)
+    reference_images = []
 
-
-    return compare_images(image, Image.open(path), tolerance)
+    for name in names:
+        path = join(reference_folder, folder, name)
+        img = cv2.imread(path)  # type: ignore # pylint: disable=no-member
+        reference_images.append(img)
+    num_cores = multiprocessing.cpu_count()
+    return Parallel(n_jobs=num_cores, prefer="threads")(
+        delayed(compare_images)(image, template, tolerance)
+        for template in reference_images
+    )  # type: ignore
 
 
 def compare_images(
-    image: np.ndarray | Image.Image,
-    template: np.ndarray | Image.Image,
+    image: np.ndarray,
+    template,
     threshold=0.8,
 ):
     """detects pixel location of a template in an image
     Args:
-        image (np.ndarray | Image.Image): image to find template within
-        template (np.ndarray | Image.Image): template image to match to
+        image (numpy.ndarray): image to find template within
+        template (numpy.ndarray): template image to match to
         threshold (float, optional): matching threshold. defaults to 0.8
     Returns:
         list[list[int] | None]: a list of pixel location (x,y)
     """
-
-    # show template
-    # template.show()
-
-    # Convert image to np.array
-
-    image = np.array(image)
-    template = np.array(template)
-
+    # pylint: disable=no-member
     # Convert image colors
-    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore # pylint: disable=no-member
-    template_gray = cv2.cvtColor(  # type: ignore # pylint: disable=no-member
-        template, cv2.COLOR_RGB2GRAY  # type: ignore # pylint: disable=no-member
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore
+    template_gray = cv2.cvtColor(  # type: ignore
+        template, cv2.COLOR_RGB2GRAY  # type: ignore
     )
 
     # Perform match operations.
-    res = cv2.matchTemplate(  # type: ignore # pylint: disable=no-member
-        img_gray, template_gray, cv2.TM_CCOEFF_NORMED  # type: ignore # pylint: disable=no-member
+    res = cv2.matchTemplate(  # type: ignore
+        img_gray, template_gray, cv2.TM_CCOEFF_NORMED  # type: ignore
     )
 
     # Store the coordinates of matched area in a np array
@@ -193,7 +139,9 @@ def compare_images(
 # pixel comparison
 
 
-def line_is_color(vm_index, x_1, y_1, x_2, y_2, color) -> bool: # pylint: disable=too-many-arguments
+def line_is_color(  # pylint: disable=too-many-arguments
+    vm_index, x_1, y_1, x_2, y_2, color
+) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
 
@@ -205,7 +153,9 @@ def line_is_color(vm_index, x_1, y_1, x_2, y_2, color) -> bool: # pylint: disabl
     return True
 
 
-def check_line_for_color(vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int]) -> bool: #pylint: disable=too-many-arguments
+def check_line_for_color(  # pylint: disable=too-many-arguments
+    vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int]
+) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
 

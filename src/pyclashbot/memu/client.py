@@ -3,20 +3,11 @@
 import os
 import time
 
-from PIL import Image, UnidentifiedImageError
+import cv2
+from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
 
 pmc = PyMemuc(debug=False)
-
-
-def verify_image(image_path: str) -> bool:
-    """Method to verify that an image is a valid png"""
-    img = Image.open(image_path)
-    try:
-        img.verify()
-        return img.format == "PNG"
-    except UnidentifiedImageError:
-        return False
 
 
 class ScreenshotError(Exception):
@@ -26,14 +17,14 @@ class ScreenshotError(Exception):
         self.message = message
 
 
-def screenshot(vm_index: int) -> Image.Image:
+def screenshot(vm_index: int) -> ndarray:
     """Method to return a screenshot of a given region
 
     Args:
         vm_index (int): Index of the VM to take a screenshot of
 
     Returns:
-        PIL.Image.Image: Screenshot of the given region
+        numpy.ndarray: Screenshot of the given region
     """
     try:
         image_name = f"screenshot{vm_index}.png"
@@ -45,9 +36,7 @@ def screenshot(vm_index: int) -> Image.Image:
             vm_index=vm_index,
             command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
         )
-        if verify_image(image_path):
-            return Image.open(image_path)
-        raise ScreenshotError("Image is not valid")
+        return cv2.imread(image_path)  # pylint: disable=no-member
 
     except (PyMemucError, FileNotFoundError, ScreenshotError):
         time.sleep(0.1)
