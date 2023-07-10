@@ -10,6 +10,7 @@ from pyclashbot.bot.states import state_tree
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
+from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -106,34 +107,6 @@ def load_last_settings(window) -> None:
                 if key in user_settings:
                     window[key].update(user_settings[key])
         window.refresh()  # refresh the window to update the layout
-
-
-def no_jobs_popup() -> None:
-    # Define the layout of the GUI
-    layout = [
-        [
-            sg.Text(
-                "You must select at least one job!",
-                size=(25, 2),
-                justification="center",
-            )
-        ],
-        [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
-    ]
-
-    # Create the window
-    window = sg.Window("Critical Error!", layout)
-
-    # Event loop to process events and get user input
-    while True:
-        event, *_ = window.read()  # type: ignore
-
-        # Exit the program if the "Exit" button is clicked or window is closed
-        if event in (sg.WINDOW_CLOSED, "Exit"):
-            break
-
-    # Close the window
-    window.close()
 
 
 def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
