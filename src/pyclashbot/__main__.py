@@ -1,7 +1,7 @@
 import sys
 import webbrowser
 from os import path
-from typing import LiteralString
+from typing import Literal, LiteralString
 
 import PySimpleGUI as sg
 from pyclashbot.bot.states import state_tree
@@ -314,24 +314,35 @@ def main_gui() -> None:
 
 def dummy_bot():
     vm_index = 1
-    logger=Logger()
-    state = ''
-    jobs=[
-        '',
+    logger = Logger()
+    state  = "open_chests"
+    joblist: list[str] = [
+        # "Open Chests",
+        # "upgrade",
+        # "request",
+        # "free offer collection",
+        # "1v1 battle",
+        "2v2 battle",
+        # "card mastery collection",
+        # "war",
     ]
-
-
 
     while 1:
         # code to run
-        state  = state_tree(
+        state = state_tree(
             vm_index,
             logger,
             state,
-            jobs,
-
+            joblist,
         )
+
+        if state == "restart":
+            for _ in range(10):
+                print("Failure")
+            break
 
 
 if __name__ == "__main__":
-    main_gui()
+    dummy_bot()
+
+    # main_gui()
