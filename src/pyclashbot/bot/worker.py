@@ -17,11 +17,9 @@ class WorkerThread(PausableThread):
         try:
             jobs, ssid_max = self.args  # parse thread args
             # logger = Logger()
-            account_switch_order = self.make_account_switch_order(ssid_max)
             state = "start"
 
             vm_index = check_for_vm(self.logger)
-            account_index_to_switch_to = account_switch_order[0]
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
@@ -31,8 +29,6 @@ class WorkerThread(PausableThread):
                     self.logger,
                     state,
                     jobs,
-                    account_index_to_switch_to,
-                    account_switch_order,
                 )
 
                 while self.pause_flag.is_set():
