@@ -6,7 +6,7 @@ import time
 from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
 
-from pyclashbot.utils.image_handler import open_image
+from pyclashbot.utils.image_handler import InvalidImageError, open_image
 
 pmc = PyMemuc(debug=False)
 
@@ -38,12 +38,10 @@ def screenshot(vm_index: int) -> ndarray:
             command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
         )
         img = open_image(image_path)
-        if img is None:
-            raise ScreenshotError("Image is None")
         os.remove(image_path)
         return img
 
-    except (PyMemucError, FileNotFoundError, ScreenshotError):
+    except (PyMemucError, FileNotFoundError, ScreenshotError, InvalidImageError):
         time.sleep(0.1)
         return screenshot(vm_index)
 
