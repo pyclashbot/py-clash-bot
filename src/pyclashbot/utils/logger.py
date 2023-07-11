@@ -186,11 +186,11 @@ class Logger:
             message (str): error message
         """
         self.errored = True
-        self.current_status = f"Error: {message}"
+        logging.error(message)
 
     @_updates_log
     def add_card_mastery_reward_collection(self) -> None:
-        self.card_mastery_reward_collections+=1
+        self.card_mastery_reward_collections += 1
 
     @_updates_log
     def add_chest_unlocked(self) -> None:
