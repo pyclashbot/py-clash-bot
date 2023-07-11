@@ -14,6 +14,10 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
+    find_references,
+    get_file_count,
+    get_first_location,
+    make_reference_image_list,
     pixel_is_equal,
     region_is_color,
 )
@@ -45,6 +49,29 @@ REQUEST_BUTTON_COORD_LIST = {
         (330, 521),
     ],
 }
+
+
+
+
+
+def find_request_button(vm_index):
+    folder_name = "request_button"
+
+    size: int = get_file_count(folder_name)
+
+    names = make_reference_image_list(size)
+
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.88,
+    )
+
+    coord = get_first_location(locations)
+    if coord is None:
+        return None
+    return [coord[1], coord[0]]
 
 
 def request_state(vm_index, logger: Logger, next_state: str) -> str:
@@ -316,27 +343,29 @@ def do_request(vm_index, logger: Logger) -> None:
         vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
     )
 
-    # click card
-    logger.change_status(status="Clicking random card to request")
-    click(
-        vm_index=vm_index,
-        x_coord=random.randint(a=67, b=358),
-        y_coord=random.randint(a=211, b=547),
-    )
-    time.sleep(3)
+    while 1:
+        # click card
+        logger.change_status(status="Clicking random card to request")
+        click(
+            vm_index=vm_index,
+            x_coord=random.randint(a=67, b=358),
+            y_coord=random.randint(a=211, b=547),
+        )
+        time.sleep(3)
 
-    logger.change_status(status="Clicking request")
+        logger.change_status(status="Clicking request")
 
-    # get request button coord
-    coord = find_yellow_request_button_in_request_page(vm_index)
-    if coord is None:
-        logger.change_status(status="Error 987359835 Couldnt find request button")
-        return
+        # get request button coord
+        coord = find_request_button(vm_index)
+        if coord is None:
+            logger.change_status(status="Error 987359835 Couldnt find request button")
+            continue
 
-    # Click request button coord
-    click(vm_index, coord[0], coord[1])
-    logger.add_request()
-    time.sleep(3)
+        # Click request button coord
+        click(vm_index, coord[0], coord[1])
+        logger.add_request()
+        time.sleep(3)
+        break
 
 
 def check_for_trade_cards_icon(vm_index) -> bool:
