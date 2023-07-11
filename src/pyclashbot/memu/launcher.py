@@ -157,7 +157,7 @@ def start_clash_royale(logger: Logger, vm_index):
         )
         show_clash_royale_setup_gui()
 
-    # start clash royale
+    # Disable Component
     disable_components(component_names, vm_index)
 
     # start Clash Royale
