@@ -43,6 +43,7 @@ LEAVE_WAR_BATTLE_BUTTON_COORD = (204, 553)
 
 WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
+WAR_BATTLE_TIMEOUT = 240
 
 
 def find_war_battle_icon(vm_index):
@@ -175,7 +176,7 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
     logger.change_status(status="Starting war fighting")
     while check_if_in_war_battle(vm_index):
         time_taken = time.time() - start_time
-        if time_taken > 120:
+        if time_taken > WAR_BATTLE_TIMEOUT:
             logger.change_status(status="Error 658725 Ran war fight loop too long")
             return "restart"
 
@@ -238,7 +239,7 @@ def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
     return True
 
 
-def handle_make_deck(vm_index, logger: Logger) -> Literal['good deck', 'made deck']:
+def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made deck"]:
     # if the deck is ready to go, just return
     if check_if_deck_is_ready_for_this_battle(vm_index):
         logger.log("Deck is good to go. No need to make a new one")
@@ -261,7 +262,7 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal['good deck', 'made dec
         CLOSE_WAR_DECK_EDITOR_PAGE_BUTTON[1],
     )
     time.sleep(3)
-    return 'made deck'
+    return "made deck"
 
 
 def find_and_click_war_battle_icon(vm_index, logger):
