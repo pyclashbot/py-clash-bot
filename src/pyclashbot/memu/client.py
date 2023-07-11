@@ -3,9 +3,10 @@
 import os
 import time
 
-import cv2
 from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
+
+from pyclashbot.utils.image_handler import open_image
 
 pmc = PyMemuc(debug=False)
 
@@ -36,7 +37,7 @@ def screenshot(vm_index: int) -> ndarray:
             vm_index=vm_index,
             command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
         )
-        return cv2.imread(image_path)  # pylint: disable=no-member
+        return open_image(image_path)
 
     except (PyMemucError, FileNotFoundError, ScreenshotError):
         time.sleep(0.1)

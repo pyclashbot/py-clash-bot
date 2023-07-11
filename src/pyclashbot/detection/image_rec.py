@@ -7,6 +7,7 @@ import numpy as np
 from joblib import Parallel, delayed
 
 from pyclashbot.memu.client import screenshot
+from pyclashbot.utils.image_handler import open_image
 
 
 def get_file_count(folder) -> int:
@@ -96,7 +97,7 @@ def find_references(
 
     for name in names:
         path = join(reference_folder, folder, name)
-        img = cv2.imread(path)  # type: ignore # pylint: disable=no-member
+        img = open_image(path)
         reference_images.append(img)
     num_cores = multiprocessing.cpu_count()
     return Parallel(n_jobs=num_cores, prefer="threads")(
