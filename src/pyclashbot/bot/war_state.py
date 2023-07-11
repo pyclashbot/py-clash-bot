@@ -13,7 +13,11 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
+    find_references,
+    get_file_count,
+    get_first_location,
     line_is_color,
+    make_reference_image_list,
     pixel_is_equal,
     region_is_color,
 )
@@ -39,6 +43,22 @@ LEAVE_WAR_BATTLE_BUTTON_COORD = (204, 553)
 
 WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
+
+
+def find_war_battle_icon(vm_index):
+    folder_name = "war_battle_icon"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.9,
+    )
+    coord = get_first_location(locations)
+    if coord is None:
+        return None
+    return [coord[1], coord[0]]
 
 
 def war_state(vm_index: int, logger: Logger, next_state: str):
@@ -68,12 +88,13 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     # get to clan page
     logger.change_status(status="Starting a war battle")
 
-    logger.log('Getting to clan tab')
+    logger.log("Getting to clan tab")
     get_to_clan_tab_from_clash_main(vm_index, logger)
 
     # find battle icon
-    logger.log('Findign a battle icon')
+    logger.log("Finding a battle icon")
     find_and_click_war_battle_icon(vm_index, logger)
+    time.sleep(3)
 
     # make deck if needed
 
@@ -207,19 +228,22 @@ def check_if_in_war_battle(vm_index) -> bool:
 
 
 def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
-    if not region_is_color(vm_index, [289, 400, 10, 5], (201, 201, 201)):
+    if not region_is_color(vm_index, [230, 398, 17, 6], (255, 200, 79)):
         return False
-    if not region_is_color(vm_index, [116, 398, 36, 6], (76, 172, 255)):
+    if not region_is_color(vm_index, [240, 427, 30, 5], (255, 188, 43)):
+        return False
+
+    if not check_line_for_color(vm_index, 340, 161, 354, 162, (229, 36, 36)):
         return False
     return True
 
 
-def handle_make_deck(vm_index, logger: Logger) -> None:
+def handle_make_deck(vm_index, logger: Logger) -> Literal['good deck', 'made deck']:
     # if the deck is ready to go, just return
     if check_if_deck_is_ready_for_this_battle(vm_index):
-        logger.log('Deck is good to go. No need to make a new one')
+        logger.log("Deck is good to go. No need to make a new one")
 
-        return
+        return "good deck"
 
     logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
@@ -237,6 +261,7 @@ def handle_make_deck(vm_index, logger: Logger) -> None:
         CLOSE_WAR_DECK_EDITOR_PAGE_BUTTON[1],
     )
     time.sleep(3)
+    return 'made deck'
 
 
 def find_and_click_war_battle_icon(vm_index, logger):
@@ -250,10 +275,11 @@ def find_and_click_war_battle_icon(vm_index, logger):
             return "restart"
 
         click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
-        time.sleep(1)
+        time.sleep(1.5)
         scroll_up(vm_index)
+        time.sleep(1.5)
 
-        coord = find_war_battle_icon_coords(vm_index)
+        coord = find_war_battle_icon(vm_index)
 
     click(vm_index, coord[0], coord[1])
     return "good"
@@ -335,11 +361,6 @@ def check_if_on_war_page(vm_index):
 
 
 def war_state_check_if_in_a_clan(vm_index, logger: Logger):
-    # if not on clash main, reutnr
-    if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status="ERROR 385423562623 Not on clash main menu")
-        return "restart"
-
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
         logger.change_status(
