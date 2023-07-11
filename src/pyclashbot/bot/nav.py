@@ -1,14 +1,12 @@
 import time
 from typing import Literal
 
-import numpy
 
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
+from pyclashbot.memu.client import click,  scroll_up
 from pyclashbot.utils.logger import Logger
 
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [
@@ -36,7 +34,7 @@ CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 59
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 
 
-def get_to_main_from_challenges_tab(vm_index, logger, printmode=False):
+def get_to_main_from_challenges_tab(vm_index, logger, printmode=False) -> Literal['good', 'restart']:
     if printmode:
         logger.change_status(status="Getting to main from challenges tab")
     else:
@@ -55,6 +53,7 @@ def get_to_main_from_challenges_tab(vm_index, logger, printmode=False):
             )
         else:
             logger.log("Erorr 356325 Failed to get to main from challenges tab")
+        return "restart"
     return "good"
 
 
@@ -737,31 +736,11 @@ def get_to_clan_tab_from_clash_main(
 
 
 def check_if_on_clan_chat_page(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))
-
-    friend_battle_button_exists = False
-    for x_coord in range(140, 157):
-        this_pixel = iar[541][x_coord]
-        if pixel_is_equal([183, 96, 252], this_pixel, tol=35):
-            friend_battle_button_exists = True
-            break
-
-    blue_chat_button_exists = False
-    for x_coord in range(300, 320):
-        this_pixel = iar[539][x_coord]
-        if pixel_is_equal([76, 174, 255], this_pixel, tol=35):
-            blue_chat_button_exists = True
-
-    red_x_button_exists = False
-    for x_coord in range(343, 348):
-        this_pixel = iar[44][x_coord]
-        if pixel_is_equal([228, 28, 28], this_pixel, tol=35):
-            red_x_button_exists = True
-            break
-
-    if friend_battle_button_exists and blue_chat_button_exists and red_x_button_exists:
-        return True
-    return False
+    if not region_is_color(vm_index,[142,536,8,8],(183,96,254)):return False
+    if not region_is_color(vm_index,[204,537,10,8],(183,96,252)):return False
+    if not region_is_color(vm_index,[352,536,16,10],(76,175,255)):return False
+    if not region_is_color(vm_index,[310,612,25,12],(80,118,153)):return False
+    return True
 
 
 def check_if_on_profile_page(vm_index) -> bool:

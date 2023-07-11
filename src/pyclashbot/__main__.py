@@ -8,6 +8,7 @@ import PySimpleGUI as sg
 from pyclashbot.bot.states import state_tree
 
 
+
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
@@ -316,6 +317,12 @@ def dummy_bot():
             break
 
 
+def debug():
+    pass
+
+
+
 if __name__ == "__main__":
+    debug()
     # dummy_bot()
     main_gui()

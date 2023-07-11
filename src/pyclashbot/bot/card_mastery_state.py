@@ -33,7 +33,9 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, next_state: str
 
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
-        logger.log('Failure 528973589  getting to card page for card mastery collection state')
+        logger.log(
+            "Failure 528973589  getting to card page for card mastery collection state"
+        )
         return "restart"
 
     # while there are rewards to collect, run the collect loop
