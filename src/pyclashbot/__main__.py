@@ -5,8 +5,8 @@ from typing import LiteralString
 
 import PySimpleGUI as sg
 
-from pyclashbot.bot.states import state_tree
 
+from pyclashbot.bot.states import state_tree
 
 
 from pyclashbot.bot.worker import WorkerThread
@@ -321,8 +321,7 @@ def debug():
     pass
 
 
-
 if __name__ == "__main__":
-    debug()
+    # debug()
     # dummy_bot()
     main_gui()
