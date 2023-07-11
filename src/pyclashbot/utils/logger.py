@@ -1,7 +1,6 @@
 import logging
 import threading
 import time
-from typing import Literal
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
