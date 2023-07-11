@@ -68,13 +68,17 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     # get to clan page
     logger.change_status(status="Starting a war battle")
 
+    logger.log('Getting to clan tab')
     get_to_clan_tab_from_clash_main(vm_index, logger)
 
     # find battle icon
+    logger.log('Findign a battle icon')
     find_and_click_war_battle_icon(vm_index, logger)
 
     # make deck if needed
+
     handle_make_deck(vm_index, logger)
+    time.sleep(3)
 
     if not check_if_deck_is_ready_for_this_battle(vm_index):
         logger.change_status(status="No more war decks for today!")
@@ -213,6 +217,8 @@ def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
 def handle_make_deck(vm_index, logger: Logger) -> None:
     # if the deck is ready to go, just return
     if check_if_deck_is_ready_for_this_battle(vm_index):
+        logger.log('Deck is good to go. No need to make a new one')
+
         return
 
     logger.change_status(status="Setting up a deck for this war match")
