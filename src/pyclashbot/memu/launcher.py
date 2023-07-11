@@ -163,35 +163,6 @@ def start_clash_royale(logger: Logger, vm_index):
     pmc.start_app_vm(apk_base_name, vm_index)
     logger.change_status(status="Successfully initialized Clash app")
 
-
-
-
-
-def start_clash_royale(logger: Logger, vm_index):
-    # using pymemuc check if clash royale is installed
-    apk_base_name = "com.supercell.clashroyale"
-
-    # get list of installed apps
-    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
-
-    # check list of installed apps for names containing base name
-    found = [app for app in installed_apps if apk_base_name in app]
-
-    if not found:
-        # notify user that clash royale is not installed, program will exit
-        logger.change_status(
-            status="Clash royale is not installed. Please install it and restart"
-        )
-        show_clash_royale_setup_gui()
-
-    disable_components(component_names, vm_index)
-
-
-    # start clash royale
-    pmc.start_app_vm(apk_base_name, vm_index)
-    logger.change_status(status="Successfully initialized Clash app")
-
-
 # making/configuring emulator methods
 def create_vm(logger: Logger):
     # create a vm named pyclashbot
