@@ -109,6 +109,63 @@ def check_for_vm(logger: Logger) -> int:
     # return the index. if no vms named pyclashbot exist, create one.
     return vm_index if vm_index != -1 else create_vm(logger)
 
+def disable_components(component_names, vm_index):
+    for component in component_names:
+        command = f"shell pm disable {component}"
+        pmc.send_adb_command_vm(vm_index=vm_index, command=command)
+
+
+component_names = [
+    "com.supercell.clashroyale/com.supercell.titan.TimeAlarm",
+    "com.supercell.clashroyale/com.google.firebase.iid.FirebaseInstanceIdReceiver",
+    "com.supercell.clashroyale/com.supercell.id.SharedDataBroadcastReceiver",
+    "com.supercell.clashroyale/com.supercell.id.SharedDataReceiverBroadcastReceiver",
+    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
+    "com.supercell.clashroyale/com.supercell.titan.PushMessageService",
+    "com.supercell.clashroyale/com.google.firebase.messaging.FirebaseMessagingService",
+    "com.supercell.clashroyale/com.google.firebase.components.ComponentDiscoveryService",
+    "com.supercell.clashroyale/com.google.android.gms.auth.api.signin.RevocationBoundService",
+    "com.supercell.clashroyale/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService",
+    "com.supercell.clashroyale/com.helpshift.activities.HSMainActivity",
+    "com.supercell.clashroyale/com.helpshift.activities.HSDebugActivity",
+    "com.supercell.clashroyale/com.android.billingclient.api.ProxyBillingActivity",
+    "com.supercell.clashroyale/com.google.android.gms.common.api.GoogleApiActivity",
+    "com.supercell.clashroyale/com.google.android.play.core.common.PlayCoreDialogWrapperActivity",
+    "com.supercell.clashroyale/io.sentry.android.core.SentryInitProvider",
+    "com.supercell.clashroyale/io.sentry.android.core.SentryPerformanceProvider",
+    "com.supercell.clashroyale/com.google.firebase.provider.FirebaseInitProvider",
+    "com.supercell.clashroyale/androidx.lifecycle.ProcessLifecycleOwnerInitializer",
+    "com.supercell.clashroyale/com.journeyapps.barcodescanner.CaptureActivity"
+]
+
+
+def start_clash_royale(logger: Logger, vm_index):
+    # using pymemuc check if clash royale is installed
+    apk_base_name = "com.supercell.clashroyale"
+
+    # get list of installed apps
+    installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
+
+    # check list of installed apps for names containing base name
+    found = [app for app in installed_apps if apk_base_name in app]
+
+    if not found:
+        # notify user that Clash Royale is not installed, program will exit
+        logger.change_status(
+            status="Clash Royale is not installed. Please install it and restart"
+        )
+        # show_clash_royale_setup_gui()  # Define this function or remove the function call
+
+    disable_components(component_names, vm_index)
+
+    # start Clash Royale
+    pmc.start_app_vm(apk_base_name, vm_index)
+    logger.change_status(status="Successfully initialized Clash app")
+
+
+
+
 
 def start_clash_royale(logger: Logger, vm_index):
     # using pymemuc check if clash royale is installed
@@ -126,40 +183,8 @@ def start_clash_royale(logger: Logger, vm_index):
             status="Clash royale is not installed. Please install it and restart"
         )
         show_clash_royale_setup_gui()
-    component_names = [
-    "com.supercell.clashroyale/com.supercell.titan.TimeAlarm",
-    "com.supercell.clashroyale/com.google.firebase.iid.FirebaseInstanceIdReceiver",
-    "com.supercell.clashroyale/com.supercell.id.SharedDataBroadcastReceiver",
-    "com.supercell.clashroyale/com.supercell.id.SharedDataReceiverBroadcastReceiver",
-    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
-    "com.supercell.clashroyale/com.supercell.titan.PushMessageService",
-    "com.supercell.clashroyale/com.google.firebase.messaging.FirebaseMessagingService",
-    "com.supercell.clashroyale/com.google.firebase.components.ComponentDiscoveryService",
-    "com.supercell.clashroyale/com.google.android.gms.auth.api.signin.RevocationBoundService",
-    "com.supercell.clashroyale/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
-    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService",
-    "com.supercell.clashroyale/com.supercell.titan.GameApp",
-    "com.supercell.clashroyale/com.supercell.id.ui.MainActivity",
-    "com.supercell.clashroyale/com.google.android.gms.auth.api.signin.internal.SignInHubActivity",
-    "com.supercell.clashroyale/com.helpshift.activities.HSMainActivity",
-    "com.supercell.clashroyale/com.helpshift.activities.HSDebugActivity",
-    "com.supercell.clashroyale/com.android.billingclient.api.ProxyBillingActivity",
-    "com.supercell.clashroyale/com.google.android.gms.common.api.GoogleApiActivity",
-    "com.supercell.clashroyale/com.google.android.play.core.common.PlayCoreDialogWrapperActivity",
-    "com.supercell.clashroyale/com.journeyapps.barcodescanner.CaptureActivity",
-    "com.supercell.clashroyale/io.sentry.android.core.SentryInitProvider",
-    "com.supercell.clashroyale/io.sentry.android.core.SentryPerformanceProvider",
-    "com.supercell.clashroyale/com.google.firebase.provider.FirebaseInitProvider",
-    "com.supercell.clashroyale/androidx.lifecycle.ProcessLifecycleOwnerInitializer"
-    ]
 
-
-# Generate the command to disable the components
-    command = " && ".join([f"shell pm disable {component}" for component in component_names])
-
-# Execute the command
-    pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-
+    disable_components(component_names, vm_index)
 
 
     # start clash royale
