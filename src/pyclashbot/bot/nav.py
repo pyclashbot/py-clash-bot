@@ -898,49 +898,13 @@ def wait_for_clash_main_menu(
 
 
 def check_if_on_clash_main_menu(vm_index) -> bool:
-    if not check_for_gem_logo_on_main(vm_index):
-        return False
+    if not check_line_for_color(vm_index,291,7,306,26,(224,180,56)):return False
+    if not check_line_for_color(vm_index,395,6,409,26,(61,189,24)):return False
 
-    if not check_for_friends_logo_on_main(vm_index):
-        return False
 
-    if not check_for_gold_logo_on_main(vm_index):
-        return False
+
+    if not region_is_color(vm_index,[150,576,25,12],(71,105,138)):return False
     return True
-
-
-def check_for_gem_logo_on_main(vm_index) -> bool:
-    # Method to check if the clash main menu is on screen
-    iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.array(screenshot(vm_index))
-
-    for x_index in range(390, 410):
-        this_pixel = iar[16][x_index]
-        if pixel_is_equal([65, 198, 24], this_pixel, tol=35):
-            return True
-    return False
-
-
-def check_for_friends_logo_on_main(vm_index) -> bool:
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot(vm_index))
-
-    for x_coord in range(250, 290):
-        this_pixel = iar[69][x_coord]
-        if pixel_is_equal([228, 244, 255], this_pixel, tol=35):
-            return True
-    return False
-
-
-def check_for_gold_logo_on_main(vm_index) -> bool:
-    # Method to check if the clash main menu is on screen
-    iar = numpy.array(screenshot(vm_index))
-
-    for x_index in range(290, 310):
-        this_pixel = iar[17][x_index]
-        if pixel_is_equal([224, 180, 56], this_pixel, tol=35):
-            return True
-    return False
-
 
 if __name__ == "__main__":
     pass

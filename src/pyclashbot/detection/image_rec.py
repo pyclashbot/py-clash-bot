@@ -146,6 +146,7 @@ def line_is_color(  # pylint: disable=too-many-arguments
     iar = np.asarray(screenshot(vm_index))
 
     for coordinate in coordinates:
+        pixel=convert_pixel(pixel)
         pixel = iar[coordinate[1]][coordinate[0]]
 
         if not pixel_is_equal(color, pixel, tol=35):
@@ -161,6 +162,7 @@ def check_line_for_color(  # pylint: disable=too-many-arguments
 
     for coordinate in coordinates:
         pixel = iar[coordinate[1]][coordinate[0]]
+        pixel=convert_pixel(pixel)
 
         if pixel_is_equal(color, pixel, tol=35):
             return True
@@ -175,6 +177,7 @@ def check_region_for_color(vm_index, region, color):
     for x_index in range(left, left + width):
         for y_index in range(top, top + height):
             pixel = iar[y_index][x_index]
+            pixel=convert_pixel(pixel)
             if pixel_is_equal(color, pixel, tol=35):
                 return True
 
@@ -189,10 +192,19 @@ def region_is_color(vm_index, region, color):
     for x_index in range(left, left + width, 2):
         for y_index in range(top, top + height, 2):
             pixel = iar[y_index][x_index]
+            pixel = convert_pixel(pixel)
+            # print(x_index, y_index, pixel)
             if not pixel_is_equal(color, pixel, tol=35):
                 return False
 
     return True
+
+
+def convert_pixel(bad_format_pixel):
+    r = bad_format_pixel[2]
+    g = bad_format_pixel[1]
+    b = bad_format_pixel[0]
+    return [r,g,b]
 
 
 def pixel_is_equal(
