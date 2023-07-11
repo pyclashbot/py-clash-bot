@@ -44,14 +44,14 @@ jobs:
         run: |
           if ("${{startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')}}") {
             $json = @{
-                title = "New Pre-release! ${{github.ref}}"
+                title = "New Pre-release! ${{github.ref_name}}"
                 description = "Click to view changes and download"
                 url = "${{ steps.release.outputs.url }}"
             } | ConvertTo-Json
             Invoke-RestMethod -Method Post -Uri "https://www.pyclashbot.app/api/webhook/release/prerelease?code=${{ secrets.DISCORD_WEBHOOK_CODE }}" -ContentType 'application/json' -Body $json
           } else {
             $json = @{
-                title = "New Release! ${{github.ref}}"
+                title = "New Release! ${{github.ref_name}}"
                 description = "Click to view changes and download"
                 url = "${{ steps.release.outputs.url }}"
             } | ConvertTo-Json
