@@ -151,12 +151,13 @@ def start_clash_royale(logger: Logger, vm_index):
     found = [app for app in installed_apps if apk_base_name in app]
 
     if not found:
-        # notify user that Clash Royale is not installed, program will exit
+        # notify user that clash royale is not installed, program will exit
         logger.change_status(
-            status="Clash Royale is not installed. Please install it and restart"
+            status="Clash royale is not installed. Please install it and restart"
         )
-        # show_clash_royale_setup_gui()  # Define this function or remove the function call
+        show_clash_royale_setup_gui()
 
+    # start clash royale
     disable_components(component_names, vm_index)
 
     # start Clash Royale
