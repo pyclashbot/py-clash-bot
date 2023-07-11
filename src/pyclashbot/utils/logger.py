@@ -191,7 +191,7 @@ class Logger:
 
     @_updates_log
     def add_card_mastery_reward_collection(self) -> None:
-        self.card_mastery_reward_collections = self.card_mastery_reward_collections + 1
+        self.card_mastery_reward_collections+=1
 
     @_updates_log
     def add_chest_unlocked(self) -> None:

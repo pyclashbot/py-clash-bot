@@ -130,6 +130,7 @@ def open_chest(vm_index, logger, chest_index):
         time.sleep(3)
 
     if check_if_can_queue_chest(vm_index):
+        logger.add_chest_unlocked()
         click(vm_index, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
         time.sleep(3)
 
