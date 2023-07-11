@@ -1,7 +1,6 @@
 import time
-from typing import Any, Literal
+from typing import Literal
 
-import numpy
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -10,7 +9,10 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    pixel_is_equal,
+    find_references,
+    get_file_count,
+    get_first_location,
+    make_reference_image_list,
     region_is_color,
 )
 from pyclashbot.memu.client import (
@@ -55,7 +57,7 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
         logger.change_status(status=f"Searching for free offer: {str(time_taken)[:4]}")
 
         # look for free offer
-        coord = find_free_offer_coords(vm_index)
+        coord = find_free_offer_icon(vm_index)
         if coord is None:
             # scroll
             scroll_down_fast_on_left_side_of_screen(vm_index)
@@ -123,57 +125,20 @@ def check_for_free_button_condition_1(vm_index) -> bool:
     return True
 
 
-def find_free_offer_coords(vm_index):
-    coord1 = find_free_offer_coords_1(vm_index=vm_index)
-    if coord1 is not None:
-        return coord1
-
-    coord2 = find_free_offer_coords_2(vm_index=vm_index)
-    if coord2 is not None:
-        return coord2
-
-    return None
-
-
-def find_free_offer_coords_1(vm_index):
-    green_pixel_coords = []
-    iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(screenshot(vm_index))
-
-    for y_coord in range(34, 538):
-        this_pixel = iar[y_coord][49]
-
-        if pixel_is_equal(pix1=this_pixel, pix2=GREEN_COLOR, tol=30):
-            green_pixel_coords.append((49, y_coord))
-
-    pix_list_length: int = len(green_pixel_coords)
-    if pix_list_length > 100:
-        index = int(pix_list_length / 2)
-        coord = green_pixel_coords[index]
-        coord = [coord[0] + 50, coord[1]]
-        return coord
-    return "fail"
-
-
-def find_free_offer_coords_2(vm_index) -> tuple[Literal[132], int] | Literal['fail']:
-    green_pixel_coords = []
-    iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(
-        screenshot(vm_index=vm_index)
+def find_free_offer_icon(vm_index):
+    folder_name = "free_offer_icon"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.9,
     )
-
-    for y_index in range(34, 538):
-        this_pixel = iar[y_index][132]
-
-        if pixel_is_equal(pix1=this_pixel, pix2=GREEN_COLOR, tol=30):
-            coord: tuple[Literal[132], int] = (132, y_index)
-            green_pixel_coords.append(coord)
-
-    pix_list_length: int = len(green_pixel_coords)
-    if pix_list_length > 45:
-        index = int(pix_list_length / 2)
-        coord = green_pixel_coords[index]
-        coord = [coord[0] - 50, coord[1]]  # type: ignore
-        return coord
-    return "fail"
+    coord = get_first_location(locations)
+    if coord is None:
+        return None
+    return [coord[1], coord[0]]
 
 
 if __name__ == "__main__":
