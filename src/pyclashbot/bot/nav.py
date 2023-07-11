@@ -1,5 +1,5 @@
 import time
-from typing import Any, Literal
+from typing import Literal
 
 import numpy
 
@@ -898,13 +898,15 @@ def wait_for_clash_main_menu(
 
 
 def check_if_on_clash_main_menu(vm_index) -> bool:
-    if not check_line_for_color(vm_index,291,7,306,26,(224,180,56)):return False
-    if not check_line_for_color(vm_index,395,6,409,26,(61,189,24)):return False
+    if not check_line_for_color(vm_index, 291, 7, 306, 26, (224, 180, 56)):
+        return False
+    if not check_line_for_color(vm_index, 395, 6, 409, 26, (61, 189, 24)):
+        return False
 
-
-
-    if not region_is_color(vm_index,[150,576,25,12],(71,105,138)):return False
+    if not region_is_color(vm_index, [150, 576, 25, 12], (71, 105, 138)):
+        return False
     return True
+
 
 if __name__ == "__main__":
     pass
