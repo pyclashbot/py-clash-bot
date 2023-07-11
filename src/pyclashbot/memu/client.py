@@ -37,7 +37,11 @@ def screenshot(vm_index: int) -> ndarray:
             vm_index=vm_index,
             command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
         )
-        return open_image(image_path)
+        img = open_image(image_path)
+        if img is None:
+            raise ScreenshotError("Image is None")
+        os.remove(image_path)
+        return img
 
     except (PyMemucError, FileNotFoundError, ScreenshotError):
         time.sleep(0.1)
