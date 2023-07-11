@@ -11,13 +11,6 @@ from pyclashbot.utils.image_handler import InvalidImageError, open_image
 pmc = PyMemuc(debug=False)
 
 
-class ScreenshotError(Exception):
-    """Exception raised when a screenshot is not valid"""
-
-    def __init__(self, message):
-        self.message = message
-
-
 def screenshot(vm_index: int) -> ndarray:
     """Method to return a screenshot of a given region
 
@@ -41,7 +34,7 @@ def screenshot(vm_index: int) -> ndarray:
         os.remove(image_path)
         return img
 
-    except (PyMemucError, FileNotFoundError, ScreenshotError, InvalidImageError):
+    except (PyMemucError, FileNotFoundError, InvalidImageError):
         time.sleep(0.1)
         return screenshot(vm_index)
 
