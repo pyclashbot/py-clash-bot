@@ -47,7 +47,9 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
         logger.log(f'Investigating chest #{chest_index} with status "{status}"')
         start_time = time.time()
         if status == "available":
-            open_chest(vm_index, logger, chest_index)
+            if open_chest(vm_index, logger, chest_index) == "restart":
+                logger.change_status("Error 9988572 Failure with open_chest")
+                return "restart"
         logger.log(
             f"Took {str(time.time() - start_time)[:5]}s to investigate chest #{chest_index}"
         )
@@ -142,9 +144,17 @@ def open_chest(vm_index, logger, chest_index):
         time.sleep(1)
 
     # click deadspace until clash main reappears
+    deadspace_clicking_start_time = time.time()
     while not check_if_on_clash_main_menu(vm_index):
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
+
+        # if clicked deadspace too much, restart
+        if time.time() - deadspace_clicking_start_time > 35:
+            logger.change_status(
+                "Error 58732589 Took too long to click deadspace during chest opening, returning to start state"
+            )
+            return "restart"
 
 
 def check_if_can_queue_chest(vm_index):
