@@ -51,9 +51,6 @@ REQUEST_BUTTON_COORD_LIST = {
 }
 
 
-
-
-
 def find_request_button(vm_index):
     folder_name = "request_button"
 
@@ -339,7 +336,10 @@ def do_request(vm_index, logger: Logger) -> None:
     # max scrolls
     logger.change_status(status="Counting the maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
+    logger.log(f'Found {max_scrolls} scrolls maximum in request page')
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
+    logger.log(f'Gonna do {random_scroll_amount} scrolls in request page')
+
     do_random_scrolling_in_request_page(
         vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
     )
@@ -386,6 +386,8 @@ def check_for_trade_cards_icon(vm_index) -> bool:
 
 
 def check_if_can_request_wrapper(vm_index):
+    if check_if_can_request_3(vm_index):
+        return True
     if check_if_can_request(vm_index):
         return True
     if check_if_can_request_2(vm_index):
@@ -437,6 +439,15 @@ def check_if_can_request_2(vm_index) -> bool:
         return False
     if not check_line_for_color(vm_index, 50, 540, 54, 527, (176, 79, 244)):
         return False
+    return True
+
+
+def check_if_can_request_3(vm_index):
+    if not region_is_color(vm_index, [48, 529, 8, 7], (216, 229, 255)):
+        return False
+    if not region_is_color(vm_index, [106, 538, 12, 7], (255, 188, 42)):
+        return False
+
     return True
 
 
