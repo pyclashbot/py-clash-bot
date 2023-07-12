@@ -6,7 +6,7 @@ from pyclashbot.detection.image_rec import (
     check_line_for_color,
     region_is_color,
 )
-from pyclashbot.memu.client import click,  scroll_up
+from pyclashbot.memu.client import click, scroll_up
 from pyclashbot.utils.logger import Logger
 
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [
@@ -34,7 +34,9 @@ CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 59
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 
 
-def get_to_main_from_challenges_tab(vm_index, logger, printmode=False) -> Literal['good', 'restart']:
+def get_to_main_from_challenges_tab(
+    vm_index, logger, printmode=False
+) -> Literal["good", "restart"]:
     if printmode:
         logger.change_status(status="Getting to main from challenges tab")
     else:
@@ -736,10 +738,14 @@ def get_to_clan_tab_from_clash_main(
 
 
 def check_if_on_clan_chat_page(vm_index) -> bool:
-    if not region_is_color(vm_index,[142,536,8,8],(183,96,254)):return False
-    if not region_is_color(vm_index,[204,537,10,8],(183,96,252)):return False
-    if not region_is_color(vm_index,[352,536,16,10],(76,175,255)):return False
-    if not region_is_color(vm_index,[310,612,25,12],(80,118,153)):return False
+    if not region_is_color(vm_index, [142, 536, 8, 8], (183, 96, 254)):
+        return False
+    if not region_is_color(vm_index, [204, 537, 10, 8], (183, 96, 252)):
+        return False
+    if not region_is_color(vm_index, [352, 536, 16, 10], (76, 175, 255)):
+        return False
+    if not region_is_color(vm_index, [310, 612, 25, 12], (80, 118, 153)):
+        return False
     return True
 
 

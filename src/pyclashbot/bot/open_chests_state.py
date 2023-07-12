@@ -16,9 +16,12 @@ from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
 QUEUE_CHEST_BUTTON_COORD = (314, 357)
+CLASH_MAIN_DEADSPACE_COORD = (20, 350)
 
 
 def open_chests_state(vm_index, logger: Logger, next_state: str):
+    open_chests_start_time = time.time()
+
     logger.change_status(status="Opening chests state")
 
     logger.change_status(status="Handling obstructing notifications")
@@ -27,8 +30,6 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications"
         )
         return "restart"
-
-    time.sleep(3)
 
     # if not on clash main return
     if not check_if_on_clash_main_menu(vm_index):
@@ -44,12 +45,18 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
     chest_index = 0
     for status in statuses:
         logger.log(f'Investigating chest #{chest_index} with status "{status}"')
+        start_time = time.time()
         if status == "available":
             open_chest(vm_index, logger, chest_index)
+        logger.log(
+            f"Took {str(time.time() - start_time)[:5]}s to investigate chest #{chest_index}"
+        )
 
         chest_index += 1
 
-    time.sleep(3)
+    logger.log(
+        f"Took {str(time.time() - open_chests_start_time)[:5]}s to run open_chests_state"
+    )
 
     return next_state
 
@@ -127,15 +134,17 @@ def open_chest(vm_index, logger, chest_index):
     if check_if_chest_is_unlockable(vm_index):
         logger.add_chest_unlocked()
         click(vm_index, UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
-        time.sleep(3)
+        time.sleep(1)
 
     if check_if_can_queue_chest(vm_index):
         logger.add_chest_unlocked()
         click(vm_index, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
-        time.sleep(3)
+        time.sleep(1)
 
-    # click deadspace a bunch if you just accidentally opened the chest
-    click(vm_index, 20, 350, clicks=20, interval=0.3)
+    # click deadspace until clash main reappears
+    while not check_if_on_clash_main_menu(vm_index):
+        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+        time.sleep(1)
 
 
 def check_if_can_queue_chest(vm_index):

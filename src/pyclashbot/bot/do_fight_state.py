@@ -114,6 +114,8 @@ def leave_2v2_battle(vm_index, logger):
         logger.change_status("Error 96872 Failed to get to clash main after 2v2 match")
         return "restart"
 
+    return "good"
+
 
 def check_for_challenges_page():
     pass
