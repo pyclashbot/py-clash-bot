@@ -2,12 +2,14 @@ import sys
 import webbrowser
 
 import PySimpleGUI as sg
+from pyclashbot.bot.request_state import check_if_can_request_3, check_if_can_request_wrapper
 
 from pyclashbot.bot.states import state_tree
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
+from pyclashbot.memu.client import screenshot
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -309,9 +311,12 @@ def dummy_bot():
 
 
 def debug():
-    pass
+    # screenshot(1)
+    # check_if_can_request_3(1)
+    print(check_if_can_request_wrapper(1))
 
 
 if __name__ == "__main__":
     # dummy_bot()
-    main_gui()
+    # main_gui()
+    debug()

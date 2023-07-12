@@ -336,9 +336,9 @@ def do_request(vm_index, logger: Logger) -> None:
     # max scrolls
     logger.change_status(status="Counting the maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
-    logger.log(f'Found {max_scrolls} scrolls maximum in request page')
+    logger.log(f"Found {max_scrolls} scrolls maximum in request page")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
-    logger.log(f'Gonna do {random_scroll_amount} scrolls in request page')
+    logger.log(f"Gonna do {random_scroll_amount} scrolls in request page")
 
     do_random_scrolling_in_request_page(
         vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
@@ -369,23 +369,13 @@ def do_request(vm_index, logger: Logger) -> None:
         break
 
 
-def check_for_trade_cards_icon(vm_index) -> bool:
-    lines = [
-        check_line_for_color(
-            vm_index, x_1=33, y_1=502, x_2=56, y_2=502, color=(47, 69, 105)
-        ),
-        check_line_for_color(
-            vm_index, x_1=56, y_1=507, x_2=108, y_2=506, color=(253, 253, 203)
-        ),
-        check_line_for_color(
-            vm_index, x_1=37, y_1=515, x_2=125, y_2=557, color=(255, 188, 42)
-        ),
-    ]
-
-    return all(lines)
-
-
 def check_if_can_request_wrapper(vm_index):
+    if check_for_trade_cards_icon(vm_index):
+        return False
+
+    if check_for_trade_cards_icon_2(vm_index):
+        return False
+
     if check_if_can_request_3(vm_index):
         return True
     if check_if_can_request(vm_index):
@@ -396,9 +386,6 @@ def check_if_can_request_wrapper(vm_index):
 
 
 def check_if_can_request(vm_index) -> bool:
-    if check_for_trade_cards_icon(vm_index):
-        return False
-
     iar = numpy.asarray(screenshot(vm_index))
 
     region_is_white = True
@@ -438,6 +425,39 @@ def check_if_can_request_2(vm_index) -> bool:
     if not check_line_for_color(vm_index, 46, 529, 57, 539, (178, 79, 244)):
         return False
     if not check_line_for_color(vm_index, 50, 540, 54, 527, (176, 79, 244)):
+        return False
+    return True
+
+
+def check_for_trade_cards_icon(vm_index) -> bool:
+    lines = [
+        check_line_for_color(
+            vm_index, x_1=33, y_1=502, x_2=56, y_2=502, color=(47, 69, 105)
+        ),
+        check_line_for_color(
+            vm_index, x_1=56, y_1=507, x_2=108, y_2=506, color=(253, 253, 203)
+        ),
+        check_line_for_color(
+            vm_index, x_1=37, y_1=515, x_2=125, y_2=557, color=(255, 188, 42)
+        ),
+    ]
+
+    return all(lines)
+
+
+def check_for_trade_cards_icon_2(vm_index):
+    if not check_line_for_color(vm_index, 67, 524, 74, 534, (255, 255, 254)):
+        return False
+    if not check_line_for_color(vm_index, 90, 523, 91, 534, (255, 255, 254)):
+        return False
+    if not check_line_for_color(vm_index, 97, 536, 102, 543, (255, 253, 250)):
+        return False
+
+    if not region_is_color(vm_index, [50, 530, 4, 8], (212, 228, 255)):
+        return False
+    if not region_is_color(vm_index, [106, 523, 4, 8], (255, 200, 80)):
+        return False
+    if not region_is_color(vm_index, [104, 536, 12, 8], (255, 188, 42)):
         return False
     return True
 
