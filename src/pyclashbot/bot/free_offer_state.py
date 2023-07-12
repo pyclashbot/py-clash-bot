@@ -69,6 +69,7 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
         logger.log("Clicking this free offer: " + str(coord))
         click(vm_index, coord[0], coord[1])
         time.sleep(2)
+        logger.update_time_of_last_free_offer_collection(time.time())
 
         # click the 'Free!' button
         logger.log("Cliking the free! price button")
