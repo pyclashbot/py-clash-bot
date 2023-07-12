@@ -4,6 +4,6 @@ node_modules
 build
 dist
 
-
+__version__
 __pycache__
 build
