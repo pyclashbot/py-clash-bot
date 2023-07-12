@@ -37,16 +37,15 @@ def state_tree(
     #     "2v2 battle",
     #     "card mastery collection",
     #     "war",
-    #     "",
     # ]
 
     print(f"This state is {state}")
     logger.set_current_state(state)
 
     if state is None:
-        print("Error! State is None!!")
+        logger.error("Error! State is None!!")
         while 1:
-            pass
+            time.sleep(1)
 
     elif state == "start":  # --> open_chests
         # open clash
@@ -54,13 +53,7 @@ def state_tree(
 
         return "open_chests"
 
-    elif state == "restart":  # --> open_chests
-        ####DEBUG
-        # for _ in range(5):
-        #     print("ENTERED RESTART STATE. INFINITE LOOP")
-        # while 1:
-        #     pass
-
+    if state == "restart":  # --> open_chests
         # close app
         close_clash_royale_app(logger, vm_index)
         time.sleep(10)
@@ -76,7 +69,7 @@ def state_tree(
         # restart_vm(logger, vm_index)
         return "open_chests"
 
-    elif state == "open_chests":  # --> upgrade
+    if state == "open_chests":  # --> upgrade
         next_state = "upgrade"
 
         if "open Chests" in job_list:
@@ -84,14 +77,14 @@ def state_tree(
 
         return next_state
 
-    elif state == "upgrade":  # --> request
+    if state == "upgrade":  # --> request
         next_state = "request"
         if "upgrade" in job_list:
             return upgrade_cards_state(vm_index, logger, next_state)
 
         return next_state
 
-    elif state == "request":  # --> free_offer_collection
+    if state == "request":  # --> free_offer_collection
         next_state = "free_offer_collection"
 
         can_request = logger.check_if_can_request()
@@ -103,7 +96,7 @@ def state_tree(
 
         return next_state
 
-    elif state == "free_offer_collection":  # --> start_fight
+    if state == "free_offer_collection":  # --> start_fight
         next_state = "start_fight"
 
         can_free_offer_collect = logger.check_if_can_collect_free_offer()
@@ -113,7 +106,7 @@ def state_tree(
 
         return next_state
 
-    elif state == "start_fight":  # --> 1v1_fight, card_mastery
+    if state == "start_fight":  # --> 1v1_fight, card_mastery
         next_state = "card_mastery"
         # if both 1v1 and 2v2, pick a random one
         if "1v1 battle" in job_list and "2v2 battle" in job_list:
@@ -133,32 +126,28 @@ def state_tree(
         # if neither, go to NEXT_STATE
         return next_state
 
-    elif state == "2v2_fight":  # --> end_fight
+    if state == "2v2_fight":  # --> end_fight
         return do_2v2_fight_state(vm_index, logger)
 
-    elif state == "1v1_fight":  # --> end_fight
+    if state == "1v1_fight":  # --> end_fight
         return do_1v1_fight_state(vm_index, logger)
 
-    elif state == "end_fight":  # --> card_mastery
+    if state == "end_fight":  # --> card_mastery
         next_state = "card_mastery"
         return end_fight_state(vm_index, logger, next_state)
 
-    elif state == "card_mastery":  # --> war
+    if state == "card_mastery":  # --> war
         next_state = "war"
         if "card mastery collection" in job_list:
             return card_mastery_collection_state(vm_index, logger, next_state)
 
         return next_state
 
-    elif state == "war":  # --> open_chests
+    if state == "war":  # --> open_chests
         next_state = "open_chests"
         if "war" in job_list:
             return war_state(vm_index, logger, next_state)
         return next_state
 
-    print("Failure in state tree")
+    logger.error("Failure in state tree")
     return "fail"
-
-
-if __name__ == "__main__":
-    pass
