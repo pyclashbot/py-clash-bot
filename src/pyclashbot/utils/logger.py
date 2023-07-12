@@ -6,6 +6,8 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import exists, expandvars, getmtime, join
 
+from pyclashbot.utils.versioning import __version__
+
 MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
 
@@ -42,6 +44,7 @@ def initalize_pylogging():
         level=logging.DEBUG,
         format="%(levelname)s:%(asctime)s %(message)s",
     )
+    logging.info("Logging initialized for %s", __version__)
     compress_logs()
 
 

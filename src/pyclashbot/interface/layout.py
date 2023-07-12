@@ -1,3 +1,5 @@
+from os import path
+
 import PySimpleGUI as sg
 
 from pyclashbot.interface.controls import controls
@@ -9,6 +11,7 @@ from pyclashbot.interface.stats import (
     stat_box,
 )
 from pyclashbot.interface.theme import THEME
+from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
 
@@ -65,3 +68,13 @@ user_config_keys = [
 
 # list of button and checkbox keys to disable when the bot is running
 disable_keys = user_config_keys + ["Start"]
+
+
+def create_window():
+    """method for creating the main gui window"""
+    icon_path = "pixel-pycb.ico"
+    if not path.isfile(path=icon_path):
+        icon_path = path.join("..\\..\\..\\assets\\", icon_path)
+    return sg.Window(
+        title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path
+    )

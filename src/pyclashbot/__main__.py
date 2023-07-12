@@ -1,14 +1,13 @@
 import sys
 import webbrowser
-from os import path
-from typing import LiteralString
 
 import PySimpleGUI as sg
 
 from pyclashbot.bot.states import state_tree
 from pyclashbot.bot.worker import WorkerThread
-from pyclashbot.interface import disable_keys, main_layout, user_config_keys
+from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
+from pyclashbot.interface.layout import create_window
 from pyclashbot.utils.caching import (
     cache_user_settings,
     check_user_settings,
@@ -199,14 +198,28 @@ def exit_button_event(thread) -> None:
         thread.shutdown(kill=True)
 
 
+def handle_thread_finished(
+    window: sg.Window, thread: WorkerThread | None, logger: Logger
+):
+    """method for handling when the worker thread is finished"""
+    # enable the start button and configuration after the thread is stopped
+    if thread is not None and not thread.is_alive():
+        for key in disable_keys:
+            window[key].update(disabled=False)
+        if thread.logger.errored:
+            window["Stop"].update(disabled=True)
+            window["-Pause-Resume-Button-"].update(disabled=True)
+        else:
+            # reset the logger
+            logger = Logger(timed=False)
+            thread = None
+    return thread, logger
+
+
 def main_gui() -> None:
     """method for displaying the main gui"""
-    icon_path = "pixel-pycb.ico"
-    if not path.isfile(path=icon_path):
-        icon_path: LiteralString = path.join("..\\..\\assets\\", icon_path)
-
     # create gui window
-    window = sg.Window(title="Py-ClashBot", layout=main_layout, icon=icon_path)
+    window = create_window()
 
     # load the last cached settings
     load_last_settings(window=window)
@@ -252,27 +265,15 @@ def main_gui() -> None:
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
 
-        # handle when thread is finished
-        if thread is not None and not thread.is_alive():
-            # enable the start button and configuration after the thread is stopped
-            for key in disable_keys:
-                window[key].update(disabled=False)
-            if thread.logger.errored:
-                window["Stop"].update(disabled=True)
-                window["-Pause-Resume-Button-"].update(disabled=True)
-            else:
-                # reset the logger
-                logger = Logger(timed=False)
-                thread = None
+            # handle when thread is finished
 
         update_layout(window, logger)
 
     # shut down the thread if it is still running
+    window.close()
     if thread is not None:
         thread.shutdown(kill=True)
         thread.join()
-
-    window.close()
 
 
 def dummy_bot():
