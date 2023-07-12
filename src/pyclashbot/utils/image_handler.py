@@ -13,7 +13,7 @@ class InvalidImageError(Exception):
         super().__init__(self.message)
 
 
-def open_image(path) -> np.ndarray:
+def open_image(path: str) -> np.ndarray:
     """
     A method to validate and open an image file
     :param path: the path to the image file
@@ -21,9 +21,12 @@ def open_image(path) -> np.ndarray:
     """
     if not exists(path):
         raise FileNotFoundError(f"File {path} does not exist")
-    if not path.endswith(".png"):
+    if not path.lower().endswith(".png"):
         raise ValueError(f"File {path} is not a png image")
-    img = cv2.imread(path)  # pylint: disable=no-member
-    if img is None:
-        raise InvalidImageError(path, f"File {path} is not a valid image")
-    return img
+    with open(path, "rb") as im_stream:
+        im_bytes = bytearray(im_stream.read())
+        im_arr = np.asarray(im_bytes, dtype=np.uint8)
+        img = cv2.imdecode(im_arr, cv2.IMREAD_COLOR)  # pylint: disable=no-member
+        if img is None:
+            raise InvalidImageError(path, f"File {path} is not a valid image")
+        return img
