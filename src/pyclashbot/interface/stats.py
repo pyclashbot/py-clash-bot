@@ -135,7 +135,8 @@ collections_stats_values = [
 
 collections_stats = [
     [
+        sg.P(),
         sg.Column(collections_stats_titles, element_justification="right"),
         sg.Column(collections_stats_values, element_justification="left"),
-    ]
+    ],
 ]

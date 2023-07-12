@@ -5,10 +5,7 @@ from typing import LiteralString
 
 import PySimpleGUI as sg
 
-
 from pyclashbot.bot.states import state_tree
-
-
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, main_layout, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
@@ -216,7 +213,7 @@ def main_gui() -> None:
 
     # track worker thread and logger
     thread: WorkerThread | None = None
-    logger = Logger(timed=True)
+    logger = Logger(timed=False)
 
     # run the gui
     while True:
@@ -230,6 +227,7 @@ def main_gui() -> None:
 
         # on start event, start the thread
         if event == "Start":
+            logger = Logger(timed=True)
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
@@ -245,24 +243,14 @@ def main_gui() -> None:
             save_current_settings(values)
 
         # on Donate button event, open the donation link in browser
-        elif event == "Donate":
-            webbrowser.open(
-                "https://www.paypal.com/donate/"
-                + "?business=YE72ZEB3KWGVY"
-                + "&no_recurring=0"
-                + "&item_name=Support+my+projects%21"
-                + "&currency_code=USD"
-            )
-
-        # on Help button event, open the help gui
-        elif event == "Help":
-            webbrowser.open("https://www.pyclashbot.app/")
-
-        # on issues button event, open the github issues link in browser
-        elif event == "issues-link":
+        elif event == "bug-report":
             webbrowser.open(
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
             )
+
+        # on Help button event, open the help gui
+        elif event == "discord":
+            webbrowser.open("https://discord.gg/eXdVuHuaZv")
 
         # handle when thread is finished
         if thread is not None and not thread.is_alive():
