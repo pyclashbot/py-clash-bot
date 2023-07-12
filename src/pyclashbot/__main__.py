@@ -51,10 +51,10 @@ def read_job_list(values: dict[str, str | int]) -> list[str]:
     jobs = []
 
     if values["-Open-Chests-in-"]:
-        jobs.append("Open Chests")
+        jobs.append("open Chests")
 
     if values["-Requesting-in-"]:
-        jobs.append("Request")
+        jobs.append("request")
 
     if values["-Card-Mastery-Collection-in-"]:
         jobs.append("card mastery collection")
@@ -119,6 +119,8 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
 
     # get job list from gui
     jobs = read_job_list(values)
+    for _ in range(3):
+        logger.log(f"JOB LIST IS: {jobs}")
 
     # check if at least one job is selected
     if len(jobs) == 0:

@@ -41,6 +41,8 @@ def state_tree(
     # ]
 
     print(f"This state is {state}")
+    logger.set_current_state(state)
+
     if state is None:
         print("Error! State is None!!")
         while 1:
@@ -77,7 +79,7 @@ def state_tree(
     elif state == "open_chests":  # --> upgrade
         next_state = "upgrade"
 
-        if "Open Chests" in job_list:
+        if "open Chests" in job_list:
             return open_chests_state(vm_index, logger, next_state)
 
         return next_state
@@ -91,14 +93,22 @@ def state_tree(
 
     elif state == "request":  # --> free_offer_collection
         next_state = "free_offer_collection"
-        if "request" in job_list:
+
+        can_request = logger.check_if_can_request()
+
+        if (
+            "request" in job_list and can_request
+        ):  # request in job, request every 30 min
             return request_state(vm_index, logger, next_state)
 
         return next_state
 
     elif state == "free_offer_collection":  # --> start_fight
         next_state = "start_fight"
-        if "free offer collection" in job_list:
+
+        can_free_offer_collect = logger.check_if_can_collect_free_offer()
+
+        if "free offer collection" in job_list and can_free_offer_collect:
             return free_offer_collection_state(vm_index, logger, next_state)
 
         return next_state

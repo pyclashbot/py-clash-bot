@@ -93,13 +93,52 @@ class Logger:
 
         # bot stats
         self.account_switches = 0
+        self.current_state = "No state"
         self.current_status = "Idle"
+        self.time_of_last_request = 0
+        self.time_of_last_free_offer_collection = 0
 
         # track errored logger
         self.errored = False
 
         # write initial values to queue
         self._update_stats()
+
+    def check_if_can_request(self) -> bool:
+        if self.time_of_last_request == 0:
+            self.log("Can request bc time of last request is 0")
+            return True
+
+        if time.time() - self.time_of_last_request > 1800:
+            self.log(
+                "Can request bc time of last request is more than 1800 seconds ago"
+            )
+            return True
+
+        self.log("Cant request")
+        return False
+
+    def check_if_can_collect_free_offer(self) -> bool:
+        if self.time_of_last_free_offer_collection == 0:
+            self.log(
+                "Can free_offer_collect bc time of last free_offer_collection is 0"
+            )
+            return True
+
+        if time.time() - self.time_of_last_free_offer_collection > 1800:
+            self.log(
+                "Can free_offer_collect bc time of last free_offer_collection is more than 1800 seconds ago"
+            )
+            return True
+
+        self.log("Cant free_offer_collect")
+        return False
+
+    def update_time_of_last_request(self, input_time) -> None:
+        self.time_of_last_request = input_time
+
+    def update_time_of_last_free_offer_collection(self, input_time) -> None:
+        self.time_of_last_free_offer_collection = input_time
 
     def _update_log(self) -> None:
         self._update_stats()
@@ -146,11 +185,12 @@ class Logger:
         return wrapper
 
     def log(self, message) -> None:
-        logging.info(message)
+        log_message = f"[{self.current_state}] {message}"
+        logging.info(log_message)
         time_string: str = str(time.time() - self.start_time if self.start_time else 0)[
-            :5
+            :7
         ]
-        print(f"[{time_string}] {message}")
+        print(f"[{self.current_state}] [{time_string}] {message}")
 
     def make_time_str(self, seconds) -> str:
         """convert epoch to time
@@ -175,6 +215,10 @@ class Logger:
         else:
             hours, minutes, seconds = 0, 0, 0
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+    @_updates_log
+    def set_current_state(self, state_to_set):
+        self.current_state = state_to_set
 
     @_updates_log
     def add_free_offer_collection(self) -> None:
