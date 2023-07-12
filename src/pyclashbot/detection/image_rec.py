@@ -1,10 +1,9 @@
-import multiprocessing
-import os
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
+from os import walk
 from os.path import abspath, dirname, join
 
 import cv2
 import numpy as np
-from joblib import Parallel, delayed
 
 from pyclashbot.memu.client import screenshot
 from pyclashbot.utils.image_handler import open_image
@@ -21,7 +20,7 @@ def get_file_count(folder) -> int:
     """
     directory = join(dirname(__file__), "reference_images", folder)
 
-    return sum(len(files) for _, _, files in os.walk(directory))
+    return sum(len(files) for _, _, files in walk(directory))
 
 
 def make_reference_image_list(size):
@@ -91,24 +90,28 @@ def find_references(
         list[list[int] | None]: coordinate locations
     """
     top_level = dirname(__file__)
-    reference_folder = abspath(join(top_level, "reference_images"))
+    reference_folder = abspath(join(top_level, "reference_images", folder))
 
-    reference_images = []
+    reference_images = [open_image(join(reference_folder, name)) for name in names]
 
-    for name in names:
-        path = join(reference_folder, folder, name)
-        img = open_image(path)
-        reference_images.append(img)
-    num_cores = multiprocessing.cpu_count()
-    return Parallel(n_jobs=num_cores, prefer="threads")(
-        delayed(compare_images)(image, template, tolerance)
-        for template in reference_images
-    )  # type: ignore
+    with ThreadPoolExecutor(
+        max_workers=len(reference_images), thread_name_prefix="EmulatorThread"
+    ) as executor:
+        futures: list[Future[list[int] | None]] = [
+            executor.submit(
+                compare_images,
+                image,
+                template,
+                tolerance,
+            )
+            for template in reference_images
+        ]
+        return [future.result() for future in as_completed(futures)]
 
 
 def compare_images(
     image: np.ndarray,
-    template,
+    template: np.ndarray,
     threshold=0.8,
 ):
     """detects pixel location of a template in an image
@@ -249,7 +252,3 @@ def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
 
     coordinates.append((x_1, y_1))
     return coordinates
-
-
-if __name__ == "__main__":
-    pass
