@@ -6,7 +6,8 @@ as well as starting and stopping the Clash Royale app within them.
 import subprocess
 import sys
 import time
-from os.path import join
+from os import makedirs
+from os.path import exists, expandvars, join
 
 import numpy
 import psutil
@@ -16,16 +17,14 @@ from pymemuc import PyMemuc, PyMemucError, VMInfo
 from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import screenshot
-from pyclashbot.memu.emulator import set_vm_language
 from pyclashbot.utils.logger import Logger
 
 pmc = PyMemuc(debug=False)
 
 ANDROID_VERSION = "96"  # android 9, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
+APK_BASE_NAME = "com.supercell.clashroyale"
 
-
-# launcher specific methods
 
 MANUAL_VM_WAIT_TIME = 10
 MANUAL_CLASH_MAIN_WAIT_TIME = 10
@@ -109,46 +108,46 @@ def check_for_vm(logger: Logger) -> int:
     # return the index. if no vms named pyclashbot exist, create one.
     return vm_index if vm_index != -1 else create_vm(logger)
 
-def disable_components(component_names, vm_index):
+
+def disable_components(vm_index):
+    component_names = [
+        "/com.supercell.titan.TimeAlarm",
+        "/com.google.firebase.iid.FirebaseInstanceIdReceiver",
+        "/com.supercell.id.SharedDataBroadcastReceiver",
+        "/com.supercell.id.SharedDataReceiverBroadcastReceiver",
+        "/com.google.android.datatransport.runtime.scheduling"
+        ".jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
+        "/com.supercell.titan.PushMessageService",
+        "/com.google.firebase.messaging.FirebaseMessagingService",
+        "/com.google.firebase.components.ComponentDiscoveryService",
+        "/com.google.android.gms.auth.api.signin.RevocationBoundService",
+        "/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+        "/com.google.android.datatransport.runtime.scheduling"
+        ".jobscheduling.JobInfoSchedulerService",
+        "/com.helpshift.activities.HSMainActivity",
+        "/com.helpshift.activities.HSDebugActivity",
+        "/com.android.billingclient.api.ProxyBillingActivity",
+        "/com.google.android.gms.common.api.GoogleApiActivity",
+        "/com.google.android.play.core.common.PlayCoreDialogWrapperActivity",
+        "/io.sentry.android.core.SentryInitProvider",
+        "/io.sentry.android.core.SentryPerformanceProvider",
+        "/com.google.firebase.provider.FirebaseInitProvider",
+        "/androidx.lifecycle.ProcessLifecycleOwnerInitializer",
+        "/com.journeyapps.barcodescanner.CaptureActivity",
+    ]
     for component in component_names:
-        command = f"shell pm disable {component}"
+        command = f"shell pm disable {APK_BASE_NAME + component}"
         pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-
-
-component_names = [
-    "com.supercell.clashroyale/com.supercell.titan.TimeAlarm",
-    "com.supercell.clashroyale/com.google.firebase.iid.FirebaseInstanceIdReceiver",
-    "com.supercell.clashroyale/com.supercell.id.SharedDataBroadcastReceiver",
-    "com.supercell.clashroyale/com.supercell.id.SharedDataReceiverBroadcastReceiver",
-    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
-    "com.supercell.clashroyale/com.supercell.titan.PushMessageService",
-    "com.supercell.clashroyale/com.google.firebase.messaging.FirebaseMessagingService",
-    "com.supercell.clashroyale/com.google.firebase.components.ComponentDiscoveryService",
-    "com.supercell.clashroyale/com.google.android.gms.auth.api.signin.RevocationBoundService",
-    "com.supercell.clashroyale/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
-    "com.supercell.clashroyale/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService",
-    "com.supercell.clashroyale/com.helpshift.activities.HSMainActivity",
-    "com.supercell.clashroyale/com.helpshift.activities.HSDebugActivity",
-    "com.supercell.clashroyale/com.android.billingclient.api.ProxyBillingActivity",
-    "com.supercell.clashroyale/com.google.android.gms.common.api.GoogleApiActivity",
-    "com.supercell.clashroyale/com.google.android.play.core.common.PlayCoreDialogWrapperActivity",
-    "com.supercell.clashroyale/io.sentry.android.core.SentryInitProvider",
-    "com.supercell.clashroyale/io.sentry.android.core.SentryPerformanceProvider",
-    "com.supercell.clashroyale/com.google.firebase.provider.FirebaseInitProvider",
-    "com.supercell.clashroyale/androidx.lifecycle.ProcessLifecycleOwnerInitializer",
-    "com.supercell.clashroyale/com.journeyapps.barcodescanner.CaptureActivity"
-]
 
 
 def start_clash_royale(logger: Logger, vm_index):
     # using pymemuc check if clash royale is installed
-    apk_base_name = "com.supercell.clashroyale"
 
     # get list of installed apps
     installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
 
     # check list of installed apps for names containing base name
-    found = [app for app in installed_apps if apk_base_name in app]
+    found = [app for app in installed_apps if APK_BASE_NAME in app]
 
     if not found:
         # notify user that clash royale is not installed, program will exit
@@ -158,11 +157,12 @@ def start_clash_royale(logger: Logger, vm_index):
         show_clash_royale_setup_gui()
 
     # Disable Component
-    disable_components(component_names, vm_index)
+    disable_components(vm_index)
 
     # start Clash Royale
-    pmc.start_app_vm(apk_base_name, vm_index)
+    pmc.start_app_vm(APK_BASE_NAME, vm_index)
     logger.change_status(status="Successfully initialized Clash app")
+
 
 # making/configuring emulator methods
 def create_vm(logger: Logger):
@@ -198,6 +198,30 @@ def rename_vm(
         count += 1
 
 
+def set_vm_language(vm_index: int):
+    """Set the language of the vm to english"""
+    settings_uri = "--uri content://settings/system"
+    set_language_commands = [
+        f"shell content query {settings_uri} --where \"name='system_locales'\"",
+        f"shell content delete {settings_uri} --where \"name='system_locales'\"",
+        f"shell content insert {settings_uri} --bind name:s:system_locales --bind value:s:en-US",
+        "shell setprop ctl.restart zygote",
+    ]
+
+    for command in set_language_commands:
+        pmc.send_adb_command_vm(vm_index=vm_index, command=command)
+        time.sleep(0.1)
+
+
+def get_screenshot_folder() -> str:
+    """Get the path to the screenshot folder"""
+    screenshot_path = join(expandvars("%appdata%"), "py-clash-bot", "screenshots")
+    # make sure this folder exists
+    if not exists(screenshot_path):
+        makedirs(screenshot_path)
+    return screenshot_path
+
+
 def configure_vm(logger: Logger, vm_index):
     logger.change_status(status="Configuring VM")
 
@@ -210,9 +234,7 @@ def configure_vm(logger: Logger, vm_index):
 
     # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
     configuration: dict[str, str] = {
-        "start_window_mode": "2",  # custom window position
-        "win_x": "0",
-        "win_y": "0",
+        "start_window_mode": "1",  # remember window position
         "win_scaling_percent2": "100",  # 100% scaling
         "is_customed_resolution": "1",
         "resolution_width": "419",
@@ -222,7 +244,10 @@ def configure_vm(logger: Logger, vm_index):
         "cpus": str(cpu_count),
         "memory": str(total_mem),
         "fps": "30",
+        "turbo_mode": "0",
         "enable_audio": "0",
+        "is_hide_toolbar": "1",
+        "picturepath": get_screenshot_folder(),
     }
 
     for key, value in configuration.items():
@@ -246,7 +271,7 @@ def get_vm_index(logger: Logger, name: str) -> int:
     # sorted by index, lowest to highest
     vms.sort(key=lambda x: x["index"])
 
-    # get the indecies of all vms with the given name
+    # get the indecies of all vms named pyclashbot
     vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == name]
 
     # delete all vms except the lowest index, keep looping until there is only one
@@ -261,7 +286,7 @@ def get_vm_index(logger: Logger, name: str) -> int:
                 # don't raise error, just continue to loop until its deleted
                 # raise err # if program hangs on deleting vm then uncomment this line
 
-    # return the index. if no vms with name exist, return -1
+    # return the index. if no vms named pyclashbot exist, return -1
     return vm_indices[0] if vm_indices else -1
 
 
@@ -297,13 +322,11 @@ def check_if_clash_banned(vm_index):
             white_account_information_text_exists = True
             break
 
-    if (
+    return bool(
         red_okay_text_exists
         and blue_loading_bar_exists
         and white_account_information_text_exists
-    ):
-        return True
-    return False
+    )
 
 
 def check_if_on_clash_main_menu(vm_index):
@@ -369,6 +392,15 @@ def start_memuc_console() -> int:
     return process.pid
 
 
+def stop_memuc_console(process_id: int) -> None:
+    """Stop the memuc console with the given process ID"""
+    try:
+        process = psutil.Process(process_id)
+        process.terminate()
+    except psutil.NoSuchProcess:
+        print("#975627345 Failure to stop memuc console")
+
+
 def close_clash_royale_app(logger, vm_index):
     """using pymemuc check if clash royale is installed"""
     apk_base_name = "com.supercell.clashroyale"
@@ -396,15 +428,6 @@ def close_everything_memu():
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             print("Couldnt close process", proc.name())
     print("Exiting close_everything_memu(). . .")
-
-
-def stop_memuc_console(process_id: int) -> None:
-    """Stop the memuc console with the given process ID"""
-    try:
-        process = psutil.Process(process_id)
-        process.terminate()
-    except psutil.NoSuchProcess:
-        print("#975627345 Failure to stop memuc console")
 
 
 # error popup guis
