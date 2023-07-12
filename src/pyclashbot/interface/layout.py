@@ -12,25 +12,11 @@ from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
 
-description = [
-    [
-        sg.Text("Matthew Miglio\nMartin Miglio\nNovember 2022\n", size=(13, None)),
-    ],
-    [
-        sg.Text(
-            "Issues?",
-            key="issues-link",
-            enable_events=True,
-            tooltip="https://github.com/matthewmiglio/py-clash-bot/issues/new/choose",
-            text_color="blue",
-        ),
-    ],
-]
 
 main_layout = [
     [
         sg.Frame(layout=jobs_checklist, title="Jobs"),
-        sg.Frame(layout=controls, title="Controls", expand_x=True),
+        sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
     ],
     [
         sg.Frame(
@@ -47,9 +33,8 @@ main_layout = [
         sg.Frame(
             layout=collections_stats,
             title="Collection Stats",
-            expand_y=True,
-        ),
-        sg.Frame(layout=description, title="Info", expand_x=True),
+            expand_x=True,
+        )
     ],
     [
         stat_box("time_since_start", size=(7, 1)),
