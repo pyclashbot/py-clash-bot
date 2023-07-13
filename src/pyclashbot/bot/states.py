@@ -4,7 +4,7 @@ from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
 from pyclashbot.bot.do_fight_state import (
     do_1v1_fight_state,
     do_2v2_fight_state,
-    end_fight_state,
+    get_to_main_after_fight,
     start_1v1_fight_state,
     start_2v2_fight_state,
 )
@@ -127,14 +127,16 @@ def state_tree(
         return next_state
 
     if state == "2v2_fight":  # --> end_fight
-        return do_2v2_fight_state(vm_index, logger)
+        next_state = "end_fight"
+        return do_2v2_fight_state(vm_index, logger, next_state)
 
     if state == "1v1_fight":  # --> end_fight
-        return do_1v1_fight_state(vm_index, logger)
+        next_state = "end_fight"
+        return do_1v1_fight_state(vm_index, logger, next_state)
 
     if state == "end_fight":  # --> card_mastery
         next_state = "card_mastery"
-        return end_fight_state(vm_index, logger, next_state)
+        return get_to_main_after_fight(vm_index, logger, next_state)
 
     if state == "card_mastery":  # --> war
         next_state = "war"
