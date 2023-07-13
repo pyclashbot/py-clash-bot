@@ -342,3 +342,6 @@ class Logger:
 
     def get_card_upgrades(self) -> int:
         return self.cards_upgraded
+
+    def get_chests_opened(self):
+        return self.chests_unlocked

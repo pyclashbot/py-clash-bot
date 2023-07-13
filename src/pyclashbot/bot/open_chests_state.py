@@ -45,9 +45,9 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
 
     chest_index = 0
     for status in statuses:
-        logger.log(f'Investigating chest #{chest_index} with status "{status}"')
         start_time = time.time()
         if status == "available":
+            logger.log(f"Chest #{chest_index} is available")
             if open_chest(vm_index, logger, chest_index) == "restart":
                 logger.change_status("Error 9988572 Failure with open_chest")
                 return "restart"
@@ -120,9 +120,10 @@ def get_chest_statuses(vm_index):
     return statuses
 
 
-def open_chest(vm_index, logger, chest_index) -> Literal['restart', 'good']:
-    prev_chests_opened = logger.get_chests_opened()
+def open_chest(vm_index, logger:Logger, chest_index) -> Literal["restart", "good"]:
+    logger.log("Opening this chest")
 
+    prev_chests_opened = logger.get_chests_opened()
 
     chest_coords = [
         (77, 497),
@@ -160,11 +161,9 @@ def open_chest(vm_index, logger, chest_index) -> Literal['restart', 'good']:
             )
             return "restart"
 
-
     chests_opened = logger.get_chests_opened()
     logger.log(f"Opened {chests_opened - prev_chests_opened} chests")
-    return 'good'
-
+    return "good"
 
 
 def check_if_can_queue_chest(vm_index):
