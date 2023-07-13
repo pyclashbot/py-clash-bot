@@ -1,13 +1,8 @@
 import random
-
 import time
 from typing import Literal
 
-
-from pyclashbot.detection.image_rec import (
-    check_line_for_color,
-    region_is_color,
-)
+from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
 from pyclashbot.memu.client import click, scroll_up
 from pyclashbot.utils.logger import Logger
 
@@ -712,7 +707,7 @@ def get_to_clan_tab_from_clash_main(
 
         # if on the clan tab chat page, return
         if check_if_on_clan_chat_page(vm_index):
-            logger.log('On clan chat page so breaking from loop')
+            logger.log("On clan chat page so breaking from loop")
             break
 
         # if on clash main, click the clan tab button

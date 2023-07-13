@@ -9,13 +9,12 @@ from pyclashbot.bot.nav import (
     get_to_clash_main_from_card_page,
 )
 from pyclashbot.detection.image_rec import (
-    pixel_is_equal,
     check_line_for_color,
+    pixel_is_equal,
     region_is_color,
 )
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
-
 
 CARD_COORDS: list[Any] = [
     (74, 252),

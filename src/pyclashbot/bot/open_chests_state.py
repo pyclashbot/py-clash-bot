@@ -120,7 +120,7 @@ def get_chest_statuses(vm_index):
     return statuses
 
 
-def open_chest(vm_index, logger:Logger, chest_index) -> Literal["restart", "good"]:
+def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "good"]:
     logger.log("Opening this chest")
 
     prev_chests_opened = logger.get_chests_opened()

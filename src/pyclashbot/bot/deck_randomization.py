@@ -1,4 +1,6 @@
 import random
+import time
+
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
@@ -13,7 +15,6 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
 from pyclashbot.utils.logger import Logger
-import time
 
 DECK_2_COORD = (158, 127)
 
