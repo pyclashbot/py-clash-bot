@@ -106,7 +106,7 @@ def randomize_this_deck(vm_index, logger: Logger):
 
 
 def find_use_card_button(vm_index):
-    folder = "use_card_button"
+    folder = "use_button"
     size = get_file_count(folder)
 
     names = make_reference_image_list(size)
