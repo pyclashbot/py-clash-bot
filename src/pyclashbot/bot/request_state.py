@@ -24,7 +24,6 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
 from pyclashbot.utils.logger import Logger
 
-
 COLOR_WHITE: list[int] = [255, 255, 255]
 YELLOW_1: list[int] = [255, 203, 85]
 YELLOW_2: list[int] = [255, 190, 43]
@@ -366,14 +365,12 @@ def do_request(vm_index, logger: Logger) -> None:
         # Click request button coord
         click(vm_index, coord[0], coord[1])
 
-
         prev_requests = logger.get_requests()
 
         logger.add_request()
 
         requests = logger.get_requests()
-        logger.log(f'Incremented requests stat from {prev_requests} to {requests}')
-
+        logger.log(f"Incremented requests stat from {prev_requests} to {requests}")
 
         time.sleep(3)
         break

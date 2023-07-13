@@ -1,7 +1,6 @@
 import time
 from typing import Literal
 
-
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     wait_for_clash_main_menu,

@@ -419,6 +419,26 @@ def check_enemy_tower_statuses(
 # post fight methods
 
 
+def end_fight_state(vm_index, logger: Logger, next_state):
+    # get to clash main after this fight
+    get_to_main_after_fight(vm_index, logger, next_state)
+
+    # check if the prev game was a win
+
+    win_check_return = check_if_previous_game_was_win(vm_index, logger)
+
+    if win_check_return == "restart":
+        logger.log("Error 885869 Failed while checking if previous game was a win")
+        return "restart"
+
+    if win_check_return:
+        logger.add_win()
+        return next_state
+
+    logger.add_loss()
+    return next_state
+
+
 def check_if_previous_game_was_win(
     vm_index, logger: Logger
 ) -> bool | Literal["restart"]:
@@ -502,9 +522,6 @@ def get_to_main_after_fight(vm_index, logger, next_state):
 # unsorted
 
 
-##
-
-
 def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
     if check_for_end_2v2_battle_condition_1(vm_index):
         logger.log("On the end of 2v2 (c1) battle screen so clicking exit button")
@@ -528,9 +545,6 @@ def check_for_end_2v2_battle_condition_1(vm_index) -> bool:
     return True
 
 
-##
-
-
 def handle_end_1v1_battle_condition_1(vm_index, logger) -> None:
     if check_for_end_1v1_battle_condition_1(vm_index):
         logger.log("On the end of 1v1 (c1) battle screen to clicking OK button")
@@ -545,9 +559,6 @@ def check_for_end_1v1_battle_condition_1(vm_index) -> bool:
     if not region_is_color(vm_index, [52, 514, 20, 8], (255, 255, 255)):
         return False
     return True
-
-
-##
 
 
 def handle_end_1v1_battle_condition_2(vm_index, logger) -> None:

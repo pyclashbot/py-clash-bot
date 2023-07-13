@@ -1,8 +1,6 @@
 import os
 import random
 
-import numpy as np
-
 from pyclashbot.detection.image_rec import (
     check_for_location,
     crop_image,
