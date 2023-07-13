@@ -104,6 +104,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         )
         return "restart"
 
+    logger.update_time_of_last_card_upgrade(time.time())
     return next_state
 
 
@@ -186,10 +187,9 @@ def upgrade_card(vm_index, logger: Logger, index, upgrade_list) -> None:
             logger.add_card_upgraded()
 
             card_upgrades = logger.get_card_upgrades()
-            logger.log(f'Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}')
-
-
-
+            logger.log(
+                f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
+            )
 
         # close buy gold popup
         click(vm_index, CLOSE_BUY_GOLD_POPUP_COORD[0], CLOSE_BUY_GOLD_POPUP_COORD[1])
@@ -222,9 +222,9 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
         time.sleep(2)
 
         # read the pixel
-        this_pixel: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(screenshot(vm_index))[this_upgrade_pixel_coord[1]][
-            this_upgrade_pixel_coord[0]
-        ]
+        this_pixel: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(
+            screenshot(vm_index)
+        )[this_upgrade_pixel_coord[1]][this_upgrade_pixel_coord[0]]
 
         if pixel_is_equal(this_pixel, GREEN_COLOR, tol=35):  # type: ignore
             bool_list.append(True)

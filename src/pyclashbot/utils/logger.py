@@ -95,6 +95,7 @@ class Logger:
         self.current_state = "No state"
         self.current_status = "Idle"
         self.time_of_last_request = 0
+        self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
 
         # track errored logger
@@ -102,6 +103,20 @@ class Logger:
 
         # write initial values to queue
         self._update_stats()
+
+    def check_if_can_card_upgrade(self):
+        if self.time_of_last_card_upgrade == 0:
+            self.log("Can card_upgrade bc time_of_last_card_upgrade is 0")
+            return True
+
+        if time.time() - self.time_of_last_card_upgrade > 1800:
+            self.log(
+                "Can card_upgrade bc time_of_last_card_upgrade is more than 1800 seconds ago"
+            )
+            return True
+
+        self.log("Cant card_upgrade")
+        return False
 
     def check_if_can_request(self) -> bool:
         if self.time_of_last_request == 0:
@@ -138,6 +153,9 @@ class Logger:
 
     def update_time_of_last_free_offer_collection(self, input_time) -> None:
         self.time_of_last_free_offer_collection = input_time
+
+    def update_time_of_last_card_upgrade(self, input_time) -> None:
+        self.time_of_last_card_upgrade = input_time
 
     def _update_log(self) -> None:
         self._update_stats()

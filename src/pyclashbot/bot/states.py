@@ -41,6 +41,7 @@ def state_tree(
 
     print(f"This state is {state}")
     logger.set_current_state(state)
+    time.sleep(1)
 
     if state is None:
         logger.error("Error! State is None!!")
@@ -79,7 +80,8 @@ def state_tree(
 
     if state == "upgrade":  # --> request
         next_state = "request"
-        if "upgrade" in job_list:
+
+        if "upgrade" in job_list and logger.check_if_can_card_upgrade():
             return upgrade_cards_state(vm_index, logger, next_state)
 
         return next_state

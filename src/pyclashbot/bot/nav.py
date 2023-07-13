@@ -35,6 +35,7 @@ CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
+CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT=120#seconds
 
 
 def get_to_main_from_challenges_tab(
@@ -696,8 +697,15 @@ def get_to_clash_main_from_clan_page(
     return "good"
 
 
-def get_to_clan_tab_from_clash_main(vm_index, logger: Logger):
+def get_to_clan_tab_from_clash_main(vm_index, logger: Logger) -> Literal['restart', 'good']:
+    start_time = time.time()
     while 1:
+        #timeout check
+        time_taken = time.time() - start_time
+        if time_taken > CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT:
+            logger.change_status('Error 89572985 took too long to get to clan tab from clash main')
+            return 'restart'
+
         #if on the clan tab chat page, return
         if check_if_on_clan_chat_page(vm_index):
             break
@@ -721,7 +729,9 @@ def get_to_clan_tab_from_clash_main(vm_index, logger: Logger):
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
         )
 
+    #if here, then done
     logger.log('Made it to the clan page from clash main')
+    return 'good'
 
 
 
