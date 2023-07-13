@@ -1,3 +1,4 @@
+
 import random
 import time
 from typing import Literal
@@ -45,6 +46,7 @@ WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
 WAR_BATTLE_TIMEOUT = 240
 
+WAR_BATTLE_START_TIMEOUT = 120#seconds
 
 def find_war_battle_icon(vm_index):
     folder_name = "war_battle_icon"
@@ -134,7 +136,9 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.add_war_fight()
 
     # wait for battle start
-    wait_for_war_battle_start(vm_index, logger)
+    if wait_for_war_battle_start(vm_index, logger)=='restart':
+        logger.log('Error 858258 WAited too long for war battle to begin.')
+        return 'restart'
 
     # do fight
     if do_war_battle(vm_index, logger) == "restart":
@@ -197,6 +201,7 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
     return "good"
 
 
+
 def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
     logger.change_status(status="Waiting for war battle start")
 
@@ -207,7 +212,7 @@ def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
 
         time_taken = time.time() - start_time
 
-        if time_taken > 45:
+        if time_taken > WAR_BATTLE_START_TIMEOUT:
             logger.change_status(
                 status="Error 98246572 Failure waiting for war battle start"
             )
