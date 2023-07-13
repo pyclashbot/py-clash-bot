@@ -1,3 +1,5 @@
+import random
+
 import time
 from typing import Literal
 
@@ -32,9 +34,7 @@ SHOP_TAB_FROM_CARD_TAB: tuple[Literal[29], Literal[601]] = (29, 601)
 CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
-CLAN_PAGE_FROM_MAIN_TIMEOUT=120#seconds
-
-
+CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
 
 
 def get_to_main_from_challenges_tab(
@@ -696,57 +696,64 @@ def get_to_clash_main_from_clan_page(
     return "good"
 
 
-def get_to_clan_tab_from_clash_main(
-    vm_index, logger: Logger, printmode=False
-) -> Literal["restart", "good"]:
-    start_time = time.time()
+def get_to_clan_tab_from_clash_main(vm_index, logger: Logger):
+    while 1:
+        #if on the clan tab chat page, return
+        if check_if_on_clan_chat_page(vm_index):
+            break
 
-    if printmode:
-        logger.change_status(status="Getting to clan tab from clash main menu")
-    else:
-        logger.log("Getting to clan tab from clash main menu")
+        # if on clash main, click the clan tab button
+        handle_clash_main_page_for_clan_page_navigation(vm_index, logger)
 
-    # if not on main, restart
-    if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(
-            status="ERROR 7346722 Not on clash main menu, returning to start state"
-        )
-        return "restart"
+        # if on final results page, click OK
+        handle_final_results_page(vm_index, logger)
 
-    # click clan tab button
-    click(
-        vm_index,
-        CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
-        CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
-    )
+        #1/3 of the time scroll up randomly, then redo the page navigation checks
+        if random.randint(1,3)==1:
+            scroll_up(vm_index)
+            continue
 
-
-
-    while not check_if_on_clan_chat_page(vm_index):
-        time_taken = time.time() - start_time
-        if time_taken > CLAN_PAGE_FROM_MAIN_TIMEOUT:
-            logger.log('Error 995235 Watied too long for clan tab to appear when coming from main')
-
-
-        if printmode:
-            logger.change_status(status="Cycling to clan tab")
-        else:
-            logger.log("Cycling to clan tab")
-        click(
+        #1/3 of the time cycle the clan tab page that its on
+        if random.randint(1,3)==1:
+            click(
             vm_index,
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
         )
 
-        scroll_up(vm_index)
+    logger.log('Made it to the clan page from clash main')
 
-        time.sleep(3)
 
-    if printmode:
-        logger.change_status(status="Made it to clan chat page")
-    else:
-        logger.log("Made it to clan chat page")
-    return "good"
+
+def handle_clash_main_page_for_clan_page_navigation(vm_index, logger) -> None:
+    if check_if_on_clash_main_menu(vm_index):
+        click(
+            vm_index,
+            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
+        )
+        logger.log("On clash main so clicking clan tab button")
+
+
+def handle_final_results_page(vm_index, logger) -> None:
+    if check_for_final_results_page(vm_index):
+        click(vm_index, 211, 524)
+        logger.log("On final_results_page so clicking OK button")
+
+
+def check_for_final_results_page(vm_index) -> bool:
+    if not region_is_color(vm_index, [170, 527, 20, 18], (181, 96, 253)):
+        return False
+    if not region_is_color(vm_index, [227, 514, 18, 6], (192, 120, 252)):
+        return False
+
+    if not check_line_for_color(vm_index, 201, 518, 209, 528, (255, 255, 255)):
+        return False
+    if not check_line_for_color(vm_index, 213, 517, 215, 527, (255, 255, 255)):
+        return False
+
+    return True
+
 
 
 def check_if_on_clan_chat_page(vm_index) -> bool:
