@@ -93,10 +93,11 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         logger.change_status(status="ERROR 74842744443 Not on clan tab")
         return "restart"
 
+    logger.update_time_of_last_request(time.time())
+
     # check if request exists
     if check_if_can_request_wrapper(vm_index):
         # do request
-        logger.update_time_of_last_request(time.time())
         do_request(vm_index, logger)
     else:
         logger.change_status(status="Cant request right now.")
