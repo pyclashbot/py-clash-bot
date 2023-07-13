@@ -92,7 +92,6 @@ class Logger:
         self.most_recent_restart_time = 0
 
         # bot stats
-        self.account_switches = 0
         self.current_state = "No state"
         self.current_status = "Idle"
         self.time_of_last_request = 0
@@ -158,7 +157,6 @@ class Logger:
                 "chests_unlocked": self.chests_unlocked,
                 "cards_played": self.cards_played,
                 "war_fights": self.war_fights,
-                "account_switches": self.account_switches,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "free_offer_collections": self.free_offer_collections,
                 "current_status": self.current_status,
@@ -258,11 +256,6 @@ class Logger:
     def add_card_upgraded(self):
         """add card upgraded to log"""
         self.cards_upgraded += 1
-
-    @_updates_log
-    def add_account_switch(self):
-        """add account switch to log"""
-        self.account_switches += 1
 
     @_updates_log
     def add_win(self):

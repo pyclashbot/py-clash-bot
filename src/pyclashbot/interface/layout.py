@@ -6,8 +6,8 @@ from pyclashbot.interface.controls import controls
 from pyclashbot.interface.joblist import jobs_checklist
 from pyclashbot.interface.stats import (
     battle_stats,
-    collections_stats,
-    progress_stats,
+    collection_stats,
+    bot_stats,
     stat_box,
 )
 from pyclashbot.interface.theme import THEME
@@ -23,19 +23,19 @@ main_layout = [
     ],
     [
         sg.Frame(
-            layout=battle_stats,
-            title="Battle Stats",
+            layout=collection_stats,
+            title="Collection Stats",
         ),
         sg.Frame(
-            layout=progress_stats,
-            title="Progress Stats",
+            layout=battle_stats,
+            title="Battle Stats",
             expand_x=True,
         ),
     ],
     [
         sg.Frame(
-            layout=collections_stats,
-            title="Collection Stats",
+            layout=bot_stats,
+            title="Bot Stats",
             expand_x=True,
         )
     ],
