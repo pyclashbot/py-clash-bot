@@ -268,22 +268,22 @@ class Logger:
         self.losses += 1
 
     @_updates_log
-    def add_1v1_fight(self):
+    def add_1v1_fight(self) -> None:
         """add fight to log"""
         self._1v1_fights += 1
 
     @_updates_log
-    def add_2v2_fight(self):
+    def add_2v2_fight(self) -> None:
         """add fight to log"""
         self._2v2_fights += 1
 
     @_updates_log
-    def add_request(self):
+    def add_request(self) -> None:
         """add request to log"""
         self.requests += 1
 
     @_updates_log
-    def change_status(self, status):
+    def change_status(self, status) -> None:
         """change status of bot in log
 
         Args:
@@ -293,22 +293,34 @@ class Logger:
         self.log(status)
 
     @_updates_log
-    def add_auto_restart(self):
+    def add_auto_restart(self) -> None:
         """add request to log"""
         self.auto_restarts += 1
 
     @_updates_log
-    def add_restart_after_failure(self):
+    def add_restart_after_failure(self) -> None:
         """add request to log"""
         self.restarts_after_failure += 1
 
     @_updates_log
-    def change_most_recent_restart_time(self, time_to_set):
+    def change_most_recent_restart_time(self, time_to_set) -> None:
         """add request to log"""
         self.most_recent_restart_time = time_to_set
 
-    def get_1v1_fights(self):
+    def get_1v1_fights(self) -> int:
         return self._1v1_fights
 
-    def get_2v2_fights(self):
+    def get_2v2_fights(self) -> int:
         return self._2v2_fights
+
+    def get_cards_played(self) -> int:
+        return self.cards_played
+
+    def get_free_offer_collections(self) -> int:
+        return self.free_offer_collections
+
+    def get_requests(self) -> int:
+        return self.requests
+
+    def get_card_upgrades(self) -> int:
+        return self.cards_upgraded

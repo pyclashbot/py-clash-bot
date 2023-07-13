@@ -182,7 +182,14 @@ def upgrade_card(vm_index, logger: Logger, index, upgrade_list) -> None:
 
         # if gold popup doesnt exists: add to logger's upgrade stat
         if not check_for_missing_gold_popup(vm_index):
+            prev_card_upgrades = logger.get_card_upgrades()
             logger.add_card_upgraded()
+
+            card_upgrades = logger.get_card_upgrades()
+            logger.log(f'Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}')
+
+
+
 
         # close buy gold popup
         click(vm_index, CLOSE_BUY_GOLD_POPUP_COORD[0], CLOSE_BUY_GOLD_POPUP_COORD[1])

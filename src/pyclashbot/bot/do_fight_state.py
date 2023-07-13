@@ -157,7 +157,13 @@ def do_1v1_fight_state(vm_index, logger: Logger, next_state):
         logger.log("Error 884458245 Failuring in fight loop")
         return "restart"
 
+    prev_1v1_fight_count = logger.get_1v1_fights()
     logger.add_1v1_fight()
+    _1v1_fight_count = logger.get_1v1_fights()
+    logger.log(
+        f"Increment 1v1 fight count from {prev_1v1_fight_count} to {_1v1_fight_count}"
+    )
+
     return next_state
 
 
@@ -179,7 +185,13 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state):
         logger.log("Error 698245 Failuring in fight loop")
         return "restart"
 
+    prev_2v2_fight_count = logger.get_2v2_fights()
     logger.add_2v2_fight()
+    _2v2_fight_count = logger.get_2v2_fights()
+    logger.log(
+        f"Increment 2v2 fight count from {prev_2v2_fight_count} to {_2v2_fight_count}"
+    )
+
     return next_state
 
 
@@ -213,6 +225,8 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # count plays
     plays = 0
+
+    prev_cards_played = logger.get_cards_played()
 
     # while in battle:
     while check_for_in_2v2_battle(vm_index):
@@ -267,7 +281,10 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # increment plays counter
         plays += 1
-    logger.log("Done with fight loop")
+
+    cards_played = logger.get_cards_played()
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
+
     return "good"
 
 
@@ -281,6 +298,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # count plays
     plays = 0
+    prev_cards_played = logger.get_cards_played()
 
     # while in battle:
     while check_for_in_1v1_battle(vm_index):
@@ -335,7 +353,8 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # increment plays counter
         plays += 1
-    logger.log("Done with fight loop")
+    cards_played = logger.get_cards_played()
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
     return "good"
 
 

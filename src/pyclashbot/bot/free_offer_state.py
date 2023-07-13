@@ -81,7 +81,14 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
             )
         else:
             click(vm_index, FREE_BUTTON[0], FREE_BUTTON[1])
+
+        prev_free_offer_collections = logger.get_free_offer_collections()
         logger.add_free_offer_collection()
+        free_offer_collections = logger.get_free_offer_collections()
+        logger.log(
+            f"Incremented free offer collections from {prev_free_offer_collections} to {free_offer_collections}"
+        )
+
         time.sleep(2)
 
         # click deadspace for if its a chest

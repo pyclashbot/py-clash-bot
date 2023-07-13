@@ -364,7 +364,16 @@ def do_request(vm_index, logger: Logger) -> None:
 
         # Click request button coord
         click(vm_index, coord[0], coord[1])
+
+
+        prev_requests = logger.get_requests()
+
         logger.add_request()
+
+        requests = logger.get_requests()
+        logger.log(f'Incremented requests stat from {prev_requests} to {requests}')
+
+
         time.sleep(3)
         break
 

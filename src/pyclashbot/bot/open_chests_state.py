@@ -1,4 +1,5 @@
 import time
+from typing import Literal
 
 import numpy
 
@@ -119,7 +120,10 @@ def get_chest_statuses(vm_index):
     return statuses
 
 
-def open_chest(vm_index, logger, chest_index):
+def open_chest(vm_index, logger, chest_index) -> Literal['restart', 'good']:
+    prev_chests_opened = logger.get_chests_opened()
+
+
     chest_coords = [
         (77, 497),
         (164, 509),
@@ -155,6 +159,12 @@ def open_chest(vm_index, logger, chest_index):
                 "Error 58732589 Took too long to click deadspace during chest opening, returning to start state"
             )
             return "restart"
+
+
+    chests_opened = logger.get_chests_opened()
+    logger.log(f"Opened {chests_opened - prev_chests_opened} chests")
+    return 'good'
+
 
 
 def check_if_can_queue_chest(vm_index):

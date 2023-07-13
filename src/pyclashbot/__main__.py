@@ -285,10 +285,10 @@ def dummy_bot():
     joblist: list[str] = [
         # "Open Chests",
         # "upgrade",
-        # "request",
+        "request",
         # "free offer collection",
-        "1v1 battle",
-        "2v2 battle",
+        # "1v1 battle",
+        # "2v2 battle",
         # "card mastery collection",
         # "war",
     ]
