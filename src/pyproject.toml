@@ -8,7 +8,11 @@ authors = [
   "Martin Miglio <code@martinmiglio.dev>",
 ]
 homepage = "https://pyclashbot.app"
-include = ["../README.md", "pyclashbot/detection/reference_images/**/*.png"]
+include = [
+  "../README.md",
+  "pyclashbot/detection/reference_images/**/*.png",
+  "pyclashbot/__version__",
+]
 
 
 [tool.poetry.dependencies]
