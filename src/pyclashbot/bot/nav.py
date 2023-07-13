@@ -32,6 +32,9 @@ SHOP_TAB_FROM_CARD_TAB: tuple[Literal[29], Literal[601]] = (29, 601)
 CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
+CLAN_PAGE_FROM_MAIN_TIMEOUT=120#seconds
+
+
 
 
 def get_to_main_from_challenges_tab(
@@ -696,6 +699,8 @@ def get_to_clash_main_from_clan_page(
 def get_to_clan_tab_from_clash_main(
     vm_index, logger: Logger, printmode=False
 ) -> Literal["restart", "good"]:
+    start_time = time.time()
+
     if printmode:
         logger.change_status(status="Getting to clan tab from clash main menu")
     else:
@@ -715,7 +720,14 @@ def get_to_clan_tab_from_clash_main(
         CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
     )
 
+
+
     while not check_if_on_clan_chat_page(vm_index):
+        time_taken = time.time() - start_time
+        if time_taken > CLAN_PAGE_FROM_MAIN_TIMEOUT:
+            logger.log('Error 995235 Watied too long for clan tab to appear when coming from main')
+
+
         if printmode:
             logger.change_status(status="Cycling to clan tab")
         else:
