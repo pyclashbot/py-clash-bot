@@ -3,6 +3,7 @@ import webbrowser
 
 import PySimpleGUI as sg
 
+
 from pyclashbot.bot.states import state_tree
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
@@ -313,6 +314,6 @@ def debug():
 
 
 if __name__ == "__main__":
+    # debug()
     # dummy_bot()
     main_gui()
-    # debug()
