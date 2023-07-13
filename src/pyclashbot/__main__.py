@@ -159,7 +159,7 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     window["Stop"].update(disabled=True)
     window["-Pause-Resume-Button-"].update(text="Pause")
     window["-Pause-Resume-Button-"].update(disabled=True)
-    thread.shutdown()  # send the shutdown flag to the thread
+    thread.shutdown(kill=False)  # send the shutdown flag to the thread
 
 
 def pause_resume_button_event(logger: Logger, window, thread: PausableThread) -> None:
