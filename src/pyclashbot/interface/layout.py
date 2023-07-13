@@ -23,13 +23,13 @@ main_layout = [
     ],
     [
         sg.Frame(
-            layout=collection_stats,
-            title="Collection Stats",
-        ),
-        sg.Frame(
             layout=battle_stats,
             title="Battle Stats",
             expand_x=True,
+        ),
+        sg.Frame(
+            layout=collection_stats,
+            title="Collection Stats",
         ),
     ],
     [
