@@ -5,6 +5,7 @@ import numpy as np
 
 from pyclashbot.detection.image_rec import (
     check_for_location,
+    crop_image,
     find_references,
     get_file_count,
     make_reference_image_list,
@@ -146,21 +147,7 @@ def get_card_images(vm_index):
     return card_images
 
 
-def crop_image(image: np.ndarray, region: list[int]) -> np.ndarray:
-    """Method to crop an image based on a given region
 
-    Args:
-        image (numpy.ndarray): The original image to be cropped
-        region (list[int]): List defining the region as [left, top, width, height]
-
-    Returns:
-        numpy.ndarray: Cropped image based on the given region
-    """
-    left, top, width, height = region
-    right = left + width
-    bottom = top + height
-
-    return image[top:bottom, left:right]
 
 
 def get_card_name_list():

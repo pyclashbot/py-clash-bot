@@ -38,6 +38,30 @@ def make_reference_image_list(size):
 # image comparison
 
 
+
+def crop_image(image: np.ndarray, region: list) -> np.ndarray:
+    """
+    Crop the given image using the specified region.
+
+    Parameters:
+    - image: numpy.ndarray
+        The image to be cropped.
+    - region: list [left, top, width, height]
+        The region to be cropped, denoted by [left, top, width, height].
+
+    Returns:
+    - cropped_image: numpy.ndarray
+        The cropped image.
+    """
+    left, top, width, height = region
+
+    # Crop the image using array slicing
+    cropped_image = image[top:top+height, left:left+width]
+
+    return cropped_image
+
+
+
 def get_first_location(
     locations: list[list[int] | None], flip=False
 ) -> list[int] | None:
@@ -76,7 +100,7 @@ def find_references(
     image: np.ndarray,
     folder: str,
     names: list[str],
-    tolerance=0.97,
+    tolerance=0.88,
 ) -> list[list[int] | None]:
     """find all reference images in a screenshot
 

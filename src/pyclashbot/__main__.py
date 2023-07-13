@@ -284,14 +284,14 @@ def dummy_bot():
     logger = Logger()
     state = "open_chests"
     joblist: list[str] = [
-        # "Open Chests",
-        # "upgrade",
-        # "request",
-        # "free offer collection",
-        # "1v1 battle",
-        # "2v2 battle",
+        "Open Chests",
+        "upgrade",
+        "request",
+        "free offer collection",
+        "1v1 battle",
+        "2v2 battle",
         # "card mastery collection",
-        # "war",
+        "war",
     ]
 
     while 1:
