@@ -147,9 +147,6 @@ def get_card_images(vm_index):
     return card_images
 
 
-
-
-
 def get_card_name_list():
     card_names = []
     for name in get_file_names(
