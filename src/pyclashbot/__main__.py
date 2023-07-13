@@ -285,8 +285,8 @@ def dummy_bot():
     state = "open_chests"
     joblist: list[str] = [
         # "Open Chests",
-        # "upgrade",
-        "request",
+        "upgrade",
+        # "request",
         # "free offer collection",
         # "1v1 battle",
         # "2v2 battle",
