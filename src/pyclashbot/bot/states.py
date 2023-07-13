@@ -43,6 +43,9 @@ def state_tree(
     logger.set_current_state(state)
     time.sleep(1)
 
+    # header in the log file to split the log by state loop iterations
+    logger.log(f"\n\n------------------------------\nSTATE == {state} ")
+
     if state is None:
         logger.error("Error! State is None!!")
         while 1:

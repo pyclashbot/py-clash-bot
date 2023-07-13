@@ -32,6 +32,9 @@ OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209
 CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
 CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 120  # seconds
 
+CLASH_MAIN_MENU_WAIT_TIMEOUT = 120  # seconds
+CLASH_MAIN_MENU_DEADSPACE_COORD: tuple[Literal[32], Literal[364]] = (32, 364)
+
 
 def get_to_main_from_challenges_tab(
     vm_index, logger, printmode=False
@@ -196,7 +199,7 @@ def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "goo
 def handle_clash_main_tab_notifications(
     vm_index, logger: Logger, printmode=False
 ) -> Literal["restart", "good"]:
-    start_time = time.time()
+    start_time: float = time.time()
 
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
@@ -257,7 +260,7 @@ def handle_clash_main_tab_notifications(
 def wait_for_clash_main_challenges_tab(
     vm_index, logger: Logger, printmode=False
 ) -> Literal["restart", "good"]:
-    start_time = time.time()
+    start_time: float = time.time()
 
     if printmode:
         logger.change_status(status="Waiting for clash main challenges tab")
@@ -887,7 +890,7 @@ def wait_for_clash_main_menu(
         if check_for_trophy_reward_menu(vm_index):
             handle_trophy_reward_menu(vm_index, logger)
 
-        if time.time() - start_time > 60:
+        if time.time() - start_time > CLASH_MAIN_MENU_WAIT_TIMEOUT:
             logger.change_status(
                 status="Looped through getting to clash main too many times"
             )
@@ -897,7 +900,11 @@ def wait_for_clash_main_menu(
             return "restart"
 
         # click dead space
-        click(vm_index, 32, 364)
+        click(
+            vm_index,
+            CLASH_MAIN_MENU_DEADSPACE_COORD[0],
+            CLASH_MAIN_MENU_DEADSPACE_COORD[1],
+        )
 
         # wait 1 sec
         time.sleep(1)
