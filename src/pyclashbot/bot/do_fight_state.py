@@ -73,7 +73,7 @@ def end_fight_state(vm_index: int, logger: Logger, next_state: str) -> str:
     game_was_win_return: bool | Literal['restart'] = check_if_previous_game_was_win(vm_index, logger)
     if game_was_win_return == "restart":
         logger.change_status(
-            status="Erropr 115 Failure with check_if_previous_game_was_win() in end_fight_state()"
+            status="Error 115 Failure with check_if_previous_game_was_win() in end_fight_state()"
         )
         return "restart"
 
