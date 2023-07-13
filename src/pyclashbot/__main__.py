@@ -288,7 +288,7 @@ def dummy_bot():
         # "request",
         # "free offer collection",
         "1v1 battle",
-        # "2v2 battle",
+        "2v2 battle",
         # "card mastery collection",
         # "war",
     ]
