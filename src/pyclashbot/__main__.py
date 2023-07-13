@@ -285,7 +285,7 @@ def dummy_bot():
     state = "open_chests"
     joblist: list[str] = [
         # "Open Chests",
-        "upgrade",
+        # "upgrade",
         # "request",
         # "free offer collection",
         # "1v1 battle",
@@ -309,7 +309,7 @@ def dummy_bot():
             break
 
 
-def debug():
+def debug() -> None:
     pass
 
 
