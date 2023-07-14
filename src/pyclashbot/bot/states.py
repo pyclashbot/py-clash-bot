@@ -28,7 +28,6 @@ def state_tree(
     state,
     job_list,
 ) -> str:
-    print(f"This state is {state}")
     logger.set_current_state(state)
     time.sleep(1)
 
@@ -41,6 +40,7 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> open_chests
+        
         # open clash
         restart_emulator(logger)
 
@@ -70,16 +70,17 @@ def state_tree(
     if state == "open_chests":  # --> upgrade
         next_state = "upgrade"
 
-        if job_list["open_chests_user_toggle"]:
+        #
+
+        if job_list["open_chests_user_toggle"] and logger.check_if_can_open_chests(
+            job_list["open_chests_increment_user_input"]
+        ):
             return open_chests_state(vm_index, logger, next_state)
 
         return next_state
 
     if state == "upgrade":  # --> request
         next_state = "request"
-
-        if job_list["upgrade_user_toggle"]:
-            logger.log("Upgrade is in the user job toggle job list !!!")
 
         if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade(
             job_list["card_upgrade_increment_user_input"]
@@ -148,7 +149,11 @@ def state_tree(
     if state == "card_mastery":  # --> war
         next_state = "war"
 
-        if job_list["card_mastery_user_toggle"]:
+        if job_list[
+            "card_mastery_user_toggle"
+        ] and logger.check_if_can_collect_card_mastery(
+            job_list["card_mastery_collect_increment_user_input"]
+        ):
             return card_mastery_collection_state(vm_index, logger, next_state)
 
         return next_state

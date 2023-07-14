@@ -30,7 +30,7 @@ MANUAL_VM_WAIT_TIME = 10
 MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 
-def restart_emulator(logger):
+def restart_emulator(logger, start_time=time.time()):
     # restart the game, including the launcher and emulator
 
     # stop all vms
@@ -49,39 +49,49 @@ def restart_emulator(logger):
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    for second in range(MANUAL_VM_WAIT_TIME):
-        logger.log(f"Waiting for VM to load {second}/{MANUAL_VM_WAIT_TIME}")
-        time.sleep(1)
+    wait_start_time = time.time()
+    time_waiting = 0
+    while time_waiting < MANUAL_VM_WAIT_TIME:
+        time.sleep(4)
+        time_waiting = time.time() - wait_start_time
+        logger.log(
+            (f"Waiting for VM to load {str(time_waiting)[:4]}/{MANUAL_VM_WAIT_TIME}")
+        )
 
     # skip ads
     logger.log("Skipping ads")
     if skip_ads(vm_index) == "fail":
-        return restart_emulator(logger)
+        logger.log("Error 99 Failed to skip ads")
+        return restart_emulator(logger, start_time)
 
     # start clash royale
     start_clash_royale(logger, vm_index)
 
     # manually wait for clash main
-    for second in range(MANUAL_CLASH_MAIN_WAIT_TIME):
-        print(
-            f"Manually waiting for clash main page. {second}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
+    wait_start_time = time.time()
+    time_waiting = 0
+    while time_waiting < MANUAL_CLASH_MAIN_WAIT_TIME:
+        time.sleep(4)
+        time_waiting = time.time() - wait_start_time
+        logger.log(
+            f"Manually waiting for clash main page. {str(time_waiting)[:3]}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
         )
-        time.sleep(1)
 
     # check-wait for clash main if need to wait longer
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
-        logger.log("#34646 Looping restart_emulator() bc fail")
-        return restart_emulator(logger)
+        logger.log("#34 Looping restart_emulator() b/c fail waiting for clash main")
+        return restart_emulator(logger, start_time)
 
     time.sleep(5)
 
+    logger.log(f'Took {str(time.time() - start_time)[:5]}s to launch emulator')
     return True
 
 
 def skip_ads(vm_index):
     # Method for skipping the memu ads that popip up when you start memu
 
-    print("Trying to skipping ads")
+    # print("Trying to skipping ads")
     try:
         for _ in range(4):
             pmc.trigger_keystroke_vm("home", vm_index=vm_index)
@@ -387,7 +397,7 @@ def start_memuc_console() -> int:
     # pylint: disable=consider-using-with
     process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
 
-    print(f"Started memu console with PID {process.pid}")
+    # print(f"Started memu console with PID {process.pid}")
 
     return process.pid
 
@@ -419,7 +429,7 @@ def close_everything_memu():
         "MEmuHeadless.exe",
     ]
 
-    print("Entered close_everything_memu()")
+    print("Closing memu processes...")
     for proc in psutil.process_iter():
         try:
             if proc.name() in name_list:
@@ -427,7 +437,6 @@ def close_everything_memu():
                 proc.kill()
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             print("Couldnt close process", proc.name())
-    print("Exiting close_everything_memu(). . .")
 
 
 # error popup guis

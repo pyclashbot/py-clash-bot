@@ -47,13 +47,18 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
     logger.change_status(status="Searching for free offer")
 
     start_time = time.time()
+    prints = 0
     while 1:
         # if looped too much, return
         time_taken = time.time() - start_time
         if time_taken > 35:
             break
 
-        logger.change_status(status=f"Searching for free offer: {str(time_taken)[:4]}")
+        if prints * 10 < time_taken:
+            logger.change_status(
+                status=f"Searching for free offer: {str(time_taken)[:4]}"
+            )
+            prints += 1
 
         # look for free offer
         coord = find_free_offer_icon(vm_index)

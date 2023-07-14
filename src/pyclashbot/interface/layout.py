@@ -15,43 +15,60 @@ from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
 
-
 main_layout = [
     [
-        sg.Frame(layout=jobs_checklist, title="Jobs"),
         sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
+        sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
     ],
     [
-        sg.Frame(
-            layout=battle_stats,
-            title="Battle Stats",
+        sg.Column(
+            [
+                [
+                    sg.Frame(layout=battle_stats, title="Battle Stats", expand_x=True)
+                ]
+            ],
             expand_x=True,
+            expand_y=True,
         ),
-        sg.Frame(
-            layout=collection_stats,
-            title="Collection Stats",
+        sg.Column(
+            [
+                [
+                    sg.Frame(
+                        layout=collection_stats,
+                        title="Collection Stats",
+                        expand_x=True,
+                    )
+                ],
+                [
+                    sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True)
+                ],
+            ],
+            expand_x=True,
+            expand_y=True,
+            justification="right",
         ),
     ],
     [
-        sg.Frame(
-            layout=bot_stats,
-            title="Bot Stats",
+        sg.Column(
+            [
+                [
+                    stat_box("time_since_start", size=(7, 1)),
+                    sg.Input(
+                        "Idle",
+                        key="current_status",
+                        use_readonly_for_disable=True,
+                        disabled=True,
+                        text_color="blue",
+                        expand_x=True,
+                        tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
+                    ),
+                ]
+            ],
             expand_x=True,
         )
     ],
-    [
-        stat_box("time_since_start", size=(7, 1)),
-        sg.Input(
-            "Idle",
-            key="current_status",
-            use_readonly_for_disable=True,
-            disabled=True,
-            text_color="blue",
-            expand_x=True,
-            tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
-        ),
-    ],
 ]
+
 
 # a list of all the keys that contain user configuration
 user_config_keys = [
@@ -69,6 +86,8 @@ user_config_keys = [
     'request_increment_user_input',
     'free_offer_collection_increment_user_input',
     'card_upgrade_increment_user_input',
+    'card_mastery_collect_increment_user_input',
+    'open_chests_increment_user_input',
 ]
 
 # list of button and checkbox keys to disable when the bot is running
