@@ -44,14 +44,23 @@ def read_window(
 
 def make_job_dictionary(values: dict[str, str | int]):
     jobs_dictionary = {
+        # job toggles
         "open_chests_user_toggle": values["-Open-Chests-in-"],
         "request_user_toggle": values["-Open-Chests-in-"],
         "card_mastery_user_toggle": values["-Open-Chests-in-"],
-        "free offer_user_toggle": values["-Open-Chests-in-"],
+        "free_offer_user_toggle": values["-Open-Chests-in-"],
         "1v1_battle_user_toggle": values["-Open-Chests-in-"],
         "2v2_battle_user_toggle": values["-Open-Chests-in-"],
         "upgrade_user_toggle": values["-Open-Chests-in-"],
         "war_user_toggle": values["-Open-Chests-in-"],
+        # job increments
+        "card_upgrade_increment_user_input": values[
+            "card_upgrade_increment_user_input"
+        ],
+        "free_offer_collection_increment_user_input": values[
+            "free_offer_collection_increment_user_input"
+        ],
+        "request_increment_user_input": values["request_increment_user_input"],
     }
     return jobs_dictionary
 
@@ -109,6 +118,7 @@ def save_current_settings(values) -> None:
     # read the currently selected values for each key in user_coinfig_keys
     user_settings = {key: values[key] for key in user_config_keys if key in values}
     # cache the user settings
+    print("Cached settings")
     cache_user_settings(user_settings)
 
 
@@ -130,7 +140,9 @@ def load_last_settings(window) -> None:
         window.refresh()  # refresh the window to update the layout
 
 
-def start_button_event(logger: Logger, window, values) -> WorkerThread | Literal['no jobs selected']:
+def start_button_event(
+    logger: Logger, window, values
+) -> WorkerThread | Literal["no jobs selected"]:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -140,16 +152,15 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | Literal
         None
     """
     logger.change_status(status="Start Button Event")
+    save_current_settings(values)
+
 
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
-
 
     if check_for_no_jobs_in_job_dictionary(job_dictionary):
         no_jobs_popup()
         print("Failed no job check")
-        return 'no jobs selected'
-
-
+        return "no jobs selected"
 
     for key in disable_keys:
         window[key].update(disabled=True)
@@ -258,6 +269,7 @@ def main_gui() -> None:
     while True:
         event, values = read_window(window, timeout=10)
 
+
         # on exit event, kill any existing thread
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
@@ -306,16 +318,21 @@ def dummy_bot():
     vm_index = 1
     logger = Logger()
     state = "open_chests"
-    joblist: list[str] = [
-        "Open Chests",
-        "upgrade",
-        "request",
-        "free offer collection",
-        "1v1 battle",
-        "2v2 battle",
-        # "card mastery collection",
-        "war",
-    ]
+    jobs_dictionary = {
+        # job list
+        "open_chests_user_toggle": True,
+        "request_user_toggle": True,
+        "card_mastery_user_toggle": True,
+        "free_offer_user_toggle": True,
+        "1v1_battle_user_toggle": True,
+        "2v2_battle_user_toggle": True,
+        "upgrade_user_toggle": True,
+        "war_user_toggle": True,
+        # job incremenets
+        "card_upgrade_increment_user_input": "1 game",
+        "free_offer_collection_increment_user_input": "5 games",
+        "request_increment_user_input": "25 games",
+    }
 
     while 1:
         # code to run
@@ -323,7 +340,7 @@ def dummy_bot():
             vm_index,
             logger,
             state,
-            joblist,
+            jobs_dictionary,
         )
 
         if state == "restart":

@@ -28,23 +28,6 @@ def state_tree(
     state,
     job_list,
 ) -> str | tuple[None, None]:
-    # [
-    #     "Open Chests",
-    #     "upgrade",
-    #     "request",
-    #     "free offer collection",
-    #     "1v1 battle",
-    #     "2v2 battle",
-    #     "card mastery collection",
-    #     "war",
-    # ]
-
-    print("--------------------")
-    print("Job dictionary in state_tree:")
-    for item in job_list.items():
-        print(item)
-    print("--------------------")
-
     print(f"This state is {state}")
     logger.set_current_state(state)
     time.sleep(1)
@@ -90,7 +73,9 @@ def state_tree(
     if state == "upgrade":  # --> request
         next_state = "request"
 
-        if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade():
+        if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade(
+            job_list["card_upgrade_increment_user_input"]
+        ):
             return upgrade_cards_state(vm_index, logger, next_state)
 
         return next_state
@@ -98,7 +83,9 @@ def state_tree(
     if state == "request":  # --> free_offer_collection
         next_state = "free_offer_collection"
 
-        if job_list["request_user_toggle"] and logger.check_if_can_request():
+        if job_list["request_user_toggle"] and logger.check_if_can_request(
+            job_list["request_increment_user_input"]
+        ):
             return request_state(vm_index, logger, next_state)
 
         return next_state
@@ -106,7 +93,11 @@ def state_tree(
     if state == "free_offer_collection":  # --> start_fight
         next_state = "start_fight"
 
-        if job_list["offer_user_toggle"] and logger.check_if_can_collect_free_offer():
+        if job_list[
+            "free_offer_user_toggle"
+        ] and logger.check_if_can_collect_free_offer(
+            job_list["free_offer_collection_increment_user_input"]
+        ):
             return free_offer_collection_state(vm_index, logger, next_state)
 
         return next_state
