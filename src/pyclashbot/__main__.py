@@ -53,6 +53,7 @@ def make_job_dictionary(values: dict[str, str | int]):
         "2v2_battle_user_toggle": values["-Open-Chests-in-"],
         "upgrade_user_toggle": values["-Open-Chests-in-"],
         "war_user_toggle": values["-Open-Chests-in-"],
+
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -61,6 +62,12 @@ def make_job_dictionary(values: dict[str, str | int]):
             "free_offer_collection_increment_user_input"
         ],
         "request_increment_user_input": values["request_increment_user_input"],
+        "card_mastery_collect_increment_user_input": values[
+            "card_mastery_collect_increment_user_input"
+        ],
+        "open_chests_increment_user_input": values["open_chests_increment_user_input"],
+
+
     }
     return jobs_dictionary
 
@@ -153,7 +160,6 @@ def start_button_event(
     """
     logger.change_status(status="Start Button Event")
     save_current_settings(values)
-
 
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
 
@@ -269,7 +275,6 @@ def main_gui() -> None:
     while True:
         event, values = read_window(window, timeout=10)
 
-
         # on exit event, kill any existing thread
         if event in [sg.WIN_CLOSED, "Exit"]:
             # shut down the thread if it is still running
@@ -328,11 +333,11 @@ def dummy_bot():
         "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
-
         # job incremenets
         "card_upgrade_increment_user_input": "1 game",
         "free_offer_collection_increment_user_input": "5 games",
         "request_increment_user_input": "25 games",
+        "card_mastery_collect_increment_user_input": "5 games",
     }
 
     while 1:

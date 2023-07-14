@@ -63,12 +63,15 @@ collection_stats = [
 
 # fight stats
 
-fight_stats_titles: list[list[sg.Text]] = [
+battle_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Wins: "),
     ],
     [
         sg.Text("Losses: "),
+    ],
+    [
+        sg.Text("Win Rate: "),
     ],
     [
         sg.Text("Cards Played: "),
@@ -92,6 +95,9 @@ battle_stats_values = [
         stat_box("losses"),
     ],
     [
+        stat_box("winrate"),
+    ],
+    [
         stat_box("cards_played"),
     ],
     [
@@ -107,7 +113,7 @@ battle_stats_values = [
 
 battle_stats = [
     [
-        sg.Column(fight_stats_titles, element_justification="right"),
+        sg.Column(battle_stats_titles, element_justification="right"),
         sg.Column(battle_stats_values, element_justification="left"),
     ]
 ]

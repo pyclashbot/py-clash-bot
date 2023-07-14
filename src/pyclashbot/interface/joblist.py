@@ -4,6 +4,7 @@ from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
 
+
 def no_jobs_popup() -> None:
     # Define the layout of the GUI
     layout = [
@@ -46,14 +47,15 @@ jobs_checklist = [
         sg.Column(
             [
                 [
-                    job_check_box("Open chests", "-Open-Chests-in-"),
-                ],
-                [
                     job_check_box("1v1 battles", "1v1_battle_in"),
                 ],
                 [
                     job_check_box("2v2 battles", "2v2_battle_in"),
                 ],
+                [
+                    job_check_box("Open chests", "-Open-Chests-in-"),
+                ],
+
                 [
                     job_check_box("Random Requesting", "-Requesting-in-"),
                 ],
@@ -81,7 +83,7 @@ jobs_checklist = [
             scrollable=True,
             vertical_scroll_only=True,
             expand_x=True,
-            size=(None, 150),
+            size=(None, 200),
         )
     ],
 ]

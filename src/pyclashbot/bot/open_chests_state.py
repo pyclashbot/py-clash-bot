@@ -23,6 +23,7 @@ CLASH_MAIN_DEADSPACE_COORD = (20, 350)
 def open_chests_state(vm_index, logger: Logger, next_state: str):
     open_chests_start_time = time.time()
 
+    logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
 
     logger.change_status(status="Handling obstructing notifications")

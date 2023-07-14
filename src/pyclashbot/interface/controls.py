@@ -12,54 +12,60 @@ controls = [
         sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-", expand_x=True),
     ],
     [
-        sg.Text("Request every:             "),
+        sg.Column(
+            [
+                [sg.Text("Request Random Card Every:")],
+                [sg.Text("Collect Free Offer Every:")],
+                [sg.Text("Upgrade Current Deck Every:")],
+                [sg.Text("Collect Card Mastery Every:")],
+                [sg.Text("Open Chests Every:")],
+            ],
+            justification="left",
+        ),
         sg.Column(
             [
                 [
                     sg.DropDown(
-                        ["1 game", "5 games", "25 games"],
+                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
                         key="request_increment_user_input",
                         default_value="1 game",
                         enable_events=True,
                     )
                 ],
-            ],
-            justification="right",
-            expand_x=True,
-        ),
-    ],
-    [
-        sg.Text("Collect free offer every:  "),
-        sg.Column(
-            [
                 [
                     sg.DropDown(
-                        ["1 game", "5 games", "25 games"],
+                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
                         key="free_offer_collection_increment_user_input",
                         default_value="1 game",
                         enable_events=True,
                     )
                 ],
-            ],
-            justification="right",
-            expand_x=True,
-        ),
-    ],
-    [
-        sg.Text("Upgrade cards every:    "),
-        sg.Column(
-            [
                 [
                     sg.DropDown(
-                        ["1 game", "5 games", "25 games"],
+                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
                         key="card_upgrade_increment_user_input",
+                        default_value="1 game",
+                        enable_events=True,
+                    )
+                ],
+                [
+                    sg.DropDown(
+                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
+                        key="card_mastery_collect_increment_user_input",
+                        default_value="1 game",
+                        enable_events=True,
+                    )
+                ],
+                [
+                    sg.DropDown(
+                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
+                        key="open_chests_increment_user_input",
                         default_value="1 game",
                         enable_events=True,
                     )
                 ],
             ],
             justification="right",
-            expand_x=True,
         ),
     ],
     [sg.VP()],
@@ -69,3 +75,100 @@ controls = [
         sg.Button("Report Bug", key="bug-report", expand_x=True),
     ],
 ]
+
+
+
+
+
+
+    # # request every: control
+    # [
+    #     sg.Text("Request Random Card Every: "),
+    #     sg.Column(
+    #         [
+    #             [
+    #                 sg.DropDown(
+    #                     ["1 game", "3 games", "5 games", "10 games", "25 games"],
+    #                     key="request_increment_user_input",
+    #                     default_value="1 game",
+    #                     enable_events=True,
+    #                 )
+    #             ],
+    #         ],
+    #         justification="right",
+    #         expand_x=True,
+    #     ),
+    # ],
+    # # Collect free offer every: control
+    # [
+    #     sg.Text("Collect Free Offer Every:         "),
+    #     sg.Column(
+    #         [
+    #             [
+    #                 sg.DropDown(
+    #                     ["1 game", "3 games", "5 games", "10 games", "25 games"],
+    #                     key="free_offer_collection_increment_user_input",
+    #                     default_value="1 game",
+    #                     enable_events=True,
+    #                 )
+    #             ],
+    #         ],
+    #         justification="right",
+    #         expand_x=True,
+    #     ),
+    # ],
+    # # Upgrade cards every: control
+    # [
+    #     sg.Text("Upgrade Current Deck Every:  "),
+    #     sg.Column(
+    #         [
+    #             [
+    #                 sg.DropDown(
+    #                     ["1 game", "3 games", "5 games", "10 games", "25 games"],
+    #                     key="card_upgrade_increment_user_input",
+    #                     default_value="1 game",
+    #                     enable_events=True,
+    #                 )
+    #             ],
+    #         ],
+    #         justification="right",
+    #         expand_x=True,
+    #     ),
+    # ],
+    # # Collect Card Mastery every: control
+    # [
+    #     sg.Text("Collect Card Mastery Every:    "),
+    #     sg.Column(
+    #         [
+    #             [
+    #                 sg.DropDown(
+    #                     ["1 game", "3 games", "5 games", "10 games", "25 games"],
+    #                     key="card_mastery_collect_increment_user_input",
+    #                     default_value="1 game",
+    #                     enable_events=True,
+    #                 )
+    #             ],
+    #         ],
+    #         justification="right",
+    #         expand_x=True,
+    #     ),
+    # ],
+    # # Open Chests every: control
+    # [
+    #     sg.Text("Open Chests Every:               "),
+    #     sg.Column(
+    #         [
+    #             [
+    #                 sg.DropDown(
+    #                     ["1 game", "3 games", "5 games", "10 games", "25 games"],
+    #                     key="open_chests_increment_user_input",
+    #                     default_value="1 game",
+    #                     enable_events=True,
+    #                 )
+    #             ],
+    #         ],
+    #         justification="right",
+    #         expand_x=True,
+    #     ),
+    # ],
+
