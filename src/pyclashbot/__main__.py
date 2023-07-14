@@ -1,4 +1,5 @@
 import sys
+from typing import Literal
 import webbrowser
 
 import PySimpleGUI as sg
@@ -39,6 +40,28 @@ def read_window(
         print("Window not found")
         sys.exit()
     return read_result
+
+
+def make_job_dictionary(values: dict[str, str | int]):
+    jobs_dictionary = {
+        "open_chests_user_toggle": values["-Open-Chests-in-"],
+        "request_user_toggle": values["-Open-Chests-in-"],
+        "card_mastery_user_toggle": values["-Open-Chests-in-"],
+        "free offer_user_toggle": values["-Open-Chests-in-"],
+        "1v1_battle_user_toggle": values["-Open-Chests-in-"],
+        "2v2_battle_user_toggle": values["-Open-Chests-in-"],
+        "upgrade_user_toggle": values["-Open-Chests-in-"],
+        "war_user_toggle": values["-Open-Chests-in-"],
+    }
+    return jobs_dictionary
+
+
+def check_for_no_jobs_in_job_dictionary(job_dict):
+    for i in job_dict.items():
+        if i[1]:
+            return False
+
+    return True
 
 
 def read_job_list(values: dict[str, str | int]) -> list[str]:
@@ -107,7 +130,7 @@ def load_last_settings(window) -> None:
         window.refresh()  # refresh the window to update the layout
 
 
-def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
+def start_button_event(logger: Logger, window, values) -> WorkerThread | Literal['no jobs selected']:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -118,23 +141,24 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
     """
     logger.change_status(status="Start Button Event")
 
-    # get job list from gui
-    jobs = read_job_list(values)
-    for _ in range(3):
-        logger.log(f"JOB LIST IS: {jobs}")
+    job_dictionary: dict[str, str | int] = make_job_dictionary(values)
 
-    # check if at least one job is selected
-    if len(jobs) == 0:
-        logger.change_status(status="At least one job must be selected")
+
+    if check_for_no_jobs_in_job_dictionary(job_dictionary):
         no_jobs_popup()
-        return None
+        print("Failed no job check")
+        return 'no jobs selected'
+
+
 
     for key in disable_keys:
         window[key].update(disabled=True)
 
     # setup the main thread and start it
     acc_count = int(values["-SSID_IN-"])
-    args: tuple[list[str], int] = (jobs, acc_count)
+
+    args = (job_dictionary, acc_count)
+    # args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, args)
     thread.start()
 
