@@ -69,7 +69,7 @@ CLOSE_CARD_PAGE_COORD = (355, 238)
 
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Upgrade cards state")
-
+    logger.add_card_upgrade_attempt()
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(

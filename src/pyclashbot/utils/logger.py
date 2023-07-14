@@ -81,10 +81,13 @@ class Logger:
 
         # job stats
         self.requests = 0
+        self.request_attempts = 0
         self.chests_unlocked = 0
         self.cards_upgraded = 0
+        self.card_upgrade_attempts = 0
         self.card_mastery_reward_collections = 0
         self.free_offer_collections = 0
+        self.free_offer_collection_attempts = 0
 
         # restart stats
         self.auto_restarts = 0
@@ -104,48 +107,79 @@ class Logger:
         # write initial values to queue
         self._update_stats()
 
-    def check_if_can_card_upgrade(self):
-        if self.time_of_last_card_upgrade == 0:
-            self.log("Can card_upgrade bc time_of_last_card_upgrade is 0")
+    def check_if_can_card_upgrade(self, increment):
+        # count card_upgrade_attempts
+        card_upgrade_attempts = self.card_upgrade_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if card_upgrade_attempts is zero return true
+        if card_upgrade_attempts == 0:
+            self.log("Can upgrade bc card_upgrade_attempts is 0")
             return True
 
-        if time.time() - self.time_of_last_card_upgrade > 1800:
-            self.log(
-                "Can card_upgrade bc time_of_last_card_upgrade is more than 1800 seconds ago"
-            )
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log("Can upgrade bc games_played is 0")
             return True
 
-        self.log("Cant card_upgrade")
+        # if games_played / increment > card_upgrade_attempts
+        if games_played / increment > card_upgrade_attempts:
+            self.log("Can upgrade bc games_played / increment > card_upgrade_attempts")
+            return True
+
+        self.log('Cant upgrade')
         return False
 
-    def check_if_can_request(self) -> bool:
-        if self.time_of_last_request == 0:
-            self.log("Can request bc time of last request is 0")
+    def check_if_can_request(self, increment) -> bool:
+        # count requests
+        request_attempts = self.request_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if request_attempts is zero return true
+        if request_attempts == 0:
+            self.log("Can request bc request_attempts is 0")
             return True
 
-        if time.time() - self.time_of_last_request > 1800:
-            self.log(
-                "Can request bc time of last request is more than 1800 seconds ago"
-            )
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log("Can request bc games_played is 0")
             return True
 
-        self.log("Cant request")
+        # if games_played / increment > request_attempts
+        if games_played / increment > request_attempts:
+            self.log("Can request bc games_played / increment > request_attempts")
+            return True
+
+        self.log('Cant request')
         return False
 
-    def check_if_can_collect_free_offer(self) -> bool:
-        if self.time_of_last_free_offer_collection == 0:
-            self.log(
-                "Can free_offer_collect bc time of last free_offer_collection is 0"
-            )
+    def check_if_can_collect_free_offer(self, increment) -> bool:
+        # count free_offer_collection_attempts
+        free_offer_collection_attempts = self.free_offer_collection_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if free_offer_collection_attempts is zero return true
+        if free_offer_collection_attempts == 0:
+            self.log("Can collect free offer bc free_offer_collection_attempts is 0")
             return True
 
-        if time.time() - self.time_of_last_free_offer_collection > 1800:
-            self.log(
-                "Can free_offer_collect bc time of last free_offer_collection is more than 1800 seconds ago"
-            )
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log("Can collect free offer bc games_played is 0")
             return True
 
-        self.log("Cant free_offer_collect")
+        # if games_played / increment > free_offer_collection_attempts
+        if games_played / increment > free_offer_collection_attempts:
+            self.log("Can collect free offer bc games_played / increment > free_offer_collection_attempts")
+            return True
+
+        self.log('Cant collect free offer')
         return False
 
     def update_time_of_last_request(self, input_time) -> None:
@@ -324,6 +358,15 @@ class Logger:
     def change_most_recent_restart_time(self, time_to_set) -> None:
         """add request to log"""
         self.most_recent_restart_time = time_to_set
+
+    def add_request_attempt(self):
+        self.request_attempts += 1
+
+    def add_free_offer_collection_attempt(self):
+        self.free_offer_collection_attempts += 1
+
+    def add_card_upgrade_attempt(self):
+        self.card_upgrade_attempts += 1
 
     def get_1v1_fights(self) -> int:
         return self._1v1_fights

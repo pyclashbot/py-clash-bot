@@ -55,6 +55,7 @@ main_layout = [
 
 # a list of all the keys that contain user configuration
 user_config_keys = [
+    #job list controls keys
     "-Open-Chests-in-",
     "-Requesting-in-",
     "-Card-Mastery-Collection-in-",
@@ -63,6 +64,11 @@ user_config_keys = [
     "2v2_battle_in",
     "card_upgrading_in",
     "war_checkbox_in",
+
+    #job increment controls keys
+    'request_increment_user_input',
+    'free_offer_collection_increment_user_input',
+    'card_upgrade_increment_user_input',
 ]
 
 # list of button and checkbox keys to disable when the bot is running
