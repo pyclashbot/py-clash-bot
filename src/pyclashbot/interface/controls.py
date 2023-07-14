@@ -20,6 +20,7 @@ controls = [
                         ["1 game", "5 games", "25 games"],
                         key="request_increment_user_input",
                         default_value="1 game",
+                        enable_events=True,
                     )
                 ],
             ],
@@ -36,6 +37,7 @@ controls = [
                         ["1 game", "5 games", "25 games"],
                         key="free_offer_collection_increment_user_input",
                         default_value="1 game",
+                        enable_events=True,
                     )
                 ],
             ],
@@ -52,6 +54,7 @@ controls = [
                         ["1 game", "5 games", "25 games"],
                         key="card_upgrade_increment_user_input",
                         default_value="1 game",
+                        enable_events=True,
                     )
                 ],
             ],
