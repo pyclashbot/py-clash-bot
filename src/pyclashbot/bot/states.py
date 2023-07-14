@@ -27,7 +27,7 @@ def state_tree(
     logger: Logger,
     state,
     job_list,
-) -> str | tuple[None, None]:
+) -> str:
     print(f"This state is {state}")
     logger.set_current_state(state)
     time.sleep(1)
@@ -47,6 +47,7 @@ def state_tree(
         return "open_chests"
 
     if state == "restart":  # --> open_chests
+        next_state = "open_chests"
         # close app
         close_clash_royale_app(logger, vm_index)
         time.sleep(10)
@@ -57,10 +58,14 @@ def state_tree(
         start_clash_royale(logger, vm_index)
 
         # wait for clash main
-        wait_for_clash_main_menu(vm_index, logger)
+        if wait_for_clash_main_menu(vm_index, logger) == "restart":
+            logger.log(
+                "Error 0124097926761 Clash main menu not found after restart! (RECURSIVE)"
+            )
+            next_state = "restart"
 
         # restart_vm(logger, vm_index)
-        return "open_chests"
+        return next_state
 
     if state == "open_chests":  # --> upgrade
         next_state = "upgrade"
@@ -74,7 +79,7 @@ def state_tree(
         next_state = "request"
 
         if job_list["upgrade_user_toggle"]:
-            logger.log('Upgrade is in the user job toggle job list !!!')
+            logger.log("Upgrade is in the user job toggle job list !!!")
 
         if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade(
             job_list["card_upgrade_increment_user_input"]
