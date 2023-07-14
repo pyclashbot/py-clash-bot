@@ -424,7 +424,10 @@ def check_enemy_tower_statuses(
 
 def end_fight_state(vm_index, logger: Logger, next_state):
     # get to clash main after this fight
-    get_to_main_after_fight(vm_index, logger, next_state)
+    if get_to_main_after_fight(vm_index, logger, next_state)=='restart':
+        logger.log('Erro 6969 Failed to get to clash main after a fight')
+        return 'restart'
+
 
     # check if the prev game was a win
 
@@ -505,6 +508,9 @@ def get_to_main_after_fight(vm_index, logger, next_state):
         # if on end of 2v2 battle screen, click EXIT
         handle_end_2v2_battle_condition_1(vm_index, logger)
 
+        #if on end of 2v2 battle screen c2, click OK
+        handle_end_2v2_battle_condition_2(vm_index, logger)
+
         # if on end of 1v1 battle screen, click OK
         handle_end_1v1_battle_condition_1(vm_index, logger)
         handle_end_1v1_battle_condition_2(vm_index, logger)
@@ -524,6 +530,24 @@ def get_to_main_after_fight(vm_index, logger, next_state):
 
 # unsorted
 
+
+def handle_end_2v2_battle_condition_2(vm_index, logger):
+    if check_for_end_2v2_battle_condition_2(vm_index):
+        logger.log("On the end of 2v2 (c2) battle screen so clicking OK button")
+        click(vm_index, 212,553)
+
+
+
+def check_for_end_2v2_battle_condition_2(vm_index):
+    if not region_is_color(vm_index,[175,558,15,8],(78,175,255)):return False
+    if not region_is_color(vm_index,[225,544,17,6],(99,184,255)):return False
+
+    if not check_line_for_color(vm_index,197,545,201,550,(255,255,255)):return False
+    if not check_line_for_color(vm_index,210,544,201,550,(255,255,255)):return False
+    if not check_line_for_color(vm_index,211,544,213,554,(255,255,255)):return False
+    if not check_line_for_color(vm_index,225,558,215,554,(255,255,255)):return False
+
+    return True
 
 def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
     if check_for_end_2v2_battle_condition_1(vm_index):
