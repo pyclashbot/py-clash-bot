@@ -320,14 +320,15 @@ def dummy_bot():
     state = "open_chests"
     jobs_dictionary = {
         # job list
-        "open_chests_user_toggle": True,
+        "open_chests_user_toggle": False,
         "request_user_toggle": True,
-        "card_mastery_user_toggle": True,
-        "free_offer_user_toggle": True,
-        "1v1_battle_user_toggle": True,
-        "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": True,
-        "war_user_toggle": True,
+        "card_mastery_user_toggle": False,
+        "free_offer_user_toggle": False,
+        "1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": False,
+        "upgrade_user_toggle": False,
+        "war_user_toggle": False,
+
         # job incremenets
         "card_upgrade_increment_user_input": "1 game",
         "free_offer_collection_increment_user_input": "5 games",
@@ -355,5 +356,5 @@ def debug() -> None:
 
 if __name__ == "__main__":
     # debug()
-    # dummy_bot()
-    main_gui()
+    dummy_bot()
+    # main_gui()

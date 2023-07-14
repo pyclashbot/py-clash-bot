@@ -72,6 +72,7 @@ def find_request_button(vm_index):
 
 def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.change_status(status="Request state")
+    logger.add_request_attempt()
 
     # if not on main: return
     if not check_if_on_clash_main_menu(vm_index):
