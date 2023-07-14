@@ -4,6 +4,7 @@ import time
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
+    get_to_clash_main_from_card_page,
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
@@ -13,10 +14,21 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
     make_reference_image_list,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_down
 from pyclashbot.utils.logger import Logger
 
 DECK_2_COORD = (158, 127)
+
+CARDS_TO_REPLACE_COORDS = [
+    (72, 240),
+    (156, 240),
+    (257, 240),
+    (339, 240),
+    (72, 399),
+    (156, 399),
+    (257, 399),
+    (339, 399),
+]
 
 
 def randomize_deck_2(vm_index, logger):
@@ -40,10 +52,19 @@ def randomize_deck_2(vm_index, logger):
         time.sleep(1)
 
     # run deck randomize function
+    if randomize_this_deck(vm_index, logger) == "restart":
+        return "restart"
 
     # get to clash main
+    if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
+        logger.log("Error 85893 Issue getting to clash main after deck randomization")
 
     return "good"
+
+
+CLASH_MAIN_ICON_FROM_CARD_PAGE = (245, 600)
+CARD_PAGE_ICON_FROM_CLASH_MAIN = (115, 600)
+RANDOM_CARD_SEARCH_TIMEOUT = 120  # seconds
 
 
 def randomize_this_deck(vm_index, logger: Logger):
@@ -52,53 +73,97 @@ def randomize_this_deck(vm_index, logger: Logger):
     logger.change_status("Randomizing this deck")
 
     # count max scrolls
-    max_scrolls = count_max_scrolls(vm_index)
+    logger.log("Counting max scrolls")
+    max_scrolls = count_max_scrolls(vm_index, logger)
+    logger.log(f"There are {max_scrolls} max scrolls")
 
+    logger.log("Getting back to top of card page")
     # scroll back to top
-    for _ in range(10):
-        scroll_up(vm_index)
-        time.sleep(1)
+    click(
+        vm_index,
+        CLASH_MAIN_ICON_FROM_CARD_PAGE[0],
+        CLASH_MAIN_ICON_FROM_CARD_PAGE[1],
+    )
+    time.sleep(2)
+    click(
+        vm_index,
+        CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
+        CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
+    )
+    time.sleep(2)
 
     # for each of the 8 cards:
-    for card_to_replace_coord in card_to_replace_coords:
+    logger.log("Entering card replacement loop")
+    for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
         # while doesnt have replacement card:
+
+        start_time = time.time()
         while 1:
+            if time.time() - start_time > RANDOM_CARD_SEARCH_TIMEOUT:
+                logger.log(
+                    "Error 998745 Searched for a rnadom card to repalce the card with for too long"
+                )
+                return "restart"
+
+            logger.log("Scrolling a random amount")
+
             # scroll random amount
-            for _ in range(random.randint(1, max_scrolls)):
-                scroll_up(vm_index)
+            scroll_amount = random.randint(1, max_scrolls)
+            if scroll_amount < 3:
+                scroll_amount = 3
+            logger.log(f"Scrolling {scroll_amount} times ")
+            for _ in range(scroll_amount):
+                scroll_down(vm_index)
                 time.sleep(1)
+            time.sleep(3)
 
             # click a random card
+            logger.log("Clicking a random card")
             random_card_coord = find_random_card_in_card_page(vm_index)
 
             # if doenst have coord at this scroll location:
             if random_card_coord is None:
-                # scroll back to top
-                for _ in range(10):
-                    scroll_up(vm_index)
-                    time.sleep(1)
+                logger.log("Didnt find a random card.")
+                logger.log("Scrolling back to top")
+                click(
+                    vm_index,
+                    CLASH_MAIN_ICON_FROM_CARD_PAGE[0],
+                    CLASH_MAIN_ICON_FROM_CARD_PAGE[1],
+                )
+                time.sleep(2)
+                click(
+                    vm_index,
+                    CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
+                    CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
+                )
+                time.sleep(2)
 
                 # redo
                 continue
 
             # click the random card
+            logger.log("Found a random card. Clicking it.")
             click(vm_index, random_card_coord[0], random_card_coord[1])
             time.sleep(1)
 
             # find use button
+            logger.log("Clicking use card button")
             use_card_button_coord = find_use_card_button(vm_index)
 
             # if there is no use button
             if use_card_button_coord is None:
                 # redo
+                logger.log("Didnt find this cards use button")
                 continue
 
             # if use button appears:
             # click it
+            logger.log("Found use card button")
             click(vm_index, use_card_button_coord[0], use_card_button_coord[1])
             time.sleep(3)
 
-            # click coord of card to place
+            # click coord of card to replace
+            logger.log("Clicking the card to replace")
             click(vm_index, card_to_replace_coord[0], card_to_replace_coord[1])
             time.sleep(1)
 
@@ -138,7 +203,11 @@ def count_max_scrolls(vm_index, logger):
         time.sleep(1)
         scrolls += 1
 
-    print(f"scrolls is {scrolls}")
+    scrolls = scrolls - 3
+    if scrolls < 3:
+        scrolls = 3
+
+    return scrolls
 
 
 def find_random_card_in_card_page_with_delay(vm_index, delay):
@@ -205,8 +274,14 @@ def select_deck_2(vm_index):
 
 
 if __name__ == "__main__":
+    randomize_deck_2(1, Logger())
+    # randomize_this_deck(1, Logger())
+
+    # while 1:
+    #     print(find_random_card_in_card_page(1))
+
     # count_max_scrolls(1, Logger())
-    while 1:
-        print(find_random_card_in_card_page_with_delay(1, 5))
-        time.sleep(3)
+    # while 1:
+    #     print(find_random_card_in_card_page_with_delay(1, 5))
+    #     time.sleep(3)
     # screenshot(1)
