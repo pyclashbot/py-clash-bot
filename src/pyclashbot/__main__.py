@@ -155,9 +155,8 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | Literal
         window[key].update(disabled=True)
 
     # setup the main thread and start it
-    acc_count = int(values["-SSID_IN-"])
 
-    args = (job_dictionary, acc_count)
+    args = job_dictionary
     # args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, args)
     thread.start()

@@ -55,7 +55,6 @@ main_layout = [
 
 # a list of all the keys that contain user configuration
 user_config_keys = [
-    "-SSID_IN-",
     "-Open-Chests-in-",
     "-Requesting-in-",
     "-Card-Mastery-Collection-in-",
