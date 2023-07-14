@@ -107,7 +107,15 @@ class Logger:
         # write initial values to queue
         self._update_stats()
 
-    def check_if_can_card_upgrade(self, increment):
+    def check_if_can_card_upgrade(self, increment_input):
+        # parse increment arg into an int
+        increment_parse_dict = {
+            "25 games": 25,
+            "5 games": 5,
+            "1 game": 1,
+        }
+        increment: int = increment_parse_dict[increment_input]
+
         # count card_upgrade_attempts
         card_upgrade_attempts = self.card_upgrade_attempts
 
@@ -129,10 +137,18 @@ class Logger:
             self.log("Can upgrade bc games_played / increment > card_upgrade_attempts")
             return True
 
-        self.log('Cant upgrade')
+        self.log("Cant upgrade")
         return False
 
-    def check_if_can_request(self, increment) -> bool:
+    def check_if_can_request(self, increment_input) -> bool:
+        # parse increment arg into an int
+        increment_parse_dict = {
+            "25 games": 25,
+            "5 games": 5,
+            "1 game": 1,
+        }
+        increment: int = increment_parse_dict[increment_input]
+
         # count requests
         request_attempts = self.request_attempts
 
@@ -154,10 +170,18 @@ class Logger:
             self.log("Can request bc games_played / increment > request_attempts")
             return True
 
-        self.log('Cant request')
+        self.log("Cant request")
         return False
 
-    def check_if_can_collect_free_offer(self, increment) -> bool:
+    def check_if_can_collect_free_offer(self, increment_input) -> bool:
+        # parse increment arg into an int
+        increment_parse_dict = {
+            "25 games": 25,
+            "5 games": 5,
+            "1 game": 1,
+        }
+        increment: int = increment_parse_dict[increment_input]
+
         # count free_offer_collection_attempts
         free_offer_collection_attempts = self.free_offer_collection_attempts
 
@@ -176,10 +200,12 @@ class Logger:
 
         # if games_played / increment > free_offer_collection_attempts
         if games_played / increment > free_offer_collection_attempts:
-            self.log("Can collect free offer bc games_played / increment > free_offer_collection_attempts")
+            self.log(
+                "Can collect free offer bc games_played / increment > free_offer_collection_attempts"
+            )
             return True
 
-        self.log('Cant collect free offer')
+        self.log("Cant collect free offer")
         return False
 
     def update_time_of_last_request(self, input_time) -> None:
