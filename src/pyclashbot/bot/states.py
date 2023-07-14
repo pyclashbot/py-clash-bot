@@ -73,6 +73,9 @@ def state_tree(
     if state == "upgrade":  # --> request
         next_state = "request"
 
+        if job_list["upgrade_user_toggle"]:
+            logger.log('Upgrade is in the user job toggle job list !!!')
+
         if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade(
             job_list["card_upgrade_increment_user_input"]
         ):
