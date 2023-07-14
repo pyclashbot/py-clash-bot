@@ -15,7 +15,7 @@ class WorkerThread(PausableThread):
 
     def run(self) -> None:
         try:
-            jobs, *_ = self.args  # parse thread args
+            jobs = self.args  # parse thread args
             # logger = Logger()
             state = "start"
 
