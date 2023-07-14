@@ -28,6 +28,8 @@ def state_tree(
     state,
     job_list,
 ) -> str:
+
+    start_time = time.time()
     logger.set_current_state(state)
     time.sleep(1)
 
@@ -40,10 +42,10 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> open_chests
-        
         # open clash
         restart_emulator(logger)
 
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return "open_chests"
 
     if state == "restart":  # --> open_chests
@@ -65,6 +67,7 @@ def state_tree(
             next_state = "restart"
 
         # restart_vm(logger, vm_index)
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     if state == "open_chests":  # --> upgrade
@@ -75,8 +78,10 @@ def state_tree(
         if job_list["open_chests_user_toggle"] and logger.check_if_can_open_chests(
             job_list["open_chests_increment_user_input"]
         ):
+            logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
             return open_chests_state(vm_index, logger, next_state)
 
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     if state == "upgrade":  # --> request
@@ -85,8 +90,10 @@ def state_tree(
         if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade(
             job_list["card_upgrade_increment_user_input"]
         ):
+            logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
             return upgrade_cards_state(vm_index, logger, next_state)
 
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     if state == "request":  # --> free_offer_collection
@@ -95,8 +102,10 @@ def state_tree(
         if job_list["request_user_toggle"] and logger.check_if_can_request(
             job_list["request_increment_user_input"]
         ):
+            logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
             return request_state(vm_index, logger, next_state)
 
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     if state == "free_offer_collection":  # --> start_fight
@@ -107,8 +116,10 @@ def state_tree(
         ] and logger.check_if_can_collect_free_offer(
             job_list["free_offer_collection_increment_user_input"]
         ):
+            logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
             return free_offer_collection_state(vm_index, logger, next_state)
 
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     if state == "start_fight":  # --> 1v1_fight, card_mastery
@@ -136,14 +147,17 @@ def state_tree(
 
     if state == "2v2_fight":  # --> end_fight
         next_state = "end_fight"
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return do_2v2_fight_state(vm_index, logger, next_state)
 
     if state == "1v1_fight":  # --> end_fight
         next_state = "end_fight"
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return do_1v1_fight_state(vm_index, logger, next_state)
 
     if state == "end_fight":  # --> card_mastery
         next_state = "card_mastery"
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return end_fight_state(vm_index, logger, next_state)
 
     if state == "card_mastery":  # --> war
@@ -154,8 +168,10 @@ def state_tree(
         ] and logger.check_if_can_collect_card_mastery(
             job_list["card_mastery_collect_increment_user_input"]
         ):
+            logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
             return card_mastery_collection_state(vm_index, logger, next_state)
 
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     if state == "war":  # --> open_chests
@@ -163,6 +179,7 @@ def state_tree(
 
         if job_list["war_user_toggle"]:
             return war_state(vm_index, logger, next_state)
+        logger.log(f'This state: {state} took {str(time.time() - start_time)[:5]} seconds')
         return next_state
 
     logger.error("Failure in state tree")
