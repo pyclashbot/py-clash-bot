@@ -39,6 +39,12 @@ def state_tree(
     #     "war",
     # ]
 
+    print("--------------------")
+    print("Job dictionary in state_tree:")
+    for item in job_list.items():
+        print(item)
+    print("--------------------")
+
     print(f"This state is {state}")
     logger.set_current_state(state)
     time.sleep(1)
@@ -76,7 +82,7 @@ def state_tree(
     if state == "open_chests":  # --> upgrade
         next_state = "upgrade"
 
-        if "open Chests" in job_list:
+        if job_list["open_chests_user_toggle"]:
             return open_chests_state(vm_index, logger, next_state)
 
         return next_state
@@ -84,7 +90,7 @@ def state_tree(
     if state == "upgrade":  # --> request
         next_state = "request"
 
-        if "upgrade" in job_list and logger.check_if_can_card_upgrade():
+        if job_list["upgrade_user_toggle"] and logger.check_if_can_card_upgrade():
             return upgrade_cards_state(vm_index, logger, next_state)
 
         return next_state
@@ -92,11 +98,7 @@ def state_tree(
     if state == "request":  # --> free_offer_collection
         next_state = "free_offer_collection"
 
-        can_request = logger.check_if_can_request()
-
-        if (
-            "request" in job_list and can_request
-        ):  # request in job, request every 30 min
+        if job_list["request_user_toggle"] and logger.check_if_can_request():
             return request_state(vm_index, logger, next_state)
 
         return next_state
@@ -104,9 +106,7 @@ def state_tree(
     if state == "free_offer_collection":  # --> start_fight
         next_state = "start_fight"
 
-        can_free_offer_collect = logger.check_if_can_collect_free_offer()
-
-        if "free offer collection" in job_list and can_free_offer_collect:
+        if job_list["offer_user_toggle"] and logger.check_if_can_collect_free_offer():
             return free_offer_collection_state(vm_index, logger, next_state)
 
         return next_state
@@ -114,18 +114,21 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, card_mastery
         next_state = "card_mastery"
         # if both 1v1 and 2v2, pick a random one
-        if "1v1 battle" in job_list and "2v2 battle" in job_list:
+        _1v1_toggle = job_list["1v1_battle_user_toggle"]
+        _2v2_toggle = job_list["2v2_battle_user_toggle"]
+
+        if _1v1_toggle and _2v2_toggle:
             if logger.get_1v1_fights() < logger.get_2v2_fights():
                 return start_1v1_fight_state(vm_index, logger)
 
             return start_2v2_fight_state(vm_index, logger)
 
         # if only 1v1, do 1v1
-        if "1v1 battle" in job_list:
+        if _1v1_toggle:
             return start_1v1_fight_state(vm_index, logger)
 
         # if only 2v2, do 2v2
-        if "2v2 battle" in job_list:
+        if _2v2_toggle:
             return start_2v2_fight_state(vm_index, logger)
 
         # if neither, go to NEXT_STATE
@@ -145,14 +148,16 @@ def state_tree(
 
     if state == "card_mastery":  # --> war
         next_state = "war"
-        if "card mastery collection" in job_list:
+
+        if job_list["card_mastery_user_toggle"]:
             return card_mastery_collection_state(vm_index, logger, next_state)
 
         return next_state
 
     if state == "war":  # --> open_chests
         next_state = "open_chests"
-        if "war" in job_list:
+
+        if job_list["war_user_toggle"]:
             return war_state(vm_index, logger, next_state)
         return next_state
 
