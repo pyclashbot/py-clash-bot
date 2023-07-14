@@ -137,7 +137,9 @@ class Logger:
             self.log("Can upgrade bc games_played / increment > card_upgrade_attempts")
             return True
 
-        self.log("Cant upgrade")
+        self.log(
+            f"Cant upgrade. {games_played} Games and {card_upgrade_attempts} Attempts"
+        )
         return False
 
     def check_if_can_request(self, increment_input) -> bool:
@@ -170,7 +172,7 @@ class Logger:
             self.log("Can request bc games_played / increment > request_attempts")
             return True
 
-        self.log("Cant request")
+        self.log(f"Cant request. {games_played} Games and {request_attempts} Attempts")
         return False
 
     def check_if_can_collect_free_offer(self, increment_input) -> bool:
@@ -205,7 +207,9 @@ class Logger:
             )
             return True
 
-        self.log("Cant collect free offer")
+        self.log(
+            f"Cant collect free offer. {games_played} Games and {free_offer_collection_attempts} Attempts"
+        )
         return False
 
     def update_time_of_last_request(self, input_time) -> None:
