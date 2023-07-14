@@ -11,12 +11,6 @@ controls = [
         sg.Button("Stop", disabled=True, expand_x=True),
         sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-", expand_x=True),
     ],
-    [sg.VP()],
-    [sg.HSep(color="lightgray")],
-    [
-        sg.Button("Discord", key="discord", expand_x=True),
-        sg.Button("Report Bug", key="bug-report", expand_x=True),
-    ],
     [
         sg.Text("Request every:             "),
         sg.Column(
@@ -64,5 +58,11 @@ controls = [
             justification="right",
             expand_x=True,
         ),
+    ],
+    [sg.VP()],
+    [sg.HSep(color="lightgray")],
+    [
+        sg.Button("Discord", key="discord", expand_x=True),
+        sg.Button("Report Bug", key="bug-report", expand_x=True),
     ],
 ]
