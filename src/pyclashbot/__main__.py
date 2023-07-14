@@ -356,5 +356,5 @@ def debug() -> None:
 
 if __name__ == "__main__":
     # debug()
-    dummy_bot()
-    # main_gui()
+    # dummy_bot()
+    main_gui()
