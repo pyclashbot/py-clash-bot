@@ -1,3 +1,4 @@
+"""random module for randomizing fight plays"""
 import random
 import time
 from typing import Literal

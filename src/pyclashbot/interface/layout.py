@@ -1,3 +1,5 @@
+"""os and path are imported to check if the icon file exists, if it
+doesn't then the icon file is searched for in the assets folder"""
 from os import path
 
 import PySimpleGUI as sg
