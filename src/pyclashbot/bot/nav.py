@@ -204,7 +204,7 @@ def handle_clash_main_tab_notifications(
     # if not on clash main, return restart
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            status="Error 08725652389 Not on clash main menu for open chests state, restarting vm"
+            status="Error 08726246569979 Not on clash main menu for handle_clash_main_tab_notifications()"
         )
         return "restart"
 
