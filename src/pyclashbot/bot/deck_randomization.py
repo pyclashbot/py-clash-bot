@@ -36,6 +36,7 @@ CARDS_TO_REPLACE_COORDS = [
 
 
 def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
+    start_time = time.time()
     logger.change_status("Randomizing deck number 2")
     logger.add_randomize_deck_attempt()
 
@@ -64,6 +65,7 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
         logger.log("Error 85893 Issue getting to clash main after deck randomization")
 
+    logger.log(f"Randomize deck state took {str(time.time()-start_time)[:5]}s")
     return next_state
 
 
@@ -94,7 +96,9 @@ def randomize_this_deck(vm_index, logger: Logger):
 
     # for each of the 8 cards:
     logger.log("Entering card replacement loop")
+    card_index = 0
     for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
+        card_index += 1
         # while doesnt have replacement card:
 
         start_time = time.time()
@@ -168,6 +172,7 @@ def randomize_this_deck(vm_index, logger: Logger):
             time.sleep(1)
 
             # break the while loop
+            logger.log(f"Successfully replaced this card: {card_index}/8\n------------------")
             break
 
 
