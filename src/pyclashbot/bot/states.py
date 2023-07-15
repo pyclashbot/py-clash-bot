@@ -44,10 +44,7 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> open_chests
-        for _ in range(10):
-            logger.log("Infinite wait break")
-        while 1:
-            pass
+
 
         # open clash
         logger.log("Running restart_emulator() for initial emulator boot")
