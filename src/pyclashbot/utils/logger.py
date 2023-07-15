@@ -78,19 +78,19 @@ class Logger:
         self._2v2_fights = 0
         self.cards_played = 0
         self.war_fights = 0
-        self.winrate: str = '00.0%'
+        self.deck_randomizations = 0
+        self.winrate: str = "00.0%"
 
         # job stats
         self.requests = 0
         self.request_attempts = 0
+        self.deck_randomize_attempts = 0
         self.chests_unlocked = 0
         self.cards_upgraded = 0
-
         self.card_upgrade_attempts = 0
         self.card_mastery_reward_collections = 0
         self.free_offer_collections = 0
         self.free_offer_collection_attempts = 0
-
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
 
@@ -134,6 +134,7 @@ class Logger:
                 "free_offer_collections": self.free_offer_collections,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
+                'deck_randomizations':self.deck_randomizations,
             }
 
     def get_stats(self):
@@ -269,6 +270,10 @@ class Logger:
         self._1v1_fights += 1
 
     @_updates_log
+    def add_deck_randomization(self):
+        self.deck_randomizations += 1
+
+    @_updates_log
     def add_2v2_fight(self) -> None:
         """add fight to log"""
         self._2v2_fights += 1
@@ -302,6 +307,9 @@ class Logger:
     def change_most_recent_restart_time(self, time_to_set) -> None:
         """add request to log"""
         self.most_recent_restart_time = time_to_set
+
+    def add_randomize_deck_attempt(self):
+        self.deck_randomize_attempts += 1
 
     def add_request_attempt(self):
         self.request_attempts += 1
@@ -569,6 +577,53 @@ class Logger:
 
         self.log(
             f"Cant collect free offer. {games_played} Games and {free_offer_collection_attempts} Attempts"
+        )
+        return False
+
+    def check_if_can_randomize_deck(self, increment_input):
+        # parse increment arg into an int
+        increment_parse_dict = {
+            "25 games": 25,
+            "10 games": 10,
+            "5 games": 5,
+            "3 games": 3,
+            "1 game": 1,
+        }
+        increment: int = increment_parse_dict[increment_input]
+
+        if increment == 1:
+            self.log(f"Increment is {increment} so can always randomize deck")
+            return True
+
+        # count free_offer_collection_attempts
+        deck_randomize_attempts = self.deck_randomize_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if deck_randomize_attempts is zero return true
+        if deck_randomize_attempts == 0:
+            self.log(
+                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+            )
+            return True
+
+        # if games_played / increment > deck_randomize_attempts
+        if games_played / increment >= deck_randomize_attempts:
+            self.log(
+                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Cant randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
         )
         return False
 

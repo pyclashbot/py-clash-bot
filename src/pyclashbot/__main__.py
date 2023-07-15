@@ -53,6 +53,7 @@ def make_job_dictionary(values: dict[str, str | int]):
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
+        "random_decks_user_toggle": values["random_decks_user_toggle"],
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -65,6 +66,7 @@ def make_job_dictionary(values: dict[str, str | int]):
             "card_mastery_collect_increment_user_input"
         ],
         "open_chests_increment_user_input": values["open_chests_increment_user_input"],
+        "deck_randomization_increment_user_input": values["deck_randomization_increment_user_input"],
     }
     return jobs_dictionary
 
@@ -116,10 +118,35 @@ def log_job_dictionary(job_dictionary: dict[str, str | int], logger) -> None:
     returns:
         None
     """
-    logger.log("\n-------------------------------\nJob Dictionary:\n")
+    user_toggle_keys_and_values = []
+    increment_user_input_keys_and_values = []
+
     for key, value in job_dictionary.items():
-        logger.log(f"{key}: {value}")
-    logger.log("-------------------------------\n")
+        if "increment_user_input" in key:
+            increment_user_input_keys_and_values.append((key, value))
+        else:
+            user_toggle_keys_and_values.append((key, value))
+
+    logger.log("-------------------------------")
+    logger.log("------Job Dictionary:----------")
+    logger.log("-------------------------------")
+
+    logger.log("User Toggle Keys and Values:")
+    for key, value in user_toggle_keys_and_values:
+        while len(key) < 35:
+            key += " "
+        logger.log(f"     -{key}:           {value}")
+
+    logger.log("-------------------------------")
+    logger.log("Increment User Input Keys and Values:")
+    for key, value in increment_user_input_keys_and_values:
+        while len(key) < 45:
+            key += " "
+        logger.log(f"     -{key}:              {value}")
+
+    logger.log("-------------------------------")
+    logger.log("-------------------------------")
+    logger.log("-------------------------------\n\n")
 
 
 def start_button_event(

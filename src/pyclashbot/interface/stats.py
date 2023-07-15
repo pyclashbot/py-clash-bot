@@ -85,6 +85,9 @@ battle_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("War Fights: "),
     ],
+    [
+        sg.Text("Random Decks: "),
+    ],
 ]
 
 battle_stats_values = [
@@ -108,6 +111,9 @@ battle_stats_values = [
     ],
     [
         stat_box("war_fights"),
+    ],
+    [
+        stat_box("deck_randomizations"),
     ],
 ]
 

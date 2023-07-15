@@ -1,5 +1,6 @@
 import random
 import time
+from typing import Literal
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -17,8 +18,11 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_down
 from pyclashbot.utils.logger import Logger
 
-DECK_2_COORD = (158, 127)
+DECK_2_COORD: tuple[Literal[158], Literal[127]] = (158, 127)
 
+CLASH_MAIN_ICON_FROM_CARD_PAGE: tuple[Literal[245], Literal[600]] = (245, 600)
+CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
+RANDOM_CARD_SEARCH_TIMEOUT = 120  # seconds
 CARDS_TO_REPLACE_COORDS = [
     (72, 240),
     (156, 240),
@@ -31,8 +35,9 @@ CARDS_TO_REPLACE_COORDS = [
 ]
 
 
-def randomize_deck_2(vm_index, logger):
+def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status("Randomizing deck number 2")
+    logger.add_randomize_deck_attempt()
 
     # if not on clash main, return fail
     if not check_if_on_clash_main_menu(vm_index):
@@ -59,12 +64,7 @@ def randomize_deck_2(vm_index, logger):
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
         logger.log("Error 85893 Issue getting to clash main after deck randomization")
 
-    return "good"
-
-
-CLASH_MAIN_ICON_FROM_CARD_PAGE = (245, 600)
-CARD_PAGE_ICON_FROM_CLASH_MAIN = (115, 600)
-RANDOM_CARD_SEARCH_TIMEOUT = 120  # seconds
+    return next_state
 
 
 def randomize_this_deck(vm_index, logger: Logger):
@@ -271,17 +271,3 @@ def check_if_deck_2_is_selected(vm_index):
 
 def select_deck_2(vm_index):
     click(vm_index, DECK_2_COORD[0], DECK_2_COORD[1])
-
-
-if __name__ == "__main__":
-    randomize_deck_2(1, Logger())
-    # randomize_this_deck(1, Logger())
-
-    # while 1:
-    #     print(find_random_card_in_card_page(1))
-
-    # count_max_scrolls(1, Logger())
-    # while 1:
-    #     print(find_random_card_in_card_page_with_delay(1, 5))
-    #     time.sleep(3)
-    # screenshot(1)

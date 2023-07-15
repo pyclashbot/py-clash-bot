@@ -78,6 +78,12 @@ jobs_checklist = [
                         "war_user_toggle",
                     ),
                 ],
+                [
+                    job_check_box(
+                        "Random Decks",
+                        "random_decks_user_toggle",
+                    ),
+                ],
             ],
             scrollable=True,
             vertical_scroll_only=True,
