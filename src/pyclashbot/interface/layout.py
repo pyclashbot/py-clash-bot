@@ -22,11 +22,7 @@ main_layout = [
     ],
     [
         sg.Column(
-            [
-                [
-                    sg.Frame(layout=battle_stats, title="Battle Stats", expand_x=True)
-                ]
-            ],
+            [[sg.Frame(layout=battle_stats, title="Battle Stats", expand_x=True)]],
             expand_x=True,
             expand_y=True,
         ),
@@ -39,9 +35,7 @@ main_layout = [
                         expand_x=True,
                     )
                 ],
-                [
-                    sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True)
-                ],
+                [sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True)],
             ],
             expand_x=True,
             expand_y=True,
@@ -72,22 +66,22 @@ main_layout = [
 
 # a list of all the keys that contain user configuration
 user_config_keys = [
-    #job list controls keys
-    "-Open-Chests-in-",
-    "-Requesting-in-",
-    "-Card-Mastery-Collection-in-",
-    "-Free-Offer-Collection-in-",
-    "1v1_battle_in",
-    "2v2_battle_in",
-    "card_upgrading_in",
-    "war_checkbox_in",
+    # job list controls keys
+    "open_chests_user_toggle",
+    "request_user_toggle",
+    "card_mastery_user_toggle",
+    "free_offer_user_toggle",
+    "1v1_user_toggle",
+    "2v2_user_toggle",
+    "card_upgrade_user_toggle",
+    "war_user_toggle",
 
-    #job increment controls keys
-    'request_increment_user_input',
-    'free_offer_collection_increment_user_input',
-    'card_upgrade_increment_user_input',
-    'card_mastery_collect_increment_user_input',
-    'open_chests_increment_user_input',
+    # job increment controls keys
+    "request_increment_user_input",
+    "free_offer_collection_increment_user_input",
+    "card_upgrade_increment_user_input",
+    "card_mastery_collect_increment_user_input",
+    "open_chests_increment_user_input",
 ]
 
 # list of button and checkbox keys to disable when the bot is running
