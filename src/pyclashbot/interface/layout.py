@@ -82,6 +82,7 @@ user_config_keys = [
     "card_upgrade_increment_user_input",
     "card_mastery_collect_increment_user_input",
     "open_chests_increment_user_input",
+    "deck_randomization_increment_user_input",
 ]
 
 # list of button and checkbox keys to disable when the bot is running

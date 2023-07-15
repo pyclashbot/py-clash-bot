@@ -2,6 +2,7 @@ from operator import ne
 import time
 
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
+from pyclashbot.bot.deck_randomization import randomize_deck_state
 from pyclashbot.bot.do_fight_state import (
     do_1v1_fight_state,
     do_2v2_fight_state,
@@ -43,6 +44,11 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> open_chests
+        for _ in range(10):
+            logger.log("Infinite wait break")
+        while 1:
+            pass
+
         # open clash
         logger.log("Running restart_emulator() for initial emulator boot")
         restart_emulator(logger)
@@ -141,8 +147,8 @@ def state_tree(
         # return output of this state
         return request_state(vm_index, logger, next_state)
 
-    if state == "free_offer_collection":  # --> start_fight
-        next_state = "start_fight"
+    if state == "free_offer_collection":  # --> randomize_deck
+        next_state = "randomize_deck"
 
         # if job not selected, return next state
         if not job_list["free_offer_user_toggle"]:
@@ -158,6 +164,23 @@ def state_tree(
 
         # return output of this state
         return free_offer_collection_state(vm_index, logger, next_state)
+
+    if state == "randomize_deck":  # --> start_fight
+        next_state = "start_fight"
+
+        # if randomize deck isnt toggled, return next state
+        if not job_list["random_decks_user_toggle"]:
+            logger.log("deck randomization isnt toggled. skipping this state")
+            return next_state
+
+        # if randomize deck isnt ready, return next state
+        if not logger.check_if_can_randomize_deck(
+            job_list["deck_randomization_increment_user_input"]
+        ):
+            logger.log("deck randomization isnt ready. skipping this state")
+            return next_state
+
+        return randomize_deck_state(vm_index, logger, next_state)
 
     if state == "start_fight":  # --> 1v1_fight, card_mastery
         next_state = "card_mastery"

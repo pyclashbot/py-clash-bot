@@ -19,6 +19,7 @@ controls = [
                 [sg.Text("Upgrade Current Deck Every:")],
                 [sg.Text("Collect Card Mastery Every:")],
                 [sg.Text("Open Chests Every:")],
+                [sg.Text("Randomize Deck Every:")],
             ],
             justification="left",
         ),
@@ -60,6 +61,14 @@ controls = [
                     sg.DropDown(
                         ["1 game", "3 games", "5 games", "10 games", "25 games"],
                         key="open_chests_increment_user_input",
+                        default_value="1 game",
+                        enable_events=True,
+                    )
+                ],
+                [
+                    sg.DropDown(
+                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
+                        key="deck_randomization_increment_user_input",
                         default_value="1 game",
                         enable_events=True,
                     )
