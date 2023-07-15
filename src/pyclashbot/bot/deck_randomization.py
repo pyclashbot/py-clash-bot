@@ -158,6 +158,21 @@ def randomize_this_deck(vm_index, logger: Logger):
             if use_card_button_coord is None:
                 # redo
                 logger.log("Didnt find this cards use button")
+                logger.log("Scrolling back to top")
+                click(
+                    vm_index,
+                    CLASH_MAIN_ICON_FROM_CARD_PAGE[0],
+                    CLASH_MAIN_ICON_FROM_CARD_PAGE[1],
+                )
+                time.sleep(2)
+                click(
+                    vm_index,
+                    CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
+                    CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
+                )
+                time.sleep(2)
+
+                # redo
                 continue
 
             # if use button appears:
@@ -172,7 +187,9 @@ def randomize_this_deck(vm_index, logger: Logger):
             time.sleep(1)
 
             # break the while loop
-            logger.log(f"Successfully replaced this card: {card_index}/8\n------------------")
+            logger.log(
+                f"Successfully replaced this card: {card_index}/8\n------------------"
+            )
             break
 
 
@@ -231,7 +248,7 @@ def find_random_card_in_card_page_with_delay(vm_index, delay):
 def find_random_card_in_card_page(vm_index):
     img = screenshot(vm_index)
 
-    random_region = [random.randint(34, 293), random.randint(115, 423), 143, 122]
+    random_region = [random.randint(34, 293), random.randint(115, 393), 143, 152]
 
     cropped_image = crop_image(img, random_region)
 
@@ -276,3 +293,8 @@ def check_if_deck_2_is_selected(vm_index):
 
 def select_deck_2(vm_index):
     click(vm_index, DECK_2_COORD[0], DECK_2_COORD[1])
+
+
+if __name__ == "__main__":
+    while 1:
+        print(find_random_card_in_card_page(1))
