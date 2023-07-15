@@ -79,7 +79,7 @@ class Logger:
         self._2v2_fights = 0
         self.cards_played = 0
         self.war_fights = 0
-        self.deck_randomizations = 0
+        self.card_randomizations = 0
         self.winrate: str = "00.0%"
 
         # job stats
@@ -135,7 +135,7 @@ class Logger:
                 "free_offer_collections": self.free_offer_collections,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
-                "deck_randomizations": self.deck_randomizations,
+                "card_randomizations": self.card_randomizations,
             }
 
     def get_stats(self):
@@ -278,9 +278,9 @@ class Logger:
         self._1v1_fights += 1
 
     @_updates_log
-    def add_deck_randomization(self):
-        """incremenet deck randomization counter"""
-        self.deck_randomizations += 1
+    def add_card_randomization(self):
+        """incremenet card_randomizations counter"""
+        self.card_randomizations += 1
 
     @_updates_log
     def add_2v2_fight(self) -> None:

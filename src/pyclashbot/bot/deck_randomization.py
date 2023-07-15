@@ -143,7 +143,7 @@ def randomize_this_deck(vm_index, logger: Logger):
                 time.sleep(0.5)
             time.sleep(3)
 
-    
+
 
             # click a random card
             logger.log("Clicking a random card")
@@ -189,6 +189,7 @@ def randomize_this_deck(vm_index, logger: Logger):
             time.sleep(1)
 
             # break the while loop
+            logger.add_card_randomization()
             this_card_replacement_time_taken = str(
                 time.time() - this_card_replacement_start_time
             ).split(".")[0]
