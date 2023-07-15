@@ -66,7 +66,14 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
         logger.log("Error 85893 Issue getting to clash main after deck randomization")
 
-    logger.log(f"Randomize deck state took {str(time.time()-start_time)[:5]}s")
+    time_taken = time.time() - start_time
+    mins = int(time_taken / 60)
+    time_taken=time_taken-(mins*60)
+    seconds = int(time_taken)
+
+
+
+    logger.log(f"Randomize deck state took {mins}m {seconds}s")
     return next_state
 
 
@@ -182,14 +189,14 @@ def randomize_this_deck(vm_index, logger: Logger):
             # break the while loop
             this_card_replacement_time_taken = str(
                 time.time() - this_card_replacement_start_time
-            )[:5]
+            ).split(".")[0]
             logger.change_status(
                 f"Replaced this card in {this_card_replacement_time_taken}s {card_index}/8"
             )
-            logger.log("||||||||||||||||||")
+            logger.log("- - - - - - - - - - - - -")
             break
 
-    return 'good'
+    return "good"
 
 
 def find_use_card_button(vm_index):
@@ -295,3 +302,10 @@ def select_deck_2(vm_index):
 
 if __name__ == "__main__":
     print(randomize_deck_state(1, Logger(), "next_statedghjgh "))
+
+
+
+
+
+
+

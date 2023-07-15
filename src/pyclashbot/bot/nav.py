@@ -210,7 +210,7 @@ def handle_clash_main_tab_notifications(
 
     # click card tab
     click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
-    if wait_for_clash_main_card_page(vm_index, logger) == "restart":
+    if wait_for_clash_main_card_page(vm_index, logger, printmode) == "restart":
         logger.change_status(
             status="Error 0675248 Waited too long for clash main card page, restarting vm"
         )
@@ -218,7 +218,7 @@ def handle_clash_main_tab_notifications(
 
     # click shop tab
     click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1])
-    if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
+    if wait_for_clash_main_shop_page(vm_index, logger, printmode) == "restart":
         logger.change_status(
             status="Error 086720845 Waited too long for clash main shop page, restarting vm"
         )
@@ -226,7 +226,7 @@ def handle_clash_main_tab_notifications(
 
     # click challenges tab
     click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1])
-    if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
+    if wait_for_clash_main_challenges_tab(vm_index, logger, printmode) == "restart":
         logger.change_status(
             status="Error 922225 Waited too long for clash main challenged tab page, restarting vm"
         )
@@ -239,7 +239,7 @@ def handle_clash_main_tab_notifications(
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
     )
-    if wait_for_clash_main_menu(vm_index, logger, printmode=False) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger, printmode) == "restart":
         logger.change_status(
             status="Error 358971935813 Waited too long for clash main menu, restarting vm"
         )
