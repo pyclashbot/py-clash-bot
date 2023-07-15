@@ -143,6 +143,8 @@ def randomize_this_deck(vm_index, logger: Logger):
                 time.sleep(0.5)
             time.sleep(3)
 
+    
+
             # click a random card
             logger.log("Clicking a random card")
             random_card_coord = find_random_card_in_card_page(vm_index)
