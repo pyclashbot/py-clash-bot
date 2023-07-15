@@ -53,7 +53,6 @@ def make_job_dictionary(values: dict[str, str | int]):
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
-
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
