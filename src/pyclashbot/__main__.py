@@ -45,14 +45,14 @@ def read_window(
 def make_job_dictionary(values: dict[str, str | int]):
     jobs_dictionary = {
         # job toggles
-        "open_chests_user_toggle": values["-Open-Chests-in-"],
-        "request_user_toggle": values["-Open-Chests-in-"],
-        "card_mastery_user_toggle": values["-Open-Chests-in-"],
-        "free_offer_user_toggle": values["-Open-Chests-in-"],
-        "1v1_battle_user_toggle": values["-Open-Chests-in-"],
-        "2v2_battle_user_toggle": values["-Open-Chests-in-"],
-        "upgrade_user_toggle": values["-Open-Chests-in-"],
-        "war_user_toggle": values["-Open-Chests-in-"],
+        "open_chests_user_toggle": values["open_chests_user_toggle"],
+        "request_user_toggle": values["request_user_toggle"],
+        "card_mastery_user_toggle": values["card_mastery_user_toggle"],
+        "free_offer_user_toggle": values["free_offer_user_toggle"],
+        "1v1_battle_user_toggle": values["1v1_user_toggle"],
+        "2v2_battle_user_toggle": values["2v2_user_toggle"],
+        "upgrade_user_toggle": values["card_upgrade_user_toggle"],
+        "war_user_toggle": values["war_user_toggle"],
 
         # job increments
         "card_upgrade_increment_user_input": values[
@@ -66,8 +66,6 @@ def make_job_dictionary(values: dict[str, str | int]):
             "card_mastery_collect_increment_user_input"
         ],
         "open_chests_increment_user_input": values["open_chests_increment_user_input"],
-
-
     }
     return jobs_dictionary
 
@@ -78,41 +76,6 @@ def check_for_no_jobs_in_job_dictionary(job_dict):
             return False
 
     return True
-
-
-def read_job_list(values: dict[str, str | int]) -> list[str]:
-    """method for unpacking the job list from the user's input in the gui
-    args:
-        values: dictionary of the values of the window
-    returns:
-        list of jobs as str[]
-    """
-    # unpacking gui vars into a list of jobs as strings
-    jobs = []
-
-    if values["-Open-Chests-in-"]:
-        jobs.append("open Chests")
-
-    if values["-Requesting-in-"]:
-        jobs.append("request")
-
-    if values["-Card-Mastery-Collection-in-"]:
-        jobs.append("card mastery collection")
-
-    if values["-Free-Offer-Collection-in-"]:
-        jobs.append("free offer collection")
-
-    if values["1v1_battle_in"]:
-        jobs.append("1v1 battle")
-    if values["2v2_battle_in"]:
-        jobs.append("2v2 battle")
-
-    if values["card_upgrading_in"]:
-        jobs.append("upgrade")
-
-    if values["war_checkbox_in"]:
-        jobs.append("war")
-    return jobs
 
 
 def save_current_settings(values) -> None:
@@ -147,6 +110,19 @@ def load_last_settings(window) -> None:
         window.refresh()  # refresh the window to update the layout
 
 
+def log_job_dictionary(job_dictionary: dict[str, str | int], logger) -> None:
+    """method for logging the job dictionary
+    args:
+        job_dictionary: the job dictionary to log
+    returns:
+        None
+    """
+    logger.log("\n-------------------------------\nJob Dictionary:\n")
+    for key, value in job_dictionary.items():
+        logger.log(f"{key}: {value}")
+    logger.log("-------------------------------\n")
+
+
 def start_button_event(
     logger: Logger, window, values
 ) -> WorkerThread | Literal["no jobs selected"]:
@@ -162,6 +138,7 @@ def start_button_event(
     save_current_settings(values)
 
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
+    log_job_dictionary(job_dictionary, logger)
 
     if check_for_no_jobs_in_job_dictionary(job_dictionary):
         no_jobs_popup()
@@ -339,6 +316,13 @@ def dummy_bot():
         "request_increment_user_input": "25 games",
         "card_mastery_collect_increment_user_input": "5 games",
     }
+
+    for _ in range(10):
+        logger.log("Running dummy bot...")
+    logger.log("\n-----------------------------\nJob list:")
+    for item in jobs_dictionary:
+        logger.log(f"{item}: {jobs_dictionary[item]}")
+    logger.log("-----------------------------\n\n")
 
     while 1:
         # code to run

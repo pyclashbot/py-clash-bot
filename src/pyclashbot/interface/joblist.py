@@ -47,36 +47,35 @@ jobs_checklist = [
         sg.Column(
             [
                 [
-                    job_check_box("1v1 battles", "1v1_battle_in"),
+                    job_check_box("1v1 battles", "1v1_user_toggle"),
                 ],
                 [
-                    job_check_box("2v2 battles", "2v2_battle_in"),
+                    job_check_box("2v2 battles", "2v2_user_toggle"),
                 ],
                 [
-                    job_check_box("Open chests", "-Open-Chests-in-"),
+                    job_check_box("Open chests", "open_chests_user_toggle"),
                 ],
-
                 [
-                    job_check_box("Random Requesting", "-Requesting-in-"),
+                    job_check_box("Random Requesting", "request_user_toggle"),
                 ],
                 [
                     job_check_box(
-                        "Card Mastery Collection", "-Card-Mastery-Collection-in-"
+                        "Card Mastery Collection", "card_mastery_user_toggle"
                     ),
                 ],
                 [
-                    job_check_box("Card Upgrading", "card_upgrading_in"),
+                    job_check_box("Card Upgrading", "card_upgrade_user_toggle"),
                 ],
                 [
                     job_check_box(
                         "Free Offer Collection",
-                        "-Free-Offer-Collection-in-",
+                        "free_offer_user_toggle",
                     ),
                 ],
                 [
                     job_check_box(
                         "War Participation",
-                        "war_checkbox_in",
+                        "war_user_toggle",
                     ),
                 ],
             ],
