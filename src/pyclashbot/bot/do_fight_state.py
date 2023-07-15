@@ -39,6 +39,7 @@ QUICKMATCH_BUTTON_COORD = (
     353,
 )  # coord of the quickmatch button after you click the battle button
 POST_FIGHT_TIMEOUT = 120  # seconds
+ELIXER_WAIT_TIMEOUT = 25
 
 
 # pre-fight methods
@@ -233,17 +234,22 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         logger.log(f"2v2 battle play #{plays}:")
 
         # wait for 6 elixer
-        logger.log("Waiting for 6 elixer")
+        logger.log("Waiting for 4 elixer")
 
-        elixer_wait_return = wait_for_6_elixer(vm_index, logger, "2v2")
+        elixer_wait_return: Literal["restart", "no battle", "good"] = wait_for_4_elixer(
+            vm_index, logger, mode="2v2"
+        )
 
         if elixer_wait_return == "restart":
             logger.change_status(
-                status="Error 99765684 wait_for_6_elixer() in fight_loop()"
+                status="Error 99765684 wait_for_4_elixer() in fight_loop()"
             )
             return "restart"
 
         if elixer_wait_return == "no battle":
+            logger.log(
+                "No battle detected in elixer_wait_return var in _2v2_fight_loop()"
+            )
             break
 
         # choose random card to play
@@ -282,7 +288,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # increment plays counter
         plays += 1
 
-    logger.remove_card_played(cards_to_remove=random.randint(2,3))
+    logger.remove_card_played(cards_to_remove=random.randint(2, 3))
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
@@ -355,10 +361,33 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # increment plays counter
         plays += 1
 
-    logger.remove_card_played(cards_to_remove=random.randint(2,3))
+    logger.remove_card_played(cards_to_remove=random.randint(2, 3))
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
     return "good"
+
+
+def wait_for_4_elixer(vm_index, logger, mode="1v1"):
+    start_time = time.time()
+    while not check_for_4_elixer(vm_index):
+        if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
+            return "restart"
+
+        if mode == "1v1" and not check_for_in_1v1_battle(vm_index):
+            logger.change_status(status="Not in battle, stopping waiting for 4 elixer")
+            return "no battle"
+        if mode == "2v2" and not check_for_in_2v2_battle(vm_index):
+            logger.change_status(status="Not in battle, stopping waiting for 4 elixer")
+            return "no battle"
+    return "good"
+
+
+def check_for_4_elixer(vm_index):
+    if not region_is_color(vm_index, [207, 612, 15, 2], (240, 137, 244)):
+        return False
+    if not region_is_color(vm_index, [205, 618, 17, 2], (207, 33, 213)):
+        return False
+    return True
 
 
 def wait_for_6_elixer(
@@ -366,7 +395,7 @@ def wait_for_6_elixer(
 ) -> Literal["restart", "no battle", "good"]:
     start_time = time.time()
     while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
-        if time.time() - start_time > 25:
+        if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
         if mode == "1v1" and not check_for_in_1v1_battle(vm_index):
@@ -376,15 +405,6 @@ def wait_for_6_elixer(
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
     return "good"
-
-
-def check_for_6_elixer_with_delay(vm_index) -> bool:
-    start_time = time.time()
-    while time.time() - start_time < 3:
-        if check_for_6_elixer(vm_index):
-            return True
-        time.sleep(0.1)
-    return False
 
 
 def check_for_6_elixer(vm_index) -> bool:
@@ -424,10 +444,9 @@ def check_enemy_tower_statuses(
 
 def end_fight_state(vm_index, logger: Logger, next_state):
     # get to clash main after this fight
-    if get_to_main_after_fight(vm_index, logger, next_state)=='restart':
-        logger.log('Erro 6969 Failed to get to clash main after a fight')
-        return 'restart'
-
+    if get_to_main_after_fight(vm_index, logger, next_state) == "restart":
+        logger.log("Erro 6969 Failed to get to clash main after a fight")
+        return "restart"
 
     # check if the prev game was a win
 
@@ -508,7 +527,7 @@ def get_to_main_after_fight(vm_index, logger, next_state):
         # if on end of 2v2 battle screen, click EXIT
         handle_end_2v2_battle_condition_1(vm_index, logger)
 
-        #if on end of 2v2 battle screen c2, click OK
+        # if on end of 2v2 battle screen c2, click OK
         handle_end_2v2_battle_condition_2(vm_index, logger)
 
         # if on end of 1v1 battle screen, click OK
@@ -534,20 +553,26 @@ def get_to_main_after_fight(vm_index, logger, next_state):
 def handle_end_2v2_battle_condition_2(vm_index, logger):
     if check_for_end_2v2_battle_condition_2(vm_index):
         logger.log("On the end of 2v2 (c2) battle screen so clicking OK button")
-        click(vm_index, 212,553)
-
+        click(vm_index, 212, 553)
 
 
 def check_for_end_2v2_battle_condition_2(vm_index):
-    if not region_is_color(vm_index,[175,558,15,8],(78,175,255)):return False
-    if not region_is_color(vm_index,[225,544,17,6],(99,184,255)):return False
+    if not region_is_color(vm_index, [175, 558, 15, 8], (78, 175, 255)):
+        return False
+    if not region_is_color(vm_index, [225, 544, 17, 6], (99, 184, 255)):
+        return False
 
-    if not check_line_for_color(vm_index,197,545,201,550,(255,255,255)):return False
-    if not check_line_for_color(vm_index,210,544,201,550,(255,255,255)):return False
-    if not check_line_for_color(vm_index,211,544,213,554,(255,255,255)):return False
-    if not check_line_for_color(vm_index,225,558,215,554,(255,255,255)):return False
+    if not check_line_for_color(vm_index, 197, 545, 201, 550, (255, 255, 255)):
+        return False
+    if not check_line_for_color(vm_index, 210, 544, 201, 550, (255, 255, 255)):
+        return False
+    if not check_line_for_color(vm_index, 211, 544, 213, 554, (255, 255, 255)):
+        return False
+    if not check_line_for_color(vm_index, 225, 558, 215, 554, (255, 255, 255)):
+        return False
 
     return True
+
 
 def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
     if check_for_end_2v2_battle_condition_1(vm_index):
