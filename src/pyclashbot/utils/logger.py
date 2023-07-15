@@ -1,3 +1,4 @@
+"""import logging for file logging"""
 import logging
 import threading
 import time
@@ -12,14 +13,14 @@ MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
 
 log_dir = join(expandvars("%appdata%"), MODULE_NAME, "logs")
-archive_name = join(log_dir, "logs.zip")
+archive_name: str = join(log_dir, "logs.zip")
 
 
-def compress_logs():
-    # archive will contain a large text file, all old logs appended together
-    # extract the file and read the text to get the old logs
+def compress_logs() -> None:
+    """archive will contain a large text file, all old logs appended together
+    extract the file and read the text to get the old logs"""
 
-    logs = sorted(
+    logs: list[str] = sorted(
         [join(log_dir, log) for log in listdir(log_dir) if log.endswith(".txt")],
         key=getmtime,
     )
@@ -32,7 +33,7 @@ def compress_logs():
                 remove(log)
 
 
-def initalize_pylogging():
+def initalize_pylogging() -> None:
     """method to be called once to initalize python logging"""
 
     if not exists(log_dir):
@@ -134,7 +135,7 @@ class Logger:
                 "free_offer_collections": self.free_offer_collections,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
-                'deck_randomizations':self.deck_randomizations,
+                "deck_randomizations": self.deck_randomizations,
             }
 
     def get_stats(self):
@@ -158,6 +159,7 @@ class Logger:
         return wrapper
 
     def log(self, message) -> None:
+        """log something to file and print to console with time and stats"""
         log_message = f"[{self.current_state}] {message}"
         logging.info(log_message)
         time_string = self.calc_time_since_start()
@@ -180,6 +182,8 @@ class Logger:
         return f"{hour}:{minutes:02}:{seconds:02}"
 
     def calc_time_since_start(self) -> str:
+        """calculate time since start of bot using logger's
+        stats and reutrn as string in hours:mins:seconds"""
         if self.start_time is not None:
             hours, remainder = divmod(time.time() - self.start_time, 3600)
             minutes, seconds = divmod(remainder, 60)
@@ -189,6 +193,7 @@ class Logger:
 
     @_updates_log
     def calc_win_rate(self):
+        """calculate win rate using logger's stats and return as string"""
         wins = self.wins
         losses = self.losses
         if wins == 0:
@@ -208,6 +213,7 @@ class Logger:
 
     @_updates_log
     def set_current_state(self, state_to_set):
+        """set logger's current_state to state_to_set"""
         self.current_state = state_to_set
 
     @_updates_log
@@ -227,6 +233,7 @@ class Logger:
 
     @_updates_log
     def add_card_mastery_reward_collection(self) -> None:
+        """increment logger's card mastery reward collection counter by 1"""
         self.card_mastery_reward_collections += 1
 
     @_updates_log
@@ -245,6 +252,7 @@ class Logger:
         self.cards_played += 1
 
     def remove_card_played(self, cards_to_remove=1):
+        """decremenet logger's card played counter by cards_to_remove"""
         self.cards_played -= cards_to_remove
 
     @_updates_log
@@ -271,6 +279,7 @@ class Logger:
 
     @_updates_log
     def add_deck_randomization(self):
+        """incremenet deck randomization counter"""
         self.deck_randomizations += 1
 
     @_updates_log
@@ -309,45 +318,61 @@ class Logger:
         self.most_recent_restart_time = time_to_set
 
     def add_randomize_deck_attempt(self):
+        """increments logger's deck_randomize_attempts by 1"""
         self.deck_randomize_attempts += 1
 
     def add_request_attempt(self):
+        """increments logger's request_attempts by 1"""
         self.request_attempts += 1
 
     def add_free_offer_collection_attempt(self):
+        """increments logger's free_offer_collection_attempts by 1"""
         self.free_offer_collection_attempts += 1
 
     def add_card_upgrade_attempt(self):
+        """increments logger's card_upgrade_attempts by 1"""
         self.card_upgrade_attempts += 1
 
     def add_chest_unlock_attempt(self):
+        """increments logger's chest_unlock_attempts by 1"""
         self.chest_unlock_attempts += 1
 
-    def card_mastery_reward_collection_attempt(self):
+    def add_card_mastery_reward_collection_attempt(self):
+        """increments logger's card_mastery_reward_collection_attempts by 1"""
         self.card_mastery_reward_collection_attempts += 1
 
     def get_1v1_fights(self) -> int:
+        """returns logger's 1v1_fights stat"""
         return self._1v1_fights
 
     def get_2v2_fights(self) -> int:
+        """returns logger's 2v2_fights stat"""
         return self._2v2_fights
 
     def get_cards_played(self) -> int:
+        """returns logger's cards_played stat"""
         return self.cards_played
 
     def get_free_offer_collections(self) -> int:
+        """returns logger's free_offer_collections stat"""
         return self.free_offer_collections
 
     def get_requests(self) -> int:
+        """returns logger's requests stat"""
         return self.requests
 
     def get_card_upgrades(self) -> int:
+        """returns logger's cards_upgraded stat"""
         return self.cards_upgraded
 
     def get_chests_opened(self):
+        """return chests_unlocked stat"""
         return self.chests_unlocked
 
     def check_if_can_open_chests(self, increment_input):
+        """check if can open chests using logger's games_played and
+        open_chests attempts stats and user input increment arg"""
+
         # parse increment arg into an int
         increment_parse_dict = {
             "25 games": 25,
@@ -395,6 +420,9 @@ class Logger:
         return False
 
     def check_if_can_collect_card_mastery(self, increment_input):
+        """check if can collect card mastery rewards using logger's games_played and
+        card_mastery_reward_collection_attempts stats and user input increment arg"""
+
         # parse increment arg into an int
         increment_parse_dict = {
             "25 games": 25,
@@ -410,40 +438,41 @@ class Logger:
             return True
 
         # count card_mastery_reward_collection_attempts
-        card_mastery_reward_collection_attempts = (
-            self.card_mastery_reward_collection_attempts
-        )
+        card_mastery_attempts = self.card_mastery_reward_collection_attempts
 
         # count games
         games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if card_mastery_reward_collection_attempts is zero return true
-        if card_mastery_reward_collection_attempts == 0:
+        if card_mastery_attempts == 0:
             self.log(
-                f"Can collect card mastery. {games_played} Games and {card_mastery_reward_collection_attempts} Attempts"
+                f"Can do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect card mastery. {games_played} Games and {card_mastery_reward_collection_attempts} Attempts"
+                f"Can do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
             )
             return True
 
         # if games_played / increment > card_mastery_reward_collection_attempts
-        if games_played / increment >= card_mastery_reward_collection_attempts:
+        if games_played / increment >= card_mastery_attempts:
             self.log(
-                f"Can collect card mastery. {games_played} Games and {card_mastery_reward_collection_attempts} Attempts"
+                f"Can do card mastery. {games_played} Games & {card_mastery_attempts} Attempts"
             )
             return True
 
         self.log(
-            f"Cant collect card mastery. {games_played} Games and {card_mastery_reward_collection_attempts} Attempts"
+            f"Cant do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
         )
         return False
 
     def check_if_can_card_upgrade(self, increment_input):
+        """check if can upgrade cards using logger's games_played and
+        card_upgrade_attempts stats and user input increment arg"""
+
         # parse increment arg into an int
         increment_parse_dict = {
             "25 games": 25,
@@ -489,6 +518,7 @@ class Logger:
         return False
 
     def check_if_can_request(self, increment_input) -> bool:
+        """method to check if can request given attempts, games played, and user increment input"""
         # parse increment arg into an int
         increment_parse_dict = {
             "25 games": 25,
@@ -512,21 +542,21 @@ class Logger:
         # if request_attempts is zero return true
         if request_attempts == 0:
             self.log(
-                f"Can request bc request_attempts is {request_attempts} and games played is {games_played}"
+                f"Can request bc attempts is {request_attempts} and games played is {games_played}"
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can request bc request_attempts is {request_attempts} and games played is {games_played}"
+                f"Can request bc attempts is {request_attempts} and games played is {games_played}"
             )
             return True
 
         # if games_played / increment > request_attempts
         if games_played / increment >= request_attempts:
             self.log(
-                f"Can request bc request_attempts is {request_attempts} and games played is {games_played}"
+                f"Can request. attempts = {request_attempts} & games played = {games_played}"
             )
             return True
 
@@ -534,6 +564,9 @@ class Logger:
         return False
 
     def check_if_can_collect_free_offer(self, increment_input) -> bool:
+        """method to check if can collect free offers given
+        attempts, games played, and user increment input"""
+
         # parse increment arg into an int
         increment_parse_dict = {
             "25 games": 25,
@@ -549,38 +582,42 @@ class Logger:
             return True
 
         # count free_offer_collection_attempts
-        free_offer_collection_attempts = self.free_offer_collection_attempts
+        free_offer_attempts = self.free_offer_collection_attempts
 
         # count games
         games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if free_offer_collection_attempts is zero return true
-        if free_offer_collection_attempts == 0:
+        if free_offer_attempts == 0:
             self.log(
-                f"Can collect free offer. {games_played} Games and {free_offer_collection_attempts} Attempts"
+                f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect free offer. {games_played} Games and {free_offer_collection_attempts} Attempts"
+                f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
             )
             return True
 
         # if games_played / increment > free_offer_collection_attempts
-        if games_played / increment >= free_offer_collection_attempts:
+        if games_played / increment >= free_offer_attempts:
             self.log(
-                f"Can collect free offer. {games_played} Games and {free_offer_collection_attempts} Attempts"
+                f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
             )
             return True
 
         self.log(
-            f"Cant collect free offer. {games_played} Games and {free_offer_collection_attempts} Attempts"
+            f"Cant do free offer. {games_played} Games and {free_offer_attempts} Attempts"
         )
         return False
 
     def check_if_can_randomize_deck(self, increment_input):
+        """method to check if can randomize deck given
+        attempts, games played, and user increment input"""
+
+
         # parse increment arg into an int
         increment_parse_dict = {
             "25 games": 25,
@@ -628,10 +665,13 @@ class Logger:
         return False
 
     def update_time_of_last_request(self, input_time) -> None:
+        """sets logger's time_of_last_request to input_time"""
         self.time_of_last_request = input_time
 
     def update_time_of_last_free_offer_collection(self, input_time) -> None:
+        """sets logger's time_of_last_free_offer_collection to input_time"""
         self.time_of_last_free_offer_collection = input_time
 
     def update_time_of_last_card_upgrade(self, input_time) -> None:
+        """sets logger's time_of_last_card_upgrade to input_time"""
         self.time_of_last_card_upgrade = input_time

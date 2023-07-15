@@ -23,7 +23,7 @@ CARD_PAGE_DEADSPACE: tuple[Literal[21], Literal[355]] = (21, 355)
 
 def card_mastery_collection_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="Card mastery collection state")
-    logger.card_mastery_reward_collection_attempt()
+    logger.add_card_mastery_reward_collection_attempt()
 
     # if not on clash main, return fail
     if not check_if_on_clash_main_menu(vm_index):

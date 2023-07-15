@@ -1,3 +1,4 @@
+"""random import for deck randomization"""
 import random
 import time
 from typing import Literal
@@ -69,18 +70,7 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     return next_state
 
 
-def randomize_this_deck(vm_index, logger: Logger):
-    # starts when looking at the deck to randomize
-
-    logger.change_status("Randomizing this deck")
-
-    # count max scrolls
-    logger.log("Counting max scrolls")
-    max_scrolls = count_max_scrolls(vm_index, logger)
-    logger.log(f"There are {max_scrolls} max scrolls")
-
-    logger.log("Getting back to top of card page")
-    # scroll back to top
+def reset_card_page_scroll(vm_index):
     click(
         vm_index,
         CLASH_MAIN_ICON_FROM_CARD_PAGE[0],
@@ -94,14 +84,39 @@ def randomize_this_deck(vm_index, logger: Logger):
     )
     time.sleep(2)
 
+
+def randomize_this_deck(vm_index, logger: Logger):
+    # starts when looking at the deck to randomize
+
+    logger.change_status("Randomizing this deck")
+    time.sleep(1)
+
+    # count max scrolls
+    logger.change_status("Counting length of your card list")
+
+    logger.log("Counting max scrolls")
+    max_scrolls = count_max_scrolls(vm_index, logger)
+    logger.log(f"There are {max_scrolls} max scrolls")
+
+    logger.log("Getting back to top of card page")
+    # scroll back to top
+    reset_card_page_scroll(vm_index)
+
     # for each of the 8 cards:
     logger.log("Entering card replacement loop")
+    logger.change_status("Replacing this deck with random cards...")
     card_index = 0
-    for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
-        card_index += 1
-        # while doesnt have replacement card:
 
+    random.shuffle(CARDS_TO_REPLACE_COORDS)
+
+    for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
+        this_card_replacement_start_time = time.time()
+        card_index += 1
         start_time = time.time()
+
+        logger.change_status(f"Replacing card {card_index}/8")
+
+        # while doesnt have replacement card:
         while 1:
             if time.time() - start_time > RANDOM_CARD_SEARCH_TIMEOUT:
                 logger.log(
@@ -113,12 +128,12 @@ def randomize_this_deck(vm_index, logger: Logger):
 
             # scroll random amount
             scroll_amount = random.randint(1, max_scrolls)
-            if scroll_amount < 3:
-                scroll_amount = 3
+            scroll_amount = max(3, scroll_amount)
+
             logger.log(f"Scrolling {scroll_amount} times ")
             for _ in range(scroll_amount):
                 scroll_down(vm_index)
-                time.sleep(1)
+                time.sleep(0.5)
             time.sleep(3)
 
             # click a random card
@@ -129,18 +144,7 @@ def randomize_this_deck(vm_index, logger: Logger):
             if random_card_coord is None:
                 logger.log("Didnt find a random card.")
                 logger.log("Scrolling back to top")
-                click(
-                    vm_index,
-                    CLASH_MAIN_ICON_FROM_CARD_PAGE[0],
-                    CLASH_MAIN_ICON_FROM_CARD_PAGE[1],
-                )
-                time.sleep(2)
-                click(
-                    vm_index,
-                    CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
-                    CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
-                )
-                time.sleep(2)
+                reset_card_page_scroll(vm_index)
 
                 # redo
                 continue
@@ -159,18 +163,7 @@ def randomize_this_deck(vm_index, logger: Logger):
                 # redo
                 logger.log("Didnt find this cards use button")
                 logger.log("Scrolling back to top")
-                click(
-                    vm_index,
-                    CLASH_MAIN_ICON_FROM_CARD_PAGE[0],
-                    CLASH_MAIN_ICON_FROM_CARD_PAGE[1],
-                )
-                time.sleep(2)
-                click(
-                    vm_index,
-                    CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
-                    CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
-                )
-                time.sleep(2)
+                reset_card_page_scroll(vm_index)
 
                 # redo
                 continue
@@ -187,10 +180,16 @@ def randomize_this_deck(vm_index, logger: Logger):
             time.sleep(1)
 
             # break the while loop
-            logger.log(
-                f"Successfully replaced this card: {card_index}/8\n------------------"
+            this_card_replacement_time_taken = str(
+                time.time() - this_card_replacement_start_time
+            )[:5]
+            logger.change_status(
+                f"Replaced this card in {this_card_replacement_time_taken}s {card_index}/8"
             )
+            logger.log("||||||||||||||||||")
             break
+
+    return 'good'
 
 
 def find_use_card_button(vm_index):
@@ -222,12 +221,11 @@ def count_max_scrolls(vm_index, logger):
 
     while find_random_card_in_card_page_with_delay(vm_index, delay=5) is not None:
         scroll_down(vm_index)
-        time.sleep(1)
+        time.sleep(0.5)
         scrolls += 1
 
     scrolls = scrolls - 3
-    if scrolls < 3:
-        scrolls = 3
+    scrolls = max(scrolls, 3)
 
     return scrolls
 
@@ -296,5 +294,4 @@ def select_deck_2(vm_index):
 
 
 if __name__ == "__main__":
-    while 1:
-        print(find_random_card_in_card_page(1))
+    print(randomize_deck_state(1, Logger(), "next_statedghjgh "))

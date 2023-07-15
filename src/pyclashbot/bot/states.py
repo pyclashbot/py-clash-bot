@@ -1,4 +1,3 @@
-from operator import ne
 import time
 
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
@@ -44,8 +43,6 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> open_chests
-
-
         # open clash
         logger.log("Running restart_emulator() for initial emulator boot")
         restart_emulator(logger)
@@ -80,7 +77,7 @@ def state_tree(
             )
             for _ in range(3):
                 logger.log(
-                    "Error 33 wait_for_clash_main_menu() within restart state, so recursively restarting!"
+                    "Error 33 wait_for_clash_main_menu() in restart state recursively restarting!"
                 )
             logger.log("\n")
             next_state = "restart"

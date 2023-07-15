@@ -1,3 +1,4 @@
+"""pysimplegui layout for the joblist window."""
 import PySimpleGUI as sg
 
 from pyclashbot.interface.theme import THEME
@@ -6,6 +7,8 @@ sg.theme(THEME)
 
 
 def no_jobs_popup() -> None:
+    """pysimplegui to popup when no jobs are selected."""
+
     # Define the layout of the GUI
     layout = [
         [
@@ -34,6 +37,8 @@ def no_jobs_popup() -> None:
 
 
 def job_check_box(text: str, element_key: str) -> sg.Checkbox:
+    '''returns a checkbox element for the joblist window'''
+
     return sg.Checkbox(
         text,
         default=True,
