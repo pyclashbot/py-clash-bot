@@ -68,10 +68,8 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
 
     time_taken = time.time() - start_time
     mins = int(time_taken / 60)
-    time_taken=time_taken-(mins*60)
+    time_taken = time_taken - (mins * 60)
     seconds = int(time_taken)
-
-
 
     logger.log(f"Randomize deck state took {mins}m {seconds}s")
     return next_state
@@ -90,6 +88,119 @@ def reset_card_page_scroll(vm_index):
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
     )
     time.sleep(2)
+
+
+def scroll_random_amount_on_card_page(vm_index, logger, max_scrolls):
+    # scroll random amount
+    scroll_amount = random.randint(1, max_scrolls)
+    scroll_amount = max(3, scroll_amount)
+
+    logger.log(f"Scrolling {scroll_amount} times ")
+    for _ in range(scroll_amount):
+        scroll_down(vm_index)
+        time.sleep(0.5)
+    time.sleep(3)
+
+
+def click_random_card_on_card_page(logger, vm_index):
+    # click a random card
+    logger.log("Clicking a random card")
+    random_card_coord = find_random_card_in_card_page(vm_index)
+
+    # if doenst have coord at this scroll location:
+    if random_card_coord is None:
+        logger.log("Didnt find a random card.")
+        logger.log("Scrolling back to top")
+        return "fail"
+
+    # click the random card
+    click(vm_index, random_card_coord[0], random_card_coord[1])
+    time.sleep(1)
+
+
+def find_replacement_card_on_this_page(vm_index, logger) -> Literal["success", "fail"]:
+    # finds a card and clicks the use button. if it fails, it just stares at cards
+
+    FIND_REPLACEMENT_CARD_TIMEOUT = 10
+    start_time = time.time()
+
+    # while within timeout:
+    while time.time() - start_time < FIND_REPLACEMENT_CARD_TIMEOUT:
+        # click a new card, if fail, continue
+        if click_random_card_on_card_page(logger, vm_index) == "fail":
+            logger.log("failed to click a card")
+            continue
+
+        # find use, if no use, continue
+        if click_use_card_button(vm_index, logger) == "fail":
+            logger.log("Failed to click use card button")
+            continue
+
+        logger.log("Got the use card button!")
+        return "success"
+
+    logger.log("Failed to find a replacement card within timeout")
+    return "fail"
+
+
+def click_use_card_button(vm_index, logger) -> Literal["fail", "success"]:
+    # find use button
+    logger.log("Clicking use card button")
+    use_card_button_coord = find_use_card_button(vm_index)
+
+    # if there is no use button
+    if use_card_button_coord is None:
+        return "fail"
+
+    # if use button appears:
+    # click it
+    logger.log("Found use card button")
+    click(vm_index, use_card_button_coord[0], use_card_button_coord[1])
+    time.sleep(3)
+    return "success"
+
+
+def randomize_deck(vm_index, logger, max_scrolls) -> Literal["restart"] | None:
+    card_index = 0
+    for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
+        this_card_replacement_start_time = time.time()
+        card_index += 1
+        start_time = time.time()
+
+        logger.change_status(f"Replacing card {card_index}/8")
+
+        # while doesnt have replacement card:
+        while 1:
+            if time.time() - start_time > RANDOM_CARD_SEARCH_TIMEOUT:
+                logger.log(
+                    "Error 998745 Searched for a rnadom card to repalce the card with for too long"
+                )
+                return "restart"
+
+            logger.log("Scrolling a random amount")
+
+            # scroll random amount
+            scroll_random_amount_on_card_page(vm_index, logger, max_scrolls)
+
+            if find_replacement_card_on_this_page(vm_index, logger) == "fail":
+                reset_card_page_scroll(vm_index)
+                continue
+
+            # click coord of card to replace
+            logger.log("Clicking the card to replace")
+            click(vm_index, card_to_replace_coord[0], card_to_replace_coord[1])
+            time.sleep(1)
+
+            # break the while loop
+            logger.add_card_randomization()
+            this_card_replacement_time_taken = str(
+                time.time() - this_card_replacement_start_time
+            ).split(".")[0]
+            logger.change_status(
+                f"Replaced this card in {this_card_replacement_time_taken}s {card_index}/8"
+            )
+            logger.log("- - - - - - - - - - - - -")
+            break
 
 
 def randomize_this_deck(vm_index, logger: Logger):
@@ -112,92 +223,9 @@ def randomize_this_deck(vm_index, logger: Logger):
     # for each of the 8 cards:
     logger.log("Entering card replacement loop")
     logger.change_status("Replacing this deck with random cards...")
-    card_index = 0
 
     random.shuffle(CARDS_TO_REPLACE_COORDS)
-
-    for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
-        this_card_replacement_start_time = time.time()
-        card_index += 1
-        start_time = time.time()
-
-        logger.change_status(f"Replacing card {card_index}/8")
-
-        # while doesnt have replacement card:
-        while 1:
-            if time.time() - start_time > RANDOM_CARD_SEARCH_TIMEOUT:
-                logger.log(
-                    "Error 998745 Searched for a rnadom card to repalce the card with for too long"
-                )
-                return "restart"
-
-            logger.log("Scrolling a random amount")
-
-            # scroll random amount
-            scroll_amount = random.randint(1, max_scrolls)
-            scroll_amount = max(3, scroll_amount)
-
-            logger.log(f"Scrolling {scroll_amount} times ")
-            for _ in range(scroll_amount):
-                scroll_down(vm_index)
-                time.sleep(0.5)
-            time.sleep(3)
-
-
-
-            # click a random card
-            logger.log("Clicking a random card")
-            random_card_coord = find_random_card_in_card_page(vm_index)
-
-            # if doenst have coord at this scroll location:
-            if random_card_coord is None:
-                logger.log("Didnt find a random card.")
-                logger.log("Scrolling back to top")
-                reset_card_page_scroll(vm_index)
-
-                # redo
-                continue
-
-            # click the random card
-            logger.log("Found a random card. Clicking it.")
-            click(vm_index, random_card_coord[0], random_card_coord[1])
-            time.sleep(1)
-
-            # find use button
-            logger.log("Clicking use card button")
-            use_card_button_coord = find_use_card_button(vm_index)
-
-            # if there is no use button
-            if use_card_button_coord is None:
-                # redo
-                logger.log("Didnt find this cards use button")
-                logger.log("Scrolling back to top")
-                reset_card_page_scroll(vm_index)
-
-                # redo
-                continue
-
-            # if use button appears:
-            # click it
-            logger.log("Found use card button")
-            click(vm_index, use_card_button_coord[0], use_card_button_coord[1])
-            time.sleep(3)
-
-            # click coord of card to replace
-            logger.log("Clicking the card to replace")
-            click(vm_index, card_to_replace_coord[0], card_to_replace_coord[1])
-            time.sleep(1)
-
-            # break the while loop
-            logger.add_card_randomization()
-            this_card_replacement_time_taken = str(
-                time.time() - this_card_replacement_start_time
-            ).split(".")[0]
-            logger.change_status(
-                f"Replaced this card in {this_card_replacement_time_taken}s {card_index}/8"
-            )
-            logger.log("- - - - - - - - - - - - -")
-            break
+    randomize_deck(vm_index, logger, max_scrolls)
 
     return "good"
 
@@ -305,10 +333,3 @@ def select_deck_2(vm_index):
 
 if __name__ == "__main__":
     print(randomize_deck_state(1, Logger(), "next_statedghjgh "))
-
-
-
-
-
-
-

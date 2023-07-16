@@ -88,7 +88,7 @@ battle_stats_titles: list[list[sg.Text]] = [
         sg.Text("War Fights: "),
     ],
     [
-        sg.Text("Random Cards: "),
+        sg.Text("Card Swaps: "),
     ],
 ]
 
