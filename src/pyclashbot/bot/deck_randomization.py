@@ -34,6 +34,7 @@ CARDS_TO_REPLACE_COORDS = [
     (257, 399),
     (339, 399),
 ]
+FIND_REPLACEMENT_CARD_TIMEOUT = 10
 
 
 def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
@@ -92,7 +93,7 @@ def reset_card_page_scroll(vm_index):
 
 def scroll_random_amount_on_card_page(vm_index, logger, max_scrolls):
     # scroll random amount
-    scroll_amount = random.randint(1, max_scrolls)
+    scroll_amount: int = random.randint(1, max_scrolls)
     scroll_amount = max(3, scroll_amount)
 
     logger.log(f"Scrolling {scroll_amount} times ")
@@ -117,11 +118,12 @@ def click_random_card_on_card_page(logger, vm_index):
     click(vm_index, random_card_coord[0], random_card_coord[1])
     time.sleep(1)
 
+    return "good"
+
 
 def find_replacement_card_on_this_page(vm_index, logger) -> Literal["success", "fail"]:
     # finds a card and clicks the use button. if it fails, it just stares at cards
 
-    FIND_REPLACEMENT_CARD_TIMEOUT = 10
     start_time = time.time()
 
     # while within timeout:
@@ -160,7 +162,7 @@ def click_use_card_button(vm_index, logger) -> Literal["fail", "success"]:
     return "success"
 
 
-def randomize_deck(vm_index, logger, max_scrolls) -> Literal["restart"] | None:
+def randomize_deck(vm_index, logger, max_scrolls) -> Literal['restart', 'good']:
     card_index = 0
     for card_to_replace_coord in CARDS_TO_REPLACE_COORDS:
         this_card_replacement_start_time = time.time()
@@ -193,17 +195,19 @@ def randomize_deck(vm_index, logger, max_scrolls) -> Literal["restart"] | None:
 
             # break the while loop
             logger.add_card_randomization()
-            this_card_replacement_time_taken = str(
+            this_card_replacement_time_taken: str = str(
                 time.time() - this_card_replacement_start_time
-            ).split(".")[0]
+            ).split(".", maxsplit=1)[0]
             logger.change_status(
                 f"Replaced this card in {this_card_replacement_time_taken}s {card_index}/8"
             )
             logger.log("- - - - - - - - - - - - -")
             break
 
+    return "good"
 
-def randomize_this_deck(vm_index, logger: Logger):
+
+def randomize_this_deck(vm_index, logger: Logger) -> Literal["good"]:
     # starts when looking at the deck to randomize
 
     logger.change_status("Randomizing this deck")
@@ -213,7 +217,7 @@ def randomize_this_deck(vm_index, logger: Logger):
     logger.change_status("Counting length of your card list")
 
     logger.log("Counting max scrolls")
-    max_scrolls = count_max_scrolls(vm_index, logger)
+    max_scrolls: int = count_max_scrolls(vm_index, logger)
     logger.log(f"There are {max_scrolls} max scrolls")
 
     logger.log("Getting back to top of card page")
