@@ -77,6 +77,7 @@ user_config_keys = [
     "2v2_user_toggle",
     "card_upgrade_user_toggle",
     "war_user_toggle",
+    'random_decks_user_toggle',
 
     # job increment controls keys
     "request_increment_user_input",

@@ -42,8 +42,8 @@ def read_window(
     return read_result
 
 
-def make_job_dictionary(values: dict[str, str | int]):
-    jobs_dictionary = {
+def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
+    jobs_dictionary: dict[str, str | int] = {
         # job toggles
         "open_chests_user_toggle": values["open_chests_user_toggle"],
         "request_user_toggle": values["request_user_toggle"],
@@ -66,7 +66,9 @@ def make_job_dictionary(values: dict[str, str | int]):
             "card_mastery_collect_increment_user_input"
         ],
         "open_chests_increment_user_input": values["open_chests_increment_user_input"],
-        "deck_randomization_increment_user_input": values["deck_randomization_increment_user_input"],
+        "deck_randomization_increment_user_input": values[
+            "deck_randomization_increment_user_input"
+        ],
     }
     return jobs_dictionary
 
@@ -342,13 +344,6 @@ def dummy_bot():
         "request_increment_user_input": "25 games",
         "card_mastery_collect_increment_user_input": "5 games",
     }
-
-    for _ in range(10):
-        logger.log("Running dummy bot...")
-    logger.log("\n-----------------------------\nJob list:")
-    for item in jobs_dictionary:
-        logger.log(f"{item}: {jobs_dictionary[item]}")
-    logger.log("-----------------------------\n\n")
 
     while 1:
         # code to run
