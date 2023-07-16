@@ -1,3 +1,4 @@
+from datetime import datetime
 import sys
 from typing import Literal
 import webbrowser
@@ -151,6 +152,35 @@ def log_job_dictionary(job_dictionary: dict[str, str | int], logger) -> None:
     logger.log("-------------------------------\n\n")
 
 
+def log_program_info(logger):
+    logger.log(
+        "--------------------------------------------------------------------------------------------"
+    )
+    logger.log(
+        "-0000--0---0---------0000--0--------000-----000---0----0----------00000-----000----0000000--"
+    )
+    logger.log(
+        "-0--0--0---0--------0------0-------0---0---0------0----0----------0----0---0----0-----0-----"
+    )
+    logger.log(
+        "-0000----0----000---0------0-------00000----00----000000---000----00000----0----0-----0-----"
+    )
+    logger.log(
+        "-0-------0----------0------0-------0---0------0---0----0----------0----0---0----0-----0-----"
+    )
+    logger.log(
+        "-0-------0-----------0000--000000--0---0---0000---0----0----------00000-----000-------0-----"
+    )
+    logger.log(
+        "--------------------------------------------------------------------------------------------"
+    )
+    current_time = datetime.now()
+
+    # Format the time according to your desired format
+    formatted_time = current_time.strftime("%d/%m/%Y %H:%M:%S")
+    logger.log(f"Local time is {formatted_time}")
+
+
 def start_button_event(
     logger: Logger, window, values
 ) -> WorkerThread | Literal["no jobs selected"]:
@@ -167,6 +197,7 @@ def start_button_event(
 
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
     log_job_dictionary(job_dictionary, logger)
+    log_program_info(logger)
 
     if check_for_no_jobs_in_job_dictionary(job_dictionary):
         no_jobs_popup()
