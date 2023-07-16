@@ -205,6 +205,17 @@ def randomize_deck(vm_index, logger, max_scrolls) -> Literal["restart", "good"]:
             if find_and_click_replacement_card_on_this_page(vm_index, logger) == "fail":
                 reset_card_page_scroll(vm_index)
                 continue
+            time.sleep(3)
+
+            #  CHECK FOR CHAMPION TYPE CARD
+            if check_for_champion_replacement_card(vm_index, logger):
+                logger.log(
+                    "Champion type card so its no good. Gotta redo this card replacement"
+                )
+                reset_card_page_scroll(vm_index)
+                continue
+
+            logger.log("This card type is good!")
 
             # click coord of card to replace
             logger.log("Clicking the card to replace")
@@ -426,9 +437,106 @@ def select_deck_2(vm_index) -> Literal["good"]:
     return "good"
 
 
-if __name__ == "__main__":
-    print(randomize_deck_state(1, Logger(), "next_statedghjgh "))
+def check_for_champion_replacement_card(vm_index, logger):
+    """method to check if the card the randomizer is
+    going to use as a replacement card is a champion type card"""
 
-    # print(count_max_scrolls(1, Logger()))
-    # while 1:
-    #     print(find_random_card_in_bottom_half_of_card_page(1))
+    if check_for_skeleton_king(vm_index):
+        logger.log("Detected skeleton_king")
+        return True
+    if check_for_archer_queen(vm_index):
+        logger.log("Detected archer_queen")
+        return True
+    if check_for_golden_knight(vm_index):
+        logger.log("Detected golden_knight")
+        return True
+    if check_for_mighty_miner(vm_index):
+        logger.log("Detected mighty_miner")
+        return True
+    if check_for_monk(vm_index):
+        logger.log("Detected monk")
+        return True
+
+    logger.log("Not a champion type card.")
+    return False
+
+
+def check_for_monk(vm_index) -> bool:
+    """method to check if the card the randomizer is
+    going to use as a replacement card is a monk"""
+
+    if not check_line_for_color(vm_index, 191, 551, 201, 554, (225, 202, 181)):
+        return False
+    if not check_line_for_color(vm_index, 217, 547, 223, 553, (254, 249, 233)):
+        return False
+    if not check_line_for_color(vm_index, 204, 544, 212, 543, (235, 140, 78)):
+        return False
+    if not check_line_for_color(vm_index, 225, 547, 233, 549, (49, 165, 156)):
+        return False
+    if not check_line_for_color(vm_index, 188, 556, 180, 555, (97, 164, 156)):
+        return False
+    return True
+
+
+def check_for_archer_queen(vm_index) -> bool:
+    """method to check if the card the randomizer is
+    going to use as a replacement card is a archer_queen"""
+
+    if not check_line_for_color(vm_index, 186, 565, 184, 554, (175, 105, 75)):
+        return False
+    if not check_line_for_color(vm_index, 236, 557, 226, 553, (254, 226, 92)):
+        return False
+    if not check_line_for_color(vm_index, 223, 544, 214, 539, (79, 44, 112)):
+        return False
+    if not check_line_for_color(vm_index, 210, 563, 208, 553, (182, 91, 18)):
+        return False
+
+    return True
+
+
+def check_for_golden_knight(vm_index) -> bool:
+    """method to check if the card the randomizer is
+    going to use as a replacement card is a golden_knight"""
+
+    if not check_line_for_color(vm_index, 203, 552, 202, 541, (251, 227, 106)):
+        return False
+    if not check_line_for_color(vm_index, 201, 554, 195, 560, (254, 224, 117)):
+        return False
+    if not check_line_for_color(vm_index, 210, 551, 217, 557, (254, 234, 137)):
+        return False
+    if not check_line_for_color(vm_index, 213, 552, 219, 544, (155, 98, 43)):
+        return False
+    return True
+
+
+def check_for_mighty_miner(vm_index) -> bool:
+    """method to check if the card the randomizer is
+    going to use as a replacement card is a mighty_miner"""
+
+    if not check_line_for_color(vm_index, 202, 563, 203, 546, (236, 165, 79)):
+        return False
+    if not check_line_for_color(vm_index, 219, 565, 222, 559, (83, 36, 33)):
+        return False
+    if not check_line_for_color(vm_index, 181, 562, 186, 563, (118, 98, 99)):
+        return False
+    if not check_line_for_color(vm_index, 189, 566, 180, 561, (254, 242, 105)):
+        return False
+    return True
+
+
+def check_for_skeleton_king(vm_index) -> bool:
+    """method to check if the card the randomizer is
+    going to use as a replacement card is a skeleton_king"""
+    if not check_line_for_color(vm_index, 207, 544, 216, 547, (166, 176, 227)):
+        return False
+    if not check_line_for_color(vm_index, 194, 555, 205, 566, (8, 4, 9)):
+        return False
+    if not check_line_for_color(vm_index, 226, 554, 227, 567, (17, 0, 7)):
+        return False
+    if not check_line_for_color(vm_index, 193, 544, 176, 543, (169, 8, 169)):
+        return False
+    return True
+
+
+if __name__ == "__main__":
+    pass
