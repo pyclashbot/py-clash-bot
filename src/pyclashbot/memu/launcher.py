@@ -122,28 +122,15 @@ def check_for_vm(logger: Logger) -> int:
 def disable_components(vm_index):
     component_names = [
         "/com.supercell.titan.TimeAlarm",
-        "/com.google.firebase.iid.FirebaseInstanceIdReceiver",
         "/com.supercell.id.SharedDataBroadcastReceiver",
         "/com.supercell.id.SharedDataReceiverBroadcastReceiver",
-        "/com.google.android.datatransport.runtime.scheduling"
         ".jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
         "/com.supercell.titan.PushMessageService",
-        "/com.google.firebase.messaging.FirebaseMessagingService",
-        "/com.google.firebase.components.ComponentDiscoveryService",
-        "/com.google.android.gms.auth.api.signin.RevocationBoundService",
-        "/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
-        "/com.google.android.datatransport.runtime.scheduling"
         ".jobscheduling.JobInfoSchedulerService",
         "/com.helpshift.activities.HSMainActivity",
         "/com.helpshift.activities.HSDebugActivity",
-        "/com.android.billingclient.api.ProxyBillingActivity",
-        "/com.google.android.gms.common.api.GoogleApiActivity",
-        "/com.google.android.play.core.common.PlayCoreDialogWrapperActivity",
         "/io.sentry.android.core.SentryInitProvider",
         "/io.sentry.android.core.SentryPerformanceProvider",
-        "/com.google.firebase.provider.FirebaseInitProvider",
-        "/androidx.lifecycle.ProcessLifecycleOwnerInitializer",
-        "/com.journeyapps.barcodescanner.CaptureActivity",
     ]
     for component in component_names:
         command = f"shell pm disable {APK_BASE_NAME + component}"
