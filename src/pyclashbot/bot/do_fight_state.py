@@ -42,11 +42,19 @@ QUICKMATCH_BUTTON_COORD = (
 POST_FIGHT_TIMEOUT = 120  # seconds
 ELIXER_WAIT_TIMEOUT = 25
 
-
-# pre-fight methods
+EMOTE_BUTTON_COORD_IN_2V2 = (67, 521)
+EMOTES_COORDS_IN_2V2 = [
+    (144, 545),
+    (182, 420),
+    (308, 470),
+    (327, 544),
+    (243, 469),
+]
 
 
 def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_fight"]:
+    """method to handle starting a 2v2 fight"""
+
     logger.change_status(status="Start fight state")
     logger.change_status(status="Starting 2v2 mode")
 
@@ -89,6 +97,8 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
 
 
 def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_fight"]:
+    """method to handle starting a 1v1 fight"""
+
     logger.change_status(status="Start fight state")
     logger.change_status(status="Starting 1v1 mode")
 
@@ -108,6 +118,8 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
 
 
 def check_for_challenge_page_on_events_tab(vm_index):
+    """method to check for the presence of an ongoing challenge page in the events tab"""
+
     if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 188, 40)):
         return False
     if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 255, 255)):
@@ -119,6 +131,8 @@ def check_for_challenge_page_on_events_tab(vm_index):
 
 
 def close_this_challenge_page(vm_index) -> None:
+    """method to close an ongoing challenge page on the events tab"""
+
     click(
         vm_index,
         CLOSE_THIS_CHALLENGE_PAGE_BUTTON[0],
@@ -127,21 +141,25 @@ def close_this_challenge_page(vm_index) -> None:
 
 
 def click_2v2_icon_button(vm_index) -> None:
+    """method to click the 2v2 icon on the challenges tab"""
+
     click(vm_index, _2V2_BATTLE_ICON_COORD[0], _2V2_BATTLE_ICON_COORD[1])
 
 
 def click_2v2_battle_button(vm_index) -> None:
+    """method to click the 2v2 battle button on the challenges tab"""
     click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
 
 
 def click_quickmatch_button(vm_index) -> None:
+    """method to click the quickmatch button on the 2v2 battle screen"""
+
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
-# fight loop methods
-
-
 def do_1v1_fight_state(vm_index, logger: Logger, next_state):
+    """method to handle the entirety of the 1v1 battle state (start fight, do fight, end fight)"""
+
     logger.change_status(status="do_1v1_fight_state state")
     logger.change_status(status="waiting for 1v1 battle start")
 
@@ -170,6 +188,8 @@ def do_1v1_fight_state(vm_index, logger: Logger, next_state):
 
 
 def do_2v2_fight_state(vm_index, logger: Logger, next_state):
+    """method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
+
     logger.change_status(status="do_1v1_fight_state state")
     logger.change_status(status="waiting for 2v2 battle start")
 
@@ -198,6 +218,8 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state):
 
 
 def choose_play_side(vm_index, favorite_side):
+    """method to choose a play side given a favorite side"""
+
     # get tower_statuses
     tower_statuses = check_enemy_tower_statuses(vm_index)
 
@@ -217,7 +239,25 @@ def choose_play_side(vm_index, favorite_side):
     return random.choice(choices)
 
 
+def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
+    """method to do an emote in a 2v2 match"""
+
+    logger.change_status("Hitting an emote")
+
+    # click emote button
+    click(vm_index, EMOTE_BUTTON_COORD_IN_2V2[0], EMOTE_BUTTON_COORD_IN_2V2[1])
+    time.sleep(1)
+
+    emote_coord = random.choice(EMOTES_COORDS_IN_2V2)
+    click(vm_index, emote_coord[0], emote_coord[1])
+    time.sleep(0.33)
+
+    return "good"
+
+
 def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
+    """method to handle a dynamicly timed 2v2 fight"""
+
     logger.change_status(status="Starting 2v2 battle loop")
 
     # choose a side to favor this fight
@@ -232,6 +272,10 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # while in battle:
     while check_for_in_2v2_battle(vm_index):
+        # emote sometimes to do daily challenge (jk its to be funny and annoy people)
+        if random.randint(0, 10) == 1:
+            emote_in_2v2(vm_index, logger)
+
         logger.log(f"2v2 battle play #{plays}:")
 
         # wait for 6 elixer
@@ -297,6 +341,8 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
 
 def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
+    """method for handling dynamicly timed 1v1 fight"""
+
     logger.change_status(status="Starting battle loop")
 
     # choose a side to favor this fight
@@ -369,6 +415,8 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
 
 def wait_for_4_elixer(vm_index, logger, mode="1v1"):
+    """method to wait for 4 elixer during a battle"""
+
     start_time = time.time()
     while not check_for_4_elixer(vm_index):
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
@@ -384,6 +432,8 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
 
 
 def check_for_4_elixer(vm_index):
+    """method to check for 4 elixer during a battle"""
+
     if not region_is_color(vm_index, [207, 612, 15, 2], (240, 137, 244)):
         return False
     if not region_is_color(vm_index, [205, 618, 17, 2], (207, 33, 213)):
@@ -394,6 +444,8 @@ def check_for_4_elixer(vm_index):
 def wait_for_6_elixer(
     vm_index, logger: Logger, mode="1v1"
 ) -> Literal["restart", "no battle", "good"]:
+    """method to wait for 6 elixer during a battle"""
+
     start_time = time.time()
     while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
@@ -409,6 +461,8 @@ def wait_for_6_elixer(
 
 
 def check_for_6_elixer(vm_index) -> bool:
+    """method to check if the player has 6 elixer during a battle"""
+
     line2 = check_line_for_color(
         vm_index, x_1=253, y_1=611, x_2=273, y_2=622, color=(207, 33, 213)
     )
@@ -424,6 +478,9 @@ def check_for_6_elixer(vm_index) -> bool:
 def check_enemy_tower_statuses(
     vm_index,
 ) -> tuple[Literal["alive", "destroyed"], Literal["alive", "destroyed"]]:
+    """method to scan pixels during a battle to determine
+    which of  the enemy towers are alive or destroyed"""
+
     left_tower_color = (232, 188, 43)
     right_tower_color = (232, 188, 42)
 
@@ -440,10 +497,9 @@ def check_enemy_tower_statuses(
     return (left_status, right_status)
 
 
-# post fight methods
-
-
 def end_fight_state(vm_index, logger: Logger, next_state):
+    """method to handle the time after a fight and before the next state"""
+
     # get to clash main after this fight
     if get_to_main_after_fight(vm_index, logger, next_state) == "restart":
         logger.log("Erro 6969 Failed to get to clash main after a fight")
@@ -468,6 +524,8 @@ def end_fight_state(vm_index, logger: Logger, next_state):
 def check_if_previous_game_was_win(
     vm_index, logger: Logger
 ) -> bool | Literal["restart"]:
+    """method to handle the checking if the previous game was a win or loss"""
+
     logger.change_status(status="Checking if last game was a win/loss")
 
     # if not on main, return restart
@@ -502,6 +560,9 @@ def check_if_previous_game_was_win(
 
 
 def check_pixels_for_win_in_battle_log(vm_index) -> bool:
+    """method to check pixels that appear in the battle
+    log to determing if the previous game was a win"""
+
     line1 = check_line_for_color(
         vm_index, x_1=47, y_1=135, x_2=109, y_2=154, color=(255, 51, 102)
     )
@@ -518,6 +579,8 @@ def check_pixels_for_win_in_battle_log(vm_index) -> bool:
 
 
 def get_to_main_after_fight(vm_index, logger, next_state):
+    """method to handle the navigation between the end of a fight and the main menu"""
+
     start_time = time.time()
 
     while 1:
@@ -548,16 +611,17 @@ def get_to_main_after_fight(vm_index, logger, next_state):
     return next_state
 
 
-# unsorted
-
-
 def handle_end_2v2_battle_condition_2(vm_index, logger):
+    """method to handle end of 2v2 battle screen condition 2"""
+
     if check_for_end_2v2_battle_condition_2(vm_index):
         logger.log("On the end of 2v2 (c2) battle screen so clicking OK button")
         click(vm_index, 212, 553)
 
 
 def check_for_end_2v2_battle_condition_2(vm_index):
+    """method to check if on second possible end of 2v2 battle screen"""
+
     if not region_is_color(vm_index, [175, 558, 15, 8], (78, 175, 255)):
         return False
     if not region_is_color(vm_index, [225, 544, 17, 6], (99, 184, 255)):
@@ -576,12 +640,16 @@ def check_for_end_2v2_battle_condition_2(vm_index):
 
 
 def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
+    """method to handle end of 2v2 battle screen condition 1"""
+
     if check_for_end_2v2_battle_condition_1(vm_index):
         logger.log("On the end of 2v2 (c1) battle screen so clicking exit button")
         click(vm_index, 81, 600)
 
 
 def check_for_end_2v2_battle_condition_1(vm_index) -> bool:
+    """method to check if on first possible end of 2v2 battle screen"""
+
     if not region_is_color(vm_index, [44, 602, 14, 8], (76, 174, 255)):
         return False
     if not region_is_color(vm_index, [100, 588, 8, 10], (104, 184, 255)):
@@ -599,12 +667,16 @@ def check_for_end_2v2_battle_condition_1(vm_index) -> bool:
 
 
 def handle_end_1v1_battle_condition_1(vm_index, logger) -> None:
+    """method to handle the #1 possible end of 1v1 battle screen"""
+
     if check_for_end_1v1_battle_condition_1(vm_index):
         logger.log("On the end of 1v1 (c1) battle screen to clicking OK button")
         click(vm_index, 211, 554)
 
 
 def check_for_end_1v1_battle_condition_1(vm_index) -> bool:
+    """method to check if on the #1 possible end of 1v1 battle screen"""
+
     if not region_is_color(vm_index, [175, 556, 20, 6], (78, 175, 255)):
         return False
     if not region_is_color(vm_index, [225, 546, 242, 4], (101, 185, 255)):
@@ -615,12 +687,15 @@ def check_for_end_1v1_battle_condition_1(vm_index) -> bool:
 
 
 def handle_end_1v1_battle_condition_2(vm_index, logger) -> None:
+    """method to handle the #2 possible end of 1v1 battle screen"""
     if check_for_end_1v1_battle_condition_2(vm_index):
         logger.log("On the end of 1v1 (c2) battle screen to clicking OK button")
         click(vm_index, 211, 552)
 
 
 def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
+    """method to check if the #2 possible end of 1v1 battle screen is on the screen"""
+
     if not region_is_color(vm_index, [175, 554, 20, 12], (78, 175, 255)):
         return False
     if not region_is_color(vm_index, [228, 545, 12, 6], (99, 184, 255)):
@@ -631,3 +706,7 @@ def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
     if not check_line_for_color(vm_index, 212, 544, 214, 553, (255, 255, 255)):
         return False
     return True
+
+
+if __name__ == "__main__":
+    pass
