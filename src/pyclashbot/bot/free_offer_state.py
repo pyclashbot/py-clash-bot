@@ -1,3 +1,4 @@
+"""time module for timing methods and for sleeping while interacting with client"""
 import time
 from typing import Literal
 
@@ -28,8 +29,12 @@ FREE_BUTTON_CONDITION_1_COORD: tuple[Literal[207], Literal[398]] = (207, 398)
 
 GREEN_COLOR: tuple[Literal[137], Literal[242], Literal[178]] = (137, 242, 178)
 
+FREE_OFFER_SCROLL_TIMEOUT = 35  # seconds
+
 
 def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> str:
+    """method to handle the entirety of the free offer collection state in the state tree"""
+    logger.set_current_state("free_offer_collection")
     logger.change_status(status="Free offer collection state")
     logger.add_free_offer_collection_attempt()
     if not check_if_on_clash_main_menu(vm_index):
@@ -46,12 +51,15 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
 
     logger.change_status(status="Searching for free offer")
 
-    start_time = time.time()
+    start_time: float = time.time()
     prints = 0
     while 1:
         # if looped too much, return
-        time_taken = time.time() - start_time
-        if time_taken > 35:
+        time_taken: float = time.time() - start_time
+        if time_taken > FREE_OFFER_SCROLL_TIMEOUT:
+            logger.log(
+                f"Scrolled longer than {FREE_OFFER_SCROLL_TIMEOUT} seconds so breaking"
+            )
             break
 
         if prints * 10 < time_taken:
@@ -61,44 +69,11 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
             prints += 1
 
         # look for free offer
-        coord = find_free_offer_icon(vm_index)
-        if coord is None:
-            # scroll
-            scroll_down_fast_on_left_side_of_screen(vm_index)
-            time.sleep(1)
+        if find_and_click_free_offer(vm_index, logger) == "fail":
             continue
 
-        # click the offer
-        logger.change_status(status="Collecting an available free offer!")
-        logger.log("Clicking this free offer: " + str(coord))
-        click(vm_index, coord[0], coord[1])
-        time.sleep(2)
-        logger.update_time_of_last_free_offer_collection(time.time())
-
-        # click the 'Free!' button
-        logger.log("Cliking the free! price button")
-        if check_for_free_button_condition_1(vm_index):
-            click(
-                vm_index,
-                FREE_BUTTON_CONDITION_1_COORD[0],
-                FREE_BUTTON_CONDITION_1_COORD[1],
-            )
-        else:
-            click(vm_index, FREE_BUTTON[0], FREE_BUTTON[1])
-
-        prev_free_offer_collections = logger.get_free_offer_collections()
-        logger.add_free_offer_collection()
-        free_offer_collections = logger.get_free_offer_collections()
-        logger.log(
-            f"Incremented free offer collections from {prev_free_offer_collections} to {free_offer_collections}"
-        )
-
-        time.sleep(2)
-
-        # click deadspace for if its a chest
-        logger.log("Clicking deadspace if its a chest")
-        click(vm_index, 10, 344, clicks=15, interval=0.75)
-        break
+        if buy_this_free_offer(vm_index, logger) == "good":
+            break
 
     # return to clash main
     click(
@@ -115,7 +90,55 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
     return next_state
 
 
+def find_and_click_free_offer(vm_index, logger: Logger) -> Literal["fail", "good"]:
+    """method to find the click the free offer
+    image that appears in the clash shop page"""
+
+    # look for a free offer
+    free_offer_coord = find_free_offer_icon(vm_index)
+
+    # if the coord doesn't exist, scroll again, and return
+    if free_offer_coord is None:
+        # scroll
+        scroll_down_fast_on_left_side_of_screen(vm_index)
+        time.sleep(1)
+        return "fail"
+
+    # if the coord exists, click the offer
+    logger.change_status(status="Collecting an available free offer!")
+    logger.log("Clicking this free offer: " + str(free_offer_coord))
+    click(vm_index, free_offer_coord[0], free_offer_coord[1])
+    time.sleep(2)
+    return "good"
+
+
+def buy_this_free_offer(vm_index, logger) -> Literal["good"]:
+    """method to click the free! button that appears after
+    first clicking a free offer on the clash shop page"""
+    # click the 'Free!' button
+    logger.log("Cliking the free! price button")
+    if check_for_free_button_condition_1(vm_index):
+        click(
+            vm_index,
+            FREE_BUTTON_CONDITION_1_COORD[0],
+            FREE_BUTTON_CONDITION_1_COORD[1],
+        )
+    else:
+        click(vm_index, FREE_BUTTON[0], FREE_BUTTON[1])
+
+    time.sleep(2)
+
+    # click deadspace for if its a chest
+    logger.log("Clicking deadspace if its a chest")
+    click(vm_index, 10, 344, clicks=15, interval=0.75)
+    time.sleep(1)
+
+    return "good"
+
+
 def check_for_free_button_condition_1(vm_index) -> bool:
+    """method to check if the free! button exists"""
+
     if not check_line_for_color(
         vm_index=vm_index, x_1=186, y_1=389, x_2=187, y_2=407, color=(255, 255, 255)
     ):
@@ -138,6 +161,8 @@ def check_for_free_button_condition_1(vm_index) -> bool:
 
 
 def find_free_offer_icon(vm_index):
+    """method to find the free offer icon image in the shop pages"""
+
     folder_name = "free_offer_icon"
     size = get_file_count(folder_name)
     names = make_reference_image_list(size)
@@ -154,6 +179,4 @@ def find_free_offer_icon(vm_index):
 
 
 if __name__ == "__main__":
-    # free_offer_collection_state(1, Logger())
-
-    screenshot(1)
+    (free_offer_collection_state(1, Logger(), "test"))
