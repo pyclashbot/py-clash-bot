@@ -119,14 +119,38 @@ def check_for_vm(logger: Logger) -> int:
     return vm_index if vm_index != -1 else create_vm(logger)
 
 
-def disable_components(vm_index):
+def enable_components(vm_index):
     component_names = [
         "/com.supercell.titan.TimeAlarm",
+        "/com.google.firebase.iid.FirebaseInstanceIdReceiver",
         "/com.supercell.id.SharedDataBroadcastReceiver",
         "/com.supercell.id.SharedDataReceiverBroadcastReceiver",
+        "/com.google.android.datatransport.runtime.scheduling"
         ".jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
         "/com.supercell.titan.PushMessageService",
+        "/com.google.firebase.messaging.FirebaseMessagingService",
+        "/com.google.firebase.components.ComponentDiscoveryService",
+        "/com.google.android.gms.auth.api.signin.RevocationBoundService",
+        "/com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+        "/com.google.android.datatransport.runtime.scheduling",
         ".jobscheduling.JobInfoSchedulerService",
+        "/com.android.billingclient.api.ProxyBillingActivity",
+        "/com.google.firebase.provider.FirebaseInitProvider",
+        "/androidx.lifecycle.ProcessLifecycleOwnerInitializer",
+        "/com.journeyapps.barcodescanner.CaptureActivity",
+        "/com.android.billingclient.api.ProxyBillingActivity",
+        "/com.google.android.gms.common.api.GoogleApiActivity",
+        "/com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+
+    ]
+    for component in component_names:
+        command = f"shell pm enable {APK_BASE_NAME + component}"
+        pmc.send_adb_command_vm(vm_index=vm_index, command=command)
+
+
+
+def disable_components(vm_index):
+    component_names = [
         "/com.helpshift.activities.HSMainActivity",
         "/com.helpshift.activities.HSDebugActivity",
         "/io.sentry.android.core.SentryInitProvider",
@@ -152,7 +176,9 @@ def start_clash_royale(logger: Logger, vm_index):
             status="Clash royale is not installed. Please install it and restart"
         )
         show_clash_royale_setup_gui()
-
+        
+    # Enable Component This Function Can Be Deleted After New Clash Royale Update
+    enable_components(vm_index)
     # Disable Component
     disable_components(vm_index)
 
