@@ -98,7 +98,9 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     # find battle icon
     logger.log("Finding a battle icon")
-    find_and_click_war_battle_icon(vm_index, logger)
+    if find_and_click_war_battle_icon(vm_index, logger)=='restart':
+        logger.log('Error 989 Failed clicking a war battle icon. Restarting')
+        return 'restart'
     time.sleep(3)
 
     # make deck if needed
@@ -279,7 +281,7 @@ def find_and_click_war_battle_icon(vm_index, logger):
     while coord is None:
         time_taken = time.time() - start_time
         if time_taken > 30:
-            logger.log("Erorr 9528753 Failure findign a war battle icon")
+            logger.log("Error 9528753 Failure findign a war battle icon")
             return "restart"
 
         click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])

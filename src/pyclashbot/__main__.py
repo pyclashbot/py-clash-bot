@@ -56,20 +56,20 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
         # job increments
-        "card_upgrade_increment_user_input": values[
+        "card_upgrade_increment_user_input": int(values[
             "card_upgrade_increment_user_input"
-        ],
-        "free_offer_collection_increment_user_input": values[
+        ]),
+        "free_offer_collection_increment_user_input":int (values[
             "free_offer_collection_increment_user_input"
-        ],
-        "request_increment_user_input": values["request_increment_user_input"],
-        "card_mastery_collect_increment_user_input": values[
+        ]),
+        "request_increment_user_input": int(values["request_increment_user_input"]),
+        "card_mastery_collect_increment_user_input": int(values[
             "card_mastery_collect_increment_user_input"
-        ],
-        "open_chests_increment_user_input": values["open_chests_increment_user_input"],
-        "deck_randomization_increment_user_input": values[
+        ]),
+        "open_chests_increment_user_input": int(values["open_chests_increment_user_input"]),
+        "deck_randomization_increment_user_input": int(values[
             "deck_randomization_increment_user_input"
-        ],
+        ]),
     }
     return jobs_dictionary
 
@@ -453,3 +453,9 @@ if __name__ == "__main__":
     # debug()
     # dummy_bot()
     main_gui()
+
+
+    # logger = Logger()
+    # logger.add_1v1_fight()
+    # logger.add_chest_unlock_attempt()
+    # logger.check_if_can_open_chests('11')
