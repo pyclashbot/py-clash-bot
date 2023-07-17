@@ -31,7 +31,7 @@ jobs:
       - name: Write version to file
         run: |
           $version = "${{ github.ref_name }}"
-          $version | Out-File -FilePath "src/pyclashbot/.__version__"
+          $version | Out-File -FilePath "src/pyclashbot/__version__"
         shell: powershell
       - name: Build package
         run: |
