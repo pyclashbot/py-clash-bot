@@ -3,7 +3,7 @@ import time
 from typing import Literal
 
 from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
-from pyclashbot.memu.client import click, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [
@@ -30,10 +30,14 @@ CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
-CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 120  # seconds
+CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 240  # seconds
 
 CLASH_MAIN_MENU_WAIT_TIMEOUT = 160  # seconds
 CLASH_MAIN_MENU_DEADSPACE_COORD: tuple[Literal[32], Literal[364]] = (32, 364)
+
+OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
+OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
+
 
 
 def get_to_main_from_challenges_tab(
@@ -695,6 +699,33 @@ def get_to_clash_main_from_clan_page(
     return "good"
 
 
+def open_war_chest_obstruction(vm_index, logger):
+    logger.log("Found a war chest on the way to getting to the clan page.")
+    logger.log("Opening this chest real quick")
+    click(vm_index, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
+    time.sleep(2)
+    click(
+        vm_index,
+        OPENING_WAR_CHEST_DEADZONE_COORD[0],
+        OPENING_WAR_CHEST_DEADZONE_COORD[1],
+        clicks=15,
+        interval=1,
+    )
+    time.sleep(2)
+    logger.log("Done opening this war chest")
+
+
+def check_for_war_chest_obstruction(vm_index):
+    if not check_line_for_color(vm_index, 213, 409, 218, 423, (252, 195, 63)):
+        return False
+    if not check_line_for_color(vm_index, 156, 416, 164, 414, (255, 255, 255)):
+        return False
+
+    if not region_is_color(vm_index, [147, 410, 10, 17], (255, 188, 44)):
+        return False
+    return True
+
+
 def get_to_clan_tab_from_clash_main(
     vm_index, logger: Logger
 ) -> Literal["restart", "good"]:
@@ -707,6 +738,10 @@ def get_to_clan_tab_from_clash_main(
                 "Error 89572985 took too long to get to clan tab from clash main"
             )
             return "restart"
+
+        # check for a war chest obstructing the nav
+        if check_for_war_chest_obstruction(vm_index):
+            open_war_chest_obstruction(vm_index, logger)
 
         # if on the clan tab chat page, return
         if check_if_on_clan_chat_page(vm_index):
@@ -929,4 +964,8 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    pass
+    print(get_to_clan_tab_from_clash_main(1, Logger()))
+
+    # print(check_for_war_chest_obstruction())
+
+    # screenshot(1)
