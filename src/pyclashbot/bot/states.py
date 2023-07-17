@@ -36,7 +36,7 @@ def state_tree(
     time.sleep(1)
 
     # header in the log file to split the log by state loop iterations
-    logger.log(f"\n\n------------------------------\nSTATE == {state} ")
+    logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
 
     if state is None:
         logger.error("Error! State is None!!")
@@ -93,11 +93,13 @@ def state_tree(
         next_state = "upgrade"
 
         # if job not selected, skip this state
+        logger.log('Checking if "open_chests_user_toggle" is on')
         if not job_list["open_chests_user_toggle"]:
             logger.log("Open chests user toggle is off, skipping this state")
             return next_state
 
         # if job not ready, skip this state
+        logger.log('Checking if "open_chests_increment_user_input" is ready')
         if not logger.check_if_can_open_chests(
             job_list["open_chests_increment_user_input"]
         ):
