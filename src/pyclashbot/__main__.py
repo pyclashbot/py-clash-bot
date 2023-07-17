@@ -215,7 +215,9 @@ def show_invalid_job_increment_input_popup(key) -> None:
     )
 
 
-def start_button_event(logger: Logger, window, values) -> WorkerThread | Literal['invalid job increment input', 'no jobs selected']:
+def start_button_event(
+    logger: Logger, window, values
+) -> WorkerThread | Literal["invalid job increment input", "no jobs selected"]:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -409,19 +411,23 @@ def dummy_bot():
     state = "open_chests"
     jobs_dictionary = {
         # job list
-        "open_chests_user_toggle": False,
+        "open_chests_user_toggle": True,
         "request_user_toggle": True,
-        "card_mastery_user_toggle": False,
-        "free_offer_user_toggle": False,
-        "1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": False,
-        "upgrade_user_toggle": False,
-        "war_user_toggle": False,
+        "card_mastery_user_toggle": True,
+        "free_offer_user_toggle": True,
+        "1v1_battle_user_toggle": True,
+        "2v2_battle_user_toggle": True,
+        "upgrade_user_toggle": True,
+        "war_user_toggle": True,
+        "random_decks_user_toggle": True,
+
         # job incremenets
-        "card_upgrade_increment_user_input": "1 game",
-        "free_offer_collection_increment_user_input": "5 games",
-        "request_increment_user_input": "25 games",
-        "card_mastery_collect_increment_user_input": "5 games",
+        "card_upgrade_increment_user_input": "1",
+        "free_offer_collection_increment_user_input": "1",
+        "request_increment_user_input": "1",
+        "card_mastery_collect_increment_user_input": "1",
+        "deck_randomization_increment_user_input": "1",
+        "open_chests_increment_user_input": "1",
     }
 
     while 1:
@@ -445,5 +451,5 @@ def debug() -> None:
 
 if __name__ == "__main__":
     # debug()
-    # dummy_bot()
-    main_gui()
+    dummy_bot()
+    # main_gui()
