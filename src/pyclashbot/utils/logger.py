@@ -369,19 +369,11 @@ class Logger:
         """return chests_unlocked stat"""
         return self.chests_unlocked
 
-    def check_if_can_open_chests(self, increment_input):
+    def check_if_can_open_chests(self, increment):
         """check if can open chests using logger's games_played and
         open_chests attempts stats and user input increment arg"""
 
-        # parse increment arg into an int
-        increment_parse_dict = {
-            "25 games": 25,
-            "10 games": 10,
-            "5 games": 5,
-            "3 games": 3,
-            "1 game": 1,
-        }
-        increment: int = increment_parse_dict[increment_input]
+
 
         if increment == 1:
             self.log(f"Increment is {increment} so can always open chests")
@@ -419,19 +411,11 @@ class Logger:
         )
         return False
 
-    def check_if_can_collect_card_mastery(self, increment_input):
+    def check_if_can_collect_card_mastery(self, increment):
         """check if can collect card mastery rewards using logger's games_played and
         card_mastery_reward_collection_attempts stats and user input increment arg"""
 
-        # parse increment arg into an int
-        increment_parse_dict = {
-            "25 games": 25,
-            "10 games": 10,
-            "5 games": 5,
-            "3 games": 3,
-            "1 game": 1,
-        }
-        increment: int = increment_parse_dict[increment_input]
+
 
         if increment == 1:
             self.log(f"Increment is {increment} so can always collect card mastery")
@@ -469,19 +453,11 @@ class Logger:
         )
         return False
 
-    def check_if_can_card_upgrade(self, increment_input):
+    def check_if_can_card_upgrade(self, increment):
         """check if can upgrade cards using logger's games_played and
         card_upgrade_attempts stats and user input increment arg"""
 
-        # parse increment arg into an int
-        increment_parse_dict = {
-            "25 games": 25,
-            "10 games": 10,
-            "5 games": 5,
-            "3 games": 3,
-            "1 game": 1,
-        }
-        increment: int = increment_parse_dict[increment_input]
+
 
         if increment == 1:
             self.log(f"Increment is {increment} so can always upgrade cards")
@@ -517,17 +493,9 @@ class Logger:
         )
         return False
 
-    def check_if_can_request(self, increment_input) -> bool:
+    def check_if_can_request(self, increment) -> bool:
         """method to check if can request given attempts, games played, and user increment input"""
-        # parse increment arg into an int
-        increment_parse_dict = {
-            "25 games": 25,
-            "10 games": 10,
-            "5 games": 5,
-            "3 games": 3,
-            "1 game": 1,
-        }
-        increment: int = increment_parse_dict[increment_input]
+
 
         if increment == 1:
             self.log(f"Increment is {increment} so can always Request")
@@ -563,19 +531,11 @@ class Logger:
         self.log(f"Cant request. {games_played} Games and {request_attempts} Attempts")
         return False
 
-    def check_if_can_collect_free_offer(self, increment_input) -> bool:
+    def check_if_can_collect_free_offer(self, increment) -> bool:
         """method to check if can collect free offers given
         attempts, games played, and user increment input"""
 
-        # parse increment arg into an int
-        increment_parse_dict = {
-            "25 games": 25,
-            "10 games": 10,
-            "5 games": 5,
-            "3 games": 3,
-            "1 game": 1,
-        }
-        increment: int = increment_parse_dict[increment_input]
+
 
         if increment == 1:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
@@ -613,20 +573,12 @@ class Logger:
         )
         return False
 
-    def check_if_can_randomize_deck(self, increment_input):
+    def check_if_can_randomize_deck(self, increment):
         """method to check if can randomize deck given
         attempts, games played, and user increment input"""
 
 
-        # parse increment arg into an int
-        increment_parse_dict = {
-            "25 games": 25,
-            "10 games": 10,
-            "5 games": 5,
-            "3 games": 3,
-            "1 game": 1,
-        }
-        increment: int = increment_parse_dict[increment_input]
+
 
         if increment == 1:
             self.log(f"Increment is {increment} so can always randomize deck")

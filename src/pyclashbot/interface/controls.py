@@ -6,13 +6,25 @@ from pyclashbot.interface.theme import THEME
 sg.theme(THEME)
 
 
+def make_job_increment_control_object(key):
+    return sg.InputText(
+        default_text="1",
+        tooltip="How often to perform this job",
+        key=key,
+        enable_events=True,
+        size=5,
+    )
+
+
 controls = [
     [
         sg.Button("Start", expand_x=True),
         sg.Button("Stop", disabled=True, expand_x=True),
         sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-", expand_x=True),
     ],
+    # whole box
     [
+        # title column
         sg.Column(
             [
                 [sg.Text("Request Random Card Every:")],
@@ -24,58 +36,45 @@ controls = [
             ],
             justification="left",
         ),
+        # input text column
         sg.Column(
             [
+                [make_job_increment_control_object("request_increment_user_input")],
                 [
-                    sg.DropDown(
-                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
-                        key="request_increment_user_input",
-                        default_value="1 game",
-                        enable_events=True,
+                    make_job_increment_control_object(
+                        "free_offer_collection_increment_user_input"
                     )
                 ],
                 [
-                    sg.DropDown(
-                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
-                        key="free_offer_collection_increment_user_input",
-                        default_value="1 game",
-                        enable_events=True,
+                    make_job_increment_control_object(
+                        "card_upgrade_increment_user_input"
                     )
                 ],
                 [
-                    sg.DropDown(
-                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
-                        key="card_upgrade_increment_user_input",
-                        default_value="1 game",
-                        enable_events=True,
+                    make_job_increment_control_object(
+                        "card_mastery_collect_increment_user_input"
                     )
                 ],
+                [make_job_increment_control_object("open_chests_increment_user_input")],
                 [
-                    sg.DropDown(
-                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
-                        key="card_mastery_collect_increment_user_input",
-                        default_value="1 game",
-                        enable_events=True,
-                    )
-                ],
-                [
-                    sg.DropDown(
-                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
-                        key="open_chests_increment_user_input",
-                        default_value="1 game",
-                        enable_events=True,
-                    )
-                ],
-                [
-                    sg.DropDown(
-                        ["1 game", "3 games", "5 games", "10 games", "25 games"],
-                        key="deck_randomization_increment_user_input",
-                        default_value="1 game",
-                        enable_events=True,
+                    make_job_increment_control_object(
+                        "deck_randomization_increment_user_input"
                     )
                 ],
             ],
             justification="right",
+        ),
+        # end titles column
+        sg.Column(
+            [
+                [sg.Text("games")],
+                [sg.Text("games")],
+                [sg.Text("games")],
+                [sg.Text("games")],
+                [sg.Text("games")],
+                [sg.Text("games")],
+            ],
+            justification="left",
         ),
     ],
     [sg.VP()],

@@ -159,7 +159,7 @@ def disable_components(vm_index):
     for component in component_names:
         command = f"shell pm disable {APK_BASE_NAME + component}"
         pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-
+        
 
 def start_clash_royale(logger: Logger, vm_index):
     # using pymemuc check if clash royale is installed
@@ -181,6 +181,7 @@ def start_clash_royale(logger: Logger, vm_index):
     enable_components(vm_index)
     # Disable Component
     disable_components(vm_index)
+
 
     # start Clash Royale
     pmc.start_app_vm(APK_BASE_NAME, vm_index)

@@ -1,3 +1,4 @@
+"""time module for timing functions and controling pacing"""
 import time
 
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state

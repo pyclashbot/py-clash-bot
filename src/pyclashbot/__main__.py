@@ -1,3 +1,4 @@
+from datetime import datetime
 import sys
 from typing import Literal
 import webbrowser
@@ -42,8 +43,8 @@ def read_window(
     return read_result
 
 
-def make_job_dictionary(values: dict[str, str | int]):
-    jobs_dictionary = {
+def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
+    jobs_dictionary: dict[str, str | int] = {
         # job toggles
         "open_chests_user_toggle": values["open_chests_user_toggle"],
         "request_user_toggle": values["request_user_toggle"],
@@ -66,9 +67,28 @@ def make_job_dictionary(values: dict[str, str | int]):
             "card_mastery_collect_increment_user_input"
         ],
         "open_chests_increment_user_input": values["open_chests_increment_user_input"],
-        "deck_randomization_increment_user_input": values["deck_randomization_increment_user_input"],
+        "deck_randomization_increment_user_input": values[
+            "deck_randomization_increment_user_input"
+        ],
     }
     return jobs_dictionary
+
+
+def check_for_invalid_job_increment_input(job_dictionary):
+    items = job_dictionary.items()
+
+    for i in items:
+        key = i[0]
+        value = i[1]
+
+        if value == True or value == False:
+            continue
+
+        for char in value:
+            if char not in "1234567890":
+                return key
+
+    return False
 
 
 def check_for_no_jobs_in_job_dictionary(job_dict):
@@ -142,16 +162,62 @@ def log_job_dictionary(job_dictionary: dict[str, str | int], logger) -> None:
     for key, value in increment_user_input_keys_and_values:
         while len(key) < 45:
             key += " "
-        logger.log(f"     -{key}:              {value}")
+        logger.log(f"     -{key}:              [{value}]")
 
     logger.log("-------------------------------")
     logger.log("-------------------------------")
     logger.log("-------------------------------\n\n")
 
 
+def log_program_info(logger):
+    logger.log(
+        "--------------------------------------------------------------------------------------------"
+    )
+    logger.log(
+        "-0000--0---0---------0000--0--------000-----000---0----0----------00000-----000----0000000--"
+    )
+    logger.log(
+        "-0--0--0---0--------0------0-------0---0---0------0----0----------0----0---0----0-----0-----"
+    )
+    logger.log(
+        "-0000----0----000---0------0-------00000----00----000000---000----00000----0----0-----0-----"
+    )
+    logger.log(
+        "-0-------0----------0------0-------0---0------0---0----0----------0----0---0----0-----0-----"
+    )
+    logger.log(
+        "-0-------0-----------0000--000000--0---0---0000---0----0----------00000-----000-------0-----"
+    )
+    logger.log(
+        "--------------------------------------------------------------------------------------------"
+    )
+    current_time = datetime.now()
+
+    # Format the time according to your desired format
+    formatted_time = current_time.strftime("%d/%m/%Y %H:%M:%S")
+    logger.log(f"Local time is {formatted_time}")
+
+
+def show_invalid_job_increment_input_popup(key) -> None:
+    key_to_job_dict: dict[str, str] = {
+        "card_upgrade_increment_user_input": "Card Upgrade Increment",
+        "free_offer_collection_increment_user_input": "Free Offer Collection Increment",
+        "request_increment_user_input": "Request Increment",
+        "card_mastery_collect_increment_user_input": "Card Mastery Collect Increment",
+        "open_chests_increment_user_input": "Open Chests Increment",
+        "deck_randomization_increment_user_input": "Randomize Deck Increment",
+    }
+
+    key_string = key_to_job_dict[key]
+    sg.popup(
+        f"Invalid job increment input for key: {key_string}",
+        title="Invalid Job Increment Input",
+    )
+
+
 def start_button_event(
     logger: Logger, window, values
-) -> WorkerThread | Literal["no jobs selected"]:
+) -> WorkerThread | Literal["invalid job increment input", "no jobs selected"]:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -160,16 +226,33 @@ def start_button_event(
     returns:
         None
     """
+
+    # make job dictionary
+    job_dictionary: dict[str, str | int] = make_job_dictionary(values)
+
+    # handle invalid job increment input
+    job_increment_input_check = check_for_invalid_job_increment_input(job_dictionary)
+    if not job_increment_input_check:
+        logger.log("Job increment inputs are valid")
+    else:
+        logger.log("Job increment inputs are invalid")
+        logger.log(f"Offensive increment input for key: [{job_increment_input_check}]")
+        show_invalid_job_increment_input_popup(job_increment_input_check)
+        return "invalid job increment input"
+
+    # handle no jobs selected
+    if check_for_no_jobs_in_job_dictionary(job_dictionary):
+        no_jobs_popup()
+        logger.log("No jobs are selected!")
+        return "no jobs selected"
+    else:
+        logger.log("Selected jobs are valid")
+
     logger.change_status(status="Start Button Event")
     save_current_settings(values)
 
-    job_dictionary: dict[str, str | int] = make_job_dictionary(values)
     log_job_dictionary(job_dictionary, logger)
-
-    if check_for_no_jobs_in_job_dictionary(job_dictionary):
-        no_jobs_popup()
-        print("Failed no job check")
-        return "no jobs selected"
+    log_program_info(logger)
 
     for key in disable_keys:
         window[key].update(disabled=True)
@@ -328,27 +411,24 @@ def dummy_bot():
     state = "open_chests"
     jobs_dictionary = {
         # job list
-        "open_chests_user_toggle": False,
+        "open_chests_user_toggle": True,
         "request_user_toggle": True,
-        "card_mastery_user_toggle": False,
-        "free_offer_user_toggle": False,
-        "1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": False,
-        "upgrade_user_toggle": False,
-        "war_user_toggle": False,
-        # job incremenets
-        "card_upgrade_increment_user_input": "1 game",
-        "free_offer_collection_increment_user_input": "5 games",
-        "request_increment_user_input": "25 games",
-        "card_mastery_collect_increment_user_input": "5 games",
-    }
+        "card_mastery_user_toggle": True,
+        "free_offer_user_toggle": True,
+        "1v1_battle_user_toggle": True,
+        "2v2_battle_user_toggle": True,
+        "upgrade_user_toggle": True,
+        "war_user_toggle": True,
+        "random_decks_user_toggle": True,
 
-    for _ in range(10):
-        logger.log("Running dummy bot...")
-    logger.log("\n-----------------------------\nJob list:")
-    for item in jobs_dictionary:
-        logger.log(f"{item}: {jobs_dictionary[item]}")
-    logger.log("-----------------------------\n\n")
+        # job incremenets
+        "card_upgrade_increment_user_input": "1",
+        "free_offer_collection_increment_user_input": "1",
+        "request_increment_user_input": "1",
+        "card_mastery_collect_increment_user_input": "1",
+        "deck_randomization_increment_user_input": "1",
+        "open_chests_increment_user_input": "1",
+    }
 
     while 1:
         # code to run
