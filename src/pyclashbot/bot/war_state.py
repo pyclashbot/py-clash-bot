@@ -1,4 +1,4 @@
-
+"""random import for random war plays"""
 import random
 import time
 from typing import Literal
@@ -44,11 +44,15 @@ LEAVE_WAR_BATTLE_BUTTON_COORD = (204, 553)
 
 WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
-WAR_BATTLE_TIMEOUT = 240
+WAR_BATTLE_TIMEOUT = 240  # seconds
 
-WAR_BATTLE_START_TIMEOUT = 120#seconds
+WAR_BATTLE_START_TIMEOUT = 120  # seconds
+FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT = 60  # seconds
+
 
 def find_war_battle_icon(vm_index):
+    """method to find the war battle icon image in the current image"""
+
     folder_name = "war_battle_icon"
     size = get_file_count(folder_name)
     names = make_reference_image_list(size)
@@ -65,6 +69,8 @@ def find_war_battle_icon(vm_index):
 
 
 def war_state(vm_index: int, logger: Logger, next_state: str):
+    """method to handle the war state of the bot"""
+
     logger.change_status(status="War state")
 
     # if not on clash main: return
@@ -98,9 +104,9 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     # find battle icon
     logger.log("Finding a battle icon")
-    if find_and_click_war_battle_icon(vm_index, logger)=='restart':
-        logger.log('Error 989 Failed clicking a war battle icon. Restarting')
-        return 'restart'
+    if find_and_click_war_battle_icon(vm_index, logger) == "restart":
+        logger.log("Error 989 Failed clicking a war battle icon. Restarting")
+        return "restart"
     time.sleep(3)
 
     # make deck if needed
@@ -138,9 +144,9 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.add_war_fight()
 
     # wait for battle start
-    if wait_for_war_battle_start(vm_index, logger)=='restart':
-        logger.log('Error 858258 WAited too long for war battle to begin.')
-        return 'restart'
+    if wait_for_war_battle_start(vm_index, logger) == "restart":
+        logger.log("Error 858258 WAited too long for war battle to begin.")
+        return "restart"
 
     # do fight
     if do_war_battle(vm_index, logger) == "restart":
@@ -166,6 +172,8 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
 
 def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
+    """method to wait for the war page to load after leaving a war battle"""
+
     logger.change_status(status="Waiting for war page")
     start_time: float = time.time()
     while not check_if_on_war_page(vm_index):
@@ -180,6 +188,9 @@ def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
 
 
 def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
+    """method to do the fighting in a war battle.
+    Pretty much throws the match but it doesnt matter"""
+
     start_time = time.time()
     logger.change_status(status="Starting war fighting")
     while check_if_in_war_battle(vm_index):
@@ -203,8 +214,9 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
     return "good"
 
 
-
 def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
+    """method to wait until the war battle begins, with a timeout"""
+
     logger.change_status(status="Waiting for war battle start")
 
     start_time = time.time()
@@ -225,6 +237,8 @@ def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
 
 
 def check_if_in_war_battle(vm_index) -> bool:
+    """method to check if the war battle screen still exists"""
+
     if not check_line_for_color(
         vm_index, x_1=104, y_1=606, x_2=123, y_2=626, color=(224, 28, 215)
     ):
@@ -238,6 +252,9 @@ def check_if_in_war_battle(vm_index) -> bool:
 
 
 def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
+    """method to scan pixels in the image of
+    this war battle page to see if the deck is good to go"""
+
     if not region_is_color(vm_index, [230, 398, 17, 6], (255, 200, 79)):
         return False
     if not region_is_color(vm_index, [240, 427, 30, 5], (255, 188, 43)):
@@ -249,6 +266,9 @@ def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
 
 
 def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made deck"]:
+    """method to make a fresh war deck
+    if this account doesn't have one made yet"""
+
     # if the deck is ready to go, just return
     if check_if_deck_is_ready_for_this_battle(vm_index):
         logger.log("Deck is good to go. No need to make a new one")
@@ -274,14 +294,19 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made dec
     return "made deck"
 
 
-def find_and_click_war_battle_icon(vm_index, logger):
+def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good"]:
+    """method to cycle through the various clan
+    pages while searching for a war battle icon to click"""
+
     start_time = time.time()
 
     coord = None
     while coord is None:
         time_taken = time.time() - start_time
-        if time_taken > 30:
-            logger.log("Error 9528753 Failure findign a war battle icon")
+        if time_taken > FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
+            logger.log(
+                f"Error 99 timeout ({FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT}) finding war battle"
+            )
             return "restart"
 
         click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
@@ -295,41 +320,10 @@ def find_and_click_war_battle_icon(vm_index, logger):
     return "good"
 
 
-def find_war_battle_icon_coords(vm_index):
-    coord = find_battle_from_pix_list(get_war_battle_pix_list(vm_index))
-    return coord
-
-
-def find_battle_from_pix_list(pix_list):
-    index_of_last_bad = 0
-    index = 0
-    result_coord = None
-
-    for datum in pix_list:
-        color = datum["color"]
-        coord = datum["coord"]
-
-        bool_datum = {
-            "coord": coord,
-            "bool": pixel_is_equal(color, [0, 180, 255], tol=30),
-        }
-        pix_list[index] = bool_datum
-
-        if bool_datum["bool"]:
-            pass
-        else:
-            index_of_last_bad = index
-
-        if index - index_of_last_bad > 15:
-            result_coord = bool_datum["coord"]
-            break
-
-        index += 1
-
-    return result_coord
-
-
 def get_war_battle_pix_list(vm_index):
+    """method to get a list of pixels relevant to checking if
+    the user is in a clan when on the user's clash main profile page"""
+
     data = []
 
     if not check_if_on_war_page(vm_index):
@@ -349,6 +343,8 @@ def get_war_battle_pix_list(vm_index):
 
 
 def check_if_on_war_page(vm_index):
+    """method to check pixels to see if bot is on the war page"""
+
     if not check_line_for_color(
         vm_index, x_1=19, y_1=16, x_2=59, y_2=59, color=(144, 108, 255)
     ):
@@ -371,6 +367,8 @@ def check_if_on_war_page(vm_index):
 
 
 def war_state_check_if_in_a_clan(vm_index, logger: Logger):
+    """method to handle the process of cehcking if the user in in a clan"""
+
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
         logger.change_status(
@@ -393,6 +391,9 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
 
 
 def war_state_check_pixels_for_clan_flag(vm_index):
+    """method to check the pixels on the clash main
+    user profile page to see if the user is in a clan"""
+
     iar = numpy.asarray(screenshot(vm_index))
 
     for x_index in range(78, 97):
@@ -409,4 +410,5 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    while 1:
+        print(find_war_battle_icon(1))
