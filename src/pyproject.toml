@@ -29,7 +29,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.3"
+cx-freeze = "^6.15.4"
 
 
 [tool.poetry.group.dev]
