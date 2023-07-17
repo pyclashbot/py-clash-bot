@@ -128,8 +128,9 @@ def count_scrolls_in_request_page(vm_index) -> int:
         time.sleep(2)
 
     # scroll back to top
-    for _ in range(10):
+    for _ in range(14):
         scroll_up(vm_index)
+        time.sleep(0.1)
 
     return scrolls
 
