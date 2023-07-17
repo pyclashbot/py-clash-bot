@@ -56,20 +56,22 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
         # job increments
-        "card_upgrade_increment_user_input": int(values[
-            "card_upgrade_increment_user_input"
-        ]),
-        "free_offer_collection_increment_user_input":int (values[
-            "free_offer_collection_increment_user_input"
-        ]),
+        "card_upgrade_increment_user_input": int(
+            values["card_upgrade_increment_user_input"]
+        ),
+        "free_offer_collection_increment_user_input": int(
+            values["free_offer_collection_increment_user_input"]
+        ),
         "request_increment_user_input": int(values["request_increment_user_input"]),
-        "card_mastery_collect_increment_user_input": int(values[
-            "card_mastery_collect_increment_user_input"
-        ]),
-        "open_chests_increment_user_input": int(values["open_chests_increment_user_input"]),
-        "deck_randomization_increment_user_input": int(values[
-            "deck_randomization_increment_user_input"
-        ]),
+        "card_mastery_collect_increment_user_input": int(
+            values["card_mastery_collect_increment_user_input"]
+        ),
+        "open_chests_increment_user_input": int(
+            values["open_chests_increment_user_input"]
+        ),
+        "deck_randomization_increment_user_input": int(
+            values["deck_randomization_increment_user_input"]
+        ),
     }
     return jobs_dictionary
 
@@ -77,13 +79,16 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
 def check_for_invalid_job_increment_input(job_dictionary):
     items = job_dictionary.items()
 
-    for i in items:
-        key = i[0]
-        value = i[1]
-
-        if value == True or value == False:
+    for key, value in items:
+        # if its a bool then its a good type input
+        if isinstance(value, bool):
             continue
 
+        # if its an int, then its a good type input
+        if isinstance(value, int):
+            continue
+
+        # if it includes chars that aren't numbers, then its a bad type input
         for char in value:
             if char not in "1234567890":
                 return key
@@ -420,7 +425,6 @@ def dummy_bot():
         "upgrade_user_toggle": True,
         "war_user_toggle": True,
         "random_decks_user_toggle": True,
-
         # job incremenets
         "card_upgrade_increment_user_input": "1",
         "free_offer_collection_increment_user_input": "1",
@@ -453,7 +457,6 @@ if __name__ == "__main__":
     # debug()
     # dummy_bot()
     main_gui()
-
 
     # logger = Logger()
     # logger.add_1v1_fight()
