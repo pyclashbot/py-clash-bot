@@ -56,22 +56,20 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
         # job increments
-        "card_upgrade_increment_user_input": int(
-            values["card_upgrade_increment_user_input"]
-        ),
-        "free_offer_collection_increment_user_input": int(
-            values["free_offer_collection_increment_user_input"]
-        ),
-        "request_increment_user_input": int(values["request_increment_user_input"]),
-        "card_mastery_collect_increment_user_input": int(
-            values["card_mastery_collect_increment_user_input"]
-        ),
-        "open_chests_increment_user_input": int(
-            values["open_chests_increment_user_input"]
-        ),
-        "deck_randomization_increment_user_input": int(
-            values["deck_randomization_increment_user_input"]
-        ),
+        "card_upgrade_increment_user_input": values[
+            "card_upgrade_increment_user_input"
+        ],
+        "free_offer_collection_increment_user_input": values[
+            "free_offer_collection_increment_user_input"
+        ],
+        "request_increment_user_input": values["request_increment_user_input"],
+        "card_mastery_collect_increment_user_input": values[
+            "card_mastery_collect_increment_user_input"
+        ],
+        "open_chests_increment_user_input": values["open_chests_increment_user_input"],
+        "deck_randomization_increment_user_input": values[
+            "deck_randomization_increment_user_input"
+        ],
     }
     return jobs_dictionary
 
@@ -89,6 +87,9 @@ def check_for_invalid_job_increment_input(job_dictionary):
             continue
 
         # if it includes chars that aren't numbers, then its a bad type input
+        if value == "":
+            return key
+
         for char in value:
             if char not in "1234567890":
                 return key
