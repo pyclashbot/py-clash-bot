@@ -250,8 +250,7 @@ def start_button_event(
         no_jobs_popup()
         logger.log("No jobs are selected!")
         return "no jobs selected"
-    else:
-        logger.log("Selected jobs are valid")
+    logger.log("Selected jobs are valid")
 
     logger.change_status(status="Start Button Event")
     save_current_settings(values)

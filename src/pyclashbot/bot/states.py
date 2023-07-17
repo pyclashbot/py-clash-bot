@@ -30,6 +30,7 @@ def state_tree(
     state,
     job_list,
 ) -> str:
+    '''method to handle and loop between the various states of the bot'''
     start_time = time.time()
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
