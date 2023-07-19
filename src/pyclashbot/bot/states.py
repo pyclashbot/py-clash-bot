@@ -24,13 +24,29 @@ from pyclashbot.memu.launcher import (
 from pyclashbot.utils.logger import Logger
 
 
+class StateException(Exception):
+    """custom exception for state errors"""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class RestartException(StateException):
+    """custom exception for restart errors"""
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
 def state_tree(
     vm_index,
     logger: Logger,
     state,
     job_list,
 ) -> str:
-    '''method to handle and loop between the various states of the bot'''
+    """method to handle and loop between the various states of the bot"""
     start_time = time.time()
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
@@ -74,15 +90,9 @@ def state_tree(
         # wait for clash main
         logger.log("Running wait_for_clash_main_menu()")
         if wait_for_clash_main_menu(vm_index, logger) == "restart":
-            logger.log(
-                "Error 0124097926761 Clash main menu not found after restart! (RECURSIVE)"
-            )
-            for _ in range(3):
-                logger.log(
-                    "Error 33 wait_for_clash_main_menu() in restart state recursively restarting!"
-                )
-            logger.log("\n")
-            next_state = "restart"
+            err = "Failed to reach clash main menu after restart"
+            logger.error(err)
+            raise RestartException(f"RestartException: {err}")
 
         # restart_vm(logger, vm_index)
         logger.log(
