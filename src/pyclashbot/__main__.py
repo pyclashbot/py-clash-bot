@@ -1,4 +1,3 @@
-from datetime import datetime
 import sys
 import webbrowser
 
@@ -136,73 +135,6 @@ def load_last_settings(window) -> None:
         window.refresh()  # refresh the window to update the layout
 
 
-def log_job_dictionary(job_dictionary: dict[str, str | int], logger) -> None:
-    """method for logging the job dictionary
-    args:
-        job_dictionary: the job dictionary to log
-    returns:
-        None
-    """
-    user_toggle_keys_and_values = []
-    increment_user_input_keys_and_values = []
-
-    for key, value in job_dictionary.items():
-        if "increment_user_input" in key:
-            increment_user_input_keys_and_values.append((key, value))
-        else:
-            user_toggle_keys_and_values.append((key, value))
-
-    logger.log("-------------------------------")
-    logger.log("------Job Dictionary:----------")
-    logger.log("-------------------------------")
-
-    logger.log("User Toggle Keys and Values:")
-    for key, value in user_toggle_keys_and_values:
-        while len(key) < 35:
-            key += " "
-        logger.log(f"     -{key}:           {value}")
-
-    logger.log("-------------------------------")
-    logger.log("Increment User Input Keys and Values:")
-    for key, value in increment_user_input_keys_and_values:
-        while len(key) < 45:
-            key += " "
-        logger.log(f"     -{key}:              [{value}]")
-
-    logger.log("-------------------------------")
-    logger.log("-------------------------------")
-    logger.log("-------------------------------\n\n")
-
-
-def log_program_info(logger):
-    logger.log(
-        "--------------------------------------------------------------------------------------------"
-    )
-    logger.log(
-        "-0000--0---0---------0000--0--------000-----000---0----0----------00000-----000----0000000--"
-    )
-    logger.log(
-        "-0--0--0---0--------0------0-------0---0---0------0----0----------0----0---0----0-----0-----"
-    )
-    logger.log(
-        "-0000----0----000---0------0-------00000----00----000000---000----00000----0----0-----0-----"
-    )
-    logger.log(
-        "-0-------0----------0------0-------0---0------0---0----0----------0----0---0----0-----0-----"
-    )
-    logger.log(
-        "-0-------0-----------0000--000000--0---0---0000---0----0----------00000-----000-------0-----"
-    )
-    logger.log(
-        "--------------------------------------------------------------------------------------------"
-    )
-    current_time = datetime.now()
-
-    # Format the time according to your desired format
-    formatted_time = current_time.strftime("%d/%m/%Y %H:%M:%S")
-    logger.log(f"Local time is {formatted_time}")
-
-
 def show_invalid_job_increment_input_popup(key) -> None:
     key_to_job_dict: dict[str, str] = {
         "card_upgrade_increment_user_input": "Card Upgrade Increment",
@@ -251,8 +183,7 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
     logger.change_status(status="Start Button Event")
     save_current_settings(values)
 
-    log_job_dictionary(job_dictionary, logger)
-    log_program_info(logger)
+    logger.log_job_dictionary(job_dictionary)
 
     for key in disable_keys:
         window[key].update(disabled=True)

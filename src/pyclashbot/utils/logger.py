@@ -46,6 +46,12 @@ def initalize_pylogging() -> None:
         format="%(levelname)s:%(asctime)s %(message)s",
     )
     logging.info("Logging initialized for %s", __version__)
+    logging.info("""
+ ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
+(  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
+ )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
+(__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
+""")
     compress_logs()
 
 
@@ -617,3 +623,47 @@ class Logger:
     def update_time_of_last_card_upgrade(self, input_time) -> None:
         """sets logger's time_of_last_card_upgrade to input_time"""
         self.time_of_last_card_upgrade = input_time
+
+    def log_job_dictionary(self, job_dictionary: dict[str, str | int]) -> None:
+        """method for logging the job dictionary
+        args:
+            job_dictionary: the job dictionary to log
+        returns:
+            None
+        """
+        user_toggle_keys_and_values = []
+        increment_user_input_keys_and_values = []
+
+        for key, value in job_dictionary.items():
+            if "increment_user_input" in key:
+                increment_user_input_keys_and_values.append((key, value))
+            else:
+                user_toggle_keys_and_values.append((key, value))
+
+        self.log("-------------------------------")
+        self.log("------Job Dictionary:----------")
+        self.log("-------------------------------")
+
+        self.log("User Toggle Keys and Values:")
+        for key, value in user_toggle_keys_and_values:
+            while len(key) < 35:
+                key += " "
+            self.log(f"     -{key}:           {value}")
+
+        self.log("-------------------------------")
+        self.log("Increment User Input Keys and Values:")
+        for key, value in increment_user_input_keys_and_values:
+            while len(key) < 45:
+                key += " "
+            self.log(f"     -{key}:              [{value}]")
+
+        self.log("-------------------------------")
+        self.log("-------------------------------")
+        self.log("-------------------------------\n\n")
+
+
+
+if __name__ == "__main__":
+    initalize_pylogging()
+    logger = Logger()
+
