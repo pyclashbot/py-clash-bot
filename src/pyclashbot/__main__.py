@@ -1,6 +1,5 @@
 from datetime import datetime
 import sys
-from typing import Literal
 import webbrowser
 
 import PySimpleGUI as sg
@@ -221,9 +220,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
     )
 
 
-def start_button_event(
-    logger: Logger, window, values
-) -> WorkerThread | Literal["invalid job increment input", "no jobs selected"]:
+def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -236,22 +233,20 @@ def start_button_event(
     # make job dictionary
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
 
-    # handle invalid job increment input
-    job_increment_input_check = check_for_invalid_job_increment_input(job_dictionary)
-    if not job_increment_input_check:
-        logger.log("Job increment inputs are valid")
-    else:
+    if job_increment_input_check := check_for_invalid_job_increment_input(
+        job_dictionary
+    ):
         logger.log("Job increment inputs are invalid")
         logger.log(f"Offensive increment input for key: [{job_increment_input_check}]")
         show_invalid_job_increment_input_popup(job_increment_input_check)
-        return "invalid job increment input"
+        logger.log("invalid job increment input")
+        return None
 
     # handle no jobs selected
     if check_for_no_jobs_in_job_dictionary(job_dictionary):
         no_jobs_popup()
         logger.log("No jobs are selected!")
-        return "no jobs selected"
-    logger.log("Selected jobs are valid")
+        return None
 
     logger.change_status(status="Start Button Event")
     save_current_settings(values)
