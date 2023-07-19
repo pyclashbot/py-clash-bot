@@ -30,6 +30,7 @@ optional = true
 
 [tool.poetry.group.build.dependencies]
 cx-freeze = "^6.15.4"
+poethepoet = "^0.21.0"
 
 
 [tool.poetry.group.dev]
@@ -43,6 +44,20 @@ vulture = "^2.6"
 isort = "^5.12.0"
 prospector = "^1.10.2"
 poethepoet = "^0.21.0"
+
+
+[tool.poe.tasks.build-dist]
+shell = """
+$Env:version | Out-File -FilePath "pyclashbot/__version__" -Encoding utf8
+poetry run python setup_msi.py bdist_msi --target-version $Env:version
+"""
+interpreter = "powershell"
+
+
+[[tool.poe.tasks.build-dist.args]]
+name = "version"
+default = "dev"
+options = ["-v", "--version"]
 
 
 [tool.poe.tasks.tag]

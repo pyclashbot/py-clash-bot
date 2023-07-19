@@ -28,15 +28,10 @@ jobs:
           cd src
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
           poetry install --with build --without dev
-      - name: Write version to file
-        run: |
-          $version = "${{ github.ref_name }}"
-          $version | Out-File -FilePath "src/pyclashbot/__version__"
-        shell: powershell
       - name: Build package
         run: |
           cd src
-          poetry run python setup_msi.py bdist_msi --target-version $(git describe --tags --abbrev=0)
+          poe build-dist -v ${{github.ref_name}}
       - name: Publish Release
         uses: softprops/action-gh-release@master
         id: release

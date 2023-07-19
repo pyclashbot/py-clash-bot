@@ -1,7 +1,7 @@
 """Versioning for the program"""
-from os.path import exists, isfile, join, pardir
+from os.path import exists, isfile, join, pardir, dirname
 
-VERSION_FILE = join(pardir, "__version__")
+VERSION_FILE = join(dirname(__file__), pardir, "__version__")
 VERSION = "dev"
 
 # use exists to check if the file exists
