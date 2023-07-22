@@ -29,7 +29,7 @@ _Join the [Discord server](https://discord.gg/mx4W9qRNgF)!_
 
 ## Demo
 
-<img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%"/><img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%"/>
+<img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/matthewmiglio/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
 
 ## Contribute
 
