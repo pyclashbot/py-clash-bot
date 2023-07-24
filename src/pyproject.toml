@@ -20,7 +20,7 @@ python = "^3.11"
 opencv-python = "^4.8.0"
 numpy = "^1.25.0"
 pysimplegui = "^4.60.5"
-pymemuc = "^0.4.2"
+pymemuc = "^0.4.3"
 psutil = "^5.9.5"
 
 
