@@ -10,7 +10,7 @@ _Join the [Discord server](https://discord.gg/mx4W9qRNgF)!_
 
 - Automated level-up, clan wars, card requesting, card mastery, card upgrade, chest opening, and MORE!
 - Completely undetectable (over two years of use across multiple accounts with zero bans)!
-- Multi-account farming support
+- *Planned:* Simultaneous multi-account farming support
 - [This link](https://github.com/matthewmiglio/py-clash-bot/blob/master/JobListDescriptions.md) has a complete list of each task with descriptions.
 
 ## Installation
