@@ -6,24 +6,15 @@ from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [
-    315,
-    597,
-]  # coords of clan tab icon on the bottom of the clash main menu, when on the clash main menu
-
+CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [315,597]
 PROFILE_PAGE_COORD: list[int] = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE: list[int] = [178, 593]
-
 CLASH_MAIN_OPTIONS_BURGER_BUTTON: tuple[Literal[365], Literal[62]] = (365, 62)
 BATTLE_LOG_BUTTON: tuple[Literal[241], Literal[43]] = (241, 43)
-
-
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[108], Literal[598]] = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE: tuple[Literal[147], Literal[598]] = (147, 598)
 CHALLENGES_TAB_ICON_FROM_CLASH_MAIN: tuple[Literal[380], Literal[598]] = (380, 598)
-
 CLASH_MAIN_ICON_FROM_CARD_PAGE: tuple[Literal[247], Literal[601]] = (247, 601)
-
 CARD_TAB_FROM_CLASH_MAIN: tuple[Literal[105], Literal[591]] = (105, 591)
 SHOP_TAB_FROM_CARD_TAB: tuple[Literal[29], Literal[601]] = (29, 601)
 CHALLENGES_TAB_FROM_SHOP_TAB: tuple[Literal[385], Literal[600]] = (385, 600)
@@ -31,13 +22,10 @@ CLASH_MAIN_TAB_FROM_CHALLENGES_TAB: tuple[Literal[173], Literal[591]] = (173, 59
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE: tuple[Literal[209], Literal[599]] = (209, 599)
 CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
 CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 240  # seconds
-
 CLASH_MAIN_MENU_WAIT_TIMEOUT = 160  # seconds
 CLASH_MAIN_MENU_DEADSPACE_COORD: tuple[Literal[32], Literal[364]] = (32, 364)
-
 OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
 OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
-
 
 
 def get_to_main_from_challenges_tab(
