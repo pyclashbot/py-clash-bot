@@ -318,6 +318,10 @@ def main_gui() -> None:
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
             )
 
+        #donate event
+        elif event == 'donate':
+            webbrowser.open("https://github.com/sponsors/matthewmiglio?o=sd&sc=t")
+
         # on Help button event, open the help gui
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
