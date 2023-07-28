@@ -156,6 +156,7 @@ def request_state_check_if_in_a_clan(
         )
         return "restart"
 
+    time.sleep(1)
     # check pixels for in a clan
     in_a_clan = request_state_check_pixels_for_clan_flag(vm_index)
 
@@ -173,15 +174,19 @@ def request_state_check_if_in_a_clan(
 def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))  # type: ignore
 
-    for x_index in range(78, 97):
-        this_pixel = iar[446][x_index]
-        if not pixel_is_equal([51, 51, 51], this_pixel, tol=25):
+    coord_list = []
+    for x in range(85,90):
+        coord_list.append((346,x))
+
+    for y in range(342,352):
+        coord_list.append((87,y))
+
+    for coord in coord_list:
+        pixel = iar[coord[1]][coord[0]]
+        if not pixel_is_equal(pixel, [49,49,49], tol=25) and not pixel_is_equal(pixel, [81,39,6], tol=25):
             return True
 
-    for y_index in range(437, 455):
-        this_pixel = iar[y_index][87]
-        if not pixel_is_equal([51, 51, 51], this_pixel, tol=25):
-            return True
+
 
     return False
 
@@ -481,5 +486,5 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-    # screenshot(1)
-    do_request(1, Logger())
+    # print(request_state_check_if_in_a_clan(8, Logger()))
+    while 1:print(request_state_check_pixels_for_clan_flag(8))
