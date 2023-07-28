@@ -1,9 +1,6 @@
 import sys
 import webbrowser
-
 import PySimpleGUI as sg
-
-
 from pyclashbot.bot.states import state_tree
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys

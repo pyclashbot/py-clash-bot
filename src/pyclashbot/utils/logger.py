@@ -46,12 +46,14 @@ def initalize_pylogging() -> None:
         format="%(levelname)s:%(asctime)s %(message)s",
     )
     logging.info("Logging initialized for %s", __version__)
-    logging.info("""
+    logging.info(
+        """
  ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
 (  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
  )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
 (__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
-""")
+"""
+    )
     compress_logs()
 
 
@@ -202,20 +204,18 @@ class Logger:
         """calculate win rate using logger's stats and return as string"""
         wins = self.wins
         losses = self.losses
+
+        if wins != 0 and losses == 0:
+            return "100%"
+
         if wins == 0:
-            rate_string = "00.0%"
-            self.winrate = rate_string
-            return rate_string
+            return "00.0%"
 
         if losses == 0:
-            rate_string = "100%"
-            self.winrate = rate_string
-            return rate_string
+            return "100%"
 
-        rate: float = wins / (wins + losses) * 100
-        rate_string = str(rate)[:4] + "%"
-        self.winrate = rate_string
-        return rate_string
+        ratio = str(100 * (wins / (wins + losses)))[:4] + "%"
+        return ratio
 
     @_updates_log
     def set_current_state(self, state_to_set):
@@ -269,14 +269,14 @@ class Logger:
     @_updates_log
     def add_win(self):
         """add win to log"""
-        self.winrate = self.calc_win_rate()
         self.wins += 1
+        self.winrate = self.calc_win_rate()
 
     @_updates_log
     def add_loss(self):
         """add loss to log"""
-        self.winrate = self.calc_win_rate()
         self.losses += 1
+        self.winrate = self.calc_win_rate()
 
     @_updates_log
     def add_1v1_fight(self) -> None:
@@ -660,10 +660,3 @@ class Logger:
         self.log("-------------------------------")
         self.log("-------------------------------")
         self.log("-------------------------------\n\n")
-
-
-
-if __name__ == "__main__":
-    initalize_pylogging()
-    logger = Logger()
-
