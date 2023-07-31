@@ -911,9 +911,8 @@ def wait_for_clash_main_menu(
         logger.log("Waiting for clash main menu")
 
     start_time: float = time.time()
-    while  check_if_on_clash_main_menu(vm_index) is not True:
-        # loop count
-
+    on_main =check_if_on_clash_main_menu(vm_index)
+    while  on_main is not True:
         if check_for_trophy_reward_menu(vm_index):
             handle_trophy_reward_menu(vm_index, logger)
 
@@ -924,6 +923,8 @@ def wait_for_clash_main_menu(
             logger.change_status(
                 status="wait_for_clash_main_menu() took too long waiting for clash main."
             )
+            logger.log(f"This is this user's pixel list after failing to get to clash main for {CLASH_MAIN_MENU_WAIT_TIMEOUT}s")
+            logger.log(on_main)
             return "restart"
 
         # click dead space
@@ -935,6 +936,10 @@ def wait_for_clash_main_menu(
 
         # wait 1 sec
         time.sleep(1)
+
+        #recheck
+        on_main =check_if_on_clash_main_menu(vm_index)
+
 
     if printmode:
         logger.change_status(status="Done waiting for clash main menu")
