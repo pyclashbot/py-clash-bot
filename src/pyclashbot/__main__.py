@@ -318,8 +318,8 @@ def main_gui() -> None:
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
             )
 
-        #donate event
-        elif event == 'donate':
+        # donate event
+        elif event == "donate":
             webbrowser.open("https://github.com/sponsors/matthewmiglio?o=sd&sc=t")
 
         # on Help button event, open the help gui
@@ -384,8 +384,3 @@ if __name__ == "__main__":
     # debug()
     # dummy_bot()
     main_gui()
-
-    # logger = Logger()
-    # logger.add_1v1_fight()
-    # logger.add_chest_unlock_attempt()
-    # logger.check_if_can_open_chests('11')
