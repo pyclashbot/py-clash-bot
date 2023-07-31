@@ -43,7 +43,7 @@ jobs:
             ./src/dist/py-clash-bot*.msi
       - name: Trigger Discord Webhook
         run: |
-          if ("${{startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')}}") {
+          if ($${{startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')}}) {
             $json = @{
                 title = "New Pre-release! ${{github.ref_name}}"
                 description = "Click to view changes and download"
