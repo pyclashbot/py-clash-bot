@@ -7,6 +7,7 @@ from pyclashbot.bot.card_detection import get_play_coords_for_card
 from pyclashbot.bot.nav import (
     check_for_in_1v1_battle,
     check_for_in_2v2_battle,
+    check_for_in_2v2_battle_with_delay,
     check_if_on_clash_main_challenges_tab,
     check_if_on_clash_main_menu,
     get_to_activity_log,
@@ -271,7 +272,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     prev_cards_played = logger.get_cards_played()
 
     # while in battle:
-    while check_for_in_2v2_battle(vm_index):
+    while check_for_in_2v2_battle_with_delay(vm_index):
         # emote sometimes to do daily challenge (jk its to be funny and annoy people)
         if random.randint(0, 10) == 1:
             emote_in_2v2(vm_index, logger)
@@ -529,10 +530,12 @@ def check_if_previous_game_was_win(
     logger.change_status(status="Checking if last game was a win/loss")
 
     # if not on main, return restart
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    clash_main_check =check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
         logger.change_status(
             status='534594784234 Error Not on main menu, returning "restart"'
         )
+        logger.log(f'failed clash main pix list:\n\n{clash_main_check}\n\n')
         return "restart"
 
     # get to clash main options menu
