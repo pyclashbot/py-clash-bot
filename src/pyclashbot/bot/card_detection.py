@@ -70,6 +70,8 @@ def get_card_group(card_id) -> str:
             "rocket",
             "lightning",
             "log",
+            'tornado',
+            'graveyard',
         ],
         "turret": [
             "bomb_tower",
@@ -190,3 +192,6 @@ def identify_card(image):
             return card_name
 
     return "Unknown"
+
+
+
