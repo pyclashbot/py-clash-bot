@@ -34,7 +34,7 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
         return "restart"
 
     # if not on clash main return
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="ERROR 827358235 Not on clash main menu, returning to start state"
         )
@@ -151,7 +151,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
 
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
-    while not check_if_on_clash_main_menu(vm_index):
+    while  check_if_on_clash_main_menu(vm_index) is not True:
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 

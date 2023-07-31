@@ -37,7 +37,7 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
     logger.set_current_state("free_offer_collection")
     logger.change_status(status="Free offer collection state")
     logger.add_free_offer_collection_attempt()
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(status="ERROR 625436252356 Not on clash main menu")
         return "restart"
 

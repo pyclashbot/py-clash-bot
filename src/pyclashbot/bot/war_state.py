@@ -31,21 +31,15 @@ CARD_COORDS = [
     (269, 555),
     (343, 555),
 ]
-
 CLAN_PAGE_ICON_COORD = (281, 586)
 EDIT_WAR_DECK_BUTTON_COORD = (148, 413)
 RANDOM_DECK_BUTTON_COORD = (265, 483)
 CLOSE_WAR_DECK_EDITOR_PAGE_BUTTON = (211, 38)
-
 START_WAR_BATTLE_BUTTON_COORD = (267, 410)
-
 LEAVE_WAR_BATTLE_BUTTON_COORD = (204, 553)
-
-
 WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
 WAR_BATTLE_TIMEOUT = 240  # seconds
-
 WAR_BATTLE_START_TIMEOUT = 120  # seconds
 FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT = 60  # seconds
 
@@ -74,7 +68,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="War state")
 
     # if not on clash main: return
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Error 4069852734098 Not on clash main to begin war state"
         )

@@ -2,11 +2,15 @@ import random
 import time
 from typing import Literal
 
-from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
+from pyclashbot.detection.image_rec import (
+    check_line_for_color,
+    pixel_is_equal,
+    region_is_color,
+)
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [315,597]
+CLAN_TAB_BUTTON_COORDS_FROM_MAIN: list[int] = [315, 597]
 PROFILE_PAGE_COORD: list[int] = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE: list[int] = [178, 593]
 CLASH_MAIN_OPTIONS_BURGER_BUTTON: tuple[Literal[365], Literal[62]] = (365, 62)
@@ -194,7 +198,7 @@ def handle_clash_main_tab_notifications(
     start_time: float = time.time()
 
     # if not on clash main, return restart
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Error 08726246569979 Not on clash main menu for handle_clash_main_tab_notifications()"
         )
@@ -373,7 +377,7 @@ def get_to_activity_log(
         logger.log("Getting to activity log")
 
     # if not on main return restart
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Eror 08752389 Not on clash main menu, restarting vm"
         )
@@ -845,7 +849,7 @@ def wait_for_profile_page(
 
 def get_to_profile_page(vm_index, logger: Logger) -> Literal["restart", "good"]:
     # if not on clash main, return
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="ERROR 732457256 Not on clash main menu, returning to start state"
         )
@@ -907,7 +911,7 @@ def wait_for_clash_main_menu(
         logger.log("Waiting for clash main menu")
 
     start_time: float = time.time()
-    while not check_if_on_clash_main_menu(vm_index):
+    while  check_if_on_clash_main_menu(vm_index) is not True:
         # loop count
 
         if check_for_trophy_reward_menu(vm_index):
@@ -941,19 +945,44 @@ def wait_for_clash_main_menu(
 
 
 def check_if_on_clash_main_menu(vm_index) -> bool:
-    if not check_line_for_color(vm_index, 291, 7, 306, 26, (224, 180, 56)):
-        return False
-    if not check_line_for_color(vm_index, 395, 6, 409, 26, (61, 189, 24)):
-        return False
+    iar = screenshot(vm_index)
 
-    if not region_is_color(vm_index, [150, 576, 25, 12], (71, 105, 138)):
-        return False
+
+    pixels = []
+    for coord in [
+        (361, 322),
+        (57, 386),
+        (406, 16),
+        (300, 14),
+    ]:
+        pixel = iar[coord[1]][coord[0]]
+        pixels.append(pixel)
+
+    checks = [
+        [162, 109, 29],
+        [137, 90, 22],
+        [21, 195, 60],
+        [56, 149, 209],
+    ]
+
+    for index in range(len(pixels)):
+        check = checks[index]
+
+        pixel = pixels[index]
+
+        if not pixel_is_equal(check,pixel,tol=35):
+            return pixels
+
     return True
 
 
+
+
 if __name__ == "__main__":
-    print(get_to_clan_tab_from_clash_main(1, Logger()))
+    # print(get_to_clan_tab_from_clash_main(1, Logger()))
 
     # print(check_for_war_chest_obstruction())
 
     # screenshot(1)
+
+    print(check_if_on_clash_main_menu(8))

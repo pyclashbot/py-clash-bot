@@ -46,7 +46,7 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     logger.add_randomize_deck_attempt()
 
     # if not on clash main, return fail
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.log("Error 775 Not on clash main for deck randomization state ")
         return "restart"
 

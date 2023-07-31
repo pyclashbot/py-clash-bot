@@ -61,7 +61,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
     next_state = "2v2_fight"
 
     # if not on clash main, return restart
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="ERROR 24537265435 Not on clash main menu, returning to start state"
         )
@@ -105,7 +105,7 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
     next_state = "1v1_fight"
 
     # if not on clash main, return restart
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="ERROR 77357352 Not on clash main menu, returning to start state"
         )
@@ -529,7 +529,7 @@ def check_if_previous_game_was_win(
     logger.change_status(status="Checking if last game was a win/loss")
 
     # if not on main, return restart
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status='534594784234 Error Not on main menu, returning "restart"'
         )
