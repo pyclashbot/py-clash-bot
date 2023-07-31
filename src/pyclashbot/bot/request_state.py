@@ -75,7 +75,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.add_request_attempt()
 
     # if not on main: return
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(status="ERROR 62543636 Not on clash main menu")
         return "restart"
 
@@ -145,7 +145,7 @@ def request_state_check_if_in_a_clan(
     vm_index, logger: Logger
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
-    if not check_if_on_clash_main_menu(vm_index):
+    if  check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
