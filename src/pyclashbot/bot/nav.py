@@ -613,6 +613,16 @@ def wait_for_1v1_battle_start(
     return "good"
 
 
+
+
+def check_for_in_2v2_battle_with_delay(vm_index):
+    timeout = 2#s
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        if check_for_in_2v2_battle(vm_index):
+            return True
+
+
 def check_for_in_2v2_battle(vm_index) -> bool:
     if not check_line_for_color(
         vm_index=vm_index, x_1=104, y_1=605, x_2=122, y_2=624, color=(249, 88, 235)
