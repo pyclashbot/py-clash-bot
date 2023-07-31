@@ -197,7 +197,7 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state):
     # wait for battle start
     if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) == "restart":
         logger.change_status(
-            status="Error 7567336 wait_for_1v1_battle_start() in do_1v1_fight_state()"
+            status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()"
         )
         return "restart"
 
@@ -502,9 +502,12 @@ def end_fight_state(vm_index, logger: Logger, next_state):
     """method to handle the time after a fight and before the next state"""
 
     # get to clash main after this fight
+    logger.log('Getting to clash main after doing a fight')
     if get_to_main_after_fight(vm_index, logger, next_state) == "restart":
         logger.log("Erro 6969 Failed to get to clash main after a fight")
         return "restart"
+    logger.log('Made it to clash main after doing a fight')
+
 
     # check if the prev game was a win
 
@@ -607,7 +610,7 @@ def get_to_main_after_fight(vm_index, logger, next_state):
             click(vm_index, 173, 591)
 
         # if on main, we're done
-        if check_if_on_clash_main_menu(vm_index):
+        if check_if_on_clash_main_menu(vm_index) is True:
             logger.log("Made it to clash main after a fight")
             break
 
