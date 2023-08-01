@@ -573,7 +573,7 @@ def wait_for_2v2_battle_start(
         time_taken: float = time.time() - start_time
         if time_taken > 60:
             logger.change_status(
-                status="Error 88884572456 Waiting too long for 1v1 battle to start"
+                status="Error 88884572456 Waiting too long for 2v2 battle to start"
             )
             return "restart"
 
