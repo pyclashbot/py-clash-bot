@@ -11,6 +11,7 @@ from os.path import exists, expandvars, join
 
 import numpy
 import psutil
+import pygetwindow as gw
 import PySimpleGUI as sg
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
@@ -45,7 +46,7 @@ def restart_emulator(logger, start_time=time.time()):
     # start the vm
     # logger.change_status(status="Starting a new Memu Client using the launcher. . .")
     # start_emulator_without_pmc(logger) # this is the old way
-    logger.change_status(status="Starting emulator...")
+    logger.change_status(status="Opening the Memu emulator...")
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
@@ -84,7 +85,7 @@ def restart_emulator(logger, start_time=time.time()):
 
     time.sleep(5)
 
-    logger.log(f'Took {str(time.time() - start_time)[:5]}s to launch emulator')
+    logger.log(f"Took {str(time.time() - start_time)[:5]}s to launch emulator")
     return True
 
 
@@ -117,7 +118,6 @@ def check_for_vm(logger: Logger) -> int:
 
     # return the index. if no vms named pyclashbot exist, create one.
     return vm_index if vm_index != -1 else create_vm(logger)
-
 
 
 def start_clash_royale(logger: Logger, vm_index):
@@ -357,15 +357,28 @@ def restart_vm(logger, vm_index):
     launch_vm(logger, vm_index)
 
 
+# Method to print all window names
+def check_for_memuc_console_window():
+    all_windows = gw.getAllTitles()
+    for window_name in all_windows:
+        if "Multiple Instance Manager" in window_name:
+            return True
+    return False
+
+
 def start_memuc_console() -> int:
     """Start the memuc console and return the process ID"""
-    # pylint: disable=protected-access
-    console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
-    # pylint: disable=consider-using-with
-    process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
+    loops = 0
+    while not check_for_memuc_console_window():
+        # pylint: disable=protected-access
+        console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
+        # pylint: disable=consider-using-with
+        process = subprocess.Popen(
+            console_path, creationflags=subprocess.DETACHED_PROCESS
+        )
+        loops += 1
 
-    # print(f"Started memu console with PID {process.pid}")
-
+    # print(f"Started memu console with PID {process.pid} in {loops} loops")
     return process.pid
 
 
