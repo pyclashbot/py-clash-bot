@@ -46,7 +46,7 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     logger.add_randomize_deck_attempt()
 
     # if not on clash main, return fail
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.log("Error 775 Not on clash main for deck randomization state ")
         return "restart"
 
@@ -237,28 +237,21 @@ def randomize_deck(vm_index, logger, max_scrolls) -> Literal["restart", "good"]:
 
 
 def randomize_this_deck(vm_index, logger: Logger) -> Literal["good"]:
-    """method to count max scrolls then randomize the deck currently on the screen"""
-
     # starts when looking at the deck to randomize
-
     logger.change_status("Randomizing this deck")
     time.sleep(1)
 
     # count max scrolls
     logger.change_status("Counting length of your card list")
-
-    logger.log("Counting max scrolls")
     max_scrolls: int = count_max_scrolls(vm_index, logger)
     logger.log(f"There are {max_scrolls} max scrolls")
 
-    logger.log("Getting back to top of card page")
     # scroll back to top
+    logger.log("Getting back to top of card page")
     reset_card_page_scroll(vm_index)
 
-    # for each of the 8 cards:
-    logger.log("Entering card replacement loop")
+    # repalce all 8 cards with random cards, using the max_scrolls we learned earlier
     logger.change_status("Replacing this deck with random cards...")
-
     random.shuffle(CARDS_TO_REPLACE_COORDS)
     randomize_deck(vm_index, logger, max_scrolls)
 
@@ -539,4 +532,10 @@ def check_for_skeleton_king(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    pass
+    vm_index = 8
+    logger = Logger(None, None)
+
+    randomize_this_deck_2(vm_index, logger)
+
+    while 1:
+        iar = screenshot(vm_index)
