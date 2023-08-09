@@ -177,7 +177,8 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
         logger.log("No jobs are selected!")
         return None
 
-    logger.change_status(status="Start Button Event")
+    logger.log("Start Button Event")
+    logger.change_status(status="Starting the bot!")
     save_current_settings(values)
 
     logger.log_job_dictionary(job_dictionary)
