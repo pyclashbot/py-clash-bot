@@ -628,22 +628,23 @@ def handle_end_2v2_battle_condition_2(vm_index, logger):
 def check_for_end_2v2_battle_condition_2(vm_index):
     """method to check if on second possible end of 2v2 battle screen"""
 
-    if not region_is_color(vm_index, [175, 558, 15, 8], (78, 175, 255)):
+    folder_name = "end_battle_icons"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.9,
+    )
+    coord = get_first_location(locations)
+    if coord is None:
         return False
-    if not region_is_color(vm_index, [225, 544, 17, 6], (99, 184, 255)):
-        return False
-
-    if not check_line_for_color(vm_index, 197, 545, 201, 550, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 210, 544, 201, 550, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 211, 544, 213, 554, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 225, 558, 215, 554, (255, 255, 255)):
-        return False
-
-    return True
-
+        else
+        return True
+    return [coord[1], coord[0]]
+    
+    
 
 def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
     """method to handle end of 2v2 battle screen condition 1"""
@@ -656,21 +657,21 @@ def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
 def check_for_end_2v2_battle_condition_1(vm_index) -> bool:
     """method to check if on first possible end of 2v2 battle screen"""
 
-    if not region_is_color(vm_index, [44, 602, 14, 8], (76, 174, 255)):
+    folder_name = "end_battle_icons"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.9,
+    )
+    coord = get_first_location(locations)
+    if coord is None:
         return False
-    if not region_is_color(vm_index, [100, 588, 8, 10], (104, 184, 255)):
-        return False
-
-    if not check_line_for_color(vm_index, 61, 590, 65, 601, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 74, 592, 76, 599, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 83, 590, 83, 599, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 90, 590, 91, 598, (255, 255, 255)):
-        return False
-    return True
-
+        else
+        return True
+    return [coord[1], coord[0]]
 
 def handle_end_1v1_battle_condition_1(vm_index, logger) -> None:
     """method to handle the #1 possible end of 1v1 battle screen"""
@@ -683,13 +684,22 @@ def handle_end_1v1_battle_condition_1(vm_index, logger) -> None:
 def check_for_end_1v1_battle_condition_1(vm_index) -> bool:
     """method to check if on the #1 possible end of 1v1 battle screen"""
 
-    if not region_is_color(vm_index, [175, 556, 20, 6], (78, 175, 255)):
+    folder_name = "end_battle_icons"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.9,
+    )
+    coord = get_first_location(locations)
+    if coord is None:
         return False
-    if not region_is_color(vm_index, [225, 546, 242, 4], (101, 185, 255)):
-        return False
-    if not region_is_color(vm_index, [52, 514, 20, 8], (255, 255, 255)):
-        return False
-    return True
+        else
+        return True
+    return [coord[1], coord[0]]
+    
 
 
 def handle_end_1v1_battle_condition_2(vm_index, logger) -> None:
@@ -702,17 +712,22 @@ def handle_end_1v1_battle_condition_2(vm_index, logger) -> None:
 def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
     """method to check if the #2 possible end of 1v1 battle screen is on the screen"""
 
-    if not region_is_color(vm_index, [175, 554, 20, 12], (78, 175, 255)):
+    folder_name = "end_battle_icons"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.9,
+    )
+    coord = get_first_location(locations)
+    if coord is None:
         return False
-    if not region_is_color(vm_index, [228, 545, 12, 6], (99, 184, 255)):
-        return False
-
-    if not check_line_for_color(vm_index, 197, 545, 201, 553, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 212, 544, 214, 553, (255, 255, 255)):
-        return False
-    return True
-
+        else
+        return True
+    return [coord[1], coord[0]]
+    
 
 if __name__ == "__main__":
     pass
