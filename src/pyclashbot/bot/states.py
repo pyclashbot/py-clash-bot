@@ -62,7 +62,6 @@ def state_tree(
 
     elif state == "start":  # --> open_chests
         # open clash
-        logger.log("Running restart_emulator() for initial emulator boot")
         restart_emulator(logger)
 
         logger.log(
