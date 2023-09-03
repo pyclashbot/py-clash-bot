@@ -986,7 +986,7 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
         pixel = pixels[index]
 
         if not pixel_is_equal(check,pixel,tol=35):
-            return pixels
+            return False
 
     return True
 
@@ -1000,4 +1000,4 @@ if __name__ == "__main__":
 
     # screenshot(1)
 
-    print(check_if_on_clash_main_menu(8))
+    while 1:print(check_if_on_clash_main_menu(8))
