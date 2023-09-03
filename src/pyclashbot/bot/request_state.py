@@ -75,7 +75,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.add_request_attempt()
 
     # if not on main: return
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(status="ERROR 62543636 Not on clash main menu")
         return "restart"
 
@@ -145,7 +145,7 @@ def request_state_check_if_in_a_clan(
     vm_index, logger: Logger
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
@@ -175,18 +175,18 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))  # type: ignore
 
     coord_list = []
-    for x in range(85,90):
-        coord_list.append((346,x))
+    for x in range(85, 90):
+        coord_list.append((346, x))
 
-    for y in range(342,352):
-        coord_list.append((87,y))
+    for y in range(342, 352):
+        coord_list.append((87, y))
 
     for coord in coord_list:
         pixel = iar[coord[1]][coord[0]]
-        if not pixel_is_equal(pixel, [49,49,49], tol=25) and not pixel_is_equal(pixel, [81,39,6], tol=25):
+        if not pixel_is_equal(pixel, [49, 49, 49], tol=25) and not pixel_is_equal(
+            pixel, [81, 39, 6], tol=25
+        ):
             return True
-
-
 
     return False
 
@@ -351,7 +351,16 @@ def do_request(vm_index, logger: Logger) -> None:
         vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
     )
 
+    random_click_timeout = 35  # s
+    random_click_start_time = time.time()
+
     while 1:
+        if time.time() - random_click_start_time > random_click_timeout:
+            logger.change_status(
+                "5913578 Clicked randomly for a random card to request too many times!"
+            )
+            return "restart"
+
         # click card
         logger.change_status(status="Clicking random card to request")
         click(
@@ -366,7 +375,6 @@ def do_request(vm_index, logger: Logger) -> None:
         # get request button coord
         coord = find_request_button(vm_index)
         if coord is None:
-            logger.change_status(status="Error 987359835 Couldnt find request button")
             continue
 
         # Click request button coord
@@ -487,4 +495,5 @@ def check_if_can_request_3(vm_index):
 
 if __name__ == "__main__":
     # print(request_state_check_if_in_a_clan(8, Logger()))
-    while 1:print(request_state_check_pixels_for_clan_flag(8))
+    while 1:
+        print(request_state_check_pixels_for_clan_flag(8))

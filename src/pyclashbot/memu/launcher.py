@@ -35,7 +35,6 @@ def restart_emulator(logger, start_time=time.time()):
     # restart the game, including the launcher and emulator
 
     # stop all vms
-    logger.change_status(status="Closing everything Memu related. . .")
     close_everything_memu()
 
     # check for the pyclashbot vm, if not found then create it
@@ -155,7 +154,6 @@ def create_vm(logger: Logger):
     configure_vm(logger, vm_index)
     # rename the vm to pyclashbot
     rename_vm(logger, vm_index, EMULATOR_NAME)
-    stop_memuc_console(memuc_pid)
     logger.change_status(status=f"Created VM: {vm_index} - {EMULATOR_NAME}")
     return vm_index
 
@@ -234,7 +232,6 @@ def configure_vm(logger: Logger, vm_index):
     set_vm_language(vm_index=vm_index)
     time.sleep(10)
 
-    stop_memuc_console(memuc_pid)
 
 
 # emulator interaction methods
