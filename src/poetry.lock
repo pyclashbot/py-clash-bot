@@ -811,13 +811,13 @@ pylint = ">=1.7"
 
 [[package]]
 name = "pymemuc"
-version = "0.4.4"
+version = "0.4.5"
 description = "A Memuc.exe wrapper for Python"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "pymemuc-0.4.4-py3-none-any.whl", hash = "sha256:ae6c1acbf68f275d4071c4fd4558516c25ad79d44a7c57ee2a11f0a9d32f14eb"},
-    {file = "pymemuc-0.4.4.tar.gz", hash = "sha256:44de57696cda467e69ca4f727f1f5a3ad4a26b5913b3d643fb1323e3608f4e63"},
+    {file = "pymemuc-0.4.5-py3-none-any.whl", hash = "sha256:9ed52eeddf932f12ddcad76b5f661b8eb756e604c9b005b247e891d6638dc441"},
+    {file = "pymemuc-0.4.5.tar.gz", hash = "sha256:68ade876ee38ef954e101a6525f8d83098a69ef386ef7a970ba34afb526e640f"},
 ]
 
 [[package]]
@@ -1138,4 +1138,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a6ab9a9aae3123a4618f242e64d5a0f695a33fd3cbf004186051666158dd05d7"
+content-hash = "408960aa0e9ff56ea8e4cc149ee23d87aaf1c1a0d70a340fc6957eef13f5d7f9"
