@@ -3,6 +3,8 @@ This module contains functions for launching and controlling MEmu virtual machin
 as well as starting and stopping the Clash Royale app within them.
 """
 
+
+import contextlib
 import subprocess
 import sys
 import time
@@ -11,7 +13,6 @@ from os.path import exists, expandvars, join
 
 import numpy
 import psutil
-import pygetwindow as gw
 import PySimpleGUI as sg
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
@@ -144,7 +145,7 @@ def start_clash_royale(logger: Logger, vm_index):
 def create_vm(logger: Logger):
     # create a vm named pyclashbot
     logger.change_status(status="Creating VM...")
-    memuc_pid = start_memuc_console()
+    start_memuc_console()
 
     vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
     while vm_index == -1:  # handle when vm creation fails
@@ -200,7 +201,7 @@ def get_screenshot_folder() -> str:
 def configure_vm(logger: Logger, vm_index):
     logger.change_status(status="Configuring VM")
 
-    memuc_pid = start_memuc_console()
+    start_memuc_console()
 
     cpu_count: int = psutil.cpu_count(logical=False)
     cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
@@ -231,7 +232,6 @@ def configure_vm(logger: Logger, vm_index):
     time.sleep(3)
     set_vm_language(vm_index=vm_index)
     time.sleep(10)
-
 
 
 # emulator interaction methods
@@ -354,29 +354,24 @@ def restart_vm(logger, vm_index):
     launch_vm(logger, vm_index)
 
 
-# Method to print all window names
-def check_for_memuc_console_window():
-    all_windows = gw.getAllTitles()
-    for window_name in all_windows:
-        if "Multiple Instance Manager" in window_name:
-            return True
-    return False
-
-
 def start_memuc_console() -> int:
     """Start the memuc console and return the process ID"""
-    loops = 0
-    while not check_for_memuc_console_window():
-        # pylint: disable=protected-access
-        console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
-        # pylint: disable=consider-using-with
-        process = subprocess.Popen(
-            console_path, creationflags=subprocess.DETACHED_PROCESS
-        )
-        loops += 1
+    # check if memu console is already running
+    for process in psutil.process_iter():
+        with contextlib.suppress(psutil.NoSuchProcess, psutil.AccessDenied):
+            if process.name() == "MEMuConsole.exe":
+                return process.pid
 
-    # print(f"Started memu console with PID {process.pid} in {loops} loops")
-    return process.pid
+    # start memu console
+    # pylint: disable=protected-access
+    console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
+    # pylint: disable=consider-using-with
+    process = subprocess.Popen(    console_path, creationflags=subprocess.DETACHED_PROCESS)
+
+    # ensure the process actually started
+    time.sleep(2)
+    return process.pid if psutil.pid_exists(process.pid) else start_memuc_console()
+
 
 
 def stop_memuc_console(process_id: int) -> None:
