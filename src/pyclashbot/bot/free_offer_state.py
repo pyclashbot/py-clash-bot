@@ -179,4 +179,4 @@ def find_free_offer_icon(vm_index):
 
 
 if __name__ == "__main__":
-    (free_offer_collection_state(1, Logger(), "test"))
+    pass

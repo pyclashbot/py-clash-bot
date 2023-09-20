@@ -532,10 +532,4 @@ def check_for_skeleton_king(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    vm_index = 8
-    logger = Logger(None, None)
-
-    randomize_this_deck_2(vm_index, logger)
-
-    while 1:
-        iar = screenshot(vm_index)
+    pass
