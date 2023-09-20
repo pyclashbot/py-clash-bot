@@ -198,7 +198,7 @@ def handle_clash_main_tab_notifications(
     start_time: float = time.time()
 
     # if not on clash main, return restart
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Error 08726246569979 Not on clash main menu for handle_clash_main_tab_notifications()"
         )
@@ -206,28 +206,15 @@ def handle_clash_main_tab_notifications(
 
     # click card tab
     click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
-    if wait_for_clash_main_card_page(vm_index, logger, printmode) == "restart":
-        logger.change_status(
-            status="Error 0675248 Waited too long for clash main card page, restarting vm"
-        )
-        return "restart"
+    time.sleep(4)
 
     # click shop tab
     click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1])
-    if wait_for_clash_main_shop_page(vm_index, logger, printmode) == "restart":
-        logger.change_status(
-            status="Error 086720845 Waited too long for clash main shop page, restarting vm"
-        )
-        return "restart"
+    time.sleep(4)
 
     # click challenges tab
     click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1])
-    if wait_for_clash_main_challenges_tab(vm_index, logger, printmode) == "restart":
-        logger.change_status(
-            status="Error 922225 Waited too long for clash main challenged tab page, restarting vm"
-        )
-
-        return "restart"
+    time.sleep(4)
 
     # get back to main
     click(
@@ -377,7 +364,7 @@ def get_to_activity_log(
         logger.log("Getting to activity log")
 
     # if not on main return restart
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Eror 08752389 Not on clash main menu, restarting vm"
         )
@@ -613,10 +600,8 @@ def wait_for_1v1_battle_start(
     return "good"
 
 
-
-
 def check_for_in_2v2_battle_with_delay(vm_index):
-    timeout = 2#s
+    timeout = 2  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
         if check_for_in_2v2_battle(vm_index):
@@ -859,7 +844,7 @@ def wait_for_profile_page(
 
 def get_to_profile_page(vm_index, logger: Logger) -> Literal["restart", "good"]:
     # if not on clash main, return
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="ERROR 732457256 Not on clash main menu, returning to start state"
         )
@@ -921,8 +906,8 @@ def wait_for_clash_main_menu(
         logger.log("Waiting for clash main menu")
 
     start_time: float = time.time()
-    on_main =check_if_on_clash_main_menu(vm_index)
-    while  on_main is not True:
+    on_main = check_if_on_clash_main_menu(vm_index)
+    while on_main is not True:
         if check_for_trophy_reward_menu(vm_index):
             handle_trophy_reward_menu(vm_index, logger)
 
@@ -933,7 +918,9 @@ def wait_for_clash_main_menu(
             logger.change_status(
                 status="wait_for_clash_main_menu() took too long waiting for clash main."
             )
-            logger.log(f"This is this user's pixel list after failing to get to clash main for {CLASH_MAIN_MENU_WAIT_TIMEOUT}s")
+            logger.log(
+                f"This is this user's pixel list after failing to get to clash main for {CLASH_MAIN_MENU_WAIT_TIMEOUT}s"
+            )
             logger.log(on_main)
             return "restart"
 
@@ -947,9 +934,8 @@ def wait_for_clash_main_menu(
         # wait 1 sec
         time.sleep(1)
 
-        #recheck
-        on_main =check_if_on_clash_main_menu(vm_index)
-
+        # recheck
+        on_main = check_if_on_clash_main_menu(vm_index)
 
     if printmode:
         logger.change_status(status="Done waiting for clash main menu")
@@ -961,7 +947,6 @@ def wait_for_clash_main_menu(
 
 def check_if_on_clash_main_menu(vm_index) -> bool:
     iar = screenshot(vm_index)
-
 
     pixels = []
     for coord in [
@@ -985,19 +970,11 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
 
         pixel = pixels[index]
 
-        if not pixel_is_equal(check,pixel,tol=35):
+        if not pixel_is_equal(check, pixel, tol=35):
             return False
 
     return True
 
 
-
-
 if __name__ == "__main__":
-    # print(get_to_clan_tab_from_clash_main(1, Logger()))
-
-    # print(check_for_war_chest_obstruction())
-
-    # screenshot(1)
-
-    while 1:print(check_if_on_clash_main_menu(8))
+    pass

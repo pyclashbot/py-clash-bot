@@ -404,5 +404,4 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 
 
 if __name__ == "__main__":
-    while 1:
-        print(find_war_battle_icon(1))
+    pass

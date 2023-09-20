@@ -204,5 +204,4 @@ def check_if_chest_is_unlockable(vm_index):
 
 
 if __name__ == "__main__":
-    while 1:
-        pass
+    pass
