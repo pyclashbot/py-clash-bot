@@ -131,7 +131,7 @@ main_layout = [
         sg.Column(
             [
                 [
-                    stat_box("time_since_start", size=(7, 1)),
+
                     sg.Input(
                         "Idle",
                         key="current_status",

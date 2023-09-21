@@ -82,6 +82,5 @@ controls = [
     [
         sg.Button("Discord", key="discord", expand_x=True),
         sg.Button("Report Bug", key="bug-report", expand_x=True),
-        sg.Button("Donate", key="donate", expand_x=True),
     ],
 ]
