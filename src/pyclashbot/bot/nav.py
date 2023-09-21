@@ -197,12 +197,12 @@ def handle_clash_main_tab_notifications(
 ) -> Literal["restart", "good"]:
     start_time: float = time.time()
 
-    # if not on clash main, return restart
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            status="Error 08726246569979 Not on clash main menu for handle_clash_main_tab_notifications()"
-        )
-        return "restart"
+    # # if not on clash main, return restart
+    # if check_if_on_clash_main_menu(vm_index) is not True:
+    #     logger.change_status(
+    #         status="Error 08726246569979 Not on clash main menu for handle_clash_main_tab_notifications()"
+    #     )
+    #     return "restart"
 
     # click card tab
     click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
@@ -228,14 +228,10 @@ def handle_clash_main_tab_notifications(
         )
         return "restart"
 
-    if printmode:
-        logger.change_status(
-            status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
-        )
-    else:
-        logger.log(
-            f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
-        )
+    logger.change_status(
+        status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
+    )
+
     time.sleep(3)
     return "good"
 

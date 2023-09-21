@@ -26,6 +26,10 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
     logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
 
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.change_status(status="Error 356264 Not on clash main menu at start of open_chests_state()!")
+        return "restart"
+
     logger.change_status(status="Handling obstructing notifications")
     if handle_clash_main_tab_notifications(vm_index, logger, True) == "restart":
         logger.change_status(
@@ -34,9 +38,9 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
         return "restart"
 
     # if not on clash main return
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
-            status="ERROR 827358235 Not on clash main menu, returning to start state"
+            status="Error 827358235 Not on clash main menu, returning to start state"
         )
         return "restart"
 
@@ -151,7 +155,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
 
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
-    while  check_if_on_clash_main_menu(vm_index) is not True:
+    while check_if_on_clash_main_menu(vm_index) is not True:
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 

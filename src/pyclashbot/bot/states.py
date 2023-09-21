@@ -94,10 +94,14 @@ def state_tree(
             )
             return "restart"
 
-        # restart_vm(logger, vm_index)
+        logger.log('Detected clash main at the end of "restart" state.')
+
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
+
+        logger.log(f"Next state is {next_state}")
+
         return next_state
 
     if state == "open_chests":  # --> upgrade
