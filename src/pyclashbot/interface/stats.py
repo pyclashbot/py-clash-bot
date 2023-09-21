@@ -7,7 +7,7 @@ sg.theme(THEME)
 
 
 def stat_box(stat_name: str, size=(5, 1)) -> sg.Text:
-    '''Returns a pysimplegui text box object for stats layout'''
+    """Returns a pysimplegui text box object for stats layout"""
     return sg.Text(
         "0",
         key=stat_name,
@@ -133,17 +133,24 @@ bot_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Bot Failures"),
     ],
+    [
+        sg.Text("Runtime"),
+    ],
+
 ]
 
 bot_stats_values = [
     [
         stat_box("restarts_after_failure"),
+
     ],
+    [stat_box("time_since_start", size=(7, 1)),],
 ]
 
 bot_stats = [
     [
         sg.Column(bot_stats_titles, element_justification="right"),
         sg.Column(bot_stats_values, element_justification="left"),
-    ]
+    ],
+
 ]
