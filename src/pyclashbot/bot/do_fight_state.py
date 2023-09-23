@@ -61,11 +61,12 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
 
     next_state = "2v2_fight"
 
-    # if not on clash main, return restart
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
         logger.change_status(
-            status="ERROR 24537265435 Not on clash main menu, returning to start state"
+            status="ERROR 34 Not on main for start of start 2v2"
         )
+        logger.log(f"Bot read these pixels {clash_main_check}")
         return "restart"
 
     # get to challenges tab
@@ -106,10 +107,12 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
     next_state = "1v1_fight"
 
     # if not on clash main, return restart
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
         logger.change_status(
-            status="ERROR 77357352 Not on clash main menu, returning to start state"
+            status="ERROR 46246 Not on main menu for start of start 1v1 fight"
         )
+        logger.log(f"Bot read these pixels {clash_main_check}")
         return "restart"
 
     # click 1v1 button
@@ -502,12 +505,11 @@ def end_fight_state(vm_index, logger: Logger, next_state):
     """method to handle the time after a fight and before the next state"""
 
     # get to clash main after this fight
-    logger.log('Getting to clash main after doing a fight')
+    logger.log("Getting to clash main after doing a fight")
     if get_to_main_after_fight(vm_index, logger, next_state) == "restart":
         logger.log("Erro 6969 Failed to get to clash main after a fight")
         return "restart"
-    logger.log('Made it to clash main after doing a fight')
-
+    logger.log("Made it to clash main after doing a fight")
 
     # check if the prev game was a win
 
@@ -533,12 +535,12 @@ def check_if_previous_game_was_win(
     logger.change_status(status="Checking if last game was a win/loss")
 
     # if not on main, return restart
-    clash_main_check =check_if_on_clash_main_menu(vm_index)
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status(
             status='534594784234 Error Not on main menu, returning "restart"'
         )
-        logger.log(f'failed clash main pix list:\n\n{clash_main_check}\n\n')
+        logger.log(f"Bot read these pixels {clash_main_check}")
         return "restart"
 
     # get to clash main options menu

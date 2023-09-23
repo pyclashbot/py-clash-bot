@@ -26,10 +26,10 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, next_state: str
     logger.add_card_mastery_reward_collection_attempt()
 
     # if not on clash main, return fail
-    if  check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            status="Error 1983513 Not on clash main for card mastery state"
-        )
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
+        logger.log("Not on clash main for the start of card_mastery_collection_state()")
+        logger.log(f"Bot saw these pixels: {clash_main_check}")
         return "restart"
 
     # get to card page

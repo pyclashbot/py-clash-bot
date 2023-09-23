@@ -70,8 +70,8 @@ def get_card_group(card_id) -> str:
             "rocket",
             "lightning",
             "log",
-            'tornado',
-            'graveyard',
+            "tornado",
+            "graveyard",
         ],
         "turret": [
             "bomb_tower",
@@ -147,7 +147,16 @@ def get_card_images(vm_index):
     return card_images
 
 
+
+
 def get_card_name_list():
+    """
+    Returns a list of card names by iterating through the reference images directory and extracting the card names
+    from the file names.
+
+    Returns:
+        card_names (list): A list of card names.
+    """
     card_names = []
     for name in get_file_names(
         os.path.join(
@@ -164,6 +173,15 @@ def get_card_name_list():
 
 
 def get_file_names(directory):
+    """
+    Returns a list of file names in the specified directory.
+
+    Args:
+        directory (str): The directory to search for file names.
+
+    Returns:
+        file_names (list): A list of file names in the specified directory.
+    """
     file_names = []
 
     for item_name in os.listdir(directory):
@@ -175,6 +193,15 @@ def get_file_names(directory):
 
 
 def identify_card(image):
+    """
+    Identifies the name of a card in an image using reference images.
+
+    Args:
+        image: A PIL Image object representing the card image to be identified.
+
+    Returns:
+        A string representing the name of the identified card, or "Unknown" if no match is found.
+    """
     card_names = get_card_name_list()
 
     for card_name in card_names:
@@ -192,6 +219,3 @@ def identify_card(image):
             return card_name
 
     return "Unknown"
-
-
-

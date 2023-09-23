@@ -221,7 +221,6 @@ def region_is_color(vm_index, region, color):
         for y_index in range(top, top + height, 2):
             pixel = iar[y_index][x_index]
             pixel = convert_pixel(pixel)
-            # print(x_index, y_index, pixel)
             if not pixel_is_equal(color, pixel, tol=35):
                 return False
 
