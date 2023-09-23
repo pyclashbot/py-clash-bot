@@ -51,6 +51,15 @@ REQUEST_BUTTON_COORD_LIST = {
 
 
 def find_request_button(vm_index):
+    """
+    Finds the location of the request button on the screen.
+
+    Args:
+        vm_index (int): The index of the virtual machine to search for the request button.
+
+    Returns:
+        list[int] or None: The coordinates of the request button if found, or None if not found.
+    """
     folder_name = "request_button"
 
     size: int = get_file_count(folder_name)
@@ -71,12 +80,26 @@ def find_request_button(vm_index):
 
 
 def request_state(vm_index, logger: Logger, next_state: str) -> str:
+    """
+    The request state of the bot. This state is responsible for checking if the bot is in a clan,
+    checking if a request can be made, and making a request if possible.
+
+    Args:
+        vm_index (int): The index of the virtual machine to run the bot on.
+        logger (Logger): The logger object to log messages to.
+        next_state (str): The next state to transition to after this state is complete.
+
+    Returns:
+        str: The next state to transition to after this state is complete.
+    """
     logger.change_status(status="Request state")
     logger.add_request_attempt()
 
     # if not on main: return
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(status="ERROR 62543636 Not on clash main menu")
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
+        logger.change_status("Not on clash main for the start of request_state()")
+        logger.log(f"Bot saw these pixels: {clash_main_check}")
         return "restart"
 
     # if not in a clan, return
@@ -98,7 +121,8 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     # check if request exists
     if check_if_can_request_wrapper(vm_index):
         # do request
-        do_request(vm_index, logger)
+        if not do_request(vm_index, logger):
+            return "restart"
     else:
         logger.change_status(status="Cant request right now.")
 
@@ -108,6 +132,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
             status="Error 876208476 Failure with get_to_clash_main_from_clan_page"
         )
         return "restart"
+
     return next_state
 
 
@@ -160,9 +185,9 @@ def request_state_check_if_in_a_clan(
     # check pixels for in a clan
     in_a_clan = request_state_check_pixels_for_clan_flag(vm_index)
 
-    #print clan status
+    # print clan status
     if not in_a_clan:
-        logger.change_status(f"Not in a clan, so can't request!")
+        logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
     click(vm_index, 15, 300)
@@ -179,12 +204,12 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))  # type: ignore
 
     pix_list = []
-    for x in range(80, 96):
-        pixel = iar[445][x]
+    for x_coord in range(80, 96):
+        pixel = iar[445][x_coord]
         pix_list.append(pixel)
 
-    for y in range(437, 453):
-        pixel = iar[y][88]
+    for y_coord in range(437, 453):
+        pixel = iar[y_coord][88]
         pix_list.append(pixel)
 
     for pix in pix_list:
@@ -197,147 +222,6 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
             return True
 
     return False
-
-
-def find_yellow_request_button_in_request_page(vm_index) -> Any:
-    iar: numpy.ndarray[Any, numpy.dtype[Any]] = numpy.asarray(
-        a=screenshot(vm_index=vm_index)
-    )
-
-    bool_lists: list[list[bool]] = [
-        # row 1
-        [
-            pixel_is_equal(YELLOW_1, iar[345][74], tol=25),
-            pixel_is_equal(YELLOW_1, iar[344][98], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[354][55], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[355][96], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[352][116], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[344][150], tol=25),
-            pixel_is_equal(YELLOW_1, iar[345][192], tol=25),
-            pixel_is_equal(YELLOW_1, iar[344][167], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[354][136], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[354][167], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[352][197], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][170], tol=25),
-            pixel_is_equal(YELLOW_2, iar[365][138], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[344][225], tol=25),
-            pixel_is_equal(YELLOW_1, iar[344][265], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[354][218], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[355][249], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[352][279], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][223], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][253], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][277], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[344][312], tol=25),
-            pixel_is_equal(YELLOW_1, iar[344][333], tol=25),
-            pixel_is_equal(YELLOW_1, iar[344][354], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[353][299], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[355][330], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[352][360], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][332], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][360], tol=25),
-            pixel_is_equal(YELLOW_2, iar[364][340], tol=25),
-        ],
-        # row 2
-        [
-            pixel_is_equal(YELLOW_1, iar[486][76], tol=25),
-            pixel_is_equal(YELLOW_1, iar[486][109], tol=25),
-            pixel_is_equal(YELLOW_1, iar[486][95], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[498][55], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[498][81], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[496][116], tol=25),
-            pixel_is_equal(YELLOW_2, iar[507][87], tol=25),
-            pixel_is_equal(YELLOW_2, iar[507][117], tol=25),
-            pixel_is_equal(YELLOW_2, iar[507][100], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[488][195], tol=25),
-            pixel_is_equal(YELLOW_1, iar[488][165], tol=25),
-            pixel_is_equal(YELLOW_1, iar[488][147], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[495][197], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][202], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][190], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][170], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[487][275], tol=25),
-            pixel_is_equal(YELLOW_1, iar[487][250], tol=25),
-            pixel_is_equal(YELLOW_1, iar[487][229], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[497][218], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[498][249], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[496][279], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][252], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][275], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][280], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[487][311], tol=25),
-            pixel_is_equal(YELLOW_1, iar[487][338], tol=25),
-            pixel_is_equal(YELLOW_1, iar[487][354], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[497][299], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[495][360], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][360], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][345], tol=25),
-            pixel_is_equal(YELLOW_2, iar[508][330], tol=25),
-        ],
-        # row 3
-        [
-            pixel_is_equal(YELLOW_1, iar[514][109], tol=25),
-            pixel_is_equal(YELLOW_1, iar[514][88], tol=25),
-            pixel_is_equal(YELLOW_1, iar[514][65], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[524][55], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[522][117], tol=25),
-            pixel_is_equal(YELLOW_2, iar[536][116], tol=25),
-            pixel_is_equal(YELLOW_2, iar[536][100], tol=25),
-            pixel_is_equal(YELLOW_2, iar[536][86], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[515][190], tol=25),
-            pixel_is_equal(YELLOW_1, iar[515][177], tol=25),
-            pixel_is_equal(YELLOW_1, iar[515][147], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[525][167], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[522][197], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][200], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][188], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][169], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[515][228], tol=25),
-            pixel_is_equal(YELLOW_1, iar[515][245], tol=25),
-            pixel_is_equal(YELLOW_1, iar[515][274], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[524][218], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[526][244], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[522][279], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][249], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][266], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][279], tol=25),
-        ],
-        [
-            pixel_is_equal(YELLOW_1, iar[515][309], tol=25),
-            pixel_is_equal(YELLOW_1, iar[515][335], tol=25),
-            pixel_is_equal(YELLOW_1, iar[515][356], tol=25),
-            pixel_is_equal(COLOR_WHITE, iar[522][361], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][350], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][360], tol=25),
-            pixel_is_equal(YELLOW_2, iar[535][330], tol=25),
-        ],
-    ]
-
-    index = 0
-    for bool_list in bool_lists:
-        index += 1
-        if all(bool_list):
-            break
-
-    row, col = ((math.ceil(index / 4)), (((index - 1) % 4) + 1))
-
-    return REQUEST_BUTTON_COORD_LIST[str(object=row)][col - 1]
 
 
 def do_request(vm_index, logger: Logger) -> None:
@@ -367,7 +251,7 @@ def do_request(vm_index, logger: Logger) -> None:
             logger.change_status(
                 "5913578 Clicked randomly for a random card to request too many times!"
             )
-            return "restart"
+            return False
 
         # click card
         logger.change_status(status="Clicking random card to request")
@@ -397,6 +281,8 @@ def do_request(vm_index, logger: Logger) -> None:
 
         time.sleep(3)
         break
+
+    return True
 
 
 def check_if_can_request_wrapper(vm_index):

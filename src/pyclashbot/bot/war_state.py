@@ -68,7 +68,13 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="War state")
 
     # if not on clash main: return
-    if  check_if_on_clash_main_menu(vm_index) is not True:
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
+        logger.change_status("Error 4848 Not on calshmain for start of war_state()")
+        logger.log(f"Bot saw these pixels: {clash_main_check}")
+        return "restart"
+
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Error 4069852734098 Not on clash main to begin war state"
         )

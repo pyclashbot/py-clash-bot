@@ -33,8 +33,6 @@ MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 
 def restart_emulator(logger, start_time=time.time()):
-    # restart the game, including the launcher and emulator
-
     # stop all vms
     close_everything_memu()
 
@@ -44,8 +42,6 @@ def restart_emulator(logger, start_time=time.time()):
     configure_vm(logger, vm_index=vm_index)
 
     # start the vm
-    # logger.change_status(status="Starting a new Memu Client using the launcher. . .")
-    # start_emulator_without_pmc(logger) # this is the old way
     logger.change_status(status="Opening the Memu emulator...")
     pmc.start_vm(vm_index=vm_index)
 
@@ -55,17 +51,18 @@ def restart_emulator(logger, start_time=time.time()):
     while time_waiting < MANUAL_VM_WAIT_TIME:
         time.sleep(4)
         time_waiting = time.time() - wait_start_time
-        logger.log(
-            (f"Waiting for VM to load {str(time_waiting)[:4]}/{MANUAL_VM_WAIT_TIME}")
+        logger.change_status(
+            (f"Waiting for VM to load {str(time_waiting)[:2]}/{MANUAL_VM_WAIT_TIME}")
         )
 
     # skip ads
-    logger.log("Skipping ads")
+    # logger.change_status("Skipping ads")
     if skip_ads(vm_index) == "fail":
         logger.log("Error 99 Failed to skip ads")
         return restart_emulator(logger, start_time)
 
     # start clash royale
+    logger.change_status("Starting clash royale")
     start_clash_royale(logger, vm_index)
 
     # manually wait for clash main
@@ -74,7 +71,7 @@ def restart_emulator(logger, start_time=time.time()):
     while time_waiting < MANUAL_CLASH_MAIN_WAIT_TIME:
         time.sleep(4)
         time_waiting = time.time() - wait_start_time
-        logger.log(
+        logger.change_status(
             f"Manually waiting for clash main page. {str(time_waiting)[:3]}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
         )
 
@@ -92,7 +89,6 @@ def restart_emulator(logger, start_time=time.time()):
 def skip_ads(vm_index):
     # Method for skipping the memu ads that popip up when you start memu
 
-    # print("Trying to skipping ads")
     try:
         for _ in range(4):
             pmc.trigger_keystroke_vm("home", vm_index=vm_index)
@@ -303,42 +299,6 @@ def check_if_clash_banned(vm_index):
     )
 
 
-def check_if_on_clash_main_menu(vm_index):
-    """
-    Checks if the user is on the clash main menu.
-    Returns True if on main menu, False if not.
-    """
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[15][298],
-        iar[20][299],
-        iar[16][401],
-        iar[585][166],
-        iar[622][165],
-        iar[581][264],
-        iar[71][269],
-        iar[74][262],
-    ]
-    colors = [
-        [ 56, 162, 214],
-        [ 49 ,207, 238],
-        [ 22 ,189,  60],
-        [139 ,106,  73],
-        [155 ,121,  82],
-        [138 ,105,  71],
-        [255 ,244, 228],
-        [255 ,240, 215],
-    ]
-    for i in range(len(pixels)):
-        pixel = pixels[i]
-        color = colors[i]
-
-        if not pixel_is_equal(pixel,color,tol=35):
-            return False
-    return True
-
-
 # starting/closing memu vms/apps
 
 
@@ -441,7 +401,3 @@ and login before using this bot."""
             break
     _window.close()
     sys.exit(0)
-
-
-if __name__ == "__main__":
-    print(check_if_on_clash_main_menu(8))

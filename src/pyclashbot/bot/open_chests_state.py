@@ -20,18 +20,32 @@ QUEUE_CHEST_BUTTON_COORD = (314, 357)
 CLASH_MAIN_DEADSPACE_COORD = (20, 350)
 
 
-def open_chests_state(vm_index, logger: Logger, next_state: str):
+def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
+    """
+    This function opens all available chests in the Clash of Clans game.
+
+    Args:
+    - vm_index (int): The index of the virtual machine to use.
+    - logger (Logger): The logger object to use for logging.
+    - next_state (str): The next state to transition to after opening chests.
+
+    Returns:
+    - str: The next state to transition to after opening chests.
+    """
     open_chests_start_time = time.time()
 
     logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
 
-    if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(status="Error 356264 Not on clash main menu at start of open_chests_state()!")
+    # if not on clash_main, print the pixels that the box sees, then restart
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
+        logger.log("Not on clashmain for the start of open_chests_state()")
+        logger.log(f"Bot saw these pixels: {clash_main_check}")
         return "restart"
 
     logger.change_status(status="Handling obstructing notifications")
-    if handle_clash_main_tab_notifications(vm_index, logger, True) == "restart":
+    if handle_clash_main_tab_notifications(vm_index, logger) == "restart":
         logger.change_status(
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications"
         )
@@ -70,6 +84,16 @@ def open_chests_state(vm_index, logger: Logger, next_state: str):
 
 
 def get_chest_statuses(vm_index):
+    """
+    Returns a list of strings representing the status of each chest on the Clash Royale main screen.
+
+    Args:
+        vm_index (int): The index of the VM to use for the screenshot.
+
+    Returns:
+        List[str]: A list of strings representing the status of each
+        chest. Possible values are "available" and "unavailable".
+    """
     iar = numpy.asarray(screenshot(vm_index))
 
     statuses = []
@@ -126,6 +150,17 @@ def get_chest_statuses(vm_index):
 
 
 def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "good"]:
+    """
+    Opens a chest at the specified index and performs necessary actions based on its status.
+
+    Args:
+        vm_index (int): The index of the VM to perform the action on.
+        logger (Logger): The logger object to use for logging.
+        chest_index (int): The index of the chest to open.
+
+    Returns:
+        Literal["restart", "good"]: A string indicating whether the action was successful or not.
+    """
     logger.log("Opening this chest")
 
     prev_chests_opened = logger.get_chests_opened()
@@ -162,7 +197,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
         # if clicked deadspace too much, restart
         if time.time() - deadspace_clicking_start_time > 35:
             logger.change_status(
-                "Error 58732589 Took too long to click deadspace during chest opening, returning to start state"
+                "Error 58732589 Waited too long for clash main while opening a chest"
             )
             return "restart"
 
@@ -172,6 +207,15 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
 
 
 def check_if_can_queue_chest(vm_index):
+    """
+    Checks if a chest can be queued for opening.
+
+    Args:
+        vm_index (int): The index of the VM to perform the check on.
+
+    Returns:
+        bool: True if a chest can be queued, False otherwise.
+    """
     if not check_line_for_color(vm_index, 293, 345, 301, 354, (255, 255, 255)):
         return False
     if not check_line_for_color(vm_index, 338, 345, 329, 357, (255, 255, 255)):
@@ -196,6 +240,15 @@ def check_if_can_queue_chest(vm_index):
 
 
 def check_if_chest_is_unlockable(vm_index):
+    """
+    Checks if a chest is unlockable.
+
+    Args:
+        vm_index (int): The index of the VM to perform the check on.
+
+    Returns:
+        bool: True if the chest is unlockable, False otherwise.
+    """
     line1 = check_line_for_color(
         vm_index, x_1=163, y_1=392, x_2=186, y_2=423, color=(255, 190, 43)
     )
