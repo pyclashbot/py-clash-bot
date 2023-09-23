@@ -973,4 +973,4 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    pass
+    print(check_if_on_clash_main_menu(8))

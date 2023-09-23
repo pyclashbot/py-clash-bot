@@ -310,25 +310,33 @@ def check_if_on_clash_main_menu(vm_index):
     """
     iar = numpy.asarray(screenshot(vm_index))
 
-    gem_icon_exists = False
-    for x_val in range(395, 412):
-        this_pixel = iar[17][x_val]
-        if pixel_is_equal([65, 198, 24], this_pixel, tol=35):
-            gem_icon_exists = True
+    pixels = [
+        iar[15][298],
+        iar[20][299],
+        iar[16][401],
+        iar[585][166],
+        iar[622][165],
+        iar[581][264],
+        iar[71][269],
+        iar[74][262],
+    ]
+    colors = [
+        [ 56, 162, 214],
+        [ 49 ,207, 238],
+        [ 22 ,189,  60],
+        [139 ,106,  73],
+        [155 ,121,  82],
+        [138 ,105,  71],
+        [255 ,244, 228],
+        [255 ,240, 215],
+    ]
+    for i in range(len(pixels)):
+        pixel = pixels[i]
+        color = colors[i]
 
-    friends_icon_exists = False
-    for x_val in range(255, 280):
-        this_pixel = iar[72][x_val]
-        if pixel_is_equal([244, 244, 255], this_pixel, tol=35):
-            friends_icon_exists = True
-
-    gold_icon_exists = False
-    for x_val in range(290, 310):
-        this_pixel = iar[13][x_val]
-        if pixel_is_equal([223, 175, 56], this_pixel, tol=35):
-            gold_icon_exists = True
-
-    return bool(gem_icon_exists and friends_icon_exists and gold_icon_exists)
+        if not pixel_is_equal(pixel,color,tol=35):
+            return False
+    return True
 
 
 # starting/closing memu vms/apps
@@ -366,12 +374,11 @@ def start_memuc_console() -> int:
     # pylint: disable=protected-access
     console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
     # pylint: disable=consider-using-with
-    process = subprocess.Popen(    console_path, creationflags=subprocess.DETACHED_PROCESS)
+    process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
 
     # ensure the process actually started
     time.sleep(2)
     return process.pid if psutil.pid_exists(process.pid) else start_memuc_console()
-
 
 
 def stop_memuc_console(process_id: int) -> None:
@@ -434,3 +441,7 @@ and login before using this bot."""
             break
     _window.close()
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    print(check_if_on_clash_main_menu(8))
