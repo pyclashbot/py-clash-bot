@@ -114,7 +114,6 @@ def check_for_invalid_job_increment_input(job_dictionary):
     return False
 
 
-
 def check_for_no_jobs_in_job_dictionary(job_dict):
     """
     Check if there are no jobs in the job dictionary.
@@ -162,6 +161,7 @@ def load_last_settings(window) -> None:
                 if key in user_settings:
                     window[key].update(user_settings[key])
         window.refresh()  # refresh the window to update the layout
+
 
 def show_invalid_job_increment_input_popup(key) -> None:
     """

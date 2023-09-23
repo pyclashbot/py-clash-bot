@@ -269,6 +269,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
+    #5s sleep bc this method gets called too early sometimes
+    time.sleep(5)
+
     # count plays
     plays = 0
 
@@ -353,6 +356,9 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     favorite_side = random.choice(["left", "right"])
 
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
+
+    #5s sleep bc this method gets called too early sometimes
+    time.sleep(5)
 
     # count plays
     plays = 0
