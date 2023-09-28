@@ -212,8 +212,12 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
         pixel = iar[y_coord][88]
         pix_list.append(pixel)
 
+    # for every pixel in the pix_list: format to be of format [r,g,b]
+    for index, pix in enumerate(pix_list):
+        pix_list[index] = [pix[0], pix[1], pix[2]]
+
     for pix in pix_list:
-        total = pix[0] + pix[1] + pix[2]
+        total = int(pix[0]) + int(pix[1]) + int(pix[2])
 
         if total < 130:
             return True
