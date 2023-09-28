@@ -27,7 +27,7 @@ def read_window(
     """Method for reading the attributes of the window
     args:
         window: the window to read
-        timeout: the timeout for the read method
+        timeout: the timeout for the  read method
 
     returns:
         tuple of the event and the values of the window
