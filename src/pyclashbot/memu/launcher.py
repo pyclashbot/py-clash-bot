@@ -52,7 +52,7 @@ def restart_emulator(logger, start_time=time.time()):
         time.sleep(4)
         time_waiting = time.time() - wait_start_time
         logger.change_status(
-            (f"Waiting for VM to load {str(time_waiting)[:2]}/{MANUAL_VM_WAIT_TIME}")
+            (f"Waiting for VM to load {str(time_waiting)[:2]}")
         )
 
     # skip ads
@@ -72,7 +72,7 @@ def restart_emulator(logger, start_time=time.time()):
         time.sleep(4)
         time_waiting = time.time() - wait_start_time
         logger.change_status(
-            f"Manually waiting for clash main page. {str(time_waiting)[:3]}/{MANUAL_CLASH_MAIN_WAIT_TIME}"
+            f"Manually waiting for clash main page. {str(time_waiting)[:3]}"
         )
 
     # check-wait for clash main if need to wait longer
