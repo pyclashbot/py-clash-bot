@@ -17,8 +17,16 @@ from pyclashbot.bot.nav import (
     wait_for_2v2_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.detection.image_rec import check_line_for_color, pixel_is_equal, region_is_color
-from pyclashbot.memu.client import click, screenshot, scroll_up, scroll_up_on_left_side_of_screen
+from pyclashbot.detection.image_rec import (
+    check_line_for_color,
+    pixel_is_equal,
+    region_is_color,
+)
+from pyclashbot.memu.client import (
+    click,
+    screenshot,
+    scroll_up_on_left_side_of_screen,
+)
 from pyclashbot.utils.logger import Logger
 
 LEAVE_1V1_BATTLE_OK_BUTTON: tuple[Literal[210], Literal[554]] = (210, 554)
@@ -64,9 +72,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
 
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
-            status="ERROR 34 Not on main for start of start 2v2"
-        )
+        logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
         logger.log(f"Bot read these pixels {clash_main_check}")
         return "restart"
 
@@ -192,35 +198,6 @@ def do_1v1_fight_state(vm_index, logger: Logger, next_state):
     return next_state
 
 
-def do_2v2_fight_state(vm_index, logger: Logger, next_state):
-    """method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
-
-    logger.change_status(status="waiting for 2v2 battle start")
-
-    # wait for battle start
-    if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) is not True:
-        logger.change_status(
-            status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()"
-        )
-        return "restart"
-
-    logger.change_status(status="2v2 Battle started!")
-
-    logger.change_status(status="Starting fight loop")
-    if _2v2_fight_loop(vm_index=vm_index, logger=logger) == "restart":
-        logger.log("Error 698245 Failuring in fight loop")
-        return "restart"
-
-    prev_2v2_fight_count = logger.get_2v2_fights()
-    logger.add_2v2_fight()
-    _2v2_fight_count = logger.get_2v2_fights()
-    logger.log(
-        f"Increment 2v2 fight count from {prev_2v2_fight_count} to {_2v2_fight_count}"
-    )
-
-    return next_state
-
-
 def choose_play_side(vm_index, favorite_side):
     """method to choose a play side given a favorite side"""
 
@@ -262,32 +239,32 @@ def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
 def check_if_at_10_elixer(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-    iar[606][131],
-    iar[615][131],
-    iar[615][137],
-    iar[607][144],
+        iar[606][131],
+        iar[615][131],
+        iar[615][137],
+        iar[607][144],
     ]
     for p in pixels:
-        if not pixel_is_equal(p,[255,255,255],tol=35):
+        if not pixel_is_equal(p, [255, 255, 255], tol=35):
             return False
     return True
 
+
 def mag_dump(vm_index):
     card_coords = [
-        (137,559),
-        (206,559),
-        (274,599),
-        (336,555),
+        (137, 559),
+        (206, 559),
+        (274, 599),
+        (336, 555),
     ]
 
     for _ in range(4):
         card_coord = random.choice(card_coords)
-        play_coord = (random.randint(101,322),random.randint(166,326))
-        click(vm_index, card_coord[0],card_coord[1])
+        play_coord = (random.randint(101, 322), random.randint(166, 326))
+        click(vm_index, card_coord[0], card_coord[1])
         time.sleep(0.1)
-        click(vm_index, play_coord[0],play_coord[1])
+        click(vm_index, play_coord[0], play_coord[1])
         time.sleep(0.1)
-        
 
 
 def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
@@ -301,10 +278,8 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
     logger.change_status(status="Mag dumping to make time to think")
-    
+
     mag_dump(vm_index)
-
-
 
     # count plays
     plays = 0
@@ -316,7 +291,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         this_play_start_time = time.time()
 
         if check_if_at_10_elixer(vm_index):
-            logger.change_status('At 10 elixer so just mag dumping!!!')
+            logger.change_status("At 10 elixer so just mag dumping!!!")
             mag_dump(vm_index)
 
         # emote sometimes to do daily challenge (jk its to be funny and annoy ur teammate)
@@ -329,9 +304,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         if not check_for_4_elixer(vm_index):
             logger.log("Waiting for 4 elixer")
 
-            elixer_wait_return: Literal["restart", "no battle", "good"] = wait_for_4_elixer(
-                vm_index, logger, mode="2v2"
-            )
+            elixer_wait_return: Literal[
+                "restart", "no battle", "good"
+            ] = wait_for_4_elixer(vm_index, logger, mode="2v2")
 
             if elixer_wait_return == "restart":
                 logger.change_status(
@@ -345,30 +320,33 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
                 )
                 break
 
-            if elixer_wait_return == 'mag_dump':
-                logger.change_status('At 10 elixer so just mag dumping!!!')
+            if elixer_wait_return == "mag_dump":
+                logger.change_status("At 10 elixer so just mag dumping!!!")
                 mag_dump(vm_index)
-
 
         # choose random card to play
         random_card_index = random.randint(0, 3)
-        logger.change_status(f'Gonna play card index #{random_card_index}')
+        logger.change_status(f"Gonna play card index #{random_card_index}")
 
         # choose play coord but favor a side according to favorite_side var
         play_choice_start_time = time.time()
         this_play_side = choose_play_side(vm_index, favorite_side)
-        logger.change_status(f'Choose a play side in {str(time.time() - play_choice_start_time)[:4]}s')
+        logger.change_status(
+            f"Choose a play side in {str(time.time() - play_choice_start_time)[:4]}s"
+        )
 
         # get a coord based on the selected side
         play_coords_start_time = time.time()
         card_id, play_coord = get_play_coords_for_card(
             vm_index, random_card_index, this_play_side
         )
-        logger.change_status(f'Choose a play coord in {str(time.time() - play_coords_start_time)[:4]}s')
+        logger.change_status(
+            f"Choose a play coord in {str(time.time() - play_coords_start_time)[:4]}s"
+        )
 
         # if coord is none for whatever reason, just skip this play
         if play_coord is None:
-            logger.change_status('Bad play coord. Redoing...')
+            logger.change_status("Bad play coord. Redoing...")
             continue
 
         id_string = "Regular card"
@@ -391,7 +369,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # increment plays counter
         plays += 1
 
-        logger.change_status(f'Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n')
+        logger.change_status(
+            f"Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n"
+        )
 
     logger.remove_card_played(cards_to_remove=random.randint(2, 3))
     cards_played = logger.get_cards_played()
@@ -410,7 +390,6 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
-
     # count plays
     plays = 0
     prev_cards_played = logger.get_cards_played()
@@ -424,7 +403,9 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         _6_elixer_wait_start_time = time.time()
         elixer_wait_return = wait_for_6_elixer(vm_index, logger)
-        logger.change_status(f'Waited {str(time.time() - _6_elixer_wait_start_time)[:5]}s for 6 elixer')
+        logger.change_status(
+            f"Waited {str(time.time() - _6_elixer_wait_start_time)[:5]}s for 6 elixer"
+        )
 
         if elixer_wait_return == "restart":
             logger.change_status(
@@ -442,18 +423,22 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # choose play coord but favor a side according to favorite_side var
         choose_play_side_start_time = time.time()
         this_play_side = choose_play_side(vm_index, favorite_side)
-        logger.change_status(f'Waited {str(time.time() - choose_play_side_start_time)[:5]}s to choose a side')
+        logger.change_status(
+            f"Waited {str(time.time() - choose_play_side_start_time)[:5]}s to choose a side"
+        )
 
         # get a coord based on the selected side
         choose_play_coords_start_time = time.time()
         identification, play_coord = get_play_coords_for_card(
             vm_index, random_card_index, this_play_side
         )
-        logger.change_status(f'Waited {str(time.time() - choose_play_coords_start_time)[:5]}s to calculate a coord')
+        logger.change_status(
+            f"Waited {str(time.time() - choose_play_coords_start_time)[:5]}s to calculate a coord"
+        )
 
         # if coord is none for whatever reason, just skip this play
         if play_coord is None:
-            logger.change_status('Bad play coord. Redoing...')
+            logger.change_status("Bad play coord. Redoing...")
             continue
 
         id_string = "Regular card"
@@ -490,18 +475,18 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
     """method to wait for 4 elixer during a battle"""
 
     start_time = time.time()
-   
+
     while 1:
-        logger.change_status(f'Waiting for 4 elixer for {str(time.time() - start_time)[:4]}s...')
+        logger.change_status(
+            f"Waiting for 4 elixer for {str(time.time() - start_time)[:4]}s..."
+        )
 
         if check_for_4_elixer(vm_index):
             break
 
         if check_if_at_10_elixer(vm_index):
-            return 'mag_dump'
+            return "mag_dump"
 
-        
-        
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
@@ -511,9 +496,8 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
         if mode == "2v2" and not check_for_in_2v2_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
-    
 
-    logger.change_status(f'Took {str(time.time() - start_time)[:4]}s for 4 elixer.')
+    logger.change_status(f"Took {str(time.time() - start_time)[:4]}s for 4 elixer.")
 
     return True
 
@@ -525,15 +509,11 @@ def check_for_4_elixer(vm_index):
     pixels = [
         iar[621][205],
         iar[620][224],
-        ]
+    ]
     for p in pixels:
-        if not pixel_is_equal(p, [204, 31 ,198], tol=45):
+        if not pixel_is_equal(p, [204, 31, 198], tol=45):
             return False
     return True
-
-    
-
-
 
 
 def wait_for_6_elixer(
@@ -576,35 +556,35 @@ def check_enemy_tower_statuses(
     """method to scan pixels during a battle to determine
     which of  the enemy towers are alive or destroyed"""
 
-
-
     #'alive'
-    #or
+    # or
     #'destroyed'
-
 
     iar = numpy.asarray(screenshot(vm_index))
 
     left_tower_pixel = iar[117][102]
     right_tower_pixel = iar[118][280]
 
-    left_tower_pixel = [left_tower_pixel[2],left_tower_pixel[1],left_tower_pixel[0],]
-    right_tower_pixel = [right_tower_pixel[2],right_tower_pixel[1],right_tower_pixel[0],]
+    left_tower_pixel = [
+        left_tower_pixel[2],
+        left_tower_pixel[1],
+        left_tower_pixel[0],
+    ]
+    right_tower_pixel = [
+        right_tower_pixel[2],
+        right_tower_pixel[1],
+        right_tower_pixel[0],
+    ]
 
+    left_tower_status = "destroyed"
+    if pixel_is_equal([187, 143, 44], left_tower_pixel, tol=30):
+        left_tower_status = "alive"
 
-    left_tower_status = 'destroyed'
-    if pixel_is_equal([187,143,44],left_tower_pixel,tol=30):
-        left_tower_status='alive'
-    
-    right_tower_status = 'destroyed'
-    if pixel_is_equal([232,188,44],right_tower_pixel,tol=30):
-        right_tower_status='alive'
+    right_tower_status = "destroyed"
+    if pixel_is_equal([232, 188, 44], right_tower_pixel, tol=30):
+        right_tower_status = "alive"
 
     return (left_tower_status, right_tower_status)
-    
-
-    
-
 
 
 def end_fight_state(vm_index, logger: Logger, next_state):
@@ -822,18 +802,32 @@ def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
     return True
 
 
+def do_2v2_fight_state(vm_index, logger: Logger, next_state):
+    """method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
+
+    # wait for battle start
+    if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) is not True:
+        logger.change_status(
+            status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()"
+        )
+        return "restart"
+
+    logger.change_status(status="2v2 Battle started!")
+
+    logger.change_status(status="Starting fight loop")
+    if _2v2_fight_loop(vm_index=vm_index, logger=logger) == "restart":
+        logger.log("Error 698245 Failuring in fight loop")
+        return "restart"
+
+    prev_2v2_fight_count = logger.get_2v2_fights()
+    logger.add_2v2_fight()
+    _2v2_fight_count = logger.get_2v2_fights()
+    logger.log(
+        f"Increment 2v2 fight count from {prev_2v2_fight_count} to {_2v2_fight_count}"
+    )
+
+    return next_state
+
+
 if __name__ == "__main__":
-#     while 1:print(check_for_4_elixer(
-#     1,
-# ))
-    
-    
-
-    # while 1:print(check_if_at_10_elixer(1))
-    
-    # wait_for_2v2_battle_start(1, Logger())
-
- 
-    do_2v2_fight_state(1, Logger(), 'str_next_state')
-    
-    # start_2v2_fight_state(1, Logger())
+    do_2v2_fight_state(8, Logger(), "str_next_state")

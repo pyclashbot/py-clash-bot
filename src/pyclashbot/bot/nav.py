@@ -112,25 +112,25 @@ def wait_for_2v2_battle_start(
         Literal["restart", "good"]: "restart" if the function
         needs to be restarted, "good" otherwise.
     """
-    
+
     _2v2_start_wait_start_time = time.time()
 
-    while 1:
+    while time.time() - _2v2_start_wait_start_time < _2V2_START_WAIT_TIMEOUT:
         logger.change_status(status=f"Waiting for 2v2 battle to start for {str(time.time() - _2v2_start_wait_start_time)[:4]}s")
-        
-        if time.time() - _2v2_start_wait_start_time > _2V2_START_WAIT_TIMEOUT:
-            return False
-        
+
         if check_for_in_2v2_battle(vm_index=vm_index):
             logger.change_status('Detected an ongoing 2v2 battle!')
             return True
 
-        click(vm_index=vm_index, x_coord=200, y_coord=200)
+        click(vm_index=vm_index, x_coord=20, y_coord=200)
 
-    logger.change_status(status="Done waiting for 2v2 battle to start")
-    
-    
-    
+        time.sleep(5)
+
+
+    return False
+
+
+
 
 
 def wait_for_1v1_battle_start(
@@ -202,19 +202,28 @@ def check_for_in_2v2_battle(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
-        iar[517][79],
-        iar[527][58],
-    ]
-    colors = [
-        [255, 255, 255],
-        [0, 0, 0],
+
+
+
+        iar[517][56],
+        iar[533][67],
+        iar[616][115],
     ]
 
-    for color, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[color], tol=35):
+    colors = [
+        [255, 255, 255],
+        [255, 255, 255],
+        [236,  91, 252],
+    ]
+
+    for index in range(len(pixels)):
+        color = colors[index]
+        pixel = pixels[index]
+        if not pixel_is_equal(pixel, color, tol=35):
             return False
+
     return True
-    
+
 
 
 def check_for_in_1v1_battle(vm_index) -> bool:
@@ -1227,6 +1236,11 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    while 1:print(check_for_in_2v2_battle(1))
-    
-    
+    # screenshot(8)
+    pass
+
+
+    # wait_for_2v2_battle_start(8, Logger())
+
+
+
