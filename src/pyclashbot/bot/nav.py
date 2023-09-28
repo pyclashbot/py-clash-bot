@@ -12,6 +12,7 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
+_2V2_START_WAIT_TIMEOUT = 60#s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
@@ -97,7 +98,7 @@ def check_for_end_2v2_battle_screen_2(vm_index) -> bool:
 
 
 def wait_for_2v2_battle_start(
-    vm_index, logger: Logger, printmode=False
+    vm_index, logger: Logger
 ) -> Literal["restart", "good"]:
     """
     Waits for the 2v2 battle to start.
@@ -111,27 +112,25 @@ def wait_for_2v2_battle_start(
         Literal["restart", "good"]: "restart" if the function
         needs to be restarted, "good" otherwise.
     """
-    start_time: float = time.time()
-    if printmode:
-        logger.change_status(status="Waiting for 2v2 battle to start")
-    else:
-        logger.log(message="Waiting for 2v2 battle to start")
-    while not check_for_in_2v2_battle(vm_index=vm_index):
-        time_taken: float = time.time() - start_time
-        if time_taken > 60:
-            logger.change_status(
-                status="Error 88884572456 Waiting too long for 2v2 battle to start"
-            )
-            return "restart"
+    
+    _2v2_start_wait_start_time = time.time()
+
+    while 1:
+        logger.change_status(status=f"Waiting for 2v2 battle to start for {str(time.time() - _2v2_start_wait_start_time)[:4]}s")
+        
+        if time.time() - _2v2_start_wait_start_time > _2V2_START_WAIT_TIMEOUT:
+            return False
+        
+        if check_for_in_2v2_battle(vm_index=vm_index):
+            logger.change_status('Detected an ongoing 2v2 battle!')
+            return True
 
         click(vm_index=vm_index, x_coord=200, y_coord=200)
-        time.sleep(1)
 
-    if printmode:
-        logger.change_status(status="Done waiting for 2v2 battle to start")
-    else:
-        logger.log(message="Done waiting for 2v2 battle to star")
-    return "good"
+    logger.change_status(status="Done waiting for 2v2 battle to start")
+    
+    
+    
 
 
 def wait_for_1v1_battle_start(
@@ -200,19 +199,34 @@ def check_for_in_2v2_battle(vm_index) -> bool:
     Returns:
         bool: True if the virtual machine is in a 2v2 battle, False otherwise.
     """
-    if not check_line_for_color(
-        vm_index=vm_index, x_1=104, y_1=605, x_2=122, y_2=624, color=(249, 88, 235)
-    ):
-        return False
-    if not check_line_for_color(
-        vm_index=vm_index, x_1=57, y_1=515, x_2=76, y_2=519, color=(255, 255, 255)
-    ):
-        return False
-    if not check_line_for_color(
-        vm_index=vm_index, x_1=108, y_1=620, x_2=122, y_2=613, color=(248, 80, 236)
-    ):
-        return False
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[620][109],
+        iar[622][119],
+        iar[606][118],
+        iar[517][55],
+        iar[516][66],
+        iar[517][79],
+        iar[527][58],
+        iar[526][65],
+    ]
+    colors = [
+        [187 , 28 ,189],
+        [216,  28, 237],
+        [240,  56, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+
+    for color, pixel in enumerate(pixels):
+        if not pixel_is_equal(pixel, colors[color], tol=35):
+            return False
     return True
+    
 
 
 def check_for_in_1v1_battle(vm_index) -> bool:
@@ -1225,4 +1239,6 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    print(check_if_on_clash_main_menu(8))
+    while 1:print(check_for_in_2v2_battle(1))
+    
+    
