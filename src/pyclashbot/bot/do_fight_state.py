@@ -17,7 +17,7 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import check_line_for_color, region_is_color
-from pyclashbot.memu.client import click, scroll_up
+from pyclashbot.memu.client import click, scroll_up, scroll_up_on_left_side_of_screen
 from pyclashbot.utils.logger import Logger
 
 LEAVE_1V1_BATTLE_OK_BUTTON: tuple[Literal[210], Literal[554]] = (210, 554)
@@ -80,7 +80,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
 
     # scroll up
     for _ in range(10):
-        scroll_up(vm_index)
+        scroll_up_on_left_side_of_screen(vm_index)
     time.sleep(1)
 
     # click 2v2 icon location
@@ -269,8 +269,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
-    #5s sleep bc this method gets called too early sometimes
-    time.sleep(5)
 
     # count plays
     plays = 0
@@ -357,8 +355,6 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
-    #5s sleep bc this method gets called too early sometimes
-    time.sleep(5)
 
     # count plays
     plays = 0
@@ -371,7 +367,9 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # wait for 6 elixer
         logger.log("Waiting for 6 elixer")
 
+        _6_elixer_wait_start_time = time.time()
         elixer_wait_return = wait_for_6_elixer(vm_index, logger)
+        logger.change_status(f'Waited {str(time.time() - _6_elixer_wait_start_time)[:5]}s for 6 elixer')
 
         if elixer_wait_return == "restart":
             logger.change_status(
@@ -387,22 +385,27 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         logger.log(f"Clicking card index {random_card_index}")
 
         # choose play coord but favor a side according to favorite_side var
+        choose_play_side_start_time = time.time()
         this_play_side = choose_play_side(vm_index, favorite_side)
+        logger.change_status(f'Waited {str(time.time() - choose_play_side_start_time)[:5]}s to choose a side')
 
         # get a coord based on the selected side
+        choose_play_coords_start_time = time.time()
         identification, play_coord = get_play_coords_for_card(
             vm_index, random_card_index, this_play_side
         )
+        logger.change_status(f'Waited {str(time.time() - choose_play_coords_start_time)[:5]}s to calculate a coord')
 
         # if coord is none for whatever reason, just skip this play
         if play_coord is None:
+            logger.change_status('Bad play coord. Redoing...')
             continue
 
         id_string = "Regular card"
         if identification != "Unknown":
             id_string = identification
         logger.change_status(
-            status=f"Playing card: {id_string} on {this_play_side} side"
+            status=f"Playing card: {id_string} on {this_play_side} side..."
         )
 
         # click that random card coord
@@ -414,6 +417,10 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         click(vm_index, play_coord[0], play_coord[1])
         logger.add_card_played()
         time.sleep(0.1)
+
+        logger.change_status(
+            status=f"Played card: {id_string} on {this_play_side} side"
+        )
 
         # increment plays counter
         plays += 1
@@ -723,4 +730,4 @@ def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    pass
+    start_2v2_fight_state(1, Logger())
