@@ -198,7 +198,7 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="waiting for 2v2 battle start")
 
     # wait for battle start
-    if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) == "restart":
+    if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) is not True:
         logger.change_status(
             status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()"
         )
@@ -730,4 +730,9 @@ def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    start_2v2_fight_state(1, Logger())
+    wait_for_2v2_battle_start(1, Logger())
+
+ 
+    # do_2v2_fight_state(1, Logger(), 'str_next_state')
+    
+    # start_2v2_fight_state(1, Logger())
