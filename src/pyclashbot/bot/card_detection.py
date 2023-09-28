@@ -13,7 +13,7 @@ from pyclashbot.memu.client import screenshot
 PLAY_COORDS = {
     "spell": {
         "left": [(94, 151), (95, 151), (86, 117)],
-        "right": [(324, 153), (324, 110)],
+        "right": [(330, 153), (330, 110)],
     },
     "hog": {
         "left": [(77, 281), (113, 286), (154, 283)],
