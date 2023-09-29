@@ -131,13 +131,25 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
 def check_for_challenge_page_on_events_tab(vm_index):
     """method to check for the presence of an ongoing challenge page in the events tab"""
 
-    if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 188, 40)):
-        return False
-    if not check_line_for_color(vm_index, 14, 13, 42, 34, (255, 255, 255)):
-        return False
-    if not region_is_color(vm_index, [380, 580, 30, 40], (76, 111, 146)):
-        return False
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[612][317],
+        iar[600][394],
+        iar[16][32],
+        iar[21][27],
+    ]
 
+    colors = [
+        [151, 116, 79],
+        [146, 111, 76],
+        [156, 231, 255],
+        [255, 255, 255],
+    ]
+
+    for index, pixel in enumerate(pixels):
+        color = colors[index]
+        if not pixel_is_equal(pixel, color, tol=35):
+            return False
     return True
 
 
@@ -516,38 +528,40 @@ def check_for_4_elixer(vm_index):
     return True
 
 
+def check_for_6_elixer(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[613][255],
+        iar[613][270],
+    ]
+    colors = [[244, 137, 240], [244, 137, 240]]
+
+    for index, pixel in enumerate(pixels):
+        color = colors[index]
+        if not pixel_is_equal(pixel, color, tol=35):
+            return False
+    return True
+
+
 def wait_for_6_elixer(
     vm_index, logger: Logger, mode="1v1"
 ) -> Literal["restart", "no battle", "good"]:
     """method to wait for 6 elixer during a battle"""
 
     start_time = time.time()
-    while region_is_color(vm_index, region=[254, 610, 19, 12], color=(4, 56, 125)):
+    while not check_for_6_elixer(vm_index):
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
         if mode == "1v1" and not check_for_in_1v1_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
+
         if mode == "2v2" and not check_for_in_2v2_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
+
     return "good"
-
-
-def check_for_6_elixer(vm_index) -> bool:
-    """method to check if the player has 6 elixer during a battle"""
-
-    line2 = check_line_for_color(
-        vm_index, x_1=253, y_1=611, x_2=273, y_2=622, color=(207, 33, 213)
-    )
-    line3 = check_line_for_color(
-        vm_index, x_1=254, y_1=622, x_2=273, y_2=612, color=(207, 33, 213)
-    )
-
-    if line2 and line3:
-        return True
-    return False
 
 
 def check_enemy_tower_statuses(
@@ -830,4 +844,9 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state):
 
 
 if __name__ == "__main__":
-    do_2v2_fight_state(8, Logger(), "str_next_state")
+    logger = Logger()
+    vm_index = 8
+
+    # print(check_for_challenge_page_on_events_tab(vm_index))
+
+    while 1:print(check_for_6_elixer(vm_index))

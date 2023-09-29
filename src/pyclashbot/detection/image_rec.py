@@ -38,7 +38,6 @@ def make_reference_image_list(size):
 # image comparison
 
 
-
 def crop_image(image: np.ndarray, region: list) -> np.ndarray:
     """
     Crop the given image using the specified region.
@@ -56,10 +55,9 @@ def crop_image(image: np.ndarray, region: list) -> np.ndarray:
     left, top, width, height = region
 
     # Crop the image using array slicing
-    cropped_image = image[top:top+height, left:left+width]
+    cropped_image = image[top : top + height, left : left + width]
 
     return cropped_image
-
 
 
 def get_first_location(
