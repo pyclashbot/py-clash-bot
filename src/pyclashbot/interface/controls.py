@@ -18,7 +18,7 @@ def make_job_increment_control_object(key):
 
 controls = [
     [
-        sg.Button("Start", expand_x=True),
+        sg.Button("Start", expand_x=True,button_color='Lime Green'),
         sg.Button("Stop", disabled=True, expand_x=True),
         sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-", expand_x=True),
     ],
@@ -80,7 +80,7 @@ controls = [
     [sg.VP()],
     [sg.HSep(color="lightgray")],
     [
-        sg.Button("Discord", key="discord", expand_x=True),
+        sg.Button("Discord", key="discord", expand_x=True,button_color='Lavender'),
         sg.Button("Report Bug", key="bug-report", expand_x=True),
     ],
 ]
