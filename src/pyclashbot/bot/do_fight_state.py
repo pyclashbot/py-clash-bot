@@ -258,13 +258,13 @@ def mag_dump(vm_index):
         (336, 555),
     ]
 
-    for _ in range(4):
+    for _ in range(8):
         card_coord = random.choice(card_coords)
-        play_coord = (random.randint(101, 322), random.randint(166, 326))
+        play_coord = (random.randint(101, 140), random.randint(166, 326))
         click(vm_index, card_coord[0], card_coord[1])
-        time.sleep(0.1)
+        time.sleep(0.2)
         click(vm_index, play_coord[0], play_coord[1])
-        time.sleep(0.1)
+        time.sleep(0.2)
 
 
 def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
