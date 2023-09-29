@@ -280,3 +280,14 @@ def state_tree(
 
     logger.error("Failure in state tree")
     return "fail"
+
+
+
+if __name__ == '__main__':
+    vm_index = 1
+    logger=Logger()
+    next_state='"next state return string!!"'
+
+    
+    #upgrade test
+    upgrade_cards_state(vm_index, logger, next_state)
