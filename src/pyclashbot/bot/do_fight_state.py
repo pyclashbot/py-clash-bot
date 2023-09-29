@@ -289,7 +289,8 @@ def mag_dump(vm_index):
         time.sleep(0.2)
         click(vm_index, play_coord[0], play_coord[1])
         time.sleep(0.2)
-        logger.add_card_played()
+        if random.randint(0,1)==1:
+            logger.add_card_played()
 
 
 def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
