@@ -288,7 +288,7 @@ def mag_dump(vm_index):
         click(vm_index, card_coord[0], card_coord[1])
         time.sleep(0.2)
         click(vm_index, play_coord[0], play_coord[1])
-        time.sleep(0.2)
+        time.sleep(0.4)
         if random.randint(0,1)==1:
             logger.add_card_played()
 
