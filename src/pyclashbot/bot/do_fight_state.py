@@ -1,4 +1,5 @@
 """random module for randomizing fight plays"""
+import enum
 import numpy
 import random
 import time
@@ -248,18 +249,29 @@ def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
     return "good"
 
 
-def check_if_at_10_elixer(vm_index):
+def check_if_at_max_elixer(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-        iar[606][131],
-        iar[615][131],
-        iar[615][137],
-        iar[607][144],
+        iar[612][304],
+        iar[612][312],
     ]
-    for p in pixels:
-        if not pixel_is_equal(p, [255, 255, 255], tol=35):
+
+    colors = [
+        [250 ,141 ,245],
+[255, 156,255],
+    ]
+
+    for index, pixel in enumerate(pixels):
+        color = colors[index]
+        if not pixel_is_equal(pixel, color,tol=35):
             return False
+
     return True
+
+
+
+
+
 
 
 def mag_dump(vm_index):
@@ -302,8 +314,8 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     while check_for_in_2v2_battle_with_delay(vm_index):
         this_play_start_time = time.time()
 
-        if check_if_at_10_elixer(vm_index):
-            logger.change_status("At 10 elixer so just mag dumping!!!")
+        if check_if_at_max_elixer(vm_index):
+            logger.change_status("At max elixer so just mag dumping!!!")
             mag_dump(vm_index)
 
         # emote sometimes to do daily challenge (jk its to be funny and annoy ur teammate)
@@ -333,7 +345,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
                 break
 
             if elixer_wait_return == "mag_dump":
-                logger.change_status("At 10 elixer so just mag dumping!!!")
+                logger.change_status("At max elixer so just mag dumping!!!")
                 mag_dump(vm_index)
 
         # choose random card to play
@@ -496,7 +508,7 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
         if check_for_4_elixer(vm_index):
             break
 
-        if check_if_at_10_elixer(vm_index):
+        if check_if_at_max_elixer(vm_index):
             return "mag_dump"
 
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
@@ -847,6 +859,21 @@ if __name__ == "__main__":
     logger = Logger()
     vm_index = 8
 
-    # print(check_for_challenge_page_on_events_tab(vm_index))
 
-    while 1:print(check_for_6_elixer(vm_index))
+    while 1:print(check_if_at_max_elixer(vm_index))
+
+
+
+    # # print(check_for_challenge_page_on_events_tab(vm_index))
+
+    # while 1:print(check_for_6_elixer(vm_index))
+
+
+
+
+
+
+
+
+
+
