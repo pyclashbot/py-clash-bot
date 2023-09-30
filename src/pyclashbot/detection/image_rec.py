@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 from pyclashbot.memu.client import screenshot
-from pyclashbot.utils.image_handler import open_image
+from pyclashbot.utils.image_handler import open_from_path
 
 
 def get_file_count(folder) -> int:
@@ -114,7 +114,7 @@ def find_references(
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images", folder))
 
-    reference_images = [open_image(join(reference_folder, name)) for name in names]
+    reference_images = [open_from_path(join(reference_folder, name)) for name in names]
 
     with ThreadPoolExecutor(
         max_workers=len(reference_images), thread_name_prefix="EmulatorThread"
