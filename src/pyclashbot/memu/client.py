@@ -1,5 +1,7 @@
 """Module for interacting with the memu client"""
 
+import base64
+import re
 import time
 
 from numpy import ndarray
@@ -21,15 +23,21 @@ def screenshot(vm_index: int) -> ndarray:
     """
     try:
         # read screencap from vm using screencap output encoded in base64
-        img_b64 = pmc.send_adb_command_vm(
+        shell_out = pmc.send_adb_command_vm(
             vm_index=vm_index,
-            command="exec-out screencap -p | base64",
+            command="shell screencap -p | base64",
         )
+
+        # remove non-image data from shell output
+        image_b64 = re.sub(
+            r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
+        ).replace("\n", "")
+
         # decode base64
-        img_bytearray = bytearray(img_b64, "utf-8")
+        image_data = base64.b64decode(image_b64)
+
         # open image from bytearray
-        return open_from_bytes(img_bytearray)
-        # return open_image(image_path)
+        return open_from_bytes(image_data)
 
     except (PyMemucError, FileNotFoundError, InvalidImageError):
         time.sleep(0.1)

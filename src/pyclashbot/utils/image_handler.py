@@ -13,14 +13,14 @@ class InvalidImageError(Exception):
         super().__init__(self.message)
 
 
-def open_from_bytes(byte_array: bytearray) -> np.ndarray:
+def open_from_bytes(image_data: bytes) -> np.ndarray:
     """
     A method to read an image from a byte array
     :param byte_array: the byte array to read the image from
     :return: the image as a numpy array
     :raises InvalidImageError: if the file is not a valid image
     """
-    im_arr = np.asarray(byte_array, dtype=np.uint8)
+    im_arr = np.frombuffer(image_data, dtype=np.uint8)
     img = cv2.imdecode(im_arr, cv2.IMREAD_COLOR)  # pylint: disable=no-member
     if img is None:
         raise InvalidImageError("Byte array is not a valid image")
