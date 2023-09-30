@@ -257,21 +257,16 @@ def check_if_at_max_elixer(vm_index):
     ]
 
     colors = [
-        [250 ,141 ,245],
-[255, 156,255],
+        [250, 141, 245],
+        [255, 156, 255],
     ]
 
     for index, pixel in enumerate(pixels):
         color = colors[index]
-        if not pixel_is_equal(pixel, color,tol=35):
+        if not pixel_is_equal(pixel, color, tol=35):
             return False
 
     return True
-
-
-
-
-
 
 
 def mag_dump(vm_index):
@@ -282,15 +277,18 @@ def mag_dump(vm_index):
         (336, 555),
     ]
 
-    for _ in range(8):
+    for index in range(8):
+        print(f"mag dump play {index}")
         card_coord = random.choice(card_coords)
         play_coord = (random.randint(101, 140), random.randint(166, 326))
+
         click(vm_index, card_coord[0], card_coord[1])
-        time.sleep(0.2)
+        time.sleep(0.1)
+
         click(vm_index, play_coord[0], play_coord[1])
-        time.sleep(0.4)
-        if random.randint(0,1)==1:
-            logger.add_card_played()
+        time.sleep(0.1)
+
+    print(f"Done mag dumping")
 
 
 def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
@@ -861,23 +859,6 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state):
 
 if __name__ == "__main__":
     logger = Logger()
-    vm_index = 8
+    vm_index = 1
 
-
-    while 1:print(check_if_at_max_elixer(vm_index))
-
-
-
-    # # print(check_for_challenge_page_on_events_tab(vm_index))
-
-    # while 1:print(check_for_6_elixer(vm_index))
-
-
-
-
-
-
-
-
-
-
+    mag_dump(vm_index)
