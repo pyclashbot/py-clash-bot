@@ -29,7 +29,11 @@ def card_mastery_collection_state(vm_index: int, logger: Logger, next_state: str
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.log("Not on clash main for the start of card_mastery_collection_state()")
-        logger.log(f"Bot saw these pixels: {clash_main_check}")
+
+        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        for pixel in clash_main_check:
+            logger.log('   ',pixel)
+
         return "restart"
 
     # get to card page
