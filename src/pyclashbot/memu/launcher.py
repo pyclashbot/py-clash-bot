@@ -8,8 +8,7 @@ import contextlib
 import subprocess
 import sys
 import time
-from os import makedirs
-from os.path import exists, expandvars, join
+from os.path import join
 
 import numpy
 import psutil
@@ -51,9 +50,7 @@ def restart_emulator(logger, start_time=time.time()):
     while time_waiting < MANUAL_VM_WAIT_TIME:
         time.sleep(4)
         time_waiting = time.time() - wait_start_time
-        logger.change_status(
-            (f"Waiting for VM to load {str(time_waiting)[:2]}")
-        )
+        logger.change_status((f"Waiting for VM to load {str(time_waiting)[:2]}"))
 
     # skip ads
     # logger.change_status("Skipping ads")
@@ -185,15 +182,6 @@ def set_vm_language(vm_index: int):
         time.sleep(0.1)
 
 
-def get_screenshot_folder() -> str:
-    """Get the path to the screenshot folder"""
-    screenshot_path = join(expandvars("%appdata%"), "py-clash-bot", "screenshots")
-    # make sure this folder exists
-    if not exists(screenshot_path):
-        makedirs(screenshot_path)
-    return screenshot_path
-
-
 def configure_vm(logger: Logger, vm_index):
     logger.change_status(status="Configuring VM")
 
@@ -219,7 +207,6 @@ def configure_vm(logger: Logger, vm_index):
         "turbo_mode": "0",
         "enable_audio": "0",
         "is_hide_toolbar": "1",
-        "picturepath": get_screenshot_folder(),
     }
 
     for key, value in configuration.items():
