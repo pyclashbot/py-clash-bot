@@ -1,12 +1,13 @@
 """Module for interacting with the memu client"""
 
-import os
+import base64
+import re
 import time
 
 from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
 
-from pyclashbot.utils.image_handler import InvalidImageError, open_image
+from pyclashbot.utils.image_handler import InvalidImageError, open_from_bytes
 
 pmc = PyMemuc(debug=False)
 
@@ -21,16 +22,22 @@ def screenshot(vm_index: int) -> ndarray:
         numpy.ndarray: Screenshot of the given region
     """
     try:
-        image_name = f"screenshot{vm_index}.png"
-        picture_path = pmc.get_configuration_vm(
-            vm_index=vm_index, config_key="picturepath"
-        ).replace('"', "")
-        image_path = os.path.join(picture_path, image_name)
-        pmc.send_adb_command_vm(
+        # read screencap from vm using screencap output encoded in base64
+        shell_out = pmc.send_adb_command_vm(
             vm_index=vm_index,
-            command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
+            command="shell screencap -p | base64",
         )
-        return open_image(image_path)
+
+        # remove non-image data from shell output
+        image_b64 = re.sub(
+            r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
+        ).replace("\n", "")
+
+        # decode base64
+        image_data = base64.b64decode(image_b64)
+
+        # open image from bytearray
+        return open_from_bytes(image_data)
 
     except (PyMemucError, FileNotFoundError, InvalidImageError):
         time.sleep(0.1)
@@ -61,8 +68,6 @@ def scroll_up(vm_index):
 def scroll_up_on_left_side_of_screen(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 66, 300, 66, 400)
-
-
 
 
 def scroll_down(vm_index):
