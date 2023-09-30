@@ -74,7 +74,10 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
-        logger.log(f"Bot read these pixels {clash_main_check}")
+        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        for pixel in clash_main_check:
+            logger.log('   ',pixel)
+
         return "restart"
 
     # get to challenges tab
@@ -120,7 +123,10 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
         logger.change_status(
             status="ERROR 46246 Not on main menu for start of start 1v1 fight"
         )
-        logger.log(f"Bot read these pixels {clash_main_check}")
+        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        for pixel in clash_main_check:
+            logger.log('   ',pixel)
+
         return "restart"
 
     # click 1v1 button
@@ -654,7 +660,10 @@ def check_if_previous_game_was_win(
         logger.change_status(
             status='534594784234 Error Not on main menu, returning "restart"'
         )
-        logger.log(f"Bot read these pixels {clash_main_check}")
+        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        for pixel in clash_main_check:
+            logger.log('   ',pixel)
+
         return "restart"
 
     # get to clash main options menu
