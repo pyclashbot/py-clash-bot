@@ -51,7 +51,7 @@ QUICKMATCH_BUTTON_COORD = (
     353,
 )  # coord of the quickmatch button after you click the battle button
 POST_FIGHT_TIMEOUT = 120  # seconds
-ELIXER_WAIT_TIMEOUT = 25
+ELIXER_WAIT_TIMEOUT = 40 #way to high but someone got errors with that so idk
 
 EMOTE_BUTTON_COORD_IN_2V2 = (67, 521)
 EMOTES_COORDS_IN_2V2 = [
