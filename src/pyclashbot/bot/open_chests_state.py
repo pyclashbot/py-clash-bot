@@ -44,7 +44,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
         logger.log("Not on clashmain for the start of open_chests_state()")
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'    {pixel}')
 
         return "restart"
 
