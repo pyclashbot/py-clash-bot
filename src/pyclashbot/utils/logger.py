@@ -102,6 +102,7 @@ class Logger:
         self.free_offer_collection_attempts = 0
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
+        self.war_attempts = 0
 
         # restart stats
         self.auto_restarts = 0
@@ -347,6 +348,10 @@ class Logger:
         """increments logger's card_mastery_reward_collection_attempts by 1"""
         self.card_mastery_reward_collection_attempts += 1
 
+    def add_war_attempt(self):
+        """increments logger's war_attempts by 1"""
+        self.war_attempts += 1
+
     def get_1v1_fights(self) -> int:
         """returns logger's 1v1_fights stat"""
         return self._1v1_fights
@@ -452,6 +457,43 @@ class Logger:
 
         self.log(
             f"Cant do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
+        )
+        return False
+
+    def check_if_can_do_war(self, increment) -> bool:
+        if increment == 1:
+            self.log(f"Increment is {increment} so can always collect card mastery")
+            return True
+
+        # count war_attempts
+        war_attempts = self.war_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if war_attempts is zero return true
+        if war_attempts == 0:
+            self.log(
+                f"Can do war. {games_played} Games and {war_attempts} Attempts"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can do war. {games_played} Games and {war_attempts} Attempts"
+            )
+            return True
+
+        # if games_played / int(increment) > war_attempts
+        if games_played / int(increment) >= war_attempts:
+            self.log(
+                f"Can do war. {games_played} Games & {war_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Cant do war. {games_played} Games and {war_attempts} Attempts"
         )
         return False
 
