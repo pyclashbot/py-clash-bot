@@ -77,7 +77,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         logger.change_status("Not on clash main at the start of upgrade_cards_state()")
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'   {pixel}')
 
         return "restart"
 

@@ -76,7 +76,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
         logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'   {pixel}')
 
         return "restart"
 
@@ -125,7 +125,7 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
         )
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'   {pixel}')
 
         return "restart"
 
@@ -662,7 +662,7 @@ def check_if_previous_game_was_win(
         )
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'   {pixel}')
 
         return "restart"
 

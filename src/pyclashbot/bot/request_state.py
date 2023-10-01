@@ -101,7 +101,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         logger.change_status("Not on clash main for the start of request_state()")
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'   {pixel}')
 
         return "restart"
 
