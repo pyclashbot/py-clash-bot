@@ -1,5 +1,6 @@
 """import logging for file logging"""
 import logging
+import pprint
 import threading
 import time
 import zipfile
@@ -7,6 +8,7 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import exists, expandvars, getmtime, join
 
+from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.versioning import __version__
 
 MODULE_NAME = "py-clash-bot"
@@ -53,6 +55,9 @@ def initalize_pylogging() -> None:
  )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
 (__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
 """
+    )
+    logging.info(
+        "Machine Info: \n%s", pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4)
     )
     compress_logs()
 
@@ -702,3 +707,8 @@ class Logger:
         self.log("-------------------------------")
         self.log("-------------------------------")
         self.log("-------------------------------\n\n")
+
+
+if __name__ == "__main__":
+    initalize_pylogging()
+    logger = Logger()
