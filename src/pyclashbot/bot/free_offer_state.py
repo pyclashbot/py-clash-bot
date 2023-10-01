@@ -44,7 +44,7 @@ def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> st
         logger.change_status(status="ERROR 356 Not on clash main menu for free_offer_collection_state")
         logger.log(f'There are the pixels the bot saw after failing to find clash main:')
         for pixel in clash_main_check:
-            logger.log('   ',pixel)
+            logger.log(f'   {pixel}')
 
         return "restart"
 
