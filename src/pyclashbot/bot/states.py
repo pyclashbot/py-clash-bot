@@ -275,6 +275,13 @@ def state_tree(
             logger.log("War job isnt toggled. Skipping this state")
             return next_state
 
+        # if job not ready, reutrn next state
+        # if not logger.check_if_can_do_war(
+        #     job_list["card_mastery_collect_increment_user_input"]
+        # ):
+        #     logger.log("Card mastery job isnt ready. Skipping this state")
+        #     return next_state
+
         # return output of this state
         return war_state(vm_index, logger, next_state)
 
@@ -288,6 +295,6 @@ if __name__ == '__main__':
     logger=Logger()
     next_state='"next state return string!!"'
 
-    
+
     #upgrade test
     upgrade_cards_state(vm_index, logger, next_state)

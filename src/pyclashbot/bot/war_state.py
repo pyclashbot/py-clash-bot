@@ -65,6 +65,8 @@ def find_war_battle_icon(vm_index):
 def war_state(vm_index: int, logger: Logger, next_state: str):
     """method to handle the war state of the bot"""
 
+    logger.add_war_attempt()
+
     logger.change_status(status="War state")
 
     # if not on clash main: return
