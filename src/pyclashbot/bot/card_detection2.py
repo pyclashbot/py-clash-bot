@@ -893,7 +893,10 @@ def print_pixel_data(vm_index, card_index):
 
 
 if __name__ == "__main__":
-    vm_index = 8
+    print('Start')
+    vm_index = 1
+
+    start_time = time.time()
 
     print_pixel_data(vm_index, 0)
     print("-------------")
@@ -907,3 +910,4 @@ if __name__ == "__main__":
     data = get_all_card_pixel_data(vm_index)
     for card in data:
         print(identify_card(card))
+    print(str(time.time() - start_time)[:5])
