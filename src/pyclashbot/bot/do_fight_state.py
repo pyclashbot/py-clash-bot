@@ -415,10 +415,15 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status="Starting battle loop")
 
+    logger.change_status(status="Mag dumping to make time to think")
+
+    mag_dump(vm_index)
+
     # choose a side to favor this fight
     favorite_side = random.choice(["left", "right"])
 
     logger.change_status(status=f"Going to favor {favorite_side} this fight...")
+
 
     # count plays
     plays = 0
