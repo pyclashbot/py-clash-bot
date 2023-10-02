@@ -1,5 +1,4 @@
 """random module for randomizing fight plays"""
-import enum
 import numpy
 import random
 import time
