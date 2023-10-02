@@ -832,7 +832,7 @@ def handle_clash_main_tab_notifications(
     start_time: float = time.time()
 
     # click card tab
-    click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1],clicks=2,interval=0.01)
+    click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
     time.sleep(4)
 
     # click shop tab
