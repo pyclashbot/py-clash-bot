@@ -9,10 +9,10 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
+from pyclashbot.memu.client import click, save_screenshot, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-_2V2_START_WAIT_TIMEOUT = 60#s
+_2V2_START_WAIT_TIMEOUT = 60  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
@@ -97,9 +97,7 @@ def check_for_end_2v2_battle_screen_2(vm_index) -> bool:
     return True
 
 
-def wait_for_2v2_battle_start(
-    vm_index, logger: Logger
-) -> Literal["restart", "good"]:
+def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "good"]:
     """
     Waits for the 2v2 battle to start.
 
@@ -116,21 +114,19 @@ def wait_for_2v2_battle_start(
     _2v2_start_wait_start_time = time.time()
 
     while time.time() - _2v2_start_wait_start_time < _2V2_START_WAIT_TIMEOUT:
-        logger.change_status(status=f"Waiting for 2v2 battle to start for {str(time.time() - _2v2_start_wait_start_time)[:4]}s")
+        logger.change_status(
+            status=f"Waiting for 2v2 battle to start for {str(time.time() - _2v2_start_wait_start_time)[:4]}s"
+        )
 
         if check_for_in_2v2_battle(vm_index=vm_index):
-            logger.change_status('Detected an ongoing 2v2 battle!')
+            logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
         click(vm_index=vm_index, x_coord=20, y_coord=200)
 
         time.sleep(5)
 
-
     return False
-
-
-
 
 
 def wait_for_1v1_battle_start(
@@ -202,9 +198,6 @@ def check_for_in_2v2_battle(vm_index) -> bool:
     iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
-
-
-
         iar[517][56],
         iar[533][67],
         iar[616][115],
@@ -213,7 +206,7 @@ def check_for_in_2v2_battle(vm_index) -> bool:
     colors = [
         [255, 255, 255],
         [255, 255, 255],
-        [236,  91, 252],
+        [236, 91, 252],
     ]
 
     for index in range(len(pixels)):
@@ -223,7 +216,6 @@ def check_for_in_2v2_battle(vm_index) -> bool:
             return False
 
     return True
-
 
 
 def check_for_in_1v1_battle(vm_index) -> bool:
@@ -236,35 +228,22 @@ def check_for_in_1v1_battle(vm_index) -> bool:
     Returns:
         bool: True if the virtual machine is in a 1v1 battle, False otherwise.
     """
-    # look for red enemy name
-    red_enemy_name_exists: bool = check_line_for_color(
-        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
-    )
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[613][112],
+        iar[621][121],
+    ]
 
-    # look for purple elixer thing
-    purple_exlier_icon_exists: bool = check_line_for_color(
-        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
-    )
+    colors = [
+        [232  ,70 ,252],
+[223  ,25 ,248],
+    ]
 
-    # look for white chat bubble
-    white_chat_bubble_exists: bool = check_line_for_color(
-        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
-    )
-
-    # look for tan time left text
-    tan_time_left_text_exists: bool = check_line_for_color(
-        vm_index=vm_index, x_1=30, y_1=7, x_2=80, y_2=21, color=(255, 51, 153)
-    )
-
-    if (
-        tan_time_left_text_exists
-        and white_chat_bubble_exists
-        and red_enemy_name_exists
-        and purple_exlier_icon_exists
-    ):
-        return True
-
-    return False
+    for index, pixel in enumerate(pixels):
+        color = colors[index]
+        if not pixel_is_equal(pixel, color, tol=35):
+            return False
+    return True
 
 
 def get_to_clash_main_from_clan_page(
@@ -683,7 +662,6 @@ def check_if_on_clash_main_menu(vm_index):
         iar[74][262],
     ]
 
-
     # sentinel color list
     colors = [
         [56, 162, 214],
@@ -703,10 +681,6 @@ def check_if_on_clash_main_menu(vm_index):
 
     # if all pixels are good, we're on clash main
     return True
-
-
-
-
 
 
 def get_to_clash_main_from_card_page(
@@ -941,7 +915,6 @@ def check_if_on_clash_main_challenges_tab(vm_index) -> bool:
         return False
 
     return True
-
 
 
 def check_if_on_clash_main_shop_page(vm_index) -> bool:
@@ -1232,15 +1205,7 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
     return True
 
 
-
-
-
 if __name__ == "__main__":
-    # screenshot(8)
-    pass
+    vm_index = 1
 
-
-    # wait_for_2v2_battle_start(8, Logger())
-
-
-
+    while 1:print(check_for_in_1v1_battle(vm_index))
