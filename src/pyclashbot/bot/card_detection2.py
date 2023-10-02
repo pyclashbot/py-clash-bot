@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy
 import time
 from pyclashbot.detection.image_rec import pixel_is_equal
@@ -843,7 +844,7 @@ CARD_PIXEL_DATA_DICT = {
 
 
 def get_all_card_pixel_data(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
     base_coord_list = [
         [121, 537],
         [130, 547],
@@ -874,15 +875,28 @@ def compare_card_pixels(seen_pixel_data, sentinel_pixel_data):
     return True
 
 
-def identify_card(card_data):
-    for card_name in CARD_PIXEL_DATA_DICT:
-        card_pixel_lists = CARD_PIXEL_DATA_DICT[card_name]
-        for color_list in card_pixel_lists:
-            if compare_card_pixels(card_data, color_list):
-                card_name = card_name.replace("_lists", "")
-                return card_name
+def check_pixel(card_name: str, color_list, card_data) -> str | None:
+    if compare_card_pixels(card_data, color_list):
+        return card_name.replace("_lists", "")
+    return None
 
-    return "unknown"
+
+def identify_card(card_data):
+    max_workers = len(CARD_PIXEL_DATA_DICT)
+    with ThreadPoolExecutor(
+        max_workers=max_workers, thread_name_prefix="CardIdentifier"
+    ) as executor:
+        futures = [
+            executor.submit(check_pixel, card_name, color_list, card_data)
+            for card_name, card_pixel_lists in CARD_PIXEL_DATA_DICT.items()
+            for color_list in card_pixel_lists
+        ]
+
+        for future in as_completed(futures):
+            result = future.result()
+            if result is not None:
+                return result
+        return "unknown"
 
 
 def print_pixel_data(vm_index, card_index):
@@ -893,7 +907,7 @@ def print_pixel_data(vm_index, card_index):
 
 
 if __name__ == "__main__":
-    print('Start')
+    print("Start")
     vm_index = 1
 
     start_time = time.time()
