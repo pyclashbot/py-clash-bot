@@ -77,6 +77,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "deck_randomization_increment_user_input": values[
             "deck_randomization_increment_user_input"
         ],
+        "war_attack_increment_user_input": values["war_attack_increment_user_input"],
     }
     return jobs_dictionary
 
@@ -182,6 +183,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
         "card_mastery_collect_increment_user_input": "Card Mastery Collect Increment",
         "open_chests_increment_user_input": "Open Chests Increment",
         "deck_randomization_increment_user_input": "Randomize Deck Increment",
+        'war_attack_increment_user_input': 'War Attack Increment',
     }
 
     # Get the job name corresponding to the given key.

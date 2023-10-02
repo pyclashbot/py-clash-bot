@@ -33,6 +33,7 @@ controls = [
                 [sg.Text("Collect Card Mastery Every:")],
                 [sg.Text("Open Chests Every:")],
                 [sg.Text("Randomize Deck Every:")],
+                [sg.Text("Do war attack Every:")],
             ],
             justification="left",
         ),
@@ -61,6 +62,8 @@ controls = [
                         "deck_randomization_increment_user_input"
                     )
                 ],
+                [make_job_increment_control_object("war_attack_increment_user_input")],
+
             ],
             justification="right",
         ),
