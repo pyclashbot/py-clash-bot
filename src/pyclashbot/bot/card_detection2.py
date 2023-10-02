@@ -305,10 +305,6 @@ CARD_PIXEL_DATA_DICT = {
             [243, 247, 231],
         ],
     ],
-
-
-
-
     "miner": [
         [
             [102, 85, 63],
@@ -899,19 +895,15 @@ def print_pixel_data(vm_index, card_index):
 if __name__ == "__main__":
     vm_index = 8
 
-    # print_pixel_data(vm_index, 0)
-    # print("-------------")
-    # print_pixel_data(vm_index, 1)
-    # print("-------------")
-    # print_pixel_data(vm_index, 2)
-    # print("-------------")
-    # print_pixel_data(vm_index, 3)
-    # print("\n\n")
+    print_pixel_data(vm_index, 0)
+    print("-------------")
+    print_pixel_data(vm_index, 1)
+    print("-------------")
+    print_pixel_data(vm_index, 2)
+    print("-------------")
+    print_pixel_data(vm_index, 3)
+    print("\n\n")
 
-    # print("\n")
-
-    start_time = time.time()
     data = get_all_card_pixel_data(vm_index)
     for card in data:
         print(identify_card(card))
-    print(time.time() - start_time)
