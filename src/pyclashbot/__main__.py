@@ -402,6 +402,4 @@ def main_gui() -> None:
 
 
 if __name__ == "__main__":
-    # debug()
-    # dummy_bot()
     main_gui()
