@@ -270,4 +270,6 @@ def check_if_chest_is_unlockable(vm_index):
 
 
 if __name__ == "__main__":
-    open_chests_state(1, Logger(), "next_state")
+    handle_clash_main_tab_notifications(1, Logger())
+    
+    # open_chests_state(1, Logger(), "next_state")

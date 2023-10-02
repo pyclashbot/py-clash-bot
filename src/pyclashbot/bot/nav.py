@@ -832,22 +832,22 @@ def handle_clash_main_tab_notifications(
     start_time: float = time.time()
 
     # click card tab
-    click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
+    click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1],clicks=2,interval=0.01)
     time.sleep(4)
 
     # click shop tab
-    click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1])
+    click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1],clicks=2,interval=0.01)
     time.sleep(4)
 
     # click challenges tab
-    click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1])
+    click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1],clicks=2,interval=0.01)
     time.sleep(4)
 
     # get back to main
     click(
         vm_index,
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
-        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
+        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],clicks=2,interval=0.01
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(
