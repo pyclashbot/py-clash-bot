@@ -8,21 +8,17 @@ from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
 
 from pyclashbot.utils.image_handler import InvalidImageError, open_from_bytes
-import os
+
 pmc = PyMemuc(debug=False)
 
 
 
 def save_screenshot(vm_index):
-    image_name = f"screenshot{vm_index}.png"
-    picture_path = pmc.get_configuration_vm(
-        vm_index=vm_index, config_key="picturepath"
-    ).replace('"', "")
-    image_path = os.path.join(picture_path, image_name)
-    return pmc.send_adb_command_vm(
-        vm_index=vm_index,
-        command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
-    )
+    image_name=f'image{vm_index}.png'
+    print(pmc.send_adb_command_vm(
+            vm_index=vm_index,
+            command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
+        ))
 
 
 
