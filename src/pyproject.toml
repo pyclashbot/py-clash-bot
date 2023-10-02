@@ -29,7 +29,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.8"
+cx-freeze = "^6.15.9"
 poethepoet = "^0.24.0"
 
 
