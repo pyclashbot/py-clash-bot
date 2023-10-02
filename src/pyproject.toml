@@ -30,7 +30,7 @@ optional = true
 
 [tool.poetry.group.build.dependencies]
 cx-freeze = "^6.15.8"
-poethepoet = "^0.23.0"
+poethepoet = "^0.24.0"
 
 
 [tool.poetry.group.dev]
@@ -43,7 +43,7 @@ black = "^23.9.1"
 vulture = "^2.9"
 isort = "^5.12.0"
 prospector = "^1.10.2"
-poethepoet = "^0.23.0"
+poethepoet = "^0.24.0"
 
 
 [tool.poe.tasks.build-dist]
