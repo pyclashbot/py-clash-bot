@@ -118,7 +118,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             status=f"Waiting for 2v2 battle to start for {str(time.time() - _2v2_start_wait_start_time)[:4]}s"
         )
 
-        if check_for_in_2v2_battle(vm_index=vm_index):
+        if check_if_in_2v2_battle(vm_index=vm_index):
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
@@ -149,7 +149,7 @@ def wait_for_1v1_battle_start(
         logger.change_status(status="Waiting for 1v1 battle to start")
     else:
         logger.log(message="Waiting for 1v1 battle to start")
-    while not check_for_in_1v1_battle(vm_index=vm_index):
+    while not check_if_in_1v1_battle(vm_index=vm_index):
         time_taken: float = time.time() - start_time
         if time_taken > 60:
             logger.change_status(
@@ -180,12 +180,12 @@ def check_for_in_2v2_battle_with_delay(vm_index):
     timeout = 2  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_for_in_2v2_battle(vm_index):
+        if check_if_in_2v2_battle(vm_index):
             return True
     return False
 
 
-def check_for_in_2v2_battle(vm_index) -> bool:
+def check_if_in_2v2_battle(vm_index) -> bool:
     """
     Checks if the virtual machine is in a 2v2 battle.
 
@@ -218,7 +218,7 @@ def check_for_in_2v2_battle(vm_index) -> bool:
     return True
 
 
-def check_for_in_1v1_battle(vm_index) -> bool:
+def check_if_in_1v1_battle(vm_index) -> bool:
     """
     Checks if the virtual machine is in a 1v1 battle.
 
@@ -236,7 +236,7 @@ def check_for_in_1v1_battle(vm_index) -> bool:
 
     colors = [
         [232  ,70 ,252],
-[223  ,25 ,248],
+        [223  ,25 ,248],
     ]
 
     for index, pixel in enumerate(pixels):
@@ -1208,4 +1208,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 if __name__ == "__main__":
     vm_index = 1
 
-    while 1:print(check_for_in_1v1_battle(vm_index))
+    while 1:print(check_if_in_1v1_battle(vm_index))
