@@ -17,7 +17,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-opencv-python = "^4.8.0"
+opencv-python = "^4.8.1"
 numpy = "^1.25.2"
 pysimplegui = "^4.60.5"
 pymemuc = "^0.4.5"
