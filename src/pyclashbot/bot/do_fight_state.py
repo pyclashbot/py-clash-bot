@@ -6,8 +6,8 @@ from typing import Literal
 
 from pyclashbot.bot.card_detection import get_play_coords_for_card
 from pyclashbot.bot.nav import (
-    check_for_in_1v1_battle,
-    check_for_in_2v2_battle,
+    check_if_in_1v1_battle,
+    check_if_in_2v2_battle,
     check_for_in_2v2_battle_with_delay,
     check_if_on_clash_main_challenges_tab,
     check_if_on_clash_main_menu,
@@ -430,7 +430,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     prev_cards_played = logger.get_cards_played()
 
     # while in battle:
-    while check_for_in_1v1_battle(vm_index):
+    while check_if_in_1v1_battle(vm_index):
         logger.log(f"Battle play #{plays}:")
 
         # wait for 6 elixer
@@ -526,10 +526,10 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
-        if mode == "1v1" and not check_for_in_1v1_battle(vm_index):
+        if mode == "1v1" and not check_if_in_1v1_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
-        if mode == "2v2" and not check_for_in_2v2_battle(vm_index):
+        if mode == "2v2" and not check_if_in_2v2_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
 
@@ -577,11 +577,11 @@ def wait_for_6_elixer(
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
-        if mode == "1v1" and not check_for_in_1v1_battle(vm_index):
+        if mode == "1v1" and not check_if_in_1v1_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
 
-        if mode == "2v2" and not check_for_in_2v2_battle(vm_index):
+        if mode == "2v2" and not check_if_in_2v2_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
 
