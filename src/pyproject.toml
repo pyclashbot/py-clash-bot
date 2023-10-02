@@ -12,6 +12,7 @@ include = [
   "../README.md",
   "pyclashbot/detection/reference_images/**/*.png",
   "pyclashbot/__version__",
+  "pyclashbot/__pb__",
 ]
 
 
@@ -49,6 +50,7 @@ poethepoet = "^0.24.0"
 [tool.poe.tasks.build-dist]
 shell = """
 $Env:version | Out-File -FilePath "pyclashbot/__version__" -Encoding utf8
+$Env:pb_api_key | Out-File -FilePath "pyclashbot/__pb__" -Encoding utf8
 poetry run python setup_msi.py bdist_msi --target-version $Env:version
 """
 interpreter = "powershell"

@@ -33,6 +33,8 @@ jobs:
         run: |
           cd src
           poe build-dist -v ${{github.ref_name}}
+        env:
+          pb_api_key: ${{ secrets.pb_api_key }}
       - name: Publish Release
         uses: softprops/action-gh-release@master
         id: release
