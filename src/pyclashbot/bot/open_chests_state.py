@@ -118,7 +118,7 @@ def get_chest_statuses(vm_index):
 
     statuses = []
     for index, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[index],tol=35):
+        if not pixel_is_equal(pixel, colors[index],tol=25):
             statuses.append('available')
         else:
             statuses.append('unavailable')
