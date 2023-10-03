@@ -46,15 +46,6 @@ prospector = "^1.10.2"
 poethepoet = "^0.24.0"
 
 
-[tool.poetry.group.testing]
-optional = true
-
-
-[tool.poetry.group.testing.dependencies]
-opencv-python-headless = "^4.8.1.78"
-cx-freeze = "^6.15.9"
-
-
 [tool.poe.tasks.build-dist]
 shell = """
 $Env:version | Out-File -FilePath "pyclashbot/__version__" -Encoding utf8
