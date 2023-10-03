@@ -12,7 +12,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.memu.client import click, save_screenshot, screenshot
 from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
@@ -42,9 +42,11 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.log("Not on clashmain for the start of open_chests_state()")
-        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        logger.log(
+            f"There are the pixels the bot saw after failing to find clash main:"
+        )
         for pixel in clash_main_check:
-            logger.log(f'    {pixel}')
+            logger.log(f"    {pixel}")
 
         return "restart"
 
@@ -100,57 +102,29 @@ def get_chest_statuses(vm_index):
     """
     iar = numpy.asarray(screenshot(vm_index))
 
+    pixels = [
+        iar[544][90],
+        iar[538][161],
+        iar[541][270],
+        iar[543][335],
+    ]
+
+    colors = [
+[143 , 96 , 19],
+[160 ,119 , 33],
+[155 ,115 , 29],
+[142 , 94 , 18],
+    ]
+
     statuses = []
-
-    # check chest 1
-    chest_1_exists = False
-    for x_index in range(66, 87):
-        this_pixel = iar[533][x_index]
-        if not pixel_is_equal([13, 92, 136], this_pixel, tol=35):
-            statuses.append("available")
-            chest_1_exists = True
-            break
-
-    if not chest_1_exists:
-        statuses.append("unavailable")
-
-    # check chest 2
-    chest_2_exists = False
-    for x_index in range(137, 168):
-        this_pixel = iar[537][x_index]
-        if not pixel_is_equal([31, 118, 158], this_pixel, tol=35):
-            chest_2_exists = True
-            statuses.append("available")
-            break
-
-    if not chest_2_exists:
-        statuses.append("unavailable")
-
-    # check chest 3
-    chest_3_exists = False
-    for x_index in range(248, 280):
-        this_pixel = iar[536][x_index]
-        if not pixel_is_equal([32, 117, 160], this_pixel, tol=35):
-            chest_3_exists = True
-            statuses.append("available")
-            break
-
-    if not chest_3_exists:
-        statuses.append("unavailable")
-
-    # check chest 4
-    chest_4_exists = False
-    for x_index in range(315, 348):
-        this_pixel = iar[536][x_index]
-        if not pixel_is_equal([20, 96, 142], this_pixel, tol=35):
-            chest_4_exists = True
-            statuses.append("available")
-            break
-
-    if not chest_4_exists:
-        statuses.append("unavailable")
-
+    for index, pixel in enumerate(pixels):
+        if not pixel_is_equal(pixel, colors[index],tol=35):
+            statuses.append('available')
+        else:
+            statuses.append('unavailable')
     return statuses
+
+
 
 
 def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "good"]:
@@ -270,6 +244,12 @@ def check_if_chest_is_unlockable(vm_index):
 
 
 if __name__ == "__main__":
-    handle_clash_main_tab_notifications(1, Logger())
-    
-    # open_chests_state(1, Logger(), "next_state")
+    vm_index = 1
+
+    statuses = get_chest_statuses(vm_index)
+
+
+    for s in statuses:
+        print(s)
+
+    # save_screenshot(1)
