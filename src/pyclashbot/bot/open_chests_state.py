@@ -110,21 +110,19 @@ def get_chest_statuses(vm_index):
     ]
 
     colors = [
-[143 , 96 , 19],
-[160 ,119 , 33],
-[155 ,115 , 29],
-[142 , 94 , 18],
+        [143, 96, 19],
+        [160, 119, 33],
+        [155, 115, 29],
+        [142, 94, 18],
     ]
 
     statuses = []
     for index, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[index],tol=25):
-            statuses.append('available')
+        if not pixel_is_equal(pixel, colors[index], tol=25):
+            statuses.append("available")
         else:
-            statuses.append('unavailable')
+            statuses.append("unavailable")
     return statuses
-
-
 
 
 def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "good"]:
@@ -247,7 +245,6 @@ if __name__ == "__main__":
     vm_index = 1
 
     statuses = get_chest_statuses(vm_index)
-
 
     for s in statuses:
         print(s)
