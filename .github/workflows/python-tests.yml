@@ -36,7 +36,7 @@ jobs:
         run: |
           cd src
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
-          poetry install --with build -vvv
+          poetry install --with testing
       - name: Run Tests
         run: |
           cd src
