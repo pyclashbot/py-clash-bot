@@ -13,7 +13,9 @@ class InvalidImageError(Exception):
         super().__init__(self.message)
 
 
-def open_from_bytes(image_data: bytes) -> np.ndarray:
+def open_from_buffer(
+    image_data: bytes | bytearray | memoryview | np.ndarray[any],
+) -> np.ndarray[np.uint8]:
     """
     A method to read an image from a byte array
     :param byte_array: the byte array to read the image from
@@ -23,13 +25,15 @@ def open_from_bytes(image_data: bytes) -> np.ndarray:
     im_arr = np.frombuffer(image_data, dtype=np.uint8)
     img = cv2.imdecode(im_arr, cv2.IMREAD_COLOR)  # pylint: disable=no-member
     if img is None:
-        raise InvalidImageError("Byte array is not a valid image")
-    if np.all(img == 255):
-        raise InvalidImageError("Byte array is not a valid image. All pixels are white")
+        raise InvalidImageError("image_data bytes are not a valid image")
+    if np.all(img == 255) or np.all(img == 0):
+        raise InvalidImageError(
+            "image_data bytes are not a valid image. Image is all white or all black"
+        )
     return img
 
 
-def open_from_path(path: str) -> np.ndarray:
+def open_from_path(path: str) -> np.ndarray[np.uint8]:
     """
     A method to validate and open an image file
     :param path: the path to the image file
@@ -43,8 +47,9 @@ def open_from_path(path: str) -> np.ndarray:
     if not path.lower().endswith(".png"):
         raise ValueError(f"File {path} is not a png image")
     with open(path, "rb") as im_stream:
-        im_bytes = bytearray(im_stream.read())
         try:
-            return open_from_bytes(im_bytes)
+            return open_from_buffer(im_stream.read())
         except InvalidImageError as error:
-            raise InvalidImageError(f"File {path} is not a valid image") from error
+            raise InvalidImageError(
+                f"File {path} is not a valid image. {error.message}"
+            ) from error

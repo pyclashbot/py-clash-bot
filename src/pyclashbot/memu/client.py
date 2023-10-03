@@ -7,19 +7,19 @@ import time
 from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
 
-from pyclashbot.utils.image_handler import InvalidImageError, open_from_bytes
+from pyclashbot.utils.image_handler import InvalidImageError, open_from_buffer
 
 pmc = PyMemuc(debug=False)
 
 
-
 def save_screenshot(vm_index):
-    image_name=f'image{vm_index}.png'
-    print(pmc.send_adb_command_vm(
+    image_name = f"image{vm_index}.png"
+    print(
+        pmc.send_adb_command_vm(
             vm_index=vm_index,
             command=f"exec-out screencap -p /sdcard/pictures/{image_name}",
-        ))
-
+        )
+    )
 
 
 def screenshot(vm_index: int) -> ndarray:
@@ -47,7 +47,7 @@ def screenshot(vm_index: int) -> ndarray:
         image_data = base64.b64decode(image_b64)
 
         # open image from bytearray
-        return open_from_bytes(image_data)
+        return open_from_buffer(image_data)
 
     except (PyMemucError, FileNotFoundError, InvalidImageError):
         time.sleep(0.1)
