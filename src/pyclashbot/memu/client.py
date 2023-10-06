@@ -1,13 +1,12 @@
 """Module for interacting with the memu client"""
 
-import base64
 import re
 import time
 
 from numpy import ndarray
 from pymemuc import PyMemuc, PyMemucError
 
-from pyclashbot.utils.image_handler import InvalidImageError, open_from_buffer
+from pyclashbot.utils.image_handler import InvalidImageError, open_from_b64
 
 pmc = PyMemuc(debug=False)
 
@@ -42,12 +41,7 @@ def screenshot(vm_index: int) -> ndarray:
         image_b64 = re.sub(
             r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
         ).replace("\n", "")
-
-        # decode base64
-        image_data = base64.b64decode(image_b64)
-
-        # open image from bytearray
-        return open_from_buffer(image_data)
+        return open_from_b64(image_b64)
 
     except (PyMemucError, FileNotFoundError, InvalidImageError):
         time.sleep(0.1)

@@ -1,3 +1,4 @@
+import base64
 from os.path import exists
 
 import cv2
@@ -13,6 +14,21 @@ class InvalidImageError(Exception):
         super().__init__(self.message)
 
 
+def open_from_b64(image_b64: str) -> np.ndarray[np.uint8]:
+    """
+    A method to validate and open an image from a base64 string
+    :param image_b64: the base64 string to read the image from
+    :return: the image as a numpy array
+    :raises InvalidImageError: if the file is not a valid image
+    """
+
+    try:
+        image_data = base64.b64decode(image_b64)
+    except (TypeError, ValueError, base64.binascii.Error) as error:
+        raise InvalidImageError("image_b64 is not a valid base64 string") from error
+    return open_from_buffer(image_data)
+
+
 def open_from_buffer(
     image_data: bytes | bytearray | memoryview | np.ndarray[any],
 ) -> np.ndarray[np.uint8]:
@@ -22,9 +38,16 @@ def open_from_buffer(
     :return: the image as a numpy array
     :raises InvalidImageError: if the file is not a valid image
     """
-    im_arr = np.frombuffer(image_data, dtype=np.uint8)
-    img = cv2.imdecode(im_arr, cv2.IMREAD_COLOR)  # pylint: disable=no-member
-    if img is None:
+    try:
+        im_arr = np.frombuffer(image_data, dtype=np.uint8)
+    except (BufferError, ValueError) as error:
+        raise InvalidImageError("image_data is not a valid buffer") from error
+    try:
+        img = cv2.imdecode(im_arr, cv2.IMREAD_COLOR)  # pylint: disable=no-member
+    except cv2.error as error:  # pylint: disable=catching-non-exception
+        # pylint: disable=bad-exception-cause
+        raise InvalidImageError("image_data bytes cannot be decoded") from error
+    if img is None or len(img) == 0 or len(img.shape) != 3 or img.shape[2] != 3:
         raise InvalidImageError("image_data bytes are not a valid image")
     if np.all(img == 255) or np.all(img == 0):
         raise InvalidImageError(
@@ -51,5 +74,6 @@ def open_from_path(path: str) -> np.ndarray[np.uint8]:
             return open_from_buffer(im_stream.read())
         except InvalidImageError as error:
             raise InvalidImageError(
-                f"File {path} is not a valid image. {error.message}"
+                f"File {path} is not a valid image. {error.message}",
+                path=path,
             ) from error
