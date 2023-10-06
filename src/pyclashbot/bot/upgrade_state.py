@@ -303,3 +303,10 @@ def check_for_missing_gold_popup(vm_index):
         return False
 
     return True
+
+
+if __name__ == '__main__':
+    vm_index=1
+    logger=Logger(None,None)
+    next_state = 'test'
+    upgrade_cards_state(vm_index, logger, next_state)
