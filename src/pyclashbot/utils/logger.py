@@ -6,15 +6,17 @@ import time
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
-from os.path import exists, expandvars, getmtime, join
+from os.path import basename, exists, expandvars, getmtime, join
 
 from pyclashbot.utils.machine_info import MACHINE_INFO
+from pyclashbot.utils.pastebin import upload_pastebin
 from pyclashbot.utils.versioning import __version__
 
 MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
 
 log_dir = join(expandvars("%appdata%"), MODULE_NAME, "logs")
+log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
 archive_name: str = join(log_dir, "logs.zip")
 
 
@@ -40,7 +42,6 @@ def initalize_pylogging() -> None:
 
     if not exists(log_dir):
         makedirs(log_dir)
-    log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
     logging.basicConfig(
         filename=log_name,
         encoding="utf-8",
@@ -707,6 +708,13 @@ class Logger:
         self.log("-------------------------------")
         self.log("-------------------------------")
         self.log("-------------------------------\n\n")
+
+    def upload_log(self) -> str | None:
+        """method to upload log to pastebin"""
+        with open(log_name, "r", encoding="utf-8") as log_file:
+            return upload_pastebin(
+                f"py-clash-bot log ({basename(log_name)})", log_file.read()
+            )
 
 
 if __name__ == "__main__":

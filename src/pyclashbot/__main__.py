@@ -374,6 +374,12 @@ def main_gui() -> None:
                 "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
             )
 
+        elif event == "upload-log":
+            if logger is not None:
+                url = logger.upload_log()
+                if url is not None:
+                    webbrowser.open(url)
+
         # donate event
         elif event in ("donate", DONATE_BUTTON_KEY):
             urls = {
