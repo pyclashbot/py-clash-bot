@@ -1,9 +1,6 @@
-.vscode
-cert
-node_modules
 build
 dist
-
+__pb__
 __version__
 __pycache__
 build
