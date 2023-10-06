@@ -264,6 +264,7 @@ class Logger:
         """add card played to log"""
         self.cards_played += 1
 
+    @_updates_log
     def remove_card_played(self, cards_to_remove=1):
         """decremenet logger's card played counter by cards_to_remove"""
         self.cards_played -= cards_to_remove
