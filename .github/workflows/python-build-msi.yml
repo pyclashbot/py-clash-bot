@@ -28,6 +28,7 @@ jobs:
         run: |
           cd src
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
+          poetry config installer.parallel false
           poetry install --with build --without dev
       - name: Build package
         run: |
