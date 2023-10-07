@@ -17,9 +17,9 @@ include = [
 
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "3.12"
 opencv-python = "^4.8.1"
-numpy = "^1.25.2"
+numpy = "^1.26.0"
 pysimplegui = "^4.60.5"
 pymemuc = "^0.4.5"
 psutil = "^5.9.5"
@@ -31,8 +31,8 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.9"
 poethepoet = "^0.24.0"
+cx-freeze = { version = "^6.16.0.dev9", source = "cx_freeze-dev" }
 
 
 [tool.poetry.group.dev]
@@ -46,6 +46,12 @@ vulture = "^2.9"
 isort = "^5.12.0"
 prospector = "^1.10.2"
 poethepoet = "^0.24.0"
+
+
+[[tool.poetry.source]]
+name = "cx_freeze-dev"
+url = "https://marcelotduarte.github.io/packages/"
+priority = "supplemental"
 
 
 [tool.poe.tasks.build-dist]
