@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Install Poetry
         run: |
-          pipx install "poetry>=1.3.0,<1.4.0"
+          pipx install poetry
       - name: Set up Python ${{ matrix.python }}
         id: pysetup
         uses: actions/setup-python@v4
