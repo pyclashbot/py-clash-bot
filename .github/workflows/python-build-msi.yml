@@ -18,11 +18,11 @@ jobs:
         run: |
           pipx install "poetry==1.3.2"
           pipx install poethepoet
-      - name: Set up Python 3.11
+      - name: Set up Python
         id: pysetup
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "poetry"
       - name: Install package and dependencies
         run: |
