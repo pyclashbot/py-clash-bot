@@ -276,9 +276,7 @@ def state_tree(
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_do_war(
-            job_list["war_attack_increment_user_input"]
-        ):
+        if not logger.check_if_can_do_war(job_list["war_attack_increment_user_input"]):
             logger.log("War job isnt ready. Skipping this state")
             return next_state
 
@@ -289,12 +287,10 @@ def state_tree(
     return "fail"
 
 
+if __name__ == "__main__":
+    vm_index = 8
+    logger = Logger()
+    next_state = '"next state return string!!"'
 
-if __name__ == '__main__':
-    vm_index = 1
-    logger=Logger()
-    next_state='"next state return string!!"'
-
-
-    #upgrade test
-    upgrade_cards_state(vm_index, logger, next_state)
+    # upgrade test
+    open_chests_state(vm_index, logger, next_state)
