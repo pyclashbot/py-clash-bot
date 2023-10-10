@@ -109,8 +109,14 @@ def check_for_vm(logger: Logger) -> int:
 
     vm_index = get_vm_index(logger, EMULATOR_NAME)
 
-    # return the index. if no vms named pyclashbot exist, create one.
-    return vm_index if vm_index != -1 else create_vm(logger)
+    if vm_index != 1:
+        logger.change_status(f'Found a vm named "pyclashbot" index: #{vm_index}')
+        return vm_index
+
+    else:
+        logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
+        return create_vm(logger)
+
 
 
 def start_clash_royale(logger: Logger, vm_index):
