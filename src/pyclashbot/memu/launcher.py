@@ -109,13 +109,12 @@ def check_for_vm(logger: Logger) -> int:
 
     vm_index = get_vm_index(logger, EMULATOR_NAME)
 
-    if vm_index != 1:
+    if vm_index != -1:
         logger.change_status(f'Found a vm named "pyclashbot" index: #{vm_index}')
         return vm_index
 
-    else:
-        logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
-        return create_vm(logger)
+    logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
+    return create_vm(logger)
 
 
 
