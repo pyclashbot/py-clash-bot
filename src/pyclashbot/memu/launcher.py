@@ -106,6 +106,7 @@ def check_for_vm(logger: Logger) -> int:
     Returns:
         int: index of the vm
     """
+    start_time = time.time()
 
     vm_index = get_vm_index(logger, EMULATOR_NAME)
 
@@ -114,6 +115,18 @@ def check_for_vm(logger: Logger) -> int:
         return vm_index
 
     logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
+
+    new_vm_index = create_vm()
+    logger.change_status(f"New VM index is {new_vm_index}")
+
+    logger.change_status("Configuring emualtor")
+    configure_vm(vm_index=new_vm_index)
+
+    logger.change_status("Setting language")
+    rename_vm(vm_index=new_vm_index, name=EMULATOR_NAME)
+
+    logger.change_status(f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s")
+
     return create_vm()
 
 
@@ -141,6 +154,8 @@ def start_clash_royale(logger: Logger, vm_index):
 # making/configuring emulator methods
 def create_vm():
     """Create a vm with the given name and version"""
+    start_memuc_console()
+
     vm_index = pmc.create_vm(vm_version="96")
     return vm_index
 
