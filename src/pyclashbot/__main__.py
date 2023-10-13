@@ -15,6 +15,7 @@ from pyclashbot.utils.caching import (
     check_user_settings,
     read_user_settings,
 )
+from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
@@ -235,9 +236,9 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
 
     # setup the main thread and start it
 
-    args = job_dictionary
+    thread_args = job_dictionary
     # args: tuple[list[str], int] = (jobs, acc_count)
-    thread = WorkerThread(logger, args)
+    thread = WorkerThread(logger, thread_args)
     thread.start()
 
     # enable the stop button after the thread is started
@@ -329,7 +330,7 @@ def handle_thread_finished(
     return thread, logger
 
 
-def main_gui() -> None:
+def main_gui(start_on_run=False) -> None:
     """method for displaying the main gui"""
     # create gui window
     window = create_window()
@@ -344,6 +345,9 @@ def main_gui() -> None:
     # run the gui
     while True:
         event, values = read_window(window, timeout=10)
+        if start_on_run:
+            event = "Start"
+            start_on_run = False
 
         # on exit event, kill any existing thread
         if event in [sg.WIN_CLOSED, "Exit"]:
@@ -408,4 +412,5 @@ def main_gui() -> None:
 
 
 if __name__ == "__main__":
-    main_gui()
+    cli_args = arg_parser()
+    main_gui(start_on_run=cli_args.start)
