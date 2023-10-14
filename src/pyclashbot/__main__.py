@@ -62,6 +62,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
+        "stop_fight_on_full_chests_user_toggle": values["stop_fight_on_full_chests_user_toggle"],
+        'random_plays_user_toggle': values['random_plays_user_toggle'],
+
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -79,6 +82,10 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         ],
         "war_attack_increment_user_input": values["war_attack_increment_user_input"],
     }
+
+    print(f'random plays toggle is {jobs_dictionary["random_plays_user_toggle"]} in make_job_dictionary')
+    print(f'stopfight on fullchest toggle is  {jobs_dictionary["stop_fight_on_full_chests_user_toggle"]} in make_job_dictionary')
+
     return jobs_dictionary
 
 

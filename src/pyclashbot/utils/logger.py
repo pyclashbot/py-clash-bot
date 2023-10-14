@@ -695,7 +695,7 @@ class Logger:
 
         self.log("User Toggle Keys and Values:")
         for key, value in user_toggle_keys_and_values:
-            while len(key) < 35:
+            while len(key) < 45:
                 key += " "
             self.log(f"     -{key}:           {value}")
 

@@ -228,18 +228,26 @@ def state_tree(
     if state == "2v2_fight":  # --> end_fight
         next_state = "end_fight"
 
+        random_fight_mode = job_list["random_plays_user_toggle"]
+
+        print(f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
+
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-        return do_2v2_fight_state(vm_index, logger, next_state)
+        return do_2v2_fight_state(vm_index, logger, next_state,random_fight_mode)
 
     if state == "1v1_fight":  # --> end_fight
         next_state = "end_fight"
 
+        random_fight_mode = job_list["random_plays_user_toggle"]
+        print(f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
+
+
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-        return do_1v1_fight_state(vm_index, logger, next_state)
+        return do_1v1_fight_state(vm_index, logger, next_state,random_fight_mode)
 
     if state == "end_fight":  # --> card_mastery
         next_state = "card_mastery"
