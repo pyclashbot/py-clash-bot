@@ -889,6 +889,9 @@ def do_2v2_fight_state(vm_index, logger: Logger, next_state,random_fight_mode:Bo
     print(f'random_fight_mode is {random_fight_mode} in do_2v2_fight_state()')
 
 
+
+
+
     # wait for battle start
     if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) is not True:
         logger.change_status(

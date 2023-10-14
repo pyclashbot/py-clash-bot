@@ -13,7 +13,7 @@ from pyclashbot.bot.do_fight_state import (
 )
 from pyclashbot.bot.free_offer_state import free_offer_collection_state
 from pyclashbot.bot.nav import wait_for_clash_main_menu
-from pyclashbot.bot.open_chests_state import open_chests_state
+from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war_state import war_state
@@ -209,12 +209,19 @@ def state_tree(
         _1v1_toggle = job_list["1v1_battle_user_toggle"]
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
 
+        #if all chests slots are taken, skip starting a battle
+        if job_list['skip_fight_if_full_chests_user_toggle']:
+            if all(chest_status == "available" for chest_status in get_chest_statuses(vm_index)):
+                logger.change_status("All chests are available, skipping fight state")
+                return next_state
+
         if _1v1_toggle and _2v2_toggle:
             logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
         elif _1v1_toggle:
             logger.log("1v1 is toggled")
         elif _2v2_toggle:
             logger.log("2v2 is toggled")
+
 
         if _1v1_toggle and _2v2_toggle:
             if logger.get_1v1_fights() < logger.get_2v2_fights():
@@ -244,6 +251,9 @@ def state_tree(
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
+
+
+
         return do_2v2_fight_state(vm_index, logger, next_state, random_fight_mode)
 
     if state == "1v1_fight":  # --> end_fight
