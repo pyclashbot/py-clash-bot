@@ -95,8 +95,8 @@ jobs_checklist = [
 
                 [
                     job_check_box(
-                        "Stop fighting on full chests",
-                        "stop_fight_on_full_chests_user_toggle",
+                        "Open Bannerbox",
+                        "open_bannerbox_user_toggle",
                     ),
                 ],
 
@@ -107,7 +107,7 @@ jobs_checklist = [
                     ),
                 ],
 
-                
+
             ],
             scrollable=True,
             vertical_scroll_only=True,

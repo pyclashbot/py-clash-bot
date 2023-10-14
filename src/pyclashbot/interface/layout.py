@@ -161,7 +161,7 @@ user_config_keys = [
     "card_upgrade_user_toggle",
     "war_user_toggle",
     "random_decks_user_toggle",
-    'stop_fight_on_full_chests_user_toggle',
+    'open_bannerbox_user_toggle',
     'random_plays_user_toggle',
 
     # job increment controls keys
