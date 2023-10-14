@@ -1,5 +1,6 @@
 """time module for timing functions and controling pacing"""
 import time
+from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
 
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
 from pyclashbot.bot.deck_randomization import randomize_deck_state
@@ -159,8 +160,8 @@ def state_tree(
         # return output of this state
         return request_state(vm_index, logger, next_state)
 
-    if state == "free_offer_collection":  # --> randomize_deck
-        next_state = "randomize_deck"
+    if state == "free_offer_collection":  # --> bannerbox
+        next_state = "bannerbox"
 
         # if job not selected, return next state
         if not job_list["free_offer_user_toggle"]:
@@ -176,6 +177,14 @@ def state_tree(
 
         # return output of this state
         return free_offer_collection_state(vm_index, logger, next_state)
+
+    if state == "bannerbox":  # --> randomize_deck
+        next_state = "randomize_deck"
+        if not job_list["open_bannerbox_user_toggle"]:
+            logger.log("Bannerbox job isnt toggled. Skipping")
+            return next_state
+
+        return collect_bannerbox_rewards_state(vm_index, logger, next_state)
 
     if state == "randomize_deck":  # --> start_fight
         next_state = "start_fight"
@@ -235,7 +244,7 @@ def state_tree(
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-        return do_2v2_fight_state(vm_index, logger, next_state,random_fight_mode)
+        return do_2v2_fight_state(vm_index, logger, next_state, random_fight_mode)
 
     if state == "1v1_fight":  # --> end_fight
         next_state = "end_fight"
@@ -243,11 +252,10 @@ def state_tree(
         random_fight_mode = job_list["random_plays_user_toggle"]
         print(f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
 
-
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-        return do_1v1_fight_state(vm_index, logger, next_state,random_fight_mode)
+        return do_1v1_fight_state(vm_index, logger, next_state, random_fight_mode)
 
     if state == "end_fight":  # --> card_mastery
         next_state = "card_mastery"
