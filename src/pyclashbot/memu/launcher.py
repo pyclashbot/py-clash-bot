@@ -45,8 +45,9 @@ def restart_emulator(logger, start_time=time.time()):
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    logger.change_status(status="Manual wait time...")
-    time.sleep(MANUAL_VM_WAIT_TIME)
+    for i in range(MANUAL_VM_WAIT_TIME):
+        logger.change_status(status=f"Waiting {MANUAL_VM_WAIT_TIME-i}s...")
+        time.sleep(1)
 
     # skip ads
     if skip_ads(vm_index) == "fail":

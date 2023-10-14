@@ -163,6 +163,7 @@ user_config_keys = [
     "random_decks_user_toggle",
     'open_bannerbox_user_toggle',
     'random_plays_user_toggle',
+    'skip_fight_if_full_chests_user_toggle',
 
     # job increment controls keys
     "request_increment_user_input",
