@@ -382,3 +382,10 @@ and login before using this bot."""
             break
     _window.close()
     sys.exit(0)
+
+
+if __name__ == '__main__':
+    print('start')
+    configure_vm(14)
+    configure_vm(14)
+    print('done')
