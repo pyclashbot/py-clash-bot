@@ -89,6 +89,25 @@ jobs_checklist = [
                         "random_decks_user_toggle",
                     ),
                 ],
+
+
+
+
+                [
+                    job_check_box(
+                        "Stop fighting on full chests",
+                        "stop_fight_on_full_chests_user_toggle",
+                    ),
+                ],
+
+                [
+                    job_check_box(
+                        "Random plays",
+                        "random_plays_user_toggle",
+                    ),
+                ],
+
+                
             ],
             scrollable=True,
             vertical_scroll_only=True,

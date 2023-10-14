@@ -41,19 +41,14 @@ def restart_emulator(logger, start_time=time.time()):
     configure_vm(vm_index=vm_index)
 
     # start the vm
-    logger.change_status(status="Opening the Memu emulator...")
+    logger.change_status(status="Opening the pyclashbot emulator...")
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    wait_start_time = time.time()
-    time_waiting = 0
-    while time_waiting < MANUAL_VM_WAIT_TIME:
-        time.sleep(4)
-        time_waiting = time.time() - wait_start_time
-        logger.change_status((f"Waiting for VM to load {str(time_waiting)[:2]}"))
+    logger.change_status(status="Manual wait time...")
+    time.sleep(MANUAL_VM_WAIT_TIME)
 
     # skip ads
-    # logger.change_status("Skipping ads")
     if skip_ads(vm_index) == "fail":
         logger.log("Error 99 Failed to skip ads")
         return restart_emulator(logger, start_time)
@@ -111,7 +106,7 @@ def check_for_vm(logger: Logger) -> int:
     vm_index = get_vm_index(logger, EMULATOR_NAME)
 
     if vm_index != -1:
-        logger.change_status(f'Found a vm named "pyclashbot" index: #{vm_index}')
+        logger.change_status(f'Found a vm named "pyclashbot" (#{vm_index})')
         return vm_index
 
     logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
