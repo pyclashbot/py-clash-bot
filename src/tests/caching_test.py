@@ -46,13 +46,12 @@ class CachingTest(unittest.TestCase):
         test_name = "malformed_cache_and_load_data.json"
         with TemporaryDirectory() as temp_dir:
             test_f = join(temp_dir, test_name)
-            # cache data
-            _cache_data({"test": "test"}, test_f)
-
-            # change the file to be malformed
-            with open(test_f, "r+", encoding="utf-8") as f:
-                f.seek(0, 0)
-                f.write("{")
-
+            # write a malformed json blob to the file
+            with open(test_f, "w", encoding="utf-8") as f:
+                f.write("malformed")
             # load data
             self.assertEqual(_load_data(test_f), {})
+
+
+if __name__ == "__main__":
+    unittest.main()
