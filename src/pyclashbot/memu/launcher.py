@@ -175,7 +175,7 @@ def set_vm_language(vm_index: int):
 
     for command in set_language_commands:
         pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-        time.sleep(0.1)
+        time.sleep(0.33)
 
 
 def configure_vm(vm_index):
@@ -204,6 +204,8 @@ def configure_vm(vm_index):
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
+    set_vm_language(vm_index=vm_index)
+    set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
 
 
@@ -381,7 +383,4 @@ and login before using this bot."""
 
 
 if __name__ == '__main__':
-    print('start')
-    configure_vm(14)
-    configure_vm(14)
-    print('done')
+    configure_vm(4)
