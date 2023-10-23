@@ -732,13 +732,13 @@ virtualenv = ">=20.10.0"
 
 [[package]]
 name = "prospector"
-version = "1.10.2"
+version = "1.10.3"
 description = "Prospector is a tool to analyse Python code by aggregating the result of other tools."
 optional = false
 python-versions = ">=3.7.2,<4.0"
 files = [
-    {file = "prospector-1.10.2-py3-none-any.whl", hash = "sha256:3bfe103c28bb821cca84926ca31357fbfd32405e4bf8c34ca2e55885684557e4"},
-    {file = "prospector-1.10.2.tar.gz", hash = "sha256:cc8f09e79bdd32247edddf05b666940e88ad96338a84f5717b1e8c0678337821"},
+    {file = "prospector-1.10.3-py3-none-any.whl", hash = "sha256:8567df2218cdc97d29f297ee3e3b54b96b3a2dab835931955c3a7bbd95aff6f7"},
+    {file = "prospector-1.10.3.tar.gz", hash = "sha256:f29ab19fd430869eb34490761af77406d2cfedd9b50292cf4d8db0288c9d764a"},
 ]
 
 [package.dependencies]
@@ -1288,4 +1288,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d16bc4b77e4a43296d8cfb53d8424e58855e54056965fe24dd6cfa84751ef101"
+content-hash = "af1885a894e29f3c9c89cfca19b43714e5d3dd0b3951c19b3661895626360347"
