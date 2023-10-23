@@ -666,12 +666,12 @@ def check_if_on_clash_main_menu(vm_index):
     colors = [
         [56, 162, 214],
         [49, 207, 238],
-        [22, 189, 60],
+        [21, 189, 60],
         [139, 106, 73],
         [155, 121, 82],
         [138, 105, 71],
-        [255, 244, 228],
-        [255, 240, 215],
+        [104,  75,  19],
+        [105,  74,  19],
     ]
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
