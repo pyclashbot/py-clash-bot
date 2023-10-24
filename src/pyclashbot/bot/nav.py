@@ -1110,16 +1110,16 @@ def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
     """
     if (
         check_line_for_color(
-            vm_index, x_1=182, y_1=78, x_2=208, y_2=101, color=(208, 144, 43)
+            vm_index, x_1=182, y_1=78, x_2=208, y_2=101, color=(46, 152, 252)
         )
         and check_line_for_color(
-            vm_index, x_1=184, y_1=196, x_2=206, y_2=215, color=(255, 255, 255)
+            vm_index, x_1=184, y_1=196, x_2=206, y_2=215, color=(46, 152, 252)
         )
         and check_line_for_color(
-            vm_index, x_1=182, y_1=360, x_2=210, y_2=384, color=(255, 255, 255)
+            vm_index, x_1=182, y_1=360, x_2=210, y_2=384, color=(24, 144, 252)
         )
         and check_line_for_color(
-            vm_index, x_1=182, y_1=128, x_2=208, y_2=151, color=(192, 135, 80)
+            vm_index, x_1=182, y_1=128, x_2=208, y_2=151, color=(45, 151, 252)
         )
     ):
         return True
