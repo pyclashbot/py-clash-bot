@@ -16,7 +16,7 @@ _2V2_START_WAIT_TIMEOUT = 60  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
-CLASH_MAIN_OPTIONS_BURGER_BUTTON = (365, 62)
+CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
 BATTLE_LOG_BUTTON = (241, 43)
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
@@ -235,8 +235,8 @@ def check_if_in_1v1_battle(vm_index) -> bool:
     ]
 
     colors = [
-        [232  ,70 ,252],
-        [223  ,25 ,248],
+        [232, 70, 252],
+        [223, 25, 248],
     ]
 
     for index, pixel in enumerate(pixels):
@@ -670,8 +670,8 @@ def check_if_on_clash_main_menu(vm_index):
         [139, 106, 73],
         [155, 121, 82],
         [138, 105, 71],
-        [104,  75,  19],
-        [105,  74,  19],
+        [104, 75, 19],
+        [105, 74, 19],
     ]
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
@@ -836,18 +836,32 @@ def handle_clash_main_tab_notifications(
     time.sleep(4)
 
     # click shop tab
-    click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1],clicks=2,interval=0.01)
+    click(
+        vm_index,
+        SHOP_TAB_FROM_CARD_TAB[0],
+        SHOP_TAB_FROM_CARD_TAB[1],
+        clicks=2,
+        interval=0.01,
+    )
     time.sleep(4)
 
     # click challenges tab
-    click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1],clicks=2,interval=0.01)
+    click(
+        vm_index,
+        CHALLENGES_TAB_FROM_SHOP_TAB[0],
+        CHALLENGES_TAB_FROM_SHOP_TAB[1],
+        clicks=2,
+        interval=0.01,
+    )
     time.sleep(4)
 
     # get back to main
     click(
         vm_index,
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
-        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],clicks=2,interval=0.01
+        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
+        clicks=2,
+        interval=0.01,
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(
