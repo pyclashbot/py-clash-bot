@@ -24,8 +24,9 @@ _Join the [Discord server](https://discord.gg/mx4W9qRNgF)!_
 2. Click the start button to create a new emulator. Wait for the emulator to load.
 3. `py-clash-bot` will detect that Clash Royale is not installed. You must manually install Clash Royale on the new emulator.
 4. Start Clash Royale and complete the tutorial (takes 30 seconds). Then sign into your account using the SuperCell ID login (or use the fresh account).
-5. Restart the bot, select the desired jobs to perform, then click the `Start` button.
-6. Enjoy the benefits of always-on farming with the py-clash-bot taking care of the heavy lifting for you.
+5. Set the game language to English.
+6. Restart the bot, select the desired jobs to perform, then click the `Start` button.
+7. Enjoy the benefits of always-on farming with the py-clash-bot taking care of the heavy lifting for you.
 
 ## Demo
 
