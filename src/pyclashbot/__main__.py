@@ -84,6 +84,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "deck_randomization_increment_user_input"
         ],
         "war_attack_increment_user_input": values["war_attack_increment_user_input"],
+        # account switching input info
+        "account_switching_toggle": values["account_switching_toggle"],
+        "account_switching_slider": int(values["account_switching_slider"]),
     }
 
     return jobs_dictionary
