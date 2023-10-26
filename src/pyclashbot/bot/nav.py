@@ -613,7 +613,7 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def wait_for_clash_main_menu(vm_index, logger):
+def wait_for_clash_main_menu(vm_index, logger) -> bool:
     """
     Waits for the user to be on the clash main menu.
     Returns True if on main menu, False if not.
