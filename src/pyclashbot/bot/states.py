@@ -1,5 +1,7 @@
 """time module for timing functions and controling pacing"""
+import random
 import time
+from pyclashbot.bot.account_switching import switch_accounts
 from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
 
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
@@ -209,9 +211,12 @@ def state_tree(
         _1v1_toggle = job_list["1v1_battle_user_toggle"]
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
 
-        #if all chests slots are taken, skip starting a battle
-        if job_list['skip_fight_if_full_chests_user_toggle']:
-            if all(chest_status == "available" for chest_status in get_chest_statuses(vm_index)):
+        # if all chests slots are taken, skip starting a battle
+        if job_list["skip_fight_if_full_chests_user_toggle"]:
+            if all(
+                chest_status == "available"
+                for chest_status in get_chest_statuses(vm_index)
+            ):
                 logger.change_status("All chests are available, skipping fight state")
                 return next_state
 
@@ -221,7 +226,6 @@ def state_tree(
             logger.log("1v1 is toggled")
         elif _2v2_toggle:
             logger.log("2v2 is toggled")
-
 
         if _1v1_toggle and _2v2_toggle:
             if logger.get_1v1_fights() < logger.get_2v2_fights():
@@ -251,8 +255,6 @@ def state_tree(
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-
-
 
         return do_2v2_fight_state(vm_index, logger, next_state, random_fight_mode)
 
@@ -293,8 +295,8 @@ def state_tree(
         # return output of this state
         return card_mastery_collection_state(vm_index, logger, next_state)
 
-    if state == "war":  # --> open_chests
-        next_state = "open_chests"
+    if state == "war":  # --> account_switch
+        next_state = "account_switch"
 
         # if job not selected, return next state
         if not job_list["war_user_toggle"]:
@@ -308,6 +310,20 @@ def state_tree(
 
         # return output of this state
         return war_state(vm_index, logger, next_state)
+
+    if state == "account_switch":  # --> open_chests
+        next_state = "open_chests"
+
+        if not job_list["account_switching_toggle"]:
+            logger.log("Account switching isnt toggled. Skipping this state")
+            return next_state
+
+        account_index_to_switch_to: int = random.randint(
+            1, job_list["account_switching_slider"]
+        )
+        if switch_accounts(vm_index, logger, account_index_to_switch_to) is False:
+            return "restart"
+        return next_state
 
     logger.error("Failure in state tree")
     return "fail"
