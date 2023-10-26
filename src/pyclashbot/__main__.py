@@ -377,7 +377,7 @@ def main_gui() -> None:
         # on Donate button event, open the donation link in browser
         elif event == "bug-report":
             webbrowser.open(
-                "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
+                "https://github.com/pyclashbot/py-clash-bot/issues/new/choose"
             )
 
         elif event == "upload-log":
