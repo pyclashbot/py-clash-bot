@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Install Poetry
         run: |
-          pipx install "poetry==1.3.2"
+          pipx install "poetry>=1.7.0"
           pipx install poethepoet
       - name: Set up Python 3.11
         id: pysetup
@@ -28,7 +28,6 @@ jobs:
         run: |
           cd src
           poetry env use '${{ steps.pysetup.outputs.python-path }}'
-          poetry config installer.parallel false
           poetry install --with build --without dev
       - name: Build package
         run: |
