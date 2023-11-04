@@ -10,47 +10,48 @@ iterations = 50000
 class CachingTest(unittest.TestCase):
     def test_cache_and_load_data(self):
         # create a temporary file for this test
-        test_name = "cache_and_load_data.dat"
+        test_name = "cache_and_load_data.json"
         with TemporaryDirectory() as temp_dir:
             test_f = join(temp_dir, test_name)
+            # demo data dict:
+            demo = {"test": "test"}
             # cache data
-            _cache_data("test", test_f)
+            _cache_data(demo, test_f)
             # load data
-            self.assertEqual(_load_data(test_f), "test")
+            self.assertEqual(_load_data(test_f), demo)
 
     def test_no_load_data(self):
-        self.assertEqual(_load_data("test_no.dat"), None)
+        self.assertEqual(_load_data("test_no.json"), {})
 
     def test_changed_cache_and_load_data(self):
         # testing if the cache data method overwrites the data
-        test_name = "changed_cache_and_load_data.dat"
+        test_name = "changed_cache_and_load_data.json"
         with TemporaryDirectory() as temp_dir:
             test_f = join(temp_dir, test_name)
+            # demo data dict:
+            demo = {"test": "test"}
             # cache data
-            _cache_data("test", test_f)
+            _cache_data(demo, test_f)
             # load data
-            self.assertEqual(_load_data(test_f), "test")
+            self.assertEqual(_load_data(test_f), demo)
+            # change data
+            demo["test"] = "test2"
             # cache data
-            _cache_data("test2", test_f)
+            _cache_data(demo, test_f)
             # load data
-            self.assertEqual(_load_data(test_f), "test2")
+            self.assertEqual(_load_data(test_f), demo)
 
     def test_malformed_cache_and_load_data(self):
         # testing if the load data method can handle malformed data
-        test_name = "malformed_cache_and_load_data.dat"
+        test_name = "malformed_cache_and_load_data.json"
         with TemporaryDirectory() as temp_dir:
             test_f = join(temp_dir, test_name)
-            # cache data
-            _cache_data("bad_test", test_f)
-
-            # change every 3rd byte to 1
-            with open(test_f, "rb+") as f:
-                f.seek(2)
-                while True:
-                    f.write(b"\x01")
-                    f.seek(3, 1)
-                    if f.tell() >= f.seek(0, 2):
-                        break
-
+            # write a malformed json blob to the file
+            with open(test_f, "w", encoding="utf-8") as f:
+                f.write("malformed")
             # load data
-            self.assertEqual(_load_data(test_f), None)
+            self.assertEqual(_load_data(test_f), {})
+
+
+if __name__ == "__main__":
+    unittest.main()
