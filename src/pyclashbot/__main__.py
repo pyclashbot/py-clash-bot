@@ -155,21 +155,23 @@ def save_current_settings(values) -> None:
     cache_user_settings(user_settings)
 
 
-def load_last_settings(window) -> None:
-    """method for accessing chacned user settings and updating the gui
+def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
+    """method for loading settings to the gui
     args:
-        window,the gui window
-    returns:
-        None
+        settings: dictionary of the settings to load
+        window: the gui window
     """
-    # if user settings file exists, load the cached settings
-    if check_user_settings():
+
+    if not settings and check_user_settings():
         read_window(window)  # read the window to edit the layout
         user_settings = read_user_settings()
         if user_settings is not None:
-            for key in user_config_keys:
-                if key in user_settings:
-                    window[key].update(user_settings[key])
+            settings = user_settings
+
+    if settings is not None:
+        for key in user_config_keys:
+            if key in settings:
+                window[key].update(settings[key])  # type: ignore
         window.refresh()  # refresh the window to update the layout
 
 
@@ -338,13 +340,13 @@ def handle_thread_finished(
     return thread, logger
 
 
-def main_gui() -> None:
+def main_gui(settings: None | dict[str, str] = None) -> None:
     """method for displaying the main gui"""
     # create gui window
     window = create_window()
 
     # load the last cached settings
-    load_last_settings(window=window)
+    load_settings(settings, window)
 
     # track worker thread and logger
     thread: WorkerThread | None = None
