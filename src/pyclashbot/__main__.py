@@ -62,6 +62,11 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
+        "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
+        "random_plays_user_toggle": values["random_plays_user_toggle"],
+        "skip_fight_if_full_chests_user_toggle": values[
+            "skip_fight_if_full_chests_user_toggle"
+        ],
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -78,7 +83,11 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "deck_randomization_increment_user_input"
         ],
         "war_attack_increment_user_input": values["war_attack_increment_user_input"],
+        # account switching input info
+        "account_switching_toggle": values["account_switching_toggle"],
+        "account_switching_slider": int(values["account_switching_slider"]),
     }
+
     return jobs_dictionary
 
 
@@ -373,7 +382,7 @@ def main_gui(settings: None | dict[str, str] = None) -> None:
         # on Donate button event, open the donation link in browser
         elif event == "bug-report":
             webbrowser.open(
-                "https://github.com/matthewmiglio/py-clash-bot/issues/new/choose"
+                "https://github.com/pyclashbot/py-clash-bot/issues/new/choose"
             )
 
         elif event == "upload-log":

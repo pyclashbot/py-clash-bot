@@ -12,7 +12,7 @@ To set up a development environment for py-clash-bot, you will need to have the 
 Once you have these tools installed, follow these steps to set up the project:
 
 1. Clone the py-clash-bot repository
-   `git clone https://github.com/matthewmiglio/py-clash-bot.git; cd py-clash-bot`
+   `git clone https://github.com/pyclashbot/py-clash-bot.git; cd py-clash-bot`
 2. Navigate to the `src` directory
    `cd src`
 3. Use Poetry to create a virtual environment and install dependencies

@@ -7,6 +7,7 @@ import random
 from os import path
 
 import PySimpleGUI as sg
+from cv2 import exp
 
 from pyclashbot.interface.controls import controls
 from pyclashbot.interface.joblist import jobs_checklist
@@ -95,6 +96,22 @@ main_layout = [
         sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
         sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
     ],
+    [
+        sg.Frame(
+            layout=[
+                [
+                    sg.Checkbox(
+                        "Account Switching",
+                        key="account_switching_toggle",
+                        default=False,
+                    ),
+                    sg.Slider(range=(1, 4), orientation="h",key="account_switching_slider",),
+                ],
+            ],
+            title="Account Switching",
+            expand_x=True,
+        ),
+    ],
     # stats
     [
         sg.Column(
@@ -131,7 +148,6 @@ main_layout = [
         sg.Column(
             [
                 [
-
                     sg.Input(
                         "Idle",
                         key="current_status",
@@ -161,6 +177,9 @@ user_config_keys = [
     "card_upgrade_user_toggle",
     "war_user_toggle",
     "random_decks_user_toggle",
+    "open_bannerbox_user_toggle",
+    "random_plays_user_toggle",
+    "skip_fight_if_full_chests_user_toggle",
     # job increment controls keys
     "request_increment_user_input",
     "free_offer_collection_increment_user_input",
@@ -168,7 +187,10 @@ user_config_keys = [
     "card_mastery_collect_increment_user_input",
     "open_chests_increment_user_input",
     "deck_randomization_increment_user_input",
-    'war_attack_increment_user_input',
+    "war_attack_increment_user_input",
+    #account switching stuff
+    'account_switching_toggle',
+    'account_switching_slider',
 ]
 
 # list of button and checkbox keys to disable when the bot is running

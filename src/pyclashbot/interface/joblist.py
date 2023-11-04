@@ -36,12 +36,12 @@ def no_jobs_popup() -> None:
     window.close()
 
 
-def job_check_box(text: str, element_key: str) -> sg.Checkbox:
-    '''returns a checkbox element for the joblist window'''
+def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbox:
+    """returns a checkbox element for the joblist window"""
 
     return sg.Checkbox(
         text,
-        default=True,
+        default=default_value,
         key=element_key,
         enable_events=True,
     )
@@ -52,7 +52,9 @@ jobs_checklist = [
         sg.Column(
             [
                 [
-                    job_check_box("1v1 battles", "1v1_user_toggle"),
+                    job_check_box(
+                        "1v1 battles", "1v1_user_toggle", default_value=False
+                    ),
                 ],
                 [
                     job_check_box("2v2 battles", "2v2_user_toggle"),
@@ -69,7 +71,11 @@ jobs_checklist = [
                     ),
                 ],
                 [
-                    job_check_box("Card Upgrading", "card_upgrade_user_toggle"),
+                    job_check_box(
+                        "Card Upgrading",
+                        "card_upgrade_user_toggle",
+                        default_value=False,
+                    ),
                 ],
                 [
                     job_check_box(
@@ -85,8 +91,25 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
-                        "Random Decks",
-                        "random_decks_user_toggle",
+                        "Random Decks", "random_decks_user_toggle", default_value=False
+                    ),
+                ],
+                [
+                    job_check_box(
+                        "Open Bannerbox",
+                        "open_bannerbox_user_toggle",
+                    ),
+                ],
+                [
+                    job_check_box(
+                        "Random plays", "random_plays_user_toggle", default_value=False
+                    ),
+                ],
+                [
+                    job_check_box(
+                        "Skip fights when full chests",
+                        "skip_fight_if_full_chests_user_toggle",
+                        default_value=False,
                     ),
                 ],
             ],

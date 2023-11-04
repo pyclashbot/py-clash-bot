@@ -16,7 +16,7 @@ _2V2_START_WAIT_TIMEOUT = 60  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
-CLASH_MAIN_OPTIONS_BURGER_BUTTON = (365, 62)
+CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
 BATTLE_LOG_BUTTON = (241, 43)
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
@@ -235,8 +235,8 @@ def check_if_in_1v1_battle(vm_index) -> bool:
     ]
 
     colors = [
-        [232  ,70 ,252],
-        [223  ,25 ,248],
+        [232, 70, 252],
+        [223, 25, 248],
     ]
 
     for index, pixel in enumerate(pixels):
@@ -613,7 +613,7 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def wait_for_clash_main_menu(vm_index, logger):
+def wait_for_clash_main_menu(vm_index, logger) -> bool:
     """
     Waits for the user to be on the clash main menu.
     Returns True if on main menu, False if not.
@@ -666,12 +666,12 @@ def check_if_on_clash_main_menu(vm_index):
     colors = [
         [56, 162, 214],
         [49, 207, 238],
-        [22, 189, 60],
+        [21, 189, 60],
         [139, 106, 73],
         [155, 121, 82],
         [138, 105, 71],
-        [255, 244, 228],
-        [255, 240, 215],
+        [104, 75, 19],
+        [105, 74, 19],
     ]
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
@@ -836,18 +836,32 @@ def handle_clash_main_tab_notifications(
     time.sleep(4)
 
     # click shop tab
-    click(vm_index, SHOP_TAB_FROM_CARD_TAB[0], SHOP_TAB_FROM_CARD_TAB[1],clicks=2,interval=0.01)
+    click(
+        vm_index,
+        SHOP_TAB_FROM_CARD_TAB[0],
+        SHOP_TAB_FROM_CARD_TAB[1],
+        clicks=2,
+        interval=0.01,
+    )
     time.sleep(4)
 
     # click challenges tab
-    click(vm_index, CHALLENGES_TAB_FROM_SHOP_TAB[0], CHALLENGES_TAB_FROM_SHOP_TAB[1],clicks=2,interval=0.01)
+    click(
+        vm_index,
+        CHALLENGES_TAB_FROM_SHOP_TAB[0],
+        CHALLENGES_TAB_FROM_SHOP_TAB[1],
+        clicks=2,
+        interval=0.01,
+    )
     time.sleep(4)
 
     # get back to main
     click(
         vm_index,
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
-        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],clicks=2,interval=0.01
+        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
+        clicks=2,
+        interval=0.01,
     )
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(
@@ -1110,16 +1124,16 @@ def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
     """
     if (
         check_line_for_color(
-            vm_index, x_1=182, y_1=78, x_2=208, y_2=101, color=(208, 144, 43)
+            vm_index, x_1=182, y_1=78, x_2=208, y_2=101, color=(46, 152, 252)
         )
         and check_line_for_color(
-            vm_index, x_1=184, y_1=196, x_2=206, y_2=215, color=(255, 255, 255)
+            vm_index, x_1=184, y_1=196, x_2=206, y_2=215, color=(46, 152, 252)
         )
         and check_line_for_color(
-            vm_index, x_1=182, y_1=360, x_2=210, y_2=384, color=(255, 255, 255)
+            vm_index, x_1=182, y_1=360, x_2=210, y_2=384, color=(24, 144, 252)
         )
         and check_line_for_color(
-            vm_index, x_1=182, y_1=128, x_2=208, y_2=151, color=(192, 135, 80)
+            vm_index, x_1=182, y_1=128, x_2=208, y_2=151, color=(45, 151, 252)
         )
     ):
         return True

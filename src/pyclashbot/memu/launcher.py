@@ -38,22 +38,18 @@ def restart_emulator(logger, start_time=time.time()):
     # check for the pyclashbot vm, if not found then create it
     vm_index = check_for_vm(logger)
     print(f"Found vm of index {vm_index}")
-    configure_vm(logger, vm_index=vm_index)
+    configure_vm(vm_index=vm_index)
 
     # start the vm
-    logger.change_status(status="Opening the Memu emulator...")
+    logger.change_status(status="Opening the pyclashbot emulator...")
     pmc.start_vm(vm_index=vm_index)
 
     # wait for the window to appear
-    wait_start_time = time.time()
-    time_waiting = 0
-    while time_waiting < MANUAL_VM_WAIT_TIME:
-        time.sleep(4)
-        time_waiting = time.time() - wait_start_time
-        logger.change_status((f"Waiting for VM to load {str(time_waiting)[:2]}"))
+    for i in range(MANUAL_VM_WAIT_TIME):
+        logger.change_status(status=f"Waiting {MANUAL_VM_WAIT_TIME-i}s...")
+        time.sleep(1)
 
     # skip ads
-    # logger.change_status("Skipping ads")
     if skip_ads(vm_index) == "fail":
         logger.log("Error 99 Failed to skip ads")
         return restart_emulator(logger, start_time)
@@ -106,16 +102,28 @@ def check_for_vm(logger: Logger) -> int:
     Returns:
         int: index of the vm
     """
+    start_time = time.time()
 
     vm_index = get_vm_index(logger, EMULATOR_NAME)
 
     if vm_index != -1:
-        logger.change_status(f'Found a vm named "pyclashbot" index: #{vm_index}')
+        logger.change_status(f'Found a vm named "pyclashbot" (#{vm_index})')
         return vm_index
 
     logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
-    return create_vm(logger)
 
+    new_vm_index = create_vm()
+    logger.change_status(f"New VM index is {new_vm_index}")
+
+    logger.change_status("Configuring emualtor")
+    configure_vm(vm_index=new_vm_index)
+
+    logger.change_status("Setting language")
+    rename_vm(vm_index=new_vm_index, name=EMULATOR_NAME)
+
+    logger.change_status(f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s")
+
+    return create_vm()
 
 
 def start_clash_royale(logger: Logger, vm_index):
@@ -140,36 +148,19 @@ def start_clash_royale(logger: Logger, vm_index):
 
 
 # making/configuring emulator methods
-def create_vm(logger: Logger):
-    # create a vm named pyclashbot
-    logger.change_status(status="Creating VM...")
+def create_vm():
+    """Create a vm with the given name and version"""
     start_memuc_console()
 
-    vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
-    while vm_index == -1:  # handle when vm creation fails
-        vm_index = pmc.create_vm(vm_version=ANDROID_VERSION)
-        time.sleep(1)
-    time.sleep(5)
-    configure_vm(logger, vm_index)
-    # rename the vm to pyclashbot
-    rename_vm(logger, vm_index, EMULATOR_NAME)
-    logger.change_status(status=f"Created VM: {vm_index} - {EMULATOR_NAME}")
+    vm_index = pmc.create_vm(vm_version="96")
     return vm_index
 
-
 def rename_vm(
-    logger: Logger,
     vm_index: int,
     name: str,
 ):
     """rename the vm to name"""
-    count = 0
-    while get_vm_index(logger, name) != vm_index:
-        logger.change_status(
-            status=f"Renaming VM {vm_index} to {name} {f'(attempt {count})' if count > 0 else ''}"
-        )
-        pmc.rename_vm(vm_index=vm_index, new_name=name)
-        count += 1
+    pmc.rename_vm(vm_index=vm_index, new_name=name)
 
 
 def set_vm_language(vm_index: int):
@@ -184,14 +175,10 @@ def set_vm_language(vm_index: int):
 
     for command in set_language_commands:
         pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-        time.sleep(0.1)
+        time.sleep(0.33)
 
 
-def configure_vm(logger: Logger, vm_index):
-    logger.change_status(status="Configuring VM")
-
-    start_memuc_console()
-
+def configure_vm(vm_index):
     cpu_count: int = psutil.cpu_count(logical=False)
     cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
     total_mem = psutil.virtual_memory()[0] // 1024 // 1024
@@ -217,9 +204,9 @@ def configure_vm(logger: Logger, vm_index):
     for key, value in configuration.items():
         pmc.set_configuration_vm(key, value, vm_index=vm_index)
 
-    time.sleep(3)
     set_vm_language(vm_index=vm_index)
-    time.sleep(10)
+    set_vm_language(vm_index=vm_index)
+    set_vm_language(vm_index=vm_index)
 
 
 # emulator interaction methods
@@ -393,3 +380,7 @@ and login before using this bot."""
             break
     _window.close()
     sys.exit(0)
+
+
+if __name__ == '__main__':
+    configure_vm(4)
