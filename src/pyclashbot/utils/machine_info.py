@@ -24,10 +24,13 @@ MACHINE_INFO: dict[str, str | int | float] = {
     "os_machine": platform.machine(),
     "architecture": platform.architecture()[0],
     "processor": platform.processor(),
-    "screensize": (user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)),
-    "full_screensize": (user32.GetSystemMetrics(78), user32.GetSystemMetrics(79)),
-    "memory": psutil.virtual_memory().total,
-    "cpu_count": psutil.cpu_count(logical=False),
-    "cpu_freq": psutil.cpu_freq().current,
-    "memu_version": memu_config["reginfo"]["version"],
+    "screensize": f"{user32.GetSystemMetrics(0)}, {user32.GetSystemMetrics(1)}",
+    "full_screensize": f"{user32.GetSystemMetrics(78)}, {user32.GetSystemMetrics(79)}",
+    "memory": int(psutil.virtual_memory().total),
+    "cpu_count": int(psutil.cpu_count(logical=False)),
+    "cpu_freq": float(psutil.cpu_freq().current),
+    "memu_version": memu_config.get("reginfo", "version", fallback="unknown"),
 }
+
+if __name__ == "__main__":
+    print(MACHINE_INFO)
