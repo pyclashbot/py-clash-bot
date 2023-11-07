@@ -30,22 +30,22 @@ def screenshot(vm_index: int) -> ndarray:
     Returns:
         numpy.ndarray: Screenshot of the given region
     """
-    try:
-        # read screencap from vm using screencap output encoded in base64
-        shell_out = pmc.send_adb_command_vm(
-            vm_index=vm_index,
-            command="shell screencap -p | base64",
-        )
+    while True:  # loop until a valid image is returned
+        try:
+            # read screencap from vm using screencap output encoded in base64
+            shell_out = pmc.send_adb_command_vm(
+                vm_index=vm_index,
+                command="shell screencap -p | base64",
+            )
 
-        # remove non-image data from shell output
-        image_b64 = re.sub(
-            r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
-        ).replace("\n", "")
-        return open_from_b64(image_b64)
+            # remove non-image data from shell output
+            image_b64 = re.sub(
+                r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
+            ).replace("\n", "")
+            return open_from_b64(image_b64)
 
-    except (PyMemucError, FileNotFoundError, InvalidImageError):
-        time.sleep(0.1)
-        return screenshot(vm_index)
+        except (PyMemucError, FileNotFoundError, InvalidImageError):
+            time.sleep(0.1)
 
 
 def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
