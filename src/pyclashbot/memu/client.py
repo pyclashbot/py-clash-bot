@@ -4,11 +4,10 @@ import re
 import time
 
 from numpy import ndarray
-from pymemuc import PyMemuc, PyMemucError
+from pymemuc import PyMemucError
 
+from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.image_handler import InvalidImageError, open_from_b64
-
-pmc = PyMemuc(debug=False)
 
 
 def save_screenshot(vm_index):

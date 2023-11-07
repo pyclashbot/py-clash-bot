@@ -13,14 +13,13 @@ from os.path import join
 import numpy
 import psutil
 import PySimpleGUI as sg
-from pymemuc import PyMemuc, PyMemucError, VMInfo
+from pymemuc import PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import screenshot
+from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
-
-pmc = PyMemuc(debug=False)
 
 ANDROID_VERSION = "96"  # android 9, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
@@ -121,7 +120,9 @@ def check_for_vm(logger: Logger) -> int:
     logger.change_status("Setting language")
     rename_vm(vm_index=new_vm_index, name=EMULATOR_NAME)
 
-    logger.change_status(f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s")
+    logger.change_status(
+        f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s"
+    )
 
     return create_vm()
 
@@ -154,6 +155,7 @@ def create_vm():
 
     vm_index = pmc.create_vm(vm_version="96")
     return vm_index
+
 
 def rename_vm(
     vm_index: int,
@@ -382,5 +384,5 @@ and login before using this bot."""
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     configure_vm(4)
