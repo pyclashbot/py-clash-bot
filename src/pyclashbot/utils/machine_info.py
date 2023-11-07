@@ -6,12 +6,12 @@ import platform
 from os.path import join
 
 import psutil
-from pymemuc import PyMemuc
 
+from pyclashbot.memu.pmc import pmc
 
 user32 = ctypes.windll.user32
 
-pmc = PyMemuc()
+
 memu_config = configparser.ConfigParser()
 memu_config.read(
     join(pmc._get_memu_top_level(), "config.ini")  # pylint: disable=protected-access
