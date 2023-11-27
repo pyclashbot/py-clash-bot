@@ -87,6 +87,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         # account switching input info
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switching_slider": int(values["account_switching_slider"]),
+        "next_account": 0
     }
 
     return jobs_dictionary
@@ -263,7 +264,7 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
 def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     """method for stopping the main bot thread
     args:
-        logger, the logger object for for stats storage and printing
+        logger, the  object for for stats storage and printing
         window, the gui window
         thread: the main bot thread
     returns:
