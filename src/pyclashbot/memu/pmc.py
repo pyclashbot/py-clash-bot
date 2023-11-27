@@ -6,6 +6,6 @@ import sys
 
 from pymemuc import PyMemuc
 
-FROZEN = getattr(sys, "frozen", False)
+FROZEN = True #getattr(sys, "frozen", False)
 
 pmc = PyMemuc(debug=not FROZEN)
