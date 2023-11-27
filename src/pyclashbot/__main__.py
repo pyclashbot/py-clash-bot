@@ -264,7 +264,7 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
 def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     """method for stopping the main bot thread
     args:
-        logger, the  object for for stats storage and printing
+        logger, the logger object for for stats storage and printing
         window, the gui window
         thread: the main bot thread
     returns:

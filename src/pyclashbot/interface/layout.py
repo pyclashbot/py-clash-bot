@@ -59,9 +59,6 @@ def get_random_donate_image_path():
 
     # if 'github exists in the list, then we're in a source code version
     # of the bot, so source the images from the assets folder
-
-    donate_image_sources = []
-
     if ".github" in donate_image_sources:
         donate_image_sources = []
 
