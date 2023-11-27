@@ -62,10 +62,13 @@ def get_random_donate_image_path():
 
     donate_image_sources = []
 
-    files = os.listdir("F:/py-clash-bot/src/pyclashbot/interface/assets")
-    for file in files:
-        this_path = os.path.join("F:/py-clash-bot/src/pyclashbot/interface/assets", file)
-        donate_image_sources.append(this_path)
+    if ".github" in donate_image_sources:
+        donate_image_sources = []
+
+        files = os.listdir("src/pyclashbot/interface/assets")
+        for file in files:
+            this_path = os.path.join("src/pyclashbot/interface/assets", file)
+            donate_image_sources.append(this_path)
 
     donate_image_sources = filter_donate_image_sources(donate_image_sources)
 
