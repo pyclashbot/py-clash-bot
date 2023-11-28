@@ -320,12 +320,20 @@ def state_tree(
 
         if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
             return "restart"
-        
+
         # increment next account iteration
         if job_list["next_account"] < job_list["account_switching_slider"]:
             job_list["next_account"] += job_list["next_account"] + 1
         else:
             job_list["next_account"] = 0
+
+        # update current account # to GUI
+        current_account = (
+            job_list["next_account"] - 1
+            if job_list["next_account"] > 0
+            else job_list["account_switching_slider"]
+        )
+        logger.change_current_account(current_account)
 
         return next_state
 

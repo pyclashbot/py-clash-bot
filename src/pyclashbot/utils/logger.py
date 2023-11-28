@@ -109,6 +109,7 @@ class Logger:
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
         self.war_attempts = 0
+        self.current_account = "-"
 
         # restart stats
         self.auto_restarts = 0
@@ -151,6 +152,7 @@ class Logger:
                 "current_status": self.current_status,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
+                "current_account": self.current_account,
             }
 
     def get_stats(self):
@@ -331,6 +333,10 @@ class Logger:
         """add request to log"""
         self.most_recent_restart_time = time_to_set
 
+    @_updates_log
+    def change_current_account(self, account_id):
+        self.current_account = account_id
+
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""
         self.deck_randomize_attempts += 1
@@ -480,28 +486,20 @@ class Logger:
 
         # if war_attempts is zero return true
         if war_attempts == 0:
-            self.log(
-                f"Can do war. {games_played} Games and {war_attempts} Attempts"
-            )
+            self.log(f"Can do war. {games_played} Games and {war_attempts} Attempts")
             return True
 
         # if games_played is zero return true
         if games_played == 0:
-            self.log(
-                f"Can do war. {games_played} Games and {war_attempts} Attempts"
-            )
+            self.log(f"Can do war. {games_played} Games and {war_attempts} Attempts")
             return True
 
         # if games_played / int(increment) > war_attempts
         if games_played / int(increment) >= war_attempts:
-            self.log(
-                f"Can do war. {games_played} Games & {war_attempts} Attempts"
-            )
+            self.log(f"Can do war. {games_played} Games & {war_attempts} Attempts")
             return True
 
-        self.log(
-            f"Cant do war. {games_played} Games and {war_attempts} Attempts"
-        )
+        self.log(f"Cant do war. {games_played} Games and {war_attempts} Attempts")
         return False
 
     def check_if_can_card_upgrade(self, increment):
