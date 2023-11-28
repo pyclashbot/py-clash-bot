@@ -42,12 +42,3 @@ class WorkerThread(PausableThread):
             # we don't want the thread to crash the interface so we catch all exceptions and log
             # raise e
             self.logger.error(str(err))
-
-    def make_account_switch_order(self, account_count) -> Any:
-        # Generate a list of numbers from 0 to account_count - 1
-        account_numbers = list(range(account_count))
-        # Shuffle the list randomly
-        random.shuffle(account_numbers)
-        # Pad the list with zeros up to length 4
-        account_numbers += [0] * (4 - account_count)
-        return account_numbers

@@ -72,13 +72,6 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
-                        "Card Upgrading",
-                        "card_upgrade_user_toggle",
-                        default_value=False,
-                    ),
-                ],
-                [
-                    job_check_box(
                         "Free Offer Collection",
                         "free_offer_user_toggle",
                     ),
@@ -91,23 +84,30 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
-                        "Random Decks", "random_decks_user_toggle", default_value=False
-                    ),
-                ],
-                [
-                    job_check_box(
                         "Open Bannerbox",
                         "open_bannerbox_user_toggle",
                     ),
                 ],
                 [
                     job_check_box(
-                        "Random plays", "random_plays_user_toggle", default_value=False
+                        "Card Upgrading",
+                        "card_upgrade_user_toggle",
+                        default_value=False,
                     ),
                 ],
                 [
                     job_check_box(
-                        "Skip fights when full chests",
+                        "Random Decks", "random_decks_user_toggle", default_value=False
+                    ),
+                ],
+                [
+                    job_check_box(
+                        "Random Plays", "random_plays_user_toggle", default_value=False
+                    ),
+                ],
+                [
+                    job_check_box(
+                        "Skip Fights When Full Chests",
                         "skip_fight_if_full_chests_user_toggle",
                         default_value=False,
                     ),
@@ -116,7 +116,7 @@ jobs_checklist = [
             scrollable=True,
             vertical_scroll_only=True,
             expand_x=True,
-            size=(None, 200),
+            size=(None, 285),
         )
     ],
 ]

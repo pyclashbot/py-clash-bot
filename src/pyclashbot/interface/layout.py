@@ -200,6 +200,7 @@ user_config_keys = [
     "open_chests_increment_user_input",
     "deck_randomization_increment_user_input",
     "war_attack_increment_user_input",
+    "account_switching_increment_user_input",
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",

@@ -53,7 +53,7 @@ def state_tree(
     start_time = time.time()
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
-    time.sleep(1)
+    time.sleep(0.1)
 
     # header in the log file to split the log by state loop iterations
     logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
@@ -121,7 +121,7 @@ def state_tree(
         if not logger.check_if_can_open_chests(
             job_list["open_chests_increment_user_input"]
         ):
-            logger.log("Cant open chests at this time, skipping this state")
+            logger.log("Can't open chests at this time, skipping this state")
             return next_state
 
         # run this state
@@ -140,7 +140,7 @@ def state_tree(
         if not logger.check_if_can_card_upgrade(
             job_list["card_upgrade_increment_user_input"]
         ):
-            logger.log("Upgrade state isnt ready, skipping this state")
+            logger.log("Upgrade state isn't ready, skipping this state")
             return next_state
 
         # return output of this state
@@ -151,12 +151,12 @@ def state_tree(
 
         # if job not selected, return next state
         if not job_list["request_user_toggle"]:
-            logger.log("Request job isnt toggled. Skipping")
+            logger.log("Request job isn't toggled. Skipping")
             return next_state
 
         # if job not ready, reutrn next state
         if not logger.check_if_can_request(job_list["request_increment_user_input"]):
-            logger.log("Request job isnt ready. Skipping")
+            logger.log("Request job isn't ready. Skipping")
             return next_state
 
         # return output of this state
@@ -167,14 +167,14 @@ def state_tree(
 
         # if job not selected, return next state
         if not job_list["free_offer_user_toggle"]:
-            logger.log("Free offer state isnt toggled")
+            logger.log("Free offer state isn't toggled")
             return next_state
 
         # if job not ready, reutrn next state
         if not logger.check_if_can_collect_free_offer(
             job_list["free_offer_collection_increment_user_input"]
         ):
-            logger.log("Free offer state isnt ready")
+            logger.log("Free offer state isn't ready")
             return next_state
 
         # return output of this state
@@ -183,7 +183,7 @@ def state_tree(
     if state == "bannerbox":  # --> randomize_deck
         next_state = "randomize_deck"
         if not job_list["open_bannerbox_user_toggle"]:
-            logger.log("Bannerbox job isnt toggled. Skipping")
+            logger.log("Bannerbox job isn't toggled. Skipping")
             return next_state
 
         return collect_bannerbox_rewards_state(vm_index, logger, next_state)
@@ -191,16 +191,16 @@ def state_tree(
     if state == "randomize_deck":  # --> start_fight
         next_state = "start_fight"
 
-        # if randomize deck isnt toggled, return next state
+        # if randomize deck isn't toggled, return next state
         if not job_list["random_decks_user_toggle"]:
-            logger.log("deck randomization isnt toggled. skipping this state")
+            logger.log("deck randomization isn't toggled. skipping this state")
             return next_state
 
-        # if randomize deck isnt ready, return next state
+        # if randomize deck isn't ready, return next state
         if not logger.check_if_can_randomize_deck(
             job_list["deck_randomization_increment_user_input"]
         ):
-            logger.log("deck randomization isnt ready. skipping this state")
+            logger.log("deck randomization isn't ready. skipping this state")
             return next_state
 
         return randomize_deck_state(vm_index, logger, next_state)
@@ -282,14 +282,14 @@ def state_tree(
 
         # if job not selected, return next state
         if not job_list["card_mastery_user_toggle"]:
-            logger.log("Card mastery job isnt toggled. Skipping this state")
+            logger.log("Card mastery job isn't toggled. Skipping this state")
             return next_state
 
         # if job not ready, reutrn next state
         if not logger.check_if_can_collect_card_mastery(
             job_list["card_mastery_collect_increment_user_input"]
         ):
-            logger.log("Card mastery job isnt ready. Skipping this state")
+            logger.log("Card mastery job isn't ready. Skipping this state")
             return next_state
 
         # return output of this state
@@ -300,12 +300,12 @@ def state_tree(
 
         # if job not selected, return next state
         if not job_list["war_user_toggle"]:
-            logger.log("War job isnt toggled. Skipping this state")
+            logger.log("War job isn't toggled. Skipping this state")
             return next_state
 
         # if job not ready, reutrn next state
         if not logger.check_if_can_do_war(job_list["war_attack_increment_user_input"]):
-            logger.log("War job isnt ready. Skipping this state")
+            logger.log("War job isn't ready. Skipping this state")
             return next_state
 
         # return output of this state
@@ -313,10 +313,17 @@ def state_tree(
 
     if state == "account_switch":  # --> open_chests
         next_state = "open_chests"
-
+        
+        # if job not selected, return next state
         if not job_list["account_switching_toggle"]:
-            logger.log("Account switching isnt toggled. Skipping this state")
+            logger.log("Account switching isn't toggled. Skipping this state")
             return next_state
+        
+        # if job not ready, reutrn next state
+        if not logger.check_if_can_switch_account(job_list["account_switching_increment_user_input"]):
+            logger.log("Account switching job isn't ready. Skipping this state")
+            return next_state
+
 
         if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
             return "restart"

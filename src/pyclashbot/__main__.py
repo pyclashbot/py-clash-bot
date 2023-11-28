@@ -85,9 +85,12 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         ],
         "war_attack_increment_user_input": values["war_attack_increment_user_input"],
         # account switching input info
+        "account_switching_increment_user_input": values[
+            "account_switching_increment_user_input"
+        ],
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switching_slider": int(values["account_switching_slider"]),
-        "next_account": 0
+        "next_account": 0,
     }
 
     return jobs_dictionary
@@ -197,6 +200,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
         "open_chests_increment_user_input": "Open Chests Increment",
         "deck_randomization_increment_user_input": "Randomize Deck Increment",
         "war_attack_increment_user_input": "War Attack Increment",
+        "account_switching_increment_user_input": "Account Switching Increment",
     }
 
     # Get the job name corresponding to the given key.
