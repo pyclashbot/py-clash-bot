@@ -679,7 +679,7 @@ class Logger:
         games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if games_played or deck_randomize_attempts is zero return false
-        if games_played == 0 or switch_account_attempts == 0:
+        if games_played == 0 and switch_account_attempts == 0:
             self.log(
                 f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts"
             )
