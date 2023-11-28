@@ -365,7 +365,7 @@ class Logger:
     def add_war_attempt(self):
         """increments logger's war_attempts by 1"""
         self.war_attempts += 1
-        
+
     def add_switch_account_attempt(self) -> None:
         """add card played to log"""
         self.switch_account_attempts += 1
@@ -678,19 +678,12 @@ class Logger:
         # count games
         games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
-        # if deck_randomize_attempts is zero return true
-        if switch_account_attempts == 0:
+        # if games_played or deck_randomize_attempts is zero return false
+        if games_played == 0 or switch_account_attempts == 0:
             self.log(
-                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts"
+                f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts"
             )
-            return True
-
-        # if games_played is zero return true
-        if games_played == 0:
-            self.log(
-                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts"
-            )
-            return True
+            return False
 
         # if games_played / int(increment) > deck_randomize_attempts
         if games_played / int(increment) >= switch_account_attempts:

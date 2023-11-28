@@ -61,7 +61,7 @@ def restart_emulator(logger, start_time=time.time()):
     wait_start_time = time.time()
     time_waiting = 0
     while time_waiting < MANUAL_CLASH_MAIN_WAIT_TIME:
-        time.sleep(4)
+        time.sleep(2)
         time_waiting = time.time() - wait_start_time
         logger.change_status(
             f"Manually waiting for clash main page. {str(time_waiting)[:3]}"
@@ -72,7 +72,7 @@ def restart_emulator(logger, start_time=time.time()):
         logger.log("#34 Looping restart_emulator() b/c fail waiting for clash main")
         return restart_emulator(logger, start_time)
 
-    time.sleep(5)
+    time.sleep(1)
 
     logger.log(f"Took {str(time.time() - start_time)[:5]}s to launch emulator")
     return True

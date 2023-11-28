@@ -313,17 +313,18 @@ def state_tree(
 
     if state == "account_switch":  # --> open_chests
         next_state = "open_chests"
-        
+
         # if job not selected, return next state
         if not job_list["account_switching_toggle"]:
             logger.log("Account switching isn't toggled. Skipping this state")
             return next_state
-        
+
         # if job not ready, reutrn next state
-        if not logger.check_if_can_switch_account(job_list["account_switching_increment_user_input"]):
+        if not logger.check_if_can_switch_account(
+            job_list["account_switching_increment_user_input"]
+        ):
             logger.log("Account switching job isn't ready. Skipping this state")
             return next_state
-
 
         if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
             return "restart"
