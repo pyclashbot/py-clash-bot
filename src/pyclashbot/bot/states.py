@@ -318,11 +318,15 @@ def state_tree(
             logger.log("Account switching isnt toggled. Skipping this state")
             return next_state
 
-        account_index_to_switch_to: int = random.randint(
-            1, job_list["account_switching_slider"]
-        )
-        if switch_accounts(vm_index, logger, account_index_to_switch_to) is False:
+        if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
             return "restart"
+        
+        # increment next account iteration
+        if job_list["next_account"] < job_list["account_switching_slider"]:
+            job_list["next_account"] += job_list["next_account"] + 1
+        else:
+            job_list["next_account"] = 0
+
         return next_state
 
     logger.error("Failure in state tree")
