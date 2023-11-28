@@ -36,6 +36,7 @@ def switch_accounts(vm_index, logger, account_index_to_switch_to):
     if wait_for_clash_main_menu(vm_index, logger) is False:
         return False
 
+    logger.change_status(f"Switched to account #{account_index_to_switch_to}")
     return True
 
 
