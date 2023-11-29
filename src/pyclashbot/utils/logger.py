@@ -391,7 +391,7 @@ class Logger:
         """check if can open chests using logger's games_played and
         open_chests attempts stats and user input increment arg"""
 
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always open chests")
             return True
 
@@ -431,7 +431,7 @@ class Logger:
         """check if can collect card mastery rewards using logger's games_played and
         card_mastery_reward_collection_attempts stats and user input increment arg"""
 
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always collect card mastery")
             return True
 
@@ -468,7 +468,7 @@ class Logger:
         return False
 
     def check_if_can_do_war(self, increment) -> bool:
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always collect card mastery")
             return True
 
@@ -508,7 +508,7 @@ class Logger:
         """check if can upgrade cards using logger's games_played and
         card_upgrade_attempts stats and user input increment arg"""
 
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always upgrade cards")
             return True
 
@@ -547,7 +547,7 @@ class Logger:
     def check_if_can_request(self, increment) -> bool:
         """method to check if can request given attempts, games played, and user increment input"""
 
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always Request")
             return True
 
@@ -585,7 +585,7 @@ class Logger:
         """method to check if can collect free offers given
         attempts, games played, and user increment input"""
 
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
             return True
 
@@ -625,7 +625,7 @@ class Logger:
         """method to check if can randomize deck given
         attempts, games played, and user increment input"""
 
-        if increment == 1:
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always randomize deck")
             return True
 
