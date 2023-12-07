@@ -105,7 +105,19 @@ main_layout = [
                         key="account_switching_toggle",
                         default=False,
                     ),
-                    sg.Slider(range=(1, 4), orientation="h",key="account_switching_slider",),
+                    sg.Slider(
+                        range=(1, 4),
+                        orientation="h",
+                        key="account_switching_slider",
+                    ),
+                    sg.Text("Current Account #"),
+                    sg.Text(
+                        "-",
+                        key="current_account",
+                        relief=sg.RELIEF_SUNKEN,
+                        text_color="blue",
+                        size=(5, 1),
+                    ),
                 ],
             ],
             title="Account Switching",
@@ -188,9 +200,10 @@ user_config_keys = [
     "open_chests_increment_user_input",
     "deck_randomization_increment_user_input",
     "war_attack_increment_user_input",
-    #account switching stuff
-    'account_switching_toggle',
-    'account_switching_slider',
+    "account_switching_increment_user_input",
+    # account switching stuff
+    "account_switching_toggle",
+    "account_switching_slider",
 ]
 
 # list of button and checkbox keys to disable when the bot is running

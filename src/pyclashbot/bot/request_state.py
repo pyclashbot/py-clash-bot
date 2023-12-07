@@ -127,7 +127,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         if not do_request(vm_index, logger):
             return "restart"
     else:
-        logger.change_status(status="Cant request right now.")
+        logger.change_status(status="Can't request right now.")
 
     # return to clash main
     if get_to_clash_main_from_clan_page(vm_index, logger) == "restart":
@@ -148,7 +148,7 @@ def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
 
 
 def count_scrolls_in_request_page(vm_index) -> int:
-    # scroll down, counting each scroll, until cant scroll anymore
+    # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
     while check_if_can_scroll_in_request_page(vm_index):
         scroll_down(vm_index)

@@ -109,6 +109,8 @@ class Logger:
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
         self.war_attempts = 0
+        self.switch_account_attempts = 0
+        self.current_account = "-"
 
         # restart stats
         self.auto_restarts = 0
@@ -151,6 +153,7 @@ class Logger:
                 "current_status": self.current_status,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
+                "current_account": self.current_account,
             }
 
     def get_stats(self):
@@ -331,6 +334,10 @@ class Logger:
         """add request to log"""
         self.most_recent_restart_time = time_to_set
 
+    @_updates_log
+    def change_current_account(self, account_id):
+        self.current_account = account_id
+
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""
         self.deck_randomize_attempts += 1
@@ -358,6 +365,10 @@ class Logger:
     def add_war_attempt(self):
         """increments logger's war_attempts by 1"""
         self.war_attempts += 1
+
+    def add_switch_account_attempt(self) -> None:
+        """add card played to log"""
+        self.switch_account_attempts += 1
 
     def get_1v1_fights(self) -> int:
         """returns logger's 1v1_fights stat"""
@@ -424,7 +435,7 @@ class Logger:
             return True
 
         self.log(
-            f"Cant open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
+            f"Can't open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
         )
         return False
 
@@ -465,7 +476,7 @@ class Logger:
             return True
 
         self.log(
-            f"Cant do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
+            f"Can't do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
         )
         return False
 
@@ -483,16 +494,12 @@ class Logger:
 
         # if war_attempts is zero return true
         if war_attempts == 0:
-            self.log(
-                f"Can do war. {games_played} Games and {war_attempts} Attempts"
-            )
+            self.log(f"Can do war. {games_played} Games and {war_attempts} Attempts")
             return True
 
         # if games_played is zero return true
         if games_played == 0:
-            self.log(
-                f"Can do war. {games_played} Games and {war_attempts} Attempts"
-            )
+            self.log(f"Can do war. {games_played} Games and {war_attempts} Attempts")
             return True
 
         # if games_played / increment > war_attempts
@@ -502,9 +509,7 @@ class Logger:
             )
             return True
 
-        self.log(
-            f"Cant do war. {games_played} Games and {war_attempts} Attempts"
-        )
+        self.log(f"Can't do war. {games_played} Games and {war_attempts} Attempts")
         return False
 
     def check_if_can_card_upgrade(self, increment):
@@ -544,7 +549,7 @@ class Logger:
             return True
 
         self.log(
-            f"Cant upgrade. {games_played} Games and {card_upgrade_attempts} Attempts"
+            f"Can't upgrade. {games_played} Games and {card_upgrade_attempts} Attempts"
         )
         return False
 
@@ -583,7 +588,7 @@ class Logger:
             )
             return True
 
-        self.log(f"Cant request. {games_played} Games and {request_attempts} Attempts")
+        self.log(f"Can't request. {games_played} Games and {request_attempts} Attempts")
         return False
 
     def check_if_can_collect_free_offer(self, increment) -> bool:
@@ -623,7 +628,7 @@ class Logger:
             return True
 
         self.log(
-            f"Cant do free offer. {games_played} Games and {free_offer_attempts} Attempts"
+            f"Can't do free offer. {games_played} Games and {free_offer_attempts} Attempts"
         )
         return False
 
@@ -664,7 +669,40 @@ class Logger:
             return True
 
         self.log(
-            f"Cant randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+            f"Can't randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+        )
+        return False
+
+    def check_if_can_switch_account(self, increment):
+        """method to check if can switch account given
+        attempts, games played, and user increment input"""
+
+        if increment == 1:
+            self.log(f"Increment is {increment} so can always switch account")
+            return True
+
+        # count free_offer_collection_attempts
+        switch_account_attempts = self.switch_account_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if games_played or deck_randomize_attempts is zero return false
+        if games_played == 0 and switch_account_attempts == 0:
+            self.log(
+                f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts"
+            )
+            return False
+
+        # if games_played / int(increment) > deck_randomize_attempts
+        if games_played / int(increment) >= switch_account_attempts:
+            self.log(
+                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts"
         )
         return False
 
