@@ -833,7 +833,7 @@ def handle_clash_main_tab_notifications(
 
     # click card tab
     click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
-    time.sleep(4)
+    time.sleep(8)
 
     # click shop tab
     click(
@@ -843,7 +843,7 @@ def handle_clash_main_tab_notifications(
         clicks=2,
         interval=0.01,
     )
-    time.sleep(4)
+    time.sleep(8)
 
     # click challenges tab
     click(

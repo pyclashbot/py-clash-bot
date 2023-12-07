@@ -402,7 +402,8 @@ class Logger:
         """check if can open chests using logger's games_played and
         open_chests attempts stats and user input increment arg"""
 
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always open chests")
             return True
 
@@ -426,8 +427,8 @@ class Logger:
             )
             return True
 
-        # if games_played / int(increment) > chest_unlock_attempts
-        if games_played / int(increment) >= chest_unlock_attempts:
+        # if games_played / increment > chest_unlock_attempts
+        if games_played / increment >= chest_unlock_attempts:
             self.log(
                 f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
             )
@@ -442,7 +443,8 @@ class Logger:
         """check if can collect card mastery rewards using logger's games_played and
         card_mastery_reward_collection_attempts stats and user input increment arg"""
 
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always collect card mastery")
             return True
 
@@ -466,8 +468,8 @@ class Logger:
             )
             return True
 
-        # if games_played / int(increment) > card_mastery_reward_collection_attempts
-        if games_played / int(increment) >= card_mastery_attempts:
+        # if games_played / increment > card_mastery_reward_collection_attempts
+        if games_played / increment >= card_mastery_attempts:
             self.log(
                 f"Can do card mastery. {games_played} Games & {card_mastery_attempts} Attempts"
             )
@@ -479,7 +481,8 @@ class Logger:
         return False
 
     def check_if_can_do_war(self, increment) -> bool:
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always collect card mastery")
             return True
 
@@ -499,9 +502,11 @@ class Logger:
             self.log(f"Can do war. {games_played} Games and {war_attempts} Attempts")
             return True
 
-        # if games_played / int(increment) > war_attempts
-        if games_played / int(increment) >= war_attempts:
-            self.log(f"Can do war. {games_played} Games & {war_attempts} Attempts")
+        # if games_played / increment > war_attempts
+        if games_played / increment >= war_attempts:
+            self.log(
+                f"Can do war. {games_played} Games & {war_attempts} Attempts"
+            )
             return True
 
         self.log(f"Can't do war. {games_played} Games and {war_attempts} Attempts")
@@ -511,7 +516,8 @@ class Logger:
         """check if can upgrade cards using logger's games_played and
         card_upgrade_attempts stats and user input increment arg"""
 
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always upgrade cards")
             return True
 
@@ -535,10 +541,10 @@ class Logger:
             )
             return True
 
-        # if games_played / int(increment) > card_upgrade_attempts
-        if games_played / int(increment) >= card_upgrade_attempts:
+        # if games_played / increment > card_upgrade_attempts
+        if games_played / increment >= card_upgrade_attempts:
             self.log(
-                "Can upgrade bc games_played / int(increment) > card_upgrade_attempts"
+                "Can upgrade bc games_played / increment > card_upgrade_attempts"
             )
             return True
 
@@ -550,7 +556,8 @@ class Logger:
     def check_if_can_request(self, increment) -> bool:
         """method to check if can request given attempts, games played, and user increment input"""
 
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always Request")
             return True
 
@@ -574,8 +581,8 @@ class Logger:
             )
             return True
 
-        # if games_played / int(increment) > request_attempts
-        if games_played / int(increment) >= request_attempts:
+        # if games_played / increment > request_attempts
+        if games_played / increment >= request_attempts:
             self.log(
                 f"Can request. attempts = {request_attempts} & games played = {games_played}"
             )
@@ -588,7 +595,8 @@ class Logger:
         """method to check if can collect free offers given
         attempts, games played, and user increment input"""
 
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
             return True
 
@@ -612,8 +620,8 @@ class Logger:
             )
             return True
 
-        # if games_played / int(increment) > free_offer_collection_attempts
-        if games_played / int(increment) >= free_offer_attempts:
+        # if games_played / increment > free_offer_collection_attempts
+        if games_played / increment >= free_offer_attempts:
             self.log(
                 f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
             )
@@ -628,7 +636,8 @@ class Logger:
         """method to check if can randomize deck given
         attempts, games played, and user increment input"""
 
-        if increment == 1:
+        increment = int(increment)
+        if increment <= 1:
             self.log(f"Increment is {increment} so can always randomize deck")
             return True
 
@@ -652,8 +661,8 @@ class Logger:
             )
             return True
 
-        # if games_played / int(increment) > deck_randomize_attempts
-        if games_played / int(increment) >= deck_randomize_attempts:
+        # if games_played / increment > deck_randomize_attempts
+        if games_played / increment >= deck_randomize_attempts:
             self.log(
                 f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
             )

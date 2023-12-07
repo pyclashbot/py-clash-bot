@@ -10,11 +10,7 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import DONATE_BUTTON_KEY, create_window
-from pyclashbot.utils.caching import (
-    cache_user_settings,
-    check_user_settings,
-    read_user_settings,
-)
+from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
@@ -157,7 +153,7 @@ def save_current_settings(values) -> None:
     user_settings = {key: values[key] for key in user_config_keys if key in values}
     # cache the user settings
     print("Cached settings")
-    cache_user_settings(user_settings)
+    USER_SETTINGS_CACHE.cache_data(user_settings)
 
 
 def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
@@ -167,9 +163,9 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
         window: the gui window
     """
 
-    if not settings and check_user_settings():
+    if not settings and USER_SETTINGS_CACHE.exists():
         read_window(window)  # read the window to edit the layout
-        user_settings = read_user_settings()
+        user_settings = USER_SETTINGS_CACHE.load_data()
         if user_settings is not None:
             settings = user_settings
 
