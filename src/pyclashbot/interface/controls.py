@@ -18,7 +18,7 @@ def make_job_increment_control_object(key):
 
 controls = [
     [
-        sg.Button("Start", expand_x=True,button_color='Lime Green'),
+        sg.Button("Start", expand_x=True, button_color="Lime Green"),
         sg.Button("Stop", disabled=True, expand_x=True),
         sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-", expand_x=True),
     ],
@@ -33,7 +33,8 @@ controls = [
                 [sg.Text("Collect Card Mastery Every:")],
                 [sg.Text("Open Chests Every:")],
                 [sg.Text("Randomize Deck Every:")],
-                [sg.Text("Do war attack Every:")],
+                [sg.Text("Do War Attack Every:")],
+                [sg.Text("Switch Account Every:")],
             ],
             justification="left",
         ),
@@ -63,7 +64,11 @@ controls = [
                     )
                 ],
                 [make_job_increment_control_object("war_attack_increment_user_input")],
-
+                [
+                    make_job_increment_control_object(
+                        "account_switching_increment_user_input"
+                    )
+                ],
             ],
             justification="right",
         ),
@@ -76,6 +81,8 @@ controls = [
                 [sg.Text("games")],
                 [sg.Text("games")],
                 [sg.Text("games")],
+                [sg.Text("games")],
+                [sg.Text("games")]
             ],
             justification="left",
         ),
