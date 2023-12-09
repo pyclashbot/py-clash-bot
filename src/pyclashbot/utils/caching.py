@@ -1,6 +1,7 @@
 """
 A module to cache and load program data to and from the disk
 """
+from io import UnsupportedOperation
 import json
 import pickle
 from os import makedirs, remove
@@ -32,7 +33,7 @@ class FileCache:
             with open(file_path, "w", encoding="utf-8") as this_file:
                 try:
                     file_data = json.load(this_file)
-                except json.JSONDecodeError:
+                except (json.JSONDecodeError, UnsupportedOperation):
                     file_data = {}
                 file_data |= data
                 json.dump(file_data, this_file, indent=4)
@@ -47,7 +48,7 @@ class FileCache:
             with open(file_path, "r", encoding="utf-8") as this_file:
                 try:
                     return json.load(this_file)
-                except json.JSONDecodeError:
+                except (json.JSONDecodeError, UnsupportedOperation):
                     return {}
 
     def exists(self) -> bool:
