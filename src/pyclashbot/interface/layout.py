@@ -54,36 +54,48 @@ def get_random_donate_image_path():
     """
     Returns a random path to a donate image file.
     """
-    # grab all the donate images
-    donate_image_sources = os.listdir()
+    try:
+        # grab all the donate images
+        donate_image_sources = os.listdir()
 
-    # if 'github exists in the list, then we're in a source code version
-    # of the bot, so source the images from the assets folder
-    if ".github" in donate_image_sources:
-        donate_image_sources = []
+        # if 'github exists in the list, then we're in a source code version
+        # of the bot, so source the images from the assets folder
+        if ".github" in donate_image_sources:
+            donate_image_sources = []
 
-        files = os.listdir("src/pyclashbot/interface/assets")
-        for file in files:
-            this_path = os.path.join("src/pyclashbot/interface/assets", file)
-            donate_image_sources.append(this_path)
+            files = os.listdir("src/pyclashbot/interface/assets")
+            for file in files:
+                this_path = os.path.join("src/pyclashbot/interface/assets", file)
+                donate_image_sources.append(this_path)
 
-    donate_image_sources = filter_donate_image_sources(donate_image_sources)
+        donate_image_sources = filter_donate_image_sources(donate_image_sources)
 
-    random_image_index = random.randint(0, len(donate_image_sources) - 1)
+        random_image_index = random.randint(0, len(donate_image_sources) - 1)
 
-    random_image_path = donate_image_sources[random_image_index]
+        random_image_path = donate_image_sources[random_image_index]
 
-    return random_image_path
+        return random_image_path
+    except Exception:
+        print("Error getting random donate image")
+        return None
 
+
+RANDOM_DONATE_IMAGE = get_random_donate_image_path()
 
 DONATE_BUTTON_LAYOUTS = [
     [
         [
             sg.Button(
-                image_source=get_random_donate_image_path(),
+                image_source=RANDOM_DONATE_IMAGE,
                 size=(70, 7),
                 key=DONATE_BUTTON_KEY,
             )
+            if RANDOM_DONATE_IMAGE is not None
+            else sg.Button(
+                "Donate",
+                size=(70, 7),
+                key=DONATE_BUTTON_KEY,
+            ),
         ]
     ],
 ]
