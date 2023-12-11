@@ -325,15 +325,20 @@ def state_tree(
         ):
             logger.log("Account switching job isn't ready. Skipping this state")
             return next_state
+        
+        logger.log(
+            f"Attempt to switch to account #{job_list['next_account']} of {job_list['account_switching_slider']}"
+        )
 
         if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
             return "restart"
-
+        
         # increment next account iteration
-        if job_list["next_account"] < job_list["account_switching_slider"]:
-            job_list["next_account"] += job_list["next_account"] + 1
-        else:
+        job_list["next_account"] += 1
+        if job_list["next_account"] >= job_list["account_switching_slider"]:
             job_list["next_account"] = 0
+        
+        logger.log(f"Next account is {job_list['next_account']} / {job_list['account_switching_slider']}")
 
         # update current account # to GUI
         current_account = (
