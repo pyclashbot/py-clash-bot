@@ -43,7 +43,7 @@ optional = true
 pre-commit = "^3.5.0"
 black = "^23.11.0"
 vulture = "^2.10"
-isort = "^5.12.0"
+isort = "^5.13.0"
 prospector = "^1.10.3"
 poethepoet = "^0.24.4"
 
