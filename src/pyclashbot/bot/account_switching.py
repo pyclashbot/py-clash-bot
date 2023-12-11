@@ -26,11 +26,13 @@ def switch_accounts(vm_index, logger, account_index_to_switch_to):
     # click switch SSID button
     logger.change_status("Clicking switch SSID button")
     click(vm_index, 221, 368)
-    time.sleep(8)
+    time.sleep(4)
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
-    logger.change_status("Clicking the account to switch to...")
+    logger.change_status(
+        f"Clicking {account_coord}, switch account #{account_index_to_switch_to}"
+    )
     click(vm_index, account_coord[0], account_coord[1])
     time.sleep(4)
 
