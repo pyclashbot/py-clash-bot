@@ -24,6 +24,7 @@ pysimplegui = "^4.60.5"
 pymemuc = "^0.4.5"
 psutil = "^5.9.6"
 requests = "^2.31.0"
+adbblitz = "^0.10"
 
 
 [tool.poetry.group.build]

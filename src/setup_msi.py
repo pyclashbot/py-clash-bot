@@ -21,16 +21,17 @@ except (ValueError, IndexError):
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
+    "includes": ["av"],
     "include_files": [
         "..\\assets\\pixel-pycb.ico",
-        'pyclashbot\\interface\\assets\\donate1.png',
-        'pyclashbot\\interface\\assets\\donate2.png',
-        'pyclashbot\\interface\\assets\\donate3.png',
-        'pyclashbot\\interface\\assets\\donate4.png',
-        'pyclashbot\\interface\\assets\\donate5.png',
-        'pyclashbot\\interface\\assets\\donate6.png',
-        'pyclashbot\\interface\\assets\\donate7.png',
-                      ],
+        "pyclashbot\\interface\\assets\\donate1.png",
+        "pyclashbot\\interface\\assets\\donate2.png",
+        "pyclashbot\\interface\\assets\\donate3.png",
+        "pyclashbot\\interface\\assets\\donate4.png",
+        "pyclashbot\\interface\\assets\\donate5.png",
+        "pyclashbot\\interface\\assets\\donate6.png",
+        "pyclashbot\\interface\\assets\\donate7.png",
+    ],
     "include_msvcr": True,
 }
 
