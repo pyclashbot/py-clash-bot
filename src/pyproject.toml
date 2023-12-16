@@ -32,7 +32,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.11"
+cx-freeze = { git = "https://github.com/marcelotduarte/cx_Freeze.git", rev = "85f7d9fbd1b7e3e4f06e6536be63eabff4608d82" }
 poethepoet = "^0.24.4"
 
 
