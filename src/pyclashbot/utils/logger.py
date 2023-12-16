@@ -100,6 +100,7 @@ class Logger:
 
         # job stats
         self.requests = 0
+        self.donates = 0
         self.request_attempts = 0
         self.donate_attempts = 0
         self.deck_randomize_attempts = 0
@@ -149,6 +150,7 @@ class Logger:
                 "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
+                'donates': self.donates,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
                 "cards_played": self.cards_played,
@@ -323,6 +325,11 @@ class Logger:
     def add_request(self) -> None:
         """add request to log"""
         self.requests += 1
+
+    @_updates_log
+    def add_donate(self) -> None:
+        """add donate to log"""
+        self.donates += 1
 
     @_updates_log
     def change_status(self, status) -> None:

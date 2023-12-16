@@ -24,6 +24,9 @@ collection_stats_titles: list[list[Text]] = [
         sg.Text("Requests: "),
     ],
     [
+        sg.Text("Donates: "),
+    ],
+    [
         sg.Text("Chests Unlocked: "),
     ],
     [
@@ -40,6 +43,9 @@ collection_stats_titles: list[list[Text]] = [
 collection_stats_values: list[list[Text]] = [
     [
         stat_box("requests"),
+    ],
+    [
+        stat_box("donates"),
     ],
     [
         stat_box("chests_unlocked"),
@@ -105,10 +111,10 @@ battle_stats_values = [
     [
         stat_box("losses"),
     ],
-[
+    [
         stat_box("friendly_crowns"),
     ],
-[
+    [
         stat_box("enemy_crowns"),
     ],
     [
@@ -148,15 +154,15 @@ bot_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Runtime"),
     ],
-
 ]
 
 bot_stats_values = [
     [
         stat_box("restarts_after_failure"),
-
     ],
-    [stat_box("time_since_start", size=(7, 1)),],
+    [
+        stat_box("time_since_start", size=(7, 1)),
+    ],
 ]
 
 bot_stats = [
@@ -164,5 +170,4 @@ bot_stats = [
         sg.Column(bot_stats_titles, element_justification="right"),
         sg.Column(bot_stats_values, element_justification="left"),
     ],
-
 ]
