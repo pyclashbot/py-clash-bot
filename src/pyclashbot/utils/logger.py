@@ -89,6 +89,8 @@ class Logger:
         # fight stats
         self.wins = 0
         self.losses = 0
+        self.friendly_crowns = 0
+        self.enemy_crowns = 0
         self._1v1_fights = 0
         self._2v2_fights = 0
         self.cards_played = 0
@@ -140,6 +142,8 @@ class Logger:
             self.stats = {
                 "wins": self.wins,
                 "losses": self.losses,
+                'friendly_crowns': self.friendly_crowns,
+                'enemy_crowns': self.enemy_crowns,
                 "1v1_fights": self._1v1_fights,
                 "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,
@@ -231,6 +235,15 @@ class Logger:
     def set_current_state(self, state_to_set):
         """set logger's current_state to state_to_set"""
         self.current_state = state_to_set
+
+    def add_count_to_enemy_crowns(self,count):
+        self.enemy_crowns += count
+
+    def add_count_to_friendly_crowns(self,count):
+        self.friendly_crowns += count
+
+
+
 
     @_updates_log
     def add_free_offer_collection(self) -> None:
