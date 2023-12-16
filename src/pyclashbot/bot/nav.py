@@ -168,7 +168,7 @@ def wait_for_1v1_battle_start(
     return "good"
 
 
-def check_for_in_2v2_battle_with_delay(vm_index):
+def check_for_in_battle_with_delay(vm_index):
     """
     Checks if the virtual machine is in a 2v2 battle with a delay.
 
@@ -1192,6 +1192,6 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-  
+
     pass
 
