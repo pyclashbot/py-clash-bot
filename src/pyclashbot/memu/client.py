@@ -67,6 +67,8 @@ def scroll_up(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 300, 215, 400)
 
+def scroll_up_a_little(vm_index):
+    send_swipe(vm_index, 215, 300, 215, 320)
 
 def scroll_up_on_left_side_of_screen(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""

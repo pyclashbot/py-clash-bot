@@ -31,6 +31,14 @@ MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 
 def restart_emulator(logger, start_time=time.time()):
+    """
+    Restart the emulator.
+
+    Args:
+        logger (Logger): Logger object
+        start_time (float, optional): Start time. Defaults to time.time().
+    """
+    # Rest of the code...
     # stop all vms
     close_everything_memu()
 
@@ -41,13 +49,8 @@ def restart_emulator(logger, start_time=time.time()):
 
     # start the vm
     logger.change_status(status="Opening the pyclashbot emulator...")
-    out=pmc.start_vm(vm_index=vm_index)
-    print(f'Opened the pyclashbot emulator with output:\n{out}')
-
-    # wait for the window to appear
-    for i in range(MANUAL_VM_WAIT_TIME):
-        logger.change_status(status=f"Waiting {MANUAL_VM_WAIT_TIME-i}s...")
-        time.sleep(1)
+    out = pmc.start_vm(vm_index=vm_index)
+    print(f"Opened the pyclashbot emulator with output:\n{out}")
 
     # skip ads
     if skip_ads(vm_index) == "fail":
@@ -57,16 +60,6 @@ def restart_emulator(logger, start_time=time.time()):
     # start clash royale
     logger.change_status("Starting clash royale")
     start_clash_royale(logger, vm_index)
-
-    # manually wait for clash main
-    wait_start_time = time.time()
-    time_waiting = 0
-    while time_waiting < MANUAL_CLASH_MAIN_WAIT_TIME:
-        time.sleep(2)
-        time_waiting = time.time() - wait_start_time
-        logger.change_status(
-            f"Manually waiting for clash main page. {str(time_waiting)[:3]}"
-        )
 
     # check-wait for clash main if need to wait longer
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
@@ -80,8 +73,15 @@ def restart_emulator(logger, start_time=time.time()):
 
 
 def skip_ads(vm_index):
-    # Method for skipping the memu ads that popip up when you start memu
+    """
+    Skip ads in the emulator.
 
+    Args:
+        vm_index (int): Index of the virtual machine.
+
+    Returns:
+        str: "success" if ads are skipped successfully, "fail" otherwise.
+    """
     try:
         for _ in range(4):
             pmc.trigger_keystroke_vm("home", vm_index=vm_index)
@@ -129,7 +129,14 @@ def check_for_vm(logger: Logger) -> int:
 
 
 def start_clash_royale(logger: Logger, vm_index):
-    # using pymemuc check if clash royale is installed
+    """
+    Start Clash Royale in the emulator.
+
+    Args:
+        logger (Logger): Logger object.
+        vm_index (int): Index of the virtual machine.
+    """
+    # Function implementation goes here
 
     # get list of installed apps
     installed_apps = pmc.get_app_info_list_vm(vm_index=vm_index)
@@ -182,6 +189,8 @@ def set_vm_language(vm_index: int):
 
 
 def configure_vm(vm_index):
+    """Configure the virtual machine with the given index."""
+    # Add your code here
     cpu_count: int = psutil.cpu_count(logical=False)
     cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
     total_mem = psutil.virtual_memory()[0] // 1024 // 1024
@@ -251,6 +260,8 @@ def home_button_press(vm_index, clicks=4):
 
 
 def check_if_clash_banned(vm_index):
+    """Check if Clash of Clans is banned on the virtual machine with the given index."""
+    # Add your code here
     iar = numpy.asarray(screenshot(vm_index))
 
     red_okay_text_exists = False
@@ -364,7 +375,9 @@ def close_everything_memu():
 
 
 def show_clash_royale_setup_gui():
-    # a method to notify the user that clashroayle is not installed or setup
+    """
+    Displays a GUI window indicating that Clash Royale is not installed or setup.
+    """
 
     out_text = """Clash Royale is not installed or setup.
 Please install Clash Royale, finish the in-game tutorial

@@ -1,9 +1,8 @@
 """time module for timing functions and controling pacing"""
-import random
 import time
 from pyclashbot.bot.account_switching import switch_accounts
 from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
-
+from pyclashbot.bot.donate import donate_cards_state
 from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
 from pyclashbot.bot.deck_randomization import randomize_deck_state
 from pyclashbot.bot.do_fight_state import (
@@ -146,8 +145,8 @@ def state_tree(
         # return output of this state
         return upgrade_cards_state(vm_index, logger, next_state)
 
-    if state == "request":  # --> free_offer_collection
-        next_state = "free_offer_collection"
+    if state == "request":  # --> donate
+        next_state = "donate"
 
         # if job not selected, return next state
         if not job_list["request_user_toggle"]:
@@ -161,6 +160,23 @@ def state_tree(
 
         # return output of this state
         return request_state(vm_index, logger, next_state)
+
+    if state == "donate":  # --> free_offer_collection
+        next_state = "free_offer_collection"
+
+        # if job not selected, return next state
+        if not job_list["donate_toggle"]:
+            logger.log("Donate job isn't toggled. Skipping")
+            return next_state
+
+        # if job not ready, reutrn next state
+        if not logger.check_if_can_donate(job_list["donate_increment_user_input"]):
+            logger.log("Donate job isn't ready. Skipping")
+            return next_state
+
+        # return output of this state
+        return donate_cards_state(vm_index, logger, next_state)
+
 
     if state == "free_offer_collection":  # --> bannerbox
         next_state = "bannerbox"
@@ -275,7 +291,9 @@ def state_tree(
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-        return end_fight_state(vm_index, logger, next_state, job_list['disable_win_track_toggle'])
+        return end_fight_state(
+            vm_index, logger, next_state, job_list["disable_win_track_toggle"]
+        )
 
     if state == "card_mastery":  # --> war
         next_state = "war"
@@ -326,8 +344,9 @@ def state_tree(
             logger.log("Account switching job isn't ready. Skipping this state")
             return next_state
 
+        account_total = job_list["account_switching_slider"]
         logger.log(
-            f"Attempt to switch to account #{job_list['next_account']} of {job_list['account_switching_slider']}"
+            f"Doing switch to act#{job_list['next_account']} of {account_total}"
         )
 
         if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
@@ -338,7 +357,9 @@ def state_tree(
         if job_list["next_account"] >= job_list["account_switching_slider"]:
             job_list["next_account"] = 0
 
-        logger.log(f"Next account is {job_list['next_account']} / {job_list['account_switching_slider']}")
+        logger.log(
+            f"Next account is {job_list['next_account']} / {job_list['account_switching_slider']}"
+        )
 
         # update current account # to GUI
         current_account = (
@@ -355,9 +376,4 @@ def state_tree(
 
 
 if __name__ == "__main__":
-    vm_index = 8
-    logger = Logger()
-    next_state = '"next state return string!!"'
-
-    # upgrade test
-    open_chests_state(vm_index, logger, next_state)
+    pass

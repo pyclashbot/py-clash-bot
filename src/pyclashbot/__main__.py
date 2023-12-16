@@ -53,6 +53,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         # job toggles
         "open_chests_user_toggle": values["open_chests_user_toggle"],
         "request_user_toggle": values["request_user_toggle"],
+        "donate_toggle": values["donate_toggle"],
         # "card_mastery_user_toggle": values["card_mastery_user_toggle"],
         "card_mastery_user_toggle": False,
         "free_offer_user_toggle": values["free_offer_user_toggle"],
@@ -76,6 +77,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "free_offer_collection_increment_user_input"
         ],
         "request_increment_user_input": values["request_increment_user_input"],
+        "donate_increment_user_input": values["donate_increment_user_input"],
         "card_mastery_collect_increment_user_input": values[
             "card_mastery_collect_increment_user_input"
         ],
@@ -196,6 +198,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
         "card_upgrade_increment_user_input": "Card Upgrade Increment",
         "free_offer_collection_increment_user_input": "Free Offer Collection Increment",
         "request_increment_user_input": "Request Increment",
+        "donate_increment_user_input": "Donate Increment",
         "card_mastery_collect_increment_user_input": "Card Mastery Collect Increment",
         "open_chests_increment_user_input": "Open Chests Increment",
         "deck_randomization_increment_user_input": "Randomize Deck Increment",

@@ -332,7 +332,6 @@ def get_to_clan_tab_from_clash_main(
 
         # if on the clan tab chat page, return
         if check_if_on_clan_chat_page(vm_index):
-            logger.log("On clan chat page so breaking from loop")
             break
 
         # if on clash main, click the clan tab button
@@ -356,6 +355,7 @@ def get_to_clan_tab_from_clash_main(
                 )
                 time.sleep(2)
                 continue
+        time.sleep(1)
 
     # if here, then done
     logger.log("Made it to the clan page from clash main")
