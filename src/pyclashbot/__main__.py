@@ -15,6 +15,8 @@ from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 
+
+
 initalize_pylogging()
 
 
@@ -52,13 +54,17 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         # job toggles
         "open_chests_user_toggle": values["open_chests_user_toggle"],
         "request_user_toggle": values["request_user_toggle"],
-        "card_mastery_user_toggle": values["card_mastery_user_toggle"],
+
+
+        # "card_mastery_user_toggle": values["card_mastery_user_toggle"],
+        "card_mastery_user_toggle": False,
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "1v1_battle_user_toggle": values["1v1_user_toggle"],
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
-        "random_decks_user_toggle": values["random_decks_user_toggle"],
+        # "random_decks_user_toggle": values["random_decks_user_toggle"],
+        "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
         "skip_fight_if_full_chests_user_toggle": values[
@@ -426,3 +432,5 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 if __name__ == "__main__":
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
+
+

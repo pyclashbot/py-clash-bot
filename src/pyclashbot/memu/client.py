@@ -153,10 +153,6 @@ def send_newline_char(vm_index):
     )
 
 
-# if __name__ == "__main__":
-#     # demo the screenshot method on vm 3, display wth matplotlib
-#     import matplotlib.pyplot as plt
 
-#     plt.imshow(screenshot(3))
-#     plt.show()
-#     del _ss
+if __name__ == "__main__":
+    pass
