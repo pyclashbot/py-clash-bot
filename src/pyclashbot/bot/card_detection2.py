@@ -6,7 +6,7 @@ from pyclashbot.memu.client import screenshot
 import random
 
 CARD_PIXEL_DATA_DICT = {
-    #checked
+    # checked
     "arrows": [
         [
             [239, 223, 196],
@@ -219,8 +219,7 @@ CARD_PIXEL_DATA_DICT = {
             [121, 108, 101],
         ],
     ],
-
-    #unchecked
+    # unchecked
     "freeze": [
         [
             [165, 101, 42],
