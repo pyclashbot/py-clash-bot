@@ -101,6 +101,7 @@ class Logger:
         # job stats
         self.requests = 0
         self.request_attempts = 0
+        self.donate_attempts = 0
         self.deck_randomize_attempts = 0
         self.chests_unlocked = 0
         self.cards_upgraded = 0
@@ -236,14 +237,15 @@ class Logger:
         """set logger's current_state to state_to_set"""
         self.current_state = state_to_set
 
-    def add_count_to_enemy_crowns(self,count):
+    @_updates_log
+    def add_count_to_enemy_crowns(self, count):
+        """Increment the logger's enemy crowns count by the given count."""
         self.enemy_crowns += count
 
-    def add_count_to_friendly_crowns(self,count):
+    @_updates_log
+    def add_count_to_friendly_crowns(self, count):
+        """Increment the logger's friendly crowns count by the given count."""
         self.friendly_crowns += count
-
-
-
 
     @_updates_log
     def add_free_offer_collection(self) -> None:
@@ -358,6 +360,10 @@ class Logger:
     def add_request_attempt(self):
         """increments logger's request_attempts by 1"""
         self.request_attempts += 1
+
+    def add_donate_attempt(self):
+        self.donate_attempts += 1
+
 
     def add_free_offer_collection_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""
@@ -602,6 +608,42 @@ class Logger:
             return True
 
         self.log(f"Can't request. {games_played} Games and {request_attempts} Attempts")
+        return False
+
+    def check_if_can_donate(self, increment) -> bool:
+        increment = int(increment)
+        if increment <= 1:
+            self.log(f"Increment is {increment} so can always Request")
+            return True
+
+        # count requests
+        donate_attempts = self.donate_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if request_attempts is zero return true
+        if donate_attempts == 0:
+            self.log(
+                f"Can donate bc attempts is {donate_attempts} and games played is {games_played}"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can donate bc attempts is {donate_attempts} and games played is {games_played}"
+            )
+            return True
+
+        # if games_played / increment > request_attempts
+        if games_played / increment >= donate_attempts:
+            self.log(
+                f"Can donate. attempts = {donate_attempts} & games played = {games_played}"
+            )
+            return True
+
+        self.log(f"Can't donate. {games_played} games and {donate_attempts} Attempts")
         return False
 
     def check_if_can_collect_free_offer(self, increment) -> bool:

@@ -65,6 +65,10 @@ jobs_checklist = [
                 [
                     job_check_box("Random Requesting", "request_user_toggle"),
                 ],
+                [
+                    job_check_box("Donates", "donate_toggle"),
+                ],
+
                 #TODO fix Card Mastery Collection (broken since 12/13/23 update)
                 #keep checkbox disabled for now
                 # [

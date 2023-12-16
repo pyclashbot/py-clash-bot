@@ -7,7 +7,6 @@ import random
 from os import path
 
 import PySimpleGUI as sg
-from cv2 import exp
 
 from pyclashbot.interface.controls import controls
 from pyclashbot.interface.joblist import jobs_checklist
@@ -15,7 +14,6 @@ from pyclashbot.interface.stats import (
     battle_stats,
     bot_stats,
     collection_stats,
-    stat_box,
 )
 from pyclashbot.interface.theme import THEME
 from pyclashbot.utils.versioning import __version__
@@ -194,6 +192,7 @@ user_config_keys = [
     # job list controls keys
     "open_chests_user_toggle",
     "request_user_toggle",
+    'donate_toggle',
     #DISABLED: "card_mastery_user_toggle",
     'disable_win_track_toggle',
     "free_offer_user_toggle",
@@ -207,6 +206,7 @@ user_config_keys = [
     "skip_fight_if_full_chests_user_toggle",
     # job increment controls keys
     "request_increment_user_input",
+    "donate_increment_user_input",
     "free_offer_collection_increment_user_input",
     "card_upgrade_increment_user_input",
     "card_mastery_collect_increment_user_input",

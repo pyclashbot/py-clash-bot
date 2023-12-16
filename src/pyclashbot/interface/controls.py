@@ -28,6 +28,7 @@ controls = [
         sg.Column(
             [
                 [sg.Text("Request Random Card Every:")],
+                [sg.Text("Donate Cards Every:")],
                 [sg.Text("Collect Free Offer Every:")],
                 [sg.Text("Upgrade Current Deck Every:")],
                 [sg.Text("Collect Card Mastery Every:")],
@@ -42,6 +43,7 @@ controls = [
         sg.Column(
             [
                 [make_job_increment_control_object("request_increment_user_input")],
+                [make_job_increment_control_object("donate_increment_user_input")],
                 [
                     make_job_increment_control_object(
                         "free_offer_collection_increment_user_input"
