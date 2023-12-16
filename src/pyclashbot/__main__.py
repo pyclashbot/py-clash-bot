@@ -55,7 +55,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "open_chests_user_toggle": values["open_chests_user_toggle"],
         "request_user_toggle": values["request_user_toggle"],
 
-
         # "card_mastery_user_toggle": values["card_mastery_user_toggle"],
         "card_mastery_user_toggle": False,
         "free_offer_user_toggle": values["free_offer_user_toggle"],
@@ -67,9 +66,8 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
-        "skip_fight_if_full_chests_user_toggle": values[
-            "skip_fight_if_full_chests_user_toggle"
-        ],
+        "skip_fight_if_full_chests_user_toggle": values["skip_fight_if_full_chests_user_toggle"],
+        'disable_win_track_toggle': values['disable_win_track_toggle'],
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -94,6 +92,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "account_switching_slider": int(values["account_switching_slider"]),
         "next_account": 0,
     }
+
+
+
 
     return jobs_dictionary
 
