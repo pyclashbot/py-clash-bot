@@ -80,6 +80,12 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
+                        "Disable win/loss tracking",
+                        "disable_win_track_toggle",
+                    ),
+                ],
+                [
+                    job_check_box(
                         "War Participation",
                         "war_user_toggle",
                     ),

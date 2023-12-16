@@ -7,8 +7,7 @@ from typing import Literal
 
 from pyclashbot.bot.card_detection import get_play_coords_for_card
 from pyclashbot.bot.nav import (
-    check_if_in_1v1_battle,
-    check_if_in_2v2_battle,
+    check_if_in_battle,
     check_for_in_2v2_battle_with_delay,
     check_if_on_clash_main_challenges_tab,
     check_if_on_clash_main_menu,
@@ -75,7 +74,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
     if clash_main_check is not True:
         logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
         logger.log(
-            f"There are the pixels the bot saw after failing to find clash main:"
+            "There are the pixels the bot saw after failing to find clash main:"
         )
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
@@ -126,7 +125,7 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
             status="ERROR 46246 Not on main menu for start of start 1v1 fight"
         )
         logger.log(
-            f"There are the pixels the bot saw after failing to find clash main:"
+            "There are the pixels the bot saw after failing to find clash main:"
         )
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
@@ -240,7 +239,7 @@ def _1v1_random_fight_loop(vm_index, logger):
         logger.add_card_played()
 
     # while in battle:
-    while check_if_in_1v1_battle(vm_index):
+    while check_if_in_battle(vm_index):
         time.sleep(8)
 
         mag_dump(vm_index, logger)
@@ -357,7 +356,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
             logger.change_status("At max elixer so just mag dumping!!!")
             mag_dump(vm_index, logger)
 
-        # emote sometimes to do daily challenge (jk its to be funny and annoy ur teammate)
+        # emote sometimes to do daily challenge (jk its to be funny)
         if random.randint(0, 10) == 1:
             emote_in_2v2(vm_index, logger)
 
@@ -463,7 +462,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     prev_cards_played = logger.get_cards_played()
 
     # while in battle:
-    while check_if_in_1v1_battle(vm_index):
+    while check_if_in_battle(vm_index):
         logger.log(f"Battle play #{plays}:")
 
         # wait for 6 elixer
@@ -559,10 +558,10 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
-        if mode == "1v1" and not check_if_in_1v1_battle(vm_index):
+        if mode == "1v1" and not check_if_in_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
-        if mode == "2v2" and not check_if_in_2v2_battle(vm_index):
+        if mode == "2v2" and not check_if_in_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
 
@@ -610,11 +609,11 @@ def wait_for_6_elixer(
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
-        if mode == "1v1" and not check_if_in_1v1_battle(vm_index):
+        if mode == "1v1" and not check_if_in_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
 
-        if mode == "2v2" and not check_if_in_2v2_battle(vm_index):
+        if mode == "2v2" and not check_if_in_battle(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
             return "no battle"
 
@@ -658,7 +657,7 @@ def check_enemy_tower_statuses(
     return (left_tower_status, right_tower_status)
 
 
-def end_fight_state(vm_index, logger: Logger, next_state):
+def end_fight_state(vm_index, logger: Logger, next_state, disable_win_tracker_toggle=True):
     """method to handle the time after a fight and before the next state"""
 
     # get to clash main after this fight
@@ -669,18 +668,21 @@ def end_fight_state(vm_index, logger: Logger, next_state):
     logger.log("Made it to clash main after doing a fight")
 
     # check if the prev game was a win
+    if not disable_win_tracker_toggle:
+        win_check_return = check_if_previous_game_was_win(vm_index, logger)
 
-    win_check_return = check_if_previous_game_was_win(vm_index, logger)
+        if win_check_return == "restart":
+            logger.log("Error 885869 Failed while checking if previous game was a win")
+            return "restart"
 
-    if win_check_return == "restart":
-        logger.log("Error 885869 Failed while checking if previous game was a win")
-        return "restart"
+        if win_check_return:
+            logger.add_win()
+            return next_state
 
-    if win_check_return:
-        logger.add_win()
-        return next_state
+        logger.add_loss()
+    else:
+        logger.log('Not checking win/loss because check is disabled')
 
-    logger.add_loss()
     return next_state
 
 
@@ -698,7 +700,7 @@ def check_if_previous_game_was_win(
             status='534594784234 Error Not on main menu, returning "restart"'
         )
         logger.log(
-            f"There are the pixels the bot saw after failing to find clash main:"
+            "There are the pixels the bot saw after failing to find clash main:"
         )
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
@@ -955,13 +957,18 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
 
 if __name__ == "__main__":
-    logger = Logger()
-    vm_index = 5
+    # logger = Logger()
+    # vm_index = 5
 
     # mag_dump(vm_index,logger)
 
     # _2v2_random_fight_loop(vm_index, logger)
 
-    _1v1_random_fight_loop(vm_index, logger)
+    # _1v1_random_fight_loop(vm_index, logger)
 
     # mag_dump(vm_index,logger)
+
+
+    # while 1:print(check_if_in_battle(vm_index))
+
+    pass
