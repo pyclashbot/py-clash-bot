@@ -2,137 +2,145 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 from pyclashbot.detection.image_rec import pixel_is_equal
 
-from pyclashbot.memu.client import save_screenshot, screenshot
-
+from pyclashbot.memu.client import screenshot
+import random
 
 CARD_PIXEL_DATA_DICT = {
+    #checked
     "arrows": [
         [
-            [243, 229, 214],
-            [239, 215, 189],
-            [187, 150, 190],
-            [169, 166, 211],
-            [251, 198, 132],
-        ],
-        [
-            [65, 44, 215],
-            [239, 218, 190],
-            [247, 195, 140],
-            [245, 198, 134],
-            [209, 195, 209],
-        ],
-        [
-            [253, 232, 204],
-            [239, 216, 189],
-            [245, 195, 140],
-            [247, 195, 125],
-            [196, 158, 123],
-        ],
-        [
-            [98, 98, 98],
-            [212, 212, 212],
-            [228, 228, 228],
-            [184, 184, 184],
-            [201, 201, 201],
+            [239, 223, 196],
+            [234, 213, 185],
+            [237, 194, 135],
+            [239, 196, 133],
+            [199, 164, 124],
         ],
     ],
     "barb_hut": [
         [
-            [181, 183, 165],
-            [253, 191, 141],
-            [255, 227, 231],
-            [100, 170, 254],
-            [128, 191, 246],
+            [76, 72, 9],
+            [210, 208, 193],
+            [94, 84, 62],
+            [19, 17, 10],
+            [26, 33, 51],
         ],
         [
-            [181, 186, 164],
-            [252, 199, 151],
-            [255, 228, 233],
-            [106, 177, 255],
-            [143, 207, 255],
+            [175, 181, 156],
+            [235, 181, 136],
+            [246, 226, 226],
+            [110, 167, 255],
+            [119, 184, 251],
         ],
         [
-            [183, 182, 151],
-            [255, 201, 152],
-            [255, 235, 234],
-            [107, 188, 178],
-            [63, 121, 186],
+            [175, 181, 156],
+            [236, 182, 138],
+            [246, 226, 226],
+            [110, 167, 255],
+            [119, 185, 252],
         ],
         [
-            [173, 180, 156],
-            [220, 164, 118],
-            [255, 233, 238],
-            [96, 162, 243],
-            [55, 96, 162],
+            [177, 178, 152],
+            [249, 195, 151],
+            [249, 230, 230],
+            [110, 177, 166],
+            [72, 120, 185],
+        ],
+        [
+            [175, 181, 156],
+            [238, 185, 140],
+            [246, 226, 226],
+            [110, 167, 255],
+            [121, 187, 254],
+        ],
+        [
+            [176, 182, 155],
+            [231, 178, 132],
+            [246, 226, 226],
+            [110, 167, 255],
+            [117, 182, 249],
         ],
     ],
     "barb_barrel": [
         [
-            [238, 174, 74],
-            [71, 249, 255],
-            [49, 96, 134],
-            [46, 79, 122],
-            [69, 67, 65],
-        ],
-        [
-            [231, 174, 74],
+            [227, 171, 71],
             [84, 255, 255],
-            [19, 54, 90],
-            [56, 93, 147],
-            [64, 57, 57],
+            [26, 59, 91],
+            [69, 113, 170],
+            [59, 55, 52],
         ],
         [
-            [231, 174, 74],
-            [84, 253, 255],
-            [24, 62, 98],
-            [50, 89, 141],
-            [65, 57, 57],
+            [227, 171, 70],
+            [80, 247, 250],
+            [51, 88, 128],
+            [47, 79, 121],
+            [71, 66, 64],
+        ],
+        [
+            [227, 171, 71],
+            [83, 255, 255],
+            [27, 61, 93],
+            [69, 114, 171],
+            [60, 56, 53],
         ],
     ],
     "balloon": [
         [
-            [222, 240, 239],
-            [132, 94, 74],
-            [90, 86, 86],
-            [213, 221, 185],
-            [205, 211, 158],
+            [211, 244, 233],
+            [127, 95, 75],
+            [85, 84, 86],
+            [202, 212, 173],
+            [196, 206, 158],
         ],
         [
-            [101, 103, 154],
-            [123, 92, 82],
-            [84, 95, 111],
-            [206, 225, 201],
-            [208, 207, 155],
+            [50, 68, 122],
+            [117, 88, 78],
+            [83, 95, 122],
+            [207, 225, 196],
+            [203, 203, 157],
         ],
         [
-            [214, 247, 244],
-            [135, 100, 78],
-            [86, 86, 105],
-            [116, 154, 188],
-            [199, 215, 197],
+            [94, 113, 166],
+            [117, 88, 78],
+            [83, 95, 120],
+            [207, 225, 196],
+            [203, 202, 154],
         ],
     ],
     "bomb_tower": [
         [
-            [115, 81, 59],
-            [222, 198, 141],
-            [27, 44, 86],
-            [41, 63, 146],
-            [85, 117, 216],
+            [109, 79, 55],
+            [206, 189, 141],
+            [25, 43, 83],
+            [33, 75, 179],
+            [85, 119, 216],
         ],
         [
-            [107, 81, 57],
-            [212, 191, 147],
-            [25, 44, 86],
-            [36, 74, 173],
-            [86, 120, 223],
+            [109, 79, 57],
+            [222, 204, 158],
+            [18, 39, 82],
+            [39, 63, 152],
+            [84, 116, 216],
         ],
         [
-            [115, 81, 57],
-            [225, 207, 160],
-            [18, 40, 84],
-            [42, 68, 156],
-            [85, 117, 221],
+            [109, 79, 57],
+            [221, 203, 155],
+            [18, 39, 82],
+            [39, 59, 143],
+            [84, 116, 215],
+        ],
+        [
+            [109, 79, 57],
+            [222, 205, 159],
+            [18, 39, 82],
+            [39, 65, 156],
+            [84, 116, 216],
+        ],
+        [
+            [109, 79, 57],
+            [221, 203, 153],
+            [19, 39, 82],
+            [39, 56, 137],
+            [84, 116, 215],
         ],
     ],
     "battle_ram": [
@@ -181,57 +189,38 @@ CARD_PIXEL_DATA_DICT = {
     ],
     "cannon": [
         [
-            [115, 153, 164],
-            [184, 134, 143],
-            [53, 56, 64],
-            [40, 59, 65],
-            [206, 228, 240],
+            [113, 149, 159],
+            [159, 135, 156],
+            [50, 58, 59],
+            [34, 51, 51],
+            [201, 224, 234],
+        ],
+        [
+            [113, 148, 158],
+            [155, 135, 159],
+            [50, 57, 58],
+            [34, 51, 51],
+            [201, 224, 234],
         ],
         [
             [115, 150, 160],
-            [184, 135, 139],
-            [53, 56, 64],
-            [41, 60, 66],
-            [206, 227, 239],
-        ],
-        [
-            [123, 158, 166],
-            [175, 165, 189],
-            [57, 62, 60],
-            [33, 47, 48],
-            [206, 224, 239],
-        ],
-        [
-            [115, 151, 165],
-            [166, 137, 157],
-            [52, 57, 60],
-            [40, 59, 65],
-            [206, 227, 239],
+            [155, 134, 158],
+            [50, 58, 59],
+            [35, 50, 50],
+            [200, 224, 234],
         ],
     ],
     "furnace": [
         [
-            [74, 111, 90],
-            [35, 28, 55],
-            [220, 43, 195],
-            [148, 138, 132],
-            [104, 219, 255],
-        ],
-        [
-            [90, 140, 120],
-            [51, 40, 61],
-            [200, 30, 166],
-            [148, 138, 133],
-            [123, 111, 104],
-        ],
-        [
-            [82, 133, 103],
-            [35, 31, 57],
-            [245, 53, 227],
-            [53, 49, 55],
-            [109, 200, 255],
+            [83, 140, 113],
+            [49, 40, 59],
+            [204, 34, 170],
+            [145, 138, 128],
+            [121, 108, 101],
         ],
     ],
+
+    #unchecked
     "freeze": [
         [
             [165, 101, 42],
@@ -803,11 +792,14 @@ CARD_PIXEL_DATA_DICT = {
         ],
     ],
     "ram_rider": [
-     [[129,224,236],
-[123,247,255],
-[74,98,132],
-[89,132,202],
-[107,139,186],],   [
+        [
+            [129, 224, 236],
+            [123, 247, 255],
+            [74, 98, 132],
+            [89, 132, 202],
+            [107, 139, 186],
+        ],
+        [
             [63, 202, 233],
             [115, 241, 255],
             [69, 227, 255],
@@ -876,11 +868,14 @@ CARD_PIXEL_DATA_DICT = {
         ],
     ],
     "lightning": [
-    [[206,154,115],
-[255,253,254],
-[139,76,65],
-[233,113,37],
-[236,108,38],],    [
+        [
+            [206, 154, 115],
+            [255, 253, 254],
+            [139, 76, 65],
+            [233, 113, 37],
+            [236, 108, 38],
+        ],
+        [
             [219, 169, 129],
             [255, 252, 248],
             [156, 89, 77],
@@ -976,6 +971,126 @@ CARD_PIXEL_DATA_DICT = {
 }
 
 
+PLAY_COORDS = {
+    "spell": {
+        "left": [(94, 151), (95, 151), (86, 117)],
+        "right": [(330, 153), (330, 110)],
+    },
+    "hog": {
+        "left": [(77, 281), (113, 286), (154, 283)],
+        "right": [(257, 283), (300, 284), (353, 283)],
+    },
+    "turret": {
+        "left": [(224, 300), (224, 334)],
+        "right": [(224, 300), (224, 334)],
+    },
+    "miner": {
+        "left": [(86, 156), (90, 104), (143, 113), (142, 153)],
+        "right": [(274, 152), (276, 111), (339, 111), (323, 157)],
+    },
+    "goblin_barrel": {
+        "left": [(115, 134), (115, 134), (60, 96)],
+        "right": [(300, 137), (300, 137), (356, 106)],
+    },
+    "xbow": {
+        "left": [(170, 288)],
+        "right": [(254, 284)],
+    },
+    "spawner": {
+        "left": [(69, 442), (158, 444), (166, 394)],
+        "right": [(247, 396), (264, 440), (343, 442)],
+    },
+}
+
+
+def get_play_coords_for_card(vm_index, card_index, side_preference):
+    card_data = get_all_card_pixel_data(vm_index)[card_index]
+
+    # get the ID of this card(ram_rider, zap, etc)
+    identity = identify_card(card_data)
+
+    # get the grouping of this card (hog, turret, spell, etc)
+    group = get_card_group(identity)
+
+    # get the play coords of this grouping
+    coords = calculate_play_coords(group, side_preference)
+
+    return identity, coords
+
+
+def get_card_group(card_id) -> str:
+    card_groups: dict[str, list[str]] = {
+        "spell": [
+            "earthquake",
+            "fireball",
+            "freeze",
+            "poison",
+            "arrows",
+            "snowball",
+            "zap",
+            "rocket",
+            "lightning",
+            "log",
+            "tornado",
+            "graveyard",
+        ],
+        "turret": [
+            "bomb_tower",
+            "cannon",
+            "tesla",
+            "goblin_cage",
+            "inferno_tower",
+        ],
+        "hog": [
+            "battle_ram",
+            "wall_breakers",
+            "princess",
+            "ram_rider",
+            "skeleton_barrel",
+            "hog",
+            "royal_hogs",
+        ],
+        "miner": [
+            "goblin_drill",
+            "miner",
+        ],
+        "goblin_barrel": [
+            "goblin_barrel",
+        ],
+        "xbow": [
+            "xbow",
+            "mortar",
+        ],
+        "spawner": [
+            "tombstone",
+            "goblin_hut",
+            "barb_hut",
+            "furnace",
+        ],
+    }
+
+    for group, cards in card_groups.items():
+        if card_id in cards:
+            return group
+
+    return "No group"
+
+
+def calculate_play_coords(card_grouping: str, side_preference: str):
+    if PLAY_COORDS.get(card_grouping):
+        group_datum = PLAY_COORDS[card_grouping]
+        if side_preference == "left" and "left" in group_datum:
+            return random.choice(group_datum["left"])
+        if side_preference == "right" and "right" in group_datum:
+            return random.choice(group_datum["right"])
+        if "coords" in group_datum:
+            return random.choice(group_datum["coords"])
+
+    if side_preference == "left":
+        return (random.randint(60, 206), random.randint(281, 456))
+    return (random.randint(210, 351), random.randint(281, 456))
+
+
 def get_all_card_pixel_data(vm_index):
     iar = screenshot(vm_index)
     base_coord_list = [
@@ -1039,34 +1154,20 @@ def print_pixel_data(vm_index, card_index):
         print(f"[{p[0]},{p[1]},{p[2]}],")
 
 
+def card_detection_tester(vm_index):
+    print("\n\n--------------")
+    card_data = get_all_card_pixel_data(vm_index)
+    for i, d in enumerate(card_data):
+        id = identify_card(d)
+        if id == "unknown":
+            print(f"\nCard index #{i} failed")
+            for p in d:
+                print(f"[{p[0]},{p[1]},{p[2]}],")
+    print("--------------")
+
+
 if __name__ == "__main__":
-    print("Start")
-    vm_index = 1
+    vm_index = 11
+    side_preference = "left"
 
-    # start_time = time.time()
-
-    # print_pixel_data(vm_index, 0)
-    # print("-------------")
-    # print_pixel_data(vm_index, 1)
-    # print("-------------")
-    # print_pixel_data(vm_index, 2)
-    # print("-------------")
-    # print_pixel_data(vm_index, 3)
-    # print("\n\n")
-
-    # data = get_all_card_pixel_data(vm_index)
-    # for card in data:
-    #     print(identify_card(card))
-    # print(str(time.time() - start_time)[:5])
-
-    "-----------------------"
-
-    start_time = time.time()
-    data = get_all_card_pixel_data(vm_index)
-    for card in data:
-        print(identify_card(card))
-
-    "-----------------------"
-    # card_index = 2
-
-    # print_pixel_data(vm_index, card_index)
+    card_detection_tester(vm_index)
