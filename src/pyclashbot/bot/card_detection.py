@@ -147,8 +147,6 @@ def get_card_images(vm_index):
     return card_images
 
 
-
-
 def get_card_name_list():
     """
     Returns a list of card names by iterating through the reference images directory and extracting the card names
