@@ -96,4 +96,4 @@ def check_if_can_purchase_100_tickets_bannerbox(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    collect_bannerbox_rewards_state(11,Logger(),'next_state')
