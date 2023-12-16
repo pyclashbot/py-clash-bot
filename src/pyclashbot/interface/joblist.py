@@ -65,11 +65,13 @@ jobs_checklist = [
                 [
                     job_check_box("Random Requesting", "request_user_toggle"),
                 ],
-                [
-                    job_check_box(
-                        "Card Mastery Collection", "card_mastery_user_toggle"
-                    ),
-                ],
+                #TODO fix Card Mastery Collection (broken since 12/13/23 update)
+                #keep checkbox disabled for now
+                # [
+                #     job_check_box(
+                #         "Card Mastery Collection", "card_mastery_user_toggle"
+                #     ),
+                # ],
                 [
                     job_check_box(
                         "Free Offer Collection",
@@ -95,11 +97,13 @@ jobs_checklist = [
                         default_value=False,
                     ),
                 ],
-                [
-                    job_check_box(
-                        "Random Decks", "random_decks_user_toggle", default_value=False
-                    ),
-                ],
+                #TODO fix random decks (broken since 12/13/23 update)
+                #keep checkbox disabled for now
+                # [
+                #     job_check_box(
+                #         "Random Decks", "random_decks_user_toggle", default_value=False
+                #     ),
+                # ],
                 [
                     job_check_box(
                         "Random Plays", "random_plays_user_toggle", default_value=False

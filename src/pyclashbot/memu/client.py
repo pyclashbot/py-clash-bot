@@ -168,3 +168,8 @@ def send_newline_char(vm_index):
         vm_index=vm_index,
         command="shell input keyevent KEYCODE_NUMPAD_ENTER",
     )
+
+
+
+if __name__ == "__main__":
+    pass

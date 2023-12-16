@@ -32,53 +32,48 @@ GREEN_COLOR: tuple[Literal[137], Literal[242], Literal[178]] = (137, 242, 178)
 FREE_OFFER_SCROLL_TIMEOUT = 35  # seconds
 
 
+def get_to_shop_page(vm_index, logger):
+    click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
+    if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
+        logger.change_status(
+            status="Error 085708235 Failure waiting for clash main shop page "
+        )
+        return False
+    return True
+
+
 def free_offer_collection_state(vm_index, logger: Logger, next_state: str) -> str:
     """method to handle the entirety of the free offer collection state in the state tree"""
     logger.set_current_state("free_offer_collection")
     logger.change_status(status="Free offer collection state")
     logger.add_free_offer_collection_attempt()
 
-
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(status="ERROR 356 Not on clash main menu for free_offer_collection_state")
-        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        logger.change_status(
+            status="ERROR 356 Not on clash main menu for free_offer_collection_state"
+        )
+        logger.log(
+            f"There are the pixels the bot saw after failing to find clash main:"
+        )
         for pixel in clash_main_check:
-            logger.log(f'   {pixel}')
+            logger.log(f"   {pixel}")
 
-        return "restart"
-
-
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(status="ERROR 625436252356 Not on clash main menu")
         return "restart"
 
     # get to shop page
-    click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
-    if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
-        logger.change_status(
-            status="Error 085708235 Failure waiting for clash main shop page "
-        )
+    if get_to_shop_page(vm_index, logger) is False:
+        logger.change_status("Failed to get to shop page!")
         return "restart"
 
     logger.change_status(status="Searching for free offer")
-
     start_time: float = time.time()
-    prints = 0
     while 1:
         # if looped too much, return
         time_taken: float = time.time() - start_time
         if time_taken > FREE_OFFER_SCROLL_TIMEOUT:
-            logger.log(
-                f"Scrolled longer than {FREE_OFFER_SCROLL_TIMEOUT} seconds so breaking"
-            )
+            logger.log(f"Scrolled longer than {FREE_OFFER_SCROLL_TIMEOUT}s so breaking")
             break
-
-        if prints * 10 < time_taken:
-            logger.change_status(
-                status=f"Searching for free offer: {str(time_taken)[:4]}"
-            )
-            prints += 1
 
         # look for free offer
         if find_and_click_free_offer(vm_index, logger) == "fail":
@@ -114,6 +109,7 @@ def find_and_click_free_offer(vm_index, logger: Logger) -> Literal["fail", "good
         # scroll
         scroll_down_fast_on_left_side_of_screen(vm_index)
         time.sleep(1)
+        click(vm_index, 13, 250)
         return "fail"
 
     # if the coord exists, click the offer
@@ -142,7 +138,7 @@ def buy_this_free_offer(vm_index, logger) -> Literal["good"]:
 
     # click deadspace for if its a chest
     logger.log("Clicking deadspace if its a chest")
-    click(vm_index, 10, 344, clicks=15, interval=0.75)
+    click(vm_index, 5, 344, clicks=15, interval=0.75)
     time.sleep(1)
 
     return "good"
@@ -191,4 +187,9 @@ def find_free_offer_icon(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    vm_index = 11
+    logger = Logger()
+
+    free_offer_collection_state(vm_index, logger, "next_state")
+
+    # get_to_shop_page(vm_index, logger)

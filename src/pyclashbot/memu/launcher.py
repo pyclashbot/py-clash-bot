@@ -41,7 +41,8 @@ def restart_emulator(logger, start_time=time.time()):
 
     # start the vm
     logger.change_status(status="Opening the pyclashbot emulator...")
-    pmc.start_vm(vm_index=vm_index)
+    out=pmc.start_vm(vm_index=vm_index)
+    print(f'Opened the pyclashbot emulator with output:\n{out}')
 
     # wait for the window to appear
     for i in range(MANUAL_VM_WAIT_TIME):

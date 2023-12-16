@@ -773,21 +773,28 @@ def check_if_on_card_page(vm_index) -> bool:
     Returns:
         bool: True if the bot is on the card page, False otherwise.
     """
-    if not region_is_color(vm_index, region=[75, 579, 31, 11], color=(73, 105, 139)):
-        return False
-    if not region_is_color(vm_index, region=[170, 577, 29, 10], color=(72, 105, 138)):
-        return False
-
-    lines = [
-        check_line_for_color(
-            vm_index, x_1=393, y_1=9, x_2=410, y_2=29, color=(66, 198, 24)
-        ),
-        check_line_for_color(
-            vm_index, x_1=67, y_1=54, x_2=99, y_2=84, color=(96, 196, 255)
-        ),
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[110][294],
+        iar[137][317],
+        iar[117][310],
+        iar[479][56],
+        iar[485][56],
     ]
 
-    return all(lines)
+    colors = [
+[150,  62,   4],
+[165 , 75,   2],
+[255, 238, 230],
+[232,   0, 248],
+[214,   2, 226],
+    ]
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i],p,tol=15):
+            return False
+
+    return True
 
 
 def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "good"]:
@@ -960,7 +967,7 @@ def check_if_on_clash_main_shop_page(vm_index) -> bool:
 
 
 def wait_for_clash_main_shop_page(
-    vm_index, logger: Logger, printmode=False
+    vm_index, logger: Logger
 ) -> Literal["restart", "good"]:
     """
     Wait for the bot to navigate to the main shop page in the Clash of Clans game.
@@ -975,10 +982,6 @@ def wait_for_clash_main_shop_page(
         Literal["restart", "good"]: "restart" if the bot needs to be restarted, "good" otherwise.
     """
     start_time = time.time()
-    if printmode:
-        logger.change_status(status="Waiting for clash main shop page")
-    else:
-        logger.log("Waiting for clash main shop page")
     while not check_if_on_clash_main_shop_page(vm_index):
         time_taken = time.time() - start_time
         if time_taken > 20:
@@ -986,10 +989,7 @@ def wait_for_clash_main_shop_page(
                 status="Error 764527546 Waiting too long for clash main shop page"
             )
             return "restart"
-    if printmode:
-        logger.change_status(status="Done waiting for clash main shop page")
-    else:
-        logger.log("Done waiting for clash main shop page")
+
     return "good"
 
 
@@ -1220,6 +1220,8 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    vm_index = 1
+    vm_index = 11
 
-    while 1:print(check_if_in_1v1_battle(vm_index))
+
+
+
