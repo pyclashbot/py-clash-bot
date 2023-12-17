@@ -1251,13 +1251,13 @@ pylint = ">=1.7"
 
 [[package]]
 name = "pymemuc"
-version = "0.4.5"
-description = "A Memuc.exe wrapper for Python"
+version = "0.5.2"
+description = "A Python API for MEmu Android Emulator."
 optional = false
-python-versions = ">=3.9,<4.0"
+python-versions = ">=3.9,<3.13"
 files = [
-    {file = "pymemuc-0.4.5-py3-none-any.whl", hash = "sha256:9ed52eeddf932f12ddcad76b5f661b8eb756e604c9b005b247e891d6638dc441"},
-    {file = "pymemuc-0.4.5.tar.gz", hash = "sha256:68ade876ee38ef954e101a6525f8d83098a69ef386ef7a970ba34afb526e640f"},
+    {file = "pymemuc-0.5.2-py3-none-any.whl", hash = "sha256:2e91e964b4b55894482edf6e9b6f020b520f250efb69ff8783b5f1021d29b330"},
+    {file = "pymemuc-0.5.2.tar.gz", hash = "sha256:ab50c01a68a3eb7a3368f759df087d7d7b2c1189d4f948f24329c355edda7f83"},
 ]
 
 [[package]]

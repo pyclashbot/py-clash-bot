@@ -17,11 +17,11 @@ include = [
 
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.13"
 opencv-python = "^4.8.1"
 numpy = "^1.26.2"
 pysimplegui = "^4.60.5"
-pymemuc = "^0.4.5"
+pymemuc = "^0.5.2"
 psutil = "^5.9.6"
 requests = "^2.31.0"
 adbblitz = "^0.10"
