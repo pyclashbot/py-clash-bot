@@ -193,7 +193,7 @@ user_config_keys = [
     "open_chests_user_toggle",
     "request_user_toggle",
     'donate_toggle',
-    #DISABLED: "card_mastery_user_toggle",
+    DISABLED: "card_mastery_user_toggle",
     'disable_win_track_toggle',
     "free_offer_user_toggle",
     "1v1_user_toggle",
