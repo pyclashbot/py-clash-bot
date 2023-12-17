@@ -24,6 +24,7 @@ pysimplegui = "^4.60.5"
 pymemuc = "^0.4.5"
 psutil = "^5.9.6"
 requests = "^2.31.0"
+adbblitz = "^0.10"
 
 
 [tool.poetry.group.build]
@@ -31,7 +32,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.11"
+cx-freeze = { git = "https://github.com/marcelotduarte/cx_Freeze.git", rev = "85f7d9fbd1b7e3e4f06e6536be63eabff4608d82" }
 poethepoet = "^0.24.4"
 
 
