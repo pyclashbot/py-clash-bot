@@ -1,4 +1,3 @@
-import base64
 from os.path import exists
 
 import cv2
@@ -12,21 +11,6 @@ class InvalidImageError(Exception):
         self.path = path
         self.message = message
         super().__init__(self.message)
-
-
-def open_from_b64(image_b64: str) -> np.ndarray[np.uint8]:
-    """
-    A method to validate and open an image from a base64 string
-    :param image_b64: the base64 string to read the image from
-    :return: the image as a numpy array
-    :raises InvalidImageError: if the file is not a valid image
-    """
-
-    try:
-        image_data = base64.b64decode(image_b64)
-    except (TypeError, ValueError, base64.binascii.Error) as error:
-        raise InvalidImageError("image_b64 is not a valid base64 string") from error
-    return open_from_buffer(image_data)
 
 
 def open_from_buffer(
