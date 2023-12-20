@@ -2,14 +2,11 @@
 A module for getting screenshots from Memu VMs.
 """
 import atexit
-import sys
 
 import numpy as np
 from adbblitz import AdbShotTCP
 
 from pyclashbot.memu.pmc import pmc, adb_path
-
-FROZEN = getattr(sys, "frozen", False)
 
 
 class ScreenShotter:
@@ -33,7 +30,7 @@ class ScreenShotter:
             self.connections[vm_index] = AdbShotTCP(
                 device_serial=f"{host}:{port}",
                 adb_path=adb_path,
-                log_level="ERROR" if FROZEN else "INFO",
+                log_level="ERROR",
             )
         return np.array(self.connections[vm_index].get_one_screenshot())
 
