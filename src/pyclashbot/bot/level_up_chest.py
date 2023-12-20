@@ -2,7 +2,7 @@
 import numpy
 from pyclashbot.memu.client import screenshot
 
-def check_for_bannerbox_chest(vm_index):
+def check_for_level_up_chest(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
@@ -24,4 +24,4 @@ def collect_bannerbox_chest():
 
 if __name__ == '__main__':
     vm_index=11
-    check_for_bannerbox_chest(vm_index)
+    check_for_level_up_chest(vm_index)
