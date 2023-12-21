@@ -1,14 +1,22 @@
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, wait_for_clash_main_menu
-from pyclashbot.memu.client import click, save_screenshot
+from pyclashbot.memu.client import click, save_screenshot, send_swipe
 import time
 
 SSID_COORDS = [
-    (48, 305),
-    (48, 387),
-    (53, 471),
-    (48, 553),
+    (48, 305),  # 1st account, index 0
+    (48, 387),  # 2nd account, index 1
+    (48, 471),  # 3rd account, index 2
+    (48, 553),  # 4th account, index 3
+    (48, 631),  # 5th account, index 4
+    (48, 631),  # 6th account, index 5
+    (48, 631),  # 7th account, index 6
+    (48, 631),  # 8th account, index 7
 ]
 
+def custom_swipe(vm_index, start_x, start_y, end_x, end_y, repeat, delay):
+    for _ in range(repeat):
+        send_swipe(vm_index, start_x, start_y, end_x, end_y)
+        time.sleep(delay)
 
 def switch_accounts(vm_index, logger, account_index_to_switch_to):
     logger.add_switch_account_attempt()
@@ -27,6 +35,17 @@ def switch_accounts(vm_index, logger, account_index_to_switch_to):
     logger.change_status("Clicking switch SSID button")
     click(vm_index, 221, 368)
     time.sleep(4)
+
+    # Perform the scrolling
+    logger.change_status(f"Scrolling down to reach account #{account_index_to_switch_to}")
+    if account_index_to_switch_to == 5:  # 6th account
+        custom_swipe(vm_index, 215, 400, 215, 350, 2, 1)
+    elif account_index_to_switch_to == 6:  # 7th account
+        custom_swipe(vm_index, 215, 400, 215, 350, 4, 1)
+    elif account_index_to_switch_to == 7:  # 8th account
+        custom_swipe(vm_index, 215, 400, 215, 350, 6, 1)
+        #send_swipe(vm_index, 215, 631, 215, 10)
+        #time.sleep(2)
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
