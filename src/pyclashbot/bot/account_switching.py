@@ -44,8 +44,6 @@ def switch_accounts(vm_index, logger, account_index_to_switch_to):
         custom_swipe(vm_index, 215, 400, 215, 350, 4, 1)
     elif account_index_to_switch_to == 7:  # 8th account
         custom_swipe(vm_index, 215, 400, 215, 350, 6, 1)
-        #send_swipe(vm_index, 215, 631, 215, 10)
-        #time.sleep(2)
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
