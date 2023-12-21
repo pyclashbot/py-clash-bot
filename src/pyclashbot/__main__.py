@@ -72,6 +72,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         # "random_decks_user_toggle": values["random_decks_user_toggle"],
         "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
+        "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
         "skip_fight_if_full_chests_user_toggle": values[
             "skip_fight_if_full_chests_user_toggle"
@@ -85,6 +86,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "shop_buy_increment_user_input": values["shop_buy_increment_user_input"],
         "request_increment_user_input": values["request_increment_user_input"],
         "donate_increment_user_input": values["donate_increment_user_input"],
+        "daily_reward_increment_user_input": values["daily_reward_increment_user_input"],
         "card_mastery_collect_increment_user_input": values[
             "card_mastery_collect_increment_user_input"
         ],
@@ -206,6 +208,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
         "shop_buy_increment_user_input": "Shop Purchase Increment",
         "request_increment_user_input": "Request Increment",
         "donate_increment_user_input": "Donate Increment",
+        "daily_reward_increment_user_input": "Daily Reward Increment",
         "card_mastery_collect_increment_user_input": "Card Mastery Collect Increment",
         "open_chests_increment_user_input": "Open Chests Increment",
         "deck_randomization_increment_user_input": "Randomize Deck Increment",

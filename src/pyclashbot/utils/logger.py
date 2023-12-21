@@ -101,7 +101,9 @@ class Logger:
         # job stats
         self.requests = 0
         self.shop_buys = 0
+        self.daily_reward_attempts = 0
         self.donates = 0
+        self.daily_rewards = 0
         self.request_attempts = 0
         self.donate_attempts = 0
         self.deck_randomize_attempts = 0
@@ -159,6 +161,7 @@ class Logger:
                 "war_fights": self.war_fights,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "free_offer_collections": self.free_offer_collections,
+                "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
@@ -340,6 +343,11 @@ class Logger:
         self.donates += 1
 
     @_updates_log
+    def add_daily_reward(self) -> None:
+        """add donate to log"""
+        self.daily_rewards += 1
+
+    @_updates_log
     def change_status(self, status) -> None:
         """change status of bot in log
 
@@ -368,6 +376,8 @@ class Logger:
     def change_current_account(self, account_id):
         self.current_account = account_id
 
+
+
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""
         self.deck_randomize_attempts += 1
@@ -382,6 +392,13 @@ class Logger:
     def add_shop_buy_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""
         self.shop_buy_attempts += 1
+
+    def add_daily_reward_attempt(self):
+        """increments logger's free_offer_collection_attempts by 1"""
+        self.daily_reward_attempts += 1
+
+
+
 
     def add_card_upgrade_attempt(self):
         """increments logger's card_upgrade_attempts by 1"""
@@ -700,6 +717,48 @@ class Logger:
             f"Can't do shop_buy . {games_played} Games and {shop_buy_attempts} Attempts"
         )
         return False
+
+    def check_if_can_collect_daily_rewards(self, increment) -> bool:
+        """method to check if can collect free offers given
+        attempts, games played, and user increment input"""
+
+        increment = int(increment)
+        if increment <= 1:
+            self.log(f"Increment is {increment} so can always Collect Free Offers")
+            return True
+
+        # count daily_reward_attempts
+        daily_reward_attempts = self.daily_reward_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if daily_reward_attempts is zero return true
+        if daily_reward_attempts == 0:
+            self.log(
+                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts"
+            )
+            return True
+
+        # if games_played / increment > shop_buy_attempts
+        if games_played / increment >= daily_reward_attempts:
+            self.log(
+                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Can't do collect_daily_rewards . {games_played} Games and {daily_reward_attempts} Attempts"
+        )
+        return False
+
 
     def check_if_can_randomize_deck(self, increment):
         """method to check if can randomize deck given

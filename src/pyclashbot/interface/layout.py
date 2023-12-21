@@ -203,11 +203,13 @@ user_config_keys = [
     "war_user_toggle",
     #DISABLED: "random_decks_user_toggle",
     "open_bannerbox_user_toggle",
+    'daily_rewards_user_toggle',
     "random_plays_user_toggle",
     "skip_fight_if_full_chests_user_toggle",
     # job increment controls keys
     "request_increment_user_input",
     "donate_increment_user_input",
+    "daily_reward_increment_user_input",
     "shop_buy_increment_user_input",
     "card_upgrade_increment_user_input",
     "card_mastery_collect_increment_user_input",

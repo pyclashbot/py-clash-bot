@@ -105,6 +105,12 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
+                        "Daily Rewards",
+                        "daily_rewards_user_toggle",
+                    ),
+                ],
+                [
+                    job_check_box(
                         "Card Upgrading",
                         "card_upgrade_user_toggle",
                         default_value=False,
