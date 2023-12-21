@@ -12,7 +12,6 @@ from pyclashbot.bot.do_fight_state import (
     start_1v1_fight_state,
     start_2v2_fight_state,
 )
-from pyclashbot.bot.free_offer_state import free_offer_collection_state
 from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
@@ -23,6 +22,7 @@ from pyclashbot.memu.launcher import (
     restart_emulator,
     start_clash_royale,
 )
+from pyclashbot.bot.buy_shop_offers import buy_shop_offers_state
 from pyclashbot.utils.logger import Logger
 
 
@@ -161,8 +161,8 @@ def state_tree(
         # return output of this state
         return request_state(vm_index, logger, next_state)
 
-    if state == "donate":  # --> free_offer_collection
-        next_state = "free_offer_collection"
+    if state == "donate":  # --> shop_buy
+        next_state = "shop_buy"
 
         # if job not selected, return next state
         if not job_list["donate_toggle"]:
@@ -177,24 +177,30 @@ def state_tree(
         # return output of this state
         return donate_cards_state(vm_index, logger, next_state)
 
-
-    if state == "free_offer_collection":  # --> bannerbox
+    if state == "shop_buy":  # --> bannerbox
         next_state = "bannerbox"
 
         # if job not selected, return next state
-        if not job_list["free_offer_user_toggle"]:
-            logger.log("Free offer state isn't toggled")
+        if (
+            not job_list["free_offer_user_toggle"]
+            and not job_list["gold_offer_user_toggle"]
+        ):
+            logger.log("Free neither free, not gold offer buys toggled")
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_collect_free_offer(
-            job_list["free_offer_collection_increment_user_input"]
-        ):
-            logger.log("Free offer state isn't ready")
+        if not logger.check_if_can_shop_buy(job_list["shop_buy_increment_user_input"]):
+            logger.log("Free shop_buy isn't ready")
             return next_state
 
         # return output of this state
-        return free_offer_collection_state(vm_index, logger, next_state)
+        return buy_shop_offers_state(
+            vm_index,
+            logger,
+            job_list["gold_offer_user_toggle"],
+            job_list["free_offer_user_toggle"],
+            next_state,
+        )
 
     if state == "bannerbox":  # --> randomize_deck
         next_state = "randomize_deck"
@@ -345,9 +351,7 @@ def state_tree(
             return next_state
 
         account_total = job_list["account_switching_slider"]
-        logger.log(
-            f"Doing switch to act#{job_list['next_account']} of {account_total}"
-        )
+        logger.log(f"Doing switch to act#{job_list['next_account']} of {account_total}")
 
         if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
             return "restart"

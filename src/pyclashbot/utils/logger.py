@@ -100,6 +100,7 @@ class Logger:
 
         # job stats
         self.requests = 0
+        self.shop_buys = 0
         self.donates = 0
         self.request_attempts = 0
         self.donate_attempts = 0
@@ -109,7 +110,7 @@ class Logger:
         self.card_upgrade_attempts = 0
         self.card_mastery_reward_collections = 0
         self.free_offer_collections = 0
-        self.free_offer_collection_attempts = 0
+        self.shop_buy_attempts = 0
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
         self.war_attempts = 0
@@ -150,6 +151,7 @@ class Logger:
                 "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
+                "shop_buys": self.shop_buys,
                 'donates': self.donates,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
@@ -327,6 +329,12 @@ class Logger:
         self.requests += 1
 
     @_updates_log
+    def add_shop_buy(self) -> None:
+        """add request to log"""
+        self.shop_buys += 1
+
+
+    @_updates_log
     def add_donate(self) -> None:
         """add donate to log"""
         self.donates += 1
@@ -371,10 +379,9 @@ class Logger:
     def add_donate_attempt(self):
         self.donate_attempts += 1
 
-
-    def add_free_offer_collection_attempt(self):
+    def add_shop_buy_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""
-        self.free_offer_collection_attempts += 1
+        self.shop_buy_attempts += 1
 
     def add_card_upgrade_attempt(self):
         """increments logger's card_upgrade_attempts by 1"""
@@ -653,7 +660,7 @@ class Logger:
         self.log(f"Can't donate. {games_played} games and {donate_attempts} Attempts")
         return False
 
-    def check_if_can_collect_free_offer(self, increment) -> bool:
+    def check_if_can_shop_buy(self, increment) -> bool:
         """method to check if can collect free offers given
         attempts, games played, and user increment input"""
 
@@ -662,35 +669,35 @@ class Logger:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
             return True
 
-        # count free_offer_collection_attempts
-        free_offer_attempts = self.free_offer_collection_attempts
+        # count shop_buy_attempts
+        shop_buy_attempts = self.shop_buy_attempts
 
         # count games
         games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
-        # if free_offer_collection_attempts is zero return true
-        if free_offer_attempts == 0:
+        # if shop_buy_attempts is zero return true
+        if shop_buy_attempts == 0:
             self.log(
-                f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
+                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts"
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
+                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts"
             )
             return True
 
-        # if games_played / increment > free_offer_collection_attempts
-        if games_played / increment >= free_offer_attempts:
+        # if games_played / increment > shop_buy_attempts
+        if games_played / increment >= shop_buy_attempts:
             self.log(
-                f"Can collect free offer. {games_played} Games and {free_offer_attempts} Attempts"
+                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts"
             )
             return True
 
         self.log(
-            f"Can't do free offer. {games_played} Games and {free_offer_attempts} Attempts"
+            f"Can't do shop_buy . {games_played} Games and {shop_buy_attempts} Attempts"
         )
         return False
 

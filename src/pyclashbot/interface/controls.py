@@ -46,7 +46,7 @@ controls = [
                 [make_job_increment_control_object("donate_increment_user_input")],
                 [
                     make_job_increment_control_object(
-                        "free_offer_collection_increment_user_input"
+                        "shop_buy_increment_user_input"
                     )
                 ],
                 [

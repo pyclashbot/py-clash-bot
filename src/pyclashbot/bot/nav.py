@@ -34,6 +34,19 @@ CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 364)
 OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
 OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
+SHOP_PAGE_BUTTON: tuple[Literal[33], Literal[603]] = (33, 603)
+
+
+def get_to_shop_page_from_clash_main(vm_index, logger):
+    click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
+    if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
+        logger.change_status(
+            status="Error 085708235 Failure waiting for clash main shop page "
+        )
+        return False
+    return True
+
+
 
 
 def wait_for_end_battle_screen(

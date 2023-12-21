@@ -196,6 +196,7 @@ user_config_keys = [
     "card_mastery_user_toggle",
     'disable_win_track_toggle',
     "free_offer_user_toggle",
+    "gold_offer_user_toggle",
     "1v1_user_toggle",
     "2v2_user_toggle",
     "card_upgrade_user_toggle",
@@ -207,7 +208,7 @@ user_config_keys = [
     # job increment controls keys
     "request_increment_user_input",
     "donate_increment_user_input",
-    "free_offer_collection_increment_user_input",
+    "shop_buy_increment_user_input",
     "card_upgrade_increment_user_input",
     "card_mastery_collect_increment_user_input",
     "open_chests_increment_user_input",
