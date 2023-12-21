@@ -49,6 +49,14 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     Returns:
         A dictionary of job toggles and increments based on the values of the GUI window.
     """
+    print("values in job_dict:\n")
+    print(
+        "free_offer_user_toggle:",
+        values["free_offer_user_toggle"],
+        "gold_offer_user_toggle:",
+        values["gold_offer_user_toggle"],
+    )
+
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
         "open_chests_user_toggle": values["open_chests_user_toggle"],
@@ -56,6 +64,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "donate_toggle": values["donate_toggle"],
         "card_mastery_user_toggle": values["card_mastery_user_toggle"],
         "free_offer_user_toggle": values["free_offer_user_toggle"],
+        "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "1v1_battle_user_toggle": values["1v1_user_toggle"],
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
@@ -68,13 +77,12 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "skip_fight_if_full_chests_user_toggle"
         ],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
+
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
         ],
-        "free_offer_collection_increment_user_input": values[
-            "free_offer_collection_increment_user_input"
-        ],
+        "shop_buy_increment_user_input": values["shop_buy_increment_user_input"],
         "request_increment_user_input": values["request_increment_user_input"],
         "donate_increment_user_input": values["donate_increment_user_input"],
         "card_mastery_collect_increment_user_input": values[
@@ -195,7 +203,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
     # A dictionary mapping the job increment input keys to their corresponding job names.
     key_to_job_dict: dict[str, str] = {
         "card_upgrade_increment_user_input": "Card Upgrade Increment",
-        "free_offer_collection_increment_user_input": "Free Offer Collection Increment",
+        "shop_buy_increment_user_input": "Shop Purchase Increment",
         "request_increment_user_input": "Request Increment",
         "donate_increment_user_input": "Donate Increment",
         "card_mastery_collect_increment_user_input": "Card Mastery Collect Increment",

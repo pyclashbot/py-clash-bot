@@ -75,8 +75,14 @@ jobs_checklist = [
                 ],
                 [
                     job_check_box(
-                        "Free Offer Collection",
+                        "Free Offers Collection",
                         "free_offer_user_toggle",
+                    ),
+                ],
+                [
+                    job_check_box(
+                        "Gold Offers Collection",
+                        "gold_offer_user_toggle",
                     ),
                 ],
                 [

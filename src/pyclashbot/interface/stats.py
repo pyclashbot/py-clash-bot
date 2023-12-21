@@ -24,6 +24,9 @@ collection_stats_titles: list[list[Text]] = [
         sg.Text("Requests: "),
     ],
     [
+        sg.Text("Shop Buys: "),
+    ],
+    [
         sg.Text("Donates: "),
     ],
     [
@@ -43,6 +46,9 @@ collection_stats_titles: list[list[Text]] = [
 collection_stats_values: list[list[Text]] = [
     [
         stat_box("requests"),
+    ],
+    [
+        stat_box("shop_buys"),
     ],
     [
         stat_box("donates"),

@@ -88,7 +88,6 @@ def skip_ads(vm_index):
             time.sleep(1)
     except Exception as err:  # pylint: disable=broad-except
         print(f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
-        input("Enter to cont")
         return "fail"
     return "success"
 

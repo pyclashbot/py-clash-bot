@@ -1,6 +1,7 @@
-
 import numpy
+from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import screenshot
+
 
 def check_for_level_up_chest(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
@@ -12,16 +13,24 @@ def check_for_level_up_chest(vm_index):
         iar[23][16],
     ]
 
-    for i,p in enumerate(pixels):
-        print(p)
+    colors = [
+        [245, 195, 79],
+        [246, 215, 63],
+        [108, 211, 247],
+        [221, 169, 39],
+    ]
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=15):
+            return True
+
+    return False
 
 
 def collect_bannerbox_chest():
-
-
     pass
 
 
-if __name__ == '__main__':
-    vm_index=11
-    check_for_level_up_chest(vm_index)
+if __name__ == "__main__":
+    vm_index = 12
+    print(check_for_level_up_chest(vm_index))
