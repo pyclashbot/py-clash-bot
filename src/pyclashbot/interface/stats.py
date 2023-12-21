@@ -33,6 +33,10 @@ collection_stats_titles: list[list[Text]] = [
         sg.Text("Chests Unlocked: "),
     ],
     [
+        sg.Text("Daily Rewards: "),
+    ],
+
+    [
         sg.Text("Card Mastery Rewards: "),
     ],
     [
@@ -56,6 +60,10 @@ collection_stats_values: list[list[Text]] = [
     [
         stat_box("chests_unlocked"),
     ],
+    [
+        stat_box("daily_rewards"),
+    ],
+
     [
         stat_box("card_mastery_reward_collections"),
     ],

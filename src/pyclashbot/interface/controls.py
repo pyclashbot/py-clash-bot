@@ -31,6 +31,7 @@ controls = [
                 [sg.Text("Donate Cards Every:")],
                 [sg.Text("Collect Free Offer Every:")],
                 [sg.Text("Upgrade Current Deck Every:")],
+                [sg.Text("Collect Daily Rewards Every:")],
                 [sg.Text("Collect Card Mastery Every:")],
                 [sg.Text("Open Chests Every:")],
                 [sg.Text("Randomize Deck Every:")],
@@ -44,14 +45,15 @@ controls = [
             [
                 [make_job_increment_control_object("request_increment_user_input")],
                 [make_job_increment_control_object("donate_increment_user_input")],
+                [make_job_increment_control_object("shop_buy_increment_user_input")],
                 [
                     make_job_increment_control_object(
-                        "shop_buy_increment_user_input"
+                        "card_upgrade_increment_user_input"
                     )
                 ],
                 [
                     make_job_increment_control_object(
-                        "card_upgrade_increment_user_input"
+                        "daily_reward_increment_user_input"
                     )
                 ],
                 [
@@ -84,7 +86,7 @@ controls = [
                 [sg.Text("games")],
                 [sg.Text("games")],
                 [sg.Text("games")],
-                [sg.Text("games")]
+                [sg.Text("games")],
             ],
             justification="left",
         ),

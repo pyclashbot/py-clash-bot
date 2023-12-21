@@ -24,6 +24,7 @@ from pyclashbot.memu.launcher import (
 )
 from pyclashbot.bot.buy_shop_offers import buy_shop_offers_state
 from pyclashbot.utils.logger import Logger
+from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
 
 
 class StateException(Exception):
@@ -202,13 +203,31 @@ def state_tree(
             next_state,
         )
 
-    if state == "bannerbox":  # --> randomize_deck
-        next_state = "randomize_deck"
+    if state == "bannerbox":  # --> daily_rewards
+        next_state = "daily_rewards"
         if not job_list["open_bannerbox_user_toggle"]:
             logger.log("Bannerbox job isn't toggled. Skipping")
             return next_state
 
         return collect_bannerbox_rewards_state(vm_index, logger, next_state)
+
+    if state == "daily_rewards":  # --> randomize_deck
+        next_state = "randomize_deck"
+
+        #if job not toggled, return next state
+        if not job_list["daily_rewards_user_toggle"]:
+            logger.log("daily_rewards job isn't toggled. Skipping")
+            return next_state
+
+        # if job not ready, return next state
+        if not logger.check_if_can_collect_daily_rewards(
+            job_list["daily_reward_increment_user_input"]
+        ):
+            logger.log("daily_rewards job isn't ready")
+            return next_state
+
+        #run this job, return its output
+        return collect_daily_rewards_state(vm_index, logger, next_state)
 
     if state == "randomize_deck":  # --> start_fight
         next_state = "start_fight"
