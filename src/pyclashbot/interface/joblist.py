@@ -212,6 +212,7 @@ rewards_tab = [
         ),
     ],
 ]
+
 card_collection_tab = [
     [
         job_check_box("Request cards", "request_user_toggle", default_value=True),
