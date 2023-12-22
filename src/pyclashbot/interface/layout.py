@@ -193,9 +193,9 @@ user_config_keys = [
     # job list controls keys
     "open_chests_user_toggle",
     "request_user_toggle",
-    'donate_toggle',
+    "donate_toggle",
     "card_mastery_user_toggle",
-    'disable_win_track_toggle',
+    "disable_win_track_toggle",
     "free_offer_user_toggle",
     "gold_offer_user_toggle",
     "1v1_user_toggle",
@@ -204,7 +204,7 @@ user_config_keys = [
     "war_user_toggle",
     "random_decks_user_toggle",
     "open_bannerbox_user_toggle",
-    'daily_rewards_user_toggle',
+    "daily_rewards_user_toggle",
     "random_plays_user_toggle",
     "skip_fight_if_full_chests_user_toggle",
     # job increment controls keys
