@@ -606,7 +606,7 @@ def wait_for_clash_main_menu(vm_index, logger) -> bool:
     start_time: float = time.time()
     while time.time() - start_time < CLASH_MAIN_WAIT_TIMEOUT:
         logger.change_status(
-            status=f"Waiting for clash main menu for {str(time.time() - start_time)[:3]}s"
+            status=f"Waiting for clash main menu for {str(time.time() - start_time)[:4]}s"
         )
 
         # handle geting stuck on trophy road screen
