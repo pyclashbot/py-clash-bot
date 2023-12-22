@@ -348,7 +348,7 @@ def get_to_clan_tab_from_clash_main(
             break
 
         # if on clash main, click the clan tab button
-        handle_clash_main_page_for_clan_page_navigation(vm_index, logger)
+        handle_clash_main_page_for_clan_page_navigation(vm_index)
 
         # if on final results page, click OK
         handle_final_results_page(vm_index, logger)
@@ -375,7 +375,7 @@ def get_to_clan_tab_from_clash_main(
     return "good"
 
 
-def handle_clash_main_page_for_clan_page_navigation(vm_index, logger) -> None:
+def handle_clash_main_page_for_clan_page_navigation(vm_index) -> None:
     """
     Handles navigation from the Clash Main page to the Clan page.
 
@@ -392,7 +392,6 @@ def handle_clash_main_page_for_clan_page_navigation(vm_index, logger) -> None:
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
         )
-        logger.log("On clash main so clicking clan tab button")
 
 
 def handle_final_results_page(vm_index, logger) -> None:

@@ -60,6 +60,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
     click(vm_index, 385, 488)
     time.sleep(2)
 
+    logger.change_status("Starting donate sequence")
     for _ in range(2):
         # click donate buttons that exist on this page, then scroll a little
         for _ in range(3):
