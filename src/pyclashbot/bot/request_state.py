@@ -151,7 +151,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
 def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
     logger.change_status(status="Doing random scrolling in request page")
     for _ in range(scrolls):
-        scroll_down(vm_index)
+        scroll_down_in_request_page(vm_index)
         time.sleep(2)
     logger.change_status(status="Done with random scrolling in request page")
 
