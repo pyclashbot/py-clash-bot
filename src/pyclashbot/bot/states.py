@@ -3,7 +3,7 @@ import time
 from pyclashbot.bot.account_switching import switch_accounts
 from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
 from pyclashbot.bot.donate import donate_cards_state
-from pyclashbot.bot.card_mastery_state import card_mastery_collection_state
+from pyclashbot.bot.card_mastery_state import card_mastery_state
 from pyclashbot.bot.deck_randomization import randomize_deck_state
 from pyclashbot.bot.do_fight_state import (
     do_1v1_fight_state,
@@ -336,7 +336,7 @@ def state_tree(
             return next_state
 
         # return output of this state
-        return card_mastery_collection_state(vm_index, logger, next_state)
+        return card_mastery_state(vm_index, logger, next_state)
 
     if state == "war":  # --> account_switch
         next_state = "account_switch"
