@@ -87,6 +87,8 @@ controls = [
                 [sg.Text("games")],
                 [sg.Text("games")],
                 [sg.Text("games")],
+                [sg.Text("games")],
+                [sg.Text("games")],
             ],
             justification="left",
         ),
