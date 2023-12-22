@@ -64,15 +64,22 @@ def scroll_up_on_left_side_of_screen(vm_index):
     send_swipe(vm_index, 66, 300, 66, 400)
 
 
-
-
-
 def scroll_down(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 400, 215, 300)
 
     #click deadspace to stop the scroll
     click(vm_index,10,200)
+
+def scroll_down_in_request_page(vm_index):
+    """Method for scrolling down faster when interacting with a scrollable menu"""
+    send_swipe(vm_index, 215, 400, 215, 300)
+
+
+    #swipe deadspace to stop the scroll
+    # send_swipe(vm_index, 215, 315, 215, 300)
+    send_swipe(vm_index, 215, 315, 200, 315)
+
 
 
 def scroll_down_fast_on_left_side_of_screen(vm_index):
