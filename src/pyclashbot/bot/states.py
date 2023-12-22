@@ -16,6 +16,7 @@ from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
+from pyclashbot.bot.battlepass import collect_battlepass_state
 from pyclashbot.bot.war_state import war_state
 from pyclashbot.memu.launcher import (
     close_clash_royale_app,
@@ -64,7 +65,7 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> account_switch
-        next_state = 'account_switch'
+        next_state = "account_switch"
 
         restart_emulator(logger)
 
@@ -253,8 +254,8 @@ def state_tree(
 
         return collect_bannerbox_rewards_state(vm_index, logger, next_state)
 
-    if state == "daily_rewards":  # --> randomize_deck
-        next_state = "randomize_deck"
+    if state == "daily_rewards":  # --> battlepass_rewards
+        next_state = "battlepass_rewards"
 
         # if job not toggled, return next state
         if not job_list["daily_rewards_user_toggle"]:
@@ -270,6 +271,19 @@ def state_tree(
 
         # run this job, return its output
         return collect_daily_rewards_state(vm_index, logger, next_state)
+
+    if state == "battlepass_rewards":  # --> randomize_deck
+        next_state = "randomize_deck"
+
+        if not logger.check_if_can_battlepass_collect(job_list['battlepass_collect_increment_user_input']):
+            return next_state
+
+
+        return collect_battlepass_state(vm_index, logger, next_state)
+
+
+
+
 
     if state == "randomize_deck":  # --> start_fight
         next_state = "start_fight"
@@ -395,8 +409,6 @@ def state_tree(
 
         # return output of this state
         return war_state(vm_index, logger, next_state)
-
-
 
     logger.error("Failure in state tree")
     return "fail"

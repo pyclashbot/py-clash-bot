@@ -193,6 +193,11 @@ rewards_tab = [
     ],
     [
         job_check_box(
+            "Battlepass rewards", "open_battlepass_user_toggle", default_value=True
+        ),
+    ],
+    [
+        job_check_box(
             "Card mastery rewards", "card_mastery_user_toggle", default_value=True
         ),
     ],
