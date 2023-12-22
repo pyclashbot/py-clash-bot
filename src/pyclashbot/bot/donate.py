@@ -2,6 +2,7 @@
 This module contains functions related to donating cards in Clash of Clans.
 """
 import time
+import random
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -13,9 +14,11 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
     make_reference_image_list,
     pixel_is_equal,
+    crop_image,
 )
 from pyclashbot.memu.client import screenshot, click, scroll_up_a_little, scroll_up
 from pyclashbot.utils.logger import Logger
+import numpy
 
 
 def donate_cards_state(vm_index, logger: Logger, next_state):
@@ -46,118 +49,92 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
 
 
 def donate_cards_main(vm_index, logger):
-    """
-    This function represents the main logic for donating cards in Clash of Clans.
-
-    Args:
-        vm_index (int): The index of the virtual machine.
-        logger (Logger): The logger object for logging.
-    """
-    # existing code...
     # get to clan chat page
-    if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
-        logger.log("Failure getting to clan chat page for donate. Returning False")
+    if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
         return False
+    time.sleep(2)
 
-    # click 'jump to beginning' button in clan chat
-    click(vm_index, 389, 490)
-    time.sleep(1)
+    # click jump to bottom button
+    click(vm_index, 385, 488)
+    time.sleep(2)
 
-    # for 3 iterations:
-    logger.change_status("Donating cards...")
-    for _ in range(3):
-        # click available donates
-        find_and_click_donates_for_period(vm_index, logger, period=7)
-
-        # scroll up a little
-        scroll_up_a_little(vm_index)
-
-    # for 2 iterations:
-    for _ in range(2):
-        # click available donates
-        find_and_click_donates_for_period(vm_index, logger, period=7)
-
-        # scroll up a little
-        scroll_up(vm_index)
-
-    # click 'more donates' button
-    for _ in range(2):
-        click(vm_index, 38, 129)
-        time.sleep(1)
-        find_and_click_donates_for_period(vm_index, logger, period=7)
-
-    # return to clash main from clan chat
-    logger.change_status("Done donating. Returning to clash main...")
-    click(vm_index, 175, 605)
-    time.sleep(4)
-
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.log("Not on clash main after donating. Returning False")
-        return False
-
-    return True
-
-
-def find_and_click_donates_for_period(vm_index, logger, period):
-    """
-    Find and click on available donates for a specified period of time.
-
-    Args:
-        vm_index (int): The index of the virtual machine.
-        period (int): The period of time to search for available donates.
-
-    Returns:
-        None
-    """
     start_time = time.time()
-    while time.time() - start_time < period:
-        find_and_click_donates(vm_index, logger)
+    timeout = 60
+    for _ in range(3):
+        # click donate buttons that exist on this page, then scroll a little
+        for _ in range(3):
+            if time.time() - start_time > timeout:
+                logger.log("Timed out waiting for donate button")
+                return False
+
+            while find_and_click_donates(vm_index, logger) is True:
+                pass
+
+            scroll_up_a_little(vm_index)
+            time.sleep(1)
+
+        # click the more requests button that may exist
+        click(vm_index, 48, 132)
+        time.sleep(1)
+
+    # get to clash main
+    click(vm_index, 175, 600)
+    time.sleep(3)
+
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.log("Failed to get to clash main after doanting! Retsrating")
+        return False
 
 
 def find_and_click_donates(vm_index, logger):
-    coord = find_donate_button(vm_index)
-    if coord is None:
-        return False
+    coords = find_donate_buttons(vm_index)
 
-    coord = [coord[0] + 40, coord[1] + 24]
+    found_donates = False
+    for coord in coords:
+        if check_for_positive_donate_button_coords(vm_index, coord):
+            if coord[1] < 108:
+                continue
 
-    if check_region_for_donate_button_color(vm_index, coord):
-        logger.change_status("Found a donate button")
-        logger.add_donate()
-        click(vm_index, coord[0], coord[1])
+            click(vm_index, coord[0], coord[1])
+            print(f"donated a card at: {coord}")
+            found_donates = True
+            logger.add_donate()
 
-
-def check_region_for_donate_button_color(vm_index, coord):
-    # specify the color of the positive donate button
-    positive_color = [58, 228, 73]
-
-    # compile coordinates to check based on coordinate of donate button
-    coords_to_check = []
-    for x in range(10):
-        for y in range(10):
-            coords_to_check.append([coord[0] + x, coord[1] + y])
-
-    # grab a screenshot
-    iar = screenshot(vm_index)
-
-    # assemble pixel list of colors surrounding the donate button coord
-    pixels = []
-    for coord in coords_to_check:
-        pixels.append(iar[coord[1], coord[0]])
-
-    # count positive pixels surrounding the donate button coord
-    postiive_count = 0
-    for i, pixel in enumerate(pixels):
-        if pixel_is_equal(pixel, positive_color, tol=20):
-            postiive_count += 1
-
-    # return True if postiive_count is great enough
-    if postiive_count > 20:
-        return True
-    return False
+    return found_donates
 
 
-def find_donate_button(vm_index):
+def find_donate_buttons(vm_index):
+    coords = []
+
+    for _ in range(200):
+        try:
+            left = random.randint(0, 360)
+            top = random.randint(0, 400)
+            width = random.randint(75, 150)
+            height = random.randint(30, 100)
+            region = [left, top, width, height]
+
+            image = screenshot(vm_index)
+            image = crop_image(image, region)
+
+            coord = find_donate_button(image)
+
+            if coord is None:
+                continue
+
+            coord = [coord[0] + left, coord[1] + top]
+
+            # adjust coord to make it more central to the icon
+            coord = [coord[0] + 37, coord[1] + 3]
+
+            coords.append(coord)
+        except:
+            pass
+
+    return condense_coordinates(coords, distance_threshold=15)
+
+
+def find_donate_button(image):
     """method to find the elixer price icon in a cropped image"""
 
     folder = "donate_button_icon"
@@ -165,12 +142,13 @@ def find_donate_button(vm_index):
     names = make_reference_image_list(get_file_count(folder))
 
     locations: list[list[int] | None] = find_references(
-        screenshot(vm_index),
+        image,
         folder,
         names,
-        tolerance=0.92,
+        tolerance=0.96,
     )
-    coord: list[int] | None = get_first_location(locations)
+
+    coord = get_first_location(locations)
 
     if coord is None:
         return None
@@ -178,5 +156,59 @@ def find_donate_button(vm_index):
     return [coord[1], coord[0]]
 
 
+def condense_coordinates(coords, distance_threshold=5):
+    """
+    Condense a list of coordinates by removing similar ones.
+
+    Parameters:
+    - coords: List of coordinates, where each coordinate is a list [x, y].
+    - distance_threshold: Maximum distance for coordinates to be considered similar.
+
+    Returns:
+    - List of condensed coordinates.
+    """
+    condensed_coords = []
+
+    for coord in coords:
+        x, y = coord
+        if not any(
+            numpy.abs(existing_coord[0] - x) < distance_threshold
+            and numpy.abs(existing_coord[1] - y) < distance_threshold
+            for existing_coord in condensed_coords
+        ):
+            condensed_coords.append(coord)
+
+    return condensed_coords
+
+
+def check_for_positive_donate_button_coords(vm_index, coord):
+    #if pixel is too high, always return False
+
+
+    iar = screenshot(vm_index)
+
+    positive_color = [58, 228, 73]
+
+    pixels = []
+    region_width = 50
+    region_height = 50
+    c1 = [int(coord[0] - region_width / 2), int(coord[1] - region_height / 2)]
+    for x in range(region_width):
+        for y in range(region_height):
+            pixels.append(iar[c1[1] + y, c1[0] + x])
+
+    positive_count = 0
+    for i, pixel in enumerate(pixels):
+        if pixel_is_equal(pixel, positive_color, tol=20):
+            positive_count += 1
+
+    if (positive_count) > 5:
+        return True
+    return False
+
+
 if __name__ == "__main__":
-    pass
+    vm_index = 12
+    logger = Logger()
+
+    donate_cards_main(vm_index, logger)

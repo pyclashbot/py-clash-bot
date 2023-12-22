@@ -65,6 +65,9 @@ def scroll_down(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 400, 215, 300)
 
+    #click deadspace to stop the scroll
+    click(vm_index,10,200)
+
 
 def scroll_down_fast_on_left_side_of_screen(vm_index):
     """Method for scrolling down even faster when interacting with a
