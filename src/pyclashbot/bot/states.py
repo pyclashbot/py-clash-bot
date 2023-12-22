@@ -275,6 +275,11 @@ def state_tree(
     if state == "battlepass_rewards":  # --> randomize_deck
         next_state = "randomize_deck"
 
+        if not job_list['battlepass_collect_user_toggle']:
+            logger.change_status('Battlepass collect is not toggled. Skipping this state')
+            return next_state
+
+
         if not logger.check_if_can_battlepass_collect(job_list['battlepass_collect_increment_user_input']):
             return next_state
 
