@@ -338,7 +338,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # while in battle:
     while check_for_in_battle_with_delay(vm_index):
-        this_play_start_time = time.time()
 
         if check_if_at_max_elixer(vm_index):
             logger.change_status("At max elixer so just mag dumping!!!")
@@ -373,6 +372,8 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
             if elixer_wait_return == "mag_dump":
                 logger.change_status("At max elixer so just mag dumping!!!")
                 mag_dump(vm_index, logger)
+
+        this_play_start_time = time.time()
 
         # choose random card to play
         random_card_index = random.randint(0, 3)
@@ -420,8 +421,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         plays += 1
 
         logger.change_status(
-            f"Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n"
+f"Played {id_string} on {this_play_side} side in {str(time.time() - this_play_start_time)[:4]}s"
         )
+
 
     if logger.get_cards_played() != 0:
         logger.remove_card_played(cards_to_remove=random.randint(0, 1))
@@ -750,6 +752,7 @@ def end_fight_state(
         logger.log("Erro 6969 Failed to get to clash main after a fight")
         return "restart"
     logger.log("Made it to clash main after doing a fight")
+    time.sleep(3)
 
     # check if the prev game was a win
     if not disable_win_tracker_toggle:

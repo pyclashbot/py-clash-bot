@@ -183,7 +183,7 @@ def collect_all_daily_rewards(vm_index, logger):
 
 
 def check_which_rewards_are_available(vm_index, logger):
-    logger.change_status("Checking which rewards are available")
+    logger.change_status("Checking which daily rewards are available")
 
     # if not on clash main, return False
     if not check_if_on_clash_main_menu(vm_index):

@@ -60,7 +60,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
     click(vm_index, 385, 488)
     time.sleep(2)
 
-    for _ in range(3):
+    for _ in range(2):
         # click donate buttons that exist on this page, then scroll a little
         for _ in range(3):
             loops = 0
@@ -71,7 +71,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
                     return False
                 time.sleep(0.5)
 
-            logger.change_status("Scrolling up to search for more requests")
+            logger.change_status("Scrolling up to search for more donate requests")
             scroll_up(vm_index)
             time.sleep(1)
 
@@ -101,9 +101,10 @@ def find_and_click_donates(vm_index, logger):
                 continue
 
             click(vm_index, coord[0], coord[1])
-            print(f"donated a card at: {coord}")
+            logger.change_status("Donated a card!")
             found_donates = True
             logger.add_donate()
+            time.sleep(0.5)
 
     return found_donates
 
