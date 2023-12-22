@@ -21,7 +21,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up,scroll_down_in_request_page
 from pyclashbot.utils.logger import Logger
 
 COLOR_WHITE: list[int] = [255, 255, 255]
@@ -154,7 +154,7 @@ def count_scrolls_in_request_page(vm_index) -> int:
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
     while check_if_can_scroll_in_request_page(vm_index):
-        scroll_down(vm_index)
+        scroll_down_in_request_page(vm_index)
         scrolls += 1
         time.sleep(2)
 
@@ -398,4 +398,10 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+
+    vm_index = 12
+    logger=Logger(None)
+    do_request(vm_index, logger)
+
+
+    # count_scrolls_in_request_page(vm_index=vm_index)
