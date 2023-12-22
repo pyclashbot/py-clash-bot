@@ -63,18 +63,20 @@ def state_tree(
         while 1:
             time.sleep(1)
 
-    elif state == "start":  # --> open_chests
-        # open clash
+    elif state == "start":  # --> account_switch
+        next_state = 'account_switch'
+
         restart_emulator(logger)
 
         logger.log(
             f"Emulator boot sequence took {str(time.time() - start_time)[:5]} seconds"
         )
-        return "open_chests"
+        return next_state
 
-    if state == "restart":  # --> open_chests
+    if state == "restart":  # --> account_switch
+        next_state = "account_switch"
+
         logger.log("Entered the restart state after a failure in another state...")
-        next_state = "open_chests"
 
         # close app
         logger.log("Running close_clash_royale_app()")
@@ -104,6 +106,46 @@ def state_tree(
         )
 
         logger.log(f"Next state is {next_state}")
+
+        return next_state
+
+    if state == "account_switch":  # --> open_chests
+        next_state = "open_chests"
+
+        # if job not selected, return next state
+        if not job_list["account_switching_toggle"]:
+            logger.log("Account switching isn't toggled. Skipping this state")
+            return next_state
+
+        # if job not ready, reutrn next state
+        if not logger.check_if_can_switch_account(
+            job_list["account_switching_increment_user_input"]
+        ):
+            logger.log("Account switching job isn't ready. Skipping this state")
+            return next_state
+
+        account_total = job_list["account_switching_slider"]
+        logger.log(f"Doing switch to act#{job_list['next_account']} of {account_total}")
+
+        if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
+            return "restart"
+
+        # increment next account iteration
+        job_list["next_account"] += 1
+        if job_list["next_account"] >= job_list["account_switching_slider"]:
+            job_list["next_account"] = 0
+
+        logger.log(
+            f"Next account is {job_list['next_account']} / {job_list['account_switching_slider']}"
+        )
+
+        # update current account # to GUI
+        current_account = (
+            job_list["next_account"] - 1
+            if job_list["next_account"] > 0
+            else job_list["account_switching_slider"]
+        )
+        logger.change_current_account(current_account)
 
         return next_state
 
@@ -354,45 +396,7 @@ def state_tree(
         # return output of this state
         return war_state(vm_index, logger, next_state)
 
-    if state == "account_switch":  # --> open_chests
-        next_state = "open_chests"
 
-        # if job not selected, return next state
-        if not job_list["account_switching_toggle"]:
-            logger.log("Account switching isn't toggled. Skipping this state")
-            return next_state
-
-        # if job not ready, reutrn next state
-        if not logger.check_if_can_switch_account(
-            job_list["account_switching_increment_user_input"]
-        ):
-            logger.log("Account switching job isn't ready. Skipping this state")
-            return next_state
-
-        account_total = job_list["account_switching_slider"]
-        logger.log(f"Doing switch to act#{job_list['next_account']} of {account_total}")
-
-        if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
-            return "restart"
-
-        # increment next account iteration
-        job_list["next_account"] += 1
-        if job_list["next_account"] >= job_list["account_switching_slider"]:
-            job_list["next_account"] = 0
-
-        logger.log(
-            f"Next account is {job_list['next_account']} / {job_list['account_switching_slider']}"
-        )
-
-        # update current account # to GUI
-        current_account = (
-            job_list["next_account"] - 1
-            if job_list["next_account"] > 0
-            else job_list["account_switching_slider"]
-        )
-        logger.change_current_account(current_account)
-
-        return next_state
 
     logger.error("Failure in state tree")
     return "fail"

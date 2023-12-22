@@ -117,6 +117,7 @@ class Logger:
         self.card_mastery_reward_collection_attempts = 0
         self.war_attempts = 0
         self.switch_account_attempts = 0
+        self.account_switches = 0
         self.current_account = "-"
 
         # restart stats
@@ -166,6 +167,7 @@ class Logger:
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
                 "current_account": self.current_account,
+                "account_switches": self.account_switches,
             }
 
     def get_stats(self):
@@ -320,6 +322,11 @@ class Logger:
     def add_card_randomization(self):
         """incremenet card_randomizations counter"""
         self.card_randomizations += 1
+
+    @_updates_log
+    def increment_account_switches(self):
+        """incremenet account_switches counter"""
+        self.account_switches+=1
 
     @_updates_log
     def add_2v2_fight(self) -> None:

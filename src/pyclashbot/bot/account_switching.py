@@ -1,6 +1,9 @@
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, wait_for_clash_main_menu
-from pyclashbot.memu.client import click, save_screenshot, send_swipe
+from pyclashbot.memu.client import click, save_screenshot, custom_swipe, screenshot
+from pyclashbot.utils.logger import Logger
+from pyclashbot.detection.image_rec import pixel_is_equal
 import time
+import numpy
 
 SSID_COORDS = [
     (48, 305),  # 1st account, index 0
@@ -13,12 +16,45 @@ SSID_COORDS = [
     (48, 631),  # 8th account, index 7
 ]
 
-def custom_swipe(vm_index, start_x, start_y, end_x, end_y, repeat, delay):
-    for _ in range(repeat):
-        send_swipe(vm_index, start_x, start_y, end_x, end_y)
-        time.sleep(delay)
 
-def switch_accounts(vm_index, logger, account_index_to_switch_to):
+def check_for_switch_ssid_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = []
+    for y in range(78, 360, 45):
+        pixels.append(iar[y][228])
+
+    colors = [
+        [146, 68, 22],
+        [255, 255, 240],
+        [153, 79, 28],
+        [255, 251, 254],
+        [229, 229, 229],
+        [252, 252, 252],
+        [236, 236, 236],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=10):
+            return False
+    return True
+
+
+def wait_for_switch_ssid_page(vm_index, logger):
+    timeout = 20  # s
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        logger.change_status(
+            f"Waiting for switch ssid page for {str(time.time() - start_time)[:4]}s"
+        )
+        if check_for_switch_ssid_page(vm_index):
+            return True
+        time.sleep(1)
+    return False
+
+
+def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to):
     logger.add_switch_account_attempt()
 
     # if not on clash main, return False
@@ -36,14 +72,20 @@ def switch_accounts(vm_index, logger, account_index_to_switch_to):
     click(vm_index, 221, 368)
     time.sleep(4)
 
+    # wait for switch ssid page
+    wait_for_switch_ssid_page(vm_index, logger)
+
     # Perform the scrolling
-    logger.change_status(f"Scrolling down to reach account #{account_index_to_switch_to}")
-    if account_index_to_switch_to == 5:  # 6th account
-        custom_swipe(vm_index, 215, 400, 215, 350, 2, 1)
-    elif account_index_to_switch_to == 6:  # 7th account
-        custom_swipe(vm_index, 215, 400, 215, 350, 4, 1)
-    elif account_index_to_switch_to == 7:  # 8th account
-        custom_swipe(vm_index, 215, 400, 215, 350, 6, 1)
+    if account_index_to_switch_to in [5, 6, 7]:
+        logger.change_status(
+            f"Scrolling down to reach account #{account_index_to_switch_to}"
+        )
+        if account_index_to_switch_to == 5:  # 6th account
+            custom_swipe(vm_index, 215, 400, 215, 350, 2, 1)
+        elif account_index_to_switch_to == 6:  # 7th account
+            custom_swipe(vm_index, 215, 400, 215, 350, 4, 1)
+        elif account_index_to_switch_to == 7:  # 8th account
+            custom_swipe(vm_index, 215, 400, 215, 350, 6, 1)
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
@@ -58,8 +100,9 @@ def switch_accounts(vm_index, logger, account_index_to_switch_to):
         return False
 
     logger.change_status(f"Switched to account #{account_index_to_switch_to}")
+    logger.increment_account_switches()
     return True
 
 
 if __name__ == "__main__":
-    save_screenshot(0)
+    pass
