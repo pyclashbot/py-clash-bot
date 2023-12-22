@@ -128,13 +128,14 @@ def buy_shop_offers_state(
 
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
     start_time = time.time()
-    timeout = 90
+    timeout = 25
     logger.change_status("Starting to buy offers")
     while 1:
         if time.time() - start_time > timeout:
             break
 
         # scroll a little
+        logger.change_status('Searching for offers to buy')
         scroll_down_slowly_in_shop_page(vm_index)
         time.sleep(0.33)
 
@@ -146,6 +147,7 @@ def buy_shop_offers_state(
                 is True
             ):
                 logger.change_status("Bought an offer from the shop!")
+                start_time=time.time()
                 logger.add_shop_buy()
 
     # get to clash main from shop page
