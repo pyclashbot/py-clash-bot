@@ -10,48 +10,45 @@ from pyclashbot.detection.image_rec import (
     check_line_for_color,
     region_is_color,
 )
-from pyclashbot.memu.client import click,screenshot
+from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 import numpy
 
 
-
 CARD_COORDS: list[Any] = [
-    (76,227),
-    (175,224),
-    (257,230),
-    (339,230),
-
-    (85,370),
-    (175,370),
-    (257,370),
-    (339,370),
+    (76, 227),
+    (175, 224),
+    (257, 230),
+    (339, 230),
+    (85, 370),
+    (175, 370),
+    (257, 370),
+    (339, 370),
 ]
 
 UPGRADE_PIXEL_COORDS: list[Any] = [
-    (41,304),
-    (128,304),
-    (218,304),
-    (306,304),
-
-    (41,447),
-    (128,447),
-    (218,447),
-    (306,447),
+    (41, 304),
+    (128, 304),
+    (218, 304),
+    (306, 304),
+    (41, 447),
+    (128, 447),
+    (218, 447),
+    (306, 447),
 ]
 
 
 GREEN_COLOR = [56, 228, 72]
 
 UPGRADE_BUTTON_COORDS = [
-    (75,311),
-    (165,311),
-    (249,311),
-    (339,311),
-    (75,458),
-    (165,458),
-    (249,458),
-    (339,458),
+    (75, 311),
+    (165, 311),
+    (249, 311),
+    (339, 311),
+    (75, 458),
+    (165, 458),
+    (249, 458),
+    (339, 458),
 ]
 
 SECOND_UPGRADE_BUTTON_COORDS = (236, 574)
@@ -77,9 +74,11 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Not on clash main at the start of upgrade_cards_state()")
-        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        logger.log(
+            f"There are the pixels the bot saw after failing to find clash main:"
+        )
         for pixel in clash_main_check:
-            logger.log(f'   {pixel}')
+            logger.log(f"   {pixel}")
 
         return "restart"
 
@@ -100,8 +99,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         if upgrade_bool:
             upgradeable_cards_count += 1
 
-    logger.change_status(f'There are {upgradeable_cards_count} upgradable cards')
-
+    logger.change_status(f"There are {upgradeable_cards_count} upgradable cards")
 
     for card_index, upgrade_bool in enumerate(upgrade_list):
         if upgrade_bool:
@@ -110,9 +108,12 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Done upgrading cards")
 
     # return to clash main
-    if get_to_clash_main_from_card_page(vm_index, logger) == "restart":
+    click(vm_index, 245, 593)
+    time.sleep(3)
+
+    if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            status="Error 1666713 Failure getting to clash main from card page after card upgrading"
+            status="Not on clash main after upgrading cards. Returning restart"
         )
         return "restart"
 
@@ -175,9 +176,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
     """
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
-
     # click the card
-    logger.change_status(status="Clicking the card")
     click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
     time.sleep(2)
 
@@ -232,20 +231,18 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
         click(vm_index, CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
         time.sleep(2)
 
-        logger.change_status('Upgraded this card')
+        logger.change_status("Upgraded this card")
     else:
-        logger.log(f'Missing gold popup exists. Skipping this upgradable card.')
+        logger.log(f"Missing gold popup exists. Skipping this upgradable card.")
 
     # click deadspace
-    logger.change_status(status="Clicking deadspace")
+    logger.change_status(status="Clicking deadspace after upgrading this card")
     for _ in range(4):
         click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
         time.sleep(1)
 
 
-
-
-def check_if_pixel_indicates_upgradable_card( pixel) -> bool:
+def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
     r = pixel[0]
     g = pixel[1]
     b = pixel[2]
@@ -266,7 +263,6 @@ def check_if_pixel_indicates_upgradable_card( pixel) -> bool:
         return False
 
     return True
-
 
 
 def check_for_missing_gold_popup(vm_index):
@@ -293,30 +289,35 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
 
     logger.change_status(status="Checking out which cards are upgradable")
 
-    #click a bottom card so it scrolls down the little bit (dogshit clash UI)
-    click(vm_index,163,403)
+    # click a bottom card so it scrolls down the little bit (dogshit clash UI)
+    click(vm_index, 163, 403)
     time.sleep(1)
 
-    #deadspace click to unclick that card but keep the random scroll
-    click(vm_index,14,286)
+    # deadspace click to unclick that card but keep the random scroll
+    click(vm_index, 14, 286)
     time.sleep(0.3)
 
     for i, card_coord in enumerate(CARD_COORDS):
-        #click the selected card
-        click(vm_index, card_coord[0],card_coord[1])
-        time.sleep(2)
+        # click the selected card
+        click(vm_index, card_coord[0], card_coord[1])
+        time.sleep(0.5)
 
-        #see if green uprgade button exists in card context menu
+        # see if green uprgade button exists in card context menu
         upgrade_coord = UPGRADE_PIXEL_COORDS[i]
-        bool_list.append(check_if_pixel_indicates_upgradable_card(numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]))
+        bool_list.append(
+            check_if_pixel_indicates_upgradable_card(
+                numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]
+            )
+        )
 
-    #deadspace click
-    click(vm_index,14,286)
+    # deadspace click
+    click(vm_index, 14, 286)
 
     return bool_list
 
-if __name__ == '__main__':
-    logger=Logger()
-    vm_index=11
 
-    upgrade_cards_state(vm_index, logger, 'next_state')
+if __name__ == "__main__":
+    logger = Logger()
+    vm_index = 11
+
+    upgrade_cards_state(vm_index, logger, "next_state")
