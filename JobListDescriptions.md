@@ -2,11 +2,19 @@
 
 | Job                                   | Description                                                                                                               |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Open chests**                       | Unlock and open the chests on the Clash main menu.                                                                        |
-| **1v1 Fight**                         | Fight in a trophy road 1v1 match                                                                                        |
-| **2v2 Fight**                         | Fight in a 2v2 match with a random teammate                                                                                         |
-| **Random requesting**                 | Request a random card from the list of cards you can request from.                |
-| **Upgrade cards**                     | Upgrade the cards in your currently selected deck.                                                                        |
-| **War participation**                 | Participates in war by doing war battles                                                                                             |
-| **Card mastery collection**           | Collects card mastery rewards from the card page.                                                                         |
-| **Free offer collection**             | Collects daily free offers from the shop page on the Clash main menu.                                                     |
+| **1v1 Battles**                      |        Play Trophy Road 1v1 matches                                   |
+| **2v2 Battles**                      |      Play a 2v2 match with a random teammate                                      |
+| **Open Chests**                       |       Unlock and open your chests                                    |
+| **Random Requesting**           |         Request a random card from your clan                                  |
+| **Donates**                    |      Donate cards to your clan                                     |
+| **Card Mastery Colection**          |       Collect Card Mastery Rewards                                    |
+| **Free Offers Collection**      |       Purchase FREE offers from the shop                                    |
+| **Gold Offers Collection**           |    Purchase card offers for gold from the shop                                       |
+| **Disable win/loss tracking**           |       Disable the tracking of wins and losses                                    |
+| **War Participation**                   |   Fight in Clan War battles                                        |
+| **Open Bannerbox**           |     Open Bannerbox chests                                      |
+| **Daily Rewards**            |      Collect Daily Rewards                                     |
+| **Card Upgrading**           |     Upgrade your current deck                                      |
+| **Random Decks**             |     Randomize your #2 deck slot                                  |
+
+
