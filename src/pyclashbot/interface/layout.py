@@ -100,13 +100,15 @@ DONATE_BUTTON_LAYOUTS = [
 
 # endregion
 
-main_layout = [
-    # controls + jobs list
+
+controls_layout = [
     [
         sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
         sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
-        # jobs_checklist,
-    ],
+    ]
+]
+
+account_switching_layout = [
     [
         sg.Frame(
             layout=[
@@ -134,8 +136,10 @@ main_layout = [
             title="Account Switching",
             expand_x=True,
         ),
-    ],
-    # stats
+    ]
+]
+
+stats_tab_layout = [
     [
         sg.Column(
             [[sg.Frame(layout=battle_stats, title="Battle Stats", expand_x=True)]],
@@ -157,34 +161,65 @@ main_layout = [
             expand_y=True,
             justification="right",
         ),
-    ],
+    ]
+]
+
+donate_button_layout_tab = [
+    sg.Frame(
+        layout=random.choice(DONATE_BUTTON_LAYOUTS),
+        title="",
+        relief=sg.RELIEF_SUNKEN,
+        expand_x=True,
+    ),
+]
+
+time_status_bar_layout = [
+    sg.Column(
+        [
+            [
+                sg.Input(
+                    "Idle",
+                    key="current_status",
+                    use_readonly_for_disable=True,
+                    disabled=True,
+                    text_color="blue",
+                    expand_x=True,
+                    tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
+                ),
+            ]
+        ],
+        expand_x=True,
+    )
+]
+
+
+# main_layout = [
+#     # controls + jobs list
+#     controls_layout,
+#     # account switching
+#     account_switching_layout,
+#     # stats
+#     stats_tab_layout,
+#     # donate button
+#     donate_button_layout_tab,
+#     # time+status bar
+#     time_status_bar_layout,
+# ]
+
+
+main_layout = [
     [
-        sg.Frame(
-            layout=random.choice(DONATE_BUTTON_LAYOUTS),
-            title="",
-            relief=sg.RELIEF_SUNKEN,
-            expand_x=True,
+        # layout:List[List[Tab]]
+        sg.TabGroup(
+            layout=[
+                [sg.Tab("Controls", controls_layout)],
+                [sg.Tab("Account Switching", account_switching_layout)],
+                [sg.Tab("Stats", stats_tab_layout)],
+            ]
         ),
     ],
-    # time+status bar
-    [
-        sg.Column(
-            [
-                [
-                    sg.Input(
-                        "Idle",
-                        key="current_status",
-                        use_readonly_for_disable=True,
-                        disabled=True,
-                        text_color="blue",
-                        expand_x=True,
-                        tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
-                    ),
-                ]
-            ],
-            expand_x=True,
-        )
-    ],
+    [donate_button_layout_tab],
+    [time_status_bar_layout],
 ]
 
 
@@ -192,7 +227,7 @@ main_layout = [
 user_config_keys = [
     # job list controls keys
     "open_chests_user_toggle",
-    'open_battlepass_user_toggle',
+    "open_battlepass_user_toggle",
     "request_user_toggle",
     "donate_toggle",
     "card_mastery_user_toggle",
