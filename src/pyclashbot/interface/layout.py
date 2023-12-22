@@ -108,6 +108,7 @@ controls_layout = [
     ]
 ]
 
+
 account_switching_layout = [
     [
         sg.Frame(
@@ -139,6 +140,7 @@ account_switching_layout = [
     ]
 ]
 
+
 stats_tab_layout = [
     [
         sg.Column(
@@ -164,6 +166,7 @@ stats_tab_layout = [
     ]
 ]
 
+
 donate_button_layout_tab = [
     sg.Frame(
         layout=random.choice(DONATE_BUTTON_LAYOUTS),
@@ -172,6 +175,7 @@ donate_button_layout_tab = [
         expand_x=True,
     ),
 ]
+
 
 time_status_bar_layout = [
     sg.Column(
@@ -193,20 +197,6 @@ time_status_bar_layout = [
 ]
 
 
-# main_layout = [
-#     # controls + jobs list
-#     controls_layout,
-#     # account switching
-#     account_switching_layout,
-#     # stats
-#     stats_tab_layout,
-#     # donate button
-#     donate_button_layout_tab,
-#     # time+status bar
-#     time_status_bar_layout,
-# ]
-
-
 main_layout = [
     [
         # layout:List[List[Tab]]
@@ -219,15 +209,31 @@ main_layout = [
     ],
     [account_switching_layout],
     [
-        sg.Button("Start", expand_x=True, button_color="Lime Green"),
-        sg.Button("Stop", disabled=True, expand_x=True),
-        sg.Button("Pause", disabled=True, key="-Pause-Resume-Button-", expand_x=True),
+        sg.Button("Start", expand_x=True, button_color="Lime Green", border_width=3),
+        sg.Button("Stop", disabled=True, expand_x=True, border_width=2),
+        sg.Button(
+            "Pause",
+            disabled=True,
+            key="-Pause-Resume-Button-",
+            expand_x=True,
+            border_width=2,
+        ),
     ],
     [
-        sg.Button("Discord", key="discord", expand_x=True, button_color="#7289da"),
-        sg.Button("Upload Log", key="upload-log", expand_x=True),
         sg.Button(
-            "Report Bug", key="bug-report", expand_x=True, button_color="#FF0000"
+            "Discord",
+            key="discord",
+            expand_x=True,
+            button_color="#7289da",
+            border_width=2,
+        ),
+        sg.Button("Upload Log", key="upload-log", expand_x=True, border_width=2),
+        sg.Button(
+            "Report Bug",
+            key="bug-report",
+            expand_x=True,
+            button_color="#FF0000",
+            border_width=2,
         ),
     ],
     [donate_button_layout_tab],
