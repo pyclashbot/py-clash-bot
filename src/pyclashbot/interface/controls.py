@@ -36,6 +36,7 @@ controls = [
                 [sg.Text("Open Chests Every:")],
                 [sg.Text("Randomize Deck Every:")],
                 [sg.Text("Do War Attack Every:")],
+                [sg.Text("Collect Battlepass Every:")],
                 [sg.Text("Switch Account Every:")],
             ],
             justification="left",
@@ -68,6 +69,7 @@ controls = [
                     )
                 ],
                 [make_job_increment_control_object("war_attack_increment_user_input")],
+                [make_job_increment_control_object("battlepass_collect_increment_user_input")],
                 [
                     make_job_increment_control_object(
                         "account_switching_increment_user_input"
@@ -79,6 +81,7 @@ controls = [
         # end titles column
         sg.Column(
             [
+                [sg.Text("games")],
                 [sg.Text("games")],
                 [sg.Text("games")],
                 [sg.Text("games")],

@@ -112,7 +112,7 @@ def check_for_vm(logger: Logger) -> int:
 
         if vm_index != -1:
             logger.change_status(
-                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} trie(s)'
+                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} tries'
             )
             return vm_index
 

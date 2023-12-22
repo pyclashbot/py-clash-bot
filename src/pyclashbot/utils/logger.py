@@ -103,6 +103,7 @@ class Logger:
         self.shop_buys = 0
         self.daily_reward_attempts = 0
         self.donates = 0
+        self.battlepass_collects = 0
         self.daily_rewards = 0
         self.request_attempts = 0
         self.donate_attempts = 0
@@ -113,6 +114,7 @@ class Logger:
         self.card_mastery_reward_collections = 0
         self.free_offer_collections = 0
         self.shop_buy_attempts = 0
+        self.battlepass_collect_attempts = 0
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
         self.war_attempts = 0
@@ -148,20 +150,21 @@ class Logger:
             self.stats = {
                 "wins": self.wins,
                 "losses": self.losses,
-                'friendly_crowns': self.friendly_crowns,
-                'enemy_crowns': self.enemy_crowns,
+                "friendly_crowns": self.friendly_crowns,
+                "enemy_crowns": self.enemy_crowns,
                 "1v1_fights": self._1v1_fights,
                 "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
                 "shop_buys": self.shop_buys,
-                'donates': self.donates,
+                "donates": self.donates,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
                 "cards_played": self.cards_played,
                 "war_fights": self.war_fights,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "free_offer_collections": self.free_offer_collections,
+                "battlepass_collects": self.battlepass_collects,
                 "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
@@ -252,6 +255,11 @@ class Logger:
         self.enemy_crowns += count
 
     @_updates_log
+    def increment_battlepass_collects(self):
+        """Increment the logger's battlepass_collects count by 1."""
+        self.battlepass_collects += 1
+
+    @_updates_log
     def add_count_to_friendly_crowns(self, count):
         """Increment the logger's friendly crowns count by the given count."""
         self.friendly_crowns += count
@@ -326,7 +334,7 @@ class Logger:
     @_updates_log
     def increment_account_switches(self):
         """incremenet account_switches counter"""
-        self.account_switches+=1
+        self.account_switches += 1
 
     @_updates_log
     def add_2v2_fight(self) -> None:
@@ -342,7 +350,6 @@ class Logger:
     def add_shop_buy(self) -> None:
         """add request to log"""
         self.shop_buys += 1
-
 
     @_updates_log
     def add_donate(self) -> None:
@@ -383,8 +390,6 @@ class Logger:
     def change_current_account(self, account_id):
         self.current_account = account_id
 
-
-
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""
         self.deck_randomize_attempts += 1
@@ -400,12 +405,13 @@ class Logger:
         """increments logger's free_offer_collection_attempts by 1"""
         self.shop_buy_attempts += 1
 
+    def add_battlepass_collect_attempt(self):
+        """increments logger's battlepass_collect_attempts by 1"""
+        self.battlepass_collect_attempts += 1
+
     def add_daily_reward_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""
         self.daily_reward_attempts += 1
-
-
-
 
     def add_card_upgrade_attempt(self):
         """increments logger's card_upgrade_attempts by 1"""
@@ -561,9 +567,7 @@ class Logger:
 
         # if games_played / increment > war_attempts
         if games_played / increment >= war_attempts:
-            self.log(
-                f"Can do war. {games_played} Games & {war_attempts} Attempts"
-            )
+            self.log(f"Can do war. {games_played} Games & {war_attempts} Attempts")
             return True
 
         self.log(f"Can't do war. {games_played} Games and {war_attempts} Attempts")
@@ -600,9 +604,7 @@ class Logger:
 
         # if games_played / increment > card_upgrade_attempts
         if games_played / increment >= card_upgrade_attempts:
-            self.log(
-                "Can upgrade bc games_played / increment > card_upgrade_attempts"
-            )
+            self.log("Can upgrade bc games_played / increment > card_upgrade_attempts")
             return True
 
         self.log(
@@ -725,6 +727,49 @@ class Logger:
         )
         return False
 
+    def check_if_can_battlepass_collect(self, increment) -> bool:
+        """method to check if can collect battlepass given
+        attempts, games played, and user increment input"""
+
+        increment = int(increment)
+        if increment <= 1:
+            self.log(f"Increment is {increment} so can always Collect Free Offers")
+            return True
+
+        # count battlepass_collect_attempts
+        battlepass_collect_attempts = self.battlepass_collect_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if shop_buy_attempts is zero return true
+        if battlepass_collect_attempts == 0:
+            self.log(
+                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts"
+            )
+            return True
+
+        # if games_played / increment > battlepass_collect_attempts
+        if games_played / increment >= battlepass_collect_attempts:
+            self.log(
+                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Can't do battlepass_collect . {games_played} Games and {battlepass_collect_attempts} Attempts"
+        )
+        return False
+
+
+
     def check_if_can_collect_daily_rewards(self, increment) -> bool:
         """method to check if can collect free offers given
         attempts, games played, and user increment input"""
@@ -765,7 +810,6 @@ class Logger:
             f"Can't do collect_daily_rewards . {games_played} Games and {daily_reward_attempts} Attempts"
         )
         return False
-
 
     def check_if_can_randomize_deck(self, increment):
         """method to check if can randomize deck given

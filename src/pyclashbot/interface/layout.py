@@ -192,6 +192,7 @@ main_layout = [
 user_config_keys = [
     # job list controls keys
     "open_chests_user_toggle",
+    'open_battlepass_user_toggle',
     "request_user_toggle",
     "donate_toggle",
     "card_mastery_user_toggle",
@@ -217,6 +218,7 @@ user_config_keys = [
     "open_chests_increment_user_input",
     "deck_randomization_increment_user_input",
     "war_attack_increment_user_input",
+    "battlepass_collect_increment_user_input",
     "account_switching_increment_user_input",
     # account switching stuff
     "account_switching_toggle",

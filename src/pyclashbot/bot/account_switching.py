@@ -70,7 +70,6 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
     # click switch SSID button
     logger.change_status("Clicking switch SSID button")
     click(vm_index, 221, 368)
-    time.sleep(4)
 
     # wait for switch ssid page
     wait_for_switch_ssid_page(vm_index, logger)
@@ -89,11 +88,8 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
-    logger.change_status(
-        f"Clicking {account_coord}, switch account #{account_index_to_switch_to}"
-    )
+    logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
     click(vm_index, account_coord[0], account_coord[1])
-    time.sleep(4)
 
     logger.change_status("Waiting for clash main on new account...")
     if wait_for_clash_main_menu(vm_index, logger) is False:

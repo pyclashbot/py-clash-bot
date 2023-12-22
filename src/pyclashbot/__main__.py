@@ -59,6 +59,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
 
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
+        "open_battlepass_user_toggle": values["open_battlepass_user_toggle"],
         "open_chests_user_toggle": values["open_chests_user_toggle"],
         "request_user_toggle": values["request_user_toggle"],
         "donate_toggle": values["donate_toggle"],
@@ -95,6 +96,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "deck_randomization_increment_user_input"
         ],
         "war_attack_increment_user_input": values["war_attack_increment_user_input"],
+        "battlepass_collect_increment_user_input": values["battlepass_collect_increment_user_input"],
         # account switching input info
         "account_switching_increment_user_input": values[
             "account_switching_increment_user_input"
@@ -213,6 +215,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
         "open_chests_increment_user_input": "Open Chests Increment",
         "deck_randomization_increment_user_input": "Randomize Deck Increment",
         "war_attack_increment_user_input": "War Attack Increment",
+        "battlepass_collect_increment_user_input": "battlepass_collect_increment_user_input",
         "account_switching_increment_user_input": "Account Switching Increment",
     }
 
