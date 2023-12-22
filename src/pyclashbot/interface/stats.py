@@ -35,7 +35,6 @@ collection_stats_titles: list[list[Text]] = [
     [
         sg.Text("Daily Rewards: "),
     ],
-
     [
         sg.Text("Card Mastery Rewards: "),
     ],
@@ -63,7 +62,6 @@ collection_stats_values: list[list[Text]] = [
     [
         stat_box("daily_rewards"),
     ],
-
     [
         stat_box("card_mastery_reward_collections"),
     ],
@@ -168,6 +166,9 @@ bot_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Runtime"),
     ],
+    [
+        sg.Text("Account Switches"),
+    ],
 ]
 
 bot_stats_values = [
@@ -176,6 +177,9 @@ bot_stats_values = [
     ],
     [
         stat_box("time_since_start", size=(7, 1)),
+    ],
+    [
+        stat_box("account_switches", size=(7, 1)),
     ],
 ]
 

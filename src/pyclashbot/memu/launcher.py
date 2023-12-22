@@ -103,13 +103,17 @@ def check_for_vm(logger: Logger) -> int:
     """
     start_time = time.time()
 
-    find_vm_timeout = 20#s
+    find_vm_timeout = 20  # s
     find_vm_start_time = time.time()
+    find_vm_tries = 0
     while time.time() - find_vm_start_time < find_vm_timeout:
+        find_vm_tries += 1
         vm_index = get_vm_index(logger, EMULATOR_NAME)
 
         if vm_index != -1:
-            logger.change_status(f'Found a vm named "pyclashbot" (#{vm_index})')
+            logger.change_status(
+                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} trie(s)'
+            )
             return vm_index
 
         logger.change_status('Failed to find "pyclashbot" emulator. Retrying...')

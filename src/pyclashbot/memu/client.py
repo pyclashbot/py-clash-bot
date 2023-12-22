@@ -49,7 +49,10 @@ def scroll_up_fast(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 100, 215, 500)
 
-
+def custom_swipe(vm_index, start_x, start_y, end_x, end_y, repeat, delay):
+    for _ in range(repeat):
+        send_swipe(vm_index, start_x, start_y, end_x, end_y)
+        time.sleep(delay)
 
 
 def scroll_up(vm_index):
