@@ -279,15 +279,11 @@ def state_tree(
             logger.change_status('Battlepass collect is not toggled. Skipping this state')
             return next_state
 
-
         if not logger.check_if_can_battlepass_collect(job_list['battlepass_collect_increment_user_input']):
+            logger.change_status('Battlepass collect is not ready. Skipping this state')
             return next_state
 
-
         return collect_battlepass_state(vm_index, logger, next_state)
-
-
-
 
 
     if state == "randomize_deck":  # --> start_fight

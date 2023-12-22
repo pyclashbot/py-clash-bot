@@ -49,13 +49,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     Returns:
         A dictionary of job toggles and increments based on the values of the GUI window.
     """
-    print("values in job_dict:\n")
-    print(
-        "free_offer_user_toggle:",
-        values["free_offer_user_toggle"],
-        "gold_offer_user_toggle:",
-        values["gold_offer_user_toggle"],
-    )
+
 
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
@@ -77,6 +71,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "skip_fight_if_full_chests_user_toggle": values[
             "skip_fight_if_full_chests_user_toggle"
         ],
+        "battlepass_collect_user_toggle": values["open_battlepass_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         # job increments
         "card_upgrade_increment_user_input": values[
