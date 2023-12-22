@@ -21,7 +21,13 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up,scroll_down_in_request_page
+from pyclashbot.memu.client import (
+    click,
+    screenshot,
+    scroll_down,
+    scroll_up,
+    scroll_down_in_request_page,
+)
 from pyclashbot.utils.logger import Logger
 
 COLOR_WHITE: list[int] = [255, 255, 255]
@@ -132,12 +138,12 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         logger.change_status(status="Can't request right now.")
 
     # return to clash main
-    if get_to_clash_main_from_clan_page(vm_index, logger) == "restart":
-        logger.change_status(
-            status="Error 876208476 Failure with get_to_clash_main_from_clan_page"
-        )
-        return "restart"
+    click(vm_index, 173, 596)
     time.sleep(3)
+
+    if not check_if_on_clash_main_menu(vm_index):
+        logger.change_status("Not on clash main after requesting. Returning restart")
+        return "restart"
 
     return next_state
 
@@ -398,10 +404,8 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-
     vm_index = 12
-    logger=Logger(None)
+    logger = Logger(None)
     do_request(vm_index, logger)
-
 
     # count_scrolls_in_request_page(vm_index=vm_index)
