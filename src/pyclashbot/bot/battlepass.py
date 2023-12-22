@@ -87,6 +87,10 @@ def collect_battlepass(vm_index, logger):
         )
         return False
 
+    if not check_for_battlepass_reward_icon_with_delay(vm_index, delay=3):
+        logger.change_status("No battlepass rewards to collect")
+        return True
+
     # while rewards exist:
     while check_for_battlepass_reward_icon_with_delay(vm_index, delay=3) is True:
         if collect_1_battlepass_reward(vm_index, logger) is True:

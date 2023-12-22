@@ -7,7 +7,7 @@ THEME ='Material1'
 # THEME ='reddit'
 
 
-print('\n',THEME)
+# print('\n',THEME)
 sg.theme(THEME)
 
 

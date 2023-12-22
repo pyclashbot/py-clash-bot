@@ -115,7 +115,7 @@ account_switching_layout = [
             layout=[
                 [
                     sg.Checkbox(
-                        "Account Switching",
+                        "Enabled",
                         key="account_switching_toggle",
                         default=False,
                     ),
