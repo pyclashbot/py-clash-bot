@@ -226,11 +226,12 @@ main_layout = [
     [
         sg.Button("Discord", key="discord", expand_x=True, button_color="#7289da"),
         sg.Button("Upload Log", key="upload-log", expand_x=True),
-        sg.Button("Report Bug", key="bug-report", expand_x=True,button_color="#FF0000"),
+        sg.Button(
+            "Report Bug", key="bug-report", expand_x=True, button_color="#FF0000"
+        ),
     ],
     [donate_button_layout_tab],
     [time_status_bar_layout],
-
 ]
 
 
