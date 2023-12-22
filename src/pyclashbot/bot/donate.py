@@ -58,19 +58,16 @@ def donate_cards_main(vm_index, logger):
     click(vm_index, 385, 488)
     time.sleep(2)
 
-    start_time = time.time()
-    timeout = 60
     for _ in range(3):
         # click donate buttons that exist on this page, then scroll a little
         for _ in range(3):
-            if time.time() - start_time > timeout:
-                logger.log("Timed out waiting for donate button")
-                return False
-
+            loops = 0
             while find_and_click_donates(vm_index, logger) is True:
-                pass
+                loops+=1
+                if loops > 50:
+                    return False
 
-            scroll_up_a_little(vm_index)
+            scroll_up(vm_index)
             time.sleep(1)
 
         # click the more requests button that may exist
@@ -91,7 +88,7 @@ def find_and_click_donates(vm_index, logger):
 
     found_donates = False
     for coord in coords:
-        if check_for_positive_donate_button_coords(vm_index, coord):
+        while check_for_positive_donate_button_coords(vm_index, coord):
             if coord[1] < 108:
                 continue
 
@@ -211,4 +208,5 @@ if __name__ == "__main__":
     vm_index = 12
     logger = Logger()
 
-    donate_cards_main(vm_index, logger)
+    donate_cards_state(vm_index, logger, 'next_state')
+
