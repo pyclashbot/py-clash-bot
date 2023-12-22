@@ -96,7 +96,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "deck_randomization_increment_user_input"
         ],
         "war_attack_increment_user_input": values["war_attack_increment_user_input"],
-        "battlepass_collect_increment_user_input": values["battlepass_collect_increment_user_input"],
+        "battlepass_collect_increment_user_input": values[
+            "battlepass_collect_increment_user_input"
+        ],
         # account switching input info
         "account_switching_increment_user_input": values[
             "account_switching_increment_user_input"
