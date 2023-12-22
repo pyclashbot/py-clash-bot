@@ -105,6 +105,7 @@ main_layout = [
     [
         sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
         sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
+        # jobs_checklist,
     ],
     [
         sg.Frame(
