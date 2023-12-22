@@ -69,8 +69,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
-        # "random_decks_user_toggle": values["random_decks_user_toggle"],
-        "random_decks_user_toggle": False,
+        "random_decks_user_toggle": values["random_decks_user_toggle"],
         "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
         "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
@@ -78,7 +77,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
             "skip_fight_if_full_chests_user_toggle"
         ],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
-
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -86,7 +84,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "shop_buy_increment_user_input": values["shop_buy_increment_user_input"],
         "request_increment_user_input": values["request_increment_user_input"],
         "donate_increment_user_input": values["donate_increment_user_input"],
-        "daily_reward_increment_user_input": values["daily_reward_increment_user_input"],
+        "daily_reward_increment_user_input": values[
+            "daily_reward_increment_user_input"
+        ],
         "card_mastery_collect_increment_user_input": values[
             "card_mastery_collect_increment_user_input"
         ],

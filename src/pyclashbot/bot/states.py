@@ -214,7 +214,7 @@ def state_tree(
     if state == "daily_rewards":  # --> randomize_deck
         next_state = "randomize_deck"
 
-        #if job not toggled, return next state
+        # if job not toggled, return next state
         if not job_list["daily_rewards_user_toggle"]:
             logger.log("daily_rewards job isn't toggled. Skipping")
             return next_state
@@ -226,7 +226,7 @@ def state_tree(
             logger.log("daily_rewards job isn't ready")
             return next_state
 
-        #run this job, return its output
+        # run this job, return its output
         return collect_daily_rewards_state(vm_index, logger, next_state)
 
     if state == "randomize_deck":  # --> start_fight

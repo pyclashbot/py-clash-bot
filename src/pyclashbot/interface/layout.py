@@ -201,7 +201,7 @@ user_config_keys = [
     "2v2_user_toggle",
     "card_upgrade_user_toggle",
     "war_user_toggle",
-    #DISABLED: "random_decks_user_toggle",
+    "random_decks_user_toggle",
     "open_bannerbox_user_toggle",
     'daily_rewards_user_toggle',
     "random_plays_user_toggle",

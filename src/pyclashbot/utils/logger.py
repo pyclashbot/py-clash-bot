@@ -669,7 +669,7 @@ class Logger:
 
         # if games_played / increment > request_attempts
         if games_played / increment >= donate_attempts:
-            self.log(
+            self.change_status(
                 f"Can donate. attempts = {donate_attempts} & games played = {games_played}"
             )
             return True
