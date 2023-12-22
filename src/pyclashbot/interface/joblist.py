@@ -116,13 +116,11 @@ jobs_checklist = [
                         default_value=False,
                     ),
                 ],
-                #TODO fix random decks (broken since 12/13/23 update)
-                #keep checkbox disabled for now
-                # [
-                #     job_check_box(
-                #         "Random Decks", "random_decks_user_toggle", default_value=False
-                #     ),
-                # ],
+                [
+                    job_check_box(
+                        "Random Decks", "random_decks_user_toggle", default_value=False
+                    ),
+                ],
                 [
                     job_check_box(
                         "Random Plays", "random_plays_user_toggle", default_value=False

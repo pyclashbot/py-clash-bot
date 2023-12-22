@@ -255,6 +255,31 @@ def convert_pixel(bad_format_pixel):
     return [red, green, blue]
 
 
+def condense_coordinates(coords, distance_threshold=5):
+    """
+    Condense a list of coordinates by removing similar ones.
+
+    Parameters:
+    - coords: List of coordinates, where each coordinate is a list [x, y].
+    - distance_threshold: Maximum distance for coordinates to be considered similar.
+
+    Returns:
+    - List of condensed coordinates.
+    """
+    condensed_coords = []
+
+    for coord in coords:
+        x, y = coord
+        if not any(
+            np.abs(existing_coord[0] - x) < distance_threshold
+            and np.abs(existing_coord[1] - y) < distance_threshold
+            for existing_coord in condensed_coords
+        ):
+            condensed_coords.append(coord)
+
+    return condensed_coords
+
+
 def pixel_is_equal(
     pix1: tuple[int, int, int] | list[int],
     pix2: tuple[int, int, int] | list[int],

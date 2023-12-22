@@ -45,6 +45,12 @@ def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
         send_click(vm_index, x_coord, y_coord)
         time.sleep(interval)
 
+def scroll_up_fast(vm_index):
+    """Method for scrolling up faster when interacting with a scrollable menu"""
+    send_swipe(vm_index, 215, 100, 215, 500)
+
+
+
 
 def scroll_up(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""

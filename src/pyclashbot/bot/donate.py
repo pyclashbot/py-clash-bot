@@ -15,6 +15,7 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
     crop_image,
+    condense_coordinates,
 )
 from pyclashbot.memu.client import screenshot, click, scroll_up_a_little, scroll_up
 from pyclashbot.utils.logger import Logger
@@ -48,8 +49,9 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
     return next_state
 
 
-def donate_cards_main(vm_index, logger):
+def donate_cards_main(vm_index, logger: Logger) -> bool:
     # get to clan chat page
+    logger.change_status("Getting to clan tab to donate cards")
     if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
         return False
     time.sleep(2)
@@ -63,10 +65,13 @@ def donate_cards_main(vm_index, logger):
         for _ in range(3):
             loops = 0
             while find_and_click_donates(vm_index, logger) is True:
-                loops+=1
+                logger.change_status("Found a donate button")
+                loops += 1
                 if loops > 50:
                     return False
+                time.sleep(0.5)
 
+            logger.change_status("Scrolling up to search for more requests")
             scroll_up(vm_index)
             time.sleep(1)
 
@@ -75,12 +80,15 @@ def donate_cards_main(vm_index, logger):
         time.sleep(1)
 
     # get to clash main
+    logger.change_status("Returning to clash main after donating")
     click(vm_index, 175, 600)
     time.sleep(3)
 
     if not check_if_on_clash_main_menu(vm_index):
         logger.log("Failed to get to clash main after doanting! Retsrating")
         return False
+
+    return True
 
 
 def find_and_click_donates(vm_index, logger):
@@ -153,34 +161,8 @@ def find_donate_button(image):
     return [coord[1], coord[0]]
 
 
-def condense_coordinates(coords, distance_threshold=5):
-    """
-    Condense a list of coordinates by removing similar ones.
-
-    Parameters:
-    - coords: List of coordinates, where each coordinate is a list [x, y].
-    - distance_threshold: Maximum distance for coordinates to be considered similar.
-
-    Returns:
-    - List of condensed coordinates.
-    """
-    condensed_coords = []
-
-    for coord in coords:
-        x, y = coord
-        if not any(
-            numpy.abs(existing_coord[0] - x) < distance_threshold
-            and numpy.abs(existing_coord[1] - y) < distance_threshold
-            for existing_coord in condensed_coords
-        ):
-            condensed_coords.append(coord)
-
-    return condensed_coords
-
-
 def check_for_positive_donate_button_coords(vm_index, coord):
-    #if pixel is too high, always return False
-
+    # if pixel is too high, always return False
 
     iar = screenshot(vm_index)
 
@@ -208,5 +190,4 @@ if __name__ == "__main__":
     vm_index = 12
     logger = Logger()
 
-    donate_cards_state(vm_index, logger, 'next_state')
-
+    donate_cards_state(vm_index, logger, "next_state")
