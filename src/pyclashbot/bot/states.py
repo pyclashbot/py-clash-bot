@@ -66,10 +66,8 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> account_switch
-
-        if job_list['memu_attach_mode_toggle']:
+        if job_list["memu_attach_mode_toggle"]:
             start_memu_attach_mode()
-
 
         next_state = "account_switch"
 
@@ -432,4 +430,45 @@ def state_tree(
 
 
 if __name__ == "__main__":
-    pass
+    jobs_dictionary: dict[str, str | int] = {
+        # job toggles
+        "open_battlepass_user_toggle":False,
+        "open_chests_user_toggle":False,
+        "request_user_toggle":False,
+        "donate_toggle":False,
+        "card_mastery_user_toggle":False,
+        "memu_attach_mode_toggle":False,
+        "free_offer_user_toggle":False,
+        "gold_offer_user_toggle":False,
+        "1v1_battle_user_toggle":False,
+        "2v2_battle_user_toggle":False,
+        "upgrade_user_toggle":False,
+        "war_user_toggle":False,
+        "random_decks_user_toggle":False,
+        "open_bannerbox_user_toggle":False,
+        "daily_rewards_user_toggle":False,
+        "random_plays_user_toggle":False,
+        "skip_fight_if_full_chests_user_toggle":False,
+        "battlepass_collect_user_toggle":False,
+        "disable_win_track_toggle":False,
+        # job increments
+        "card_upgrade_increment_user_input":1,
+        "shop_buy_increment_user_input":1,
+        "daily_reward_increment_user_input":1,
+        "card_mastery_collect_increment_user_input":1,
+        "deck_randomization_increment_user_input":1,
+        "battlepass_collect_increment_user_input":1,
+        # account switching input info
+        "account_switching_toggle":False,
+        "account_switching_slider":False,
+        "next_account":1,
+        "random_account_switch_list":[1],
+    }
+    state = "account_switch"
+    while 1:
+        state = state_tree(
+            12,
+            Logger(None),
+            state,
+            jobs_dictionary,
+        )
