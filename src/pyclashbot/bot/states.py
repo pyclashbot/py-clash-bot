@@ -128,7 +128,14 @@ def state_tree(
         account_total = job_list["account_switching_slider"]
         logger.log(f"Doing switch to act#{job_list['next_account']} of {account_total}")
 
-        if switch_accounts(vm_index, logger, job_list["next_account"]) is False:
+        accout_index = job_list["next_account"]
+
+        if (
+            switch_accounts(
+                vm_index, logger, job_list["random_account_switch_list"][accout_index]
+            )
+            is False
+        ):
             return "restart"
 
         # increment next account iteration
@@ -275,16 +282,19 @@ def state_tree(
     if state == "battlepass_rewards":  # --> randomize_deck
         next_state = "randomize_deck"
 
-        if not job_list['battlepass_collect_user_toggle']:
-            logger.change_status('Battlepass collect is not toggled. Skipping this state')
+        if not job_list["battlepass_collect_user_toggle"]:
+            logger.change_status(
+                "Battlepass collect is not toggled. Skipping this state"
+            )
             return next_state
 
-        if not logger.check_if_can_battlepass_collect(job_list['battlepass_collect_increment_user_input']):
-            logger.change_status('Battlepass collect is not ready. Skipping this state')
+        if not logger.check_if_can_battlepass_collect(
+            job_list["battlepass_collect_increment_user_input"]
+        ):
+            logger.change_status("Battlepass collect is not ready. Skipping this state")
             return next_state
 
         return collect_battlepass_state(vm_index, logger, next_state)
-
 
     if state == "randomize_deck":  # --> start_fight
         next_state = "start_fight"

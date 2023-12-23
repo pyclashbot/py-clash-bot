@@ -50,6 +50,8 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         A dictionary of job toggles and increments based on the values of the GUI window.
     """
 
+    random_account_switch_list = make_random_account_switching_dict(int(values["account_switching_slider"]))
+    print("random_account_switch_list: ",random_account_switch_list)
 
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
@@ -101,9 +103,26 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switching_slider": int(values["account_switching_slider"]),
         "next_account": 0,
+        "random_account_switch_list":  random_account_switch_list,
     }
 
     return jobs_dictionary
+
+def make_random_account_switching_dict(count):
+    old_list = []
+    for i in range(count):
+        old_list.append(i)
+
+    new_list=  []
+    while len(new_list) < len(old_list):
+        random_choice = random.choice(old_list)
+        if random_choice not in new_list:
+            new_list.append(random_choice)
+
+    return new_list
+
+
+
 
 
 def check_for_invalid_job_increment_input(job_dictionary):
@@ -120,6 +139,9 @@ def check_for_invalid_job_increment_input(job_dictionary):
     items = job_dictionary.items()
 
     for key, value in items:
+        if key == 'random_account_switch_list':
+            continue
+
         # if its a bool then its a good type input
         if isinstance(value, bool):
             continue
@@ -443,3 +465,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 if __name__ == "__main__":
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
+
+
+
