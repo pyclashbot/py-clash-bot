@@ -2,8 +2,8 @@ import PySimpleGUI as sg
 import random
 
 # THEME = "SystemDefaultForReal"
-THEME ='Material1'
-# THEME ='Material2'
+# THEME ='Material1'
+THEME ='Material2'
 # THEME ='reddit'
 
 

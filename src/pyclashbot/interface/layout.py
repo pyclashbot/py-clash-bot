@@ -124,32 +124,35 @@ account_switching_layout = [
                         orientation="h",
                         key="account_switching_slider",
                     ),
+                ],
+                [
                     sg.Text("Current Account #"),
                     sg.Text(
                         "-",
                         key="current_account",
                         relief=sg.RELIEF_SUNKEN,
                         text_color="blue",
-                        size=(5, 1),
+                        size=(20, 1),
                     ),
                 ],
             ],
             title="Account Switching",
             expand_x=True,
-        ),sg.Frame(
-        layout=[
-            [
-                sg.Checkbox(
-                    "Enabled",
-                    key="memu_attach_mode_toggle",
-                    default=False,
-                ),
+        ),
+        sg.Frame(
+            layout=[
+                [
+                    sg.Checkbox(
+                        "Enabled",
+                        key="memu_attach_mode_toggle",
+                        default=False,
+                    ),
+                ],
             ],
-        ],
-        title="Memu Docking",
-        expand_x=True,
-        expand_y=True,
-    ),
+            title="Memu Docking",
+            expand_x=True,
+            expand_y=True,
+        ),
     ]
 ]
 
@@ -222,31 +225,52 @@ main_layout = [
     ],
     [account_switching_layout],
     [
-        sg.Button("Start", expand_x=True, button_color="Lime Green", border_width=3),
-        sg.Button("Stop", disabled=True, expand_x=True, border_width=2),
+        sg.Button(
+            "Start",
+            # expand_x=True,
+            button_color="Lime Green",
+            border_width=3,
+            size=(20, 1),
+        ),
+        sg.Button(
+            "Stop",
+            disabled=True,
+            #   expand_x=True,
+            border_width=2,
+            size=(20, 1),
+        ),
         sg.Button(
             "Pause",
             disabled=True,
             key="-Pause-Resume-Button-",
-            expand_x=True,
+            # expand_x=True,
             border_width=2,
+            size=(20, 1),
         ),
     ],
     [
         sg.Button(
             "Discord",
             key="discord",
-            expand_x=True,
+            # expand_x=True,
             button_color="#7289da",
             border_width=2,
+            size=(20, 1),
         ),
-        sg.Button("Upload Log", key="upload-log", expand_x=True, border_width=2),
+        sg.Button(
+            "Upload Log",
+            key="upload-log",
+            # expand_x=True,
+            size=(20, 1),
+            border_width=2,
+        ),
         sg.Button(
             "Report Bug",
             key="bug-report",
-            expand_x=True,
+            # expand_x=True,
             button_color="#FF0000",
             border_width=2,
+            size=(20, 1),
         ),
     ],
     [donate_button_layout_tab],

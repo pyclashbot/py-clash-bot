@@ -14,9 +14,21 @@ import time
 
 
 def collect_battlepass_state(vm_index, logger, next_state):
+    if not check_if_on_clash_main_menu(vm_index=vm_index):
+        logger.change_status(
+            "Not on clash main before collecting battlepass, returning restart"
+        )
+        return "restart"
+
     if collect_battlepass(vm_index, logger) is False:
         logger.change_status(
             "Failed somewhere in collect_battlepass(), returning restart"
+        )
+        return "restart"
+
+    if not check_if_on_clash_main_menu(vm_index=vm_index):
+        logger.change_status(
+            "Not on clash main after collecting battlepass, returning restart"
         )
         return "restart"
 

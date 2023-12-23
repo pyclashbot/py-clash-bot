@@ -101,14 +101,29 @@ def check_memu_windows_orientation():
     return True
 
 
-def memu_attach_mode():
+def check_if_windows_apart():
+    gui_pos = get_window_position(GUI_NAME)
+
+    memu_topleft = get_window_position(MEMU_CLIENT_NAME)
+
+    gui_size = get_window_size(GUI_NAME)
+
+    gui_topright = (gui_pos[0] + gui_size[0], gui_pos[1])
+
+    #if either axis is off by more than 10, return False
+    if abs(gui_topright[0] - memu_topleft[0]) > 10 or abs(gui_topright[1] - memu_topleft[1]) > 10:
+        return True
+
+    return False
+
+def memu_dock_mode():
     current_pos = None
     while not stop_threads.is_set():
         try:
             if current_pos is None:
                 current_pos = get_window_position(GUI_NAME)
 
-            if current_pos != get_window_position(GUI_NAME):
+            if current_pos != get_window_position(GUI_NAME) or check_if_windows_apart():
                 current_pos = get_window_position(GUI_NAME)
                 resize_memu_based_on_gui()
                 attach_memu_to_gui()
@@ -116,12 +131,14 @@ def memu_attach_mode():
         except:
             pass
 
-def start_memu_attach_mode():
+def start_memu_dock_mode():
     print('Starting memu attach mode!')
-    threading.Thread(target=memu_attach_mode).start()
+    threading.Thread(target=memu_dock_mode).start()
 
 
 
 
 if __name__ == "__main__":
-    start_memu_attach_mode()
+    while 1:
+        pos = get_window_position(GUI_NAME)
+        print(pos)
