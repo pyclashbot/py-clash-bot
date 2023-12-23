@@ -296,8 +296,8 @@ def state_tree(
         # run this job, return its output
         return collect_daily_rewards_state(vm_index, logger, next_state)
 
-    if state == "battlepass_rewards":  # --> randomize_deck
-        next_state = "randomize_deck"
+    if state == "battlepass_rewards":  # --> start_fight
+        next_state = "start_fight"
 
         if not job_list["battlepass_collect_user_toggle"]:
             logger.change_status(
