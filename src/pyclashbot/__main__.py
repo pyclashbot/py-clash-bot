@@ -60,6 +60,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "request_user_toggle": values["request_user_toggle"],
         "donate_toggle": values["donate_toggle"],
         "card_mastery_user_toggle": values["card_mastery_user_toggle"],
+        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "1v1_battle_user_toggle": values["1v1_user_toggle"],

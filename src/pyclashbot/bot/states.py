@@ -26,6 +26,7 @@ from pyclashbot.memu.launcher import (
 from pyclashbot.bot.buy_shop_offers import buy_shop_offers_state
 from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
+from pyclashbot.memu.gui_attach_mode import start_memu_attach_mode
 
 
 class StateException(Exception):
@@ -65,6 +66,11 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> account_switch
+
+        if job_list['memu_attach_mode_toggle']:
+            start_memu_attach_mode()
+
+
         next_state = "account_switch"
 
         restart_emulator(logger)

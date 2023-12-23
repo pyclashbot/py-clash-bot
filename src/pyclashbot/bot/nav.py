@@ -744,6 +744,29 @@ def get_to_card_page_from_clash_main(
     return "good"
 
 
+def check_if_on_card_page2(vm_index):
+    iar= numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[115][158],
+        iar[117][245],
+        iar[120][207],
+        iar[476][57],
+    ]
+
+    colors = [
+[129 , 78,  32],
+[225 ,200, 177],
+[189 ,179, 179],
+[235 ,  1, 240],
+    ]
+
+    for i,p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p,colors[i],tol=15):
+            return False
+    return True
+
+
 def check_if_on_card_page(vm_index) -> bool:
     """
     Checks if the bot is currently on the card page by looking for
@@ -755,6 +778,11 @@ def check_if_on_card_page(vm_index) -> bool:
     Returns:
         bool: True if the bot is on the card page, False otherwise.
     """
+
+    if check_if_on_card_page2(vm_index):
+        return True
+
+
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
         iar[110][294],
@@ -1203,5 +1231,7 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 if __name__ == "__main__":
 
-    pass
 
+    get_to_card_page_from_clash_main(
+    12, Logger(), True
+)

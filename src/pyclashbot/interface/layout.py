@@ -136,7 +136,20 @@ account_switching_layout = [
             ],
             title="Account Switching",
             expand_x=True,
-        ),
+        ),sg.Frame(
+        layout=[
+            [
+                sg.Checkbox(
+                    "Enabled",
+                    key="memu_attach_mode_toggle",
+                    default=False,
+                ),
+            ],
+        ],
+        title="Memu Docking",
+        expand_x=True,
+        expand_y=True,
+    ),
     ]
 ]
 
@@ -249,6 +262,7 @@ user_config_keys = [
     "request_user_toggle",
     "donate_toggle",
     "card_mastery_user_toggle",
+    "memu_attach_mode_toggle",
     "disable_win_track_toggle",
     "free_offer_user_toggle",
     "gold_offer_user_toggle",
