@@ -1075,7 +1075,7 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
 if __name__ == "__main__":
     logger = Logger()
-    vm_index = 11
+    vm_index = 12
 
 
 
@@ -1085,4 +1085,4 @@ if __name__ == "__main__":
     #     print('friendly: ',count_friendly_crowns(vm_index))
     #     time.sleep(5)
 
-    check_for_2v2_chat_window(vm_index)
+    # start_2v2_fight_state(vm_index, logger)

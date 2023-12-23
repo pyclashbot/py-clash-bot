@@ -236,7 +236,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
         logger.log(f"Missing gold popup exists. Skipping this upgradable card.")
 
     # click deadspace
-    logger.change_status(status="Clicking deadspace after upgrading this card")
+    logger.change_status(status="Clicking deadspace after attemping upgrading this card")
     for _ in range(4):
         click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
         time.sleep(1)

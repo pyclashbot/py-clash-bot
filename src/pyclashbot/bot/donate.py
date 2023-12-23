@@ -83,11 +83,12 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
     # get to clash main
     logger.change_status("Returning to clash main after donating")
     click(vm_index, 175, 600)
-    time.sleep(3)
+    time.sleep(5)
 
     if not check_if_on_clash_main_menu(vm_index):
         logger.log("Failed to get to clash main after doanting! Retsrating")
         return False
+    time.sleep(3)
 
     return True
 
@@ -126,7 +127,7 @@ def find_donate_buttons(vm_index):
     start_time = time.time()
     coords = []
 
-    for _ in range(200):
+    for _ in range(100):
         try:
             left = random.randint(0, 360)
             top = random.randint(0, 400)
