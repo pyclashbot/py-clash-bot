@@ -93,6 +93,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
 
 
 def find_and_click_donates(vm_index, logger):
+    logger.change_status("Searching for donate buttons...")
     coords = find_donate_buttons(vm_index)
 
     found_donates = False
