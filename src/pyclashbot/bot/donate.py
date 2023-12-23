@@ -97,11 +97,22 @@ def find_and_click_donates(vm_index, logger):
     coords = find_donate_buttons(vm_index)
 
     found_donates = False
+    start_time = time.time()
+    timeout = 30#s
     for coord in coords:
-        while check_for_positive_donate_button_coords(vm_index, coord):
-            if coord[1] < 108:
-                continue
+        #if coord is too high
+        if coord[1] < 108:
+            print('Found a donate button but its too high to do anything with')
+            continue
 
+        #if coord is in range, click it until its grey
+        while check_for_positive_donate_button_coords(vm_index, coord):
+            #timeout check
+            if time.time() - start_time > timeout:
+                logger.change_status('Timed out while donating... Restarting')
+                return 'restart'
+
+            #do clicking, increment counter, toggle found_donates
             click(vm_index, coord[0], coord[1])
             logger.change_status("Donated a card!")
             found_donates = True
@@ -112,6 +123,7 @@ def find_and_click_donates(vm_index, logger):
 
 
 def find_donate_buttons(vm_index):
+    start_time = time.time()
     coords = []
 
     for _ in range(200):
@@ -139,6 +151,7 @@ def find_donate_buttons(vm_index):
         except:
             pass
 
+    print(f'Finished find_donate_buttons() in {time.time() - start_time}s')
     return condense_coordinates(coords, distance_threshold=15)
 
 
@@ -165,6 +178,7 @@ def find_donate_button(image):
 
 
 def check_for_positive_donate_button_coords(vm_index, coord):
+    start_time = time.time()
     # if pixel is too high, always return False
 
     iar = screenshot(vm_index)
@@ -185,7 +199,9 @@ def check_for_positive_donate_button_coords(vm_index, coord):
             positive_count += 1
 
     if (positive_count) > 5:
+        print(f'Finished check_for_positive_donate_button_coords() in {time.time() - start_time}s')
         return True
+    print(f'Finished check_for_positive_donate_button_coords() in {time.time() - start_time}s')
     return False
 
 
