@@ -157,8 +157,8 @@ def state_tree(
 
         return next_state
 
-    if state == "open_chests":  # --> upgrade
-        next_state = "upgrade"
+    if state == "open_chests":  # --> randomize_deck
+        next_state = "randomize_deck"
 
         # if job not selected, skip this state
         logger.log('Checking if "open_chests_user_toggle" is on')
@@ -177,6 +177,23 @@ def state_tree(
         # run this state
         logger.log('Open chests is toggled and ready. Running "open_chests_state()"')
         return open_chests_state(vm_index, logger, next_state)
+
+    if state == "randomize_deck":  # --> upgrade
+        next_state = "upgrade"
+
+        # if randomize deck isn't toggled, return next state
+        if not job_list["random_decks_user_toggle"]:
+            logger.log("deck randomization isn't toggled. skipping this state")
+            return next_state
+
+        # if randomize deck isn't ready, return next state
+        if not logger.check_if_can_randomize_deck(
+            job_list["deck_randomization_increment_user_input"]
+        ):
+            logger.log("deck randomization isn't ready. skipping this state")
+            return next_state
+
+        return randomize_deck_state(vm_index, logger, next_state)
 
     if state == "upgrade":  # --> request
         next_state = "request"
@@ -295,23 +312,6 @@ def state_tree(
             return next_state
 
         return collect_battlepass_state(vm_index, logger, next_state)
-
-    if state == "randomize_deck":  # --> start_fight
-        next_state = "start_fight"
-
-        # if randomize deck isn't toggled, return next state
-        if not job_list["random_decks_user_toggle"]:
-            logger.log("deck randomization isn't toggled. skipping this state")
-            return next_state
-
-        # if randomize deck isn't ready, return next state
-        if not logger.check_if_can_randomize_deck(
-            job_list["deck_randomization_increment_user_input"]
-        ):
-            logger.log("deck randomization isn't ready. skipping this state")
-            return next_state
-
-        return randomize_deck_state(vm_index, logger, next_state)
 
     if state == "start_fight":  # --> 1v1_fight, card_mastery
         next_state = "card_mastery"
