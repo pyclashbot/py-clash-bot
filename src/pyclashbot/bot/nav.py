@@ -12,7 +12,7 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click,  screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-_2V2_START_WAIT_TIMEOUT = 60  # s
+_2V2_START_WAIT_TIMEOUT = 120  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
@@ -45,8 +45,6 @@ def get_to_shop_page_from_clash_main(vm_index, logger):
         )
         return False
     return True
-
-
 
 
 def wait_for_end_battle_screen(
