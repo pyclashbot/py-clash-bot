@@ -1,5 +1,5 @@
 import threading
-
+import time
 import pygetwindow as gw
 
 GUI_NAME = "py-clash-bot | dev"
@@ -53,7 +53,7 @@ def resize_memu():
 
     new_height = gui_size[1] - 7
 
-    new_width = int(new_height*ratio)
+    new_width = int(new_height*ratio)+1
 
     resize_window(MEMU_CLIENT_NAME,new_width,new_height)
 
@@ -99,9 +99,14 @@ def docker_main():
     while 1:
         try:
             if not check_sizing():
+                print('[docker] resize...')
                 resize_memu()
+                continue
             if not check_position():
+                print('[docker] Dock...')
                 dock_memu()
+                continue
+            time.sleep(0.33)
         except:
             pass
 

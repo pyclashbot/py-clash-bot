@@ -93,15 +93,17 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
         scroll_up_on_left_side_of_screen(vm_index)
     time.sleep(1)
 
-    #if there is a locked events page, return restart
+    # if there is a locked events page, return restart
     if check_for_locked_events_page(vm_index):
         logger.change_status("Locked events page! Doing 1v1 instead...")
-        click(vm_index, 170,589)
+        click(vm_index, 170, 589)
         time.sleep(3)
         if not check_if_on_clash_main_menu(vm_index):
-            logger.change_status('Failed to get from events tab to clash main after locked events page')
-            return 'restart'
-        return 'start_1v1_fight_state'
+            logger.change_status(
+                "Failed to get from events tab to clash main after locked events page"
+            )
+            return "restart"
+        return start_1v1_fight_state(vm_index, logger)
 
     # click 2v2 icon location
     click_2v2_icon_button(vm_index)
@@ -129,11 +131,11 @@ def check_for_locked_events_page(vm_index):
     ]
 
     colors = [
-[239, 130,  25],
-[ 91, 227, 153],
-[255 ,251, 239],
-[241 ,129,  25],
-[239 ,130,  27],
+        [239, 130, 25],
+        [91, 227, 153],
+        [255, 251, 239],
+        [241, 129, 25],
+        [239, 130, 27],
     ]
 
     for i, p in enumerate(pixels):
@@ -141,7 +143,6 @@ def check_for_locked_events_page(vm_index):
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True
-
 
 
 def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_fight"]:
@@ -374,7 +375,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # while in battle:
     while check_for_in_battle_with_delay(vm_index):
-
         # if check_if_at_max_elixer(vm_index):
         #     logger.change_status("At max elixer so just mag dumping!!!")
         #     mag_dump(vm_index, logger)
@@ -457,9 +457,8 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         plays += 1
 
         logger.change_status(
-f"Played {id_string} on {this_play_side} side in {str(time.time() - this_play_start_time)[:4]}s"
+            f"Played {id_string} on {this_play_side} side in {str(time.time() - this_play_start_time)[:4]}s"
         )
-
 
     if logger.get_cards_played() != 0:
         logger.remove_card_played(cards_to_remove=random.randint(0, 1))
@@ -725,8 +724,8 @@ def count_friendly_crowns(vm_index):
 
     for index, pixel in enumerate(pixels):
         color = colors[index]
-        if  pixel_is_equal(pixel, color, tol=35):
-            crowns+=1
+        if pixel_is_equal(pixel, color, tol=35):
+            crowns += 1
 
     return crowns
 
@@ -740,10 +739,10 @@ def check_for_2v2_chat_window(vm_index):
         iar[19][320],
     ]
     colors = [
-        [247 ,239, 235],
-        [255 ,255, 255],
-        [255 ,186, 104],
-        [255 ,154,  51],
+        [247, 239, 235],
+        [255, 255, 255],
+        [255, 186, 104],
+        [255, 154, 51],
     ]
 
     for i, p in enumerate(pixels):
@@ -754,11 +753,11 @@ def check_for_2v2_chat_window(vm_index):
 
 
 def close_2v2_chat_window(vm_index):
-    click(vm_index, 399,15)
+    click(vm_index, 399, 15)
 
 
-def count_crowns(vm_index, logger:Logger):
-    #close chat window if its 2v2
+def count_crowns(vm_index, logger: Logger):
+    # close chat window if its 2v2
     if check_for_2v2_chat_window(vm_index):
         close_2v2_chat_window(vm_index)
         time.sleep(1)
@@ -770,11 +769,12 @@ def count_crowns(vm_index, logger:Logger):
     logger.add_count_to_enemy_crowns(enemy_crowns)
     logger.add_count_to_friendly_crowns(friendly_crowns)
 
-    print('New crown count')
-    print(f'friendly crowns: {friendly_crowns}')
-    print(f'enemy crowns: {enemy_crowns}')
+    print("New crown count")
+    print(f"friendly crowns: {friendly_crowns}")
+    print(f"enemy crowns: {enemy_crowns}")
 
-    return friendly_crowns,enemy_crowns
+    return friendly_crowns, enemy_crowns
+
 
 def end_fight_state(
     vm_index, logger: Logger, next_state, disable_win_tracker_toggle=True
@@ -848,6 +848,7 @@ def check_if_previous_game_was_win(
             status="Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()"
         )
         return "restart"
+    time.sleep(2)
 
     return is_a_win
 
@@ -876,12 +877,12 @@ def get_to_main_after_fight(vm_index, logger, next_state):
 
     start_time = time.time()
 
-    logger.log('Counting crowns')
-    friendly_crowns,enemy_crowns = count_crowns(vm_index, logger)
-    logger.log(f'Score last match was: {friendly_crowns}/{enemy_crowns}')
+    logger.log("Counting crowns")
+    friendly_crowns, enemy_crowns = count_crowns(vm_index, logger)
+    logger.log(f"Score last match was: {friendly_crowns}/{enemy_crowns}")
 
     while 1:
-        logger.log('Getting back to main')
+        logger.log("Getting back to main")
 
         if time.time() - start_time > POST_FIGHT_TIMEOUT:
             logger.log("took too long to get to clash main after a fight")
@@ -894,7 +895,7 @@ def get_to_main_after_fight(vm_index, logger, next_state):
         handle_end_2v2_battle_condition_2(vm_index, logger)
 
         # if on end of 2v2 battle screen c3, click OK
-        handle_end_2v2_battle_condition_3(logger,vm_index)
+        handle_end_2v2_battle_condition_3(logger, vm_index)
 
         # if on end of 1v1 battle screen c1, click OK
         handle_end_1v1_battle_condition_1(vm_index, logger)
@@ -1013,7 +1014,7 @@ def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
 
 
 def check_for_end_2v2_battle_condition_3(vm_index):
-    iar=numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot(vm_index))
     pixels = [
         iar[518][56],
         iar[517][76],
@@ -1022,23 +1023,23 @@ def check_for_end_2v2_battle_condition_3(vm_index):
     ]
 
     colors = [
-        (255,255,255),
-        (255,255,255),
-        (78,175,255),
-        (104,187,255),
+        (255, 255, 255),
+        (255, 255, 255),
+        (78, 175, 255),
+        (104, 187, 255),
     ]
 
-    for i,p in enumerate(pixels):
-        if not pixel_is_equal(p,colors[i],tol=35):
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=35):
             return False
     return True
 
 
-def handle_end_2v2_battle_condition_3(logger,vm_index):
+def handle_end_2v2_battle_condition_3(logger, vm_index):
     """method to handle the #3 possible end of 2v2 battle screen"""
     if check_for_end_2v2_battle_condition_3(vm_index):
         logger.log("On the end of 2v2 (c3) battle screen to clicking OK button")
-        click(vm_index, 216,554)
+        click(vm_index, 216, 554)
 
 
 def do_2v2_fight_state(
@@ -1114,6 +1115,5 @@ if __name__ == "__main__":
     logger = Logger()
     vm_index = 12
 
-
-
-    while 1:print(check_for_locked_events_page(vm_index))
+    while 1:
+        print(check_for_locked_events_page(vm_index))

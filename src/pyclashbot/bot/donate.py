@@ -7,6 +7,7 @@ import random
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
+    handle_trophy_reward_menu,check_for_trophy_reward_menu,
 )
 from pyclashbot.detection.image_rec import (
     find_references,
@@ -82,8 +83,13 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
 
     # get to clash main
     logger.change_status("Returning to clash main after donating")
-    click(vm_index, 175, 600)
+    click(vm_index, 175, 600, clicks = 3)
     time.sleep(5)
+
+    # handle geting stuck on trophy road screen
+    if check_for_trophy_reward_menu(vm_index):
+        handle_trophy_reward_menu(vm_index, logger)
+        time.sleep(2)
 
     if not check_if_on_clash_main_menu(vm_index):
         logger.log("Failed to get to clash main after doanting! Retsrating")
