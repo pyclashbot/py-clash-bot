@@ -25,6 +25,7 @@ pymemuc = "^0.5.2"
 psutil = "^5.9.6"
 requests = "^2.31.0"
 adbblitz = "^0.10"
+pywin32 = "^306"
 
 
 [tool.poetry.group.build]
