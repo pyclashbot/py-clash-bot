@@ -99,21 +99,21 @@ def find_and_click_donates(vm_index, logger):
 
     found_donates = False
     start_time = time.time()
-    timeout = 30#s
+    timeout = 30  # s
     for coord in coords:
-        #if coord is too high
+        # if coord is too high
         if coord[1] < 108:
-            print('Found a donate button but its too high to do anything with')
+            print("Found a donate button but its too high to do anything with")
             continue
 
-        #if coord is in range, click it until its grey
+        # if coord is in range, click it until its grey
         while check_for_positive_donate_button_coords(vm_index, coord):
-            #timeout check
+            # timeout check
             if time.time() - start_time > timeout:
-                logger.change_status('Timed out while donating... Restarting')
-                return 'restart'
+                logger.change_status("Timed out while donating... Restarting")
+                return "restart"
 
-            #do clicking, increment counter, toggle found_donates
+            # do clicking, increment counter, toggle found_donates
             click(vm_index, coord[0], coord[1])
             logger.change_status("Donated a card!")
             found_donates = True
@@ -152,7 +152,7 @@ def find_donate_buttons(vm_index):
         except:
             pass
 
-    print(f'Finished find_donate_buttons() in {time.time() - start_time}s')
+    print(f"Finished find_donate_buttons() in {time.time() - start_time:5}s")
     return condense_coordinates(coords, distance_threshold=15)
 
 
@@ -200,9 +200,7 @@ def check_for_positive_donate_button_coords(vm_index, coord):
             positive_count += 1
 
     if (positive_count) > 5:
-        print(f'Finished check_for_positive_donate_button_coords() in {time.time() - start_time}s')
         return True
-    print(f'Finished check_for_positive_donate_button_coords() in {time.time() - start_time}s')
     return False
 
 
