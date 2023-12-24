@@ -69,7 +69,7 @@ def check_sizing():
 
     value = abs(gui_height - memu_height - 8)
 
-    if value > 4:
+    if value > 2:
         return False
     return True
 
@@ -88,7 +88,7 @@ def check_position():
     x_diff = abs(gui_topright[0] - memu_topleft[0])
     y_diff = abs(gui_topright[1] - memu_topleft[1])
 
-    if x_diff > 4 or y_diff > 4:
+    if x_diff > 4 or y_diff > 2:
         return False
 
     return True

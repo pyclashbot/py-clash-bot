@@ -258,6 +258,28 @@ def check_which_rewards_are_available(vm_index, logger):
     return rewards
 
 
+def check_for_task_2_reward(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[247][270],
+        iar[251][87],
+        iar[274][270],
+        iar[244][88],
+    ]
+    colors = [
+        [84, 228, 255],
+        [84, 225, 253],
+        [84, 228, 253],
+        [78, 226, 254],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], 15):
+            return False
+    return True
+
+
 def check_rewards_menu_pixels(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
@@ -281,6 +303,9 @@ def check_rewards_menu_pixels(vm_index):
         bool = pixel_is_equal(p, colors[i], 15)
         bools.append(not (bool))
 
+    # patching buggy task 2 reward
+    bools[1] = check_for_task_2_reward(vm_index)
+
     return bools
 
 
@@ -288,4 +313,12 @@ if __name__ == "__main__":
     vm_index = 12
     logger = Logger()
 
-    print(check_if_daily_rewards_button_exists(vm_index))
+    # rewards = check_rewards_menu_pixels(vm_index)
+
+    # for r in rewards:
+    #     print(r)
+
+    # print(len(rewards))
+    # print('----------')
+
+    print(check_for_task_2_reward(vm_index))
