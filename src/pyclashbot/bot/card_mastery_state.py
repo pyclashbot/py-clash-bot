@@ -58,14 +58,18 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
         return False
     time.sleep(3)
 
-    # while card mastery icon exists:
-    while card_mastery_rewards_exist(vm_index):
-        logger.change_status("Detected card mastery rewards")
-        #   click card mastery icon
-        collect_first_mastery_reward(vm_index, logger)
-        logger.change_status("Collected a card mastery reward!")
-        logger.add_card_mastery_reward_collection()
-        time.sleep(3)
+    if not card_mastery_rewards_exist(vm_index):
+        logger.change_status("No card mastery rewards to collect.")
+
+    else:
+        # while card mastery icon exists:
+        while card_mastery_rewards_exist(vm_index):
+            logger.change_status("Detected card mastery rewards")
+            #   click card mastery icon
+            collect_first_mastery_reward(vm_index, logger)
+            logger.change_status("Collected a card mastery reward!")
+            logger.add_card_mastery_reward_collection()
+            time.sleep(3)
 
     # get to clash main
     click(vm_index, 243, 600)
