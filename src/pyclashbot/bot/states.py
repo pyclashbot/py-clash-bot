@@ -69,6 +69,8 @@ def state_tree(
         if job_list["memu_attach_mode_toggle"]:
             start_memu_dock_mode()
 
+        logger.set_total_accounts(len(job_list["random_account_switch_list"]))
+
         next_state = "account_switch"
 
         restart_emulator(logger)
