@@ -40,6 +40,34 @@ def check_for_collected_all_bannerbox_rewards_icon(vm_index):
     return True
 
 
+def check_if_bannerbox_icon_exists_on_clashmain(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[181][350],
+        iar[190][334],
+        iar[195][345],
+        iar[220][364],
+        iar[229][378],
+        iar[240][400],
+    ]
+
+    colors = [
+        [150, 113, 33],
+        [178, 133, 43],
+        [169, 126, 37],
+        [150, 102, 28],
+        [143, 104, 31],
+        [128, 89, 22],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=35):
+            return True
+
+    return False
+
+
 def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     logger.change_status("Collecting bannerbox rewards")
 
@@ -47,6 +75,10 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status("Not in clash main menu")
         return False
+
+    if not check_if_bannerbox_icon_exists_on_clashmain(vm_index):
+        logger.change_status("Account doesn't have bannerbox icon")
+        return True
 
     # click bannerbox button on clash main
     click(
@@ -135,9 +167,4 @@ def check_if_can_purchase_100_tickets_bannerbox(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger=Logger()
-
-    collect_bannerbox_rewards_state(vm_index, logger, "next_state")
-
-    # collect_bannerbox_rewards(vm_index, logger: Logger)
+    pass

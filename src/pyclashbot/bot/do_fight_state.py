@@ -93,6 +93,16 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
         scroll_up_on_left_side_of_screen(vm_index)
     time.sleep(1)
 
+    #if there is a locked events page, return restart
+    if check_for_locked_events_page(vm_index):
+        logger.change_status("Locked events page! Doing 1v1 instead...")
+        click(vm_index, 170,589)
+        time.sleep(3)
+        if not check_if_on_clash_main_menu(vm_index):
+            logger.change_status('Failed to get from events tab to clash main after locked events page')
+            return 'restart'
+        return 'start_1v1_fight_state'
+
     # click 2v2 icon location
     click_2v2_icon_button(vm_index)
     time.sleep(1)
@@ -106,6 +116,32 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
     time.sleep(1)
 
     return next_state
+
+
+def check_for_locked_events_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[254][93],
+        iar[122][240],
+        iar[117][216],
+        iar[362][343],
+        iar[259][325],
+    ]
+
+    colors = [
+[239, 130,  25],
+[ 91, 227, 153],
+[255 ,251, 239],
+[241 ,129,  25],
+[239 ,130,  27],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=10):
+            return False
+    return True
+
 
 
 def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_fight"]:
@@ -339,9 +375,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     # while in battle:
     while check_for_in_battle_with_delay(vm_index):
 
-        if check_if_at_max_elixer(vm_index):
-            logger.change_status("At max elixer so just mag dumping!!!")
-            mag_dump(vm_index, logger)
+        # if check_if_at_max_elixer(vm_index):
+        #     logger.change_status("At max elixer so just mag dumping!!!")
+        #     mag_dump(vm_index, logger)
 
         # emote sometimes to do daily challenge (jk its to be funny)
         if random.randint(0, 10) == 1:
@@ -369,9 +405,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
                 )
                 break
 
-            if elixer_wait_return == "mag_dump":
-                logger.change_status("At max elixer so just mag dumping!!!")
-                mag_dump(vm_index, logger)
+            # if elixer_wait_return == "mag_dump":
+            #     logger.change_status("At max elixer so just mag dumping!!!")
+            #     mag_dump(vm_index, logger)
 
         this_play_start_time = time.time()
 
@@ -1004,6 +1040,7 @@ def handle_end_2v2_battle_condition_3(logger,vm_index):
         logger.log("On the end of 2v2 (c3) battle screen to clicking OK button")
         click(vm_index, 216,554)
 
+
 def do_2v2_fight_state(
     vm_index,
     logger: Logger,
@@ -1079,10 +1116,4 @@ if __name__ == "__main__":
 
 
 
-    # while 1:
-    #     print('\n')
-    #     print('enemy:    ',count_enemy_crowns(vm_index))
-    #     print('friendly: ',count_friendly_crowns(vm_index))
-    #     time.sleep(5)
-
-    # start_2v2_fight_state(vm_index, logger)
+    while 1:print(check_for_locked_events_page(vm_index))

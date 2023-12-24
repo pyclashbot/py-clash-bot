@@ -151,6 +151,40 @@ def collect_weekly_bonus(vm_index, logger) -> bool:
     return True
 
 
+def check_if_daily_rewards_button_exists(vm_index) -> bool:
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[181][17],
+        iar[210][48],
+        iar[200][36],
+        iar[195][26],
+        iar[205][63],
+        iar[215][45],
+        iar[226][31],
+        iar[216][55],
+        iar[236][66],
+    ]
+
+    colors = [
+        [111, 75, 13],
+        [136, 90, 23],
+        [129, 91, 20],
+        [118, 84, 16],
+        [152, 102, 33],
+        [132, 88, 21],
+        [136, 96, 25],
+        [147, 98, 27],
+        [158, 101, 33],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=35):
+            return True
+
+    return False
+
+
 def collect_all_daily_rewards(vm_index, logger):
     # if not on clash main, reutrn False
     if not check_if_on_clash_main_menu(vm_index):
@@ -158,6 +192,11 @@ def collect_all_daily_rewards(vm_index, logger):
             "Not on clash main at start of collect_daily_rewards(). Returning False"
         )
         return False
+
+    # if daily rewards button doesnt exist, reutnr True
+    if not check_if_daily_rewards_button_exists(vm_index):
+        logger.change_status("Daily rewards button doesn't exist")
+        return True
 
     # check which rewards are available
     rewards = check_which_rewards_are_available(vm_index, logger)
@@ -249,4 +288,4 @@ if __name__ == "__main__":
     vm_index = 12
     logger = Logger()
 
-
+    print(check_if_daily_rewards_button_exists(vm_index))
