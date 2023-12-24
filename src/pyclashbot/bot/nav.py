@@ -9,7 +9,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click,  screenshot, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 _2V2_START_WAIT_TIMEOUT = 120  # s
@@ -125,7 +125,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
     _2v2_start_wait_start_time = time.time()
 
     while time.time() - _2v2_start_wait_start_time < _2V2_START_WAIT_TIMEOUT:
-        time_taken =str(time.time() - _2v2_start_wait_start_time)[:4]
+        time_taken = str(time.time() - _2v2_start_wait_start_time)[:4]
         logger.change_status(
             status=f"Waiting for 2v2 battle to start for {time_taken}s"
         )
@@ -226,7 +226,6 @@ def check_if_in_battle(vm_index) -> bool:
             return False
 
     return True
-
 
 
 def get_to_clash_main_from_clan_page(
@@ -745,7 +744,7 @@ def get_to_card_page_from_clash_main(
 
 
 def check_if_on_card_page2(vm_index):
-    iar= numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot(vm_index))
     pixels = [
         iar[115][158],
         iar[117][245],
@@ -754,15 +753,36 @@ def check_if_on_card_page2(vm_index):
     ]
 
     colors = [
-[129 , 78,  32],
-[225 ,200, 177],
-[189 ,179, 179],
-[235 ,  1, 240],
+        [129, 78, 32],
+        [225, 200, 177],
+        [189, 179, 179],
+        [235, 1, 240],
     ]
 
-    for i,p in enumerate(pixels):
+    for i, p in enumerate(pixels):
         # print(p)
-        if not pixel_is_equal(p,colors[i],tol=15):
+        if not pixel_is_equal(p, colors[i], tol=15):
+            return False
+    return True
+
+
+def check_if_on_card_page3(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[477][57],
+        iar[126][35],
+        iar[126][329],
+    ]
+
+    colors = [
+        [237, 0, 245],
+        [201, 81, 1],
+        [201, 82, 0],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
 
@@ -779,9 +799,12 @@ def check_if_on_card_page(vm_index) -> bool:
         bool: True if the bot is on the card page, False otherwise.
     """
 
+    #some pixel checks for card pages of newer accounts
     if check_if_on_card_page2(vm_index):
         return True
-
+    
+    if check_if_on_card_page3(vm_index):
+        return True
 
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
@@ -793,15 +816,15 @@ def check_if_on_card_page(vm_index) -> bool:
     ]
 
     colors = [
-[150,  62,   4],
-[165 , 75,   2],
-[255, 238, 230],
-[232,   0, 248],
-[214,   2, 226],
+        [150, 62, 4],
+        [165, 75, 2],
+        [255, 238, 230],
+        [232, 0, 248],
+        [214, 2, 226],
     ]
 
     for i, p in enumerate(pixels):
-        if not pixel_is_equal(colors[i],p,tol=15):
+        if not pixel_is_equal(colors[i], p, tol=15):
             return False
 
     return True
@@ -1230,8 +1253,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-
-
-    get_to_card_page_from_clash_main(
-    12, Logger(), True
-)
+    print(check_if_on_card_page(12))
