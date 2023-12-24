@@ -479,11 +479,7 @@ class Logger:
         chest_unlock_attempts = self.chest_unlock_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if chest_unlock_attempts is zero return true
         if chest_unlock_attempts == 0:
@@ -524,11 +520,7 @@ class Logger:
         card_mastery_attempts = self.card_mastery_reward_collection_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if card_mastery_reward_collection_attempts is zero return true
         if card_mastery_attempts == 0:
@@ -566,11 +558,7 @@ class Logger:
         war_attempts = self.war_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if war_attempts is zero return true
         if war_attempts == 0:
@@ -603,11 +591,7 @@ class Logger:
         card_upgrade_attempts = self.card_upgrade_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if card_upgrade_attempts is zero return true
         if card_upgrade_attempts == 0:
@@ -645,11 +629,7 @@ class Logger:
         request_attempts = self.request_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if request_attempts is zero return true
         if request_attempts == 0:
@@ -685,11 +665,7 @@ class Logger:
         donate_attempts = self.donate_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if request_attempts is zero return true
         if donate_attempts == 0:
@@ -728,11 +704,7 @@ class Logger:
         shop_buy_attempts = self.shop_buy_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if shop_buy_attempts is zero return true
         if shop_buy_attempts == 0:
@@ -773,11 +745,7 @@ class Logger:
         battlepass_collect_attempts = self.battlepass_collect_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if shop_buy_attempts is zero return true
         if battlepass_collect_attempts == 0:
@@ -818,11 +786,7 @@ class Logger:
         daily_reward_attempts = self.daily_reward_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if daily_reward_attempts is zero return true
         if daily_reward_attempts == 0:
@@ -863,11 +827,7 @@ class Logger:
         deck_randomize_attempts = self.deck_randomize_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if deck_randomize_attempts is zero return true
         if deck_randomize_attempts == 0:
@@ -907,11 +867,7 @@ class Logger:
         switch_account_attempts = self.switch_account_attempts
 
         # count games
-        games_played = (
-            round_down_int(self._1v1_fights + self._2v2_fights + self.war_fights)
-            / self.total_accounts
-            / self.total_accounts
-        )
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
         # if games_played or deck_randomize_attempts is zero return true
         if games_played == 0:
