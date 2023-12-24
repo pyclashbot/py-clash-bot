@@ -116,6 +116,17 @@ def check_if_windows_apart():
 
     return False
 
+
+def check_if_sizes_different():
+    gui_height = get_window_size(GUI_NAME)[1]
+    memu_height = get_window_size(MEMU_CLIENT_NAME)[1]
+
+    #if height is off by 10 either way, reutrn True
+    if abs(gui_height - memu_height) > 10:
+        return True
+
+    return False
+
 def memu_dock_mode():
     current_pos = None
     while not stop_threads.is_set():
@@ -123,7 +134,7 @@ def memu_dock_mode():
             if current_pos is None:
                 current_pos = get_window_position(GUI_NAME)
 
-            if current_pos != get_window_position(GUI_NAME) or check_if_windows_apart():
+            if current_pos != get_window_position(GUI_NAME) or check_if_windows_apart() or check_if_sizes_different():
                 current_pos = get_window_position(GUI_NAME)
                 resize_memu_based_on_gui()
                 attach_memu_to_gui()
