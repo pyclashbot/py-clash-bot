@@ -14,7 +14,7 @@ from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
-
+from PySimpleGUI import Window
 
 initalize_pylogging()
 
@@ -249,7 +249,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
     )
 
 
-def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
+def start_button_event(logger: Logger, window:Window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -258,6 +258,9 @@ def start_button_event(logger: Logger, window, values) -> WorkerThread | None:
     returns:
         None
     """
+
+    #print window layout
+    window['Stats'].select()
 
     # make job dictionary
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
@@ -384,6 +387,9 @@ def handle_thread_finished(
 
 def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
     """method for displaying the main gui"""
+
+
+
     # create gui window
     window = create_window()
 

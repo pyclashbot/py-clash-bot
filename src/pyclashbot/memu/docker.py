@@ -1,155 +1,118 @@
-import win32gui
-import time
 import threading
+
+import pygetwindow as gw
 
 GUI_NAME = "py-clash-bot | dev"
 MEMU_CLIENT_NAME = "(pyclashbot-96)"
+CLANSPAM_NAME = "(clanspam-11)"
 
-# Define a threading.Event to signal when to stop the threads
-stop_threads = threading.Event()
+def get_window_pos(name):
+    try:
+        window = gw.getWindowsWithTitle(name)[0]
+        return window.topleft
+    except IndexError:
+        return None
 
+def move_window(name,x,y):
+    try:
+        window = gw.getWindowsWithTitle(name)[0]
+        window.moveTo(x,y)
+    except IndexError:
+        return None
 
-def get_window_position(window_name):
-    hwnd = win32gui.FindWindow(None, window_name)
-    if hwnd:
-        rect = win32gui.GetWindowRect(hwnd)
-        x, y = rect[0], rect[1]
-        return x, y
-    else:
+def get_window_size(name):
+    try:
+        window = gw.getWindowsWithTitle(name)[0]
+        return window.size
+    except IndexError:
         return None
 
 
-def move_window(window_name, new_x, new_y):
-    hwnd = win32gui.FindWindow(None, window_name)
-    w, h = get_window_size(window_name)
-    if hwnd:
-        win32gui.MoveWindow(hwnd, new_x, new_y, w, h, True)
-        return True
-    else:
-        return False
-
-
-def resize_window(window_name, new_width, new_height):
-    hwnd = win32gui.FindWindow(None, window_name)
-    if hwnd:
-        win32gui.MoveWindow(hwnd, 0, 0, new_width, new_height, True)
-        return True
-    else:
-        return False
-
-
-def get_window_size(window_name):
-    hwnd = win32gui.FindWindow(None, window_name)
-    if hwnd:
-        rect = win32gui.GetWindowRect(hwnd)
-        width, height = rect[2] - rect[0], rect[3] - rect[1]
-        return width, height
-    else:
+def resize_window(name,w,h):
+    try:
+        window = gw.getWindowsWithTitle(name)[0]
+        window.resizeTo(w,h)
+    except IndexError:
         return None
 
 
-def attach_memu_to_gui():
-    # get pos of gui
-    pos = get_window_position(GUI_NAME)
-
-    # get width of gui
-    width, height = get_window_size(GUI_NAME)
-
-    # calculate topright coord of gui
-    rightmost_x = pos[0] + width - 7
-
-    move_window(MEMU_CLIENT_NAME, rightmost_x, pos[1])
-
-
-def make_new_memu_res(height):
-    ratio = 0.6326836581709145
-
-    width = int(height * ratio)
-
-    return width, height
-
-
-def resize_memu_based_on_gui():
-    # gui size
-    width, height = get_window_size(GUI_NAME)
-
-    # make new memu res
-    new_width, new_height = make_new_memu_res(height)
-
-    # subtract 5 from new_height
-    new_height -= 5
-
-    # resize memu
-    resize_window(MEMU_CLIENT_NAME, new_width, new_height)
-
-
-def check_memu_windows_orientation():
-    gui_pos = get_window_position(GUI_NAME)
+def dock_memu():
+    gui_topleft = get_window_pos(GUI_NAME)
     gui_size = get_window_size(GUI_NAME)
-    memu_pos = get_window_position(MEMU_CLIENT_NAME)
+    gui_width = gui_size[0]
+    gui_topright = (gui_topleft[0]+gui_width,gui_topleft[1])
 
-    #calculate topright of gui
-    topright = (gui_pos[0] + gui_size[0], gui_pos[1])
+    gui_topright = (gui_topright[0]-7,gui_topright[1])
 
-    #calculate topleft of memu
-    topleft = (memu_pos[0], memu_pos[1])
+    move_window(MEMU_CLIENT_NAME,gui_topright[0],gui_topright[1])
 
-    #if either axis is off by more than 10, return False
-    if abs(topright[0] - topleft[0]) > 10 or abs(topright[1] - topleft[1]) > 10:
+
+def resize_memu():
+    ratio = 0.6326836581709145
+    gui_size = get_window_size(GUI_NAME)
+
+    new_height = gui_size[1] - 7
+
+    new_width = int(new_height*ratio)
+
+    resize_window(MEMU_CLIENT_NAME,new_width,new_height)
+
+
+def check_sizing():
+    gui_size = get_window_size(GUI_NAME)
+    memu_size = get_window_size(MEMU_CLIENT_NAME)
+
+    gui_height = gui_size[1]
+    memu_height = memu_size[1]
+
+    # print(gui_height,memu_height)
+
+    value = abs(gui_height - memu_height - 8)
+
+    if value > 4:
+        return False
+    return True
+
+
+def check_position():
+    gui_topleft = get_window_pos(GUI_NAME)
+    gui_size = get_window_size(GUI_NAME)
+    gui_width = gui_size[0]
+    gui_topright = (gui_topleft[0]+gui_width,gui_topleft[1])
+
+    memu_topleft = get_window_pos(MEMU_CLIENT_NAME)
+
+    memu_topleft = (memu_topleft[0]+7, memu_topleft[1])
+
+
+    x_diff = abs(gui_topright[0] - memu_topleft[0])
+    y_diff = abs(gui_topright[1] - memu_topleft[1])
+
+    if x_diff > 4 or y_diff > 4:
         return False
 
     return True
 
 
-def check_if_windows_apart():
-    gui_pos = get_window_position(GUI_NAME)
 
-    memu_topleft = get_window_position(MEMU_CLIENT_NAME)
-
-    gui_size = get_window_size(GUI_NAME)
-
-    gui_topright = (gui_pos[0] + gui_size[0], gui_pos[1])
-
-    #if either axis is off by more than 10, return False
-    if abs(gui_topright[0] - memu_topleft[0]) > 10 or abs(gui_topright[1] - memu_topleft[1]) > 10:
-        return True
-
-    return False
-
-
-def check_if_sizes_different():
-    gui_height = get_window_size(GUI_NAME)[1]
-    memu_height = get_window_size(MEMU_CLIENT_NAME)[1]
-
-    #if height is off by 10 either way, reutrn True
-    if abs(gui_height - memu_height) > 10:
-        return True
-
-    return False
-
-def memu_dock_mode():
-    current_pos = None
-    while not stop_threads.is_set():
+def docker_main():
+    while 1:
         try:
-            if current_pos is None:
-                current_pos = get_window_position(GUI_NAME)
-
-            if current_pos != get_window_position(GUI_NAME) or check_if_windows_apart() or check_if_sizes_different():
-                current_pos = get_window_position(GUI_NAME)
-                resize_memu_based_on_gui()
-                attach_memu_to_gui()
-                time.sleep(0.1)
+            if not check_sizing():
+                resize_memu()
+            if not check_position():
+                dock_memu()
         except:
             pass
 
+
+
 def start_memu_dock_mode():
-    print('Starting memu attach mode!')
-    threading.Thread(target=memu_dock_mode).start()
+    print('Starting memu docking!')
+    threading.Thread(target=docker_main).start()
 
 
 
 
 if __name__ == "__main__":
-    while 1:
-        pos = get_window_position(GUI_NAME)
-        print(pos)
+    pass
