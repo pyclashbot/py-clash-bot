@@ -89,7 +89,7 @@ def check_if_on_battlepass_page(vm_index):
     return True
 
 
-def collect_battlepass(vm_index, logger):
+def collect_battlepass(vm_index, logger) -> bool:
     logger.change_status("Collecting battlepass rewards...")
 
     # if not on main to begin, return False

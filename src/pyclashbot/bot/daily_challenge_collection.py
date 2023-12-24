@@ -76,7 +76,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     # click deadspace a bunch
     deadspace_clicks = 5
     if rewards[1]:
-        deadspace_clicks = 10
+        deadspace_clicks = 15
     click(vm_index, 15, 290, clicks=deadspace_clicks, interval=0.33)
 
     # if not on clash main, reutrn False
@@ -108,7 +108,7 @@ def collect_daily_bonus(vm_index, logger) -> bool:
     time.sleep(1)
 
     # click deadspace a bunch
-    click(vm_index, 10, 300, clicks=10, interval=1)
+    click(vm_index, 10, 300, clicks=15, interval=1)
 
     # if not on clash main, retunr False
     if not check_if_on_clash_main_menu(vm_index):
@@ -139,7 +139,7 @@ def collect_weekly_bonus(vm_index, logger) -> bool:
     time.sleep(1)
 
     # click deadspace a bunch
-    click(vm_index, 15, 300, clicks=10, interval=0.33)
+    click(vm_index, 15, 300, clicks=15, interval=0.33)
 
     # if not on clash main, retunr False
     if not check_if_on_clash_main_menu(vm_index):
