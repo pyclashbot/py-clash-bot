@@ -9,7 +9,7 @@ from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.logger import Logger
 import numpy
-from pyclashbot.memu.client import screenshot, click
+from pyclashbot.memu.client import screenshot, click, scroll_up_a_little
 import time
 
 
@@ -132,6 +132,7 @@ def collect_1_battlepass_reward(vm_index, logger):
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
             vm_index, delay=3
         )
+
         if claim_rewards_coord is None:
             logger.change_status(
                 "No claim rewards button, clicking more rewards button"
@@ -139,6 +140,12 @@ def collect_1_battlepass_reward(vm_index, logger):
             click(vm_index, 70, 120)
             time.sleep(3)
             continue
+
+        # if collect coord is too high, scroll a little and continue
+        if claim_rewards_coord[1] < 160:
+            logger.change_status("Claim rewards button too high, scrolling a little")
+            scroll_up_a_little(vm_index)
+            time.sleep(3)
 
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
@@ -225,4 +232,4 @@ if __name__ == "__main__":
     vm_index = 12
     logger = Logger(None)
 
-    print(collect_battlepass_state(vm_index, logger, "next_state"))
+    scroll_up_a_little(vm_index)
