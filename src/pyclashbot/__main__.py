@@ -15,6 +15,7 @@ from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import PausableThread, StoppableThread
 from PySimpleGUI import Window
+from pyclashbot.memu.memu_closer import close_memuc_processes
 
 initalize_pylogging()
 
@@ -42,7 +43,7 @@ def read_window(
 
 def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     """Create a dictionary of job toggles and increments based on the values of the GUI window.
-
+ 
     Args:
         values: A dictionary of the values of the GUI window.
 
@@ -50,8 +51,10 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         A dictionary of job toggles and increments based on the values of the GUI window.
     """
 
-    random_account_switch_list = make_random_account_switching_dict(int(values["account_switching_slider"]))
-    print("random_account_switch_list: ",random_account_switch_list)
+    random_account_switch_list = make_random_account_switching_dict(
+        int(values["account_switching_slider"])
+    )
+    print("random_account_switch_list: ", random_account_switch_list)
 
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
@@ -104,26 +107,24 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switching_slider": int(values["account_switching_slider"]),
         "next_account": 0,
-        "random_account_switch_list":  random_account_switch_list,
+        "random_account_switch_list": random_account_switch_list,
     }
 
     return jobs_dictionary
+
 
 def make_random_account_switching_dict(count):
     old_list = []
     for i in range(count):
         old_list.append(i)
 
-    new_list=  []
+    new_list = []
     while len(new_list) < len(old_list):
         random_choice = random.choice(old_list)
         if random_choice not in new_list:
             new_list.append(random_choice)
 
     return new_list
-
-
-
 
 
 def check_for_invalid_job_increment_input(job_dictionary):
@@ -140,7 +141,7 @@ def check_for_invalid_job_increment_input(job_dictionary):
     items = job_dictionary.items()
 
     for key, value in items:
-        if key == 'random_account_switch_list':
+        if key == "random_account_switch_list":
             continue
 
         # if its a bool then its a good type input
@@ -249,7 +250,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
     )
 
 
-def start_button_event(logger: Logger, window:Window, values) -> WorkerThread | None:
+def start_button_event(logger: Logger, window: Window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -259,8 +260,8 @@ def start_button_event(logger: Logger, window:Window, values) -> WorkerThread | 
         None
     """
 
-    #print window layout
-    window['Stats'].select()
+    # print window layout
+    window["Stats"].select()
 
     # make job dictionary
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
@@ -289,8 +290,10 @@ def start_button_event(logger: Logger, window:Window, values) -> WorkerThread | 
     for key in disable_keys:
         window[key].update(disabled=True)
 
-    # setup the main thread and start it
+    # close existing memuc processes
+    close_memuc_processes()
 
+    # setup the main thread and start it
     thread_args = job_dictionary
     # args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, thread_args)
@@ -388,8 +391,6 @@ def handle_thread_finished(
 def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
     """method for displaying the main gui"""
 
-
-
     # create gui window
     window = create_window()
 
@@ -472,6 +473,3 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 if __name__ == "__main__":
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
-
-
-

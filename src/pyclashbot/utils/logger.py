@@ -116,7 +116,7 @@ class Logger:
         self.cards_upgraded = 0
         self.card_upgrade_attempts = 0
         self.card_mastery_reward_collections = 0
-        self.free_offer_collections = 0
+        self.shop_offer_collections = 0
         self.shop_buy_attempts = 0
         self.battlepass_collect_attempts = 0
         self.chest_unlock_attempts = 0
@@ -168,7 +168,7 @@ class Logger:
                 "cards_played": self.cards_played,
                 "war_fights": self.war_fights,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
-                "free_offer_collections": self.free_offer_collections,
+                "shop_offer_collections": self.shop_offer_collections,
                 "battlepass_collects": self.battlepass_collects,
                 "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
@@ -270,9 +270,9 @@ class Logger:
         self.friendly_crowns += count
 
     @_updates_log
-    def add_free_offer_collection(self) -> None:
+    def add_shop_offer_collection(self) -> None:
         """add level up chest collection to log"""
-        self.free_offer_collections += 1
+        self.shop_offer_collections += 1
 
     @_updates_log
     def error(self, message: str) -> None:
@@ -450,9 +450,9 @@ class Logger:
         """returns logger's cards_played stat"""
         return self.cards_played
 
-    def get_free_offer_collections(self) -> int:
-        """returns logger's free_offer_collections stat"""
-        return self.free_offer_collections
+    def get_shop_offer_collections(self) -> int:
+        """returns logger's shop_offer_collections stat"""
+        return self.shop_offer_collections
 
     def get_requests(self) -> int:
         """returns logger's requests stat"""
