@@ -136,6 +136,8 @@ def state_tree(
 
         accout_index = job_list["next_account"]
 
+
+
         if (
             switch_accounts(
                 vm_index, logger, job_list["random_account_switch_list"][accout_index]
@@ -154,12 +156,8 @@ def state_tree(
         )
 
         # update current account # to GUI
-        current_account = (
-            job_list["next_account"] - 1
-            if job_list["next_account"] > 0
-            else job_list["account_switching_slider"]
-        )
-        logger.change_current_account(current_account)
+        logger.change_current_account(job_list["random_account_switch_list"][accout_index])
+
 
         return next_state
 
