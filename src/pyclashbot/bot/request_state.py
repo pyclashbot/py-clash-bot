@@ -1,14 +1,12 @@
-import math
 import random
 import time
-from typing import Any, Literal
+from typing import Literal
 
 import numpy
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
-    get_to_clash_main_from_clan_page,
     get_to_profile_page,
     wait_for_clash_main_menu,
 )
@@ -24,7 +22,6 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import (
     click,
     screenshot,
-    scroll_down,
     scroll_up,
     scroll_down_in_request_page,
 )
@@ -98,22 +95,21 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     Returns:
         str: The next state to transition to after this state is complete.
     """
-    logger.change_status(status="Request state")
+    logger.change_status(status="Doing request state!")
     logger.add_request_attempt()
 
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Not on clash main for the start of request_state()")
-        logger.log(
-            f"There are the pixels the bot saw after failing to find clash main:"
-        )
+        logger.log("There are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
         return "restart"
 
     # if not in a clan, return
+    logger.change_status("Checking if in a clan before requesting")
     in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
     if in_a_clan_return == "restart":
         logger.change_status(status="Error 05708425 Failure with check_if_in_a_clan")
@@ -123,6 +119,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         return next_state
 
     # get to clan page
+    logger.change_status("Getting to clan tab to request a card")
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(status="ERROR 74842744443 Not on clan tab")
         return "restart"
@@ -440,7 +437,6 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger(None)
-
-    print(check_if_can_request_wrapper(vm_index))
+    # vm_index = 12
+    # logger = Logger(None)
+    pass
