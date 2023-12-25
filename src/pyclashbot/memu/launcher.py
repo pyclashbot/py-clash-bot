@@ -10,14 +10,12 @@ import sys
 import time
 from os.path import join
 
-import numpy
 import psutil
 import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import wait_for_clash_main_menu
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import screenshot
+from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
 
@@ -182,54 +180,6 @@ def rename_vm(
     pmc.rename_vm(vm_index=vm_index, new_name=name)
 
 
-def set_vm_language(vm_index: int):
-    """Set the language of the vm to english"""
-    settings_uri = "--uri content://settings/system"
-    set_language_commands = [
-        f"shell content query {settings_uri} --where \"name='system_locales'\"",
-        f"shell content delete {settings_uri} --where \"name='system_locales'\"",
-        f"shell content insert {settings_uri} --bind name:s:system_locales --bind value:s:en-US",
-        "shell setprop ctl.restart zygote",
-    ]
-
-    for command in set_language_commands:
-        pmc.send_adb_command_vm(vm_index=vm_index, command=command)
-        time.sleep(0.33)
-
-
-def configure_vm(vm_index):
-    """Configure the virtual machine with the given index."""
-    # Add your code here
-    cpu_count: int = psutil.cpu_count(logical=False)
-    cpu_count: int = numpy.clip(cpu_count // 2, 2, 6)
-    total_mem = psutil.virtual_memory()[0] // 1024 // 1024
-    total_mem: int = numpy.clip(total_mem // 2, 2048, 4096)
-
-    # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
-    configuration: dict[str, str] = {
-        "start_window_mode": "1",  # remember window position
-        "win_scaling_percent2": "100",  # 100% scaling
-        "is_customed_resolution": "1",
-        "resolution_width": "419",
-        "resolution_height": "633",
-        "vbox_dpi": "160",
-        "cpucap": "50",
-        "cpus": str(cpu_count),
-        "memory": str(total_mem),
-        "fps": "30",
-        "turbo_mode": "0",
-        "enable_audio": "0",
-        "is_hide_toolbar": "1",
-    }
-
-    for key, value in configuration.items():
-        pmc.set_configuration_vm(key, value, vm_index=vm_index)
-
-    set_vm_language(vm_index=vm_index)
-    set_vm_language(vm_index=vm_index)
-    set_vm_language(vm_index=vm_index)
-
-
 # emulator interaction methods
 
 
@@ -268,39 +218,6 @@ def home_button_press(vm_index, clicks=4):
         time.sleep(1)
 
 
-def check_if_clash_banned(vm_index):
-    """Check if Clash of Clans is banned on the virtual machine with the given index."""
-    # Add your code here
-    iar = numpy.asarray(screenshot(vm_index))
-
-    red_okay_text_exists = False
-    for x_index in range(140, 190):
-        this_pixel = iar[405][x_index]
-        if pixel_is_equal([252, 67, 69], this_pixel, tol=35):
-            red_okay_text_exists = True
-            break
-
-    blue_loading_bar_exists = False
-    for x_index in range(40, 120):
-        this_pixel = iar[623][x_index]
-        if pixel_is_equal([25, 113, 214], this_pixel, tol=35):
-            blue_loading_bar_exists = True
-            break
-
-    white_account_information_text_exists = False
-    for x_index in range(100, 180):
-        this_pixel = iar[209][x_index]
-        if pixel_is_equal([255, 255, 255], this_pixel, tol=35):
-            white_account_information_text_exists = True
-            break
-
-    return bool(
-        red_okay_text_exists
-        and blue_loading_bar_exists
-        and white_account_information_text_exists
-    )
-
-
 # starting/closing memu vms/apps
 
 
@@ -315,7 +232,6 @@ def launch_vm(logger, vm_index):
     """Launches the VM with the given index."""
     logger.change_status(status=f"Launching VM {vm_index}")
     pmc.start_vm(vm_index=vm_index)
-    set_vm_language(vm_index=vm_index)
 
 
 def restart_vm(logger, vm_index):
