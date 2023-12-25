@@ -3,10 +3,13 @@ A module for getting screenshots from Memu VMs.
 """
 import atexit
 import time
-import numpy as np
-from adbblitz import AdbShotTCP
 
-from pyclashbot.memu.pmc import pmc, adb_path
+import cv2
+import numpy as np
+from adbnativeblitz import AdbFastScreenshots
+
+from pyclashbot.memu.configure import MEMU_CONFIGURATION
+from pyclashbot.memu.pmc import adb_path, pmc
 
 
 class ScreenShotter:
@@ -22,24 +25,44 @@ class ScreenShotter:
     """
 
     def __init__(self):
-        self.connections: dict[int, AdbShotTCP] = {}
+        self.connections: dict[int, AdbFastScreenshots] = {}
+        self.height = int(MEMU_CONFIGURATION["resolution_width"])
+        self.width = int(MEMU_CONFIGURATION["resolution_height"])
+
+    def _crop_image(self, image: np.ndarray) -> np.ndarray:
+        return image[:, 500:1100, :]
+
+    def _resize_image(self, image: np.ndarray) -> np.ndarray:
+        return cv2.resize(image, (self.height, self.width))  # pylint: disable=no-member
 
     def __getitem__(self, vm_index: int) -> np.ndarray:
         if vm_index not in self.connections:
-            # host, port = pmc.get_adb_connection(vm_index=vm_index)
-            outputs = pmc.get_adb_connection(vm_index=vm_index)
-            host,port = outputs
-            self.connections[vm_index] = AdbShotTCP(
+            host, port = pmc.get_adb_connection(vm_index=vm_index)
+            self.connections[vm_index] = AdbFastScreenshots(
                 device_serial=f"{host}:{port}",
                 adb_path=adb_path,
-                log_level="ERROR",
             )
+            # pylint: disable=protected-access
+            self.connections[vm_index]._start_capturing()
+
         time.sleep(0.01)
-        return np.array(self.connections[vm_index].get_one_screenshot())
+        while not self.connections[vm_index].stop_recording:
+            if not self.connections[vm_index].lastframes:
+                # print("no frames yet")
+                time.sleep(0.005)
+                continue
+            image = self.connections[vm_index].lastframes[-1].copy()
+
+            # Crop and resize image (adbblitz returns a 1600x900 image and its scaling doesn't work)
+            image = self._crop_image(image)
+            image = self._resize_image(image)
+            return image
+        raise RuntimeError("Failed to get screenshot, is the connection open?")
 
     def __del__(self):
         for conn in self.connections.values():
-            conn.quit()
+            conn.stop_recording = True
+            conn.stop_capture()
 
 
 screen_shotter = ScreenShotter()
