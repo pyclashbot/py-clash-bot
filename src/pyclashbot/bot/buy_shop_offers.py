@@ -20,6 +20,7 @@ import numpy
 from pyclashbot.utils.logger import Logger
 from pyclashbot.detection.image_rec import pixel_is_equal
 
+
 def search_for_free_purchases(vm_index):
     """method to find the free offer icon image in the shop pages"""
 
@@ -106,7 +107,7 @@ def buy_offers_from_this_shop_page(
 
 
 def check_if_on_shop_page(vm_index):
-    iar= numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
         iar[582][19],
@@ -114,9 +115,9 @@ def check_if_on_shop_page(vm_index):
         iar[595][13],
     ]
     colors = [
-[139,72,105],
-[145,76,111],
-[143,74,109],
+[138 ,103,  70],
+[143 ,109,  74],
+[142 ,108,  73],
     ]
 
     for i, p in enumerate(pixels):
@@ -124,7 +125,6 @@ def check_if_on_shop_page(vm_index):
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
-
 
 
 def buy_shop_offers_state(
@@ -154,6 +154,9 @@ def buy_shop_offers_state(
         return "restart"
 
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
+
+    purchase_total = 0
+
     start_time = time.time()
     timeout = 25
     logger.change_status("Starting to buy offers")
@@ -173,8 +176,13 @@ def buy_shop_offers_state(
                 )
                 is True
             ):
+                purchase_total+=1
                 logger.change_status("Bought an offer from the shop!")
                 start_time = time.time()
+
+            #if purchase total exceeds 6, then it's done
+            if purchase_total > 6:
+                break
 
     # get to clash main from shop page
     click(vm_index, 245, 596)
@@ -189,4 +197,7 @@ def buy_shop_offers_state(
 
 
 if __name__ == "__main__":
-    pass
+    vm_index = 12
+    logger = Logger()
+
+    while 1:print(check_if_on_shop_page(vm_index))
