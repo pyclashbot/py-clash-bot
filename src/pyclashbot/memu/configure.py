@@ -6,15 +6,15 @@ import time
 
 import numpy
 import psutil
+from pymemuc import ConfigKeys
 
 from pyclashbot.memu.pmc import pmc
-
 
 cpu_count: int = psutil.cpu_count(logical=False)
 total_mem = psutil.virtual_memory()[0] // 1024 // 1024
 
 # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
-MEMU_CONFIGURATION: dict[str, str | int | float] = {
+MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
     "start_window_mode": 1,  # remember window position
     "win_scaling_percent2": 100,  # 100% scaling
     "is_customed_resolution": 1,
