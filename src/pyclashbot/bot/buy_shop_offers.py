@@ -15,9 +15,10 @@ from pyclashbot.memu.client import (
     click,
     scroll_down_slowly_in_shop_page,
 )
+import numpy
 
 from pyclashbot.utils.logger import Logger
-
+from pyclashbot.detection.image_rec import pixel_is_equal
 
 def search_for_free_purchases(vm_index):
     """method to find the free offer icon image in the shop pages"""
@@ -71,7 +72,9 @@ def search_for_gold_purchases(vm_index):
     return [coord[1], coord[0]]
 
 
-def buy_offers_from_this_shop_page(vm_index, gold_buy_toggle, free_offers_toggle):
+def buy_offers_from_this_shop_page(
+    vm_index, logger, gold_buy_toggle, free_offers_toggle
+):
     coord = None
 
     if gold_buy_toggle:
@@ -92,12 +95,36 @@ def buy_offers_from_this_shop_page(vm_index, gold_buy_toggle, free_offers_toggle
     # click the second 'buy' button
     click(vm_index, 200, 433)
     click(vm_index, 204, 394)
+    logger.add_shop_offer_collection()
     time.sleep(2)
 
     # click deadspace to close this offer
-    click(vm_index, 15, 200, clicks=10)
-    time.sleep(1)
+    while not check_if_on_shop_page(vm_index):
+        click(vm_index, 15, 200)
+
     return True
+
+
+def check_if_on_shop_page(vm_index):
+    iar= numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[582][19],
+        iar[599][108],
+        iar[595][13],
+    ]
+    colors = [
+[139,72,105],
+[145,76,111],
+[143,74,109],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=10):
+            return False
+    return True
+
 
 
 def buy_shop_offers_state(
@@ -135,20 +162,19 @@ def buy_shop_offers_state(
             break
 
         # scroll a little
-        logger.change_status('Searching for offers to buy')
+        logger.change_status("Searching for offers to buy")
         scroll_down_slowly_in_shop_page(vm_index)
         time.sleep(0.33)
 
         if gold_buy_toggle:
             while (
                 buy_offers_from_this_shop_page(
-                    vm_index, gold_buy_toggle, free_offers_toggle
+                    vm_index, logger, gold_buy_toggle, free_offers_toggle
                 )
                 is True
             ):
                 logger.change_status("Bought an offer from the shop!")
-                start_time=time.time()
-                logger.add_shop_buy()
+                start_time = time.time()
 
     # get to clash main from shop page
     click(vm_index, 245, 596)
