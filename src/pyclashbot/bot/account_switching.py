@@ -1,8 +1,13 @@
 import time
 import numpy
 
-from pyclashbot.bot.nav import check_if_on_clash_main_menu, wait_for_clash_main_menu
-from pyclashbot.memu.client import click,  custom_swipe, screenshot
+from pyclashbot.bot.nav import (
+    check_for_trophy_reward_menu,
+    check_if_on_clash_main_menu,
+    handle_trophy_reward_menu,
+    wait_for_clash_main_menu,
+)
+from pyclashbot.memu.client import click, custom_swipe, screenshot
 from pyclashbot.utils.logger import Logger
 from pyclashbot.detection.image_rec import pixel_is_equal
 
@@ -97,6 +102,10 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
     if wait_for_clash_main_menu(vm_index, logger) is False:
         return False
     time.sleep(4)
+
+    if check_for_trophy_reward_menu(vm_index):
+        handle_trophy_reward_menu(vm_index, logger, printmode=False)
+        time.sleep(2)
 
     logger.change_status(f"Switched to account #{account_index_to_switch_to}")
     logger.increment_account_switches()
