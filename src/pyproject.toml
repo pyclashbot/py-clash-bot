@@ -24,8 +24,8 @@ pysimplegui = "^4.60.5"
 pymemuc = "^0.5.2"
 psutil = "^5.9.6"
 requests = "^2.31.0"
-adbblitz = "^0.10"
 pygetwindow = "^0.0.9"
+adbnativeblitz = "^0.11"
 
 
 [tool.poetry.group.build]
@@ -48,6 +48,8 @@ vulture = "^2.10"
 isort = "^5.13.0"
 prospector = "^1.10.3"
 poethepoet = "^0.24.4"
+decorator = "^5.1.1"
+matplotlib = "^3.8.2"
 
 
 [tool.poe.tasks.build-dist]
