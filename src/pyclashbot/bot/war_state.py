@@ -6,6 +6,8 @@ from typing import Literal
 import numpy
 
 from pyclashbot.bot.nav import (
+    check_for_trophy_reward_menu,
+    handle_trophy_reward_menu,
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
     get_to_clash_main_from_clan_page,
@@ -39,7 +41,7 @@ START_WAR_BATTLE_BUTTON_COORD = (267, 410)
 LEAVE_WAR_BATTLE_BUTTON_COORD = (204, 553)
 WAR_PAGE_DEADSPACE_COORD = (15, 315)
 POST_WAR_FIGHT_WAIT = 10  # seconds
-WAR_BATTLE_TIMEOUT = 240  # seconds
+WAR_BATTLE_TIMEOUT = 360  # seconds
 WAR_BATTLE_START_TIMEOUT = 120  # seconds
 FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT = 60  # seconds
 
@@ -73,9 +75,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Error 4848 Not on calshmain for start of war_state()")
-        logger.log(
-            "These are the pixels the bot saw after failing to find clash main:"
-        )
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -109,11 +109,31 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
         logger.log("Error 86868243 Took too long to get to clan tab from clash main")
         return "restart"
 
-    # find battle icon
+    # find and click battle icon
     logger.log("Finding a battle icon")
-    if find_and_click_war_battle_icon(vm_index, logger) == "restart":
+    find_battle_return = find_and_click_war_battle_icon(vm_index, logger)
+
+    # handle failure to find battle icon
+    if find_battle_return == "restart":
         logger.log("Error 989 Failed clicking a war battle icon. Restarting")
         return "restart"
+
+    # handle locked war battle
+    if find_battle_return == "locked":
+        click(vm_index, 175, 600)
+
+        time.sleep(3)
+
+        if check_for_trophy_reward_menu(vm_index):
+            handle_trophy_reward_menu(vm_index, logger)
+            time.sleep(3)
+
+        if check_if_on_clash_main_menu(vm_index) is not True:
+            logger.change_status("Failed to get to clash main after seeing locked war.")
+            return "restart"
+
+        return next_state
+
     time.sleep(3)
 
     # make deck if needed
@@ -300,6 +320,31 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made dec
     return "made deck"
 
 
+def check_for_locked_clan_war_screen(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[292][125],
+        iar[292][281],
+        iar[586][238],
+        iar[589][317],
+        iar[196][215],
+    ]
+
+    colors = [
+        [254, 80, 141],
+        [252, 78, 139],
+        [138, 103, 70],
+        [140, 105, 72],
+        [121, 0, 255],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=10):
+            return False
+    return True
+
+
 def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good"]:
     """method to cycle through the various clan
     pages while searching for a war battle icon to click"""
@@ -308,6 +353,10 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
     # FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT
 
     while time.time() - start_time < FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
+        if check_for_locked_clan_war_screen(vm_index):
+            logger.change_status("Clan war is locked. Skipping war battle...")
+            return "locked"
+
         coord = find_war_battle_icon(vm_index)
 
         if coord is None:
@@ -419,4 +468,4 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    print(check_for_locked_clan_war_screen(12))

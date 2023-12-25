@@ -392,7 +392,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
             elixer_wait_return: Literal[
                 "restart", "no battle", "good"
-            ] = wait_for_6_elixer(vm_index, logger)
+            ] = wait_for_4_elixer(vm_index, logger)
 
             if elixer_wait_return == "restart":
                 logger.change_status(
@@ -489,7 +489,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         logger.log("Waiting for 6 elixer")
 
         _6_elixer_wait_start_time = time.time()
-        elixer_wait_return = wait_for_6_elixer(vm_index, logger)
+        elixer_wait_return = wait_for_4_elixer(vm_index, logger)
         logger.change_status(
             f"Waited {str(time.time() - _6_elixer_wait_start_time)[:5]}s for 6 elixer"
         )
