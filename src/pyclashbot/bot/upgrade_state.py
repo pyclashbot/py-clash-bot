@@ -243,23 +243,23 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
 
 
 def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
+    # print(f'Pixel is: {pixel}')
+
     r = pixel[0]
     g = pixel[1]
     b = pixel[2]
 
+
+    #if more than 90 red, return False
     if r > 90:
         return False
-    if r < 40:
+
+    #if g is less than 200, return False
+    if g < 200:
         return False
 
-    if g > 240:
-        return False
-    if g < 210:
-        return False
-
+    #if more than 80 blue, return False
     if b > 80:
-        return False
-    if b < 40:
         return False
 
     return True
@@ -309,6 +309,7 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
                 numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]
             )
         )
+        # print(bool_list[-1])
 
     # deadspace click
     click(vm_index, 14, 286)
@@ -316,8 +317,15 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
     return bool_list
 
 
+
 if __name__ == "__main__":
     logger = Logger()
-    vm_index = 11
+    vm_index = 12
 
-    upgrade_cards_state(vm_index, logger, "next_state")
+    # upgrade_cards_state(vm_index, logger, "next_state")
+
+    upgrade_list = get_upgradable_card_bool_list(vm_index, logger)
+    for i,u in enumerate(upgrade_list):
+        print(u)
+        if i == 3:
+            print('\n')

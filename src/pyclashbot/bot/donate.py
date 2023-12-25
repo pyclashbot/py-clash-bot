@@ -158,7 +158,7 @@ def find_donate_buttons(vm_index):
         except:
             pass
 
-    print(f"Finished find_donate_buttons() in {time.time() - start_time:5}s")
+    print(f"Finished find_donate_buttons() in {str(time.time() - start_time):5}s")
     return condense_coordinates(coords, distance_threshold=15)
 
 

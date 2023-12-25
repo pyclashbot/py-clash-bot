@@ -550,6 +550,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # increment plays counter
         plays += 1
+        time.sleep(0.33)
 
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} ht")
@@ -884,30 +885,44 @@ def get_to_main_after_fight(vm_index, logger, next_state):
             logger.log("took too long to get to clash main after a fight")
             return "restart"
 
+        # if on main, we're done
+        if check_if_on_clash_main_menu(vm_index) is True:
+            logger.log("Made it to clash main after a fight")
+            break
+
         # if on end of 2v2 battle screen, click EXIT
-        handle_end_2v2_battle_condition_1(vm_index, logger)
+        if handle_end_2v2_battle_condition_1(vm_index, logger):
+            time.sleep(1)
+            continue
 
         # if on end of 2v2 battle screen c2, click OK
-        handle_end_2v2_battle_condition_2(vm_index, logger)
+        if handle_end_2v2_battle_condition_2(vm_index, logger):
+            time.sleep(1)
+            continue
 
         # if on end of 2v2 battle screen c3, click OK
-        handle_end_2v2_battle_condition_3(logger, vm_index)
+        if handle_end_2v2_battle_condition_3(logger, vm_index):
+            time.sleep(1)
+            continue
 
         # if on end of 1v1 battle screen c1, click OK
-        handle_end_1v1_battle_condition_1(vm_index, logger)
+        if handle_end_1v1_battle_condition_1(vm_index, logger):
+            time.sleep(1)
+            continue
 
         # if on end of 1v1 battle screen c2, click OK
-        handle_end_1v1_battle_condition_2(vm_index, logger)
+        if handle_end_1v1_battle_condition_2(vm_index, logger):
+            time.sleep(1)
+            continue
 
         # if on challenges tab, click clash main tab
         if check_if_on_clash_main_challenges_tab(vm_index):
             logger.log("On challenges tab so clicking clash main icon")
             click(vm_index, 173, 591)
+            time.sleep(1)
+            continue
 
-        # if on main, we're done
-        if check_if_on_clash_main_menu(vm_index) is True:
-            logger.log("Made it to clash main after a fight")
-            break
+
 
     return next_state
 
@@ -918,6 +933,8 @@ def handle_end_2v2_battle_condition_2(vm_index, logger):
     if check_for_end_2v2_battle_condition_2(vm_index):
         logger.log("On the end of 2v2 (c2) battle screen so clicking OK button")
         click(vm_index, 212, 553)
+        return True
+    return False
 
 
 def check_for_end_2v2_battle_condition_2(vm_index):
@@ -940,12 +957,14 @@ def check_for_end_2v2_battle_condition_2(vm_index):
     return True
 
 
-def handle_end_2v2_battle_condition_1(vm_index, logger) -> None:
+def handle_end_2v2_battle_condition_1(vm_index, logger):
     """method to handle end of 2v2 battle screen condition 1"""
 
     if check_for_end_2v2_battle_condition_1(vm_index):
         logger.log("On the end of 2v2 (c1) battle screen so clicking exit button")
         click(vm_index, 81, 600)
+        return True
+    return False
 
 
 def check_for_end_2v2_battle_condition_1(vm_index) -> bool:
@@ -967,12 +986,14 @@ def check_for_end_2v2_battle_condition_1(vm_index) -> bool:
     return True
 
 
-def handle_end_1v1_battle_condition_1(vm_index, logger) -> None:
+def handle_end_1v1_battle_condition_1(vm_index, logger):
     """method to handle the #1 possible end of 1v1 battle screen"""
 
     if check_for_end_1v1_battle_condition_1(vm_index):
         logger.log("On the end of 1v1 (c1) battle screen to clicking OK button")
         click(vm_index, 211, 554)
+        return True
+    return False
 
 
 def check_for_end_1v1_battle_condition_1(vm_index) -> bool:
@@ -987,11 +1008,13 @@ def check_for_end_1v1_battle_condition_1(vm_index) -> bool:
     return True
 
 
-def handle_end_1v1_battle_condition_2(vm_index, logger) -> None:
+def handle_end_1v1_battle_condition_2(vm_index, logger) -> bool:
     """method to handle the #2 possible end of 1v1 battle screen"""
     if check_for_end_1v1_battle_condition_2(vm_index):
         logger.log("On the end of 1v1 (c2) battle screen to clicking OK button")
         click(vm_index, 211, 552)
+        return True
+    return False
 
 
 def check_for_end_1v1_battle_condition_2(vm_index) -> bool:
@@ -1036,6 +1059,8 @@ def handle_end_2v2_battle_condition_3(logger, vm_index):
     if check_for_end_2v2_battle_condition_3(vm_index):
         logger.log("On the end of 2v2 (c3) battle screen to clicking OK button")
         click(vm_index, 216, 554)
+        return True
+    return False
 
 
 def do_2v2_fight_state(

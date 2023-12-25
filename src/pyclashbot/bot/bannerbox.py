@@ -155,18 +155,35 @@ def check_if_can_purchase_100_tickets_bannerbox(vm_index):
         iar[473][172],
         iar[468][188],
     ]
-    colors = [
-        [0, 0, 255],
-        [0, 1, 255],
-        [2, 11, 250],
-    ]
+
 
     for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=35):
+        if not check_if_pixel_is_red(p):
             return True
 
     return False
 
 
+def check_if_pixel_is_red(p):
+    r= p[2]
+    g = p[1]
+    b = p[0]
+
+    #if r is less than 150, return False
+    if r < 150:
+        return False
+
+    #if g is more than 50, return False
+    if g > 50:
+        return False
+
+    #if b is more than 50, return False
+    if b > 50:
+        return False
+
+    return True
+
+
 if __name__ == "__main__":
-    pass
+    vm_index=12
+    print(check_if_can_purchase_100_tickets_bannerbox(12))

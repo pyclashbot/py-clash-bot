@@ -169,7 +169,7 @@ def buy_shop_offers_state(
         scroll_down_slowly_in_shop_page(vm_index)
         time.sleep(0.33)
 
-        if gold_buy_toggle:
+        if gold_buy_toggle or free_offers_toggle:
             while (
                 buy_offers_from_this_shop_page(
                     vm_index, logger, gold_buy_toggle, free_offers_toggle
@@ -180,9 +180,11 @@ def buy_shop_offers_state(
                 logger.change_status("Bought an offer from the shop!")
                 start_time = time.time()
 
-            #if purchase total exceeds 6, then it's done
-            if purchase_total > 6:
-                break
+                #if purchase total exceeds 6, then it's done
+                if purchase_total > 6:
+                    break
+
+    logger.change_status('Done buying offers. Returning to clash main')
 
     # get to clash main from shop page
     click(vm_index, 245, 596)
