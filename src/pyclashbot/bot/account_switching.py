@@ -94,6 +94,7 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
     logger.change_status("Waiting for clash main on new account...")
     if wait_for_clash_main_menu(vm_index, logger) is False:
         return False
+    time.sleep(4)
 
     logger.change_status(f"Switched to account #{account_index_to_switch_to}")
     logger.increment_account_switches()
