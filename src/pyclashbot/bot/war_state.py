@@ -209,12 +209,11 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
 
         random_card_coord = random.choice(CARD_COORDS)
         click(vm_index, random_card_coord[0], random_card_coord[1])
-        time.sleep(1)
+        time.sleep(0.33)
 
         # click a random play coord
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
         click(vm_index, random_play_coord[0], random_play_coord[1])
-        time.sleep(2.4)
     logger.change_status(status="Done with this war fight")
     return "good"
 
@@ -307,6 +306,10 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
 
     coord = None
     while coord is None:
+        coord = find_war_battle_icon(vm_index)
+        if coord is None:
+            break
+
         time_taken = time.time() - start_time
         if time_taken > FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
             logger.log(

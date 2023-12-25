@@ -45,9 +45,11 @@ def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
         send_click(vm_index, x_coord, y_coord)
         time.sleep(interval)
 
+
 def scroll_up_fast(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 100, 215, 500)
+
 
 def custom_swipe(vm_index, start_x, start_y, end_x, end_y, repeat, delay):
     for _ in range(repeat):
@@ -59,8 +61,10 @@ def scroll_up(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 300, 215, 400)
 
+
 def scroll_up_a_little(vm_index):
     send_swipe(vm_index, 215, 300, 215, 320)
+
 
 def scroll_up_on_left_side_of_screen(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
@@ -71,17 +75,15 @@ def scroll_down(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 215, 400, 215, 300)
 
-    #click deadspace to stop the scroll
-    click(vm_index,10,200)
+    # click deadspace to stop the scroll
+    click(vm_index, 10, 200)
+
 
 def scroll_down_in_request_page(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 43, 350, 43, 280)
 
     send_swipe(vm_index, 100, 385, 330, 385)
-
-
-
 
 
 def scroll_down_fast_on_left_side_of_screen(vm_index):
@@ -95,8 +97,9 @@ def scroll_down_slowly_in_shop_page(vm_index):
     scrollable menu using the left side of the screen"""
     send_swipe(vm_index, 66, 400, 66, 300)
 
-    #click deadspace to stop the scroll
-    click(vm_index,10,200)
+    # click deadspace to stop the scroll
+    click(vm_index, 10, 200)
+
 
 def send_swipe(
     vm_index: int, x_coord1: int, y_coord1: int, x_coord2: int, y_coord2: int
@@ -182,7 +185,6 @@ def send_newline_char(vm_index):
         vm_index=vm_index,
         command="shell input keyevent KEYCODE_NUMPAD_ENTER",
     )
-
 
 
 if __name__ == "__main__":

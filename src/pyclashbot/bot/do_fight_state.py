@@ -70,14 +70,14 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
 
     next_state = "2v2_fight"
 
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
-    if clash_main_check is not True:
-        logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
-        logger.log("There are the pixels the bot saw after failing to find clash main:")
-        for pixel in clash_main_check:
-            logger.log(f"   {pixel}")
+    # clash_main_check = check_if_on_clash_main_menu(vm_index)
+    # if clash_main_check is not True:
+    #     logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
+    #     logger.log("There are the pixels the bot saw after failing to find clash main:")
+    #     for pixel in clash_main_check:
+    #         logger.log(f"   {pixel}")
 
-        return "restart"
+    #     return "restart"
 
     # get to challenges tab
     if get_to_challenges_tab_from_main(vm_index, logger) == "restart":
