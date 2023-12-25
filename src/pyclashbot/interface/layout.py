@@ -124,6 +124,7 @@ account_switching_layout = [
                         range=(1, 8),
                         orientation="h",
                         key="account_switching_slider",
+                        size=(10,20)
                     ),
                 ],
                 [
@@ -242,14 +243,14 @@ main_layout = [
             # expand_x=True,
             button_color="Lime Green",
             border_width=3,
-            size=(20, 1),
+            size=(23, 1),
         ),
         sg.Button(
             "Stop",
             disabled=True,
             #   expand_x=True,
             border_width=2,
-            size=(20, 1),
+            size=(23, 1),
         ),
         sg.Button(
             "Pause",
@@ -257,7 +258,7 @@ main_layout = [
             key="-Pause-Resume-Button-",
             # expand_x=True,
             border_width=2,
-            size=(20, 1),
+            size=(23, 1),
         ),
     ],
     [
@@ -267,13 +268,13 @@ main_layout = [
             # expand_x=True,
             button_color="#7289da",
             border_width=2,
-            size=(20, 1),
+            size=(23, 1),
         ),
         sg.Button(
             "Upload Log",
             key="upload-log",
             # expand_x=True,
-            size=(20, 1),
+            size=(23, 1),
             border_width=2,
         ),
         sg.Button(
@@ -282,7 +283,7 @@ main_layout = [
             # expand_x=True,
             button_color="#FF0000",
             border_width=2,
-            size=(20, 1),
+            size=(23, 1),
         ),
     ],
     [donate_button_layout_tab],
