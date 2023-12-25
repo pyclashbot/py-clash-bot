@@ -16,8 +16,6 @@ import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import wait_for_clash_main_menu
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import screenshot
 from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
 
@@ -266,39 +264,6 @@ def home_button_press(vm_index, clicks=4):
         print("ad skip...")
         pmc.trigger_keystroke_vm("home", vm_index=vm_index)
         time.sleep(1)
-
-
-def check_if_clash_banned(vm_index):
-    """Check if Clash of Clans is banned on the virtual machine with the given index."""
-    # Add your code here
-    iar = numpy.asarray(screenshot(vm_index))
-
-    red_okay_text_exists = False
-    for x_index in range(140, 190):
-        this_pixel = iar[405][x_index]
-        if pixel_is_equal([252, 67, 69], this_pixel, tol=35):
-            red_okay_text_exists = True
-            break
-
-    blue_loading_bar_exists = False
-    for x_index in range(40, 120):
-        this_pixel = iar[623][x_index]
-        if pixel_is_equal([25, 113, 214], this_pixel, tol=35):
-            blue_loading_bar_exists = True
-            break
-
-    white_account_information_text_exists = False
-    for x_index in range(100, 180):
-        this_pixel = iar[209][x_index]
-        if pixel_is_equal([255, 255, 255], this_pixel, tol=35):
-            white_account_information_text_exists = True
-            break
-
-    return bool(
-        red_okay_text_exists
-        and blue_loading_bar_exists
-        and white_account_information_text_exists
-    )
 
 
 # starting/closing memu vms/apps
