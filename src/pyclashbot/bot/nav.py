@@ -714,6 +714,7 @@ def wait_for_clash_main_menu(vm_index, logger: Logger) -> bool:
             continue
 
         # click deadspace
+        print('deadspace click')
         click(
             vm_index,
             CLASH_MAIN_MENU_DEADSPACE_COORD[0],
