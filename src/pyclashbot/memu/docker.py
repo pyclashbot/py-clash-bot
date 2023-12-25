@@ -88,7 +88,7 @@ def check_position():
     x_diff = abs(gui_topright[0] - memu_topleft[0])
     y_diff = abs(gui_topright[1] - memu_topleft[1])
 
-    if x_diff > 4 or y_diff > 2:
+    if x_diff > 4 or y_diff > 1:
         return False
 
     return True
