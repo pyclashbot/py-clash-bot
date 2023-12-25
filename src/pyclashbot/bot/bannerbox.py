@@ -14,12 +14,12 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
     # if not in clash main, return false
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status("Not in clash main menu")
-        return False
+        return 'restart'
 
     #if bannerbox rewards are done, return True
     if not check_if_bannerbox_icon_exists_on_clashmain(vm_index):
         logger.change_status("Account doesn't have bannerbox icon. Skipping bannerbox rewards")
-        return True
+        return next_state
 
     if collect_bannerbox_rewards(vm_index, logger):
         return next_state
