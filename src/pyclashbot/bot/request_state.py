@@ -301,19 +301,28 @@ def do_request(vm_index, logger: Logger) -> None:
     return True
 
 
-def check_if_can_request_wrapper(vm_index):
+def check_if_can_request_wrapper(vm_index) -> bool:
+    if check_for_epic_sunday_icon_with_delay(vm_index, 3):
+        print("Detected epic sunday icon")
+        return True
+
     if check_for_trade_cards_icon(vm_index):
+        print("Detected trade cards icon")
         return False
 
     if check_for_trade_cards_icon_2(vm_index):
+        print("Detected trade cards icon")
         return False
 
     if check_if_can_request_3(vm_index):
         return True
+
     if check_if_can_request(vm_index):
         return True
+
     if check_if_can_request_2(vm_index):
         return True
+
     return False
 
 
@@ -343,6 +352,33 @@ def check_if_can_request(vm_index) -> bool:
     if region_is_white and yellow_button_exists:
         return True
     return False
+
+
+def check_for_epic_sunday_icon_with_delay(vm_index, delay):
+    start_time = time.time()
+    while time.time() - start_time < delay:
+        if check_for_epic_sunday_icon(vm_index):
+            return True
+        time.sleep(1)
+    return False
+
+
+def check_for_epic_sunday_icon(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[507][43],
+        iar[508][120],
+    ]
+    colors = [
+        [250, 50, 149],
+        [251, 48, 149],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=10):
+            return False
+    return True
 
 
 def check_if_can_request_2(vm_index) -> bool:
@@ -406,6 +442,5 @@ def check_if_can_request_3(vm_index):
 if __name__ == "__main__":
     vm_index = 12
     logger = Logger(None)
-    do_request(vm_index, logger)
 
-    # count_scrolls_in_request_page(vm_index=vm_index)
+    print(check_if_can_request_wrapper(vm_index))
