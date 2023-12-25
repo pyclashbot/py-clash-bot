@@ -125,6 +125,7 @@ class Logger:
         self.switch_account_attempts = 0
         self.account_switches = 0
         self.current_account = "-"
+        self.account_order = '-'
 
         # restart stats
         self.auto_restarts = 0
@@ -176,6 +177,7 @@ class Logger:
                 "card_randomizations": self.card_randomizations,
                 "current_account": self.current_account,
                 "account_switches": self.account_switches,
+                "account_order": self.account_order,
             }
 
     def get_stats(self):
@@ -394,6 +396,10 @@ class Logger:
     @_updates_log
     def change_current_account(self, account_id):
         self.current_account = account_id
+
+    @_updates_log
+    def update_account_order_var(self, account_order):
+        self.account_order = account_order
 
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""

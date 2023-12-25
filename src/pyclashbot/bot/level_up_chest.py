@@ -27,10 +27,6 @@ def check_for_level_up_chest(vm_index):
     return False
 
 
-def collect_bannerbox_chest():
-    pass
-
-
 if __name__ == "__main__":
     vm_index = 12
     print(check_for_level_up_chest(vm_index))

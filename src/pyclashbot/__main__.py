@@ -43,7 +43,7 @@ def read_window(
 
 def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     """Create a dictionary of job toggles and increments based on the values of the GUI window.
- 
+
     Args:
         values: A dictionary of the values of the GUI window.
 
@@ -109,6 +109,8 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "next_account": 0,
         "random_account_switch_list": random_account_switch_list,
     }
+
+
 
     return jobs_dictionary
 
@@ -280,6 +282,10 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         no_jobs_popup()
         logger.log("No jobs are selected!")
         return None
+
+    #updaet logger's update_account_order_var
+    logger.update_account_order_var(job_dictionary["random_account_switch_list"])
+
 
     logger.log("Start Button Event")
     logger.change_status(status="Starting the bot!")

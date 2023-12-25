@@ -4,8 +4,10 @@ from typing import Literal
 import numpy
 
 from pyclashbot.bot.nav import (
+    check_for_trophy_reward_menu,
     check_if_on_clash_main_menu,
     handle_clash_main_tab_notifications,
+    handle_trophy_reward_menu,
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
@@ -37,6 +39,11 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
 
     logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
+
+    #handle being on trophy road meu
+    if check_for_trophy_reward_menu(vm_index):
+        handle_trophy_reward_menu(vm_index, logger)
+        time.sleep(3)
 
     # if not on clash_main, print the pixels that the box sees, then restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)

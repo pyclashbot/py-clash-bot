@@ -350,6 +350,9 @@ def get_to_clan_tab_from_clash_main(
         # if on final results page, click OK
         handle_final_results_page(vm_index, logger)
 
+        #handle daily defenses rank page
+        handle_daily_defenses_rank_page(vm_index,logger)
+
         if random.randint(0, 1) == 1:
             if random.randint(1, 3) == 1:
                 scroll_up(vm_index)
@@ -370,6 +373,40 @@ def get_to_clan_tab_from_clash_main(
     # if here, then done
     logger.log("Made it to the clan page from clash main")
     return "good"
+
+
+
+def handle_daily_defenses_rank_page(vm_index,logger):
+    timeout = 2
+    start_time=time.time()
+    while time.time() - start_time < timeout:
+        if check_for_daily_defenses_rank_page(vm_index):
+            click(vm_index,150,260)
+            time.sleep(2)
+            logger.change_status('Handled daily defenses rank page')
+
+def check_for_daily_defenses_rank_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[523][81],
+        iar[548][167],
+        iar[549][237],
+        iar[549][275],
+        iar[548][200],
+    ]
+    colors = [
+[47 ,29,  0],
+[88 ,77, 40],
+[130 ,117,  87],
+[50 ,30,  0],
+[89 ,74, 43],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=15):
+            return False
+    return True
 
 
 def handle_clash_main_page_for_clan_page_navigation(vm_index) -> None:
@@ -531,7 +568,7 @@ def get_to_profile_page(vm_index: int, logger: Logger) -> Literal["restart", "go
     click(vm_index, PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
 
     # wait for profile page
-    if wait_for_profile_page(vm_index, logger) == "restart":
+    if wait_for_profile_page(vm_index, logger, printmode=False) == "restart":
         logger.change_status(
             status="Error 0573085 Waited too long for clash profile page"
         )
@@ -799,10 +836,10 @@ def check_if_on_card_page(vm_index) -> bool:
         bool: True if the bot is on the card page, False otherwise.
     """
 
-    #some pixel checks for card pages of newer accounts
+    # some pixel checks for card pages of newer accounts
     if check_if_on_card_page2(vm_index):
         return True
-    
+
     if check_if_on_card_page3(vm_index):
         return True
 
@@ -1253,4 +1290,13 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    print(check_if_on_card_page(12))
+    # print(check_for_daily_defenses_rank_page(12))
+
+    vm_index = 12
+    logger=Logger()
+
+
+    # print(check_for_daily_defenses_rank_page(vm_index))
+    handle_daily_defenses_rank_page(vm_index,logger)
+
+    print('done')

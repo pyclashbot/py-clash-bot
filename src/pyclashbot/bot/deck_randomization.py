@@ -55,7 +55,7 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     return next_state
 
 
-def randomize_deck(vm_index, logger) -> bool:
+def randomize_deck(vm_index: int, logger: Logger) -> bool:
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
         logger.change_status("Failed to get to card page from main. Returning False")
@@ -81,7 +81,7 @@ def randomize_deck(vm_index, logger) -> bool:
     time.sleep(2)
 
     # click empty card 1 slot
-    logger.change_status('Randomizing deck 2...')
+    logger.change_status("Randomizing deck 2...")
     print("Clicking empty card 1 slot")
     click(vm_index, 81, 218)
     time.sleep(4)
@@ -95,6 +95,9 @@ def randomize_deck(vm_index, logger) -> bool:
     print("Clicking OK to randomize")
     click(vm_index, 211, 591)
     time.sleep(2)
+
+    # increment logger's deck randomization sta
+    logger.add_card_randomization()
 
     # get to clash main
     logger.change_status("Returning to clash main")
