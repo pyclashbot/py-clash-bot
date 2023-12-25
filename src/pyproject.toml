@@ -26,6 +26,7 @@ psutil = "^5.9.6"
 requests = "^2.31.0"
 pygetwindow = "^0.0.9"
 adbnativeblitz = "^0.11"
+pyautogui = "^0.9.54"
 
 
 [tool.poetry.group.build]

@@ -1,15 +1,18 @@
-from pyclashbot.utils.logger import Logger
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import screenshot, click
+
 import numpy
 import time
 
 
-def collect_level_up_chest(vm_index, logger):
+from pyclashbot.utils.logger import Logger
+from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.memu.client import screenshot, click
+
+
+def collect_level_up_chest(vm_index, logger:Logger):
     logger.change_status("Checking level up chest")
 
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main for collect_level_up_chest(). Returning False"
         )
@@ -70,6 +73,4 @@ def check_for_level_up_chest(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger()
-    collect_level_up_chest(vm_index, logger)
+    pass

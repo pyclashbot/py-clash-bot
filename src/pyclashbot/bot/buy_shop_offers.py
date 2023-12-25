@@ -1,4 +1,5 @@
 import time
+import numpy
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -8,17 +9,15 @@ from pyclashbot.detection.image_rec import (
     find_references,
     get_first_location,
     get_file_count,
-    make_reference_image_list,
+    make_reference_image_list,pixel_is_equal
 )
 from pyclashbot.memu.client import (
     screenshot,
     click,
     scroll_down_slowly_in_shop_page,
 )
-import numpy
 
 from pyclashbot.utils.logger import Logger
-from pyclashbot.detection.image_rec import pixel_is_equal
 
 
 def search_for_free_purchases(vm_index):
@@ -141,7 +140,7 @@ def buy_shop_offers_state(
     logger.add_shop_buy_attempt()
 
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main to being buying offers. Returning restart"
         )
@@ -191,7 +190,7 @@ def buy_shop_offers_state(
     time.sleep(4)
 
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("Not on clash main after buying offers. Returning restart")
         return "restart"
 
@@ -199,7 +198,4 @@ def buy_shop_offers_state(
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger()
-
-    while 1:print(check_if_on_shop_page(vm_index))
+    pass

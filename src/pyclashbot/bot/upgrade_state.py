@@ -1,10 +1,12 @@
+import numpy
 import time
+
 from typing import Any
+
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
-    get_to_clash_main_from_card_page,
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
@@ -12,8 +14,6 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
-import numpy
-
 
 CARD_COORDS: list[Any] = [
     (76, 227),
@@ -75,7 +75,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     if clash_main_check is not True:
         logger.change_status("Not on clash main at the start of upgrade_cards_state()")
         logger.log(
-            f"There are the pixels the bot saw after failing to find clash main:"
+            "These are the pixels the bot saw after failing to find clash main:"
         )
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
@@ -111,7 +111,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     click(vm_index, 245, 593)
     time.sleep(3)
 
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Not on clash main after upgrading cards. Returning restart"
         )
@@ -169,7 +169,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
         vm_index (int): The index of the virtual machine to perform the upgrade on.
         logger (Logger): The logger object to use for logging.
         index (int): The index of the card to upgrade.
-        upgrade_list (list[bool]): A list of boolean values indicating whether each card is upgradable.
+        upgrade_list (list[bool]): A list of bool values indicating whether each card is upgradable.
 
     Returns:
         None
@@ -233,7 +233,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
 
         logger.change_status("Upgraded this card")
     else:
-        logger.log(f"Missing gold popup exists. Skipping this upgradable card.")
+        logger.log("Missing gold popup exists. Skipping this upgradable card.")
 
     # click deadspace
     logger.change_status(status="Clicking deadspace after attemping upgrading this card")
@@ -319,13 +319,4 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
 
 
 if __name__ == "__main__":
-    logger = Logger()
-    vm_index = 12
-
-    # upgrade_cards_state(vm_index, logger, "next_state")
-
-    upgrade_list = get_upgradable_card_bool_list(vm_index, logger)
-    for i,u in enumerate(upgrade_list):
-        print(u)
-        if i == 3:
-            print('\n')
+    pass

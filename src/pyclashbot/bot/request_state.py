@@ -102,7 +102,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Not on clash main for the start of request_state()")
-        logger.log("There are the pixels the bot saw after failing to find clash main:")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -138,7 +138,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     click(vm_index, 173, 596)
     time.sleep(3)
 
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("Not on clash main after requesting. Returning restart")
         return "restart"
 

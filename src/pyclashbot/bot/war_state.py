@@ -73,9 +73,11 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Error 4848 Not on calshmain for start of war_state()")
-        logger.log(f'There are the pixels the bot saw after failing to find clash main:')
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:"
+        )
         for pixel in clash_main_check:
-            logger.log(f'   {pixel}')
+            logger.log(f"   {pixel}")
 
         return "restart"
 
@@ -303,29 +305,28 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
     pages while searching for a war battle icon to click"""
 
     start_time = time.time()
+    # FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT
 
-    coord = None
-    while coord is None:
+    while time.time() - start_time < FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
         coord = find_war_battle_icon(vm_index)
+
         if coord is None:
-            break
+            if random.randint(0, 1) == 1:
+                click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
+                time.sleep(1.5)
 
-        time_taken = time.time() - start_time
-        if time_taken > FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
-            logger.log(
-                f"Error 99 timeout ({FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT}) finding war battle"
-            )
-            return "restart"
+            if random.randint(0, 1) == 1:
+                scroll_up(vm_index)
+                time.sleep(1.5)
+            continue
 
-        click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
-        time.sleep(1.5)
-        scroll_up(vm_index)
-        time.sleep(1.5)
+        click(vm_index, coord[0], coord[1])
+        return "good"
 
-        coord = find_war_battle_icon(vm_index)
-
-    click(vm_index, coord[0], coord[1])
-    return "good"
+    logger.change_status(
+        "Failed to find_and_click_war_battle_icon(), returning restart"
+    )
+    return "restart"
 
 
 def get_war_battle_pix_list(vm_index):

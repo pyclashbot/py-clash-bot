@@ -1,9 +1,11 @@
-from pyclashbot.bot.nav import check_if_on_clash_main_menu, wait_for_clash_main_menu
-from pyclashbot.memu.client import click, save_screenshot, custom_swipe, screenshot
-from pyclashbot.utils.logger import Logger
-from pyclashbot.detection.image_rec import pixel_is_equal
 import time
 import numpy
+
+from pyclashbot.bot.nav import check_if_on_clash_main_menu, wait_for_clash_main_menu
+from pyclashbot.memu.client import click,  custom_swipe, screenshot
+from pyclashbot.utils.logger import Logger
+from pyclashbot.detection.image_rec import pixel_is_equal
+
 
 SSID_COORDS = [
     (48, 305),  # 1st account, index 0
@@ -58,7 +60,7 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
     logger.add_switch_account_attempt()
 
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("293587 Not on clash main to do account switching")
         return False
 

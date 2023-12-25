@@ -14,7 +14,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, save_screenshot, screenshot
+from pyclashbot.memu.client import click,  screenshot
 from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
@@ -40,7 +40,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
 
-    #handle being on trophy road meu
+    # handle being on trophy road meu
     if check_for_trophy_reward_menu(vm_index):
         handle_trophy_reward_menu(vm_index, logger)
         time.sleep(3)
@@ -49,15 +49,15 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.log("Not on clashmain for the start of open_chests_state()")
-        logger.log(
-            f"There are the pixels the bot saw after failing to find clash main:"
-        )
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"    {pixel}")
 
         return "restart"
 
-    logger.change_status(status="Handling obstructing notifications before opening chests")
+    logger.change_status(
+        status="Handling obstructing notifications before opening chests"
+    )
     if handle_clash_main_tab_notifications(vm_index, logger) == "restart":
         logger.change_status(
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications"
@@ -176,7 +176,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
     while check_if_on_clash_main_menu(vm_index) is not True:
-        print('Clicking deadspace to skip chest rewards bc not on clash main')
+        print("Clicking deadspace to skip chest rewards bc not on clash main")
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 
@@ -250,11 +250,4 @@ def check_if_chest_is_unlockable(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 1
-
-    statuses = get_chest_statuses(vm_index)
-
-    for s in statuses:
-        print(s)
-
-    # save_screenshot(1)
+    pass
