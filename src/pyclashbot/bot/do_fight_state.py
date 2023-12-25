@@ -1,9 +1,10 @@
 """random module for randomizing fight plays"""
-from xmlrpc.client import Boolean
 import numpy
 import random
 import time
 from typing import Literal
+
+from xmlrpc.client import Boolean
 
 from pyclashbot.bot.card_detection import get_play_coords_for_card
 from pyclashbot.bot.nav import (
@@ -73,7 +74,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
     # clash_main_check = check_if_on_clash_main_menu(vm_index)
     # if clash_main_check is not True:
     #     logger.change_status(status="ERROR 34 Not on main for start of start 2v2")
-    #     logger.log("There are the pixels the bot saw after failing to find clash main:")
+    #     logger.log("These are the pixels the bot saw after failing to find clash main:")
     #     for pixel in clash_main_check:
     #         logger.log(f"   {pixel}")
 
@@ -98,7 +99,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
         logger.change_status("Locked events page! Doing 1v1 instead...")
         click(vm_index, 170, 589)
         time.sleep(3)
-        if not check_if_on_clash_main_menu(vm_index):
+        if check_if_on_clash_main_menu(vm_index) is not True:
             logger.change_status(
                 "Failed to get from events tab to clash main after locked events page"
             )
@@ -159,7 +160,7 @@ def start_1v1_fight_state(vm_index, logger: Logger) -> Literal["restart", "1v1_f
         logger.change_status(
             status="ERROR 46246 Not on main menu for start of start 1v1 fight"
         )
-        logger.log("There are the pixels the bot saw after failing to find clash main:")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -819,7 +820,7 @@ def check_if_previous_game_was_win(
         logger.change_status(
             status='534594784234 Error Not on main menu, returning "restart"'
         )
-        logger.log("There are the pixels the bot saw after failing to find clash main:")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -890,41 +891,109 @@ def get_to_main_after_fight(vm_index, logger, next_state):
             logger.log("Made it to clash main after a fight")
             break
 
-        # if on end of 2v2 battle screen, click EXIT
-        if handle_end_2v2_battle_condition_1(vm_index, logger):
-            time.sleep(1)
-            continue
-
-        # if on end of 2v2 battle screen c2, click OK
-        if handle_end_2v2_battle_condition_2(vm_index, logger):
-            time.sleep(1)
-            continue
-
-        # if on end of 2v2 battle screen c3, click OK
-        if handle_end_2v2_battle_condition_3(logger, vm_index):
-            time.sleep(1)
-            continue
-
-        # if on end of 1v1 battle screen c1, click OK
-        if handle_end_1v1_battle_condition_1(vm_index, logger):
-            time.sleep(1)
-            continue
-
-        # if on end of 1v1 battle screen c2, click OK
-        if handle_end_1v1_battle_condition_2(vm_index, logger):
-            time.sleep(1)
-            continue
 
         # if on challenges tab, click clash main tab
-        if check_if_on_clash_main_challenges_tab(vm_index):
+        if  check_if_on_clash_main_challenges_tab(vm_index):
             logger.log("On challenges tab so clicking clash main icon")
             click(vm_index, 173, 591)
             time.sleep(1)
-            continue
 
+        if handle_end_2v2_battle_condition_5(vm_index,logger):
+            time.sleep(1)
 
+        # if on end of 2v2 battle screen, click EXIT
+        if  handle_end_2v2_battle_condition_1(vm_index, logger):
+            time.sleep(1)
+
+        # if on end of 2v2 battle screen c2, click OK
+        if  handle_end_2v2_battle_condition_2(vm_index, logger):
+            time.sleep(1)
+
+        # if on end of 2v2 battle screen c3, click OK
+        if  handle_end_2v2_battle_condition_3(logger, vm_index):
+            time.sleep(1)
+
+        if  handle_end_2v2_battle_condition_4(vm_index,logger):
+            time.sleep(1)
+
+        # if on end of 1v1 battle screen c1, click OK
+        if  handle_end_1v1_battle_condition_1(vm_index, logger):
+            time.sleep(1)
+
+        # if on end of 1v1 battle screen c2, click OK
+        if  handle_end_1v1_battle_condition_2(vm_index, logger):
+            time.sleep(1)
 
     return next_state
+
+
+def check_for_end_2v2_battle_condition_5(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[21][57],
+        iar[14][293],
+        iar[16][193],
+        iar[600][58],
+        iar[599][76],
+        iar[603][101],
+    ]
+
+    colors = [
+[253 ,150,  49],
+[253, 150,  49],
+[253, 250, 249],
+[254 ,174,  80],
+[255 ,254, 245],
+[253, 172,  78],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=15):
+            return False
+    return True
+
+def handle_end_2v2_battle_condition_5(vm_index,logger):
+    if check_for_end_2v2_battle_condition_5(vm_index):
+        click(vm_index,79,599,clicks=2,interval=0.1)
+        logger.log('Handled end 2v2 battle (c5)')
+        return True
+    return False
+
+
+
+
+def check_for_end_2v2_battle_condition_4(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[594][53],
+        iar[594][399],
+        iar[596][105],
+        iar[598][64],
+    ]
+
+    colors = [
+        [255, 105, 187],
+        [83, 52, 66],
+        [255, 105, 187],
+        [255, 255, 255],
+    ]
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i], p, tol=15):
+            return False
+    return True
+
+
+def handle_end_2v2_battle_condition_4(vm_index,logger):
+    if check_for_end_2v2_battle_condition_4(vm_index):
+        click(vm_index,80,595)
+        time.sleep(1)
+        logger.log('Handled end 2v2 battle (c4)')
+        return True
+    return False
 
 
 def handle_end_2v2_battle_condition_2(vm_index, logger):
@@ -1133,8 +1202,4 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
 
 if __name__ == "__main__":
-    logger = Logger()
-    vm_index = 12
-
-    while 1:
-        print(check_for_locked_events_page(vm_index))
+    pass

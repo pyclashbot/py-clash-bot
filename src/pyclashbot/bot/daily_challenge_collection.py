@@ -42,7 +42,7 @@ def check_for_daily_rewards(vm_index) -> bool:
 
 def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     # if not on clash main, reutrn False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_challenge_rewards(). Returning False"
         )
@@ -80,7 +80,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     click(vm_index, 15, 290, clicks=deadspace_clicks, interval=0.33)
 
     # if not on clash main, reutrn False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_challenge_rewards(). Returning False"
         )
@@ -91,7 +91,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
 
 def collect_daily_bonus(vm_index, logger) -> bool:
     # if not on clash main, retunr False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_daily_bonus(). Returning False"
         )
@@ -111,7 +111,7 @@ def collect_daily_bonus(vm_index, logger) -> bool:
     click(vm_index, 10, 300, clicks=15, interval=1)
 
     # if not on clash main, retunr False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_daily_bonus(). Returning False"
         )
@@ -120,9 +120,9 @@ def collect_daily_bonus(vm_index, logger) -> bool:
     return True
 
 
-def collect_weekly_bonus(vm_index, logger) -> bool:
+def collect_weekly_bonus(vm_index, logger: Logger) -> bool:
     # if not on clash main, retunr False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_weekly_bonus(). Returning False"
         )
@@ -142,7 +142,7 @@ def collect_weekly_bonus(vm_index, logger) -> bool:
     click(vm_index, 15, 300, clicks=15, interval=0.33)
 
     # if not on clash main, retunr False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_weekly_bonus(). Returning False"
         )
@@ -178,7 +178,6 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], tol=35):
             return True
 
@@ -187,7 +186,7 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
 
 def collect_all_daily_rewards(vm_index, logger):
     # if not on clash main, reutrn False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main at start of collect_daily_rewards(). Returning False"
         )
@@ -225,7 +224,7 @@ def check_which_rewards_are_available(vm_index, logger):
     logger.change_status("Checking which daily rewards are available")
 
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main before check_which_rewards_are_available() "
         )
@@ -243,7 +242,7 @@ def check_which_rewards_are_available(vm_index, logger):
     time.sleep(2)
 
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main after check_which_rewards_are_available()"
         )
@@ -274,7 +273,6 @@ def check_for_task_2_reward(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], 15):
             return False
     return True
@@ -291,30 +289,20 @@ def check_rewards_menu_pixels(vm_index):
     ]
 
     colors = [
-[140 ,179, 205],
-[181 ,211, 229],
-[142 ,180, 208],
-[226 ,134,  31],
-[113 ,157,   0],
+        [140, 179, 205],
+        [181, 211, 229],
+        [142, 180, 208],
+        [226, 134, 31],
+        [113, 157, 0],
     ]
 
-    bools = []
+    bool_list = []
     for i, p in enumerate(pixels):
-        print(p)
-        bool = pixel_is_equal(p, colors[i], 15)
-        bools.append(not (bool))
+        this_bool = pixel_is_equal(p, colors[i], 15)
+        bool_list.append(not this_bool)
 
-
-    return bools
+    return bool_list
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger()
-
-    bools = check_rewards_menu_pixels(vm_index)
-
-    for b in bools:
-        print(b)
-    print('\n')
-
+    pass

@@ -1,16 +1,16 @@
 import random
+import time
+import numpy
+
 from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     get_file_count,
     find_references,
-    get_first_location,
+    get_first_location,pixel_is_equal
 )
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.utils.logger import Logger
-import numpy
+
 from pyclashbot.memu.client import screenshot, click, scroll_up_a_little
-import time
 
 
 def collect_battlepass_state(vm_index, logger, next_state):
@@ -93,7 +93,7 @@ def collect_battlepass(vm_index, logger) -> bool:
     logger.change_status("Collecting battlepass rewards...")
 
     # if not on main to begin, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             "Not on clash main to being battlepass collection. returning False"
         )
@@ -111,7 +111,7 @@ def collect_battlepass(vm_index, logger) -> bool:
             logger.change_status("Failed to collect a battlepass reward")
 
     # if not on clash main, return false
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("Not on clash main after claiming battlepass rewards")
         return False
 
@@ -229,7 +229,4 @@ def check_for_more_rewards_button(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger(None)
-
-    scroll_up_a_little(vm_index)
+    pass

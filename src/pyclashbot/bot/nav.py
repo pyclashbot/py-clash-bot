@@ -12,12 +12,6 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-from pyclashbot.detection.image_rec import (
-    make_reference_image_list,
-    get_file_count,
-    find_references,
-    get_first_location,
-)
 
 
 
@@ -359,8 +353,8 @@ def get_to_clan_tab_from_clash_main(
         # if on final results page, click OK
         handle_final_results_page(vm_index, logger)
 
-        #handle daily defenses rank page
-        handle_daily_defenses_rank_page(vm_index,logger)
+        # handle daily defenses rank page
+        handle_daily_defenses_rank_page(vm_index, logger)
 
         if random.randint(0, 1) == 1:
             if random.randint(1, 3) == 1:
@@ -384,17 +378,16 @@ def get_to_clan_tab_from_clash_main(
     return "good"
 
 
-
-def handle_daily_defenses_rank_page(vm_index,logger):
+def handle_daily_defenses_rank_page(vm_index, logger):
     timeout = 2
-    start_time=time.time()
+    start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_for_daily_defenses_rank_page(vm_index) or check_for_daily_defenses_rank_page_2(vm_index):
-            click(vm_index,150,260)
+        if check_for_daily_defenses_rank_page(
+            vm_index
+        ) or check_for_daily_defenses_rank_page_2(vm_index):
+            click(vm_index, 150, 260)
             time.sleep(2)
-            logger.change_status('Handled daily defenses rank page')
-
-
+            logger.change_status("Handled daily defenses rank page")
 
 
 def check_for_daily_defenses_rank_page_2(vm_index):
@@ -407,17 +400,15 @@ def check_for_daily_defenses_rank_page_2(vm_index):
         iar[272][271],
         iar[258][256],
         iar[247][260],
-
     ]
     colors = [
-[ 61 ,168, 233],
-[ 22 ,119, 220],
-[ 39 ,159, 229],
-[ 71 ,168, 243],
-[ 37 ,127, 222],
-[ 56 ,173, 237],
-[ 67 ,165, 238],
-
+        [61, 168, 233],
+        [22, 119, 220],
+        [39, 159, 229],
+        [71, 168, 243],
+        [37, 127, 222],
+        [56, 173, 237],
+        [67, 165, 238],
     ]
 
     for i, p in enumerate(pixels):
@@ -437,11 +428,11 @@ def check_for_daily_defenses_rank_page(vm_index):
         iar[548][200],
     ]
     colors = [
-[47 ,29,  0],
-[88 ,77, 40],
-[130 ,117,  87],
-[50 ,30,  0],
-[89 ,74, 43],
+        [47, 29, 0],
+        [88, 77, 40],
+        [130, 117, 87],
+        [50, 30, 0],
+        [89, 74, 43],
     ]
 
     for i, p in enumerate(pixels):
@@ -673,34 +664,107 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def wait_for_clash_main_menu(vm_index, logger) -> bool:
+# def wait_for_clash_main_menu2(vm_index, logger) -> bool:
+#     """
+#     Waits for the user to be on the clash main menu.
+#     Returns True if on main menu, False if not.
+#     """
+#     start_time: float = time.time()
+#     for _ in range(2):
+#         while time.time() - start_time < CLASH_MAIN_WAIT_TIMEOUT:
+#             logger.change_status(
+#                 status=f"Waiting for clash main menu for {str(time.time() - start_time)[:4]}s"
+#             )
+
+#             # handle geting stuck on trophy road screen
+#             if check_for_trophy_reward_menu(vm_index):
+#                 handle_trophy_reward_menu(vm_index, logger)
+
+#             click(
+#                 vm_index,
+#                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
+#                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
+#             )
+
+#             clash_main_check_return = check_if_on_clash_main_menu(vm_index)
+#             if clash_main_check_return is True:
+#                 return True
+
+#     logger.change_status("Failed to get to clashmain in time.")
+#     logger.change_status(f"Bot read these pixels: {clash_main_check_return}")
+#     return False
+
+
+def wait_for_clash_main_menu(vm_index, logger: Logger) -> bool:
     """
     Waits for the user to be on the clash main menu.
     Returns True if on main menu, False if not.
     """
     start_time: float = time.time()
-    while time.time() - start_time < CLASH_MAIN_WAIT_TIMEOUT:
-        logger.change_status(
-            status=f"Waiting for clash main menu for {str(time.time() - start_time)[:4]}s"
-        )
+    while not check_if_on_clash_main_menu(vm_index):
+        # timeout check
+        if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
+            logger.change_status("Timed out waiting for clash main")
+            return False
 
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu(vm_index):
             handle_trophy_reward_menu(vm_index, logger)
+            time.sleep(2)
+            continue
 
+        # click deadspace
         click(
             vm_index,
             CLASH_MAIN_MENU_DEADSPACE_COORD[0],
             CLASH_MAIN_MENU_DEADSPACE_COORD[1],
         )
+        time.sleep(1)
 
-        clash_main_check_return = check_if_on_clash_main_menu(vm_index)
-        if clash_main_check_return is True:
-            return True
+    time.sleep(1)
+    if check_if_on_clash_main_menu(vm_index) is not True:
+        return wait_for_clash_main_menu(vm_index, logger)
 
-    logger.change_status("Failed to get to clashmain in time.")
-    logger.change_status(f"Bot read these pixels: {clash_main_check_return}")
-    return False
+    return True
+
+
+def check_if_on_clash_main_menu2(iar):
+    """
+    Checks if the user is on the clash main menu.
+    Returns True if on main menu, False if not.
+    """
+
+    # get raw pixels from image array
+    pixels = [
+        iar[15][298],
+        iar[20][299],
+        iar[16][401],
+        iar[585][166],
+        iar[622][165],
+        iar[581][264],
+        iar[71][269],
+        iar[74][262],
+    ]
+
+    # sentinel color list
+    colors = [
+        [59, 158, 214],
+        [53, 201, 234],
+        [22, 187, 60],
+        [218, 191, 115],
+        [92, 74, 66],
+        [70, 168, 219],
+        [225, 162, 25],
+        [222, 159, 22],
+    ]
+
+    # if any pixel doesnt match the sentinel, then we're not on clash main
+    for i, pixel in enumerate(pixels):
+        if not pixel_is_equal(pixel, colors[i], tol=35):
+            return pixels
+
+    # if all pixels are good, we're on clash main
+    return True
 
 
 def check_if_on_clash_main_menu(vm_index):
@@ -708,7 +772,13 @@ def check_if_on_clash_main_menu(vm_index):
     Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
     """
+
     iar = numpy.asarray(screenshot(vm_index))
+
+    # run the patch-job check first, then the original check if that fails
+    if check_if_on_clash_main_menu2(iar) is True:
+        print("Used patch-job clash main detection")
+        return True
 
     # get raw pixels from image array
     pixels = [
@@ -979,14 +1049,17 @@ def handle_clash_main_tab_notifications(
         vm_index,
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
-        clicks=2,
-        interval=0.01,
     )
+
     if wait_for_clash_main_menu(vm_index, logger) == "restart":
         logger.change_status(
             status="Error 358971935813 Waited too long for clash main menu, restarting vm"
         )
         return "restart"
+
+    if check_for_trophy_reward_menu(vm_index):
+        handle_trophy_reward_menu(vm_index, logger)
+        time.sleep(2)
 
     logger.change_status(
         status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
@@ -1332,16 +1405,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    # print(check_for_daily_defenses_rank_page(12))
-
-    vm_index = 12
-    logger=Logger()
-
-
-    # print(check_for_daily_defenses_rank_page(vm_index))
-    # handle_daily_defenses_rank_page(vm_index,logger)
-
-    # print('done')
-
-
-    handle_daily_defenses_rank_page(vm_index,logger)
+    pass

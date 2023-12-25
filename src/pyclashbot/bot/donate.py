@@ -7,7 +7,8 @@ import random
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
-    handle_trophy_reward_menu,check_for_trophy_reward_menu,
+    handle_trophy_reward_menu,
+    check_for_trophy_reward_menu,
 )
 from pyclashbot.detection.image_rec import (
     find_references,
@@ -18,9 +19,8 @@ from pyclashbot.detection.image_rec import (
     crop_image,
     condense_coordinates,
 )
-from pyclashbot.memu.client import screenshot, click, scroll_up_a_little, scroll_up
+from pyclashbot.memu.client import screenshot, click, scroll_up
 from pyclashbot.utils.logger import Logger
-import numpy
 
 
 def donate_cards_state(vm_index, logger: Logger, next_state):
@@ -83,7 +83,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
 
     # get to clash main
     logger.change_status("Returning to clash main after donating")
-    click(vm_index, 175, 600, clicks = 3)
+    click(vm_index, 175, 600, clicks=3)
     time.sleep(5)
 
     # handle geting stuck on trophy road screen
@@ -91,7 +91,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
         handle_trophy_reward_menu(vm_index, logger)
         time.sleep(2)
 
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.log("Failed to get to clash main after doanting! Retsrating")
         return False
     time.sleep(3)
@@ -185,7 +185,6 @@ def find_donate_button(image):
 
 
 def check_for_positive_donate_button_coords(vm_index, coord):
-    start_time = time.time()
     # if pixel is too high, always return False
 
     iar = screenshot(vm_index)
@@ -201,7 +200,7 @@ def check_for_positive_donate_button_coords(vm_index, coord):
             pixels.append(iar[c1[1] + y, c1[0] + x])
 
     positive_count = 0
-    for i, pixel in enumerate(pixels):
+    for pixel in pixels:
         if pixel_is_equal(pixel, positive_color, tol=20):
             positive_count += 1
 
@@ -211,7 +210,4 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger()
-
-    donate_cards_state(vm_index, logger, "next_state")
+    pass

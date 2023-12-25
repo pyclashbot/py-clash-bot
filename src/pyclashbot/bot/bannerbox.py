@@ -1,9 +1,11 @@
+import time
+import numpy
+
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
-import time
-import numpy
+
 
 BANNERBOX_ICON_ON_CLASH_MAIN_PAGE = (350, 195)
 FIRST_100_TICKETS_PURCHASE_BUTTON = (303, 576)
@@ -12,13 +14,15 @@ SECOND_100_TICKETS_PURCHASE_BUTTON = (209, 466)
 
 def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: str):
     # if not in clash main, return false
-    if not check_if_on_clash_main_menu(vm_index):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("Not in clash main menu")
-        return 'restart'
+        return "restart"
 
-    #if bannerbox rewards are done, return True
+    # if bannerbox rewards are done, return True
     if not check_if_bannerbox_icon_exists_on_clashmain(vm_index):
-        logger.change_status("Account doesn't have bannerbox icon. Skipping bannerbox rewards")
+        logger.change_status(
+            "Account doesn't have bannerbox icon. Skipping bannerbox rewards"
+        )
         return next_state
 
     if collect_bannerbox_rewards(vm_index, logger):
@@ -45,7 +49,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         click(vm_index, 5, 400, clicks=4, interval=1)
 
         # if not back on main, return False
-        if not check_if_on_clash_main_menu(vm_index):
+        if check_if_on_clash_main_menu(vm_index) is not True:
             logger.change_status(
                 "Failed to return to main after being maxed on bannerboxes. Restarting"
             )
@@ -156,8 +160,7 @@ def check_if_can_purchase_100_tickets_bannerbox(vm_index):
         iar[468][188],
     ]
 
-
-    for i, p in enumerate(pixels):
+    for p in pixels:
         if not check_if_pixel_is_red(p):
             return True
 
@@ -165,19 +168,19 @@ def check_if_can_purchase_100_tickets_bannerbox(vm_index):
 
 
 def check_if_pixel_is_red(p):
-    r= p[2]
+    r = p[2]
     g = p[1]
     b = p[0]
 
-    #if r is less than 150, return False
+    # if r is less than 150, return False
     if r < 150:
         return False
 
-    #if g is more than 50, return False
+    # if g is more than 50, return False
     if g > 50:
         return False
 
-    #if b is more than 50, return False
+    # if b is more than 50, return False
     if b > 50:
         return False
 
@@ -185,5 +188,4 @@ def check_if_pixel_is_red(p):
 
 
 if __name__ == "__main__":
-    vm_index=12
-    print(check_if_can_purchase_100_tickets_bannerbox(12))
+    pass

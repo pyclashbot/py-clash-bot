@@ -1,24 +1,12 @@
 """random import for deck randomization"""
-import random
 import time
 from typing import Literal
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
-    get_to_clash_main_from_card_page,
 )
-from pyclashbot.detection.image_rec import (
-    check_line_for_color,
-    crop_image,
-    find_references,
-    get_file_count,
-    get_first_location,
-    pixel_is_equal,
-    make_reference_image_list,
-)
-import numpy
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up_fast
+from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 
 DECK_2_COORD: tuple[Literal[158], Literal[127]] = (158, 127)
@@ -116,8 +104,4 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger(None)
-
-    while 1:
-        randomize_deck_state(vm_index, logger, "next_state")
+    pass

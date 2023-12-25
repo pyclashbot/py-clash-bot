@@ -27,6 +27,7 @@ from pyclashbot.bot.buy_shop_offers import buy_shop_offers_state
 from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
 from pyclashbot.memu.docker import start_memu_dock_mode
+from pyclashbot.utils.debug_obs_clipper import clip_that
 
 
 class StateException(Exception):
@@ -85,9 +86,7 @@ def state_tree(
 
         logger.log("Entered the restart state after a failure in another state...")
 
-        # input(
-        #     "User input before doing restart state!\nUser input before doing restart state!\nUser input before doing restart state!\nUser input before doing restart state!"
-        # )
+        clip_that()
 
         # close app
         logger.log("Running close_clash_royale_app()")
@@ -303,8 +302,8 @@ def state_tree(
         # run this job, return its output
         return collect_daily_rewards_state(vm_index, logger, next_state)
 
-    if state == "battlepass_rewards":  # --> start_fight
-        next_state = "start_fight"
+    if state == "battlepass_rewards":  # --> card_mastery
+        next_state = "card_mastery"
 
         if not job_list["battlepass_collect_user_toggle"]:
             logger.change_status(
@@ -319,6 +318,24 @@ def state_tree(
             return next_state
 
         return collect_battlepass_state(vm_index, logger, next_state)
+
+    if state == "card_mastery":  # --> start_fight
+        next_state = "start_fight"
+
+        # if job not selected, return next state
+        if not job_list["card_mastery_user_toggle"]:
+            logger.log("Card mastery job isn't toggled. Skipping this state")
+            return next_state
+
+        # if job not ready, reutrn next state
+        if not logger.check_if_can_collect_card_mastery(
+            job_list["card_mastery_collect_increment_user_input"]
+        ):
+            logger.log("Card mastery job isn't ready. Skipping this state")
+            return next_state
+
+        # return output of this state
+        return card_mastery_state(vm_index, logger, next_state)
 
     if state == "start_fight":  # --> 1v1_fight, card_mastery
         next_state = "card_mastery"
@@ -384,8 +401,8 @@ def state_tree(
         )
         return do_1v1_fight_state(vm_index, logger, next_state, random_fight_mode)
 
-    if state == "end_fight":  # --> card_mastery
-        next_state = "card_mastery"
+    if state == "end_fight":  # --> war
+        next_state = "war"
 
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
@@ -393,24 +410,6 @@ def state_tree(
         return end_fight_state(
             vm_index, logger, next_state, job_list["disable_win_track_toggle"]
         )
-
-    if state == "card_mastery":  # --> war
-        next_state = "war"
-
-        # if job not selected, return next state
-        if not job_list["card_mastery_user_toggle"]:
-            logger.log("Card mastery job isn't toggled. Skipping this state")
-            return next_state
-
-        # if job not ready, reutrn next state
-        if not logger.check_if_can_collect_card_mastery(
-            job_list["card_mastery_collect_increment_user_input"]
-        ):
-            logger.log("Card mastery job isn't ready. Skipping this state")
-            return next_state
-
-        # return output of this state
-        return card_mastery_state(vm_index, logger, next_state)
 
     if state == "war":  # --> account_switch
         next_state = "account_switch"
@@ -433,45 +432,4 @@ def state_tree(
 
 
 if __name__ == "__main__":
-    jobs_dictionary: dict[str, str | int] = {
-        # job toggles
-        "open_battlepass_user_toggle": False,
-        "open_chests_user_toggle": False,
-        "request_user_toggle": False,
-        "donate_toggle": False,
-        "card_mastery_user_toggle": False,
-        "memu_attach_mode_toggle": False,
-        "free_offer_user_toggle": False,
-        "gold_offer_user_toggle": False,
-        "1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": False,
-        "upgrade_user_toggle": False,
-        "war_user_toggle": False,
-        "random_decks_user_toggle": False,
-        "open_bannerbox_user_toggle": False,
-        "daily_rewards_user_toggle": False,
-        "random_plays_user_toggle": False,
-        "skip_fight_if_full_chests_user_toggle": False,
-        "battlepass_collect_user_toggle": False,
-        "disable_win_track_toggle": False,
-        # job increments
-        "card_upgrade_increment_user_input": 1,
-        "shop_buy_increment_user_input": 1,
-        "daily_reward_increment_user_input": 1,
-        "card_mastery_collect_increment_user_input": 1,
-        "deck_randomization_increment_user_input": 1,
-        "battlepass_collect_increment_user_input": 1,
-        # account switching input info
-        "account_switching_toggle": False,
-        "account_switching_slider": False,
-        "next_account": 1,
-        "random_account_switch_list": [1],
-    }
-    state = "account_switch"
-    while 1:
-        state = state_tree(
-            12,
-            Logger(None),
-            state,
-            jobs_dictionary,
-        )
+    pass

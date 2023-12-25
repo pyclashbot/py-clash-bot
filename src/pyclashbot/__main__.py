@@ -479,3 +479,5 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 if __name__ == "__main__":
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
+
+
