@@ -132,7 +132,7 @@ def state_tree(
             return next_state
 
         account_total = job_list["account_switching_slider"]
-        logger.log(f"Doing switch to act#{job_list['next_account']} of {account_total}")
+        logger.log(f"Doing switch #{job_list['next_account']} of {account_total}")
 
         accout_index = job_list["next_account"]
 
