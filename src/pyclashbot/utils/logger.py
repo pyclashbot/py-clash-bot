@@ -20,8 +20,8 @@ log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".t
 archive_name: str = join(log_dir, "logs.zip")
 
 
-def round_down_int(float):
-    return int(float - (float % 1))
+def round_down_int(this_float):
+    return int(this_float - (this_float % 1))
 
 
 def compress_logs() -> None:
@@ -124,15 +124,11 @@ class Logger:
         self.shop_buy_attempts = 0
         self.war_attempts = 0
 
-
-
-
-        #account stuff
-        self.account_order = '-'
+        # account stuff
+        self.account_order = "-"
         self.current_account = "-"
         self.account_switches = 0
         self.switch_account_attempts = 0
-
 
         # restart stats
         self.auto_restarts = 0
@@ -178,7 +174,7 @@ class Logger:
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "shop_offer_collections": self.shop_offer_collections,
                 "battlepass_collects": self.battlepass_collects,
-                'bannerbox_collects':self.bannerbox_collects,
+                "bannerbox_collects": self.bannerbox_collects,
                 "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
@@ -431,8 +427,6 @@ class Logger:
     def add_bannerbox_collect(self):
         """increments logger's bannerbox_collects by 1"""
         self.bannerbox_collects += 1
-
-
 
     def add_daily_reward_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""
