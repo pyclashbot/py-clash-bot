@@ -460,8 +460,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
             f"Played {id_string} on {this_play_side} side in {str(time.time() - this_play_start_time)[:4]}s"
         )
 
-    if logger.get_cards_played() != 0:
-        logger.remove_card_played(cards_to_remove=random.randint(0, 1))
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
@@ -553,10 +551,8 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # increment plays counter
         plays += 1
 
-    if logger.get_cards_played() != 0:
-        logger.remove_card_played(cards_to_remove=random.randint(0, 1))
     cards_played = logger.get_cards_played()
-    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} ht")
     return "good"
 
 
