@@ -176,6 +176,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
     while check_if_on_clash_main_menu(vm_index) is not True:
+        print('Clicking deadspace to skip chest rewards bc not on clash main')
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 
