@@ -35,7 +35,7 @@ def collect_level_up_chest(vm_index, logger:Logger):
     # click deadspace until back on clash main
     timeout = 30  # s
     start_time = time.time()
-    while not check_if_on_clash_main_menu(vm_index):
+    while check_if_on_clash_main_menu(vm_index) is not True:
         # timeout check
         if time.time() - start_time > timeout:
             logger.change_status("Timed out waiting for level up chest to be collected")

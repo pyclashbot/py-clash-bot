@@ -13,8 +13,6 @@ from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 
-
-
 _2V2_START_WAIT_TIMEOUT = 120  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
@@ -138,8 +136,6 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             return True
 
         click(vm_index=vm_index, x_coord=20, y_coord=200)
-
-        time.sleep(5)
 
     return False
 
@@ -701,7 +697,8 @@ def wait_for_clash_main_menu(vm_index, logger: Logger) -> bool:
     Returns True if on main menu, False if not.
     """
     start_time: float = time.time()
-    while not check_if_on_clash_main_menu(vm_index):
+    while check_if_on_clash_main_menu(vm_index) is not True:
+        print('Still waiting for clash main')
         # timeout check
         if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
             logger.change_status("Timed out waiting for clash main")
@@ -709,12 +706,13 @@ def wait_for_clash_main_menu(vm_index, logger: Logger) -> bool:
 
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu(vm_index):
+            print('Handling trophy reward menu')
             handle_trophy_reward_menu(vm_index, logger)
             time.sleep(2)
             continue
 
         # click deadspace
-        print('deadspace click')
+        print("deadspace click while waiting for clash main")
         click(
             vm_index,
             CLASH_MAIN_MENU_DEADSPACE_COORD[0],
