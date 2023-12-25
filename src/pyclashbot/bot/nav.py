@@ -12,6 +12,15 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
+from pyclashbot.detection.image_rec import (
+    make_reference_image_list,
+    get_file_count,
+    find_references,
+    get_first_location,
+)
+
+
+
 _2V2_START_WAIT_TIMEOUT = 120  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
@@ -380,10 +389,43 @@ def handle_daily_defenses_rank_page(vm_index,logger):
     timeout = 2
     start_time=time.time()
     while time.time() - start_time < timeout:
-        if check_for_daily_defenses_rank_page(vm_index):
+        if check_for_daily_defenses_rank_page(vm_index) or check_for_daily_defenses_rank_page_2(vm_index):
             click(vm_index,150,260)
             time.sleep(2)
             logger.change_status('Handled daily defenses rank page')
+
+
+
+
+def check_for_daily_defenses_rank_page_2(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[259][160],
+        iar[273][144],
+        iar[258][131],
+        iar[258][285],
+        iar[272][271],
+        iar[258][256],
+        iar[247][260],
+
+    ]
+    colors = [
+[ 61 ,168, 233],
+[ 22 ,119, 220],
+[ 39 ,159, 229],
+[ 71 ,168, 243],
+[ 37 ,127, 222],
+[ 56 ,173, 237],
+[ 67 ,165, 238],
+
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
 
 def check_for_daily_defenses_rank_page(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
@@ -1297,6 +1339,9 @@ if __name__ == "__main__":
 
 
     # print(check_for_daily_defenses_rank_page(vm_index))
-    handle_daily_defenses_rank_page(vm_index,logger)
+    # handle_daily_defenses_rank_page(vm_index,logger)
 
-    print('done')
+    # print('done')
+
+
+    handle_daily_defenses_rank_page(vm_index,logger)
