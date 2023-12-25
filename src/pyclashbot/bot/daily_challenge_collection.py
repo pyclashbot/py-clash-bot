@@ -291,20 +291,19 @@ def check_rewards_menu_pixels(vm_index):
     ]
 
     colors = [
-        [125, 161, 188],
-        [181, 211, 231],
-        [126, 162, 189],
-        [223, 131, 28],
-        [113, 156, 0],
+[140 ,179, 205],
+[181 ,211, 229],
+[142 ,180, 208],
+[226 ,134,  31],
+[113 ,157,   0],
     ]
 
     bools = []
     for i, p in enumerate(pixels):
+        print(p)
         bool = pixel_is_equal(p, colors[i], 15)
         bools.append(not (bool))
 
-    # patching buggy task 2 reward
-    bools[1] = check_for_task_2_reward(vm_index)
 
     return bools
 
@@ -313,12 +312,9 @@ if __name__ == "__main__":
     vm_index = 12
     logger = Logger()
 
-    # rewards = check_rewards_menu_pixels(vm_index)
+    bools = check_rewards_menu_pixels(vm_index)
 
-    # for r in rewards:
-    #     print(r)
+    for b in bools:
+        print(b)
+    print('\n')
 
-    # print(len(rewards))
-    # print('----------')
-
-    print(check_for_task_2_reward(vm_index))

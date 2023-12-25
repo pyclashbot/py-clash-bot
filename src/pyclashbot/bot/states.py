@@ -85,6 +85,10 @@ def state_tree(
 
         logger.log("Entered the restart state after a failure in another state...")
 
+        # input(
+        #     "User input before doing restart state!\nUser input before doing restart state!\nUser input before doing restart state!\nUser input before doing restart state!"
+        # )
+
         # close app
         logger.log("Running close_clash_royale_app()")
         close_clash_royale_app(logger, vm_index)
@@ -136,8 +140,6 @@ def state_tree(
 
         accout_index = job_list["next_account"]
 
-
-
         if (
             switch_accounts(
                 vm_index, logger, job_list["random_account_switch_list"][accout_index]
@@ -156,8 +158,9 @@ def state_tree(
         )
 
         # update current account # to GUI
-        logger.change_current_account(job_list["random_account_switch_list"][accout_index])
-
+        logger.change_current_account(
+            job_list["random_account_switch_list"][accout_index]
+        )
 
         return next_state
 
@@ -432,37 +435,37 @@ def state_tree(
 if __name__ == "__main__":
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
-        "open_battlepass_user_toggle":False,
-        "open_chests_user_toggle":False,
-        "request_user_toggle":False,
-        "donate_toggle":False,
-        "card_mastery_user_toggle":False,
-        "memu_attach_mode_toggle":False,
-        "free_offer_user_toggle":False,
-        "gold_offer_user_toggle":False,
-        "1v1_battle_user_toggle":False,
-        "2v2_battle_user_toggle":False,
-        "upgrade_user_toggle":False,
-        "war_user_toggle":False,
-        "random_decks_user_toggle":False,
-        "open_bannerbox_user_toggle":False,
-        "daily_rewards_user_toggle":False,
-        "random_plays_user_toggle":False,
-        "skip_fight_if_full_chests_user_toggle":False,
-        "battlepass_collect_user_toggle":False,
-        "disable_win_track_toggle":False,
+        "open_battlepass_user_toggle": False,
+        "open_chests_user_toggle": False,
+        "request_user_toggle": False,
+        "donate_toggle": False,
+        "card_mastery_user_toggle": False,
+        "memu_attach_mode_toggle": False,
+        "free_offer_user_toggle": False,
+        "gold_offer_user_toggle": False,
+        "1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": False,
+        "upgrade_user_toggle": False,
+        "war_user_toggle": False,
+        "random_decks_user_toggle": False,
+        "open_bannerbox_user_toggle": False,
+        "daily_rewards_user_toggle": False,
+        "random_plays_user_toggle": False,
+        "skip_fight_if_full_chests_user_toggle": False,
+        "battlepass_collect_user_toggle": False,
+        "disable_win_track_toggle": False,
         # job increments
-        "card_upgrade_increment_user_input":1,
-        "shop_buy_increment_user_input":1,
-        "daily_reward_increment_user_input":1,
-        "card_mastery_collect_increment_user_input":1,
-        "deck_randomization_increment_user_input":1,
-        "battlepass_collect_increment_user_input":1,
+        "card_upgrade_increment_user_input": 1,
+        "shop_buy_increment_user_input": 1,
+        "daily_reward_increment_user_input": 1,
+        "card_mastery_collect_increment_user_input": 1,
+        "deck_randomization_increment_user_input": 1,
+        "battlepass_collect_increment_user_input": 1,
         # account switching input info
-        "account_switching_toggle":False,
-        "account_switching_slider":False,
-        "next_account":1,
-        "random_account_switch_list":[1],
+        "account_switching_toggle": False,
+        "account_switching_slider": False,
+        "next_account": 1,
+        "random_account_switch_list": [1],
     }
     state = "account_switch"
     while 1:
