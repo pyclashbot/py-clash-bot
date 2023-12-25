@@ -103,29 +103,36 @@ class Logger:
         self.winrate: str = "00.0%"
 
         # job stats
-        self.requests = 0
-        self.shop_buys = 0
-        self.daily_reward_attempts = 0
-        self.donates = 0
         self.battlepass_collects = 0
-        self.daily_rewards = 0
-        self.request_attempts = 0
-        self.donate_attempts = 0
-        self.deck_randomize_attempts = 0
-        self.chests_unlocked = 0
+        self.battlepass_collect_attempts = 0
+        self.bannerbox_collects = 0
         self.cards_upgraded = 0
         self.card_upgrade_attempts = 0
         self.card_mastery_reward_collections = 0
-        self.shop_offer_collections = 0
-        self.shop_buy_attempts = 0
-        self.battlepass_collect_attempts = 0
         self.chest_unlock_attempts = 0
         self.card_mastery_reward_collection_attempts = 0
+        self.chests_unlocked = 0
+        self.daily_rewards = 0
+        self.donates = 0
+        self.daily_reward_attempts = 0
+        self.donate_attempts = 0
+        self.deck_randomize_attempts = 0
+        self.request_attempts = 0
+        self.requests = 0
+        self.shop_buys = 0
+        self.shop_offer_collections = 0
+        self.shop_buy_attempts = 0
         self.war_attempts = 0
-        self.switch_account_attempts = 0
-        self.account_switches = 0
-        self.current_account = "-"
+
+
+
+
+        #account stuff
         self.account_order = '-'
+        self.current_account = "-"
+        self.account_switches = 0
+        self.switch_account_attempts = 0
+
 
         # restart stats
         self.auto_restarts = 0
@@ -171,6 +178,7 @@ class Logger:
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "shop_offer_collections": self.shop_offer_collections,
                 "battlepass_collects": self.battlepass_collects,
+                'bannerbox_collects':self.bannerbox_collects,
                 "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
                 "winrate": self.winrate,
@@ -419,6 +427,12 @@ class Logger:
     def add_battlepass_collect_attempt(self):
         """increments logger's battlepass_collect_attempts by 1"""
         self.battlepass_collect_attempts += 1
+
+    def add_bannerbox_collect(self):
+        """increments logger's bannerbox_collects by 1"""
+        self.bannerbox_collects += 1
+
+
 
     def add_daily_reward_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""

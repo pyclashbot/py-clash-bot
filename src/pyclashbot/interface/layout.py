@@ -135,6 +135,8 @@ account_switching_layout = [
                         text_color="blue",
                         size=(5, 1),
                     ),
+                ],
+                [
                     sg.Text("Account Order"),
                     sg.Text(
                         "-",
@@ -146,7 +148,7 @@ account_switching_layout = [
                 ],
             ],
             title="Account Switching",
-            expand_x=True,
+            # expand_x=True,
         ),
         sg.Frame(
             layout=[
@@ -162,6 +164,7 @@ account_switching_layout = [
             expand_x=True,
             expand_y=True,
         ),
+    sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True, expand_y = True),
     ]
 ]
 
@@ -182,7 +185,7 @@ stats_tab_layout = [
                         expand_x=True,
                     )
                 ],
-                [sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True)],
+
             ],
             expand_x=True,
             expand_y=True,

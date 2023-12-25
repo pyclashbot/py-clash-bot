@@ -39,6 +39,9 @@ collection_stats_titles: list[list[Text]] = [
         sg.Text("Card Mastery Rewards: "),
     ],
     [
+        sg.Text("Bannerbox Collects: "),
+    ],
+    [
         sg.Text("Cards Upgraded: "),
     ],
     [
@@ -68,6 +71,9 @@ collection_stats_values: list[list[Text]] = [
     ],
     [
         stat_box("card_mastery_reward_collections"),
+    ],
+    [
+        stat_box("bannerbox_collects"),
     ],
     [
         stat_box("upgrades"),
