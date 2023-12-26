@@ -14,32 +14,6 @@ def collect_daily_rewards_state(vm_index, logger, next_state):
     return next_state
 
 
-def check_for_daily_rewards(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[185][40],
-        iar[195][40],
-        iar[200][45],
-        iar[210][45],
-        iar[220][40],
-        iar[230][40],
-    ]
-    colors = [
-        [232, 202, 0],
-        [179, 123, 0],
-        [17, 114, 181],
-        [62, 60, 88],
-        [174, 78, 5],
-        [244, 223, 15],
-    ]
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], 10):
-            return True
-
-    return False
-
-
 def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     # if not on clash main, reutrn False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -54,21 +28,21 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
 
     # click first task's reward
     if rewards[0]:
-        click(vm_index, 195, 190)
+        click(vm_index, 90, 191)
         logger.change_status("Collected 1st daily challenge reward")
-        logger.add_daily_reward()
-        time.sleep(1)
-
-    # click third task's reward
-    if rewards[2]:
-        click(vm_index, 207, 320)
-        logger.change_status("Collected 2nd daily challenge reward")
         logger.add_daily_reward()
         time.sleep(1)
 
     # click second task's reward
     if rewards[1]:
-        click(vm_index, 250, 254)
+        click(vm_index, 90, 260)
+        logger.change_status("Collected 2nd daily challenge reward")
+        logger.add_daily_reward()
+        time.sleep(1)
+
+    # click third task's reward
+    if rewards[2]:
+        click(vm_index, 90, 330)
         logger.change_status("Collected 3rd daily challenge reward")
         logger.add_daily_reward()
         time.sleep(1)
@@ -257,43 +231,22 @@ def check_which_rewards_are_available(vm_index, logger):
     return rewards
 
 
-def check_for_task_2_reward(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[247][270],
-        iar[251][87],
-        iar[274][270],
-        iar[244][88],
-    ]
-    colors = [
-        [84, 228, 255],
-        [84, 225, 253],
-        [84, 228, 253],
-        [78, 226, 254],
-    ]
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], 15):
-            return False
-    return True
-
-
 def check_rewards_menu_pixels(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-        iar[192][345],
-        iar[345][262],
-        iar[330][345],
-        iar[415][242],
-        iar[502][235],
+        iar[206][80],
+        iar[275][80],
+        iar[344][80],
+        iar[440][80],
+        iar[536][80],
     ]
 
     colors = [
-        [140, 179, 205],
-        [181, 211, 229],
-        [142, 180, 208],
-        [226, 134, 31],
-        [113, 157, 0],
+        [176, 206, 225],
+        [176, 206, 225],
+        [176, 206, 225],
+        [225, 133, 30],
+        [114, 156, 1],
     ]
 
     bool_list = []
