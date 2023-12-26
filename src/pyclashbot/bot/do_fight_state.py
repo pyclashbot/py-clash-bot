@@ -876,7 +876,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # click that play coord
         click(vm_index, play_coord[0], play_coord[1])
         logger.add_card_played()
-        time.sleep(0.1)
+        time.sleep(1.5)
 
         # increment plays counter
         plays += 1
@@ -978,7 +978,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # click that play coord
         click(vm_index, play_coord[0], play_coord[1])
         logger.add_card_played()
-        time.sleep(0.1)
+        time.sleep(1.5)
 
         logger.change_status(
             status=f"Played card: {id_string} on {this_play_side} side"

@@ -135,12 +135,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         logger.change_status(status="Can't request right now.")
 
     # return to clash main
-    click(vm_index, 173, 596)
-    time.sleep(3)
-
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("Not on clash main after requesting. Returning restart")
-        return "restart"
+    wait_for_clash_main_menu(vm_index,logger,deadspace_click=False)
 
     return next_state
 
@@ -162,11 +157,12 @@ def count_scrolls_in_request_page(vm_index) -> int:
         scrolls += 1
         time.sleep(1)
 
-    # scroll back to top
-    for _ in range(14):
-        print(f'Scrolling up: {14-_}')
-        scroll_up(vm_index)
-        time.sleep(0.1)
+    #close request screen with deadspace click
+    click(vm_index, 15, 300,clicks=3,interval = 1)
+
+    #reopen request page
+    click(vm_index=vm_index, x_coord=77, y_coord=536)
+    time.sleep(0.1)
 
     return scrolls
 
