@@ -33,12 +33,26 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         logger.add_daily_reward()
         time.sleep(1)
 
+        #click deadspace a few times
+        click(vm_index,10,350,clicks=5,interval=1)
+
+        # reopen daily rewards menu
+        click(vm_index, 41, 206)
+        time.sleep(2)
+
     # click second task's reward
     if rewards[1]:
         click(vm_index, 90, 260)
         logger.change_status("Collected 2nd daily challenge reward")
         logger.add_daily_reward()
         time.sleep(1)
+
+        #click deadspace a few times
+        click(vm_index,10,350,clicks=5,interval=1)
+
+        # reopen daily rewards menu
+        click(vm_index, 41, 206)
+        time.sleep(2)
 
     # click third task's reward
     if rewards[2]:
@@ -82,6 +96,7 @@ def collect_daily_bonus(vm_index, logger) -> bool:
     time.sleep(1)
 
     # click deadspace a bunch
+    print('deadspace clicks')
     click(vm_index, 10, 300, clicks=15, interval=1)
 
     # if not on clash main, retunr False

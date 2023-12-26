@@ -81,12 +81,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
         return "restart"
 
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            status="Error 4069852734098 Not on clash main to begin war state"
-        )
-        return "restart"
-
+    #check if in a clan
     logger.change_status(status="Making sure in a clan before war battle")
     in_a_clan_check = war_state_check_if_in_a_clan(vm_index, logger)
 
@@ -99,7 +94,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     if not in_a_clan_check:
         logger.change_status(status="Not in a clan so skipping war...")
 
-        return "no clan"
+        return next_state
 
     # get to clan page
     logger.change_status(status="Starting a war battle")
