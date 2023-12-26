@@ -159,8 +159,8 @@ class Logger:
             self.stats = {
                 "wins": self.wins,
                 "losses": self.losses,
-                "friendly_crowns": self.friendly_crowns,
-                "enemy_crowns": self.enemy_crowns,
+                # "friendly_crowns": self.friendly_crowns,
+                # "enemy_crowns": self.enemy_crowns,
                 "1v1_fights": self._1v1_fights,
                 "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,

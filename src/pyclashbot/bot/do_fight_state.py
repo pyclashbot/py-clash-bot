@@ -554,7 +554,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         time.sleep(0.33)
 
     cards_played = logger.get_cards_played()
-    logger.change_status(f"Played ~{cards_played - prev_cards_played} ht")
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this 1v1 game")
     return "good"
 
 
@@ -593,12 +593,12 @@ def check_for_4_elixer(vm_index):
     """method to check for 4 elixer during a battle"""
 
     iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[621][205],
-        iar[620][224],
+    pixels= [
+        iar[619][205],
+        iar[619][225],
     ]
     for p in pixels:
-        if not pixel_is_equal(p, [204, 31, 198], tol=45):
+        if not pixel_is_equal(p, [203, 31, 209], tol=45):
             return False
     return True
 
@@ -870,7 +870,6 @@ def check_pixels_for_win_in_battle_log(vm_index) -> bool:
     return True
 
 
-
 def check_for_2v2_battle_confirmation_page(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
@@ -883,11 +882,11 @@ def check_for_2v2_battle_confirmation_page(vm_index):
     ]
 
     colors = [
-[220, 110,   1],
-[215, 107,   0],
-[ 42 ,187, 255],
-[ 42 ,188, 254],
-[ 78,  74, 211],
+        [220, 110, 1],
+        [215, 107, 0],
+        [42, 187, 255],
+        [42, 188, 254],
+        [78, 74, 211],
     ]
 
     for i, p in enumerate(pixels):
@@ -897,10 +896,10 @@ def check_for_2v2_battle_confirmation_page(vm_index):
     return True
 
 
-def handle_open_2v2_battle_confirmation_page(vm_index,logger):
+def handle_open_2v2_battle_confirmation_page(vm_index, logger):
     if check_for_2v2_battle_confirmation_page(vm_index):
-        logger.log('Handling open 2v2 confirmation page')
-        click(vm_index,342,83)
+        logger.log("Handling open 2v2 confirmation page")
+        click(vm_index, 342, 83)
         time.sleep(1)
         return True
     return False
@@ -917,10 +916,10 @@ def check_if_stuck_on_card_page(vm_index):
     ]
 
     colors = [
-[ 53, 174, 226],
-[ 74 ,227,  55],
-[142 ,108,  73],
-[143 ,110,  72],
+        [53, 174, 226],
+        [74, 227, 55],
+        [142, 108, 73],
+        [143, 110, 72],
     ]
 
     for i, p in enumerate(pixels):
@@ -929,11 +928,50 @@ def check_if_stuck_on_card_page(vm_index):
             return False
     return True
 
-def handle_stuck_on_card_page(vm_index):
-    if check_if_stuck_on_card_page(vm_index):
-        click(vm_index, 241,598)
+
+def check_if_stuck_on_shop_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[17][298],
+        iar[20][331],
+        iar[584][22],
+        iar[584][110],
+        iar[619][22],
+        iar[621][111],
+    ]
+
+    colors = [
+        [55, 178, 232],
+        [74, 228, 53],
+        [138, 103, 70],
+        [137, 104, 71],
+        [152, 117, 78],
+        [153, 118, 79],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=15):
+            return False
+    return True
+
+
+def handle_stuck_on_shop_page(vm_index):
+    if check_if_stuck_on_shop_page(vm_index):
+        click(vm_index, 242, 597)
         time.sleep(2)
         return True
+    return False
+
+
+def handle_stuck_on_card_page(vm_index):
+    if check_if_stuck_on_card_page(vm_index):
+        click(vm_index, 241, 598)
+        time.sleep(2)
+        return True
+    return False
+
 
 def get_to_main_after_fight(vm_index, logger, next_state):
     """method to handle the navigation between the end of a fight and the main menu"""
@@ -956,45 +994,51 @@ def get_to_main_after_fight(vm_index, logger, next_state):
             logger.log("Made it to clash main after a fight")
             break
 
-        #if on 2v2 battle confirmation page, click cancel
-        if handle_open_2v2_battle_confirmation_page(vm_index,logger):
-            time.sleep(1)
+        # if on 2v2 battle confirmation page, click cancel
+        if handle_open_2v2_battle_confirmation_page(vm_index, logger):
+            time.sleep(4)
 
         # if on challenges tab, click clash main tab
         if check_if_on_clash_main_challenges_tab(vm_index):
             logger.log("On challenges tab so clicking clash main icon")
             click(vm_index, 173, 591)
-            time.sleep(1)
+            time.sleep(4)
 
-        #if stuck on card page,
+        #if stuck on shop page,
+        if handle_stuck_on_shop_page(vm_index):
+            time.sleep(4)
+
+        # if stuck on card page,
         if handle_stuck_on_card_page(vm_index):
-            time.sleep(1)
+            time.sleep(4)
 
-        if handle_end_2v2_battle_condition_5(vm_index,logger):
-            time.sleep(1)
+        if handle_end_2v2_battle_condition_5(vm_index, logger):
+            time.sleep(4)
 
         # if on end of 2v2 battle screen, click EXIT
-        if  handle_end_2v2_battle_condition_1(vm_index, logger):
-            time.sleep(1)
+        if handle_end_2v2_battle_condition_1(vm_index, logger):
+            time.sleep(4)
 
         # if on end of 2v2 battle screen c2, click OK
-        if  handle_end_2v2_battle_condition_2(vm_index, logger):
-            time.sleep(1)
+        if handle_end_2v2_battle_condition_2(vm_index, logger):
+            time.sleep(4)
 
         # if on end of 2v2 battle screen c3, click OK
-        if  handle_end_2v2_battle_condition_3(logger, vm_index):
-            time.sleep(1)
+        if handle_end_2v2_battle_condition_3(logger, vm_index):
+            time.sleep(4)
 
-        if  handle_end_2v2_battle_condition_4(vm_index,logger):
-            time.sleep(1)
+        if handle_end_2v2_battle_condition_4(vm_index, logger):
+            time.sleep(4)
 
         # if on end of 1v1 battle screen c1, click OK
-        if  handle_end_1v1_battle_condition_1(vm_index, logger):
-            time.sleep(1)
+        if handle_end_1v1_battle_condition_1(vm_index, logger):
+            time.sleep(4)
 
         # if on end of 1v1 battle screen c2, click OK
-        if  handle_end_1v1_battle_condition_2(vm_index, logger):
-            time.sleep(1)
+        if handle_end_1v1_battle_condition_2(vm_index, logger):
+            time.sleep(4)
+
+        time.sleep(2)
 
     return next_state
 
@@ -1012,12 +1056,12 @@ def check_for_end_2v2_battle_condition_5(vm_index):
     ]
 
     colors = [
-[253 ,150,  49],
-[253, 150,  49],
-[253, 250, 249],
-[254 ,174,  80],
-[255 ,254, 245],
-[253, 172,  78],
+        [253, 150, 49],
+        [253, 150, 49],
+        [253, 250, 249],
+        [254, 174, 80],
+        [255, 254, 245],
+        [253, 172, 78],
     ]
 
     for i, p in enumerate(pixels):
@@ -1026,14 +1070,13 @@ def check_for_end_2v2_battle_condition_5(vm_index):
             return False
     return True
 
-def handle_end_2v2_battle_condition_5(vm_index,logger):
+
+def handle_end_2v2_battle_condition_5(vm_index, logger):
     if check_for_end_2v2_battle_condition_5(vm_index):
-        click(vm_index,79,599,clicks=2,interval=0.1)
-        logger.log('Handled end 2v2 battle (c5)')
+        click(vm_index, 79, 599, clicks=2, interval=0.1)
+        logger.log("Handled end 2v2 battle (c5)")
         return True
     return False
-
-
 
 
 def check_for_end_2v2_battle_condition_4(vm_index):
@@ -1059,11 +1102,11 @@ def check_for_end_2v2_battle_condition_4(vm_index):
     return True
 
 
-def handle_end_2v2_battle_condition_4(vm_index,logger):
+def handle_end_2v2_battle_condition_4(vm_index, logger):
     if check_for_end_2v2_battle_condition_4(vm_index):
-        click(vm_index,80,595)
+        click(vm_index, 80, 595)
         time.sleep(1)
-        logger.log('Handled end 2v2 battle (c4)')
+        logger.log("Handled end 2v2 battle (c4)")
         return True
     return False
 
@@ -1275,5 +1318,6 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
 if __name__ == "__main__":
     # print(check_for_2v2_battle_confirmation_page(12))
-    print(check_if_stuck_on_card_page(12))
+    # print(check_if_stuck_on_card_page(12))
 
+    print(check_if_stuck_on_shop_page(12))

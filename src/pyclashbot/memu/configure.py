@@ -24,7 +24,7 @@ MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
     "cpucap": 50,
     "cpus": numpy.clip(cpu_count // 2, 2, 6),
     "memory": numpy.clip(total_mem // 2, 2048, 4096),
-    "fps": 30,
+    "fps": 60,
     "turbo_mode": 0,
     "enable_audio": 0,
     "is_hide_toolbar": 1,
