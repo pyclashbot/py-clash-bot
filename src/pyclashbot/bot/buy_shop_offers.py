@@ -165,6 +165,7 @@ def buy_shop_offers_state(
 
         # scroll a little
         logger.change_status("Searching for offers to buy")
+        print("Time taken in shop: ",str(time.time() - start_time)[:5])
         scroll_down_slowly_in_shop_page(vm_index)
         time.sleep(0.33)
 

@@ -577,10 +577,10 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
         if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
             return "restart"
 
-        if mode == "1v1" and not check_if_in_battle(vm_index):
+        if mode == "1v1" and not check_for_in_battle_with_delay(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
-        if mode == "2v2" and not check_if_in_battle(vm_index):
+        if mode == "2v2" and not check_for_in_battle_with_delay(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
 

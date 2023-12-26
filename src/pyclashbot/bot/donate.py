@@ -81,6 +81,10 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
         click(vm_index, 48, 132)
         time.sleep(1)
 
+        # click deadspace
+        click(vm_index, 10, 233)
+        time.sleep(0.33)
+
     # get to clash main
     logger.change_status("Returning to clash main after donating")
     click(vm_index, 175, 600, clicks=3)
@@ -210,4 +214,8 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    pass
+    vm_index = 12
+    # scroll_up(vm_index)
+    time.sleep(1)
+
+    # click deadspace after scroll

@@ -149,7 +149,7 @@ def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
     logger.change_status(status="Doing random scrolling in request page")
     for _ in range(scrolls):
         scroll_down_in_request_page(vm_index)
-        time.sleep(2)
+        time.sleep(1)
     logger.change_status(status="Done with random scrolling in request page")
 
 
@@ -157,12 +157,14 @@ def count_scrolls_in_request_page(vm_index) -> int:
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
     while check_if_can_scroll_in_request_page(vm_index):
+        print(f'One scroll down. Count is {scrolls}')
         scroll_down_in_request_page(vm_index)
         scrolls += 1
-        time.sleep(2)
+        time.sleep(1)
 
     # scroll back to top
     for _ in range(14):
+        print(f'Scrolling up: {14-_}')
         scroll_up(vm_index)
         time.sleep(0.1)
 
