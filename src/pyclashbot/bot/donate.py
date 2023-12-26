@@ -87,7 +87,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
 
     # get to clash main
     logger.change_status("Returning to clash main after donating")
-    click(vm_index, 175, 600, clicks=3)
+    click(vm_index, 175, 600, clicks=1)
     time.sleep(5)
 
     # handle geting stuck on trophy road screen
