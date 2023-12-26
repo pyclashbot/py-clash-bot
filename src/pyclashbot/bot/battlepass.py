@@ -6,7 +6,8 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     get_file_count,
     find_references,
-    get_first_location,pixel_is_equal
+    get_first_location,
+    pixel_is_equal,
 )
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 
@@ -110,8 +111,13 @@ def collect_battlepass(vm_index, logger) -> bool:
         else:
             logger.change_status("Failed to collect a battlepass reward")
 
+    time.sleep(3)
+
     # if not on clash main, return false
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if (
+        check_if_on_clash_main_menu(vm_index) is not True
+        and check_if_on_clash_main_menu(vm_index) is not True
+    ):
         logger.change_status("Not on clash main after claiming battlepass rewards")
         return False
 
@@ -150,7 +156,7 @@ def collect_1_battlepass_reward(vm_index, logger):
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
         click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
-        time.sleep(1)
+        time.sleep(3)
 
         # click deadspace until back to battlepass page
         logger.log("Skipping thru this battlepass reward")

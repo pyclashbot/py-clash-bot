@@ -337,8 +337,8 @@ def state_tree(
         # return output of this state
         return card_mastery_state(vm_index, logger, next_state)
 
-    if state == "start_fight":  # --> 1v1_fight, card_mastery
-        next_state = "card_mastery"
+    if state == "start_fight":  # --> 1v1_fight, war
+        next_state = "war"
 
         _1v1_toggle = job_list["1v1_battle_user_toggle"]
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
