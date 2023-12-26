@@ -691,7 +691,7 @@ def handle_trophy_reward_menu(
 #     return False
 
 
-def wait_for_clash_main_menu(vm_index, logger: Logger) -> bool:
+def wait_for_clash_main_menu(vm_index, logger: Logger,deadspace_click = True) -> bool:
     """
     Waits for the user to be on the clash main menu.
     Returns True if on main menu, False if not.
@@ -712,12 +712,13 @@ def wait_for_clash_main_menu(vm_index, logger: Logger) -> bool:
             continue
 
         # click deadspace
-        print("deadspace click while waiting for clash main")
-        click(
-            vm_index,
-            CLASH_MAIN_MENU_DEADSPACE_COORD[0],
-            CLASH_MAIN_MENU_DEADSPACE_COORD[1],
-        )
+        if deadspace_click:
+            print("deadspace click while waiting for clash main")
+            click(
+                vm_index,
+                CLASH_MAIN_MENU_DEADSPACE_COORD[0],
+                CLASH_MAIN_MENU_DEADSPACE_COORD[1],
+            )
         time.sleep(1)
 
     time.sleep(1)
