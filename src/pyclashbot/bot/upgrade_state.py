@@ -109,9 +109,9 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     # return to clash main
     click(vm_index, 245, 593)
-    time.sleep(3)
+    time.sleep(4)
 
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True and check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
             status="Not on clash main after upgrading cards. Returning restart"
         )

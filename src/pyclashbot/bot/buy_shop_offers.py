@@ -181,7 +181,7 @@ def buy_shop_offers_state(
                 start_time = time.time()
 
                 #if purchase total exceeds 6, then it's done
-                if purchase_total > 6:
+                if purchase_total == 6:
                     break
 
     logger.change_status('Done buying offers. Returning to clash main')

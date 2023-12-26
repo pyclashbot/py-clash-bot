@@ -234,28 +234,31 @@ def check_which_rewards_are_available(vm_index, logger):
 def check_rewards_menu_pixels(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-        iar[206][80],
-        iar[275][80],
-        iar[344][80],
-        iar[440][80],
-        iar[536][80],
+        iar[206][117],
+        iar[273][112],
+        iar[341][115],
+        iar[413][233],
+        iar[530][216],
     ]
 
     colors = [
-        [176, 206, 225],
-        [176, 206, 225],
-        [176, 206, 225],
-        [225, 133, 30],
-        [114, 156, 1],
+        [181, 211, 229],
+        [182, 212, 230],
+        [181, 211, 229],
+        [224, 132, 29],
+        [113, 156, 0],
     ]
 
     bool_list = []
     for i, p in enumerate(pixels):
-        this_bool = pixel_is_equal(p, colors[i], 15)
+        # print(p)
+        this_bool = pixel_is_equal(p, colors[i], 5)
         bool_list.append(not this_bool)
 
     return bool_list
 
 
 if __name__ == "__main__":
-    pass
+    bs=check_rewards_menu_pixels(12)
+    for b in bs:
+        print(b)
