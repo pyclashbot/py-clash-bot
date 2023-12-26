@@ -135,7 +135,8 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        click(vm_index=vm_index, x_coord=20, y_coord=200)
+        if random.randint(0,2)==1:
+            click(vm_index=vm_index, x_coord=20, y_coord=200)
 
     return False
 
@@ -167,9 +168,8 @@ def wait_for_1v1_battle_start(
                 status="Error 8734572456 Waiting too long for 1v1 battle to start"
             )
             return "restart"
-
-        click(vm_index=vm_index, x_coord=200, y_coord=200)
-        time.sleep(1)
+        print('Waiting for 1v1 start')
+        if random.randint(1,3)==3:click(vm_index=vm_index, x_coord=200, y_coord=200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")

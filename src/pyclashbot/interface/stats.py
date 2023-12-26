@@ -104,12 +104,12 @@ battle_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Losses: "),
     ],
-    [
-        sg.Text("Friendly crowns: "),
-    ],
-    [
-        sg.Text("Enemy crowns: "),
-    ],
+    # [
+    #     sg.Text("Friendly crowns: "),
+    # ],
+    # [
+    #     sg.Text("Enemy crowns: "),
+    # ],
     [
         sg.Text("Win Rate: "),
     ],
@@ -137,12 +137,12 @@ battle_stats_values = [
     [
         stat_box("losses"),
     ],
-    [
-        stat_box("friendly_crowns"),
-    ],
-    [
-        stat_box("enemy_crowns"),
-    ],
+    # [
+    #     stat_box("friendly_crowns"),
+    # ],
+    # [
+    #     stat_box("enemy_crowns"),
+    # ],
     [
         stat_box("winrate"),
     ],
