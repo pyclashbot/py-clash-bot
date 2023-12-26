@@ -221,7 +221,7 @@ def check_if_in_battle(vm_index) -> bool:
     ]
 
     for index, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[index], tol=35):
+        if not pixel_is_equal(pixel, colors[index], tol=55):
             return False
 
     return True
