@@ -554,7 +554,9 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         time.sleep(0.33)
 
     cards_played = logger.get_cards_played()
-    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this 1v1 game")
+    logger.change_status(
+        f"Played ~{cards_played - prev_cards_played} cards this 1v1 game"
+    )
     return "good"
 
 
@@ -593,7 +595,7 @@ def check_for_4_elixer(vm_index):
     """method to check for 4 elixer during a battle"""
 
     iar = numpy.asarray(screenshot(vm_index))
-    pixels= [
+    pixels = [
         iar[619][205],
         iar[619][225],
     ]
@@ -973,75 +975,108 @@ def handle_stuck_on_card_page(vm_index):
     return False
 
 
+from pyclashbot.detection.image_rec import make_reference_image_list, find_references, get_file_count, get_first_location
+
+
+def find_exit_battle_button(vm_index):
+
+    folder = "exit_battle_button"
+
+    names = make_reference_image_list(get_file_count(folder))
+    locations: list[list[int] | None] = find_references(
+        screenshot(vm_index),
+        folder,
+        names,
+        tolerance=0.9,
+    )
+
+    coord = get_first_location(locations)
+
+    if coord is None:
+        return None
+
+    return [coord[1], coord[0]]
+
+
+
+def find_ok_battle_button(vm_index):
+
+    folder = "ok_post_battle_button"
+
+    names = make_reference_image_list(get_file_count(folder))
+    locations: list[list[int] | None] = find_references(
+        screenshot(vm_index),
+        folder,
+        names,
+        tolerance=0.9,
+    )
+
+    coord = get_first_location(locations)
+
+    if coord is None:
+        return None
+
+    return [coord[1], coord[0]]
+
+
+def check_for_events_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[600][401],
+        iar[590][367],
+        iar[598][59],
+        iar[599][256],
+    ]
+
+    colors = [
+[144 ,108,  74],
+[109 ,203, 150],
+[102 , 83,  70],
+[122 , 75, 250],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=15):
+            return False
+    return True
+
+
+
 def get_to_main_after_fight(vm_index, logger, next_state):
     """method to handle the navigation between the end of a fight and the main menu"""
 
     start_time = time.time()
 
-    logger.log("Counting crowns")
-    friendly_crowns, enemy_crowns = count_crowns(vm_index, logger)
-    logger.log(f"Score last match was: {friendly_crowns}/{enemy_crowns}")
+    timeout = 60#s
+    while time.time() - start_time < timeout:
 
-    while 1:
-        logger.log("Getting back to clash main")
-
-        if time.time() - start_time > POST_FIGHT_TIMEOUT:
-            logger.log("took too long to get to clash main after a fight")
-            return "restart"
-
-        # if on main, we're done
+        #if on clash main, return next_state
         if check_if_on_clash_main_menu(vm_index) is True:
-            logger.log("Made it to clash main after a fight")
-            break
+            print('Made it to clash main after a fight')
+            return next_state
 
-        # if on 2v2 battle confirmation page, click cancel
-        if handle_open_2v2_battle_confirmation_page(vm_index, logger):
-            time.sleep(4)
+        #check for exit button
+        exit_button_coord = find_exit_battle_button(vm_index)
+        if exit_button_coord is not None:
+            print('Found exit button, clicking it.')
+            click(vm_index, exit_button_coord[0], exit_button_coord[1])
+            time.sleep(3)
 
-        # if on challenges tab, click clash main tab
-        if check_if_on_clash_main_challenges_tab(vm_index):
-            logger.log("On challenges tab so clicking clash main icon")
-            click(vm_index, 173, 591)
-            time.sleep(4)
 
-        #if stuck on shop page,
-        if handle_stuck_on_shop_page(vm_index):
-            time.sleep(4)
+        #check for OK button after battle
+        ok_button_coord = find_ok_battle_button(vm_index)
+        if ok_button_coord is not None:
+            print('Found OK button, clicking it.')
+            click(vm_index, ok_button_coord[0], ok_button_coord[1])
+            time.sleep(3)
 
-        # if stuck on card page,
-        if handle_stuck_on_card_page(vm_index):
-            time.sleep(4)
-
-        if handle_end_2v2_battle_condition_5(vm_index, logger):
-            time.sleep(4)
-
-        # if on end of 2v2 battle screen, click EXIT
-        if handle_end_2v2_battle_condition_1(vm_index, logger):
-            time.sleep(4)
-
-        # if on end of 2v2 battle screen c2, click OK
-        if handle_end_2v2_battle_condition_2(vm_index, logger):
-            time.sleep(4)
-
-        # if on end of 2v2 battle screen c3, click OK
-        if handle_end_2v2_battle_condition_3(logger, vm_index):
-            time.sleep(4)
-
-        if handle_end_2v2_battle_condition_4(vm_index, logger):
-            time.sleep(4)
-
-        # if on end of 1v1 battle screen c1, click OK
-        if handle_end_1v1_battle_condition_1(vm_index, logger):
-            time.sleep(4)
-
-        # if on end of 1v1 battle screen c2, click OK
-        if handle_end_1v1_battle_condition_2(vm_index, logger):
-            time.sleep(4)
-
-        time.sleep(2)
-
-    return next_state
-
+        #if on events page, click clash main button
+        if check_for_events_page(vm_index):
+            print('Found events page, clicking clash main button.')
+            click(vm_index, 179,600)
+            time.sleep(3)
 
 def check_for_end_2v2_battle_condition_5(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
@@ -1320,4 +1355,12 @@ if __name__ == "__main__":
     # print(check_for_2v2_battle_confirmation_page(12))
     # print(check_if_stuck_on_card_page(12))
 
-    print(check_if_stuck_on_shop_page(12))
+    # print(check_if_stuck_on_shop_page(12))
+
+
+    pass
+
+
+    get_to_main_after_fight(12, Logger(), 'next_state')
+
+    # print(check_for_events_page(12))
