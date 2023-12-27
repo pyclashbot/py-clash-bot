@@ -883,7 +883,7 @@ def get_to_card_page_from_clash_main(
         click(
             vm_index, CARD_PAGE_ICON_FROM_CARD_PAGE[0], CARD_PAGE_ICON_FROM_CARD_PAGE[1]
         )
-        time.sleep(1)
+        time.sleep(2)
 
     if printmode:
         logger.change_status(status="Made it to card page")
