@@ -150,7 +150,7 @@ def collect_1_battlepass_reward(vm_index, logger):
 
     # Open the Battle Pass
     click(vm_index, 341, 123)
-    time.sleep(1.5)
+    time.sleep(2)
 
     while True:
         # Check for the "Claim Rewards" button
@@ -168,12 +168,16 @@ def collect_1_battlepass_reward(vm_index, logger):
             logger.change_status('Found "Claim" button')
             click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
             time.sleep(1)
-            logger.increment_battlepass_collects()
             logger.change_status('Claiming reward')
 
             # Wait to return to the Battle Pass page
             while not check_if_on_battlepass_page(vm_index):
+                if random.randint(1, 5):
+                    logger.log("Skipping thru this battlepass reward")
                 click(vm_index, 404, 33)
+
+            logger.log("Collected battlepass reward")
+            logger.increment_battlepass_collects()
 
         # Check for the button for additional rewards
         elif additional_rewards_button(vm_index):
@@ -190,7 +194,7 @@ def collect_1_battlepass_reward(vm_index, logger):
     click(vm_index, 206, 594)
     time.sleep(2)
 
-    return True
+    return False
 
 
 def find_claim_battlepass_rewards_button_with_delay(vm_index, delay):
