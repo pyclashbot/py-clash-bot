@@ -7,6 +7,7 @@ from typing import Any
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
@@ -74,9 +75,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Not on clash main at the start of upgrade_cards_state()")
-        logger.log(
-            "These are the pixels the bot saw after failing to find clash main:"
-        )
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -92,18 +91,16 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     # get upgrade list
     logger.change_status(status="Reading which cards are upgradable")
-    upgrade_list = get_upgradable_card_bool_list(vm_index, logger)
+    upgrade_index_list = get_upgradable_card_bool_list(vm_index, logger)
+    logger.change_status(f"There are {len(upgrade_index_list)} upgradable cards")
 
-    upgradeable_cards_count = 0
-    for upgrade_bool in upgrade_list:
-        if upgrade_bool:
-            upgradeable_cards_count += 1
 
-    logger.change_status(f"There are {upgradeable_cards_count} upgradable cards")
 
-    for card_index, upgrade_bool in enumerate(upgrade_list):
-        if upgrade_bool:
-            upgrade_card(vm_index, logger, card_index)
+    # upgrade each card
+    for card_index in upgrade_index_list:
+        print(f'upgrading index {card_index}')
+        while upgrade_card(vm_index, logger, card_index):
+            print(f'Upgraded card index {card_index}')
 
     logger.change_status(status="Done upgrading cards")
 
@@ -111,11 +108,10 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     click(vm_index, 245, 593)
     time.sleep(4)
 
-    if check_if_on_clash_main_menu(vm_index) is not True and check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            status="Not on clash main after upgrading cards. Returning restart"
-        )
-        return "restart"
+    #wait for main
+    if wait_for_clash_main_menu(vm_index, logger,deadspace_click = False) is False:
+        logger.change_status('Failed to wait for clash main after upgrading cards')
+        return 'restart'
 
     logger.update_time_of_last_card_upgrade(time.time())
     return next_state
@@ -161,7 +157,7 @@ def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
     return True
 
 
-def upgrade_card(vm_index, logger: Logger, card_index) -> None:
+def upgrade_card(vm_index, logger: Logger, card_index):
     """
     Upgrades a card if it is upgradable.
 
@@ -174,6 +170,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
     Returns:
         None
     """
+    upgraded_a_card = False
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
     # click the card
@@ -204,6 +201,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
 
     # if gold popup doesnt exists: add to logger's upgrade stat
     if not check_for_missing_gold_popup(vm_index):
+        upgraded_a_card=True
         prev_card_upgrades = logger.get_card_upgrades()
         logger.add_card_upgraded()
 
@@ -236,10 +234,14 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> None:
         logger.log("Missing gold popup exists. Skipping this upgradable card.")
 
     # click deadspace
-    logger.change_status(status="Clicking deadspace after attemping upgrading this card")
+    logger.change_status(
+        status="Clicking deadspace after attemping upgrading this card"
+    )
     for _ in range(4):
         click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
         time.sleep(1)
+
+    return upgraded_a_card
 
 
 def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
@@ -249,16 +251,15 @@ def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
     g = pixel[1]
     b = pixel[2]
 
-
-    #if more than 90 red, return False
+    # if more than 90 red, return False
     if r > 90:
         return False
 
-    #if g is less than 200, return False
+    # if g is less than 200, return False
     if g < 200:
         return False
 
-    #if more than 80 blue, return False
+    # if more than 80 blue, return False
     if b > 80:
         return False
 
@@ -285,7 +286,7 @@ def check_for_missing_gold_popup(vm_index):
 
 
 def get_upgradable_card_bool_list(vm_index, logger: Logger):
-    bool_list = []
+    index_list = []
 
     logger.change_status(status="Checking out which cards are upgradable")
 
@@ -297,6 +298,7 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
     click(vm_index, 14, 286)
     time.sleep(0.3)
 
+    # for each card
     for i, card_coord in enumerate(CARD_COORDS):
         # click the selected card
         click(vm_index, card_coord[0], card_coord[1])
@@ -304,18 +306,15 @@ def get_upgradable_card_bool_list(vm_index, logger: Logger):
 
         # see if green uprgade button exists in card context menu
         upgrade_coord = UPGRADE_PIXEL_COORDS[i]
-        bool_list.append(
-            check_if_pixel_indicates_upgradable_card(
-                numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]
-            )
-        )
-        # print(bool_list[-1])
+        if check_if_pixel_indicates_upgradable_card(
+            numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]
+        ):
+            index_list.append(i)
 
     # deadspace click
     click(vm_index, 14, 286)
 
-    return bool_list
-
+    return index_list
 
 
 if __name__ == "__main__":

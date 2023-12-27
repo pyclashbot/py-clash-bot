@@ -298,14 +298,17 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made dec
 
     logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
+    print("clicking edit deck button")
     click(vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # click random deck button
+    print("clicking random deck button")
     click(vm_index, RANDOM_DECK_BUTTON_COORD[0], RANDOM_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # close deck editor
+    print("Closing deck editor")
     click(
         vm_index,
         CLOSE_WAR_DECK_EDITOR_PAGE_BUTTON[0],

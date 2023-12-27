@@ -153,6 +153,11 @@ def collect_1_battlepass_reward(vm_index, logger):
             scroll_up_a_little(vm_index)
             time.sleep(3)
 
+        #find the claim rewards button again
+        claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
+            vm_index, delay=3
+        )
+
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
         click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])

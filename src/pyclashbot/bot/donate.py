@@ -3,7 +3,8 @@ This module contains functions related to donating cards in Clash of Clans.
 """
 import time
 import random
-
+import numpy
+from typing import Literal
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
@@ -21,6 +22,8 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import screenshot, click, scroll_up
 from pyclashbot.utils.logger import Logger
+from pyclashbot.bot.nav import get_to_profile_page, wait_for_clash_main_menu
+
 
 
 def donate_cards_state(vm_index, logger: Logger, next_state):
@@ -40,14 +43,93 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
         logger.log("Not on clash main for donate state. Returning False")
         return "restart"
 
+    # if not in a clan, return
+    logger.change_status("Checking if in a clan before requesting")
+    in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
+    if in_a_clan_return == "restart":
+        logger.change_status(
+            status="Error 05708425 Failure with donate_state_check_if_in_a_clan"
+        )
+        return "restart"
+
+    # handle not in a clan
+    if not in_a_clan_return:
+        logger.change_status("Not in a clan, so skipping donate state")
+        return next_state
+
+    # run donate cards main
     if donate_cards_main(vm_index, logger) is False:
         logger.log("Failure donating cards. Returning false")
         return "restart"
 
+    # print time taken
     time_taken = str(time.time() - donate_start_time)[:4]
     logger.change_status(f"Finished donating cards in {time_taken}s")
 
+    # return next state
     return next_state
+
+
+def donate_state_check_pixels_for_clan_flag(vm_index) -> bool:
+    iar = numpy.asarray(screenshot(vm_index))  # type: ignore
+
+    pix_list = []
+    for x_coord in range(80, 96):
+        pixel = iar[445][x_coord]
+        pix_list.append(pixel)
+
+    for y_coord in range(437, 453):
+        pixel = iar[y_coord][88]
+        pix_list.append(pixel)
+
+    # for every pixel in the pix_list: format to be of format [r,g,b]
+    for index, pix in enumerate(pix_list):
+        pix_list[index] = [pix[0], pix[1], pix[2]]
+
+    for pix in pix_list:
+        total = int(pix[0]) + int(pix[1]) + int(pix[2])
+
+        if total < 130:
+            return True
+
+        if total > 170:
+            return True
+
+    return False
+
+
+def donate_state_check_if_in_a_clan(
+    vm_index, logger: Logger
+) -> bool | Literal["restart"]:
+    # if not on clash main, return
+    if check_if_on_clash_main_menu(vm_index) is not True:
+        logger.change_status(status="ERROR 385462623 Not on clash main menu")
+        return "restart"
+
+    # get to profile page
+    if get_to_profile_page(vm_index, logger) == "restart":
+        logger.change_status(
+            status="Error 9076092860923485 Failure with get_to_profile_page"
+        )
+        return "restart"
+    time.sleep(1)
+
+    # check pixels for in a clan
+    in_a_clan = donate_state_check_pixels_for_clan_flag(vm_index)
+
+    # print clan status
+    if not in_a_clan:
+        logger.change_status("Not in a clan, so can't request!")
+
+    # click deadspace to leave
+    click(vm_index, 15, 300)
+    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        logger.change_status(
+            status="Error 87258301758939 Failure with wait_for_clash_main_menu"
+        )
+        return "restart"
+
+    return in_a_clan
 
 
 def donate_cards_main(vm_index, logger: Logger) -> bool:

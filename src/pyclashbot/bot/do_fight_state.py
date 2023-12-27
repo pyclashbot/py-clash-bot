@@ -753,9 +753,8 @@ def get_to_main_after_fight(vm_index, logger, next_state):
     time.sleep(3)
 
     # if on clash main, return next_state
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("Failed to get to clash main after a fight")
-        return "restart"
+    if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
+        logger.change_status('Failed to get to clash main after a fight')
 
     logger.change_status("Successfully got to clash main after a fight")
     return next_state

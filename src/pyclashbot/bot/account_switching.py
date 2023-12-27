@@ -56,6 +56,7 @@ def wait_for_switch_ssid_page(vm_index, logger):
             f"Waiting for switch ssid page for {str(time.time() - start_time)[:4]}s"
         )
         if check_for_switch_ssid_page(vm_index):
+            time.sleep(1)
             return True
         time.sleep(1)
     return False

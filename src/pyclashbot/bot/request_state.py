@@ -134,6 +134,9 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     else:
         logger.change_status(status="Can't request right now.")
 
+    #click clash main icon
+    click(vm_index, 178,593)
+
     # return to clash main
     wait_for_clash_main_menu(vm_index,logger,deadspace_click=False)
 
