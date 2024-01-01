@@ -125,7 +125,7 @@ card_collection_tab = [
         ),
     ],
     [
-        job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=False),
+        job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=True),
     ],
 ]
 
