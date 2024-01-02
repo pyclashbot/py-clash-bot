@@ -54,3 +54,9 @@ def configure_vm(vm_index):
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
+
+if __name__ == '__main__':
+    vm_index=0
+    print(f'Configuring VM {vm_index}...')
+    configure_vm(vm_index)
+    print(f'Configured VM {vm_index}')
