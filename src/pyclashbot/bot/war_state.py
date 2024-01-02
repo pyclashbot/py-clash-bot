@@ -151,7 +151,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
         logger.change_status(status="Getting back to clash main")
         get_to_clash_main_from_clan_page(vm_index, logger)
 
-        if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        if wait_for_clash_main_menu(vm_index, logger) is False:
             logger.change_status(
                 status="Erorr 7784278 failed to get to clash main after exhausting war battle decks"
             )
@@ -437,7 +437,7 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
 
     # click deadspace to leave
     click(vm_index, 15, 300)
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 872356739 Failure with wait_for_clash_main_menu"
         )
