@@ -570,7 +570,7 @@ def check_if_previous_game_was_win(
     # close battle log
     logger.change_status(status="Returning to clash main")
     click(vm_index, CLOSE_BATTLE_LOG_BUTTON[0], CLOSE_BATTLE_LOG_BUTTON[1])
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()"
         )

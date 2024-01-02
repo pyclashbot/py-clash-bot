@@ -103,7 +103,7 @@ def state_tree(
 
         # wait for clash main
         logger.log("Running wait_for_clash_main_menu()")
-        if wait_for_clash_main_menu(vm_index, logger) == "restart":
+        if wait_for_clash_main_menu(vm_index, logger) is False:
             logger.log(
                 'Waited too long for clashmain in "restart". Recursively redoing restart state'
             )

@@ -261,7 +261,7 @@ def get_to_clash_main_from_clan_page(
         logger.change_status(status="Waiting for clash main")
     else:
         logger.log("Waiting for clash main")
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 23422464342342, failure waiting for clash main"
         )
@@ -836,7 +836,7 @@ def get_to_clash_main_from_card_page(
     click(
         vm_index, CLASH_MAIN_ICON_FROM_CARD_PAGE[0], CLASH_MAIN_ICON_FROM_CARD_PAGE[1]
     )
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="error 08572380572308 Failure gettting to clash main from card page"
         )
@@ -1051,7 +1051,7 @@ def handle_clash_main_tab_notifications(
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
     )
 
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 358971935813 Waited too long for clash main menu, restarting vm"
         )

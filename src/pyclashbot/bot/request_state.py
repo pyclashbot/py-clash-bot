@@ -201,7 +201,7 @@ def request_state_check_if_in_a_clan(
 
     # click deadspace to leave
     click(vm_index, 15, 300)
-    if wait_for_clash_main_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu"
         )
