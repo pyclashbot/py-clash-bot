@@ -33,8 +33,8 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         logger.add_daily_reward()
         time.sleep(1)
 
-        #click deadspace a few times
-        click(vm_index,10,350,clicks=5,interval=1)
+        # click deadspace a few times
+        click(vm_index, 10, 350, clicks=5, interval=1)
 
         # reopen daily rewards menu
         click(vm_index, 41, 206)
@@ -47,8 +47,8 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         logger.add_daily_reward()
         time.sleep(1)
 
-        #click deadspace a few times
-        click(vm_index,10,350,clicks=5,interval=1)
+        # click deadspace a few times
+        click(vm_index, 10, 350, clicks=5, interval=1)
 
         # reopen daily rewards menu
         click(vm_index, 41, 206)
@@ -173,6 +173,34 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
     return False
 
 
+def check_for_green_checkmark(vm_index) -> bool:
+    """ Check if the green checkmark is present indicating all rewards have been collected. """
+    iar = numpy.asarray(screenshot(vm_index))
+    checkmark_pixels = [
+        (46, 195, [56, 236, 91]),
+        (52, 199, [54, 235, 89]),
+        (58, 194, [52, 235, 87])
+    ]
+    for x, y, color in checkmark_pixels:
+        if not pixel_is_equal(iar[y][x], color, tol=15):
+            return False
+    return True
+
+
+def check_for_yellow_button(vm_index) -> bool:
+    """ Check if the daily rewards button is yellow indicating rewards are available. """
+    iar = numpy.asarray(screenshot(vm_index))
+    yellow_button_pixels = [
+        (42, 185, [70, 217, 255]),
+        (32, 192, [37, 170, 226]),
+        (16, 209, [35, 180, 238])
+    ]
+    for x, y, color in yellow_button_pixels:
+        if not pixel_is_equal(iar[y][x], color, tol=15):
+            return False
+    return True
+
+
 def collect_all_daily_rewards(vm_index, logger):
     # if not on clash main, reutrn False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -184,6 +212,16 @@ def collect_all_daily_rewards(vm_index, logger):
     # if daily rewards button doesnt exist, reutnr True
     if not check_if_daily_rewards_button_exists(vm_index):
         logger.change_status("Daily rewards button doesn't exist")
+        return True
+
+    # Check for green checkmark
+    if check_for_green_checkmark(vm_index):
+        logger.change_status("All rewards have already been collected")
+        return True
+
+    # Check for yellow button
+    if not check_for_yellow_button(vm_index):
+        logger.change_status("No rewards to collect")
         return True
 
     # check which rewards are available
@@ -274,6 +312,6 @@ def check_rewards_menu_pixels(vm_index):
 
 
 if __name__ == "__main__":
-    bs=check_rewards_menu_pixels(12)
+    bs = check_rewards_menu_pixels(12)
     for b in bs:
         print(b)

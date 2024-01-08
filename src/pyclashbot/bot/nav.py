@@ -29,12 +29,12 @@ CHALLENGES_TAB_FROM_SHOP_TAB = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
-CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 240  # seconds
+CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 120  # seconds
 CLASH_MAIN_MENU_WAIT_TIMEOUT = 160  # seconds
 CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 364)
 OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
 OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
-CLASH_MAIN_WAIT_TIMEOUT = 240  # s
+CLASH_MAIN_WAIT_TIMEOUT = 120  # s
 SHOP_PAGE_BUTTON: tuple[Literal[33], Literal[603]] = (33, 603)
 
 
@@ -135,7 +135,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        if random.randint(0,2)==1:
+        if random.randint(0, 2) == 1:
             click(vm_index=vm_index, x_coord=20, y_coord=200)
 
     return False
@@ -169,7 +169,8 @@ def wait_for_1v1_battle_start(
             )
             return "restart"
         print('Waiting for 1v1 start')
-        if random.randint(1,3)==3:click(vm_index=vm_index, x_coord=200, y_coord=200)
+        if random.randint(1, 3) == 3:
+            click(vm_index=vm_index, x_coord=200, y_coord=200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")
@@ -279,7 +280,8 @@ def open_war_chest_obstruction(vm_index, logger):
     """
     logger.log("Found a war chest on the way to getting to the clan page.")
     logger.log("Opening this chest real quick")
-    click(vm_index, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
+    click(
+        vm_index, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
     time.sleep(2)
     click(
         vm_index,
@@ -381,7 +383,7 @@ def handle_daily_defenses_rank_page(vm_index, logger):
         if check_for_daily_defenses_rank_page(
             vm_index
         ) or check_for_daily_defenses_rank_page_2(vm_index):
-            click(vm_index, 150, 260)
+            click(vm_index, 211, 550)
             time.sleep(2)
             logger.change_status("Handled daily defenses rank page")
 
@@ -390,26 +392,26 @@ def check_for_daily_defenses_rank_page_2(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
         iar[259][160],
-        iar[273][144],
-        iar[258][131],
-        iar[258][285],
-        iar[272][271],
-        iar[258][256],
-        iar[247][260],
+        iar[259][147],
+        iar[259][131],
+        iar[272][209],
+        iar[259][272],
+        iar[264][256],
+        iar[321][252],
     ]
     colors = [
-        [61, 168, 233],
-        [22, 119, 220],
-        [39, 159, 229],
-        [71, 168, 243],
-        [37, 127, 222],
-        [56, 173, 237],
-        [67, 165, 238],
+        [70, 178, 239],
+        [216, 216, 216],
+        [72, 186, 250],
+        [34, 191, 253],
+        [206, 207, 208],
+        [55, 170, 227],
+        [79, 144, 213],
     ]
 
     for i, p in enumerate(pixels):
         # print(p)
-        if not pixel_is_equal(p, colors[i], tol=25):
+        if not pixel_is_equal(p, colors[i], tol=30):
             return False
     return True
 
@@ -471,6 +473,8 @@ def handle_final_results_page(vm_index, logger) -> None:
     if check_for_final_results_page(vm_index):
         click(vm_index, 211, 524)
         logger.log("On final_results_page so clicking OK button")
+        time.sleep(1)
+        click(vm_index, 211, 524)
 
 
 def check_for_final_results_page(vm_index) -> bool:
@@ -691,7 +695,7 @@ def handle_trophy_reward_menu(
 #     return False
 
 
-def wait_for_clash_main_menu(vm_index, logger: Logger,deadspace_click = True) -> bool:
+def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
     """
     Waits for the user to be on the clash main menu.
     Returns True if on main menu, False if not.
@@ -760,7 +764,7 @@ def check_if_on_clash_main_menu2(iar):
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[i], tol=35):
+        if not pixel_is_equal(pixel, colors[i], tol=45):
             return pixels
 
     # if all pixels are good, we're on clash main
@@ -1050,6 +1054,7 @@ def handle_clash_main_tab_notifications(
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
     )
+    time.sleep(2)
 
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
@@ -1099,7 +1104,8 @@ def wait_for_clash_main_challenges_tab(
             return "restart"
 
     if printmode:
-        logger.change_status(status="Done waiting for clash main challenges tab")
+        logger.change_status(
+            status="Done waiting for clash main challenges tab")
     else:
         logger.log("Done waiting for clash main challenges tab")
     return "good"
@@ -1261,7 +1267,8 @@ def wait_for_battle_log_page(
             return "restart"
 
     if printmode:
-        logger.change_status(status="Done waiting for battle log page to appear")
+        logger.change_status(
+            status="Done waiting for battle log page to appear")
     else:
         logger.log("Done waiting for battle log page to appear")
 
@@ -1343,7 +1350,8 @@ def wait_for_clash_main_burger_button_options_menu(
     start_time = time.time()
 
     if printmode:
-        logger.change_status(status="Waiting for clash main options menu to appear")
+        logger.change_status(
+            status="Waiting for clash main options menu to appear")
     else:
         logger.log("Waiting for clash main options menu to appear")
     while not check_if_on_clash_main_burger_button_options_menu(vm_index):
