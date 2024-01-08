@@ -112,7 +112,8 @@ def collect_battlepass(vm_index, logger):
 
     # if not on clash main, return false
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Not on clash main after claiming battlepass rewards")
+        logger.change_status(
+            "Not on clash main after claiming battlepass rewards")
         return False
 
     return True
@@ -137,6 +138,7 @@ def additional_rewards_button(vm_index):
     # If all target colors match, return True
     return True
 
+
 def collect_1_battlepass_reward(vm_index, logger):
     logger.change_status("Starting to collect battlepass rewards")
 
@@ -146,7 +148,8 @@ def collect_1_battlepass_reward(vm_index, logger):
 
     # Initial check for the "Claim Rewards" button
     logger.change_status("Checking for 'Claim Rewards' button")
-    claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(vm_index, 1)
+    claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
+        vm_index, 1)
     if not claim_rewards_coord:
         # Perform a swipe up if the button is not found
         custom_swipe(vm_index, 200, 300, 200, 320, 2, 0.6)
@@ -154,9 +157,11 @@ def collect_1_battlepass_reward(vm_index, logger):
 
     while True:
         # Check again for the "Claim Rewards" button
-        claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(vm_index, 1)
+        claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
+            vm_index, 1)
         if claim_rewards_coord:
             # Claim the reward
+            custom_swipe(vm_index, 200, 300, 200, 320, 1, 0.6)
             logger.change_status('Found "Claim" button')
             click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
             time.sleep(1)
@@ -165,7 +170,8 @@ def collect_1_battlepass_reward(vm_index, logger):
 
             # Wait to return to the Battle Pass page
             while not check_if_on_battlepass_page(vm_index):
-                click(vm_index, 404, 33)  # Click in a blank area to close pop-up windows
+                # Click in a blank area to close pop-up windows
+                click(vm_index, 404, 33)
 
         # Check for the button for additional rewards
         elif additional_rewards_button(vm_index):
@@ -178,7 +184,8 @@ def collect_1_battlepass_reward(vm_index, logger):
             break
 
     # Return to the main screen
-    logger.change_status("Returning to clash main after claiming all battlepass rewards")
+    logger.change_status(
+        "Returning to clash main after claiming all battlepass rewards")
     click(vm_index, 206, 594)
     time.sleep(2)
 
