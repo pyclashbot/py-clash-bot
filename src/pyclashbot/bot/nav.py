@@ -29,12 +29,12 @@ CHALLENGES_TAB_FROM_SHOP_TAB = (385, 600)
 CLASH_MAIN_TAB_FROM_CHALLENGES_TAB = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
-CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 240  # seconds
+CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 120  # seconds
 CLASH_MAIN_MENU_WAIT_TIMEOUT = 160  # seconds
 CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 364)
 OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
 OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
-CLASH_MAIN_WAIT_TIMEOUT = 240  # s
+CLASH_MAIN_WAIT_TIMEOUT = 120  # s
 SHOP_PAGE_BUTTON: tuple[Literal[33], Literal[603]] = (33, 603)
 
 
@@ -473,6 +473,8 @@ def handle_final_results_page(vm_index, logger) -> None:
     if check_for_final_results_page(vm_index):
         click(vm_index, 211, 524)
         logger.log("On final_results_page so clicking OK button")
+        time.sleep(1)
+        click(vm_index, 211, 524)
 
 
 def check_for_final_results_page(vm_index) -> bool:
@@ -762,7 +764,7 @@ def check_if_on_clash_main_menu2(iar):
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[i], tol=35):
+        if not pixel_is_equal(pixel, colors[i], tol=45):
             return pixels
 
     # if all pixels are good, we're on clash main
@@ -1052,6 +1054,7 @@ def handle_clash_main_tab_notifications(
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
         CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
     )
+    time.sleep(2)
 
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
