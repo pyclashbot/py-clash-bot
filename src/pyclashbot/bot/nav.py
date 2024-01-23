@@ -135,7 +135,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        if random.randint(0,2)==1:
+        if random.randint(0, 2) == 1:
             click(vm_index=vm_index, x_coord=20, y_coord=200)
 
     return False
@@ -168,8 +168,9 @@ def wait_for_1v1_battle_start(
                 status="Error 8734572456 Waiting too long for 1v1 battle to start"
             )
             return "restart"
-        print('Waiting for 1v1 start')
-        if random.randint(1,3)==3:click(vm_index=vm_index, x_coord=200, y_coord=200)
+        print("Waiting for 1v1 start")
+        if random.randint(1, 3) == 3:
+            click(vm_index=vm_index, x_coord=200, y_coord=200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")
@@ -691,14 +692,13 @@ def handle_trophy_reward_menu(
 #     return False
 
 
-def wait_for_clash_main_menu(vm_index, logger: Logger,deadspace_click = True) -> bool:
+def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
     """
     Waits for the user to be on the clash main menu.
     Returns True if on main menu, False if not.
     """
     start_time: float = time.time()
     while check_if_on_clash_main_menu(vm_index) is not True:
-        print('Still waiting for clash main')
         # timeout check
         if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
             logger.change_status("Timed out waiting for clash main")
@@ -706,14 +706,13 @@ def wait_for_clash_main_menu(vm_index, logger: Logger,deadspace_click = True) ->
 
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu(vm_index):
-            print('Handling trophy reward menu')
+            print("Handling trophy reward menu")
             handle_trophy_reward_menu(vm_index, logger)
             time.sleep(2)
             continue
 
         # click deadspace
-        if deadspace_click:
-            print("deadspace click while waiting for clash main")
+        if deadspace_click and random.randint(0, 1) == 0:
             click(
                 vm_index,
                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
@@ -1020,53 +1019,54 @@ def handle_clash_main_tab_notifications(
     """
     start_time: float = time.time()
 
-    # click card tab
-    click(vm_index, CARD_TAB_FROM_CLASH_MAIN[0], CARD_TAB_FROM_CLASH_MAIN[1])
-    time.sleep(3)
-
-    # click shop tab
-    click(
-        vm_index,
-        SHOP_TAB_FROM_CARD_TAB[0],
-        SHOP_TAB_FROM_CARD_TAB[1],
-        clicks=2,
-        interval=0.01,
-    )
-    time.sleep(3)
-
-    # click challenges tab
-    click(
-        vm_index,
-        CHALLENGES_TAB_FROM_SHOP_TAB[0],
-        CHALLENGES_TAB_FROM_SHOP_TAB[1],
-        clicks=2,
-        interval=0.01,
-    )
-    time.sleep(3)
-
-    # get back to main
-    click(
-        vm_index,
-        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[0],
-        CLASH_MAIN_TAB_FROM_CHALLENGES_TAB[1],
-    )
-
+    # wait for clash main to appear
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
-            status="Error 358971935813 Waited too long for clash main menu, restarting vm"
+            status="Error 246246 Waited too long for clash main menu, restarting vm"
         )
-        return "restart"
+        return False
 
+    # click card tab from main
+    click(vm_index, 103, 598)
+    time.sleep(3)
+
+    # click shop tab from card tab
+    click(vm_index, 9, 594, clicks=3, interval=0.33)
+    time.sleep(2)
+
+    # click clan tab from shop tab
+    click(vm_index, 315, 594)
+    time.sleep(3)
+
+    # click events tab from clan tab
+    click(vm_index, 408, 600, clicks=3, interval=0.33)
+    time.sleep(2)
+
+    # spam click shop page at the leftmost location, wait a little bit
+    click(vm_index, 9, 594, clicks=3, interval=0.33)
+    time.sleep(3)
+
+    # click clash main from shop page
+    click(vm_index, 240, 600)
+    time.sleep(3)
+
+    # handle possibility of trophy road obstructing clash main
     if check_for_trophy_reward_menu(vm_index):
         handle_trophy_reward_menu(vm_index, logger)
         time.sleep(2)
+
+    # wait for clash main to appear
+    if wait_for_clash_main_menu(vm_index, logger) is False:
+        logger.change_status(
+            status="Error 47 Waited too long for clash main menu, restarting vm"
+        )
+        return False
 
     logger.change_status(
         status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
     )
 
-    time.sleep(3)
-    return "good"
+    return True
 
 
 def wait_for_clash_main_challenges_tab(
@@ -1405,4 +1405,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    pass
+    print(handle_clash_main_tab_notifications(12, Logger()))

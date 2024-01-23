@@ -58,7 +58,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     logger.change_status(
         status="Handling obstructing notifications before opening chests"
     )
-    if handle_clash_main_tab_notifications(vm_index, logger) == "restart":
+    if handle_clash_main_tab_notifications(vm_index, logger) is False:
         logger.change_status(
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications"
         )
