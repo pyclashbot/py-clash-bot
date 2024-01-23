@@ -110,8 +110,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "random_account_switch_list": random_account_switch_list,
     }
 
-
-
     return jobs_dictionary
 
 
@@ -283,9 +281,8 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         logger.log("No jobs are selected!")
         return None
 
-    #updaet logger's update_account_order_var
+    # updaet logger's update_account_order_var
     logger.update_account_order_var(job_dictionary["random_account_switch_list"])
-
 
     logger.log("Start Button Event")
     logger.change_status(status="Starting the bot!")
@@ -300,6 +297,7 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     close_memuc_processes()
 
     # setup the main thread and start it
+    print("Starting main thread")
     thread_args = job_dictionary
     # args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, thread_args)
@@ -479,5 +477,3 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 if __name__ == "__main__":
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
-
-

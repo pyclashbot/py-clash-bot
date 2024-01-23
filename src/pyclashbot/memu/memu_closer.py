@@ -55,4 +55,4 @@ def close_memuc_processes():
 
 
 if __name__ == "__main__":
-    close_memuc_processes()
+    pass
