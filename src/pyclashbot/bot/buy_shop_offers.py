@@ -41,12 +41,15 @@ def buy_shop_offers_state(
         )
         return "restart"
 
-    if buy_shop_offers_main(
-        vm_index,
-        logger,
-        gold_buy_toggle,
-        free_offers_toggle,
-    ) is not True:
+    if (
+        buy_shop_offers_main(
+            vm_index,
+            logger,
+            gold_buy_toggle,
+            free_offers_toggle,
+        )
+        is not True
+    ):
         logger.change_status("Failed to buy offers. Returning restart")
         return "restart"
 
@@ -215,6 +218,22 @@ def check_if_on_shop_page(vm_index):
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
+
+
+def shop_buy_tester():
+    vm_index = 12
+    logger = Logger(None, None)
+    gold_buy_toggle = True
+    free_offers_toggle = True
+
+    print(
+        buy_shop_offers_main(
+            vm_index,
+            logger,
+            gold_buy_toggle,
+            free_offers_toggle,
+        )
+    )
 
 
 if __name__ == "__main__":
