@@ -9,7 +9,8 @@ from pyclashbot.detection.image_rec import (
     find_references,
     get_first_location,
     get_file_count,
-    make_reference_image_list,pixel_is_equal
+    make_reference_image_list,
+    pixel_is_equal,
 )
 from pyclashbot.memu.client import (
     screenshot,
@@ -18,6 +19,96 @@ from pyclashbot.memu.client import (
 )
 
 from pyclashbot.utils.logger import Logger
+
+
+def buy_shop_offers_state(
+    vm_index: int,
+    logger: Logger,
+    gold_buy_toggle: bool,
+    free_offers_toggle: bool,
+    next_state: str,
+):
+    print("Entering buy_shop_offers_state()")
+    print(f"gold_buy_toggle: {gold_buy_toggle}")
+    print(f"free_offers_toggle: {free_offers_toggle}")
+
+    logger.add_shop_buy_attempt()
+
+    # if not on clash main, return False
+    if check_if_on_clash_main_menu(vm_index) is not True:
+        logger.change_status(
+            "Not on clash main to being buying offers. Returning restart"
+        )
+        return "restart"
+
+    if buy_shop_offers_main(
+        vm_index,
+        logger,
+        gold_buy_toggle,
+        free_offers_toggle,
+    ) is not True:
+        logger.change_status("Failed to buy offers. Returning restart")
+        return "restart"
+
+    # if not on clash main, return False
+    if check_if_on_clash_main_menu(vm_index) is not True:
+        logger.change_status("Not on clash main after buying offers. Returning restart")
+        return "restart"
+
+    return next_state
+
+
+def buy_shop_offers_main(
+    vm_index: int,
+    logger: Logger,
+    gold_buy_toggle: bool,
+    free_offers_toggle: bool,
+) -> bool:
+    # get to shop page
+    logger.change_status("Getting to shop page to buy offers")
+    if get_to_shop_page_from_clash_main(vm_index, logger) is False:
+        logger.change_status("Failed to get to shop page to buy offers")
+        return False
+
+    # scroll incrementally while searching for rewards, clicking and buying any rewards found
+
+    purchase_total = 0
+
+    start_time = time.time()
+    timeout = 25
+    logger.change_status("Starting to buy offers")
+    while 1:
+        if time.time() - start_time > timeout:
+            break
+
+        # scroll a little
+        logger.change_status("Searching for offers to buy")
+        print("Time taken in shop: ", str(time.time() - start_time)[:5])
+        scroll_down_slowly_in_shop_page(vm_index)
+        time.sleep(1)
+
+        if gold_buy_toggle or free_offers_toggle:
+            while (
+                buy_offers_from_this_shop_page(
+                    vm_index, logger, gold_buy_toggle, free_offers_toggle
+                )
+                is True
+            ):
+                purchase_total += 1
+                logger.change_status("Bought an offer from the shop!")
+                start_time = time.time()
+
+                # if purchase total exceeds 6, then it's done
+                if purchase_total == 6:
+                    break
+
+    logger.change_status("Done buying offers. Returning to clash main")
+
+    # get to clash main from shop page
+    click(vm_index, 245, 596)
+    time.sleep(4)
+
+    return True
 
 
 def search_for_free_purchases(vm_index):
@@ -114,9 +205,9 @@ def check_if_on_shop_page(vm_index):
         iar[595][13],
     ]
     colors = [
-[138 ,103,  70],
-[143 ,109,  74],
-[142 ,108,  73],
+        [138, 103, 70],
+        [143, 109, 74],
+        [142, 108, 73],
     ]
 
     for i, p in enumerate(pixels):
@@ -124,78 +215,6 @@ def check_if_on_shop_page(vm_index):
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
-
-
-def buy_shop_offers_state(
-    vm_index: int,
-    logger: Logger,
-    gold_buy_toggle: bool,
-    free_offers_toggle: bool,
-    next_state: str,
-):
-    print("Entering buy_shop_offers_state()")
-    print(f"gold_buy_toggle: {gold_buy_toggle}")
-    print(f"free_offers_toggle: {free_offers_toggle}")
-
-    logger.add_shop_buy_attempt()
-
-    # if not on clash main, return False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main to being buying offers. Returning restart"
-        )
-        return "restart"
-
-    # get to shop page
-    logger.change_status("Getting to shop page to buy offers")
-    if get_to_shop_page_from_clash_main(vm_index, logger) is False:
-        logger.change_status("Failed to get to shop page to buy offers")
-        return "restart"
-
-    # scroll incrementally while searching for rewards, clicking and buying any rewards found
-
-    purchase_total = 0
-
-    start_time = time.time()
-    timeout = 25
-    logger.change_status("Starting to buy offers")
-    while 1:
-        if time.time() - start_time > timeout:
-            break
-
-        # scroll a little
-        logger.change_status("Searching for offers to buy")
-        print("Time taken in shop: ",str(time.time() - start_time)[:5])
-        scroll_down_slowly_in_shop_page(vm_index)
-        time.sleep(1)
-
-        if gold_buy_toggle or free_offers_toggle:
-            while (
-                buy_offers_from_this_shop_page(
-                    vm_index, logger, gold_buy_toggle, free_offers_toggle
-                )
-                is True
-            ):
-                purchase_total+=1
-                logger.change_status("Bought an offer from the shop!")
-                start_time = time.time()
-
-                #if purchase total exceeds 6, then it's done
-                if purchase_total == 6:
-                    break
-
-    logger.change_status('Done buying offers. Returning to clash main')
-
-    # get to clash main from shop page
-    click(vm_index, 245, 596)
-    time.sleep(4)
-
-    # if not on clash main, return False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("Not on clash main after buying offers. Returning restart")
-        return "restart"
-
-    return next_state
 
 
 if __name__ == "__main__":
