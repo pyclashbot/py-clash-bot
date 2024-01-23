@@ -86,7 +86,15 @@ def state_tree(
 
         logger.log("Entered the restart state after a failure in another state...")
 
-        clip_that()
+        # clip_that()
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        input()
 
         # close app
         logger.log("Running close_clash_royale_app()")
