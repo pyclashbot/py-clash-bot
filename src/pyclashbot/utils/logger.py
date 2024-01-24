@@ -123,6 +123,7 @@ class Logger:
         self.shop_offer_collections = 0
         self.shop_buy_attempts = 0
         self.war_attempts = 0
+        self.war_chest_collects = 0
 
         # account stuff
         self.account_order = "-"
@@ -166,6 +167,7 @@ class Logger:
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
                 "shop_buys": self.shop_buys,
+                "war_chest_collects":self.war_chest_collects,
                 "donates": self.donates,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
@@ -356,6 +358,12 @@ class Logger:
     def add_request(self) -> None:
         """add request to log"""
         self.requests += 1
+
+    @_updates_log
+    def add_war_chest_collect(self) -> None:
+        """add request to log"""
+        self.war_chest_collects += 1
+
 
     @_updates_log
     def add_shop_buy(self) -> None:

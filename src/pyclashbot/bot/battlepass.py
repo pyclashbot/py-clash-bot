@@ -110,14 +110,12 @@ def collect_battlepass(vm_index, logger) -> bool:
             logger.change_status("Successfully collected a battlepass reward")
         else:
             logger.change_status("Failed to collect a battlepass reward")
+        time.sleep(1)
 
-    time.sleep(3)
+    time.sleep(10)
 
     # if not on clash main, return false
-    if (
-        check_if_on_clash_main_menu(vm_index) is not True
-        and check_if_on_clash_main_menu(vm_index) is not True
-    ):
+    if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("Not on clash main after claiming battlepass rewards")
         return False
 
@@ -153,7 +151,7 @@ def collect_1_battlepass_reward(vm_index, logger):
             scroll_up_a_little(vm_index)
             time.sleep(3)
 
-        #find the claim rewards button again
+        # find the claim rewards button again
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
             vm_index, delay=3
         )

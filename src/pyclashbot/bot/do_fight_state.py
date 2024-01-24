@@ -6,7 +6,7 @@ from typing import Literal
 
 from xmlrpc.client import Boolean
 
-from pyclashbot.bot.card_detection import get_play_coords_for_card
+from pyclashbot.bot.card_detection2 import get_play_coords_for_card
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -511,9 +511,10 @@ def end_fight_state(
 
     # get to clash main after this fight
     logger.log("Getting to clash main after doing a fight")
-    if get_to_main_after_fight(vm_index, logger, next_state) == "restart":
-        logger.log("Erro 6969 Failed to get to clash main after a fight")
+    if get_to_main_after_fight(vm_index, logger) is False:
+        logger.log("Erro 69a3d69 Failed to get to clash main after a fight")
         return "restart"
+
     logger.log("Made it to clash main after doing a fight")
     time.sleep(3)
 
@@ -546,9 +547,7 @@ def check_if_previous_game_was_win(
     # if not on main, return restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
-            status='534594784234 Error Not on main menu, returning "restart"'
-        )
+        logger.change_status(status='54676 Error Not on main menu, returning "restart"')
         logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
@@ -641,17 +640,31 @@ def check_for_events_page(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
-        iar[600][401],
-        iar[590][367],
-        iar[598][59],
-        iar[599][256],
+        iar[578][415],
+        iar[585][415],
+        iar[595][415],
+        iar[605][415],
+        iar[621][415],
+        iar[578][310],
+        iar[585][310],
+        iar[590][310],
+        iar[600][310],
+        iar[610][310],
+        iar[622][310],
     ]
 
     colors = [
-        [144, 108, 74],
-        [109, 203, 150],
-        [102, 83, 70],
-        [122, 75, 250],
+        [136, 103, 70],
+        [136, 103, 70],
+        [140, 107, 74],
+        [142, 110, 75],
+        [149, 117, 77],
+        [139, 101, 69],
+        [138, 103, 70],
+        [141, 106, 73],
+        [142, 108, 73],
+        [147, 114, 76],
+        [154, 119, 80],
     ]
 
     for i, p in enumerate(pixels):
@@ -661,38 +674,51 @@ def check_for_events_page(vm_index):
     return True
 
 
-def get_to_main_after_fight2(vm_index, logger, next_state):
-    """method to handle the navigation between the end of a fight and the main menu"""
-
+def get_to_main_after_fight(vm_index, logger):
+    timeout = 120  # s
     start_time = time.time()
-
     clicked_ok_or_exit = False
 
-    timeout = 60  # s
     while time.time() - start_time < timeout:
+        print("Checking if on clash main after a fight...")
+
+        # if on clash main
+        if check_if_on_clash_main_menu(vm_index) is True:
+            # wait 3 seconds for the trophy road page to maybe appear bc of UI lag
+            time.sleep(3)
+
+            # if that trophy road page appears, handle it, then return True
+            if check_for_trophy_reward_menu(vm_index):
+                print("Found trophy reward menu")
+                handle_trophy_reward_menu(vm_index, logger, printmode=False)
+                time.sleep(2)
+
+            print("Made it to clash main after a fight")
+            return True
+
+        print("Not on Clash Main\nChecking for moves to make to get to clash main...")
+
+        # check for trophy reward screen
         if check_for_trophy_reward_menu(vm_index):
-            print("Foudn trophy reward menu")
+            print("Found trophy reward menu!\nHandling Trophy Reward Menu")
             handle_trophy_reward_menu(vm_index, logger, printmode=False)
             time.sleep(3)
             continue
-
-        # check for exit button
-        if not clicked_ok_or_exit:
-            exit_button_coord = find_exit_battle_button(vm_index)
-            if exit_button_coord is not None:
-                print("Found exit button, clicking it.")
-                click(vm_index, exit_button_coord[0], exit_button_coord[1])
-                clicked_ok_or_exit = True
-                continue
+        else:
+            print("Not on trophy reward page")
 
         # check for OK button after battle
         if not clicked_ok_or_exit:
             ok_button_coord = find_ok_battle_button(vm_index)
+            if ok_button_coord is None:
+                ok_button_coord = find_exit_battle_button(vm_index)
             if ok_button_coord is not None:
                 print("Found OK button, clicking it.")
                 click(vm_index, ok_button_coord[0], ok_button_coord[1])
                 clicked_ok_or_exit = True
                 continue
+        else:
+            print("Already clicked OK or EXIT so not checking for those buttons again")
 
         # if on events page, click clash main button
         if check_for_events_page(vm_index):
@@ -700,64 +726,12 @@ def get_to_main_after_fight2(vm_index, logger, next_state):
             click(vm_index, 179, 600)
             time.sleep(3)
             continue
+        else:
+            print("Not on events page...")
 
-        # if on clash main, return next_state
-        if check_if_on_clash_main_menu(vm_index) is True:
-            print("Made it to clash main after a fight")
-            return next_state
+        time.sleep(1)
 
-
-def get_to_main_after_fight(vm_index, logger, next_state):
-    """method to handle the navigation between the end of a fight and the main menu"""
-    #find exit/ok button after the fight
-    timeout = 10#s
-    start_time = time.time()
-    coord = find_ok_or_exit_button(vm_index)
-    while coord is None:
-        coord = find_ok_or_exit_button(vm_index)
-
-        if time.time() - start_time > timeout:
-            logger.change_status("Timed out while waiting for OK or EXIT button")
-            return "restart"
-
-    if coord is None:
-        logger.change_status(
-            "Didnt find OK or EXIT button after fight. Returning false"
-        )
-        return False
-
-    #click the exit/ok button
-    click(vm_index, coord[0], coord[1])
-
-    # wait for events page or clash main
-    start_time = time.time()
-    timeout = 30  # s
-    while not check_for_events_page(vm_index):
-        if time.time() - start_time > timeout:
-            logger.change_status('Timed out wating for clash main or events page to appear.')
-
-        if check_if_on_clash_main_menu(vm_index) is True:
-            logger.change_status('Made it to clash main')
-            print('Manual sleep of 6s here to see if trophy road appears')
-            time.sleep(6)
-            if check_for_trophy_reward_menu(vm_index):
-                handle_trophy_reward_menu(vm_index,logger,printmode=False)
-            return next_state
-
-        print("Waiting for events page...")
-
-    print('Found events page')
-
-    print("Getting to clash main from events page")
-    click(vm_index, 179, 600)
-    time.sleep(3)
-
-    # if on clash main, return next_state
-    if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
-        logger.change_status('Failed to get to clash main after a fight')
-
-    logger.change_status("Successfully got to clash main after a fight")
-    return next_state
+    return False
 
 
 def find_ok_or_exit_button(vm_index):
@@ -1042,6 +1016,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    get_to_main_after_fight(12, Logger(), 'next_state')
-
-    # print(check_if_on_clash_main_menu(12))
+    while 1:print(check_for_events_page(12))
