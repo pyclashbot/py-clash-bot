@@ -11,7 +11,12 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
-
+from pyclashbot.detection.image_rec import (
+    make_reference_image_list,
+    get_file_count,
+    find_references,
+    get_first_location,
+)
 
 _2V2_START_WAIT_TIMEOUT = 120  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
@@ -264,7 +269,7 @@ def get_to_clash_main_from_clan_page(
         logger.log("Waiting for clash main")
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
-            status="Error 23422464342342, failure waiting for clash main"
+            status="Error 3253, failure waiting for clash main"
         )
         return "restart"
     return "good"
@@ -313,6 +318,38 @@ def check_for_war_chest_obstruction(vm_index):
     return True
 
 
+def collect_boot_reward(vm_index):
+    # click boot reward location
+    print("Opening boot reward")
+    click(vm_index, 197, 370)
+
+    # click deadspace a bunch
+    print("Clicking deadspace to collect boot rewards")
+    click(vm_index, 5, 200, clicks=20, interval=0.5)
+
+
+def check_for_boot_reward(vm_index):
+    """method to find the elixer price icon in a cropped image"""
+
+    folder = "collect_war_boot"
+
+    names = make_reference_image_list(get_file_count(folder))
+
+    locations: list[list[int] | None] = find_references(
+        screenshot(vm_index),
+        folder,
+        names,
+        tolerance=0.52,
+    )
+
+    coord = get_first_location(locations)
+
+    if coord is None:
+        return None
+
+    return [coord[1], coord[0]]
+
+
 def get_to_clan_tab_from_clash_main(
     vm_index: int, logger: Logger
 ) -> Literal["restart", "good"]:
@@ -336,9 +373,17 @@ def get_to_clan_tab_from_clash_main(
             )
             return "restart"
 
+        # if boot exists, collect boot
+        if check_for_boot_reward(vm_index):
+            collect_boot_reward(vm_index)
+            logger.add_war_chest_collect()
+            print(f"Incremented war chest collects to {logger.war_chest_collects}")
+
         # check for a war chest obstructing the nav
         if check_for_war_chest_obstruction(vm_index):
             open_war_chest_obstruction(vm_index, logger)
+            logger.add_war_chest_collect()
+            print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # if on the clan tab chat page, return
         if check_if_on_clan_chat_page(vm_index):
@@ -722,7 +767,7 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
 
     time.sleep(1)
     if check_if_on_clash_main_menu(vm_index) is not True:
-        return wait_for_clash_main_menu(vm_index, logger)
+        return False
 
     return True
 
@@ -1405,4 +1450,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    print(handle_clash_main_tab_notifications(12, Logger()))
+    pass

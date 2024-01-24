@@ -99,6 +99,7 @@ def buy_shop_offers_main(
             ):
                 purchase_total += 1
                 logger.change_status("Bought an offer from the shop!")
+                time.sleep(2)
                 start_time = time.time()
 
                 # if purchase total exceeds 6, then it's done
@@ -237,4 +238,4 @@ def shop_buy_tester():
 
 
 if __name__ == "__main__":
-    pass
+    while 1:buy_offers_from_this_shop_page(12, Logger(), True, True)
