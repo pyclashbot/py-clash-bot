@@ -20,7 +20,7 @@ from pyclashbot.utils.logger import Logger
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
 QUEUE_CHEST_BUTTON_COORD = (314, 357)
 CLASH_MAIN_DEADSPACE_COORD = (20, 350)
-CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT = 60  # s
+CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT = 40  # s
 
 
 def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
@@ -185,10 +185,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
             time.time() - deadspace_clicking_start_time
             > CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT
         ):
-            logger.change_status(
-                "Error 58732589 Waited too long for clash main while opening a chest"
-            )
-            return "restart"
+            break
 
     chests_opened = logger.get_chests_opened()
     logger.log(f"Opened {chests_opened - prev_chests_opened} chests")
