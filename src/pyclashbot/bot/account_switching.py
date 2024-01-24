@@ -77,7 +77,7 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
 
     # click switch SSID button
     logger.change_status("Clicking switch SSID button")
-    click(vm_index, 221, 368)
+    click(vm_index, 221, 368,clicks=3,interval=0.33)
 
     # wait for switch ssid page
     wait_for_switch_ssid_page(vm_index, logger)
