@@ -100,19 +100,23 @@ def classify_pixel(pixel):
         (12, 45, 92),
     ]
 
-    # red_colors = [
-    #     (93, 13, 13),
-    #     (173, 29, 29),
-    #     (204, 35, 35),
-    # ]
+    red_colors = [
+        (93, 13, 13),
+        (173, 29, 29),
+        (204, 35, 35),
+    ]
 
-    tolerance = 50
+    tolerance = 30
 
     for color in blue_colors:
         if pixel_is_equal(pixel, color, tolerance):
             return "blue"
 
-    return "red"
+    for color in red_colors:
+        if pixel_is_equal(pixel, color, tolerance):
+            return "red"
+
+    return "unknown"
 
 
 def classify_coordinate(iar, coord):
@@ -144,8 +148,8 @@ def classify_coordinate(iar, coord):
         elif color == "blue":
             blue_color_count += 1
 
-    print(f"Found {blue_color_count} blues")
-    print(f"Found {red_color_count} reds")
+    print(f"Found {blue_color_count} blues / {len(colors)}")
+    print(f"Found {red_color_count} reds / {len(colors)}")
     if red_color_count * 0.7 > blue_color_count:
         return "red"
 
