@@ -268,9 +268,7 @@ def get_to_clash_main_from_clan_page(
     else:
         logger.log("Waiting for clash main")
     if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.change_status(
-            status="Error 3253, failure waiting for clash main"
-        )
+        logger.change_status(status="Error 3253, failure waiting for clash main")
         return "restart"
     return "good"
 
@@ -772,38 +770,77 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
     return True
 
 
-def check_if_on_clash_main_menu2(iar):
-    """
-    Checks if the user is on the clash main menu.
-    Returns True if on main menu, False if not.
-    """
+
+def check_if_on_clash_main_menu3(vm_index):
+    """A patch job for check_if_on_clash_main_menu()"""
+    iar = numpy.asarray(screenshot(vm_index))
 
     # get raw pixels from image array
     pixels = [
-        iar[15][298],
-        iar[20][299],
-        iar[16][401],
-        iar[585][166],
-        iar[622][165],
-        iar[581][264],
-        iar[71][269],
-        iar[74][262],
+iar[26][209],
+iar[9][204],
+iar[10][216],
+iar[14][210],
+iar[9][319],
+iar[9][330],
+iar[25][319],
+iar[25][329],
+iar[14][324],
     ]
 
     # sentinel color list
     colors = [
-        [59, 158, 214],
-        [53, 201, 234],
-        [22, 187, 60],
-        [218, 191, 115],
-        [92, 74, 66],
-        [70, 168, 219],
-        [225, 162, 25],
-        [222, 159, 22],
+[ 37 ,143,  18],
+[144 ,232, 132],
+[132, 235, 130],
+[252 ,253, 248],
+[140 ,231, 137],
+[136 ,235, 129],
+[ 36, 156,  16],
+[ 38, 155,  17],
+[255, 250, 249],
     ]
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
+        # print(pixel)
+        if not pixel_is_equal(pixel, colors[i], tol=35):
+            return pixels
+
+    # if all pixels are good, we're on clash main
+    return True
+
+
+
+def check_if_on_clash_main_menu2(vm_index):
+    """A patch job for check_if_on_clash_main_menu()"""
+    iar = numpy.asarray(screenshot(vm_index))
+
+    # get raw pixels from image array
+    pixels = [
+        iar[603][60],
+        iar[622][167],
+        iar[624][252],
+        iar[587][339],
+        iar[621][361],
+        iar[598][302],
+        iar[598][322],
+    ]
+
+    # sentinel color list
+    colors = [
+        [102, 81, 67],
+        [154, 119, 80],
+        [154, 119, 80],
+        [108, 87, 73],
+        [95, 76, 63],
+        [241, 122, 19],
+        [126, 77, 248],
+    ]
+
+    # if any pixel doesnt match the sentinel, then we're not on clash main
+    for i, pixel in enumerate(pixels):
+        # print(pixel)
         if not pixel_is_equal(pixel, colors[i], tol=35):
             return pixels
 
@@ -819,9 +856,10 @@ def check_if_on_clash_main_menu(vm_index):
 
     iar = numpy.asarray(screenshot(vm_index))
 
-    # run the patch-job check first, then the original check if that fails
-    if check_if_on_clash_main_menu2(iar) is True:
-        print("Used patch-job clash main detection")
+    if check_if_on_clash_main_menu2(vm_index):
+        return True
+
+    if check_if_on_clash_main_menu3(vm_index):
         return True
 
     # get raw pixels from image array
@@ -1450,4 +1488,7 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    pass
+    # while 1:
+    print(1,check_if_on_clash_main_menu(12))
+    print(2,check_if_on_clash_main_menu2(12))
+    print(3,check_if_on_clash_main_menu3(12))
