@@ -57,7 +57,7 @@ def find_enemy_troops(vm_index):
         screenshot(vm_index),
         folder,
         names,
-        tolerance=0.9,
+        tolerance=0.95,
     )
 
     if get_first_location(locations) is None:
@@ -66,19 +66,23 @@ def find_enemy_troops(vm_index):
     return flip_all_coords(locations)
 
 
-def filter_trash_coords(locations):
+def remove_trash_coords(locations):
     if locations is None:
         return locations
 
     bad_coords = [
         [276, 114],
         [231, 66],
+        [197, 15],
+        [69, 538],
+        [39, 43],
         [349, 497],
         [153, 622],
+        [133, 14],
         [100, 114],
     ]
 
-    tolerance_range = 30
+    tolerance_range = 15
     # Use list comprehension to create a new list with valid coordinates
     filtered_locations = [
         location
@@ -106,7 +110,7 @@ def classify_pixel(pixel):
         (204, 35, 35),
     ]
 
-    tolerance = 30
+    tolerance = 50
 
     for color in blue_colors:
         if pixel_is_equal(pixel, color, tolerance):
@@ -122,8 +126,8 @@ def classify_pixel(pixel):
 def classify_coordinate(iar, coord):
     pixels = []
 
-    x_range = 2  # pixels
-    y_range = 2  # pixels
+    x_range = 6  # pixels
+    y_range = 6  # pixels
 
     left_side_range = x_range / 2
     bottom_size_range = y_range / 2
@@ -148,8 +152,8 @@ def classify_coordinate(iar, coord):
         elif color == "blue":
             blue_color_count += 1
 
-    print(f"Found {blue_color_count} blues / {len(colors)}")
-    print(f"Found {red_color_count} reds / {len(colors)}")
+    # print(f"Found {blue_color_count} blues / {len(colors)}")
+    # print(f"Found {red_color_count} reds / {len(colors)}")
     if red_color_count * 0.7 > blue_color_count:
         return "red"
 
@@ -194,14 +198,16 @@ def troop_visualizer_thread(vm_index):
                 pygame.quit()
                 exit()
 
-        locations = filter_trash_coords(find_enemy_troops(vm_index))
+        locations = remove_trash_coords(find_enemy_troops(vm_index))
         locations_with_color = classify_locations(vm_index, locations)
         if locations is not None:
             # print(locations_with_color)
             for location_with_color in locations_with_color:
                 # if color is blue, dont draw
-                if location_with_color[2] == "blue":
-                    continue
+                # if location_with_color[2] == "blue":
+                #     continue
+                print(location_with_color)
+                # print(choose_play_side(vm_index))
                 add_dot(
                     active_dots,
                     location_with_color[:2],  # Use [:2] to get only the location
@@ -229,17 +235,18 @@ def remove_blue_locations(locations):
 
 
 def choose_play_side(vm_index):
-    timeout = 1  # s
+    timeout = 2  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
-        locations = filter_trash_coords(find_enemy_troops(vm_index))
+        locations = remove_trash_coords(find_enemy_troops(vm_index))
         locations = classify_locations(vm_index, locations)
-        locations = remove_blue_locations(locations)
+        # locations = remove_blue_locations(locations)
 
     # middle x coord
     middle_x = 209
 
     if locations is None:
+        print("Choosing random side because no locations found")
         return random.choice(["left", "right"])
 
     left_count = 0
@@ -251,13 +258,20 @@ def choose_play_side(vm_index):
         else:
             right_count += 1
 
+    #if both counts are 1 or below, return a random choice
+    if left_count <= 1 and right_count <= 1:
+        print("Choosing random side because both counts are 1 or below")
+        return random.choice(["left", "right"])
+
     if left_count > right_count:
-        print("New troop locater method deems left side")
+        print(f"New troop locater method deems left side {left_count}|{right_count}")
         return "left"
 
-    print("New troop locater method deems right side")
+    print(f"New troop locater method deems right side {left_count}|{right_count}")
     return "right"
 
 
 if __name__ == "__main__":
-    troop_visualizer_thread(12)
+    # troop_visualizer_thread(12)
+    while 1:
+        (choose_play_side(12))
