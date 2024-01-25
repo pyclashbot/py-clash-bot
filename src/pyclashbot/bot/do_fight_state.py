@@ -4,9 +4,11 @@ import random
 import time
 from typing import Literal
 
+
 from xmlrpc.client import Boolean
 
 from pyclashbot.bot.card_detection2 import get_play_coords_for_card
+from pyclashbot.bot.troop_locater import choose_play_side
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -310,26 +312,26 @@ def click_quickmatch_button(vm_index) -> None:
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
-def choose_play_side(vm_index, favorite_side):
-    """method to choose a play side given a favorite side"""
+# def choose_play_side(vm_index, favorite_side):
+#     """method to choose a play side given a favorite side"""
 
-    # get tower_statuses
-    tower_statuses = check_enemy_tower_statuses(vm_index)
+#     # get tower_statuses
+#     tower_statuses = check_enemy_tower_statuses(vm_index)
 
-    # if left is destroyed and right is alive, return right
-    if tower_statuses[0] == "destroyed" and tower_statuses[1] == "alive":
-        return "right"
+#     # if left is destroyed and right is alive, return right
+#     if tower_statuses[0] == "destroyed" and tower_statuses[1] == "alive":
+#         return "right"
 
-    # else, if right is destroyed and left is alive, return left
-    if tower_statuses[1] == "destroyed" and tower_statuses[0] == "alive":
-        return "left"
+#     # else, if right is destroyed and left is alive, return left
+#     if tower_statuses[1] == "destroyed" and tower_statuses[0] == "alive":
+#         return "left"
 
-    # if neither are destroyed, return favorite_side
-    choices = [favorite_side] * 7 + [
-        side for side in ["left", "right"] if side != favorite_side
-    ] * 3
+#     # if neither are destroyed, return favorite_side
+#     choices = [favorite_side] * 7 + [
+#         side for side in ["left", "right"] if side != favorite_side
+#     ] * 3
 
-    return random.choice(choices)
+#     return random.choice(choices)
 
 
 def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
@@ -779,7 +781,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         logger.log(f"2v2 battle play #{plays}:")
 
-        # wait for 6 elixer
+        # wait for 4 elixer
         if not check_for_4_elixer(vm_index):
             logger.log("Waiting for 4 elixer")
 
@@ -815,7 +817,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # choose play coord but favor a side according to favorite_side var
         play_choice_start_time = time.time()
-        this_play_side = choose_play_side(vm_index, favorite_side)
+        this_play_side = choose_play_side(vm_index)
         logger.change_status(
             f"Choose a play side in {str(time.time() - play_choice_start_time)[:4]}s"
         )
