@@ -770,35 +770,34 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
     return True
 
 
-
 def check_if_on_clash_main_menu3(vm_index):
     """A patch job for check_if_on_clash_main_menu()"""
     iar = numpy.asarray(screenshot(vm_index))
 
     # get raw pixels from image array
     pixels = [
-iar[26][209],
-iar[9][204],
-iar[10][216],
-iar[14][210],
-iar[9][319],
-iar[9][330],
-iar[25][319],
-iar[25][329],
-iar[14][324],
+        iar[26][209],
+        iar[9][204],
+        iar[10][216],
+        iar[14][210],
+        iar[9][319],
+        iar[9][330],
+        iar[25][319],
+        iar[25][329],
+        iar[14][324],
     ]
 
     # sentinel color list
     colors = [
-[ 37 ,143,  18],
-[144 ,232, 132],
-[132, 235, 130],
-[252 ,253, 248],
-[140 ,231, 137],
-[136 ,235, 129],
-[ 36, 156,  16],
-[ 38, 155,  17],
-[255, 250, 249],
+        [37, 143, 18],
+        [144, 232, 132],
+        [132, 235, 130],
+        [252, 253, 248],
+        [140, 231, 137],
+        [136, 235, 129],
+        [36, 156, 16],
+        [38, 155, 17],
+        [255, 250, 249],
     ]
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
@@ -809,7 +808,6 @@ iar[14][324],
 
     # if all pixels are good, we're on clash main
     return True
-
 
 
 def check_if_on_clash_main_menu2(vm_index):
@@ -855,12 +853,6 @@ def check_if_on_clash_main_menu(vm_index):
     """
 
     iar = numpy.asarray(screenshot(vm_index))
-
-    if check_if_on_clash_main_menu2(vm_index):
-        return True
-
-    if check_if_on_clash_main_menu3(vm_index):
-        return True
 
     # get raw pixels from image array
     pixels = [
@@ -1489,6 +1481,6 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 if __name__ == "__main__":
     # while 1:
-    print(1,check_if_on_clash_main_menu(12))
-    print(2,check_if_on_clash_main_menu2(12))
-    print(3,check_if_on_clash_main_menu3(12))
+    print(1, check_if_on_clash_main_menu(12))
+    print(2, check_if_on_clash_main_menu2(12))
+    print(3, check_if_on_clash_main_menu3(12))
