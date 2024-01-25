@@ -81,6 +81,7 @@ def get_first_location(
         None,
     )
 
+
 def crop_image(image: np.ndarray, region: list) -> np.ndarray:
     """
     Crop the given image using the specified region.
@@ -101,8 +102,6 @@ def crop_image(image: np.ndarray, region: list) -> np.ndarray:
     cropped_image = image[top : top + height, left : left + width]
 
     return cropped_image
-
-
 
 
 def check_for_location(locations: list[list[int] | None]):

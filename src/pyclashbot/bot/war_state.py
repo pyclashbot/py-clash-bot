@@ -58,6 +58,7 @@ def find_war_battle_icon(vm_index):
         names,
         0.9,
     )
+
     coord = get_first_location(locations)
     if coord is None:
         return None
@@ -81,7 +82,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
         return "restart"
 
-    #check if in a clan
+    # check if in a clan
     logger.change_status(status="Making sure in a clan before war battle")
     in_a_clan_check = war_state_check_if_in_a_clan(vm_index, logger)
 
