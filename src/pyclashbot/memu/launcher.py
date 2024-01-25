@@ -28,7 +28,7 @@ MANUAL_VM_WAIT_TIME = 10
 MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 
-def restart_emulator(logger, start_time=time.time()):
+def restart_emulator(logger, start_time=time.time(), open_clash=True):
     """
     Restart the emulator.
 
@@ -56,16 +56,20 @@ def restart_emulator(logger, start_time=time.time()):
         logger.log("Error 99 Failed to skip ads")
         return restart_emulator(logger, start_time)
 
-    # start clash royale
-    logger.change_status("Starting clash royale")
-    start_clash_royale(logger, vm_index)
+    # if open_clash is toggled, open CR
+    if open_clash:
+        # start clash royale
+        logger.change_status("Starting clash royale")
+        start_clash_royale(logger, vm_index)
 
-    # check-wait for clash main if need to wait longer
-    if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.log("#34 Looping restart_emulator() b/c fail waiting for clash main")
-        return restart_emulator(logger, start_time)
+        # check-wait for clash main if need to wait longer
+        if wait_for_clash_main_menu(vm_index, logger) is False:
+            logger.log("#34 Looping restart_emulator() b/c fail waiting for clash main")
+            return restart_emulator(logger, start_time)
 
-    time.sleep(1)
+        time.sleep(1)
+    else:
+        print("Skipping clash open sequence")
 
     logger.log(f"Took {str(time.time() - start_time)[:5]}s to launch emulator")
     return True
@@ -221,23 +225,17 @@ def home_button_press(vm_index, clicks=4):
 # starting/closing memu vms/apps
 
 
-def stop_vm(logger, vm_index):
+def stop_vm(vm_index):
     """Stops the VM with the given index."""
-    logger.change_status(status=f"Stopping VM {vm_index}")
-    pmc.stop_vm(vm_index=vm_index)
-    time.sleep(5)
+    while check_for_emulator_running(vm_index) is True:
+        pmc.stop_vm(vm_index=vm_index)
+        time.sleep(3)
 
 
 def launch_vm(logger, vm_index):
     """Launches the VM with the given index."""
     logger.change_status(status=f"Launching VM {vm_index}")
     pmc.start_vm(vm_index=vm_index)
-
-
-def restart_vm(logger, vm_index):
-    """Restarts the VM with the given index."""
-    stop_vm(logger, vm_index)
-    launch_vm(logger, vm_index)
 
 
 def start_memuc_console() -> int:
@@ -323,5 +321,87 @@ and login before using this bot."""
     sys.exit(0)
 
 
+# new
+
+
+def get_clashbot_vm_index():
+    vms: list[VMInfo] = pmc.list_vm_info()
+
+    start_time = time.time()
+    timeout = 60  # s
+
+    while time.time() - start_time < timeout:
+        for vm in vms:
+            title = vm["title"]
+            if "pyclashbot-96" in title:
+                return vm["index"]
+
+    return False
+
+
+def delete_vm(vm_index):
+    start_time = time.time()
+    timeout = 60  # s
+
+    while pmc.delete_vm(vm_index) is not True:
+        if time.time() - start_time > timeout:
+            print(f"Timed out while trying to delete vm#{vm_index}")
+            return False
+
+        print("Failed to delete vm... retrying")
+
+    return True
+
+
+def check_for_emulator_running(vm_index):
+    vms: list[VMInfo] = pmc.list_vm_info()
+
+    for vm in vms:
+        if vm["index"] != vm_index:
+            continue
+
+        return vm["running"]
+
+    return False
+
+
+def reset_clashbot_emulator(logger):
+    # find which index emulator is at with a 60s timeout
+    vm_index = get_clashbot_vm_index()
+
+    logger.change_status("Failed to find an existing clashbot emulator. Creating one!")
+
+    # delete old emulator
+    if vm_index is not False:
+        logger.change_status("Deleting old emulator...")
+        if delete_vm(vm_index):
+            logger.change_status(
+                f"Successfully deleted old emulator of index {vm_index}!"
+            )
+        else:
+            logger.change_status(f"Failed to delete old emulator of index {vm_index}")
+
+    # make new emulator
+    vm_index = create_vm()
+
+    # boot the emulator
+    while 1:
+        # close the emulator
+        stop_vm(vm_index)
+        time.sleep(5)
+
+        # configure emulator
+        configure_vm(vm_index)
+
+        # boot up emulator, if successful, break
+        if restart_emulator(logger, start_time=time.time(), open_clash=False) is True:
+            break
+
+    logger.change_status(
+        "Emualtor refreshed! Install Clash Royale and restart the bot."
+    )
+
+
 if __name__ == "__main__":
-    configure_vm(4)
+    # reset_clashbot_emulator(logger)
+    pass

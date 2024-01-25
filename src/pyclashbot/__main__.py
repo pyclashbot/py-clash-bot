@@ -10,6 +10,7 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import DONATE_BUTTON_KEY, create_window
+from pyclashbot.memu.launcher import reset_clashbot_emulator
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
@@ -446,6 +447,10 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
                 url = logger.upload_log()
                 if url is not None:
                     webbrowser.open(url)
+
+        # refresh emulator button
+        elif event == "refresh_emualtor_key":
+            reset_clashbot_emulator(logger)
 
         # donate event
         elif event in ("donate", DONATE_BUTTON_KEY):
