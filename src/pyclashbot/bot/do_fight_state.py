@@ -817,7 +817,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # choose play coord but favor a side according to favorite_side var
         play_choice_start_time = time.time()
-        this_play_side = choose_play_side(vm_index)
+        this_play_side = choose_play_side(logger,vm_index)
         logger.change_status(
             f"Choose a play side in {str(time.time() - play_choice_start_time)[:4]}s"
         )
