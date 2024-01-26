@@ -13,7 +13,7 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.detection.image_rec import screenshot
 
 DOT_RADIUS = 5
-
+ENEMY_TROOP_IMAGE_REC_TOLERANCE=0.98
 
 def flip_all_coords(locations):
     new_coord_list = []
@@ -57,7 +57,7 @@ def find_enemy_troops(vm_index):
         screenshot(vm_index),
         folder,
         names,
-        tolerance=0.95,
+        tolerance=ENEMY_TROOP_IMAGE_REC_TOLERANCE,
     )
 
     if get_first_location(locations) is None:
@@ -239,7 +239,7 @@ def choose_play_side(logger, vm_index):
     start_time = time.time()
     while time.time() - start_time < timeout:
         locations = remove_trash_coords(find_enemy_troops(vm_index))
-        locations = classify_locations(vm_index, locations)
+        # locations = classify_locations(vm_index, locations)
         # locations = remove_blue_locations(locations)
 
     # middle x coord
@@ -272,7 +272,7 @@ def choose_play_side(logger, vm_index):
 
 
 if __name__ == "__main__":
-    # troop_visualizer_thread(12)
-    from pyclashbot.utils.logger import Logger
-    while 1:
-        (choose_play_side(Logger(None,None),12))
+    troop_visualizer_thread(12)
+    # from pyclashbot.utils.logger import Logger
+    # while 1:
+        # (choose_play_side(Logger(None,None),12))
