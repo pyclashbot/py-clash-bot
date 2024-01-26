@@ -238,4 +238,4 @@ def shop_buy_tester():
 
 
 if __name__ == "__main__":
-    while 1:buy_offers_from_this_shop_page(12, Logger(), True, True)
+    shop_buy_tester()
