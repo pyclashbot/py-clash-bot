@@ -1371,9 +1371,10 @@ CARD_PIXEL_DATA_DICT = {
 
 
 PLAY_COORDS = {
+    # done
     "spell": {
-        "left": [(94, 151), (95, 151), (86, 117)],
-        "right": [(330, 153), (330, 110)],
+        "left": [(116, 140)],
+        "right": [(302, 140)],
     },
     "hog": {
         "left": [(77, 281), (113, 286), (154, 283)],
@@ -1567,4 +1568,10 @@ def card_detection_tester(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    # right tower arrows = 292,146
+    # left tower arrows = 116,149
+
+    coord = ()
+    from pyclashbot.memu.client import click
+
+    click(12, coord[0], coord[1])
