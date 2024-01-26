@@ -946,7 +946,7 @@ def get_to_card_page_from_clash_main(
     click(
         vm_index, CARD_PAGE_ICON_FROM_CLASH_MAIN[0], CARD_PAGE_ICON_FROM_CLASH_MAIN[1]
     )
-    time.sleep(1)
+    time.sleep(2.5)
 
     # while not on the card page, cycle the card page
     while not check_if_on_card_page(vm_index):
