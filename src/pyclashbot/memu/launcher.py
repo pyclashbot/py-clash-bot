@@ -63,6 +63,7 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
         start_clash_royale(logger, vm_index)
 
         # check-wait for clash main if need to wait longer
+        logger.change_status('Waiting for clash royale main menu')
         if wait_for_clash_main_menu(vm_index, logger) is False:
             logger.log("#34 Looping restart_emulator() b/c fail waiting for clash main")
             return restart_emulator(logger, start_time)

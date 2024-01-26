@@ -89,19 +89,31 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         )
         return "restart"
 
+    # click a bottom card so it scrolls down the little bit (dogshit clash UI)
+    print("Clicking bottom card to scroll")
+    click(vm_index, 163, 403)
+
+    # deadspace click to unclick that card but keep the random scroll
+    print("Deadspace click")
+    click(vm_index, 14, 286)
+
     # upgrade each card
     for card_index in range(8):
+        card_index = 8 - card_index - 1
 
         while check_if_card_is_upgradable(vm_index, logger, card_index):
             if not upgrade_card(vm_index, logger, card_index):
-                print('Upgrade card failed, so were done with this card.')
+                print("Upgrade card failed, so were done with this card.")
                 break
             print("Upgraded a card")
+
+    time.sleep(2)
     logger.change_status(status="Done upgrading cards")
+    click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
 
     # return to clash main
     click(vm_index, 245, 593)
-    time.sleep(4)
+    time.sleep(3)
 
     # wait for main
     if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
@@ -169,8 +181,8 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
     # click the card
-    click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
-    time.sleep(2)
+    # click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
+    # time.sleep(2)
 
     # click the upgrade button
     logger.change_status(status="Clicking the upgrade button for this card")
@@ -227,7 +239,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
         logger.change_status("Upgraded this card")
     else:
         logger.log("Missing gold popup exists. Skipping this upgradable card.")
-        upgraded_a_card=False
+        upgraded_a_card = False
 
     # click deadspace
     logger.change_status(
@@ -284,20 +296,11 @@ def check_for_missing_gold_popup(vm_index):
 def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
     logger.change_status(status=f"Checking out if {card_index} is upgradable")
 
-    if card_index > 3:
-        # click a bottom card so it scrolls down the little bit (dogshit clash UI)
-        print('Clicking bottom card to scroll')
-        click(vm_index, 163, 403)
-
-        # deadspace click to unclick that card but keep the random scroll
-        print('Deadspace click')
-        click(vm_index, 14, 286)
-
     # click the selected card
     card_coord = CARD_COORDS[card_index]
-    print(f'Clicking the #{card_index} card')
+    print(f"Clicking the #{card_index} card")
     click(vm_index, card_coord[0], card_coord[1])
-    time.sleep(0.5)
+    time.sleep(0.33)
 
     # see if green uprgade button exists in card context menu
     card_is_upgradable = False
@@ -308,10 +311,15 @@ def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
         card_is_upgradable = True
 
     # deadspace click
-    click(vm_index, 14, 286)
+    # click(vm_index, 14, 286)
 
+    print(f"Card #{card_index} is upgradable: {card_is_upgradable}")
     return card_is_upgradable
 
 
 if __name__ == "__main__":
-    pass
+    print(upgrade_cards_state(12, Logger(None, None), "next_state"))
+
+    # for _ in range(8):
+    #     print(check_if_card_is_upgradable(12, Logger(None, None), _))
+    #     print("\n")
