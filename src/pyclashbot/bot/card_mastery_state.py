@@ -47,7 +47,7 @@ def card_mastery_state(vm_index, logger, next_state):
 
 def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
     # get to card page
-    logger.change_status("Getting to card page...")
+    logger.change_status("Collecting card mastery rewards...")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(
             "Failed to get to card page to collect mastery rewards! Returning false"
@@ -57,6 +57,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
 
     if not card_mastery_rewards_exist(vm_index):
         logger.change_status("No card mastery rewards to collect.")
+        time.sleep(1)
 
     else:
         # while card mastery icon exists:
@@ -69,6 +70,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
             time.sleep(3)
 
     # get to clash main
+    logger.change_status("Returning to clash main menu")
     click(vm_index, 243, 600)
     time.sleep(3)
 
