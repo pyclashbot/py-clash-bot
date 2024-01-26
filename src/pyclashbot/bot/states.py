@@ -110,6 +110,7 @@ def state_tree(
         start_clash_royale(logger, vm_index)
 
         # wait for clash main
+        logger.change_status('Waiting for clash royale main menu')
         logger.log("Running wait_for_clash_main_menu()")
         if wait_for_clash_main_menu(vm_index, logger) is False:
             logger.log(
