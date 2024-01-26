@@ -25,7 +25,6 @@ from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.nav import get_to_profile_page, wait_for_clash_main_menu
 
 
-
 def donate_cards_state(vm_index, logger: Logger, next_state):
     """
     This function represents the state of donating cards in Clash of Clans.
@@ -44,7 +43,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
         return "restart"
 
     # if not in a clan, return
-    logger.change_status("Checking if in a clan before requesting")
+    logger.change_status("Checking if in a clan before donating...")
     in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
     if in_a_clan_return == "restart":
         logger.change_status(
