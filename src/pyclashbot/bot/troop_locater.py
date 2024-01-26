@@ -234,7 +234,7 @@ def remove_blue_locations(locations):
     return filtered_locations
 
 
-def choose_play_side(logger, vm_index):
+def choose_play_side(logger, vm_index) -> str:
     timeout = 1.33 # s
     start_time = time.time()
     while time.time() - start_time < timeout:
