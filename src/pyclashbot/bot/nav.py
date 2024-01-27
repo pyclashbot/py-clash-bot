@@ -394,7 +394,7 @@ def get_to_clan_tab_from_clash_main(
         handle_final_results_page(vm_index, logger)
 
         # handle daily defenses rank page
-        handle_daily_defenses_rank_page(vm_index, logger)
+        handle_war_popup_pages(vm_index, logger)
 
         if random.randint(0, 1) == 1:
             if random.randint(1, 3) == 1:
@@ -418,16 +418,88 @@ def get_to_clan_tab_from_clash_main(
     return "good"
 
 
-def handle_daily_defenses_rank_page(vm_index, logger):
-    timeout = 2
+def handle_war_popup_pages(vm_index, logger):
+    timeout = 4
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_for_daily_defenses_rank_page(
-            vm_index
-        ) or check_for_daily_defenses_rank_page_2(vm_index):
+        if check_for_battle_day_results_page(vm_index):
+            print("Found battle_day_results page")
+            click(vm_index, 233, 196)
+            time.sleep(1)
+            return True
+
+        if (
+            check_for_daily_defenses_rank_page(vm_index)
+            or check_for_daily_defenses_rank_page_2(vm_index)
+            or check_for_daily_defenses_rank_page_3(vm_index)
+        ):
+            print("Found daily_defenses page")
             click(vm_index, 150, 260)
             time.sleep(2)
             logger.change_status("Handled daily defenses rank page")
+            return True
+
+        if check_for_war_chest_obstruction(vm_index):
+            open_war_chest_obstruction(vm_index, logger)
+            logger.add_war_chest_collect()
+            print(f"Incremented war chest collects to {logger.war_chest_collects}")
+            time.sleep(1)
+            return True
+
+    return False
+
+
+def check_for_battle_day_results_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[189][48],
+        iar[193][125],
+        iar[194][236],
+        iar[314][191],
+        iar[206][203],
+    ]
+
+    colors = [
+        [253, 79, 140],
+        [255, 250, 253],
+        [253, 251, 255],
+        [204, 200, 196],
+        [253, 79, 140],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+def check_for_daily_defenses_rank_page_3(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[202][102],
+        iar[203][139],
+        iar[204][189],
+        iar[203][230],
+        iar[203][278],
+        iar[262][209],
+        iar[273][208],
+    ]
+    colors = [
+        [251, 252, 251],
+        [237, 236, 238],
+        [253, 248, 249],
+        [253, 251, 253],
+        [248, 246, 242],
+        [65, 214, 255],
+        [38, 188, 250],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=15):
+            return False
+    return True
 
 
 def check_for_daily_defenses_rank_page_2(vm_index):
@@ -738,14 +810,14 @@ def handle_trophy_reward_menu(
 def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
     """
     Waits for the user to be on the clash main menu.
-    Returns True if on main menu, False if not.
+    Returns True if on main menu, prints the pixels if False then return False
     """
     start_time: float = time.time()
     while check_if_on_clash_main_menu(vm_index) is not True:
         # timeout check
         if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
             logger.change_status("Timed out waiting for clash main")
-            return False
+            break
 
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu(vm_index):
@@ -764,7 +836,12 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
         time.sleep(1)
 
     time.sleep(1)
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    out = check_if_on_clash_main_menu(vm_index)
+    if out is not True:
+        print("Failed to get to clash main! Saw these pixels before restarting:")
+        for pixel in out:
+            print(pixel)
+        print("\n")
         return False
 
     return True
@@ -1102,26 +1179,37 @@ def handle_clash_main_tab_notifications(
         return False
 
     # click card tab from main
+    print("Clicked card tab")
     click(vm_index, 103, 598)
     time.sleep(3)
 
     # click shop tab from card tab
+    print("Clicked shop tab")
     click(vm_index, 9, 594, clicks=3, interval=0.33)
     time.sleep(2)
 
     # click clan tab from shop tab
+    print("Clicked clan tab")
     click(vm_index, 315, 594)
+    time.sleep(4)
+    print("Checking for war popup pages...")
+    while handle_war_popup_pages(vm_index, logger) is True:
+        print("Did something to handle a war page popup. Doing it again...")
     time.sleep(3)
 
     # click events tab from clan tab
+    print("Clicked events tab")
     click(vm_index, 408, 600, clicks=3, interval=0.33)
+
     time.sleep(2)
 
     # spam click shop page at the leftmost location, wait a little bit
+    print("Clicked shop page")
     click(vm_index, 9, 594, clicks=3, interval=0.33)
     time.sleep(3)
 
     # click clash main from shop page
+    print("Clicked clash main")
     click(vm_index, 240, 600)
     time.sleep(3)
 
@@ -1480,7 +1568,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    # while 1:
-    print(1, check_if_on_clash_main_menu(12))
-    print(2, check_if_on_clash_main_menu2(12))
-    print(3, check_if_on_clash_main_menu3(12))
+    handle_war_popup_pages(12, Logger(None, None))
