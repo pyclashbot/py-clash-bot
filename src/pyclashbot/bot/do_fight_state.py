@@ -20,6 +20,7 @@ from pyclashbot.bot.nav import (
     wait_for_1v1_battle_start,
     wait_for_2v2_battle_start,
     wait_for_clash_main_menu,
+    check_for_events_page,
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
@@ -312,7 +313,9 @@ def click_quickmatch_button(vm_index) -> None:
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
-def choose_play_side_barebones(vm_index, favorite_side):# -> Any | Literal['right', 'left']:
+def choose_play_side_barebones(
+    vm_index, favorite_side
+):  # -> Any | Literal['right', 'left']:
     """method to choose a play side given a favorite side"""
 
     # get tower_statuses
@@ -638,44 +641,6 @@ def find_ok_battle_button(vm_index):
     return [coord[1], coord[0]]
 
 
-def check_for_events_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[578][415],
-        iar[585][415],
-        iar[595][415],
-        iar[605][415],
-        iar[621][415],
-        iar[578][310],
-        iar[585][310],
-        iar[590][310],
-        iar[600][310],
-        iar[610][310],
-        iar[622][310],
-    ]
-
-    colors = [
-        [136, 103, 70],
-        [136, 103, 70],
-        [140, 107, 74],
-        [142, 110, 75],
-        [149, 117, 77],
-        [139, 101, 69],
-        [138, 103, 70],
-        [141, 106, 73],
-        [142, 108, 73],
-        [147, 114, 76],
-        [154, 119, 80],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(colors[i], p, tol=15):
-            return False
-    return True
-
-
 def get_to_main_after_fight(vm_index, logger):
     timeout = 120  # s
     start_time = time.time()
@@ -758,10 +723,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status="Starting 2v2 battle loop")
 
-    # choose a side to favor this fight
-    favorite_side = random.choice(["left", "right"])
 
-    logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
     # count plays
     plays = 0
@@ -817,7 +779,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # choose play coord but favor a side according to favorite_side var
         play_choice_start_time = time.time()
-        this_play_side = choose_play_side(logger,vm_index)
+        this_play_side = choose_play_side(logger, vm_index)
         logger.change_status(
             f"Choose a play side in {str(time.time() - play_choice_start_time)[:4]}s"
         )
@@ -919,7 +881,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         # choose play coord but favor a side according to favorite_side var
         choose_play_side_start_time = time.time()
-        this_play_side=choose_play_side_barebones(vm_index, favorite_side)
+        this_play_side = choose_play_side_barebones(vm_index, favorite_side)
         # this_play_side = choose_play_side(vm_index, favorite_side)
         logger.change_status(
             f"Waited {str(time.time() - choose_play_side_start_time)[:5]}s to choose a side"
@@ -1019,4 +981,5 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    while 1:print(check_for_events_page(12))
+    while 1:
+        print(check_for_events_page(12))

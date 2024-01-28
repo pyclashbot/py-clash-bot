@@ -51,10 +51,11 @@ collection_stats_titles: list[list[Text]] = [
         sg.Text("Battlepass Reward Collects"),
     ],
     [
+        sg.Text("Level Up Reward Collects"),
+    ],
+    [
         sg.Text("War Chest Collects"),
     ],
-
-
 ]
 
 collection_stats_values: list[list[Text]] = [
@@ -89,10 +90,11 @@ collection_stats_values: list[list[Text]] = [
         stat_box("battlepass_collects"),
     ],
     [
+        stat_box("level_up_chest_collects"),
+    ],
+    [
         stat_box("war_chest_collects"),
     ],
-
-
 ]
 
 collection_stats = [

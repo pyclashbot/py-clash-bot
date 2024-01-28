@@ -260,17 +260,22 @@ def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
 
 def check_if_in_war_battle(vm_index) -> bool:
     """method to check if the war battle screen still exists"""
+    timeout = 3  # s
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        # if not check_line_for_color(
+        #     vm_index, x_1=104, y_1=606, x_2=123, y_2=626, color=(224, 28, 215)
+        # ):
+        #     continue
 
-    if not check_line_for_color(
-        vm_index, x_1=104, y_1=606, x_2=123, y_2=626, color=(224, 28, 215)
-    ):
-        return False
-    if not line_is_color(
-        vm_index, x_1=51, y_1=515, x_2=68, y_2=520, color=(255, 255, 255)
-    ):
-        return False
+        if not line_is_color(
+            vm_index, x_1=51, y_1=515, x_2=68, y_2=520, color=(255, 255, 255)
+        ):
+            continue
 
-    return True
+        return True
+
+    return False
 
 
 def check_if_deck_is_ready_for_this_battle(vm_index) -> bool:
@@ -467,4 +472,8 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 
 
 if __name__ == "__main__":
-    print(check_for_locked_clan_war_screen(12))
+    # print(check_for_locked_clan_war_screen(12))
+
+
+    while 1:
+        print(check_if_in_war_battle(12))

@@ -432,6 +432,7 @@ def handle_war_popup_pages(vm_index, logger):
             check_for_daily_defenses_rank_page(vm_index)
             or check_for_daily_defenses_rank_page_2(vm_index)
             or check_for_daily_defenses_rank_page_3(vm_index)
+            or check_for_daily_defenses_rank_page_4(vm_index)
         ):
             print("Found daily_defenses page")
             click(vm_index, 150, 260)
@@ -440,6 +441,7 @@ def handle_war_popup_pages(vm_index, logger):
             return True
 
         if check_for_war_chest_obstruction(vm_index):
+            print("Found war chest obstruction")
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
@@ -493,6 +495,28 @@ def check_for_daily_defenses_rank_page_3(vm_index):
         [248, 246, 242],
         [65, 214, 255],
         [38, 188, 250],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(p, colors[i], tol=15):
+            return False
+    return True
+
+
+def check_for_daily_defenses_rank_page_4(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[201][101],
+        iar[201][109],
+        iar[201][176],
+        iar[203][188],
+    ]
+    colors = [
+        [254, 254, 254],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
     ]
 
     for i, p in enumerate(pixels):
@@ -1191,15 +1215,21 @@ def handle_clash_main_tab_notifications(
     # click clan tab from shop tab
     print("Clicked clan tab")
     click(vm_index, 315, 594)
-    time.sleep(4)
-    print("Checking for war popup pages...")
-    while handle_war_popup_pages(vm_index, logger) is True:
-        print("Did something to handle a war page popup. Doing it again...")
-    time.sleep(3)
+    time.sleep(5)
+
+
 
     # click events tab from clan tab
-    print("Clicked events tab")
-    click(vm_index, 408, 600, clicks=3, interval=0.33)
+    print("Getting to events tab...")
+    while not check_for_events_page(vm_index):
+        print("Still not on events page...")
+        handle_war_popup_pages(vm_index, logger)
+
+        print('Trying to get to events page...')
+        click(vm_index, 408, 600)
+        time.sleep(1.77)
+
+    print("On events page")
 
     time.sleep(2)
 
@@ -1229,6 +1259,44 @@ def handle_clash_main_tab_notifications(
         status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s"
     )
 
+    return True
+
+
+def check_for_events_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[578][415],
+        iar[585][415],
+        iar[595][415],
+        iar[605][415],
+        iar[621][415],
+        iar[578][310],
+        iar[585][310],
+        iar[590][310],
+        iar[600][310],
+        iar[610][310],
+        iar[622][310],
+    ]
+
+    colors = [
+        [136, 103, 70],
+        [136, 103, 70],
+        [140, 107, 74],
+        [142, 110, 75],
+        [149, 117, 77],
+        [139, 101, 69],
+        [138, 103, 70],
+        [141, 106, 73],
+        [142, 108, 73],
+        [147, 114, 76],
+        [154, 119, 80],
+    ]
+
+    for i, p in enumerate(pixels):
+        # print(p)
+        if not pixel_is_equal(colors[i], p, tol=15):
+            return False
     return True
 
 

@@ -124,6 +124,8 @@ class Logger:
         self.shop_buy_attempts = 0
         self.war_attempts = 0
         self.war_chest_collects = 0
+        self.level_up_chest_collects = 0
+        self.level_up_chest_attempts = 0
 
         # account stuff
         self.account_order = "-"
@@ -167,7 +169,7 @@ class Logger:
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
                 "shop_buys": self.shop_buys,
-                "war_chest_collects":self.war_chest_collects,
+                "war_chest_collects": self.war_chest_collects,
                 "donates": self.donates,
                 "restarts_after_failure": self.restarts_after_failure,
                 "chests_unlocked": self.chests_unlocked,
@@ -176,6 +178,7 @@ class Logger:
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "shop_offer_collections": self.shop_offer_collections,
                 "battlepass_collects": self.battlepass_collects,
+                "level_up_chest_collects":self.level_up_chest_collects,
                 "bannerbox_collects": self.bannerbox_collects,
                 "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
@@ -313,6 +316,14 @@ class Logger:
         self.cards_played += 1
 
     @_updates_log
+    def add_level_up_chest_collect(self):
+        self.level_up_chest_collects += 1
+
+    @_updates_log
+    def add_level_up_chest_attempt(self):
+        self.level_up_chest_attempts += 1
+
+    @_updates_log
     def remove_card_played(self, cards_to_remove=1):
         """decremenet logger's card played counter by cards_to_remove"""
         self.cards_played -= cards_to_remove
@@ -363,7 +374,6 @@ class Logger:
     def add_war_chest_collect(self) -> None:
         """add request to log"""
         self.war_chest_collects += 1
-
 
     @_updates_log
     def add_shop_buy(self) -> None:
@@ -567,6 +577,47 @@ class Logger:
 
         self.log(
             f"Can't do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
+        )
+        return False
+
+    def check_if_can_collect_level_up_chest(self, increment) -> bool:
+        """check if can collect level up chest rewards using logger's games_played and
+        level_up_chest_attempts stats and user input increment arg"""
+
+        increment = int(increment)
+        if increment <= 1:
+            self.log(f"Increment is {increment} so can always collect level_up_chest")
+            return True
+
+        # count level_up_chest_attempts
+        level_up_chest_attempts = self.level_up_chest_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if level_up_chest_attempts is zero return true
+        if level_up_chest_attempts == 0:
+            self.log(
+                f"Can do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts"
+            )
+            return True
+
+        # if games_played / increment > level_up_chest_attempts
+        if games_played / increment >= level_up_chest_attempts:
+            self.log(
+                f"Can do level_up_chest. {games_played} Games & {level_up_chest_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Can't do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts"
         )
         return False
 

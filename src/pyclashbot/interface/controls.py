@@ -16,6 +16,9 @@ def make_job_increment_control_object(key):
     )
 
 
+
+
+
 controls = [
 
     # whole box
@@ -33,6 +36,7 @@ controls = [
                 [sg.Text("Randomize Deck Every:")],
                 [sg.Text("Do War Attack Every:")],
                 [sg.Text("Collect Battlepass Every:")],
+                [sg.Text("Collect Level Up Chest Every:")],
                 [sg.Text("Switch Account Every:")],
             ],
             justification="left",
@@ -66,6 +70,8 @@ controls = [
                 ],
                 [make_job_increment_control_object("war_attack_increment_user_input")],
                 [make_job_increment_control_object("battlepass_collect_increment_user_input")],
+                [make_job_increment_control_object("level_up_chest_increment_user_input")],
+
                 [
                     make_job_increment_control_object(
                         "account_switching_increment_user_input"

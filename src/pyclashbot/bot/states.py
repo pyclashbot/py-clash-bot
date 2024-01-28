@@ -12,6 +12,7 @@ from pyclashbot.bot.do_fight_state import (
     start_1v1_fight_state,
     start_2v2_fight_state,
 )
+from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
@@ -86,15 +87,14 @@ def state_tree(
 
         logger.log("Entered the restart state after a failure in another state...")
 
-        # clip_that()
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # print("Bot is in restart state. Press enter to continue!!!!!!")
-        # input()
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        print("Bot is in restart state. Press enter to continue!!!!!!")
+        input()
 
         # close app
         logger.log("Running close_clash_royale_app()")
@@ -110,7 +110,7 @@ def state_tree(
         start_clash_royale(logger, vm_index)
 
         # wait for clash main
-        logger.change_status('Waiting for clash royale main menu')
+        logger.change_status("Waiting for clash royale main menu")
         logger.log("Running wait_for_clash_main_menu()")
         if wait_for_clash_main_menu(vm_index, logger) is False:
             logger.log(
@@ -172,8 +172,8 @@ def state_tree(
 
         return next_state
 
-    if state == "open_chests":  # --> randomize_deck
-        next_state = "randomize_deck"
+    if state == "open_chests":  # --> level_up_chest
+        next_state = "level_up_chest"
 
         # if job not selected, skip this state
         logger.log('Checking if "open_chests_user_toggle" is on')
@@ -192,6 +192,34 @@ def state_tree(
         # run this state
         logger.log('Open chests is toggled and ready. Running "open_chests_state()"')
         return open_chests_state(vm_index, logger, next_state)
+
+    if state == "level_up_chest":  # --> randomize_deck
+        #keys for this state:
+        #   level_up_chest_user_toggle
+        #   level_up_chest_increment_user_input
+
+
+        next_state = "randomize_deck"
+
+        # if job not selected, skip this state
+        logger.log('Checking if "level_up_chest_user_toggle" is on')
+        if not job_list["level_up_chest_user_toggle"]:
+            logger.log("level_up_chest_user_toggle is off, skipping this state")
+            return next_state
+
+        # if job not ready, skip this state
+        logger.log('Checking if "open_chests_increment_user_input" is ready')
+        if not logger.check_if_can_collect_level_up_chest(
+            job_list["level_up_chest_increment_user_input"]
+        ):
+            logger.log("Can't open level up chest at this time, skipping this state")
+            return next_state
+
+        # run this state
+        logger.log(
+            'Level up chests is toggled and ready. Running "collect_level_up_chest_state()"'
+        )
+        return collect_level_up_chest_state(vm_index, logger, next_state)
 
     if state == "randomize_deck":  # --> upgrade
         next_state = "upgrade"
