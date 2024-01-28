@@ -14,7 +14,7 @@ import psutil
 import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
-from pyclashbot.bot.nav import wait_for_clash_main_menu
+from pyclashbot.bot.nav import wait_for_clash_main_menu, check_if_on_clash_main_menu
 from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
@@ -62,13 +62,22 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
         logger.change_status("Starting clash royale")
         start_clash_royale(logger, vm_index)
 
-        # check-wait for clash main if need to wait longer
-        logger.change_status('Waiting for clash royale main menu')
-        if wait_for_clash_main_menu(vm_index, logger) is False:
-            logger.log("#34 Looping restart_emulator() b/c fail waiting for clash main")
+        # wait for clash main to appear
+        logger.change_status("Waiting for clash royale main menu")
+        clash_main_wait_start_time = time.time()
+        clash_main_wait_timeout = 240  # s
+        while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
+            clash_main_check = check_if_on_clash_main_menu(vm_index)
+            if clash_main_check is True:
+                logger.change_stauts("Detected clash main!")
+                break
+
+        if clash_main_check is not True:
+            print("Clash main wait timed out! These are the pixels it saw:")
+            for p in clash_main_check:
+                print(p)
             return restart_emulator(logger, start_time)
 
-        time.sleep(1)
     else:
         print("Skipping clash open sequence")
 
