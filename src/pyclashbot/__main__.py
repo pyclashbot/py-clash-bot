@@ -81,8 +81,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "battlepass_collect_user_toggle": values["open_battlepass_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
-
-
         # job increments
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
@@ -104,14 +102,15 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "battlepass_collect_increment_user_input": values[
             "battlepass_collect_increment_user_input"
         ],
-        "level_up_chest_increment_user_input": values["level_up_chest_increment_user_input"],
+        "level_up_chest_increment_user_input": values[
+            "level_up_chest_increment_user_input"
+        ],
         # account switching input info
         "account_switching_increment_user_input": values[
             "account_switching_increment_user_input"
         ],
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switching_slider": int(values["account_switching_slider"]),
-
         "next_account": 0,
         "random_account_switch_list": random_account_switch_list,
     }
