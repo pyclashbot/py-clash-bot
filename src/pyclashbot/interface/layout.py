@@ -124,7 +124,7 @@ account_switching_layout = [
                         range=(1, 8),
                         orientation="h",
                         key="account_switching_slider",
-                        size=(10,20)
+                        size=(10, 20),
                     ),
                 ],
                 [
@@ -165,7 +165,7 @@ account_switching_layout = [
             expand_x=True,
             expand_y=True,
         ),
-    sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True, expand_y = True),
+        sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True, expand_y=True),
     ]
 ]
 
@@ -186,7 +186,6 @@ stats_tab_layout = [
                         expand_x=True,
                     )
                 ],
-
             ],
             expand_x=True,
             expand_y=True,
@@ -332,6 +331,8 @@ user_config_keys = [
     "war_attack_increment_user_input",
     "battlepass_collect_increment_user_input",
     "account_switching_increment_user_input",
+    'level_up_chest_increment_user_input',
+    'level_up_chest_user_toggle',
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",

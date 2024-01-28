@@ -99,6 +99,11 @@ rewards_tab = [
     ],
     [
         job_check_box(
+            "Level Up Rewards", "level_up_chest_user_toggle", default_value=True
+        ),
+    ],
+    [
+        job_check_box(
             "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=True
         ),
     ],

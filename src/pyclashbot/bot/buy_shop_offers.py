@@ -102,8 +102,19 @@ def buy_shop_offers_main(
                 time.sleep(2)
                 start_time = time.time()
 
-                # if purchase total exceeds 6, then it's done
-                if purchase_total == 6:
+                # if only free offers are toggled, AND purchase total is 1, then it's done
+                if free_offers_toggle and not gold_buy_toggle and purchase_total == 1:
+                    print("only free offers toggles and purchase total is 1, breaking")
+                    break
+
+                # if both modes are toggled, and total is 6, break
+                if gold_buy_toggle and free_offers_toggle and purchase_total == 6:
+                    print("both modes toggled and purchase total is 6, breaking")
+                    break
+
+                # if only gold offers are toggled, and purchase total is 6, break
+                if gold_buy_toggle and not free_offers_toggle and purchase_total == 5:
+                    print("only gold offers toggled and purchase total is 6, breaking")
                     break
 
     logger.change_status("Done buying offers. Returning to clash main")
