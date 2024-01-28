@@ -341,7 +341,7 @@ def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
 
     # click emote button
     click(vm_index, EMOTE_BUTTON_COORD_IN_2V2[0], EMOTE_BUTTON_COORD_IN_2V2[1])
-    time.sleep(1)
+    time.sleep(0.33)
 
     emote_coord = random.choice(EMOTES_COORDS_IN_2V2)
     click(vm_index, emote_coord[0], emote_coord[1])
