@@ -73,9 +73,9 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
                 break
 
         if clash_main_check is not True:
-            print("Clash main wait timed out! These are the pixels it saw:")
+            logger.log("Clash main wait timed out! These are the pixels it saw:")
             for p in clash_main_check:
-                print(p)
+                logger.log(p)
             return restart_emulator(logger, start_time)
 
     else:
