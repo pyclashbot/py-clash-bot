@@ -800,35 +800,7 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-# def wait_for_clash_main_menu2(vm_index, logger) -> bool:
-#     """
-#     Waits for the user to be on the clash main menu.
-#     Returns True if on main menu, False if not.
-#     """
-#     start_time: float = time.time()
-#     for _ in range(2):
-#         while time.time() - start_time < CLASH_MAIN_WAIT_TIMEOUT:
-#             logger.change_status(
-#                 status=f"Waiting for clash main menu for {str(time.time() - start_time)[:4]}s"
-#             )
 
-#             # handle geting stuck on trophy road screen
-#             if check_for_trophy_reward_menu(vm_index):
-#                 handle_trophy_reward_menu(vm_index, logger)
-
-#             click(
-#                 vm_index,
-#                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
-#                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
-#             )
-
-#             clash_main_check_return = check_if_on_clash_main_menu(vm_index)
-#             if clash_main_check_return is True:
-#                 return True
-
-#     logger.change_status("Failed to get to clashmain in time.")
-#     logger.change_status(f"Bot read these pixels: {clash_main_check_return}")
-#     return False
 
 
 def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
