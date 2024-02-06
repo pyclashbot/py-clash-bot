@@ -35,7 +35,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.12"
+cx-freeze = "^6.15.13"
 poethepoet = "^0.24.4"
 
 
@@ -45,7 +45,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.6.0"
-black = "^23.11.0"
+black = "^24.1.1"
 vulture = "^2.11"
 isort = "^5.13.0"
 prospector = "^1.10.3"
