@@ -178,7 +178,7 @@ class Logger:
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "shop_offer_collections": self.shop_offer_collections,
                 "battlepass_collects": self.battlepass_collects,
-                "level_up_chest_collects":self.level_up_chest_collects,
+                "level_up_chest_collects": self.level_up_chest_collects,
                 "bannerbox_collects": self.bannerbox_collects,
                 "daily_rewards": self.daily_rewards,
                 "current_status": self.current_status,
