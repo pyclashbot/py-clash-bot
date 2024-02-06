@@ -1,4 +1,5 @@
 """random module for randomizing fight plays"""
+
 import numpy
 import random
 import time
@@ -723,8 +724,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     logger.change_status(status="Starting 2v2 battle loop")
 
-
-
     # count plays
     plays = 0
 
@@ -747,9 +746,9 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         if not check_for_4_elixer(vm_index):
             logger.log("Waiting for 4 elixer")
 
-            elixer_wait_return: Literal[
-                "restart", "no battle", "good"
-            ] = wait_for_4_elixer(vm_index, logger)
+            elixer_wait_return: Literal["restart", "no battle", "good"] = (
+                wait_for_4_elixer(vm_index, logger)
+            )
 
             if elixer_wait_return == "restart":
                 logger.change_status(
