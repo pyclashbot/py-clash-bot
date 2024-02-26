@@ -52,7 +52,7 @@ prospector = "^1.10.3"
 poethepoet = "^0.24.4"
 notebook = "^7.1.0"
 ipykernel = "^6.29.2"
-matplotlib = "^3.8.2"
+matplotlib = "^3.8.3"
 decorator = "^5.1.1"
 
 
