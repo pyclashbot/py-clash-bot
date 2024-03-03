@@ -20,7 +20,7 @@ include = [
 python = ">=3.11,<3.13"
 opencv-python = "^4.9.0"
 numpy = "^1.26.4"
-pysimplegui = "^5.0.2"
+pysimplegui = "^4.0.0"
 pymemuc = "^0.5.3"
 psutil = "^5.9.8"
 requests = "^2.31.0"
