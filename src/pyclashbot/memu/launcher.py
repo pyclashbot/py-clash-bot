@@ -14,7 +14,7 @@ import psutil
 import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
-from pyclashbot.memu.client import click
+from pyclashbot.memu.client import click,screenshot
 from pyclashbot.bot.nav import wait_for_clash_main_menu, check_if_on_clash_main_menu
 from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
@@ -27,6 +27,26 @@ APK_BASE_NAME = "com.supercell.clashroyale"
 
 MANUAL_VM_WAIT_TIME = 10
 MANUAL_CLASH_MAIN_WAIT_TIME = 10
+
+
+
+def check_vm_size(vm_index):
+    try:
+        home_button_press(vm_index,clicks=4)
+
+        image = screenshot(vm_index)
+        width, height = image.size
+
+        if width != 419 or height != 633:
+            print(f"Size is bad: {width},{height}")
+            return False
+
+        print(f"Size is good: {width},{height}")
+        return True
+    except:
+        pass
+
+    return False
 
 
 def restart_emulator(logger, start_time=time.time(), open_clash=True):
@@ -55,6 +75,10 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
     # skip ads
     if skip_ads(vm_index) == "fail":
         logger.log("Error 99 Failed to skip ads")
+        return restart_emulator(logger, start_time)
+
+    if not check_vm_size(vm_index):
+        logger.log("Error 1010 VM size is bad")
         return restart_emulator(logger, start_time)
 
     # if open_clash is toggled, open CR
