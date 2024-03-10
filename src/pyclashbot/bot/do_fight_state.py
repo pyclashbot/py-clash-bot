@@ -383,7 +383,7 @@ def mag_dump(vm_index, logger):
     ]
 
     logger.log("Mag dumping...")
-    for index in range(8):
+    for index in range(3):
         print(f"mag dump play {index}")
         card_coord = random.choice(card_coords)
         play_coord = (random.randint(101, 440), random.randint(50, 526))
@@ -686,7 +686,8 @@ def get_to_main_after_fight(vm_index, logger):
                 clicked_ok_or_exit = True
                 continue
         else:
-            print("Already clicked OK or EXIT so not checking for those buttons again")
+            # print("Already clicked OK or EXIT so not checking for those buttons again")
+            pass
 
         # if on events page, click clash main button
         if check_for_events_page(vm_index):

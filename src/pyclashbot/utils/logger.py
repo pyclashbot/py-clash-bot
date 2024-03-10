@@ -731,16 +731,16 @@ class Logger:
     def check_if_can_donate(self, increment) -> bool:
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always Request")
+            self.log(f"Increment is {increment} so can always donate")
             return True
 
-        # count requests
+        # count donates
         donate_attempts = self.donate_attempts
 
         # count games
         games_played = self._1v1_fights + self._2v2_fights + self.war_fights
 
-        # if request_attempts is zero return true
+        # if donate_attempts is zero return true
         if donate_attempts == 0:
             self.log(
                 f"Can donate bc attempts is {donate_attempts} and games played is {games_played}"
@@ -754,7 +754,7 @@ class Logger:
             )
             return True
 
-        # if games_played / increment > request_attempts
+        # if games_played / increment > donate_attempts
         if games_played / increment >= donate_attempts:
             self.change_status(
                 f"Can donate. attempts = {donate_attempts} & games played = {games_played}"

@@ -143,6 +143,8 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
         if random.randint(0, 2) == 1:
             click(vm_index=vm_index, x_coord=20, y_coord=200)
 
+        time.sleep(1)
+
     return False
 
 
@@ -1199,7 +1201,7 @@ def handle_clash_main_tab_notifications(
 
         print('Trying to get to events page...')
         click(vm_index, 408, 600)
-        time.sleep(1.77)
+        time.sleep(1)
 
     print("On events page")
 

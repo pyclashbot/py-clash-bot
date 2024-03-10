@@ -187,6 +187,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
         ):
             break
 
+    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     chests_opened = logger.get_chests_opened()
     logger.log(f"Opened {chests_opened - prev_chests_opened} chests")
     return "good"

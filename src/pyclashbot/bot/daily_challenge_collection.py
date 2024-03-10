@@ -227,7 +227,7 @@ def check_which_rewards_are_available(vm_index, logger):
     rewards = check_rewards_menu_pixels(vm_index)
 
     # click deadspace a bunch
-    click(vm_index, 15, 290, clicks=3, interval=0.33)
+    click(vm_index, 15, 400, clicks=3, interval=0.33)
     time.sleep(2)
 
     # if not on clash main, return False
