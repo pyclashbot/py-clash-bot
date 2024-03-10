@@ -16,16 +16,8 @@ def make_job_increment_control_object(key):
     )
 
 
+job_increments_titles_column = [
 
-
-
-controls = [
-
-    # whole box
-    [
-        # title column
-        sg.Column(
-            [
                 [sg.Text("Request Random Card Every:")],
                 [sg.Text("Donate Cards Every:")],
                 [sg.Text("Collect Free Offer Every:")],
@@ -38,7 +30,26 @@ controls = [
                 [sg.Text("Collect Battlepass Every:")],
                 [sg.Text("Collect Level Up Chest Every:")],
                 [sg.Text("Switch Account Every:")],
-            ],
+
+]
+
+
+games_titles_column = [
+
+
+]
+
+for _ in range(len(job_increments_titles_column)):
+    games_titles_column.append([sg.Text("games")])
+
+
+controls = [
+
+    # whole box
+    [
+        # title column
+        sg.Column(
+            job_increments_titles_column,
             justification="left",
         ),
         # input text column
@@ -82,19 +93,7 @@ controls = [
         ),
         # end titles column
         sg.Column(
-            [
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-                [sg.Text("games")],
-            ],
+            games_titles_column,
             justification="left",
         ),
     ],

@@ -32,10 +32,14 @@ MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 def check_vm_size(vm_index):
     try:
-        home_button_press(vm_index,clicks=4)
+        home_button_press(vm_index,clicks=1)
 
         image = screenshot(vm_index)
-        width, height = image.size
+        print(image.size)
+        print(image.shape)
+
+        height,width,_ = image.shape
+
 
         if width != 419 or height != 633:
             print(f"Size is bad: {width},{height}")
@@ -43,10 +47,11 @@ def check_vm_size(vm_index):
 
         print(f"Size is good: {width},{height}")
         return True
-    except:
-        pass
+    except Exception as e:
+        print("sizing error:",e)
 
-    return False
+    #in the case of errors, just return True to avoid infinite loop
+    return True
 
 
 def restart_emulator(logger, start_time=time.time(), open_clash=True):
@@ -77,6 +82,7 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
         logger.log("Error 99 Failed to skip ads")
         return restart_emulator(logger, start_time)
 
+    print(check_vm_size(vm_index))
     if not check_vm_size(vm_index):
         logger.log("Error 1010 VM size is bad")
         return restart_emulator(logger, start_time)
@@ -151,7 +157,7 @@ def check_for_vm(logger: Logger) -> int:
     """
     start_time = time.time()
 
-    find_vm_timeout = 20  # s
+    find_vm_timeout = 10  # s
     find_vm_start_time = time.time()
     find_vm_tries = 0
     while time.time() - find_vm_start_time < find_vm_timeout:
@@ -181,7 +187,7 @@ def check_for_vm(logger: Logger) -> int:
         f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s"
     )
 
-    return create_vm()
+    return new_vm_index
 
 
 def start_clash_royale(logger: Logger, vm_index):
@@ -448,5 +454,4 @@ def reset_clashbot_emulator(logger):
 
 
 if __name__ == "__main__":
-    # reset_clashbot_emulator(logger)
     pass
