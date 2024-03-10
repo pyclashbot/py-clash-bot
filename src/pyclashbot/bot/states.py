@@ -474,7 +474,7 @@ if __name__ == "__main__":
     state='account_switch'
     job_list= {
         # job toggles
-        "open_battlepass_user_toggle": False,
+        "open_battlepass_user_toggle": True,
         "open_chests_user_toggle": False,
         "request_user_toggle": False,
         "donate_toggle": False,
@@ -486,14 +486,14 @@ if __name__ == "__main__":
         "2v2_battle_user_toggle": True,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
-        "random_decks_user_toggle": False,
-        "open_bannerbox_user_toggle": True,
+        "random_decks_user_toggle": True,
+        "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
         "random_plays_user_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "battlepass_collect_user_toggle": False,
         "disable_win_track_toggle": False,
-        "level_up_chest_user_toggle": True,
+        "level_up_chest_user_toggle": False,
 
         # job increments
         "card_upgrade_increment_user_input": 1,
