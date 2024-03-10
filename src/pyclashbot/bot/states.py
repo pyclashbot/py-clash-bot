@@ -1,4 +1,5 @@
 """time module for timing functions and controling pacing"""
+
 import time
 from pyclashbot.bot.account_switching import switch_accounts
 from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
@@ -194,10 +195,9 @@ def state_tree(
         return open_chests_state(vm_index, logger, next_state)
 
     if state == "level_up_chest":  # --> randomize_deck
-        #keys for this state:
+        # keys for this state:
         #   level_up_chest_user_toggle
         #   level_up_chest_increment_user_input
-
 
         next_state = "randomize_deck"
 
@@ -469,4 +469,8 @@ def state_tree(
 
 
 if __name__ == "__main__":
-    pass
+    logger=Logger()
+    vm_index=12
+    next_state='next state'
+    # request_state(vm_index, logger, next_state)
+    donate_cards_state(vm_index, logger, next_state)

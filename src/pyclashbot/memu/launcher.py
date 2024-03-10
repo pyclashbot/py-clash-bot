@@ -99,7 +99,6 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
         clash_main_wait_timeout = 240  # s
         while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
             clash_main_check = check_if_on_clash_main_menu(vm_index)
-            print("clash_main_check: ", clash_main_check)
             if clash_main_check is True:
                 logger.change_status("Detected clash main!")
                 logger.log(
