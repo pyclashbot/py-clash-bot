@@ -24,6 +24,7 @@ from pyclashbot.memu.client import (
     screenshot,
     scroll_up,
     scroll_down_in_request_page,
+    scroll_up_fast,
 )
 from pyclashbot.utils.logger import Logger
 
@@ -134,11 +135,11 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     else:
         logger.change_status(status="Can't request right now.")
 
-    #click clash main icon
-    click(vm_index, 178,593)
+    # click clash main icon
+    click(vm_index, 178, 593)
 
     # return to clash main
-    wait_for_clash_main_menu(vm_index,logger,deadspace_click=False)
+    wait_for_clash_main_menu(vm_index, logger, deadspace_click=False)
 
     return next_state
 
@@ -155,15 +156,15 @@ def count_scrolls_in_request_page(vm_index) -> int:
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
     while check_if_can_scroll_in_request_page(vm_index):
-        print(f'One scroll down. Count is {scrolls}')
+        print(f"One scroll down. Count is {scrolls}")
         scroll_down_in_request_page(vm_index)
         scrolls += 1
         time.sleep(1)
 
-    #close request screen with deadspace click
-    click(vm_index, 15, 300,clicks=3,interval = 1)
+    # close request screen with deadspace click
+    click(vm_index, 15, 300, clicks=3, interval=1)
 
-    #reopen request page
+    # reopen request page
     click(vm_index=vm_index, x_coord=77, y_coord=536)
     time.sleep(0.1)
 

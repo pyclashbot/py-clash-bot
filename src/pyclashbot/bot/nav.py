@@ -1265,6 +1265,8 @@ def check_for_events_page(vm_index):
         [154, 119, 80],
     ]
 
+    # for p in pixels:print(p)
+
     for i, p in enumerate(pixels):
         # print(p)
         if not pixel_is_equal(colors[i], p, tol=15):

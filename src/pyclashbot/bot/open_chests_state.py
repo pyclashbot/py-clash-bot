@@ -178,7 +178,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
     while check_if_on_clash_main_menu(vm_index) is not True:
         print("Clicking deadspace to skip chest rewards bc not on clash main")
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-        time.sleep(1)
+        time.sleep(2)
 
         # if clicked deadspace too much, restart
         if (
@@ -247,4 +247,4 @@ def check_if_chest_is_unlockable(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    print(open_chests_state(12, Logger(), 'next_state'))
