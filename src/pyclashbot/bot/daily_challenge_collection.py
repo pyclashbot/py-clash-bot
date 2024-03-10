@@ -65,7 +65,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     deadspace_clicks = 5
     if rewards[1]:
         deadspace_clicks = 15
-    click(vm_index, 15, 290, clicks=deadspace_clicks, interval=0.33)
+    click(vm_index, 15, 420, clicks=deadspace_clicks, interval=0.33)
 
     # if not on clash main, reutrn False
     if check_if_on_clash_main_menu(vm_index) is not True:
