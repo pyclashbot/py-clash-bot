@@ -8,7 +8,7 @@ from typing import Literal
 
 from xmlrpc.client import Boolean
 
-from pyclashbot.bot.card_detection2 import get_play_coords_for_card
+from pyclashbot.bot.card_detection3 import get_play_coords_for_card
 from pyclashbot.bot.troop_locater import choose_play_side
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
