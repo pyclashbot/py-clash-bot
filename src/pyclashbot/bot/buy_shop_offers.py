@@ -20,6 +20,7 @@ from pyclashbot.memu.client import (
 
 from pyclashbot.utils.logger import Logger
 
+SHOP_BUY_TIMEOUT = 35
 
 def buy_shop_offers_state(
     vm_index: int,
@@ -53,6 +54,8 @@ def buy_shop_offers_state(
         logger.change_status("Failed to buy offers. Returning restart")
         return "restart"
 
+    time.sleep(3)
+
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("Not on clash main after buying offers. Returning restart")
@@ -78,10 +81,10 @@ def buy_shop_offers_main(
     purchase_total = 0
 
     start_time = time.time()
-    timeout = 25
+    done_buying = False
     logger.change_status("Starting to buy offers")
-    while 1:
-        if time.time() - start_time > timeout:
+    while 1 and done_buying is False:
+        if time.time() - start_time > SHOP_BUY_TIMEOUT:
             break
 
         # scroll a little
@@ -95,7 +98,7 @@ def buy_shop_offers_main(
                 buy_offers_from_this_shop_page(
                     vm_index, logger, gold_buy_toggle, free_offers_toggle
                 )
-                is True
+                is True and done_buying is False
             ):
                 purchase_total += 1
                 logger.change_status("Bought an offer from the shop!")
@@ -105,16 +108,19 @@ def buy_shop_offers_main(
                 # if only free offers are toggled, AND purchase total is 1, then it's done
                 if free_offers_toggle and not gold_buy_toggle and purchase_total == 1:
                     print("only free offers toggles and purchase total is 1, breaking")
+                    done_buying=True
                     break
 
                 # if both modes are toggled, and total is 6, break
                 if gold_buy_toggle and free_offers_toggle and purchase_total == 6:
                     print("both modes toggled and purchase total is 6, breaking")
+                    done_buying=True
                     break
 
                 # if only gold offers are toggled, and purchase total is 6, break
                 if gold_buy_toggle and not free_offers_toggle and purchase_total == 5:
                     print("only gold offers toggled and purchase total is 6, breaking")
+                    done_buying=True
                     break
 
     logger.change_status("Done buying offers. Returning to clash main")

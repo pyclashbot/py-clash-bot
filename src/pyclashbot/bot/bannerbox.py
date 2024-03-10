@@ -55,9 +55,9 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     logger.change_status("Checking bannerbox rewards availability")
 
     # Check if the bannerbox icon is yellow (i.e., if there are enough tickets)
-    if not check_if_bannerbox_icon_have_a_star(vm_index):
-        logger.change_status("Not enough tickets for bannerbox rewards.")
-        return True  # There are no tickets, but this is not an error
+    # if not check_if_bannerbox_icon_have_a_star(vm_index):
+    #     logger.change_status("Not enough tickets for bannerbox rewards.")
+    #     return True  # There are no tickets, but this is not an error
 
     logger.change_status("Opening bannerbox rewards...")
 

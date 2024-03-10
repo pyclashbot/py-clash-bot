@@ -7,6 +7,7 @@ import numpy
 from typing import Literal
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
+    check_if_on_profile_page,
     get_to_clan_tab_from_clash_main,
     handle_trophy_reward_menu,
     check_for_trophy_reward_menu,
@@ -37,6 +38,15 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
     logger.add_donate_attempt()
 
     donate_start_time = time.time()
+
+    #if on profile page for whatever reason, close it
+    if check_if_on_profile_page(vm_index):
+        #click deadspace to leave profile page
+        click(vm_index, 15, 300)
+        time.sleep(2)
+
+
+
     # if not on clash main, reutrn False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.log("Not on clash main for donate state. Returning False")

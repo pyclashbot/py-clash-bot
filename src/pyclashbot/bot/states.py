@@ -469,8 +469,57 @@ def state_tree(
 
 
 if __name__ == "__main__":
+    vm_index = 12
     logger=Logger()
-    vm_index=12
-    next_state='next state'
-    # request_state(vm_index, logger, next_state)
-    donate_cards_state(vm_index, logger, next_state)
+    state='account_switch'
+    job_list= {
+        # job toggles
+        "open_battlepass_user_toggle": False,
+        "open_chests_user_toggle": False,
+        "request_user_toggle": False,
+        "donate_toggle": False,
+        "card_mastery_user_toggle": False,
+        "memu_attach_mode_toggle": False,
+        "free_offer_user_toggle": False,
+        "gold_offer_user_toggle": False,
+        "1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": True,
+        "upgrade_user_toggle": False,
+        "war_user_toggle": False,
+        "random_decks_user_toggle": False,
+        "open_bannerbox_user_toggle": True,
+        "daily_rewards_user_toggle": False,
+        "random_plays_user_toggle": False,
+        "skip_fight_if_full_chests_user_toggle": False,
+        "battlepass_collect_user_toggle": False,
+        "disable_win_track_toggle": False,
+        "level_up_chest_user_toggle": True,
+
+        # job increments
+        "card_upgrade_increment_user_input": 1,
+        "shop_buy_increment_user_input": 1,
+        "request_increment_user_input": 1,
+        "donate_increment_user_input": 1,
+        "daily_reward_increment_user_input": 1,
+        "card_mastery_collect_increment_user_input": 1,
+        "open_chests_increment_user_input": 1,
+        "deck_randomization_increment_user_input": 1,
+        "war_attack_increment_user_input": 1,
+        "battlepass_collect_increment_user_input": 1,
+        "level_up_chest_increment_user_input": 1,
+
+        # account switching input info
+        "account_switching_increment_user_input": 1,
+        "account_switching_toggle": False,
+        "account_switching_slider": 1,
+        "next_account": 0,
+        "random_account_switch_list": [0],
+    }
+
+    while 1:
+        state = state_tree(
+        vm_index,
+        logger,
+        state,
+        job_list,
+    )

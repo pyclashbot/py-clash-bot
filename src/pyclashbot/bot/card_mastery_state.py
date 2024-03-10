@@ -72,7 +72,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
     # get to clash main
     logger.change_status("Returning to clash main menu")
     click(vm_index, 243, 600)
-    time.sleep(3)
+    time.sleep(5)
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -117,4 +117,7 @@ def card_mastery_rewards_exist(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    vm_index=12
+    logger=Logger()
+
+    collect_card_mastery_rewards(vm_index, logger)
