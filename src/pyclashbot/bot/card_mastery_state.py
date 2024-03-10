@@ -5,6 +5,7 @@ from typing import Literal
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
@@ -72,10 +73,9 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
     # get to clash main
     logger.change_status("Returning to clash main menu")
     click(vm_index, 243, 600)
-    time.sleep(5)
 
-    # if not on clash main, return False
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    # wait for main to appear
+    if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             "Failed to get back to clash main menu from card page! Returning false"
         )
@@ -98,7 +98,7 @@ def collect_first_mastery_reward(vm_index):
         click(vm_index, 200, y)
 
     # click deadspace a bunch
-    click(vm_index, 5, 355, clicks=10, interval=0.5)
+    click(vm_index, 5, 355, clicks=15, interval=0.5)
     time.sleep(3)
 
 
@@ -117,7 +117,7 @@ def card_mastery_rewards_exist(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index=12
-    logger=Logger()
+    vm_index = 12
+    logger = Logger()
 
     collect_card_mastery_rewards(vm_index, logger)
