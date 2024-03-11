@@ -1196,11 +1196,13 @@ def handle_clash_main_tab_notifications(
     print("Getting to events tab...")
     while not check_for_events_page(vm_index):
         print("Still not on events page...")
+
+        click(vm_index, 408, 600)
+
         handle_war_popup_pages(vm_index, logger)
 
-        print('Trying to get to events page...')
-        click(vm_index, 408, 600)
         time.sleep(1)
+
     print("On events page")
 
     # spam click shop page at the leftmost location, wait a little bit

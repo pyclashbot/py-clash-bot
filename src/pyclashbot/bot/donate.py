@@ -121,7 +121,6 @@ def donate_state_check_if_in_a_clan(
             status="Error 9076092860923485 Failure with get_to_profile_page"
         )
         return "restart"
-    time.sleep(1)
 
     # check pixels for in a clan
     in_a_clan = donate_state_check_pixels_for_clan_flag(vm_index)
