@@ -472,21 +472,21 @@ def state_tree_tester(vm_index):
     state='account_switch'
     job_list= {
         # job toggles
-        "open_battlepass_user_toggle": True,
+        "open_battlepass_user_toggle": False,
         "open_chests_user_toggle": False,
         "request_user_toggle": False,
         "donate_toggle": False,
-        "card_mastery_user_toggle": True,
+        "card_mastery_user_toggle": False,
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
-        "1v1_battle_user_toggle": True,
-        "2v2_battle_user_toggle": True,
+        "1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
         "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
-        "battlepass_collect_user_toggle": True,
+        "battlepass_collect_user_toggle": False,
         "level_up_chest_user_toggle": False,
 
         #keep these off
