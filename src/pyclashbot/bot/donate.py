@@ -145,7 +145,6 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
     logger.change_status("Getting to clan tab to donate cards")
     if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
         return False
-    time.sleep(2)
 
     # click jump to bottom button
     click(vm_index, 385, 488)
@@ -227,15 +226,21 @@ def find_donate_buttons(vm_index):
     start_time = time.time()
     coords = []
 
-    for _ in range(100):
+
+    for _ in range(10):
         try:
-            left = random.randint(0, 360)
-            top = random.randint(0, 400)
-            width = random.randint(75, 150)
-            height = random.randint(30, 100)
-            region = [left, top, width, height]
+            left = 238
+            right = 375
+            top = 80
+            bottom = 475
 
             image = screenshot(vm_index)
+
+
+            t = random.randint(top,bottom)
+            width = right-left
+            region = [left,t, width, 100]
+
             image = crop_image(image, region)
 
             coord = find_donate_button(image)
@@ -243,7 +248,7 @@ def find_donate_buttons(vm_index):
             if coord is None:
                 continue
 
-            coord = [coord[0] + left, coord[1] + top]
+            coord = [coord[0] + region[0], coord[1] + region[1]]
 
             # adjust coord to make it more central to the icon
             coord = [coord[0] + 37, coord[1] + 3]
@@ -267,7 +272,7 @@ def find_donate_button(image):
         image,
         folder,
         names,
-        tolerance=0.96,
+        tolerance=0.88,
     )
 
     coord = get_first_location(locations)
@@ -304,8 +309,6 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    # scroll_up(vm_index)
-    time.sleep(1)
+    while 1:print(find_donate_buttons(12))
 
-    # click deadspace after scroll
+    # print(find_donate_button(screenshot(12)))
