@@ -1180,19 +1180,17 @@ def handle_clash_main_tab_notifications(
     # click card tab from main
     print("Clicked card tab")
     click(vm_index, 103, 598)
-    time.sleep(3)
+    time.sleep(1)
 
     # click shop tab from card tab
     print("Clicked shop tab")
     click(vm_index, 9, 594, clicks=3, interval=0.33)
-    time.sleep(2)
+    time.sleep(1)
 
     # click clan tab from shop tab
     print("Clicked clan tab")
     click(vm_index, 315, 594)
     time.sleep(5)
-
-
 
     # click events tab from clan tab
     print("Getting to events tab...")
@@ -1203,20 +1201,17 @@ def handle_clash_main_tab_notifications(
         print('Trying to get to events page...')
         click(vm_index, 408, 600)
         time.sleep(1)
-
     print("On events page")
-
-    time.sleep(2)
 
     # spam click shop page at the leftmost location, wait a little bit
     print("Clicked shop page")
     click(vm_index, 9, 594, clicks=3, interval=0.33)
-    time.sleep(3)
+    time.sleep(2)
 
     # click clash main from shop page
     print("Clicked clash main")
     click(vm_index, 240, 600)
-    time.sleep(3)
+    time.sleep(2)
 
     # handle possibility of trophy road obstructing clash main
     if check_for_trophy_reward_menu(vm_index):
