@@ -623,7 +623,35 @@ def find_exit_battle_button(vm_index):
     return [coord[1], coord[0]]
 
 
+def find_ok_battle_button2(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[545][178],
+        iar[547][239],
+        iar[553][214],
+        iar[554][201],
+    ]
+
+    colors = [
+[255 ,187, 104],
+[255, 187, 104],
+[255, 255, 255],
+[255, 255, 255],
+    ]
+
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=20):
+            return False
+    return True
+
+
 def find_ok_battle_button(vm_index):
+    if find_ok_battle_button2(vm_index):
+        print('Used find_ok_battle_button2 patch-job')
+        return (200,550)
+
     folder = "ok_post_battle_button"
 
     names = make_reference_image_list(get_file_count(folder))
@@ -631,7 +659,7 @@ def find_ok_battle_button(vm_index):
         screenshot(vm_index),
         folder,
         names,
-        tolerance=0.9,
+        tolerance=0.85,
     )
 
     coord = get_first_location(locations)
@@ -981,5 +1009,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    while 1:
-        print(check_for_events_page(12))
+    print(find_ok_battle_button(12))
