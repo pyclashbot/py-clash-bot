@@ -269,13 +269,9 @@ def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
             )
             return "restart"
 
-        if check_for_edit_deck_page(vm_index):
-            handle_edit_deck_page(vm_index)
-            continue
+        handle_edit_deck_page(vm_index)
 
-        if check_for_pre_war_battle_page(vm_index):
-            handle_pre_war_battle_page(vm_index)
-            continue
+        handle_pre_war_battle_page(vm_index)
 
     logger.log("Done waiting for war page")
     return "good"
