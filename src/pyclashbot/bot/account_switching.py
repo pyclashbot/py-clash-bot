@@ -80,7 +80,8 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
     click(vm_index, 221, 368)
 
     # wait for switch ssid page
-    wait_for_switch_ssid_page(vm_index, logger)
+    # wait_for_switch_ssid_page(vm_index, logger)
+    time.sleep(10)
 
     # Perform the scrolling
     if account_index_to_switch_to in [5, 6, 7]:

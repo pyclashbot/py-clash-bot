@@ -29,10 +29,10 @@ from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS = [
-    (143, 555),
-    (211, 555),
-    (269, 555),
-    (343, 555),
+    (143, 590),
+    (211, 590),
+    (269, 590),
+    (343, 590),
 ]
 CLAN_PAGE_ICON_COORD = (281, 586)
 EDIT_WAR_DECK_BUTTON_COORD = (148, 413)
@@ -269,9 +269,12 @@ def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
             )
             return "restart"
 
-        handle_edit_deck_page(vm_index)
-
-        handle_pre_war_battle_page(vm_index)
+        #random click hell
+        if random.randint(0,2)==0:
+            if random.randint(0,1)==1:
+                handle_edit_deck_page(vm_index)
+            else:
+                handle_pre_war_battle_page(vm_index)
 
     logger.log("Done waiting for war page")
     return "good"
@@ -543,4 +546,4 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 if __name__ == "__main__":
     # print(check_for_locked_clan_war_screen(12))
 
-    print(check_for_pre_war_battle_page(12))
+    wait_for_war_page(12, Logger())
