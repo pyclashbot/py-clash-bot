@@ -36,7 +36,7 @@ def collect_battlepass_state(vm_index, logger, next_state):
     return next_state
 
 
-def check_for_battlepass_reward_icon_with_delay(vm_index, delay):
+def check_for_battlepass_reward_icon_with_delay(vm_index, delay=5):
     start_time = time.time()
     while time.time() - start_time < delay:
         if check_for_battlepass_reward_icon(vm_index):
@@ -99,13 +99,14 @@ def collect_battlepass(vm_index, logger) -> bool:
             "Not on clash main to being battlepass collection. returning False"
         )
         return False
+    print('On clash main for battlepass collection')
 
-    if not check_for_battlepass_reward_icon_with_delay(vm_index, delay=3):
+    if not check_for_battlepass_reward_icon_with_delay(vm_index):
         logger.change_status("No battlepass rewards to collect")
         return True
 
     # while rewards exist:
-    while check_for_battlepass_reward_icon_with_delay(vm_index, delay=3) is True:
+    while check_for_battlepass_reward_icon_with_delay(vm_index) is True:
         if collect_1_battlepass_reward(vm_index, logger) is True:
             logger.change_status("Successfully collected a battlepass reward")
         else:
