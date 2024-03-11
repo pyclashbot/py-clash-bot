@@ -1,4 +1,5 @@
 """random import for random war plays"""
+
 import random
 import time
 from typing import Literal
@@ -194,6 +195,67 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     return next_state
 
 
+def check_for_edit_deck_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[490][57],
+        iar[492][64],
+        iar[477][251],
+        iar[487][262],
+    ]
+
+    colors = [
+        [225, 41, 235],
+        [222, 27, 246],
+        [255, 187, 105],
+        [255, 255, 255],
+    ]
+
+    # for p in pixels:
+    # print(p)
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=10):
+            return False
+
+    return True
+
+
+def handle_edit_deck_page(vm_index):
+    click(vm_index, 216,45)
+
+
+def check_for_pre_war_battle_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[401][300],
+        iar[423][228],
+        iar[162][347],
+        iar[411][334],
+    ]
+
+    colors = [
+[ 80 ,200, 253],
+[ 43 ,190, 255],
+[ 36 , 36, 231],
+[254 ,243, 234],
+    ]
+
+    # for p in pixels:print(p)
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=10):
+            return False
+
+    return True
+
+
+def handle_pre_war_battle_page(vm_index):
+    click(vm_index,349,154)
+
+
 def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
     """method to wait for the war page to load after leaving a war battle"""
 
@@ -206,6 +268,15 @@ def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
                 status="Error 1109572435 WAited too long for war page after leaving war battle"
             )
             return "restart"
+
+        if check_for_edit_deck_page(vm_index):
+            handle_edit_deck_page(vm_index)
+            continue
+
+        if check_for_pre_war_battle_page(vm_index):
+            handle_pre_war_battle_page(vm_index)
+            continue
+
     logger.log("Done waiting for war page")
     return "good"
 
@@ -232,7 +303,7 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
         # click a random play coord
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
         click(vm_index, random_play_coord[0], random_play_coord[1])
-        time.sleep(6)
+        time.sleep(9)
 
     logger.change_status(status="Done with this war fight")
     return "good"
@@ -476,6 +547,4 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 if __name__ == "__main__":
     # print(check_for_locked_clan_war_screen(12))
 
-
-    while 1:
-        print(check_if_in_war_battle(12))
+    print(check_for_pre_war_battle_page(12))
