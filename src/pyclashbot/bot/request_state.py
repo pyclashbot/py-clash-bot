@@ -192,7 +192,6 @@ def request_state_check_if_in_a_clan(
         )
         return "restart"
 
-    time.sleep(1)
     # check pixels for in a clan
     in_a_clan = request_state_check_pixels_for_clan_flag(vm_index)
 

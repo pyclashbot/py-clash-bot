@@ -481,13 +481,13 @@ def state_tree_tester(vm_index):
         "gold_offer_user_toggle": True,
         "1v1_battle_user_toggle": True,
         "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": True,
+        "upgrade_user_toggle": False,
         "war_user_toggle": True,
         "random_decks_user_toggle": True,
         "open_bannerbox_user_toggle": True,
         "daily_rewards_user_toggle": True,
         "battlepass_collect_user_toggle": True,
-        "level_up_chest_user_toggle": True,
+        "level_up_chest_user_toggle": False,
 
         #keep these off
         "disable_win_track_toggle": False,
