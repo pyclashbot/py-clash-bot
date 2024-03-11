@@ -473,7 +473,7 @@ def state_tree_tester(vm_index):
     job_list= {
         # job toggles
         "open_battlepass_user_toggle": True,
-        "open_chests_user_toggle": True,
+        "open_chests_user_toggle": False,
         "request_user_toggle": True,
         "donate_toggle": True,
         "card_mastery_user_toggle": True,
@@ -527,4 +527,4 @@ def state_tree_tester(vm_index):
 
 
 if __name__ == "__main__":
-    state_tree_tester(4)
+    state_tree_tester(12)

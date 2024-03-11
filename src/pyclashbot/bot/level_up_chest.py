@@ -54,20 +54,21 @@ def check_for_level_up_chest(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
-        iar[9][10],
-        iar[9][23],
-        iar[23][10],
+        iar[7][11],
+        iar[8][23],
+        iar[21][10],
         iar[23][23],
-        iar[14][19],
     ]
 
     colors = [
-        [242, 213, 55],
-        [251, 208, 66],
-        [251, 169, 10],
-        [236, 169, 32],
-        [159, 239, 252],
+[255 ,236,  65],
+[255 ,218,  70],
+[255 ,203,  70],
+[255, 165,  27],
     ]
+
+    # for p in pixels:
+        # print(p)
 
     for i, p in enumerate(pixels):
         # print(p)
@@ -75,7 +76,6 @@ def check_for_level_up_chest(vm_index):
             return True
 
     return False
-
 
 
 def collect_level_up_chest_state(vm_index, logger, next_state):
