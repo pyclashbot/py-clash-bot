@@ -467,9 +467,7 @@ def state_tree(
     logger.error("Failure in state tree")
     return "fail"
 
-
-if __name__ == "__main__":
-    vm_index = 12
+def state_tree_tester(vm_index):
     logger=Logger()
     state='account_switch'
     job_list= {
@@ -525,3 +523,8 @@ if __name__ == "__main__":
         state,
         job_list,
     )
+
+
+
+if __name__ == "__main__":
+    state_tree_tester(4)
