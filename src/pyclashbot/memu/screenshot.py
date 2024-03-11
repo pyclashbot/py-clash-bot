@@ -1,15 +1,26 @@
 """
 A module for getting screenshots from Memu VMs.
 """
+
 import atexit
+import base64
+import re
 import time
 
 import cv2
 import numpy as np
-from adbnativeblitz import AdbFastScreenshots
+from pymemuc import PyMemucError
 
-from pyclashbot.memu.configure import MEMU_CONFIGURATION
-from pyclashbot.memu.pmc import adb_path, pmc
+from pyclashbot.memu.pmc import pmc
+
+
+class InvalidImageError(Exception):
+    """Exception raised when an image is invalid"""
+
+    def __init__(self, message: str, path: str | None = None):
+        self.path = path
+        self.message = message
+        super().__init__(self.message)
 
 
 class ScreenShotter:
@@ -24,45 +35,64 @@ class ScreenShotter:
         del screen_shotter # Cleanup
     """
 
-    def __init__(self):
-        self.connections: dict[int, AdbFastScreenshots] = {}
-        self.height = int(MEMU_CONFIGURATION["resolution_width"])
-        self.width = int(MEMU_CONFIGURATION["resolution_height"])
+    def open_from_b64(self, image_b64: str) -> np.ndarray[np.uint8]:
+        """
+        A method to validate and open an image from a base64 string
+        :param image_b64: the base64 string to read the image from
+        :return: the image as a numpy array
+        :raises InvalidImageError: if the file is not a valid image
+        """
 
-    def _crop_image(self, image: np.ndarray) -> np.ndarray:
-        return image[:, 500:1100, :]
+        try:
+            image_data = base64.b64decode(image_b64)
+        except (TypeError, ValueError, base64.binascii.Error) as error:
+            raise InvalidImageError("image_b64 is not a valid base64 string") from error
+        return self.open_from_buffer(image_data)
 
-    def _resize_image(self, image: np.ndarray) -> np.ndarray:
-        return cv2.resize(image, (self.height, self.width))  # pylint: disable=no-member
+    def open_from_buffer(
+        self,
+        image_data: bytes | bytearray | memoryview | np.ndarray[any],
+    ) -> np.ndarray[np.uint8]:
+        """
+        A method to read an image from a byte array
+        :param byte_array: the byte array to read the image from
+        :return: the image as a numpy array
+        :raises InvalidImageError: if the file is not a valid image
+        """
+        try:
+            im_arr = np.frombuffer(image_data, dtype=np.uint8)
+        except (BufferError, ValueError) as error:
+            raise InvalidImageError("image_data is not a valid buffer") from error
+        try:
+            img = cv2.imdecode(im_arr, cv2.IMREAD_COLOR)  # pylint: disable=no-member
+        except cv2.error as error:  # pylint: disable=catching-non-exception
+            # pylint: disable=bad-exception-cause
+            raise InvalidImageError("image_data bytes cannot be decoded") from error
+        if img is None or len(img) == 0 or len(img.shape) != 3 or img.shape[2] != 3:
+            raise InvalidImageError("image_data bytes are not a valid image")
+        if np.all(img == 255) or np.all(img == 0):
+            raise InvalidImageError(
+                "image_data bytes are not a valid image. Image is all white or all black"
+            )
+        return img
 
     def __getitem__(self, vm_index: int) -> np.ndarray:
-        if vm_index not in self.connections:
-            host, port = pmc.get_adb_connection(vm_index=vm_index)
-            self.connections[vm_index] = AdbFastScreenshots(
-                device_serial=f"{host}:{port}",
-                adb_path=adb_path,
-            )
-            # pylint: disable=protected-access
-            self.connections[vm_index]._start_capturing()
+        while True:  # loop until a valid image is returned
+            try:
+                # read screencap from vm using screencap output encoded in base64
+                shell_out = pmc.send_adb_command_vm(
+                    vm_index=vm_index,
+                    command="shell screencap -p | base64",
+                )
 
-        time.sleep(0.01)
-        while not self.connections[vm_index].stop_recording:
-            if not self.connections[vm_index].lastframes:
-                # print("no frames yet")
-                time.sleep(0.005)
-                continue
-            image = self.connections[vm_index].lastframes[-1].copy()
+                # remove non-image data from shell output
+                image_b64 = re.sub(
+                    r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
+                ).replace("\n", "")
+                return self.open_from_b64(image_b64)
 
-            # Crop and resize image (adbblitz returns a 1600x900 image and its scaling doesn't work)
-            image = self._crop_image(image)
-            image = self._resize_image(image)
-            return image
-        raise RuntimeError("Failed to get screenshot, is the connection open?")
-
-    def __del__(self):
-        for conn in self.connections.values():
-            conn.stop_recording = True
-            conn.stop_capture()
+            except (PyMemucError, FileNotFoundError, InvalidImageError):
+                time.sleep(0.1)
 
 
 screen_shotter = ScreenShotter()
