@@ -731,19 +731,6 @@ def get_to_main_after_fight(vm_index, logger):
     return False
 
 
-def find_ok_or_exit_button(vm_index):
-    coord = find_exit_battle_button(vm_index)
-    if coord is not None:
-        print("Found exit button")
-        return coord
-
-    coord = find_ok_battle_button(vm_index)
-    if coord is not None:
-        print("Found OK button")
-        return coord
-
-    return None
-
 
 # main fight loops
 
@@ -1009,4 +996,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    print(find_ok_battle_button(12))
+    pass
