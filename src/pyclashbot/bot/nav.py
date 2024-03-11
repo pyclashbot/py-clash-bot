@@ -9,7 +9,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_up,scroll_down
 from pyclashbot.utils.logger import Logger
 from pyclashbot.detection.image_rec import (
     make_reference_image_list,
@@ -401,6 +401,7 @@ def get_to_clan_tab_from_clash_main(
         if random.randint(0, 1) == 1:
             if random.randint(1, 3) == 1:
                 scroll_up(vm_index)
+                scroll_down(vm_index)
                 time.sleep(2)
                 continue
 
