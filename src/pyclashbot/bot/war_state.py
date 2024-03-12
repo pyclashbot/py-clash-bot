@@ -568,6 +568,4 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 
 
 if __name__ == "__main__":
-    # print(check_for_locked_clan_war_screen(12))
-
-    wait_for_war_page(12, Logger())
+    print(war_state(12, Logger(), 'next_state'))
