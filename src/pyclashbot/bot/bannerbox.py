@@ -96,7 +96,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         logger.change_status("Bannerbox not available.")
 
         # click deadspace a bunch, then return
-        click(vm_index, 10, 250, clicks=10, interval=0.33)
+        click(vm_index, 10, 450, clicks=10, interval=0.33)
         return True
 
     logger.change_status("Bannerbox is available! Buying it...")
