@@ -480,7 +480,7 @@ def state_tree_tester(vm_index):
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
         "1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": False,
+        "2v2_battle_user_toggle": True,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
         "random_decks_user_toggle": False,

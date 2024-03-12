@@ -406,7 +406,8 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
             f"Waiting for 4 elixer for {str(time.time() - start_time)[:4]}s..."
         )
 
-        if check_which_cards_are_available(vm_index = [0,1,2,3]):
+        print('checking which cards are availabe...')
+        if len(check_which_cards_are_available(vm_index)) == 4:
             logger.change_status('All cards are available!')
             return True
 
