@@ -18,7 +18,6 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
     pixels = [
         iar[194][353],
         iar[188][353],
-
     ]
     colors = [
         [2, 199, 255],
@@ -54,22 +53,19 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
 def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     logger.change_status("Checking bannerbox rewards availability")
 
-    # Check if the bannerbox icon is yellow (i.e., if there are enough tickets)
-    # if not check_if_bannerbox_icon_have_a_star(vm_index):
-    #     logger.change_status("Not enough tickets for bannerbox rewards.")
-    #     return True  # There are no tickets, but this is not an error
-
     logger.change_status("Opening bannerbox rewards...")
 
     # Open bannerbox button on clash main
     click(
-        vm_index, BANNERBOX_ICON_ON_CLASH_MAIN_PAGE[0], BANNERBOX_ICON_ON_CLASH_MAIN_PAGE[1])
+        vm_index,
+        BANNERBOX_ICON_ON_CLASH_MAIN_PAGE[0],
+        BANNERBOX_ICON_ON_CLASH_MAIN_PAGE[1],
+    )
     time.sleep(4)
 
     # if 100 tickets button is greyed, then we've collected all the banners this season
     if check_for_collected_all_bannerbox_rewards_icon(vm_index):
-        logger.change_status(
-            "Already collected all bannerbox rewards this season.")
+        logger.change_status("Already collected all bannerbox rewards this season.")
 
         # click deadspace to get back to main
         click(vm_index, 5, 400, clicks=4, interval=1)
