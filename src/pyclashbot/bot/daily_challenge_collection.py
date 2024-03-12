@@ -33,8 +33,8 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         logger.add_daily_reward()
         time.sleep(1)
 
-        #click deadspace a few times
-        click(vm_index,10,350,clicks=5,interval=1)
+        # click deadspace a few times
+        click(vm_index, 10, 350, clicks=5, interval=1)
 
         # reopen daily rewards menu
         click(vm_index, 41, 206)
@@ -47,8 +47,8 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         logger.add_daily_reward()
         time.sleep(1)
 
-        #click deadspace a few times
-        click(vm_index,10,350,clicks=5,interval=1)
+        # click deadspace a few times
+        click(vm_index, 10, 350, clicks=5, interval=1)
 
         # reopen daily rewards menu
         click(vm_index, 41, 206)
@@ -96,7 +96,7 @@ def collect_daily_bonus(vm_index, logger) -> bool:
     time.sleep(1)
 
     # click deadspace a bunch
-    print('deadspace clicks')
+    print("deadspace clicks")
     click(vm_index, 10, 300, clicks=15, interval=1)
 
     # if not on clash main, retunr False
@@ -173,7 +173,7 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
     return False
 
 
-def collect_all_daily_rewards(vm_index, logger):
+def collect_all_daily_rewards(vm_index, logger) -> bool:
     # if not on clash main, reutrn False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
@@ -188,6 +188,11 @@ def collect_all_daily_rewards(vm_index, logger):
 
     # check which rewards are available
     rewards = check_which_rewards_are_available(vm_index, logger)
+    if rewards is False:
+        logger.change_status(
+            "Error no1919 Failed with check_which_rewards_are_available()"
+        )
+        return False
     time.sleep(1)
 
     # collect the basic 3 daily rewards for completing tasks
@@ -214,10 +219,11 @@ def check_which_rewards_are_available(vm_index, logger):
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main before check_which_rewards_are_available() "
-        )
-        return False
+        time.sleep(3)
+        if check_if_on_clash_main_menu(vm_index) is not True:
+            logger.change_status(
+                "Not on clash main before check_which_rewards_are_available() "
+            )
 
     # open daily rewards menu
     click(vm_index, 41, 206)
@@ -274,6 +280,6 @@ def check_rewards_menu_pixels(vm_index):
 
 
 if __name__ == "__main__":
-    bs=check_rewards_menu_pixels(12)
+    bs = check_rewards_menu_pixels(12)
     for b in bs:
         print(b)
