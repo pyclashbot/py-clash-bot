@@ -330,15 +330,39 @@ def wait_for_war_battle_start(vm_index, logger) -> Literal["restart", "good"]:
     return "good"
 
 
+def check_if_in_war_battle2(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    pixels = [
+        iar[546][177],
+        iar[561][238],
+        iar[553][215],
+    ]
+
+    colors = [
+        [255,187,104],
+        [255,175,78],
+        [255,255,255],
+    ]
+
+    for i,p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=10):
+            return False
+
+    return True
+
+
+
+
 def check_if_in_war_battle(vm_index) -> bool:
     """method to check if the war battle screen still exists"""
     timeout = 3  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
-        # if not check_line_for_color(
-        #     vm_index, x_1=104, y_1=606, x_2=123, y_2=626, color=(224, 28, 215)
-        # ):
-        #     continue
+        if check_if_in_war_battle2(vm_index):
+            print('Using patch job for check_if_in_war_battle()')
+            click(vm_index, 200,550)
+            return False
 
         if not line_is_color(
             vm_index, x_1=51, y_1=515, x_2=68, y_2=520, color=(255, 255, 255)
