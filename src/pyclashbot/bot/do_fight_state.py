@@ -7,8 +7,9 @@ from typing import Literal
 
 
 from xmlrpc.client import Boolean
+from pyclashbot.bot.account_switching import check_for_switch_ssid_page
 
-from pyclashbot.bot.card_detection3 import get_play_coords_for_card
+from pyclashbot.bot.card_detection3 import get_play_coords_for_card,check_which_cards_are_available
 from pyclashbot.bot.troop_locater import choose_play_side
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
@@ -405,6 +406,10 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
             f"Waiting for 4 elixer for {str(time.time() - start_time)[:4]}s..."
         )
 
+        if check_which_cards_are_available(vm_index = [0,1,2,3]):
+            logger.change_status('All cards are available!')
+            return True
+
         if check_for_4_elixer(vm_index):
             break
 
@@ -426,8 +431,10 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
     return True
 
 
-def check_for_4_elixer(vm_index):
+def check_for_4_elixer(vm_index) -> bool:
     """method to check for 4 elixer during a battle"""
+
+
 
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
@@ -746,7 +753,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     prev_cards_played = logger.get_cards_played()
 
     # while in battle:
-    prev_card_index = None
     while check_for_in_battle_with_delay(vm_index):
         # if check_if_at_max_elixer(vm_index):
         #     logger.change_status("At max elixer so just mag dumping!!!")
@@ -780,17 +786,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         this_play_start_time = time.time()
 
-        # choose random card idnex to play
-        random_card_index = random.randint(0, 3)
-        while 1:
-            if prev_card_index is None:
-                break
-            random_card_index = random.randint(0, 3)
-            if random_card_index != prev_card_index:
-                break
-
-        # update prev card index for next play's choice
-        prev_card_index = random_card_index
 
         # choose play coord but favor a side according to favorite_side var
         play_choice_start_time = time.time()
@@ -798,11 +793,20 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         logger.change_status(
             f"Choose a play side in {str(time.time() - play_choice_start_time)[:4]}s"
         )
+        card_indicies = check_which_cards_are_available(vm_index)
+        if card_indicies == []:
+            logger.change_status("No cards are avilable.. waiting...")
+            continue
+
+        logger.change_status(f'These cards are available: {card_indicies}')
+
+        card_index = random.choice(card_indicies)
+        logger.change_status(f'Choosing this card index: {card_index}')
 
         # get a coord based on the selected side
         play_coords_start_time = time.time()
         card_id, play_coord = get_play_coords_for_card(
-            vm_index, random_card_index, this_play_side
+            vm_index, card_index, this_play_side
         )
         logger.change_status(
             f"Choose a play coord in {str(time.time() - play_coords_start_time)[:4]}s"

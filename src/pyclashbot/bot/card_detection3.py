@@ -1,6 +1,8 @@
+from genericpath import exists
 import random
 import math
 import numpy
+from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import screenshot
 
 card_color_data = {
@@ -683,6 +685,71 @@ def hand_card_tester(vm_index):
     return card_ids
 
 
+def check_which_cards_are_available(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+
+    card_1_pixels = []
+    card_2_pixels = []
+    card_3_pixels = []
+    card_4_pixels = []
+
+    toplefts = [
+        [133,582],
+        [199,583],
+        [266,583],
+        [334,582],
+    ]
+    width = 20
+    height = 20
+
+    for i,topleft in enumerate(toplefts):
+        for x in range(width):
+            for y in range(height):
+                x_coord = topleft[0] + x
+                y_coord = topleft[1] + y
+
+                if i == 0:
+                    card_1_pixels.append(iar[y_coord][x_coord])
+                if i == 1:
+                    card_2_pixels.append(iar[y_coord][x_coord])
+                if i == 2:
+                    card_3_pixels.append(iar[y_coord][x_coord])
+                if i == 3:
+                    card_4_pixels.append(iar[y_coord][x_coord])
+
+    purple_count_1 = count_purple_colors_in_pixel_list(card_1_pixels)
+    purple_count_2 = count_purple_colors_in_pixel_list(card_2_pixels)
+    purple_count_3 = count_purple_colors_in_pixel_list(card_3_pixels)
+    purple_count_4 = count_purple_colors_in_pixel_list(card_4_pixels)
+
+
+    card_exists_list = []
+
+    if purple_count_1 > 25:
+        card_exists_list.append(0)
+
+    if purple_count_2 > 25:
+        card_exists_list.append(1)
+
+    if purple_count_3 > 25:
+        card_exists_list.append(2)
+
+    if purple_count_4 > 25:
+        card_exists_list.append(3)
+
+    return card_exists_list
+
+
+
+def count_purple_colors_in_pixel_list(pixel_list):
+    purple_color = [255,43,227]
+    count = 0
+    for p in pixel_list:
+        if pixel_is_equal(p, purple_color,tol=30):
+            count += 1
+
+    return count
+
+
 if __name__ == "__main__":
-    vm_index = 12
-    hand_card_tester(vm_index)
+    while 1:print(check_which_cards_are_available(12))
