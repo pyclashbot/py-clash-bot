@@ -1190,7 +1190,13 @@ def handle_clash_main_tab_notifications(
     # click clan tab from shop tab
     print("Clicked clan tab")
     click(vm_index, 315, 594)
-    time.sleep(5)
+    time.sleep(3)
+
+    if check_for_war_chest_obstruction(vm_index):
+        open_war_chest_obstruction(vm_index, logger)
+        logger.add_war_chest_collect()
+        print(f"Incremented war chest collects to {logger.war_chest_collects}")
+        time.sleep(3)
 
     # click events tab from clan tab
     print("Getting to events tab...")
