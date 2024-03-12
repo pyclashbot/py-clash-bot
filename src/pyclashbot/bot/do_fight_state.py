@@ -825,7 +825,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         )
 
         # click that random card coord
-        random_card_coord = HAND_CARDS_COORDS[random_card_index]
+        random_card_coord = HAND_CARDS_COORDS[card_index]
         click(vm_index, random_card_coord[0], random_card_coord[1])
         time.sleep(0.1)
 
