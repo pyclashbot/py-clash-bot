@@ -44,7 +44,7 @@ def collect_level_up_chest(vm_index, logger: Logger) -> bool:
             return False
 
         print("Clicking deadspace to skip thru rewards")
-        click(vm_index, 19, 327)
+        click(vm_index, 19, 450)
         time.sleep(1)
 
     return True

@@ -68,7 +68,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         logger.change_status("Already collected all bannerbox rewards this season.")
 
         # click deadspace to get back to main
-        click(vm_index, 5, 400, clicks=4, interval=1)
+        click(vm_index, 5, 450, clicks=4, interval=1)
 
         # if not back on main, return False
         if check_if_on_clash_main_menu(vm_index) is not True:

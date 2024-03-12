@@ -34,7 +34,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         time.sleep(1)
 
         # click deadspace a few times
-        click(vm_index, 10, 350, clicks=5, interval=1)
+        click(vm_index, 10, 450, clicks=5, interval=1)
 
         # reopen daily rewards menu
         click(vm_index, 41, 206)
@@ -48,7 +48,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
         time.sleep(1)
 
         # click deadspace a few times
-        click(vm_index, 10, 350, clicks=5, interval=1)
+        click(vm_index, 10, 450, clicks=5, interval=1)
 
         # reopen daily rewards menu
         click(vm_index, 41, 206)
@@ -65,7 +65,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     deadspace_clicks = 5
     if rewards[1]:
         deadspace_clicks = 15
-    click(vm_index, 15, 420, clicks=deadspace_clicks, interval=0.33)
+    click(vm_index, 15, 450, clicks=deadspace_clicks, interval=0.33)
 
     # if not on clash main, reutrn False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -97,7 +97,7 @@ def collect_daily_bonus(vm_index, logger) -> bool:
 
     # click deadspace a bunch
     print("deadspace clicks")
-    click(vm_index, 10, 300, clicks=15, interval=1)
+    click(vm_index, 10, 450, clicks=15, interval=1)
 
     # if not on clash main, retunr False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -128,7 +128,7 @@ def collect_weekly_bonus(vm_index, logger: Logger) -> bool:
     time.sleep(1)
 
     # click deadspace a bunch
-    click(vm_index, 15, 300, clicks=15, interval=0.33)
+    click(vm_index, 15, 450, clicks=15, interval=0.33)
 
     # if not on clash main, retunr False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -233,7 +233,7 @@ def check_which_rewards_are_available(vm_index, logger):
     rewards = check_rewards_menu_pixels(vm_index)
 
     # click deadspace a bunch
-    click(vm_index, 15, 400, clicks=3, interval=0.33)
+    click(vm_index, 15, 450, clicks=3, interval=0.33)
     time.sleep(2)
 
     # if not on clash main, return False

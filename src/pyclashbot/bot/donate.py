@@ -42,7 +42,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
     #if on profile page for whatever reason, close it
     if check_if_on_profile_page(vm_index):
         #click deadspace to leave profile page
-        click(vm_index, 15, 300)
+        click(vm_index, 15, 450)
         time.sleep(2)
 
 
@@ -130,7 +130,7 @@ def donate_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, 15, 300)
+    click(vm_index, 15, 450)
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu"
