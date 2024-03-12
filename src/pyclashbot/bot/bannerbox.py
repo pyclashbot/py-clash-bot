@@ -119,7 +119,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
             return False
 
         # click deadspace
-        click(vm_index, 10, 250, clicks=5, interval=0.33)
+        click(vm_index, 10, 450, clicks=5, interval=0.33)
 
     # return true if everything went well
     return True
