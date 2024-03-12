@@ -124,7 +124,7 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Buy shop cards for gold offers",
+            "Buy shop offers for GOLD",
             "gold_offer_user_toggle",
             default_value=False,
         ),
