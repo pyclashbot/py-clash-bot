@@ -300,7 +300,7 @@ def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
     card_coord = CARD_COORDS[card_index]
     print(f"Clicking the #{card_index} card")
     click(vm_index, card_coord[0], card_coord[1])
-    time.sleep(0.33)
+    time.sleep(0.66)
 
     # see if green uprgade button exists in card context menu
     card_is_upgradable = False
