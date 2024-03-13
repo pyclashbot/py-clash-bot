@@ -29,6 +29,9 @@ FIND_REPLACEMENT_CARD_TIMEOUT = 10
 
 
 def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
+    #increment job count
+    logger.add_randomize_deck_attempt()
+
     # if not on clash main, return 'restart'
     if check_if_on_clash_main_menu(vm_index) is False:
         logger.change_status(
