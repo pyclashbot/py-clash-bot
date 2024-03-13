@@ -49,8 +49,12 @@ def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbo
 
 battle_tab = (
     [
-        job_check_box("1v1 battles", "1v1_user_toggle", default_value=False),
+        job_check_box("Trophy road 1v1 battles", "trophy_road_1v1_user_toggle", default_value=False),
     ],
+    [
+        job_check_box("Path of Legends 1v1 battles", "path_of_legends_1v1_user_toggle", default_value=False),
+    ],
+
     [
         job_check_box("2v2 battles", "2v2_user_toggle", default_value=True),
     ],
