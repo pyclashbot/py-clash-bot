@@ -9,7 +9,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up,scroll_down
+from pyclashbot.memu.client import click, screenshot, scroll_up, scroll_down
 from pyclashbot.utils.logger import Logger
 from pyclashbot.detection.image_rec import (
     make_reference_image_list,
@@ -803,9 +803,6 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-
-
-
 def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
     """
     Waits for the user to be on the clash main menu.
@@ -846,75 +843,35 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
     return True
 
 
-def check_if_on_clash_main_menu3(vm_index):
-    """A patch job for check_if_on_clash_main_menu()"""
+def check_if_on_path_of_legends_clash_main(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     # get raw pixels from image array
     pixels = [
-        iar[26][209],
-        iar[9][204],
-        iar[10][216],
-        iar[14][210],
-        iar[9][319],
-        iar[9][330],
-        iar[25][319],
-        iar[25][329],
-        iar[14][324],
+        iar[15][298],
+        iar[20][299],
+        iar[16][401],
+        iar[585][166],
+        iar[622][165],
+        iar[581][264],
+        iar[71][269],
+        iar[74][262],
     ]
 
     # sentinel color list
     colors = [
-        [37, 143, 18],
-        [144, 232, 132],
-        [132, 235, 130],
-        [252, 253, 248],
-        [140, 231, 137],
-        [136, 235, 129],
-        [36, 156, 16],
-        [38, 155, 17],
-        [255, 250, 249],
+        [57, 162, 215],
+        [51, 208, 238],
+        [23, 190, 61],
+        [139, 106, 72],
+        [156, 121, 81],
+        [138, 105, 71],
+        [94, 16, 43],
+        [91, 14, 41],
     ]
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
-        # print(pixel)
-        if not pixel_is_equal(pixel, colors[i], tol=35):
-            return pixels
-
-    # if all pixels are good, we're on clash main
-    return True
-
-
-def check_if_on_clash_main_menu2(vm_index):
-    """A patch job for check_if_on_clash_main_menu()"""
-    iar = numpy.asarray(screenshot(vm_index))
-
-    # get raw pixels from image array
-    pixels = [
-        iar[603][60],
-        iar[622][167],
-        iar[624][252],
-        iar[587][339],
-        iar[621][361],
-        iar[598][302],
-        iar[598][322],
-    ]
-
-    # sentinel color list
-    colors = [
-        [102, 81, 67],
-        [154, 119, 80],
-        [154, 119, 80],
-        [108, 87, 73],
-        [95, 76, 63],
-        [241, 122, 19],
-        [126, 77, 248],
-    ]
-
-    # if any pixel doesnt match the sentinel, then we're not on clash main
-    for i, pixel in enumerate(pixels):
-        # print(pixel)
         if not pixel_is_equal(pixel, colors[i], tol=35):
             return pixels
 
@@ -927,6 +884,9 @@ def check_if_on_clash_main_menu(vm_index):
     Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
     """
+    if check_if_on_path_of_legends_clash_main(vm_index):
+        print("Found path_of_legends main menu")
+        return True
 
     iar = numpy.asarray(screenshot(vm_index))
 
@@ -1616,4 +1576,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    handle_war_popup_pages(12, Logger(None, None))
+    print(check_if_on_clash_main_menu(12))
