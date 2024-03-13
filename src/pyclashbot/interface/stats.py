@@ -114,12 +114,6 @@ battle_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Losses: "),
     ],
-    # [
-    #     sg.Text("Friendly crowns: "),
-    # ],
-    # [
-    #     sg.Text("Enemy crowns: "),
-    # ],
     [
         sg.Text("Win Rate: "),
     ],
@@ -127,7 +121,10 @@ battle_stats_titles: list[list[sg.Text]] = [
         sg.Text("Cards Played: "),
     ],
     [
-        sg.Text("1v1 Fights: "),
+        sg.Text("Path of Legends Battles: "),
+    ],
+    [
+        sg.Text("Trophy Road Battles: "),
     ],
     [
         sg.Text("2v2 Fights: "),
@@ -147,21 +144,21 @@ battle_stats_values = [
     [
         stat_box("losses"),
     ],
-    # [
-    #     stat_box("friendly_crowns"),
-    # ],
-    # [
-    #     stat_box("enemy_crowns"),
-    # ],
+
     [
         stat_box("winrate"),
     ],
     [
         stat_box("cards_played"),
     ],
+
     [
-        stat_box("1v1_fights"),
+        stat_box("path_of_legends_1v1_fights"),
     ],
+    [
+        stat_box("trophy_road_1v1_fights"),
+    ],
+
     [
         stat_box("2v2_fights"),
     ],
