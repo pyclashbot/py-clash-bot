@@ -1,4 +1,5 @@
 """import logging for file logging"""
+
 import logging
 import pprint
 import threading
@@ -97,6 +98,8 @@ class Logger:
         self.enemy_crowns = 0
         self._1v1_fights = 0
         self._2v2_fights = 0
+        self.trophy_road_1v1_fights = 0
+        self.path_of_legends_1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
         self.card_randomizations = 0
@@ -241,6 +244,17 @@ class Logger:
         else:
             hours, minutes, seconds = 0, 0, 0
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+    def increment_trophy_road_fights(self):
+        self.trophy_road_1v1_fights += 1
+
+    def increment_path_of_legends_fights(self):
+        self.path_of_legends_1v1_fights += 1
+
+    def choose_trophy_road_or_path_of_legends(self):
+        if self.path_of_legends_1v1_fights < self.trophy_road_1v1_fights:
+            return 'path_of_legends'
+        return 'trophy_road'
 
     @_updates_log
     def calc_win_rate(self):

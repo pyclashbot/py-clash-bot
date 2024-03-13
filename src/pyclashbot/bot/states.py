@@ -377,7 +377,7 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        _1v1_toggle = job_list["1v1_battle_user_toggle"]
+        _1v1_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
 
         # if all chests slots are taken, skip starting a battle
@@ -389,25 +389,37 @@ def state_tree(
                 logger.change_status("All chests are available, skipping fight state")
                 return next_state
 
+        #if both are toggled, choose the lest used fight type
         if _1v1_toggle and _2v2_toggle:
             logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
-        elif _1v1_toggle:
-            logger.log("1v1 is toggled")
-        elif _2v2_toggle:
-            logger.log("2v2 is toggled")
-
-        if _1v1_toggle and _2v2_toggle:
             if logger.get_1v1_fights() < logger.get_2v2_fights():
                 return start_1v1_fight_state(vm_index, logger)
 
             return start_2v2_fight_state(vm_index, logger)
 
-        # if only 1v1, do 1v1
-        if _1v1_toggle:
-            return start_1v1_fight_state(vm_index, logger)
+        #if only 1v1 is toggled
+        elif _1v1_toggle:
+            logger.log("1v1 is toggled")
+            trophy_road_toggle =job_list['trophy_road_1v1_battle_user_toggle']
+            path_of_legends_toggle =job_list['path_of_legends_1v1_battle_user_toggle']
 
-        # if only 2v2, do 2v2
-        if _2v2_toggle:
+            print(f'trophy_road_toggle is {trophy_road_toggle}')
+            print(f'path_of_legends_toggle is {path_of_legends_toggle}')
+
+            if trophy_road_toggle and path_of_legends_toggle:
+                fight_mode = 'both'
+            elif trophy_road_toggle:
+                fight_mode = 'trophy_road'
+            elif path_of_legends_toggle:
+                fight_mode = 'path_of_legends'
+
+            print(f'Fight mode is gonna be: {fight_mode}')
+
+            return start_1v1_fight_state(vm_index, logger,fight_mode)
+
+        #if only 2v2 is toggled
+        elif _2v2_toggle:
+            logger.log("2v2 is toggled")
             return start_2v2_fight_state(vm_index, logger)
 
         # if neither, go to NEXT_STATE
@@ -431,7 +443,7 @@ def state_tree(
         next_state = "end_fight"
 
         random_fight_mode = job_list["random_plays_user_toggle"]
-        print(f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
+        print(f'random_fight_mode is {random_fight_mode} in state == "1v1_fight"')
 
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
@@ -479,8 +491,10 @@ def state_tree_tester(vm_index):
         "card_mastery_user_toggle": False,
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
-        "1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": True,
+        "trophy_road_1v1_battle_user_toggle": True,
+        "path_of_legends_1v1_battle_user_toggle":True,
+
+        "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
         "random_decks_user_toggle": False,
