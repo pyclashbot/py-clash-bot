@@ -122,7 +122,6 @@ class Logger:
         self.deck_randomize_attempts = 0
         self.request_attempts = 0
         self.requests = 0
-        self.shop_buys = 0
         self.shop_offer_collections = 0
         self.shop_buy_attempts = 0
         self.war_attempts = 0
@@ -165,13 +164,11 @@ class Logger:
             self.stats = {
                 "wins": self.wins,
                 "losses": self.losses,
-                # "friendly_crowns": self.friendly_crowns,
-                # "enemy_crowns": self.enemy_crowns,
-                "1v1_fights": self._1v1_fights,
+                "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
+                "path_of_legends_1v1_fights": self.path_of_legends_1v1_fights,
                 "2v2_fights": self._2v2_fights,
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
-                "shop_buys": self.shop_buys,
                 "war_chest_collects": self.war_chest_collects,
                 "donates": self.donates,
                 "restarts_after_failure": self.restarts_after_failure,
@@ -389,10 +386,7 @@ class Logger:
         """add request to log"""
         self.war_chest_collects += 1
 
-    @_updates_log
-    def add_shop_buy(self) -> None:
-        """add request to log"""
-        self.shop_buys += 1
+
 
     @_updates_log
     def add_donate(self) -> None:
