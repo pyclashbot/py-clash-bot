@@ -275,6 +275,12 @@ def start_path_of_legends_1v1_state(vm_index, logger: Logger,next_state):
         click(vm_index,280,400)
         time.sleep(2)
 
+    #if still not on path of legends mode, then its not unlocked. so this fight will be trophy road
+    if not check_if_on_path_of_legends_mode(vm_index):
+        logger.increment_trophy_road_fights()
+    else:
+        logger.increment_path_of_legends_fights()
+
     #click fight battle button to start fight
     click(vm_index, 207, 400)
 
@@ -286,13 +292,14 @@ def start_1v1_fight_state(vm_index, logger: Logger,mode='trophy_road') -> Litera
     #modes = ['trophy_road','path_of_legends','both']
     next_state = "1v1_fight"
 
+    print('Mode in start_1v1_fight_state():',mode)
+
     if mode == 'both':
         mode = logger.choose_trophy_road_or_path_of_legends()
         print(f'logger choose mode: {mode}')
 
     if mode == 'path_of_legends':
         logger.change_status('Starting a path of legends battle')
-        logger.increment_path_of_legends_fights()
         return start_path_of_legends_1v1_state(vm_index, logger,next_state)
     else:
         logger.change_status('Starting a tropy road battle')

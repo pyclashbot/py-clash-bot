@@ -15,7 +15,7 @@ import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
 from pyclashbot.memu.client import click,screenshot
-from pyclashbot.bot.nav import wait_for_clash_main_menu, check_if_on_clash_main_menu
+from pyclashbot.bot.nav import  check_if_on_clash_main_menu
 from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
@@ -97,6 +97,7 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
         logger.change_status("Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
+        time.sleep(12)
         while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
             clash_main_check = check_if_on_clash_main_menu(vm_index)
             if clash_main_check is True:

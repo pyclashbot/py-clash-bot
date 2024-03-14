@@ -377,8 +377,18 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        _1v1_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
+        _1v1_toggle = job_list["trophy_road_1v1_battle_user_toggle"] or job_list["path_of_legends_1v1_battle_user_toggle"]
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
+
+        trophy_road_toggle=job_list['trophy_road_1v1_battle_user_toggle']
+        path_of_legends_toggle=job_list['path_of_legends_1v1_battle_user_toggle']
+
+        fight_mode = 'trophy_road'
+        if _1v1_toggle:
+            if trophy_road_toggle and path_of_legends_toggle:
+                fight_mode = 'both'
+            elif path_of_legends_toggle:
+                fight_mode = 'path_of_legends'
 
         # if all chests slots are taken, skip starting a battle
         if job_list["skip_fight_if_full_chests_user_toggle"]:
@@ -393,7 +403,7 @@ def state_tree(
         if _1v1_toggle and _2v2_toggle:
             logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
             if logger.get_1v1_fights() < logger.get_2v2_fights():
-                return start_1v1_fight_state(vm_index, logger)
+                return start_1v1_fight_state(vm_index, logger, mode =fight_mode )
 
             return start_2v2_fight_state(vm_index, logger)
 
@@ -406,12 +416,7 @@ def state_tree(
             print(f'trophy_road_toggle is {trophy_road_toggle}')
             print(f'path_of_legends_toggle is {path_of_legends_toggle}')
 
-            if trophy_road_toggle and path_of_legends_toggle:
-                fight_mode = 'both'
-            elif trophy_road_toggle:
-                fight_mode = 'trophy_road'
-            elif path_of_legends_toggle:
-                fight_mode = 'path_of_legends'
+
 
             print(f'Fight mode is gonna be: {fight_mode}')
 

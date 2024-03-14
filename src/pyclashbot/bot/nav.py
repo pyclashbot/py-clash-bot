@@ -872,7 +872,7 @@ def check_if_on_path_of_legends_clash_main(vm_index):
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[i], tol=35):
+        if not pixel_is_equal(pixel, colors[i], tol=25):
             return pixels
 
     # if all pixels are good, we're on clash main
@@ -884,7 +884,7 @@ def check_if_on_clash_main_menu(vm_index):
     Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
     """
-    if check_if_on_path_of_legends_clash_main(vm_index):
+    if check_if_on_path_of_legends_clash_main(vm_index) is True:
         print("Found path_of_legends main menu")
         return True
 
