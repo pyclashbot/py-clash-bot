@@ -1,4 +1,5 @@
 """random import for deck randomization"""
+
 import time
 from typing import Literal
 
@@ -29,7 +30,7 @@ FIND_REPLACEMENT_CARD_TIMEOUT = 10
 
 
 def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
-    #increment job count
+    # increment job count
     logger.add_randomize_deck_attempt()
 
     # if not on clash main, return 'restart'
@@ -47,6 +48,114 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     return next_state
 
 
+def check_for_underleveled_deck_options_location(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[431][346],
+        iar[437][360],
+        iar[441][349],
+        iar[445][355],
+        iar[432][350],
+        iar[458][373],
+    ]
+    colors = [
+        [245, 175, 85],
+        [255, 255, 255],
+        [244, 182, 98],
+        [255, 255, 255],
+        [249, 186, 100],
+        [244, 174, 85],
+    ]
+
+    # for p in pixels:
+    #     print(p)
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i], p, tol=25):
+            return False
+
+    return True
+
+
+def click_deck_options(vm_index):
+    if check_for_underleveled_deck_options_location(vm_index):
+        print("Detected underleveled deck options location. Clicking...")
+        click(vm_index, 366, 444)
+    else:
+        click(vm_index, 354, 480)
+
+
+def click_delete_deck_button(vm_index):
+    if check_for_underleveled_delete_deck_button_location(vm_index):
+        print("Detected underleveled delete deck button location. Clicking...")
+        click(vm_index, 297, 276)
+
+    else:
+        click(vm_index, 291, 305)
+
+
+def check_for_underleveled_delete_deck_button_location(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[266][257],
+        iar[270][287],
+        iar[273][279],
+        iar[276][298],
+        iar[288][267],
+        iar[281][289],
+        iar[291][328],
+    ]
+    colors = [
+        [93, 92, 252],
+        [255, 255, 255],
+        [93, 92, 252],
+        [228, 228, 228],
+        [69, 67, 252],
+        [221, 221, 221],
+        [69, 67, 252],
+    ]
+
+    # for p in pixels:
+    #     print(p)
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i], p, tol=25):
+            return False
+
+    return True
+
+
+def check_for_randomize_deck_icon(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[219][260],
+        iar[237][251],
+        iar[229][252],
+        iar[299][253],
+        iar[289][254],
+        iar[300][250],
+        iar[328][244],
+    ]
+    colors = [
+        [119, 235, 107],
+        [255, 255, 255],
+        [36, 36, 36],
+        [255, 255, 255],
+        [30, 36, 253],
+        [255, 255, 255],
+        [255, 255, 255],
+    ]
+
+    # for p in pixels:
+    #     print(p)
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i], p, tol=25):
+            return False
+
+    return True
+
+
 def randomize_deck(vm_index: int, logger: Logger) -> bool:
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
@@ -58,34 +167,50 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
     click(vm_index, 109, 123)
 
     # click on deck options
-    click(vm_index, 354, 480)
-    time.sleep(0.33)
+    print("Click deck options")
+    click_deck_options(vm_index)
+    time.sleep(1)
 
-    # click delete deck
-    print("Clicking delete")
-    click(vm_index, 291, 305)
-    time.sleep(0.33)
+    if check_for_randomize_deck_icon(vm_index):
+        print('Doing the underleveled method for deck randomization')
 
-    # click OK
-    print("Clicking OK")
-    click(vm_index, 283, 387)
-    time.sleep(0.33)
+        #click randomize
+        click(vm_index,298,229)
+        time.sleep(0.33)
 
-    # click empty card 1 slot
-    logger.change_status("Randomizing deck 2...")
-    print("Clicking empty card 1 slot")
-    click(vm_index, 81, 218)
-    time.sleep(4)
+        # click OK
+        print("Clicking OK")
+        click(vm_index, 283, 387)
+        time.sleep(0.33)
 
-    # click randomize button
-    print("Clicking randomize button")
-    click(vm_index, 262, 396)
-    wait_for_filled_deck(vm_index)
+    else:
+        print('Doing the regular method for deck randomization')
 
-    # click OK
-    print("Clicking OK to randomize")
-    click(vm_index, 211, 591)
-    time.sleep(2)
+        # click delete deck
+        print("Clicking delete")
+        click_delete_deck_button(vm_index)
+        time.sleep(0.33)
+
+        # click OK
+        print("Clicking OK")
+        click(vm_index, 283, 387)
+        time.sleep(0.33)
+
+        # click empty card 1 slot
+        logger.change_status("Randomizing deck 2...")
+        print("Clicking empty card 1 slot")
+        click(vm_index, 81, 218)
+        time.sleep(4)
+
+        # click randomize button
+        print("Clicking randomize button")
+        click(vm_index, 262, 396)
+        wait_for_filled_deck(vm_index)
+
+        # click OK
+        print("Clicking OK to randomize")
+        click(vm_index, 211, 591)
+        time.sleep(2)
 
     # increment logger's deck randomization sta
     logger.add_card_randomization()
@@ -164,8 +289,5 @@ def check_for_selected_deck_2(vm_index):
 
 
 if __name__ == "__main__":
-    start_time = time.time()
-    randomize_deck(12, Logger(None))
-    print(time.time() - start_time)
+    randomize_deck(12,  Logger())
 
-    # print(check_for_selected_deck_2(12))
