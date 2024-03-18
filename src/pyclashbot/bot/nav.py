@@ -1046,6 +1046,30 @@ def check_if_on_card_page3(vm_index):
     return True
 
 
+def check_if_on_underleveled_card_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[445][50],
+        iar[101][57],
+        iar[103][370],
+        iar[19][331],
+    ]
+    colors = [
+[227 ,  1, 242],
+[245 ,106,   0],
+[243 ,104,   0],
+[ 73 ,228,  58],
+    ]
+
+
+    for i,p in enumerate(pixels):
+        if not pixel_is_equal(p,colors[i],tol=25):
+            return False
+
+    return True
+
+
+
 def check_if_on_card_page(vm_index) -> bool:
     """
     Checks if the bot is currently on the card page by looking for
@@ -1057,6 +1081,9 @@ def check_if_on_card_page(vm_index) -> bool:
     Returns:
         bool: True if the bot is on the card page, False otherwise.
     """
+    if check_if_on_underleveled_card_page(vm_index):
+        print('Detected underleveled card page!')
+        return True
 
     # some pixel checks for card pages of newer accounts
     if check_if_on_card_page2(vm_index):
@@ -1576,4 +1603,4 @@ def check_for_end_2v2_battle_screen(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    print(check_if_on_clash_main_menu(12))
+    print(check_if_on_card_page(12))
