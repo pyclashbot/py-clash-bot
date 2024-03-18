@@ -59,14 +59,17 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
 
     # click on deck options
     click(vm_index, 354, 480)
+    time.sleep(0.33)
 
     # click delete deck
     print("Clicking delete")
     click(vm_index, 291, 305)
+    time.sleep(0.33)
 
     # click OK
     print("Clicking OK")
     click(vm_index, 283, 387)
+    time.sleep(0.33)
 
     # click empty card 1 slot
     logger.change_status("Randomizing deck 2...")
