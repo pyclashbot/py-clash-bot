@@ -8,8 +8,6 @@ from typing import Literal
 
 from xmlrpc.client import Boolean
 
-from pyscreeze import pixel
-from pyclashbot.bot.account_switching import check_for_switch_ssid_page
 
 from pyclashbot.bot.card_detection3 import (
     get_play_coords_for_card,
@@ -47,7 +45,6 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
 )
 
-LEAVE_1V1_BATTLE_OK_BUTTON: tuple[Literal[210], Literal[554]] = (210, 554)
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
 HAND_CARDS_COORDS = [
@@ -67,7 +64,6 @@ QUICKMATCH_BUTTON_COORD = (
     274,
     353,
 )  # coord of the quickmatch button after you click the battle button
-POST_FIGHT_TIMEOUT = 40  # seconds
 ELIXER_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
 
 EMOTE_BUTTON_COORD_IN_2V2 = (67, 521)
@@ -167,9 +163,9 @@ def check_if_on_path_of_legends_mode(vm_index):
         iar[410][387],
     ]
     colors = [
-[179,  47,  92],
-[170 , 34,  80],
-[181 , 48,  92],
+        [179, 47, 92],
+        [170, 34, 80],
+        [181, 48, 92],
     ]
 
     for i, p in enumerate(pixels):
@@ -177,7 +173,6 @@ def check_if_on_path_of_legends_mode(vm_index):
             return False
 
     return True
-
 
 
 def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_fight"]:
@@ -263,55 +258,57 @@ def check_for_locked_events_page(vm_index):
     return True
 
 
-def start_path_of_legends_1v1_state(vm_index, logger: Logger,next_state):
+def start_path_of_legends_1v1_state(vm_index, logger: Logger, next_state):
     logger.change_status("Starting path of legends 1v1")
 
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status("Not on clash main to start path of legends fight!")
-        return 'restart'
+        return "restart"
 
     if not check_if_on_path_of_legends_mode(vm_index):
-        logger.change_status('Switching to path of legends mode')
-        click(vm_index,280,400)
+        logger.change_status("Switching to path of legends mode")
+        click(vm_index, 280, 400)
         time.sleep(2)
 
-    #if still not on path of legends mode, then its not unlocked. so this fight will be trophy road
+    # if still not on path of legends mode, then its not unlocked. so this fight will be trophy road
     if not check_if_on_path_of_legends_mode(vm_index):
         logger.increment_trophy_road_fights()
     else:
         logger.increment_path_of_legends_fights()
 
-    #click fight battle button to start fight
+    # click fight battle button to start fight
     click(vm_index, 207, 400)
 
     return next_state
 
 
-def start_1v1_fight_state(vm_index, logger: Logger,mode='trophy_road') -> Literal["restart", "1v1_fight"]:
+def start_1v1_fight_state(
+    vm_index, logger: Logger, mode="trophy_road"
+) -> Literal["restart", "1v1_fight"]:
     """method to handle starting a 1v1 fight"""
-    #modes = ['trophy_road','path_of_legends','both']
+    # modes = ['trophy_road','path_of_legends','both']
     next_state = "1v1_fight"
 
-    print('Mode in start_1v1_fight_state():',mode)
+    print("Mode in start_1v1_fight_state():", mode)
 
-    if mode == 'both':
+    if mode == "both":
         mode = logger.choose_trophy_road_or_path_of_legends()
-        print(f'logger choose mode: {mode}')
+        print(f"logger choose mode: {mode}")
 
-    if mode == 'path_of_legends':
-        logger.change_status('Starting a path of legends battle')
-        return start_path_of_legends_1v1_state(vm_index, logger,next_state)
+    if mode == "path_of_legends":
+        logger.change_status("Starting a path of legends battle")
+        return start_path_of_legends_1v1_state(vm_index, logger, next_state)
     else:
-        logger.change_status('Starting a tropy road battle')
+        logger.change_status("Starting a tropy road battle")
         logger.increment_trophy_road_fights()
-        if start_trophy_road_fight(vm_index,logger) is False:
-            return 'restart'
+        if start_trophy_road_fight(vm_index, logger) is False:
+            return "restart"
 
     return next_state
 
 
-def start_trophy_road_fight(vm_index,logger) -> bool:
-    print('Entered start_trophy_road_fight()')
+def start_trophy_road_fight(vm_index, logger) -> bool:
+    print("Entered start_trophy_road_fight()")
     # if not on clash main, return restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
@@ -324,10 +321,10 @@ def start_trophy_road_fight(vm_index,logger) -> bool:
 
         return False
 
-    #if on path of legends, cycle the page
+    # if on path of legends, cycle the page
     if check_if_on_path_of_legends_mode(vm_index):
-        logger.change_status('Switching to path of trophy road mode')
-        click(vm_index,280,400)
+        logger.change_status("Switching to path of trophy road mode")
+        click(vm_index, 280, 400)
         time.sleep(2)
 
     # click 1v1 button
@@ -517,38 +514,6 @@ def check_for_4_elixer(vm_index) -> bool:
         if not pixel_is_equal(p, [203, 31, 209], tol=45):
             return False
     return True
-
-
-def check_for_6_elixer(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[613][255],
-        iar[613][270],
-    ]
-    colors = [[244, 137, 240], [244, 137, 240]]
-
-    for index, pixel in enumerate(pixels):
-        color = colors[index]
-        if not pixel_is_equal(pixel, color, tol=35):
-            return False
-    return True
-
-
-def wait_for_6_elixer(
-    vm_index, logger: Logger
-) -> Literal["restart", "no battle", "good"]:
-    """method to wait for 6 elixer during a battle"""
-
-    start_time = time.time()
-    while not check_for_6_elixer(vm_index):
-        if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
-            return "restart"
-
-        if not check_for_in_battle_with_delay(vm_index):
-            logger.change_status(status="Not in battle, stopping waiting for 6 elixer")
-            return "no battle"
-
-    return "good"
 
 
 def check_enemy_tower_statuses(
@@ -1069,4 +1034,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    print(start_path_of_legends_1v1_state(12, Logger(),'next_state'))
+    print(start_path_of_legends_1v1_state(12, Logger(), "next_state"))

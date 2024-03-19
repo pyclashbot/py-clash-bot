@@ -1,6 +1,5 @@
 import time
 import numpy
-from typing import Literal
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -10,22 +9,6 @@ from pyclashbot.bot.nav import (
 from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 from pyclashbot.memu.client import screenshot
-
-
-CARD_MASTERY_ICON = (275, 476)
-FIRST_CARD_MASTERY_REWARD_CARD = (99, 170)
-CARD_MASTERY_REWARD_COORD_LIST = [
-    (202, 290),
-    (202, 300),
-    (202, 320),
-    (202, 340),
-    (202, 360),
-    (202, 380),
-    (202, 400),
-    (202, 430),
-    (202, 460),
-]
-CARD_PAGE_DEADSPACE: tuple[Literal[21], Literal[355]] = (5, 355)
 
 
 def card_mastery_state(vm_index, logger, next_state):

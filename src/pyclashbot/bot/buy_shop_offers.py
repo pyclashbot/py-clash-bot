@@ -22,6 +22,7 @@ from pyclashbot.utils.logger import Logger
 
 SHOP_BUY_TIMEOUT = 35
 
+
 def buy_shop_offers_state(
     vm_index: int,
     logger: Logger,
@@ -98,7 +99,8 @@ def buy_shop_offers_main(
                 buy_offers_from_this_shop_page(
                     vm_index, logger, gold_buy_toggle, free_offers_toggle
                 )
-                is True and done_buying is False
+                is True
+                and done_buying is False
             ):
                 purchase_total += 1
                 logger.change_status("Bought an offer from the shop!")
@@ -108,19 +110,19 @@ def buy_shop_offers_main(
                 # if only free offers are toggled, AND purchase total is 1, then it's done
                 if free_offers_toggle and not gold_buy_toggle and purchase_total == 1:
                     print("only free offers toggles and purchase total is 1, breaking")
-                    done_buying=True
+                    done_buying = True
                     break
 
                 # if both modes are toggled, and total is 6, break
                 if gold_buy_toggle and free_offers_toggle and purchase_total == 6:
                     print("both modes toggled and purchase total is 6, breaking")
-                    done_buying=True
+                    done_buying = True
                     break
 
                 # if only gold offers are toggled, and purchase total is 6, break
                 if gold_buy_toggle and not free_offers_toggle and purchase_total == 5:
                     print("only gold offers toggled and purchase total is 6, breaking")
-                    done_buying=True
+                    done_buying = True
                     break
 
     logger.change_status("Done buying offers. Returning to clash main")
@@ -148,22 +150,6 @@ def search_for_free_purchases(vm_index):
     if coord is None:
         return None
     return [coord[1], coord[0]]
-
-
-def buy_free_offer(vm_index):
-    coord = search_for_free_purchases(vm_index)
-
-    if coord is None:
-        return False
-
-    # click the location of the free offer icon
-    click(vm_index, coord[0], coord[1])
-
-    # click the second 'buy' button
-    click(vm_index, 200, 433)
-
-    # click deadspace to close this offer
-    click(vm_index, 15, 200, clicks=10)
 
 
 def search_for_gold_purchases(vm_index):

@@ -11,7 +11,6 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    pixel_is_equal,
     region_is_color,
 )
 from pyclashbot.memu.client import click, screenshot
@@ -40,8 +39,6 @@ UPGRADE_PIXEL_COORDS: list[Any] = [
 ]
 
 
-GREEN_COLOR = [56, 228, 72]
-
 UPGRADE_BUTTON_COORDS = [
     (75, 311),
     (165, 311),
@@ -63,7 +60,6 @@ CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1 = (242, 413)
 
 DEADSPACE_COORD = (10, 323)
 
-CLOSE_BUY_GOLD_POPUP_COORD = (350, 208)
 
 CLOSE_CARD_PAGE_COORD = (355, 238)
 
@@ -110,10 +106,10 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     time.sleep(2)
     logger.change_status(status="Done upgrading cards")
-    click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1],clicks=3,interval=1.5)
+    click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1], clicks=3, interval=1.5)
 
     # return to clash main
-    print('Returning to clash main after upgrading')
+    print("Returning to clash main after upgrading")
     click(vm_index, 245, 593)
     time.sleep(3)
 
@@ -319,33 +315,6 @@ def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
     return card_is_upgradable
 
 
-def check_which_cards_are_upgradable(vm_index):
-    iar=numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[263][47],
-        iar[263][137],
-        iar[263][225],
-        iar[263][312],
-
-        iar[406][47],
-        iar[406][137],
-        iar[406][225],
-        iar[406][312],
-    ]
-    GREEN = [110, 255 , 36]
-    BLUE = [255 ,203  , 0]
-
-    upgradable_bool_list=[]
-    for p in pixels:
-        if pixel_is_equal(GREEN,p,tol=45):
-            upgradable_bool_list.append(True)
-        else:
-            upgradable_bool_list.append(False)
-
-    return upgradable_bool_list
-
-
 if __name__ == "__main__":
     # print(check_which_cards_are_upgradable(12))
-    click(12,209,466)
+    click(12, 209, 466)

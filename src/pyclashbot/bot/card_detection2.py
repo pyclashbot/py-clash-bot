@@ -1547,26 +1547,6 @@ def identify_card(card_data):
         return "unknown"
 
 
-def print_pixel_data(vm_index, card_index):
-    data = get_all_card_pixel_data(vm_index)
-    pix_list = data[card_index]
-    for p in pix_list:
-        print(f"[{p[0]},{p[1]},{p[2]}],")
-
-
-def card_detection_tester(vm_index):
-    print("\n\n--------------")
-    card_data = get_all_card_pixel_data(vm_index)
-    for i, d in enumerate(card_data):
-        identification = identify_card(d)
-        print(identification)
-        if identification == "unknown":
-            print(f"Card index #{i} failed")
-            for p in d:
-                print(f"[{p[0]},{p[1]},{p[2]}],")
-        print("--------------")
-
-
 if __name__ == "__main__":
     # right tower arrows = 292,146
     # left tower arrows = 116,149

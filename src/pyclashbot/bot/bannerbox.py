@@ -12,26 +12,6 @@ FIRST_100_TICKETS_PURCHASE_BUTTON = (303, 576)
 SECOND_100_TICKETS_PURCHASE_BUTTON = (209, 466)
 
 
-def check_if_bannerbox_icon_have_a_star(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[194][353],
-        iar[188][353],
-    ]
-    colors = [
-        [2, 199, 255],
-        [2, 98, 176],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(colors[i], p, tol=10):
-            return False
-
-    return True
-
-
 def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: str):
     # if not in clash main, return false
     if check_if_on_clash_main_menu(vm_index) is not True:
