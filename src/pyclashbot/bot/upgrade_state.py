@@ -11,6 +11,7 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
+    pixel_is_equal,
     region_is_color,
 )
 from pyclashbot.memu.client import click, screenshot
@@ -109,9 +110,10 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     time.sleep(2)
     logger.change_status(status="Done upgrading cards")
-    click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
+    click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1],clicks=3,interval=1.5)
 
     # return to clash main
+    print('Returning to clash main after upgrading')
     click(vm_index, 245, 593)
     time.sleep(3)
 
@@ -294,7 +296,7 @@ def check_for_missing_gold_popup(vm_index):
 
 
 def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
-    logger.change_status(status=f"Checking out if {card_index} is upgradable")
+    logger.change_status(status=f"Checking if {card_index} is upgradable")
 
     # click the selected card
     card_coord = CARD_COORDS[card_index]
@@ -317,9 +319,33 @@ def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
     return card_is_upgradable
 
 
-if __name__ == "__main__":
-    print(upgrade_cards_state(12, Logger(None, None), "next_state"))
+def check_which_cards_are_upgradable(vm_index):
+    iar=numpy.asarray(screenshot(vm_index))
 
-    # for _ in range(8):
-    #     print(check_if_card_is_upgradable(12, Logger(None, None), _))
-    #     print("\n")
+    pixels = [
+        iar[263][47],
+        iar[263][137],
+        iar[263][225],
+        iar[263][312],
+
+        iar[406][47],
+        iar[406][137],
+        iar[406][225],
+        iar[406][312],
+    ]
+    GREEN = [110, 255 , 36]
+    BLUE = [255 ,203  , 0]
+
+    upgradable_bool_list=[]
+    for p in pixels:
+        if pixel_is_equal(GREEN,p,tol=45):
+            upgradable_bool_list.append(True)
+        else:
+            upgradable_bool_list.append(False)
+
+    return upgradable_bool_list
+
+
+if __name__ == "__main__":
+    # print(check_which_cards_are_upgradable(12))
+    click(12,209,466)
