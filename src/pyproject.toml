@@ -44,7 +44,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.6.2"
-black = "^24.2.0"
+black = "^24.3.0"
 vulture = "^2.11"
 isort = "^5.13.0"
 prospector = "^1.10.3"
