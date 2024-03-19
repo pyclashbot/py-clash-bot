@@ -490,7 +490,7 @@ def state_tree_tester(vm_index):
     job_list= {
         # job toggles
         "open_battlepass_user_toggle": True,
-        "open_chests_user_toggle": True,
+        "open_chests_user_toggle": False,
         "request_user_toggle": True,
         "donate_toggle": True,
         "card_mastery_user_toggle": True,
@@ -501,7 +501,7 @@ def state_tree_tester(vm_index):
         "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": True,
         "war_user_toggle": True,
-        "random_decks_user_toggle": True,
+        "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": True,
         "daily_rewards_user_toggle": True,
         "battlepass_collect_user_toggle": True,
