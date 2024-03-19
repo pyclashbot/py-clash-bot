@@ -13,7 +13,8 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.detection.image_rec import screenshot
 
 DOT_RADIUS = 5
-ENEMY_TROOP_IMAGE_REC_TOLERANCE=0.98
+ENEMY_TROOP_IMAGE_REC_TOLERANCE = 0.98
+
 
 def flip_all_coords(locations):
     new_coord_list = []
@@ -221,21 +222,8 @@ def troop_visualizer_thread(vm_index):
         clock.tick(60)  # Limit frames per second
 
 
-def remove_blue_locations(locations):
-    if locations is None:
-        return None
-
-    filtered_locations = []
-    for location in locations:
-        if location[2] == "blue":
-            continue
-        filtered_locations.append(location)
-
-    return filtered_locations
-
-
 def choose_play_side(logger, vm_index) -> str:
-    timeout = 1.33 # s
+    timeout = 1.33  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
         locations = remove_trash_coords(find_enemy_troops(vm_index))
@@ -246,7 +234,9 @@ def choose_play_side(logger, vm_index) -> str:
     middle_x = 209
 
     if locations is None:
-        logger.change_status(f"No troops detected... choosing random side {str(time.time() - start_time)[:5]}s")
+        logger.change_status(
+            f"No troops detected... choosing random side {str(time.time() - start_time)[:5]}s"
+        )
         return random.choice(["left", "right"])
 
     left_count = 0
@@ -260,14 +250,20 @@ def choose_play_side(logger, vm_index) -> str:
 
     # if locations count is 3 or below, just choose a random side
     if len(locations) < 3:
-        logger.change_status(f"No troops detected... choosing random side {str(time.time() - start_time)[:5]}s")
+        logger.change_status(
+            f"No troops detected... choosing random side {str(time.time() - start_time)[:5]}s"
+        )
         return random.choice(["left", "right"])
 
     if left_count > right_count:
-        logger.change_status(f"Choosing left side: {left_count}L | {right_count}R {str(time.time() - start_time)[:5]}s")
+        logger.change_status(
+            f"Choosing left side: {left_count}L | {right_count}R {str(time.time() - start_time)[:5]}s"
+        )
         return "left"
 
-    logger.change_status(f"Choosing right side: {left_count}L | {right_count}R {str(time.time() - start_time)[:5]}s")
+    logger.change_status(
+        f"Choosing right side: {left_count}L | {right_count}R {str(time.time() - start_time)[:5]}s"
+    )
     return "right"
 
 
@@ -275,4 +271,4 @@ if __name__ == "__main__":
     troop_visualizer_thread(12)
     # from pyclashbot.utils.logger import Logger
     # while 1:
-        # (choose_play_side(Logger(None,None),12))
+    # (choose_play_side(Logger(None,None),12))

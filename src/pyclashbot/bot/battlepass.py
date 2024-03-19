@@ -99,7 +99,7 @@ def collect_battlepass(vm_index, logger) -> bool:
             "Not on clash main to being battlepass collection. returning False"
         )
         return False
-    print('On clash main for battlepass collection')
+    print("On clash main for battlepass collection")
 
     if not check_for_battlepass_reward_icon_with_delay(vm_index):
         logger.change_status("No battlepass rewards to collect")
@@ -212,30 +212,6 @@ def find_claim_battlepass_rewards_button(vm_index):
         return None
 
     return [coord[1], coord[0]]
-
-
-def check_for_more_rewards_button(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[115][72],
-        iar[144][109],
-        iar[118][118],
-        iar[146][67],
-    ]
-    colors = [
-        [63, 203, 254],
-        [41, 182, 255],
-        [65, 203, 252],
-        [40, 183, 255],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(colors[i], p, tol=10):
-            return False
-
-    return True
 
 
 if __name__ == "__main__":

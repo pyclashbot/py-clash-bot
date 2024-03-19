@@ -29,23 +29,6 @@ from pyclashbot.bot.buy_shop_offers import buy_shop_offers_state
 from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
 from pyclashbot.memu.docker import start_memu_dock_mode
-from pyclashbot.utils.debug_obs_clipper import clip_that
-
-
-class StateException(Exception):
-    """custom exception for state errors"""
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
-
-
-class RestartException(StateException):
-    """custom exception for restart errors"""
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
 
 
 def state_tree(
@@ -377,18 +360,21 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        _1v1_toggle = job_list["trophy_road_1v1_battle_user_toggle"] or job_list["path_of_legends_1v1_battle_user_toggle"]
+        _1v1_toggle = (
+            job_list["trophy_road_1v1_battle_user_toggle"]
+            or job_list["path_of_legends_1v1_battle_user_toggle"]
+        )
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
 
-        trophy_road_toggle=job_list['trophy_road_1v1_battle_user_toggle']
-        path_of_legends_toggle=job_list['path_of_legends_1v1_battle_user_toggle']
+        trophy_road_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
+        path_of_legends_toggle = job_list["path_of_legends_1v1_battle_user_toggle"]
 
-        fight_mode = 'trophy_road'
+        fight_mode = "trophy_road"
         if _1v1_toggle:
             if trophy_road_toggle and path_of_legends_toggle:
-                fight_mode = 'both'
+                fight_mode = "both"
             elif path_of_legends_toggle:
-                fight_mode = 'path_of_legends'
+                fight_mode = "path_of_legends"
 
         # if all chests slots are taken, skip starting a battle
         if job_list["skip_fight_if_full_chests_user_toggle"]:
@@ -399,30 +385,28 @@ def state_tree(
                 logger.change_status("All chests are available, skipping fight state")
                 return next_state
 
-        #if both are toggled, choose the lest used fight type
+        # if both are toggled, choose the lest used fight type
         if _1v1_toggle and _2v2_toggle:
             logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
             if logger.get_1v1_fights() < logger.get_2v2_fights():
-                return start_1v1_fight_state(vm_index, logger, mode =fight_mode )
+                return start_1v1_fight_state(vm_index, logger, mode=fight_mode)
 
             return start_2v2_fight_state(vm_index, logger)
 
-        #if only 1v1 is toggled
+        # if only 1v1 is toggled
         elif _1v1_toggle:
             logger.log("1v1 is toggled")
-            trophy_road_toggle =job_list['trophy_road_1v1_battle_user_toggle']
-            path_of_legends_toggle =job_list['path_of_legends_1v1_battle_user_toggle']
+            trophy_road_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
+            path_of_legends_toggle = job_list["path_of_legends_1v1_battle_user_toggle"]
 
-            print(f'trophy_road_toggle is {trophy_road_toggle}')
-            print(f'path_of_legends_toggle is {path_of_legends_toggle}')
+            print(f"trophy_road_toggle is {trophy_road_toggle}")
+            print(f"path_of_legends_toggle is {path_of_legends_toggle}")
 
+            print(f"Fight mode is gonna be: {fight_mode}")
 
+            return start_1v1_fight_state(vm_index, logger, fight_mode)
 
-            print(f'Fight mode is gonna be: {fight_mode}')
-
-            return start_1v1_fight_state(vm_index, logger,fight_mode)
-
-        #if only 2v2 is toggled
+        # if only 2v2 is toggled
         elif _2v2_toggle:
             logger.log("2v2 is toggled")
             return start_2v2_fight_state(vm_index, logger)
@@ -484,10 +468,11 @@ def state_tree(
     logger.error("Failure in state tree")
     return "fail"
 
+
 def state_tree_tester(vm_index):
-    logger=Logger()
-    state='account_switch'
-    job_list= {
+    logger = Logger()
+    state = "account_switch"
+    job_list = {
         # job toggles
         "open_battlepass_user_toggle": True,
         "open_chests_user_toggle": False,
@@ -497,7 +482,7 @@ def state_tree_tester(vm_index):
         "free_offer_user_toggle": True,
         "gold_offer_user_toggle": True,
         "trophy_road_1v1_battle_user_toggle": True,
-        "path_of_legends_1v1_battle_user_toggle":False,
+        "path_of_legends_1v1_battle_user_toggle": False,
         "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": True,
         "war_user_toggle": True,
@@ -506,13 +491,11 @@ def state_tree_tester(vm_index):
         "daily_rewards_user_toggle": True,
         "battlepass_collect_user_toggle": True,
         "level_up_chest_user_toggle": True,
-
-        #keep these off
+        # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "random_plays_user_toggle": False,
         "memu_attach_mode_toggle": False,
-
         # job increments
         "card_upgrade_increment_user_input": 1,
         "shop_buy_increment_user_input": 1,
@@ -525,7 +508,6 @@ def state_tree_tester(vm_index):
         "war_attack_increment_user_input": 1,
         "battlepass_collect_increment_user_input": 1,
         "level_up_chest_increment_user_input": 1,
-
         # account switching input info
         "account_switching_increment_user_input": 1,
         "account_switching_toggle": False,
@@ -536,12 +518,11 @@ def state_tree_tester(vm_index):
 
     while 1:
         state = state_tree(
-        vm_index,
-        logger,
-        state,
-        job_list,
-    )
-
+            vm_index,
+            logger,
+            state,
+            job_list,
+        )
 
 
 if __name__ == "__main__":

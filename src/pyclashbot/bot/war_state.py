@@ -195,65 +195,12 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     return next_state
 
 
-def check_for_edit_deck_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[490][57],
-        iar[492][64],
-        iar[477][251],
-        iar[487][262],
-    ]
-
-    colors = [
-        [225, 41, 235],
-        [222, 27, 246],
-        [255, 187, 105],
-        [255, 255, 255],
-    ]
-
-    # for p in pixels:
-    # print(p)
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=10):
-            return False
-
-    return True
-
-
 def handle_edit_deck_page(vm_index):
-    click(vm_index, 216,45)
-
-
-def check_for_pre_war_battle_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = [
-        iar[401][300],
-        iar[423][228],
-        iar[162][347],
-        iar[411][334],
-    ]
-
-    colors = [
-[ 80 ,200, 253],
-[ 43 ,190, 255],
-[ 36 , 36, 231],
-[254 ,243, 234],
-    ]
-
-    # for p in pixels:print(p)
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=10):
-            return False
-
-    return True
+    click(vm_index, 216, 45)
 
 
 def handle_pre_war_battle_page(vm_index):
-    click(vm_index,349,154)
+    click(vm_index, 349, 154)
 
 
 def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
@@ -269,9 +216,9 @@ def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
             )
             return "restart"
 
-        #random click hell
-        if random.randint(0,2)==0:
-            if random.randint(0,1)==1:
+        # random click hell
+        if random.randint(0, 2) == 0:
+            if random.randint(0, 1) == 1:
                 handle_edit_deck_page(vm_index)
             else:
                 handle_pre_war_battle_page(vm_index)
@@ -340,18 +287,16 @@ def check_if_in_war_battle2(vm_index):
     ]
 
     colors = [
-        [255,187,104],
-        [255,175,78],
-        [255,255,255],
+        [255, 187, 104],
+        [255, 175, 78],
+        [255, 255, 255],
     ]
 
-    for i,p in enumerate(pixels):
+    for i, p in enumerate(pixels):
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
 
     return True
-
-
 
 
 def check_if_in_war_battle(vm_index) -> bool:
@@ -360,8 +305,8 @@ def check_if_in_war_battle(vm_index) -> bool:
     start_time = time.time()
     while time.time() - start_time < timeout:
         if check_if_in_war_battle2(vm_index):
-            print('Using patch job for check_if_in_war_battle()')
-            click(vm_index, 200,550)
+            print("Using patch job for check_if_in_war_battle()")
+            click(vm_index, 200, 550)
             return False
 
         if not line_is_color(
@@ -478,28 +423,6 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
     return "restart"
 
 
-def get_war_battle_pix_list(vm_index):
-    """method to get a list of pixels relevant to checking if
-    the user is in a clan when on the user's clash main profile page"""
-
-    data = []
-
-    if not check_if_on_war_page(vm_index):
-        return data
-
-    iar = numpy.asarray(screenshot(vm_index))
-
-    for y_index in range(182, 480):
-        data.append(
-            {
-                "coord": (325, y_index),
-                "color": iar[y_index][325],
-            }
-        )
-
-    return data
-
-
 def check_if_on_war_page(vm_index):
     """method to check pixels to see if bot is on the war page"""
 
@@ -568,4 +491,4 @@ def war_state_check_pixels_for_clan_flag(vm_index):
 
 
 if __name__ == "__main__":
-    print(war_state(12, Logger(), 'next_state'))
+    print(war_state(12, Logger(), "next_state"))
