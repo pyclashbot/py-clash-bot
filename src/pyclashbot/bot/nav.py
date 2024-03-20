@@ -27,15 +27,8 @@ BATTLE_LOG_BUTTON = (241, 43)
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
 CHALLENGES_TAB_ICON_FROM_CLASH_MAIN = (380, 598)
-CLASH_MAIN_ICON_FROM_CARD_PAGE = (247, 601)
-CARD_TAB_FROM_CLASH_MAIN = (105, 591)
-SHOP_TAB_FROM_CARD_TAB = (29, 601)
-CHALLENGES_TAB_FROM_SHOP_TAB = (385, 600)
-CLASH_MAIN_TAB_FROM_CHALLENGES_TAB = (173, 591)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
-CLAN_PAGE_FROM_MAIN_TIMEOUT = 120  # seconds
 CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 240  # seconds
-CLASH_MAIN_MENU_WAIT_TIMEOUT = 160  # seconds
 CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 450)
 OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
 OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
@@ -50,67 +43,6 @@ def get_to_shop_page_from_clash_main(vm_index, logger):
             status="Error 085708235 Failure waiting for clash main shop page "
         )
         return False
-    return True
-
-
-def wait_for_end_battle_screen(
-    vm_index, logger: Logger, printmode=False
-) -> Literal["restart", "good"]:
-    """
-    Waits for the end battle screen to appear.
-
-    Args:
-        vm_index (int): The index of the virtual machine.
-        logger (Logger): The logger object.
-        printmode (bool, optional): Whether to print status messages. Defaults to False.
-
-    Returns:
-        Literal["restart", "good"]: "restart" if the screen
-        did not appear in time, "good" otherwise.
-    """
-    start_time: float = time.time()
-    if printmode:
-        logger.change_status(status="waiting for end 1v1 battle screen")
-    else:
-        logger.log(message="waiting for end 1v1 battle screen")
-    while (
-        (not check_for_end_1v1_battle_screen(vm_index=vm_index))
-        and not (check_for_end_2v2_battle_screen(vm_index=vm_index))
-        and not (check_for_end_2v2_battle_screen_2(vm_index))
-    ):
-        time_taken: float = time.time() - start_time
-        if time_taken > 20:
-            logger.change_status(
-                status="Error 8734572456 Waiting too long for end battle screen"
-            )
-            return "restart"
-
-    if printmode:
-        logger.change_status(status="done waiting for end 1v1 battle screen")
-    else:
-        logger.log(message="done waiting for end 1v1 battle screen")
-    return "good"
-
-
-def check_for_end_2v2_battle_screen_2(vm_index) -> bool:
-    """
-    Checks if the virtual machine is on the end 2v2 battle screen.
-
-    Args:
-        vm_index (int): The index of the virtual machine.
-
-    Returns:
-        bool: True if the virtual machine is on the end 2v2 battle screen, False otherwise.
-    """
-    if not check_line_for_color(vm_index, 46, 587, 46, 609, (76, 175, 255)):
-        return False
-    if not check_line_for_color(vm_index, 58, 591, 96, 608, (255, 255, 255)):
-        return False
-    if not check_line_for_color(vm_index, 106, 589, 105, 611, (76, 173, 255)):
-        return False
-    if not check_line_for_color(vm_index, 391, 26, 406, 26, (156, 20, 20)):
-        return False
-
     return True
 
 
@@ -923,37 +855,6 @@ def check_if_on_clash_main_menu(vm_index):
     return True
 
 
-def get_to_clash_main_from_card_page(
-    vm_index, logger, printmode=False
-) -> Literal["restart", "good"]:
-    """
-    Clicks on the Clash Main icon from the card page and waits for the Clash Main menu to appear.
-
-    Args:
-        vm_index (int): The index of the virtual machine to perform the action on.
-        logger (Logger): The logger object to log messages to.
-        printmode (bool, optional): Whether to print messages to the console. Defaults to False.
-
-    Returns:
-        Literal["restart", "good"]: Returns "restart" if there was an error, otherwise "good".
-    """
-    if printmode:
-        logger.change_status(status="Getting to clash main from card page")
-    else:
-        logger.log("Getting to clash main from card page")
-
-    # click clash main icon
-    click(
-        vm_index, CLASH_MAIN_ICON_FROM_CARD_PAGE[0], CLASH_MAIN_ICON_FROM_CARD_PAGE[1]
-    )
-    if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.change_status(
-            status="error 08572380572308 Failure gettting to clash main from card page"
-        )
-        return "restart"
-    return "good"
-
-
 def get_to_card_page_from_clash_main(
     vm_index: int, logger: Logger, printmode: bool = False
 ) -> Literal["restart", "good"]:
@@ -1055,19 +956,17 @@ def check_if_on_underleveled_card_page(vm_index):
         iar[19][331],
     ]
     colors = [
-[227 ,  1, 242],
-[245 ,106,   0],
-[243 ,104,   0],
-[ 73 ,228,  58],
+        [227, 1, 242],
+        [245, 106, 0],
+        [243, 104, 0],
+        [73, 228, 58],
     ]
 
-
-    for i,p in enumerate(pixels):
-        if not pixel_is_equal(p,colors[i],tol=25):
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
             return False
 
     return True
-
 
 
 def check_if_on_card_page(vm_index) -> bool:
@@ -1082,7 +981,7 @@ def check_if_on_card_page(vm_index) -> bool:
         bool: True if the bot is on the card page, False otherwise.
     """
     if check_if_on_underleveled_card_page(vm_index):
-        print('Detected underleveled card page!')
+        print("Detected underleveled card page!")
         return True
 
     # some pixel checks for card pages of newer accounts
@@ -1558,48 +1457,6 @@ def wait_for_clash_main_burger_button_options_menu(
     else:
         logger.log("Done waiting for clash main options menu to appear")
     return "good"
-
-
-def check_for_end_1v1_battle_screen(vm_index) -> bool:
-    """
-    Checks if the virtual machine is on the end 1v1 battle screen.
-
-    Args:
-        vm_index (int): The index of the virtual machine.
-
-    Returns:
-        bool: True if the virtual machine is on the end 1v1 battle screen, False otherwise.
-    """
-    line1 = check_line_for_color(
-        vm_index, x_1=52, y_1=515, x_2=78, y_2=532, color=(255, 255, 255)
-    )
-    line2 = check_line_for_color(
-        vm_index, x_1=173, y_1=555, x_2=194, y_2=564, color=(78, 175, 255)
-    )
-    line3 = check_line_for_color(
-        vm_index, x_1=198, y_1=545, x_2=222, y_2=562, color=(255, 255, 255)
-    )
-
-    if line1 and line2 and line3:
-        return True
-    return False
-
-
-def check_for_end_2v2_battle_screen(vm_index) -> bool:
-    """
-    Checks if the virtual machine is on the end 2v2 battle screen.
-
-    Args:
-        vm_index (int): The index of the virtual machine.
-
-    Returns:
-        bool: True if the virtual machine is on the end 2v2 battle screen, False otherwise.
-    """
-    if not region_is_color(vm_index, [44, 590, 5, 6], (104, 188, 255)):
-        return False
-    if not region_is_color(vm_index, [355, 600, 17, 5], (76, 176, 255)):
-        return False
-    return True
 
 
 if __name__ == "__main__":

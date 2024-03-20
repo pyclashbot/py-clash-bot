@@ -11,22 +11,8 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 
-DECK_2_COORD: tuple[Literal[158], Literal[127]] = (158, 127)
 
-CLASH_MAIN_ICON_FROM_CARD_PAGE: tuple[Literal[245], Literal[600]] = (245, 600)
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
-RANDOM_CARD_SEARCH_TIMEOUT = 120  # seconds
-CARDS_TO_REPLACE_COORDS = [
-    (72, 240),
-    (156, 240),
-    (257, 240),
-    (339, 240),
-    (72, 399),
-    (156, 399),
-    (257, 399),
-    (339, 399),
-]
-FIND_REPLACEMENT_CARD_TIMEOUT = 10
 
 
 def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
@@ -172,10 +158,10 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
     time.sleep(1)
 
     if check_for_randomize_deck_icon(vm_index):
-        print('Doing the underleveled method for deck randomization')
+        print("Doing the underleveled method for deck randomization")
 
-        #click randomize
-        click(vm_index,298,229)
+        # click randomize
+        click(vm_index, 298, 229)
         time.sleep(0.33)
 
         # click OK
@@ -184,7 +170,7 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
         time.sleep(0.33)
 
     else:
-        print('Doing the regular method for deck randomization')
+        print("Doing the regular method for deck randomization")
 
         # click delete deck
         print("Clicking delete")
@@ -265,29 +251,5 @@ def check_for_filled_deck(vm_index):
     return True
 
 
-def check_for_selected_deck_2(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[119][102],
-        iar[111][111],
-        iar[120][123],
-        iar[13][401],
-    ]
-
-    colors = [
-        [93, 211, 249],
-        [94, 209, 250],
-        [96, 208, 252],
-        [21, 169, 45],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(colors[i], p, tol=10):
-            return False
-    return True
-
-
 if __name__ == "__main__":
-    randomize_deck(12,  Logger())
-
+    randomize_deck(12, Logger())

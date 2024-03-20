@@ -1,4 +1,3 @@
-from genericpath import exists
 import random
 import math
 import numpy
@@ -386,65 +385,447 @@ card_color_data = {
         "Indigo": 1181,
         "Violet": 496,
     },
-    "ice_golem":{'Red': 72, 'Orange': 1569, 'Yellow': 679, 'Green': 291, 'Blue': 0, 'Indigo': 422, 'Violet': 231},
-    "goblin_gang":{'Red': 35, 'Orange': 66, 'Yellow': 157, 'Green': 1592, 'Blue': 1, 'Indigo': 945, 'Violet': 468},
-    "firecraker":{'Red': 117, 'Orange': 333, 'Yellow': 111, 'Green': 656, 'Blue': 12, 'Indigo': 1395, 'Violet': 640},
-    "guards":{'Red': 10, 'Orange': 260, 'Yellow': 225, 'Green': 568, 'Blue': 0, 'Indigo': 1966, 'Violet': 235},
-    "skeleton_army":{'Red': 1, 'Orange': 5, 'Yellow': 186, 'Green': 244, 'Blue': 0, 'Indigo': 1498, 'Violet': 1330},
-    "royal_ghost":{'Red': 4, 'Orange': 1073, 'Yellow': 1085, 'Green': 13, 'Blue': 281, 'Indigo': 237, 'Violet': 571},
-    "mega_minion":{'Red': 7, 'Orange': 366, 'Yellow': 205, 'Green': 573, 'Blue': 0, 'Indigo': 1841, 'Violet': 272},
-    "spear_goblins":{'Red': 67, 'Orange': 521, 'Yellow': 226, 'Green': 1356, 'Blue': 87, 'Indigo': 773, 'Violet': 234},
-    "mini_pekka":{'Red': 1, 'Orange': 1125, 'Yellow': 245, 'Green': 173, 'Blue': 104, 'Indigo': 1506, 'Violet': 110},
-    "dart_goblin":{'Red': 2, 'Orange': 126, 'Yellow': 128, 'Green': 1035, 'Blue': 259, 'Indigo': 1550, 'Violet': 164},
-    "night_witch":{'Red': 23, 'Orange': 403, 'Yellow': 195, 'Green': 699, 'Blue': 0, 'Indigo': 1617, 'Violet': 327},
-    "minions":{'Red': 119, 'Orange': 615, 'Yellow': 305, 'Green': 994, 'Blue': 0, 'Indigo': 1154, 'Violet': 77},
-    "archers":{'Red': 1, 'Orange': 18, 'Yellow': 110, 'Green': 197, 'Blue': 5, 'Indigo': 1698, 'Violet': 1235},
-    "dark_knight":{'Red': 1, 'Orange': 117, 'Yellow': 363, 'Green': 759, 'Blue': 6, 'Indigo': 1778, 'Violet': 240},
-    "ice_wizard":{'Red': 24, 'Orange': 809, 'Yellow': 242, 'Green': 415, 'Blue': 0, 'Indigo': 1185, 'Violet': 589},
-    "knight":{'Red': 1, 'Orange': 274, 'Yellow': 250, 'Green': 189, 'Blue': 134, 'Indigo': 1487, 'Violet': 929},
-    "battle_healer":{'Red': 1, 'Orange': 14, 'Yellow': 218, 'Green': 118, 'Blue': 28, 'Indigo': 1159, 'Violet': 1726},
-    "lumberjack":{'Red': 10, 'Orange': 538, 'Yellow': 359, 'Green': 140, 'Blue': 416, 'Indigo': 1086, 'Violet': 715},
-    "skeleton_dragons":{'Red': 14, 'Orange': 717, 'Yellow': 337, 'Green': 582, 'Blue': 0, 'Indigo': 1016, 'Violet': 598},
-    "baby_dragon":{'Red': 0, 'Orange': 1032, 'Yellow': 593, 'Green': 1066, 'Blue': 106, 'Indigo': 315, 'Violet': 152},
-    "magic_archer":{'Red': 21, 'Orange': 118, 'Yellow': 295, 'Green': 365, 'Blue': 7, 'Indigo': 1642, 'Violet': 816},
-    "electro_wizard":{'Red': 4, 'Orange': 223, 'Yellow': 303, 'Green': 939, 'Blue': 7, 'Indigo': 1180, 'Violet': 608},
-    "musketeer":{'Red': 1, 'Orange': 625, 'Yellow': 446, 'Green': 138, 'Blue': 1, 'Indigo': 1705, 'Violet': 348},
-    "flying_machine":{'Red': 0, 'Orange': 282, 'Yellow': 166, 'Green': 164, 'Blue': 33, 'Indigo': 1900, 'Violet': 719},
-
-    "valkyrie":{'Red': 1, 'Orange': 21, 'Yellow': 116, 'Green': 170, 'Blue': 308, 'Indigo': 1749, 'Violet': 899},
-    "wizard":{'Red': 1, 'Orange': 204, 'Yellow': 187, 'Green': 148, 'Blue': 0, 'Indigo': 2287, 'Violet': 437},
-    "zappies":{'Red': 2, 'Orange': 493, 'Yellow': 583, 'Green': 584, 'Blue': 0, 'Indigo': 1458, 'Violet': 144},
-    "barbarians":{'Red': 2, 'Orange': 167, 'Yellow': 150, 'Green': 176, 'Blue': 962, 'Indigo': 1021, 'Violet': 786},
-
-    "hunter":{'Red': 8, 'Orange': 255, 'Yellow': 200, 'Green': 910, 'Blue': 1, 'Indigo': 1634, 'Violet': 256},
-    "minion_horde":{'Red': 1, 'Orange': 427, 'Yellow': 396, 'Green': 544, 'Blue': 0, 'Indigo': 1817, 'Violet': 79},
-    "prince":{'Red': 1, 'Orange': 71, 'Yellow': 176, 'Green': 265, 'Blue': 0, 'Indigo': 1956, 'Violet': 795},
-
-
-    "executioner":{'Red': 1, 'Orange': 292, 'Yellow': 635, 'Green': 461, 'Blue': 0, 'Indigo': 1412, 'Violet': 463},
-    "electro_dragon":{'Red': 138, 'Orange': 1410, 'Yellow': 252, 'Green': 1106, 'Blue': 0, 'Indigo': 272, 'Violet': 86},
-    "balloon":{'Red': 1, 'Orange': 773, 'Yellow': 356, 'Green': 156, 'Blue': 53, 'Indigo': 1562, 'Violet': 363},
-    "witch":{'Red': 0, 'Orange': 120, 'Yellow': 125, 'Green': 203, 'Blue': 0, 'Indigo': 2180, 'Violet': 636},
-
-    "rascals":{'Red': 1, 'Orange': 320, 'Yellow': 469, 'Green': 407, 'Blue': 0, 'Indigo': 1322, 'Violet': 745},
-    "giant":{'Red': 1, 'Orange': 43, 'Yellow': 117, 'Green': 230, 'Blue': 474, 'Indigo': 1513, 'Violet': 886},
-    "bowler":{'Red': 54, 'Orange': 1392, 'Yellow': 316, 'Green': 119, 'Blue': 0, 'Indigo': 482, 'Violet': 901},
-    "giant_skeleton":{'Red': 0, 'Orange': 727, 'Yellow': 456, 'Green': 423, 'Blue': 0, 'Indigo': 1280, 'Violet': 378},
-
-    "royal_recruits":{'Red': 4, 'Orange': 316, 'Yellow': 338, 'Green': 175, 'Blue': 2, 'Indigo': 1737, 'Violet': 692},
-    "goblin_giant":{'Red': 20, 'Orange': 433, 'Yellow': 184, 'Green': 1353, 'Blue': 2, 'Indigo': 978, 'Violet': 294},
-    "mega_knight":{'Red': 23, 'Orange': 507, 'Yellow': 335, 'Green': 295, 'Blue': 0, 'Indigo': 1905, 'Violet': 199},
-    "pekka":{'Red': 2, 'Orange': 251, 'Yellow': 173, 'Green': 512, 'Blue': 117, 'Indigo': 2018, 'Violet': 191},
-
-    "royal_giant":{'Red': 5, 'Orange': 106, 'Yellow': 378, 'Green': 250, 'Blue': 357, 'Indigo': 1526, 'Violet': 642},
-    "sparky":{'Red': 5, 'Orange': 386, 'Yellow': 442, 'Green': 94, 'Blue': 88, 'Indigo': 1579, 'Violet': 670},
-    "electro_giant":{'Red': 85, 'Orange': 294, 'Yellow': 478, 'Green': 135, 'Blue': 212, 'Indigo': 1657, 'Violet': 403},
-    "elite_barbarians":{'Red': 0, 'Orange': 200, 'Yellow': 150, 'Green': 511, 'Blue': 128, 'Indigo': 1753, 'Violet': 522},
-
-    "golem":{'Red': 1, 'Orange': 4, 'Yellow': 138, 'Green': 101, 'Blue': 106, 'Indigo': 2102, 'Violet': 812},
-    "three_musketeers":{'Red': 82, 'Orange': 1033, 'Yellow': 132, 'Green': 424, 'Blue': 0, 'Indigo': 993, 'Violet': 600},
-
-
+    "ice_golem": {
+        "Red": 72,
+        "Orange": 1569,
+        "Yellow": 679,
+        "Green": 291,
+        "Blue": 0,
+        "Indigo": 422,
+        "Violet": 231,
+    },
+    "goblin_gang": {
+        "Red": 35,
+        "Orange": 66,
+        "Yellow": 157,
+        "Green": 1592,
+        "Blue": 1,
+        "Indigo": 945,
+        "Violet": 468,
+    },
+    "firecraker": {
+        "Red": 117,
+        "Orange": 333,
+        "Yellow": 111,
+        "Green": 656,
+        "Blue": 12,
+        "Indigo": 1395,
+        "Violet": 640,
+    },
+    "guards": {
+        "Red": 10,
+        "Orange": 260,
+        "Yellow": 225,
+        "Green": 568,
+        "Blue": 0,
+        "Indigo": 1966,
+        "Violet": 235,
+    },
+    "skeleton_army": {
+        "Red": 1,
+        "Orange": 5,
+        "Yellow": 186,
+        "Green": 244,
+        "Blue": 0,
+        "Indigo": 1498,
+        "Violet": 1330,
+    },
+    "royal_ghost": {
+        "Red": 4,
+        "Orange": 1073,
+        "Yellow": 1085,
+        "Green": 13,
+        "Blue": 281,
+        "Indigo": 237,
+        "Violet": 571,
+    },
+    "mega_minion": {
+        "Red": 7,
+        "Orange": 366,
+        "Yellow": 205,
+        "Green": 573,
+        "Blue": 0,
+        "Indigo": 1841,
+        "Violet": 272,
+    },
+    "spear_goblins": {
+        "Red": 67,
+        "Orange": 521,
+        "Yellow": 226,
+        "Green": 1356,
+        "Blue": 87,
+        "Indigo": 773,
+        "Violet": 234,
+    },
+    "mini_pekka": {
+        "Red": 1,
+        "Orange": 1125,
+        "Yellow": 245,
+        "Green": 173,
+        "Blue": 104,
+        "Indigo": 1506,
+        "Violet": 110,
+    },
+    "dart_goblin": {
+        "Red": 2,
+        "Orange": 126,
+        "Yellow": 128,
+        "Green": 1035,
+        "Blue": 259,
+        "Indigo": 1550,
+        "Violet": 164,
+    },
+    "night_witch": {
+        "Red": 23,
+        "Orange": 403,
+        "Yellow": 195,
+        "Green": 699,
+        "Blue": 0,
+        "Indigo": 1617,
+        "Violet": 327,
+    },
+    "minions": {
+        "Red": 119,
+        "Orange": 615,
+        "Yellow": 305,
+        "Green": 994,
+        "Blue": 0,
+        "Indigo": 1154,
+        "Violet": 77,
+    },
+    "archers": {
+        "Red": 1,
+        "Orange": 18,
+        "Yellow": 110,
+        "Green": 197,
+        "Blue": 5,
+        "Indigo": 1698,
+        "Violet": 1235,
+    },
+    "dark_knight": {
+        "Red": 1,
+        "Orange": 117,
+        "Yellow": 363,
+        "Green": 759,
+        "Blue": 6,
+        "Indigo": 1778,
+        "Violet": 240,
+    },
+    "ice_wizard": {
+        "Red": 24,
+        "Orange": 809,
+        "Yellow": 242,
+        "Green": 415,
+        "Blue": 0,
+        "Indigo": 1185,
+        "Violet": 589,
+    },
+    "knight": {
+        "Red": 1,
+        "Orange": 274,
+        "Yellow": 250,
+        "Green": 189,
+        "Blue": 134,
+        "Indigo": 1487,
+        "Violet": 929,
+    },
+    "battle_healer": {
+        "Red": 1,
+        "Orange": 14,
+        "Yellow": 218,
+        "Green": 118,
+        "Blue": 28,
+        "Indigo": 1159,
+        "Violet": 1726,
+    },
+    "lumberjack": {
+        "Red": 10,
+        "Orange": 538,
+        "Yellow": 359,
+        "Green": 140,
+        "Blue": 416,
+        "Indigo": 1086,
+        "Violet": 715,
+    },
+    "skeleton_dragons": {
+        "Red": 14,
+        "Orange": 717,
+        "Yellow": 337,
+        "Green": 582,
+        "Blue": 0,
+        "Indigo": 1016,
+        "Violet": 598,
+    },
+    "baby_dragon": {
+        "Red": 0,
+        "Orange": 1032,
+        "Yellow": 593,
+        "Green": 1066,
+        "Blue": 106,
+        "Indigo": 315,
+        "Violet": 152,
+    },
+    "magic_archer": {
+        "Red": 21,
+        "Orange": 118,
+        "Yellow": 295,
+        "Green": 365,
+        "Blue": 7,
+        "Indigo": 1642,
+        "Violet": 816,
+    },
+    "electro_wizard": {
+        "Red": 4,
+        "Orange": 223,
+        "Yellow": 303,
+        "Green": 939,
+        "Blue": 7,
+        "Indigo": 1180,
+        "Violet": 608,
+    },
+    "musketeer": {
+        "Red": 1,
+        "Orange": 625,
+        "Yellow": 446,
+        "Green": 138,
+        "Blue": 1,
+        "Indigo": 1705,
+        "Violet": 348,
+    },
+    "flying_machine": {
+        "Red": 0,
+        "Orange": 282,
+        "Yellow": 166,
+        "Green": 164,
+        "Blue": 33,
+        "Indigo": 1900,
+        "Violet": 719,
+    },
+    "valkyrie": {
+        "Red": 1,
+        "Orange": 21,
+        "Yellow": 116,
+        "Green": 170,
+        "Blue": 308,
+        "Indigo": 1749,
+        "Violet": 899,
+    },
+    "wizard": {
+        "Red": 1,
+        "Orange": 204,
+        "Yellow": 187,
+        "Green": 148,
+        "Blue": 0,
+        "Indigo": 2287,
+        "Violet": 437,
+    },
+    "zappies": {
+        "Red": 2,
+        "Orange": 493,
+        "Yellow": 583,
+        "Green": 584,
+        "Blue": 0,
+        "Indigo": 1458,
+        "Violet": 144,
+    },
+    "barbarians": {
+        "Red": 2,
+        "Orange": 167,
+        "Yellow": 150,
+        "Green": 176,
+        "Blue": 962,
+        "Indigo": 1021,
+        "Violet": 786,
+    },
+    "hunter": {
+        "Red": 8,
+        "Orange": 255,
+        "Yellow": 200,
+        "Green": 910,
+        "Blue": 1,
+        "Indigo": 1634,
+        "Violet": 256,
+    },
+    "minion_horde": {
+        "Red": 1,
+        "Orange": 427,
+        "Yellow": 396,
+        "Green": 544,
+        "Blue": 0,
+        "Indigo": 1817,
+        "Violet": 79,
+    },
+    "prince": {
+        "Red": 1,
+        "Orange": 71,
+        "Yellow": 176,
+        "Green": 265,
+        "Blue": 0,
+        "Indigo": 1956,
+        "Violet": 795,
+    },
+    "executioner": {
+        "Red": 1,
+        "Orange": 292,
+        "Yellow": 635,
+        "Green": 461,
+        "Blue": 0,
+        "Indigo": 1412,
+        "Violet": 463,
+    },
+    "electro_dragon": {
+        "Red": 138,
+        "Orange": 1410,
+        "Yellow": 252,
+        "Green": 1106,
+        "Blue": 0,
+        "Indigo": 272,
+        "Violet": 86,
+    },
+    "balloon": {
+        "Red": 1,
+        "Orange": 773,
+        "Yellow": 356,
+        "Green": 156,
+        "Blue": 53,
+        "Indigo": 1562,
+        "Violet": 363,
+    },
+    "witch": {
+        "Red": 0,
+        "Orange": 120,
+        "Yellow": 125,
+        "Green": 203,
+        "Blue": 0,
+        "Indigo": 2180,
+        "Violet": 636,
+    },
+    "rascals": {
+        "Red": 1,
+        "Orange": 320,
+        "Yellow": 469,
+        "Green": 407,
+        "Blue": 0,
+        "Indigo": 1322,
+        "Violet": 745,
+    },
+    "giant": {
+        "Red": 1,
+        "Orange": 43,
+        "Yellow": 117,
+        "Green": 230,
+        "Blue": 474,
+        "Indigo": 1513,
+        "Violet": 886,
+    },
+    "bowler": {
+        "Red": 54,
+        "Orange": 1392,
+        "Yellow": 316,
+        "Green": 119,
+        "Blue": 0,
+        "Indigo": 482,
+        "Violet": 901,
+    },
+    "giant_skeleton": {
+        "Red": 0,
+        "Orange": 727,
+        "Yellow": 456,
+        "Green": 423,
+        "Blue": 0,
+        "Indigo": 1280,
+        "Violet": 378,
+    },
+    "royal_recruits": {
+        "Red": 4,
+        "Orange": 316,
+        "Yellow": 338,
+        "Green": 175,
+        "Blue": 2,
+        "Indigo": 1737,
+        "Violet": 692,
+    },
+    "goblin_giant": {
+        "Red": 20,
+        "Orange": 433,
+        "Yellow": 184,
+        "Green": 1353,
+        "Blue": 2,
+        "Indigo": 978,
+        "Violet": 294,
+    },
+    "mega_knight": {
+        "Red": 23,
+        "Orange": 507,
+        "Yellow": 335,
+        "Green": 295,
+        "Blue": 0,
+        "Indigo": 1905,
+        "Violet": 199,
+    },
+    "pekka": {
+        "Red": 2,
+        "Orange": 251,
+        "Yellow": 173,
+        "Green": 512,
+        "Blue": 117,
+        "Indigo": 2018,
+        "Violet": 191,
+    },
+    "royal_giant": {
+        "Red": 5,
+        "Orange": 106,
+        "Yellow": 378,
+        "Green": 250,
+        "Blue": 357,
+        "Indigo": 1526,
+        "Violet": 642,
+    },
+    "sparky": {
+        "Red": 5,
+        "Orange": 386,
+        "Yellow": 442,
+        "Green": 94,
+        "Blue": 88,
+        "Indigo": 1579,
+        "Violet": 670,
+    },
+    "electro_giant": {
+        "Red": 85,
+        "Orange": 294,
+        "Yellow": 478,
+        "Green": 135,
+        "Blue": 212,
+        "Indigo": 1657,
+        "Violet": 403,
+    },
+    "elite_barbarians": {
+        "Red": 0,
+        "Orange": 200,
+        "Yellow": 150,
+        "Green": 511,
+        "Blue": 128,
+        "Indigo": 1753,
+        "Violet": 522,
+    },
+    "golem": {
+        "Red": 1,
+        "Orange": 4,
+        "Yellow": 138,
+        "Green": 101,
+        "Blue": 106,
+        "Indigo": 2102,
+        "Violet": 812,
+    },
+    "three_musketeers": {
+        "Red": 82,
+        "Orange": 1033,
+        "Yellow": 132,
+        "Green": 424,
+        "Blue": 0,
+        "Indigo": 993,
+        "Violet": 600,
+    },
 }
 
 
@@ -663,28 +1044,6 @@ def get_play_coords_for_card(vm_index, card_index, side_preference):
     return identity, coords
 
 
-def hand_card_tester(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    top_lefts = [
-        [114, 528],
-        [181, 528],
-        [248, 528],
-        [315, 528],
-    ]
-
-    card_ids = []
-
-    for top_left in top_lefts:
-        pixels = get_pixels_and_count(iar, top_left)
-        color_dict = colors_from_pixels(pixels)
-        print(color_dict)
-        id = identify_card_from_color_dict(color_dict)
-        print(id)
-        card_ids.append(id)
-
-    return card_ids
-
-
 def check_which_cards_are_available(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
@@ -694,15 +1053,15 @@ def check_which_cards_are_available(vm_index):
     card_4_pixels = []
 
     toplefts = [
-        [133,582],
-        [199,583],
-        [266,583],
-        [334,582],
+        [133, 582],
+        [199, 583],
+        [266, 583],
+        [334, 582],
     ]
     width = 20
     height = 20
 
-    for i,topleft in enumerate(toplefts):
+    for i, topleft in enumerate(toplefts):
         for x in range(width):
             for y in range(height):
                 x_coord = topleft[0] + x
@@ -722,7 +1081,6 @@ def check_which_cards_are_available(vm_index):
     purple_count_3 = count_purple_colors_in_pixel_list(card_3_pixels)
     purple_count_4 = count_purple_colors_in_pixel_list(card_4_pixels)
 
-
     card_exists_list = []
 
     if purple_count_1 > 25:
@@ -740,16 +1098,16 @@ def check_which_cards_are_available(vm_index):
     return card_exists_list
 
 
-
 def count_purple_colors_in_pixel_list(pixel_list):
-    purple_color = [255,43,227]
+    purple_color = [255, 43, 227]
     count = 0
     for p in pixel_list:
-        if pixel_is_equal(p, purple_color,tol=30):
+        if pixel_is_equal(p, purple_color, tol=30):
             count += 1
 
     return count
 
 
 if __name__ == "__main__":
-    while 1:print(check_which_cards_are_available(12))
+    while 1:
+        print(check_which_cards_are_available(12))
