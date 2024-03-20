@@ -22,36 +22,9 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import (
     click,
     screenshot,
-    scroll_up,
     scroll_down_in_request_page,
-    scroll_up_fast,
 )
 from pyclashbot.utils.logger import Logger
-
-COLOR_WHITE: list[int] = [255, 255, 255]
-YELLOW_1: list[int] = [255, 203, 85]
-YELLOW_2: list[int] = [255, 190, 43]
-
-REQUEST_BUTTON_COORD_LIST = {
-    "1": [
-        (100, 353),
-        (163, 353),
-        (240, 353),
-        (330, 353),
-    ],
-    "2": [
-        (100, 493),
-        (163, 493),
-        (240, 493),
-        (330, 493),
-    ],
-    "3": [
-        (100, 521),
-        (163, 521),
-        (240, 521),
-        (330, 521),
-    ],
-}
 
 
 def find_request_button(vm_index):

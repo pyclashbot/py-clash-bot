@@ -21,10 +21,6 @@ log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".t
 archive_name: str = join(log_dir, "logs.zip")
 
 
-def round_down_int(this_float):
-    return int(this_float - (this_float % 1))
-
-
 def compress_logs() -> None:
     """archive will contain a large text file, all old logs appended together
     extract the file and read the text to get the old logs"""
@@ -216,22 +212,6 @@ class Logger:
         time_string = self.calc_time_since_start()
         print(f"[{self.current_state}] [{time_string}] {message}")
 
-    def make_time_str(self, seconds) -> str:
-        """convert epoch to time
-
-        Args:
-            seconds (int): epoch time in int
-
-        Returns:
-            str: human readable time
-        """
-        seconds = seconds % (24 * 3600)
-        hour = seconds // 3600
-        seconds %= 3600
-        minutes = seconds // 60
-        seconds %= 60
-        return f"{hour}:{minutes:02}:{seconds:02}"
-
     def calc_time_since_start(self) -> str:
         """calculate time since start of bot using logger's
         stats and reutrn as string in hours:mins:seconds"""
@@ -250,8 +230,8 @@ class Logger:
 
     def choose_trophy_road_or_path_of_legends(self):
         if self.path_of_legends_1v1_fights < self.trophy_road_1v1_fights:
-            return 'path_of_legends'
-        return 'trophy_road'
+            return "path_of_legends"
+        return "trophy_road"
 
     @_updates_log
     def calc_win_rate(self):
@@ -277,19 +257,9 @@ class Logger:
         self.current_state = state_to_set
 
     @_updates_log
-    def add_count_to_enemy_crowns(self, count):
-        """Increment the logger's enemy crowns count by the given count."""
-        self.enemy_crowns += count
-
-    @_updates_log
     def increment_battlepass_collects(self):
         """Increment the logger's battlepass_collects count by 1."""
         self.battlepass_collects += 1
-
-    @_updates_log
-    def add_count_to_friendly_crowns(self, count):
-        """Increment the logger's friendly crowns count by the given count."""
-        self.friendly_crowns += count
 
     @_updates_log
     def add_shop_offer_collection(self) -> None:
@@ -333,11 +303,6 @@ class Logger:
     @_updates_log
     def add_level_up_chest_attempt(self):
         self.level_up_chest_attempts += 1
-
-    @_updates_log
-    def remove_card_played(self, cards_to_remove=1):
-        """decremenet logger's card played counter by cards_to_remove"""
-        self.cards_played -= cards_to_remove
 
     @_updates_log
     def add_card_upgraded(self):
@@ -386,8 +351,6 @@ class Logger:
         """add request to log"""
         self.war_chest_collects += 1
 
-
-
     @_updates_log
     def add_donate(self) -> None:
         """add donate to log"""
@@ -409,19 +372,9 @@ class Logger:
         self.log(status)
 
     @_updates_log
-    def add_auto_restart(self) -> None:
-        """add request to log"""
-        self.auto_restarts += 1
-
-    @_updates_log
     def add_restart_after_failure(self) -> None:
         """add request to log"""
         self.restarts_after_failure += 1
-
-    @_updates_log
-    def change_most_recent_restart_time(self, time_to_set) -> None:
-        """add request to log"""
-        self.most_recent_restart_time = time_to_set
 
     @_updates_log
     def change_current_account(self, account_id):
@@ -446,17 +399,9 @@ class Logger:
         """increments logger's free_offer_collection_attempts by 1"""
         self.shop_buy_attempts += 1
 
-    def add_battlepass_collect_attempt(self):
-        """increments logger's battlepass_collect_attempts by 1"""
-        self.battlepass_collect_attempts += 1
-
     def add_bannerbox_collect(self):
         """increments logger's bannerbox_collects by 1"""
         self.bannerbox_collects += 1
-
-    def add_daily_reward_attempt(self):
-        """increments logger's free_offer_collection_attempts by 1"""
-        self.daily_reward_attempts += 1
 
     def add_card_upgrade_attempt(self):
         """increments logger's card_upgrade_attempts by 1"""
@@ -465,10 +410,6 @@ class Logger:
     def add_chest_unlock_attempt(self):
         """increments logger's chest_unlock_attempts by 1"""
         self.chest_unlock_attempts += 1
-
-    def add_card_mastery_reward_collection_attempt(self):
-        """increments logger's card_mastery_reward_collection_attempts by 1"""
-        self.card_mastery_reward_collection_attempts += 1
 
     def add_war_attempt(self):
         """increments logger's war_attempts by 1"""
@@ -489,10 +430,6 @@ class Logger:
     def get_cards_played(self) -> int:
         """returns logger's cards_played stat"""
         return self.cards_played
-
-    def get_shop_offer_collections(self) -> int:
-        """returns logger's shop_offer_collections stat"""
-        return self.shop_offer_collections
 
     def get_requests(self) -> int:
         """returns logger's requests stat"""
@@ -975,10 +912,6 @@ class Logger:
 
     def set_total_accounts(self, count):
         self.total_accounts = count
-
-    def update_time_of_last_free_offer_collection(self, input_time) -> None:
-        """sets logger's time_of_last_free_offer_collection to input_time"""
-        self.time_of_last_free_offer_collection = input_time
 
     def update_time_of_last_card_upgrade(self, input_time) -> None:
         """sets logger's time_of_last_card_upgrade to input_time"""

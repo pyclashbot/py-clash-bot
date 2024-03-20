@@ -1,5 +1,4 @@
 import time
-import numpy
 
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
@@ -7,9 +6,8 @@ from pyclashbot.bot.nav import (
     handle_trophy_reward_menu,
     wait_for_clash_main_menu,
 )
-from pyclashbot.memu.client import click, custom_swipe, screenshot
+from pyclashbot.memu.client import click, custom_swipe
 from pyclashbot.utils.logger import Logger
-from pyclashbot.detection.image_rec import pixel_is_equal
 
 
 SSID_COORDS = [
@@ -24,45 +22,7 @@ SSID_COORDS = [
 ]
 
 
-def check_for_switch_ssid_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    pixels = []
-    for y in range(78, 360, 45):
-        pixels.append(iar[y][228])
-
-    colors = [
-        [146, 68, 22],
-        [255, 255, 240],
-        [153, 79, 28],
-        [255, 251, 254],
-        [229, 229, 229],
-        [252, 252, 252],
-        [236, 236, 236],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(colors[i], p, tol=10):
-            return False
-    return True
-
-
-def wait_for_switch_ssid_page(vm_index, logger):
-    timeout = 20  # s
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        logger.change_status(
-            f"Waiting for switch ssid page for {str(time.time() - start_time)[:4]}s"
-        )
-        if check_for_switch_ssid_page(vm_index):
-            time.sleep(1)
-            return True
-        time.sleep(1)
-    return False
-
-
-def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to):
+def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
     logger.add_switch_account_attempt()
 
     # if not on clash main, return False
@@ -98,8 +58,8 @@ def switch_accounts(vm_index: int, logger: Logger(), account_index_to_switch_to)
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
     logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
-    click(vm_index, account_coord[0], account_coord[1],clicks=3,interval=0.33)
-    logger.change_status(f'Selected account #{account_index_to_switch_to}')
+    click(vm_index, account_coord[0], account_coord[1], clicks=3, interval=0.33)
+    logger.change_status(f"Selected account #{account_index_to_switch_to}")
 
     time.sleep(6)
 
