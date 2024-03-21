@@ -69,7 +69,6 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
     # check for the pyclashbot vm, if not found then create it
     vm_index = check_for_vm(logger)
 
-    logger.change_status(status="Configuring the pyclashbot emulator...")
     configure_vm(vm_index=vm_index)
 
     # start the vm
@@ -177,7 +176,6 @@ def check_for_vm(logger: Logger) -> int:
     new_vm_index = create_vm()
     logger.change_status(f"New VM index is {new_vm_index}")
 
-    logger.change_status("Configuring emualtor")
     configure_vm(vm_index=new_vm_index)
 
     logger.change_status("Setting language")
