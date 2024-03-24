@@ -4,7 +4,7 @@ A module for configuring Memu VMs.
 
 import time
 import logging
-
+import numpy
 import psutil
 from pymemuc import ConfigKeys
 
