@@ -149,7 +149,7 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
         return False
 
     # click on deck 2
-    logger.change_status("Deleting deck 2...")
+    logger.change_status("Randomizing deck 2...")
     click(vm_index, 109, 123)
 
     # click on deck options
@@ -167,7 +167,7 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
         # click OK
         print("Clicking OK")
         click(vm_index, 283, 387)
-        time.sleep(0.33)
+        time.sleep(1.33)
 
     else:
         print("Doing the regular method for deck randomization")

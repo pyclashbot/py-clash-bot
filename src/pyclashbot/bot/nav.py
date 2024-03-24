@@ -1001,12 +1001,15 @@ def check_if_on_card_page(vm_index) -> bool:
     ]
 
     colors = [
-        [150, 62, 4],
-        [165, 75, 2],
+        [168, 76, 3],
+        [83, 32, 1],
         [255, 238, 230],
-        [232, 0, 248],
-        [214, 2, 226],
+        [173, 92, 1],
+        [178, 96, 1],
     ]
+
+    # for p in pixels:
+    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
