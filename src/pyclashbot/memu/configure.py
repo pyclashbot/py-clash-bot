@@ -9,6 +9,7 @@ import psutil
 from pymemuc import ConfigKeys
 
 from pyclashbot.memu.pmc import pmc
+from pyclashbot.utils.config_tacker import get_time_since_last_config, set_time_of_last_config
 
 cpu_count: int = psutil.cpu_count(logical=False)
 total_mem = psutil.virtual_memory()[0] // 1024 // 1024
@@ -51,15 +52,23 @@ def set_vm_language(vm_index: int):
 
 def configure_vm(vm_index):
     """Configure the virtual machine with the given index."""
+
+    if get_time_since_last_config() < 48 * 60 * 60:# 48 hours
+        print(f"VM {vm_index} was recently configured, skipping configuration.")
+        return
+
     logging.info("Configuring VM %s...", vm_index)
 
     for key, value in MEMU_CONFIGURATION.items():
         pmc.set_configuration_vm(key, str(value), vm_index=vm_index)
+        print(f'Set {key} to {value}')
 
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
     logging.info("Configured VM %s", vm_index)
+
+    set_time_of_last_config()
 
 
 if __name__ == "__main__":
