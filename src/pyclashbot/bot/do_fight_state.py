@@ -789,10 +789,6 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # while in battle:
     while check_for_in_battle_with_delay(vm_index):
-        # if check_if_at_max_elixer(vm_index):
-        #     logger.change_status("At max elixer so just mag dumping!!!")
-        #     mag_dump(vm_index, logger)
-
         # emote sometimes to do daily challenge (jk its to be funny)
         if random.randint(0, 10) == 1:
             emote_in_2v2(vm_index, logger)
@@ -818,6 +814,12 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
                     "No battle detected in elixer_wait_return var in _2v2_fight_loop()"
                 )
                 break
+
+        #play champ ability if its available
+        if check_for_champion_ability(vm_index):
+            play__champion_ability(vm_index)
+            logger.change_status('Played champion ability')
+            continue
 
         this_play_start_time = time.time()
 
@@ -881,6 +883,33 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     return "good"
 
 
+
+def check_for_champion_ability(vm_index):
+    iar=numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[462][324],
+        iar[453][334],
+        iar[462][336],
+    ]
+    colors = [
+[215 , 28,223],
+[240 , 39, 254],
+[239,  40 ,251],
+    ]
+
+    # for p in pixels:print(p)
+
+    for p in pixels:
+        for c in colors:
+            if pixel_is_equal(p,c,tol=30):
+                return True
+
+    return False
+
+def play__champion_ability(vm_index):
+    click(vm_index,330,460)
+
+
 def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     """method for handling dynamicly timed 1v1 fight"""
 
@@ -896,18 +925,23 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     prev_cards_played = logger.get_cards_played()
 
     # while in battle:
-    prev_card_index = None
     while check_if_in_battle(vm_index):
         logger.log(f"Battle play #{plays}:")
 
         # wait for 6 elixer
         logger.log("Waiting for 6 elixer")
 
-        _6_elixer_wait_start_time = time.time()
+        elixer_wait_start_time = time.time()
         elixer_wait_return = wait_for_4_elixer(vm_index, logger)
         logger.change_status(
-            f"Waited {str(time.time() - _6_elixer_wait_start_time)[:5]}s for 6 elixer"
+            f"Waited {str(time.time() - elixer_wait_start_time)[:5]}s for 4 elixer"
         )
+
+        #play champ ability if its available
+        if check_for_champion_ability(vm_index):
+            play__champion_ability(vm_index)
+            logger.change_status('Played champion ability')
+            continue
 
         if elixer_wait_return == "restart":
             logger.change_status(
@@ -918,19 +952,15 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         if elixer_wait_return == "no battle":
             break
 
-        # choose random card idnex to play
-        random_card_index = random.randint(0, 3)
-        while 1:
-            if prev_card_index is None:
-                break
-            random_card_index = random.randint(0, 3)
-            if random_card_index != prev_card_index:
-                break
+        card_indicies = check_which_cards_are_available(vm_index)
+        if card_indicies == []:
+            logger.change_status("No cards are avilable.. waiting...")
+            time.sleep(3)
+            continue
 
-        # update prev card index for next play's choice
-        prev_card_index = random_card_index
-
-        logger.log(f"Using card index {random_card_index}")
+        logger.change_status(f"These cards are available: {card_indicies}")
+        card_index = random.choice(card_indicies)
+        logger.log(f"Using card index {card_index}")
 
         # choose play coord but favor a side according to favorite_side var
         choose_play_side_start_time = time.time()
@@ -943,7 +973,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # get a coord based on the selected side
         choose_play_coords_start_time = time.time()
         identification, play_coord = get_play_coords_for_card(
-            vm_index, random_card_index, this_play_side
+            vm_index, card_index, this_play_side
         )
         logger.change_status(
             f"Waited {str(time.time() - choose_play_coords_start_time)[:5]}s to calculate a coord"
@@ -962,7 +992,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         )
 
         # click that random card coord
-        random_card_coord = HAND_CARDS_COORDS[random_card_index]
+        random_card_coord = HAND_CARDS_COORDS[card_index]
         click(vm_index, random_card_coord[0], random_card_coord[1])
         time.sleep(0.1)
 
@@ -1034,4 +1064,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    print(start_path_of_legends_1v1_state(12, Logger(), "next_state"))
+    _2v2_fight_loop(12, Logger() )
