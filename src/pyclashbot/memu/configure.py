@@ -3,8 +3,8 @@ A module for configuring Memu VMs.
 """
 
 import time
+import logging
 
-import numpy
 import psutil
 from pymemuc import ConfigKeys
 
@@ -51,16 +51,17 @@ def set_vm_language(vm_index: int):
 
 def configure_vm(vm_index):
     """Configure the virtual machine with the given index."""
+    logging.info("Configuring VM %s...", vm_index)
+
     for key, value in MEMU_CONFIGURATION.items():
         pmc.set_configuration_vm(key, str(value), vm_index=vm_index)
 
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
+    logging.info("Configured VM %s", vm_index)
 
 
 if __name__ == "__main__":
     vm_index = 0
-    print(f"Configuring VM {vm_index}...")
     configure_vm(vm_index)
-    print(f"Configured VM {vm_index}")
