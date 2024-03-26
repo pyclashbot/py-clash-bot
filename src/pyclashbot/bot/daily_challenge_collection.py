@@ -7,134 +7,79 @@ import time
 
 
 def collect_daily_rewards_state(vm_index, logger, next_state):
-    if collect_all_daily_rewards(vm_index, logger) is False:
+    # First check if all rewards have already been collected
+    if check_if_rewards_collected(vm_index):
+        logger.change_status("All daily rewards have been collected")
+        return next_state
+
+    if not collect_all_daily_rewards(vm_index, logger):
         logger.change_status("Failed to collect daily rewards")
         return "restart"
 
     return next_state
 
 
+def check_if_rewards_collected(vm_index) -> bool:
+    iar = numpy.asarray(screenshot(vm_index))
+    checkmark_pixels = [
+        (65, 187, [87, 247, 121]),
+        (60, 191, [58, 238, 93]),
+        (57, 196, [57, 236, 92]),
+        (52, 199, [54, 234, 88]),
+        (45, 195, [51, 231, 85]),
+    ]
+
+    # Check each specified pixel for the checkmark
+    for x, y, expected_color in checkmark_pixels:
+        # If a pixel does not match, the checkmark is not present
+        if not pixel_is_equal(iar[y][x], expected_color, tol=10):
+            return False
+
+    # If all pixels match, the checkmark is present
+    return True
+
+
 def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
-    # if not on clash main, reutrn False
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    # Ensure we are on the main menu of Clash
+    if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main at start of collect_challenge_rewards(). Returning False"
-        )
+            "Not on clash main at start of collect_challenge_rewards(). Returning False")
         return False
 
-    # open daily rewards menu
+    # Open the daily rewards menu
     click(vm_index, 41, 206)
     time.sleep(2)
 
-    # click first task's reward
-    if rewards[0]:
-        click(vm_index, 90, 191)
-        logger.change_status("Collected 1st daily challenge reward")
-        logger.add_daily_reward()
-        time.sleep(1)
+    # Collect rewards
+    # Click positions to collect the rewards
+    reward_positions = [(114, 235), (210, 235), (308, 235)]
+    reward_messages = [
+        "Collected 1st daily challenge reward",
+        "Collected 2nd daily challenge reward",
+        "Collected lucky drop challenge reward",
+    ]
 
-        # click deadspace a few times
-        click(vm_index, 10, 450, clicks=5, interval=1)
+    for i, (x, y) in enumerate(reward_positions):
+        if rewards[i]:
+            click(vm_index, x, y)
+            logger.change_status(reward_messages[i])
+            logger.add_daily_reward()
+            time.sleep(1)
 
-        # reopen daily rewards menu
-        click(vm_index, 41, 206)
-        time.sleep(2)
+            # Reopen the daily rewards menu if it's not the last button
+            if i < 2:
+                # Click in the empty space to close menus/pop-ups
+                click(vm_index, 10, 450, clicks=5, interval=1)
+                click(vm_index, 41, 206)
+                time.sleep(2)
+            else:
+                # Additional clicks in the empty space for the lucky drop
+                click(vm_index, 15, 450, clicks=15, interval=0.33)
 
-    # click second task's reward
-    if rewards[1]:
-        click(vm_index, 90, 260)
-        logger.change_status("Collected 2nd daily challenge reward")
-        logger.add_daily_reward()
-        time.sleep(1)
-
-        # click deadspace a few times
-        click(vm_index, 10, 450, clicks=5, interval=1)
-
-        # reopen daily rewards menu
-        click(vm_index, 41, 206)
-        time.sleep(2)
-
-    # click third task's reward
-    if rewards[2]:
-        click(vm_index, 90, 330)
-        logger.change_status("Collected 3rd daily challenge reward")
-        logger.add_daily_reward()
-        time.sleep(1)
-
-    # click deadspace a bunch
-    deadspace_clicks = 5
-    if rewards[1]:
-        deadspace_clicks = 15
-    click(vm_index, 15, 450, clicks=deadspace_clicks, interval=0.33)
-
-    # if not on clash main, reutrn False
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    # Check again if we are on the main menu
+    if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main at start of collect_challenge_rewards(). Returning False"
-        )
-        return False
-
-    return True
-
-
-def collect_daily_bonus(vm_index, logger) -> bool:
-    # if not on clash main, retunr False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main at start of collect_daily_bonus(). Returning False"
-        )
-        return False
-
-    # open daily rewards menu
-    click(vm_index, 41, 206)
-    time.sleep(2)
-
-    # click the daily bonus reward
-    click(vm_index, 206, 415)
-    logger.add_daily_reward()
-    logger.change_status("Collected daily reward chest")
-    time.sleep(1)
-
-    # click deadspace a bunch
-    print("deadspace clicks")
-    click(vm_index, 10, 450, clicks=15, interval=1)
-
-    # if not on clash main, retunr False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main at start of collect_daily_bonus(). Returning False"
-        )
-        return False
-
-    return True
-
-
-def collect_weekly_bonus(vm_index, logger: Logger) -> bool:
-    # if not on clash main, retunr False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main at start of collect_weekly_bonus(). Returning False"
-        )
-        return False
-
-    # open daily rewards menu
-    click(vm_index, 41, 206)
-    time.sleep(2)
-
-    # click the weekly bonus reward
-    click(vm_index, 197, 500)
-    logger.change_status("Collected weekly reward chest")
-    logger.add_daily_reward()
-    time.sleep(1)
-
-    # click deadspace a bunch
-    click(vm_index, 15, 450, clicks=15, interval=0.33)
-
-    # if not on clash main, retunr False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main at start of collect_weekly_bonus(). Returning False"
-        )
+            "Not on clash main after collect_challenge_rewards(). Returning False")
         return False
 
     return True
@@ -174,41 +119,27 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
 
 
 def collect_all_daily_rewards(vm_index, logger) -> bool:
-    # if not on clash main, reutrn False
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main at start of collect_daily_rewards(). Returning False"
-        )
+            "Not on clash main at start of collect_daily_rewards(). Returning False")
         return False
 
-    # if daily rewards button doesnt exist, reutnr True
     if not check_if_daily_rewards_button_exists(vm_index):
-        logger.change_status("Daily rewards button doesn't exist")
+        logger.change_status(
+            "Daily rewards button doesn't exist. Assuming rewards already collected or not available.")
         return True
 
-    # check which rewards are available
     rewards = check_which_rewards_are_available(vm_index, logger)
     if rewards is False:
-        logger.change_status(
-            "Error no1919 Failed with check_which_rewards_are_available()"
-        )
-        return False
-    time.sleep(1)
-
-    # collect the basic 3 daily rewards for completing tasks
-    if rewards[0] or rewards[1] or rewards[2]:
-        if collect_challenge_rewards(vm_index, logger, rewards) is False:
-            logger.change_status("Failed to collect challenge rewards")
-            return False
-
-    # collect the daily bonus reward if it exists
-    if rewards[3] and collect_daily_bonus(vm_index, logger) is False:
-        logger.change_status("Failed to collect daily bonus reward")
+        logger.change_status("Error checking which rewards are available")
         return False
 
-    # collect the weekly bonus reward if it exists
-    if rewards[4] and collect_weekly_bonus(vm_index, logger) is False:
-        logger.change_status("Failed to collect weekly bonus reward")
+    if not any(rewards):
+        logger.change_status("No daily rewards available to collect")
+        return True
+
+    if not collect_challenge_rewards(vm_index, logger, rewards):
+        logger.change_status("Failed to collect challenge rewards")
         return False
 
     return True
@@ -255,28 +186,16 @@ def check_which_rewards_are_available(vm_index, logger):
 def check_rewards_menu_pixels(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-        iar[206][117],
-        iar[273][112],
-        iar[341][115],
-        iar[413][233],
-        iar[530][216],
+        iar[180][88],  # Position for button 1
+        iar[180][186],  # Position for button 2
+        iar[180][280],  # Position for button 3 (lucky drop)
     ]
 
-    colors = [
-        [181, 211, 229],
-        [182, 212, 230],
-        [181, 211, 229],
-        [224, 132, 29],
-        [113, 156, 0],
-    ]
+    expected_color = [65, 209, 49]
 
-    bool_list = []
-    for i, p in enumerate(pixels):
-        # print(p)
-        this_bool = pixel_is_equal(p, colors[i], 5)
-        bool_list.append(not this_bool)
-
-    return bool_list
+    rewards_available = [pixel_is_equal(
+        pixel, expected_color, tol=35) for pixel in pixels]
+    return rewards_available
 
 
 if __name__ == "__main__":
