@@ -27,7 +27,7 @@ from pyclashbot.memu.client import (
 from pyclashbot.utils.logger import Logger
 
 
-def find_request_button(vm_index):
+def find_request_button(vm_index, logger: Logger):
     """
     Finds the location of the request button on the screen.
 
@@ -47,10 +47,12 @@ def find_request_button(vm_index):
         screenshot(vm_index),
         folder_name,
         names,
-        0.88,
+        0.7,
     )
 
     coord = get_first_location(locations)
+    logger.log(
+        f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
     if coord is None:
         return None
     return [coord[1], coord[0]]
@@ -75,8 +77,10 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main for the start of request_state()")
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status(
+            "Not on clash main for the start of request_state()")
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -86,7 +90,8 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.change_status("Checking if in a clan before requesting")
     in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
     if in_a_clan_return == "restart":
-        logger.change_status(status="Error 05708425 Failure with check_if_in_a_clan")
+        logger.change_status(
+            status="Error 05708425 Failure with check_if_in_a_clan")
         return "restart"
 
     if not in_a_clan_return:
@@ -220,7 +225,8 @@ def do_request(vm_index, logger: Logger) -> None:
     time.sleep(3)
 
     # max scrolls
-    logger.change_status(status="Counting the maximum scrolls in the request page")
+    logger.change_status(
+        status="Counting the maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
     logger.log(f"Found {max_scrolls} scrolls maximum in request page")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
@@ -252,7 +258,7 @@ def do_request(vm_index, logger: Logger) -> None:
         logger.change_status(status="Clicking request")
 
         # get request button coord
-        coord = find_request_button(vm_index)
+        coord = find_request_button(vm_index, logger)
         if coord is None:
             continue
 
@@ -264,7 +270,8 @@ def do_request(vm_index, logger: Logger) -> None:
         logger.add_request()
 
         requests = logger.get_requests()
-        logger.log(f"Incremented requests stat from {prev_requests} to {requests}")
+        logger.log(
+            f"Incremented requests stat from {prev_requests} to {requests}")
 
         time.sleep(3)
         break

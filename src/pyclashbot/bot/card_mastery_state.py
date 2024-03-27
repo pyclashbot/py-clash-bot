@@ -51,7 +51,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
             collect_first_mastery_reward(vm_index)
             logger.change_status("Collected a card mastery reward!")
             logger.add_card_mastery_reward_collection()
-            time.sleep(3)
+            time.sleep(2)
 
     # get to clash main
     logger.change_status("Returning to clash main menu")
@@ -69,32 +69,46 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
 
 def collect_first_mastery_reward(vm_index):
     # click the card mastery reward icon
-    click(vm_index, 270, 480)
+    click(vm_index, 318, 444)
     time.sleep(3)
 
     # click first card
-    click(vm_index, 105, 170)
+    click(vm_index, 99, 166)
     time.sleep(3)
 
-    # click rewards
-    for y in range(280, 520, 35):
+    # click rewards at specific Y positions
+    y_positions = [316, 403, 488]
+    for y in y_positions:
         click(vm_index, 200, y)
+        time.sleep(0.5)
 
     # click deadspace a bunch
     click(vm_index, 5, 355, clicks=15, interval=0.5)
     time.sleep(3)
 
+    click(vm_index, 243, 600)
+
 
 def card_mastery_rewards_exist(vm_index):
+    # Convert the screenshot to a NumPy array for easier access
     iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[460][280],
-        iar[467][282],
-        iar[464][279],
-    ]
 
-    for p in pixels:
-        if p[2] < p[0] + p[1]:
+    # Define the target color, positions to check, and tolerance
+    target_color = numpy.array([57, 9, 236])
+    positions_to_check = [
+        (435, 326),
+        (435, 336),
+    ]
+    tolerance = 10  # Define how much color variation is acceptable
+
+    # Function to check if a pixel is within tolerance
+    def is_color_within_tolerance(pixel_color, target_color, tolerance):
+        return numpy.all(numpy.abs(pixel_color - target_color) <= tolerance)
+
+    # Check each specified position for the target color within tolerance
+    for pos in positions_to_check:
+        pixel_color = iar[pos[0], pos[1]]
+        if not is_color_within_tolerance(pixel_color, target_color, tolerance):
             return False
     return True
 

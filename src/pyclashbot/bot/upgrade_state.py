@@ -71,8 +71,10 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     # if not on clash main, return restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main at the start of upgrade_cards_state()")
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status(
+            "Not on clash main at the start of upgrade_cards_state()")
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -106,16 +108,18 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     time.sleep(2)
     logger.change_status(status="Done upgrading cards")
-    click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1], clicks=3, interval=1.5)
+    click(vm_index, 211, 607)
+    time.sleep(1)
 
     # return to clash main
     print("Returning to clash main after upgrading")
-    click(vm_index, 245, 593)
+    click(vm_index, 243, 600)
     time.sleep(3)
 
     # wait for main
     if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
-        logger.change_status("Failed to wait for clash main after upgrading cards")
+        logger.change_status(
+            "Failed to wait for clash main after upgrading cards")
         return "restart"
 
     logger.update_time_of_last_card_upgrade(time.time())
