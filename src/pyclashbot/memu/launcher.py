@@ -3,6 +3,7 @@ This module contains functions for launching and controlling MEmu virtual machin
 as well as starting and stopping the Clash Royale app within them.
 """
 
+
 import contextlib
 import subprocess
 import sys
@@ -13,11 +14,10 @@ import psutil
 import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
-from pyclashbot.memu.client import click, screenshot
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.memu.client import click,screenshot
+from pyclashbot.bot.nav import  check_if_on_clash_main_menu
 from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
-from pyclashbot.utils.config_tacker import set_time_of_last_config
 from pyclashbot.utils.logger import Logger
 
 ANDROID_VERSION = "96"  # android 9, 64 bit
@@ -29,15 +29,17 @@ MANUAL_VM_WAIT_TIME = 10
 MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 
+
 def check_vm_size(vm_index):
     try:
-        home_button_press(vm_index, clicks=1)
+        home_button_press(vm_index,clicks=1)
 
         image = screenshot(vm_index)
         print(image.size)
         print(image.shape)
 
-        height, width, _ = image.shape
+        height,width,_ = image.shape
+
 
         if width != 419 or height != 633:
             print(f"Size is bad: {width},{height}")
@@ -46,9 +48,9 @@ def check_vm_size(vm_index):
         print(f"Size is good: {width},{height}")
         return True
     except Exception as e:
-        print("sizing error:", e)
+        print("sizing error:",e)
 
-    # in the case of errors, just return True to avoid infinite loop
+    #in the case of errors, just return True to avoid infinite loop
     return True
 
 
@@ -218,9 +220,6 @@ def start_clash_royale(logger: Logger, vm_index):
 def create_vm():
     """Create a vm with the given name and version"""
     start_memuc_console()
-
-    # set config time to 0 so it will calculate that its been a long time since last config -> will configure
-    set_time_of_last_config(0)
 
     vm_index = pmc.create_vm(vm_version="96")
     return vm_index

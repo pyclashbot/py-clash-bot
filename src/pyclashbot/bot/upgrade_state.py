@@ -69,6 +69,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.add_card_upgrade_attempt()
 
     # if not on clash main, return restart
+    print('Making sure on clash main before upgrading cards')
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status(
