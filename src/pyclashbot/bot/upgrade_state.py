@@ -307,8 +307,6 @@ def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
     # see if green uprgade button exists in card context menu
     card_is_upgradable = False
     upgrade_coord = UPGRADE_PIXEL_COORDS[card_index]
-    print(
-        f"Checking upgrade button at x={upgrade_coord[0]}, y={upgrade_coord[1]}")
     if check_if_pixel_indicates_upgradable_card(
         numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]
     ):
