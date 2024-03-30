@@ -210,25 +210,30 @@ def handle_pre_war_battle_page(vm_index):
     click(vm_index, 349, 154)
 
 
-def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
-    """method to wait for the war page to load after leaving a war battle"""
+def wait_for_war_page(vm_index, logger) -> str:
+    """
+    Method to wait for the war page to load after leaving a war battle.
 
+    Args:
+        vm_index (int): The index of the virtual machine.
+        logger (Logger): The logger object for logging status and actions.
+
+    Returns:
+        str: "restart" if the page does not load within the timeout, "good" otherwise.
+    """
     logger.change_status(status="Waiting for war page")
-    start_time: float = time.time()
+    start_time = time.time()
     while not check_if_on_war_page(vm_index):
-        time_taken: float = time.time() - start_time
+        time_taken = time.time() - start_time
         if time_taken > 45:
             logger.change_status(
-                status="Error 1109572435 WAited too long for war page after leaving war battle"
+                status="Error 1109572435 Waited too long for war page after leaving war battle"
             )
             return "restart"
 
-        # random click hell
-        if random.randint(0, 2) == 0:
-            if random.randint(0, 1) == 1:
-                handle_edit_deck_page(vm_index)
-            else:
-                handle_pre_war_battle_page(vm_index)
+        # Click on the Clan menu button
+        click(vm_index, 279, 625)
+        time.sleep(1)  # Wait for a second after clicking
 
     logger.log("Done waiting for war page")
     return "good"
