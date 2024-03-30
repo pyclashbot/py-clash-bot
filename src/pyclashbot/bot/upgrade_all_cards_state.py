@@ -21,30 +21,30 @@ from pyclashbot.utils.logger import Logger
 
 def find_and_click_button_by_image(vm_index, folder_name):
     """
-    Trouve et clique sur un bouton basé sur la reconnaissance d'image.
+    Finds and clicks on a button based on image recognition.
 
     Args:
-        vm_index (int): L'index de la machine virtuelle.
-        folder_name (str): Le nom du dossier contenant les images de référence pour le bouton.
+        vm_index (int): The index of the virtual machine.
+        folder_name (str): The name of the folder containing reference images for the button.
     """
-    # Créer une liste de noms d'images de référence à partir du dossier
+    # Create a list of reference image names from the folder
     names = make_reference_image_list(get_file_count(folder_name))
 
-    # Trouver les références dans la capture d'écran
+    # Find references in the screenshot
     locations = find_references(
         screenshot(vm_index),
         folder_name,
         names,
-        tolerance=0.85,  # Ajuster la tolérance selon les besoins pour améliorer la précision
+        tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
     )
 
-    # Obtenir le premier emplacement de la référence détectée
+    # Get the first location of the detected reference
     coord = get_first_location(locations)
 
     if coord is None:
         return False
     else:
-        # Cliquer sur l'emplacement du bouton détecté
+        # Click on the detected button location
         click(vm_index, coord[1], coord[0])
         time.sleep(2)
         return True
