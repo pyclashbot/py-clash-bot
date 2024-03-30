@@ -76,8 +76,10 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     # if not on clash main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Error 4848 Not on calshmain for start of war_state()")
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status(
+            "Error 4848 Not on calshmain for start of war_state()")
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -103,7 +105,8 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     logger.log("Getting to clan tab")
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
-        logger.log("Error 86868243 Took too long to get to clan tab from clash main")
+        logger.log(
+            "Error 86868243 Took too long to get to clan tab from clash main")
         return "restart"
 
     # find and click battle icon
@@ -126,7 +129,8 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
             time.sleep(3)
 
         if check_if_on_clash_main_menu(vm_index) is not True:
-            logger.change_status("Failed to get to clash main after seeing locked war.")
+            logger.change_status(
+                "Failed to get to clash main after seeing locked war.")
             return "restart"
 
         return next_state
@@ -163,7 +167,8 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     # start battle
     logger.change_status(status="Starting a war battle")
-    click(vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
+    click(
+        vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
     logger.add_war_fight()
 
@@ -176,11 +181,13 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     if do_war_battle(vm_index, logger) == "restart":
         logger.change_status(status="Error 58734 Failed doing war battle")
         return "restart"
-    logger.change_status(status=f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
+    logger.change_status(
+        status=f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
     time.sleep(POST_WAR_FIGHT_WAIT)
 
     # when battle end, leave battle
-    click(vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
+    click(
+        vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
 
     if wait_for_war_page(vm_index, logger) == "restart":
         logger.change_status(status="Error 5135 Waited too long for war page")
@@ -203,25 +210,30 @@ def handle_pre_war_battle_page(vm_index):
     click(vm_index, 349, 154)
 
 
-def wait_for_war_page(vm_index, logger) -> Literal["restart", "good"]:
-    """method to wait for the war page to load after leaving a war battle"""
+def wait_for_war_page(vm_index, logger) -> str:
+    """
+    Method to wait for the war page to load after leaving a war battle.
 
+    Args:
+        vm_index (int): The index of the virtual machine.
+        logger (Logger): The logger object for logging status and actions.
+
+    Returns:
+        str: "restart" if the page does not load within the timeout, "good" otherwise.
+    """
     logger.change_status(status="Waiting for war page")
-    start_time: float = time.time()
+    start_time = time.time()
     while not check_if_on_war_page(vm_index):
-        time_taken: float = time.time() - start_time
+        time_taken = time.time() - start_time
         if time_taken > 45:
             logger.change_status(
-                status="Error 1109572435 WAited too long for war page after leaving war battle"
+                status="Error 1109572435 Waited too long for war page after leaving war battle"
             )
             return "restart"
 
-        # random click hell
-        if random.randint(0, 2) == 0:
-            if random.randint(0, 1) == 1:
-                handle_edit_deck_page(vm_index)
-            else:
-                handle_pre_war_battle_page(vm_index)
+        # Click on the Clan menu button
+        click(vm_index, 279, 625)
+        time.sleep(1)  # Wait for a second after clicking
 
     logger.log("Done waiting for war page")
     return "good"
@@ -236,7 +248,8 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
     while check_if_in_war_battle(vm_index):
         time_taken = time.time() - start_time
         if time_taken > WAR_BATTLE_TIMEOUT:
-            logger.change_status(status="Error 658725 Ran war fight loop too long")
+            logger.change_status(
+                status="Error 658725 Ran war fight loop too long")
             return "restart"
 
         # click a random card
@@ -346,7 +359,8 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made dec
     logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
     print("clicking edit deck button")
-    click(vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
+    click(
+        vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # click random deck button
@@ -406,7 +420,8 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
 
         if coord is None:
             if random.randint(0, 1) == 1:
-                click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
+                click(
+                    vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
                 time.sleep(1.5)
 
             if random.randint(0, 1) == 1:
@@ -424,26 +439,38 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
 
 
 def check_if_on_war_page(vm_index):
-    """method to check pixels to see if bot is on the war page"""
+    """
+    Checks if the current screen is the war page based on specific pixel colors.
 
-    if not check_line_for_color(
-        vm_index, x_1=19, y_1=16, x_2=59, y_2=59, color=(144, 108, 255)
-    ):
-        return False
-    if not check_line_for_color(
-        vm_index, x_1=61, y_1=18, x_2=51, y_2=58, color=(144, 107, 255)
-    ):
-        return False
-    if not check_line_for_color(
-        vm_index, x_1=31, y_1=43, x_2=51, y_2=45, color=(226, 219, 228)
-    ):
-        return False
+    Args:
+        vm_index (int): The index of the virtual machine.
+    """
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[26][18],  # X: 18 Y: 26
+        iar[45][42],  # X: 42 Y: 45
+        iar[44][58],  # X: 58 Y: 44
+        iar[30][65],  # X: 65 Y: 30
+        iar[20][126],  # X: 126 Y: 20
+        iar[30][143],  # X: 143 Y: 30
+        iar[20][293],  # X: 293 Y: 20
+        iar[52][354],  # X: 354 Y: 52
+    ]
 
-    if not region_is_color(vm_index, [225, 610, 25, 10], (80, 118, 153)):
-        return False
-    if not region_is_color(vm_index, [300, 610, 30, 14], (80, 118, 153)):
-        return False
+    colors = [
+        (255, 106, 144),  # X: 18 Y: 26
+        (232, 223, 229),  # X: 42 Y: 45
+        (255, 133, 189),  # X: 58 Y: 44
+        (253, 104, 142),  # X: 65 Y: 30
+        (251, 237, 232),  # X: 126 Y: 20
+        (7, 130, 202),   # X: 143 Y: 30
+        (251, 237, 232),  # X: 293 Y: 20
+        (254, 107, 145),  # X: 354 Y: 52
+    ]
 
+    for i, pixel in enumerate(pixels):
+        if not pixel_is_equal(pixel, colors[i], tol=30):
+            return False
     return True
 
 
