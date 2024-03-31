@@ -12,6 +12,7 @@ class WorkerThread(PausableThread):
     def __init__(self, logger: Logger, args, kwargs=None) -> None:
         super().__init__(args, kwargs)
         self.logger: Logger = logger
+        self.in_a_clan = False
 
     def run(self) -> None:
         try:

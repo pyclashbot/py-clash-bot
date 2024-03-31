@@ -119,6 +119,13 @@ def send_swipe(
         command=f"shell input swipe {x_coord1} {y_coord1} {x_coord2} {y_coord2}",
     )
 
+#TODO
+# def send_paste_key(vm_index):
+#     pmc.send_adb_command_vm(
+#         vm_index=vm_index,
+#         command=f"shell input keyevent 279",
+#     )
+
 
 def send_click(vm_index, x_coord, y_coord):
     """Method for sending a click command to the given vm
@@ -181,7 +188,7 @@ def send_text(vm_index, text: str):
 
 def send_newline_char(vm_index):
     """Method for sending a newline character to the given vm"""
-    pmc.send_adb_command_vm(
+    return pmc.send_adb_command_vm(
         vm_index=vm_index,
         command="shell input keyevent KEYCODE_NUMPAD_ENTER",
     )

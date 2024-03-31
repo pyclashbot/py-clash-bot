@@ -39,32 +39,34 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
 
     donate_start_time = time.time()
 
-    #if on profile page for whatever reason, close it
-    if check_if_on_profile_page(vm_index):
-        #click deadspace to leave profile page
-        click(vm_index, 15, 450)
-        time.sleep(2)
+    # if not on main: return
+    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    if clash_main_check is not True:
+        logger.change_status("Not on clash main for the start of request_state()")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        for pixel in clash_main_check:
+            logger.log(f"   {pixel}")
 
-
-
-    # if not on clash main, reutrn False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.log("Not on clash main for donate state. Returning False")
         return "restart"
 
-    # if not in a clan, return
-    logger.change_status("Checking if in a clan before donating...")
-    in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
-    if in_a_clan_return == "restart":
-        logger.change_status(
-            status="Error 05708425 Failure with donate_state_check_if_in_a_clan"
-        )
-        return "restart"
+    # if logger says we're not in a clan, check if we are in a clan
+    if logger.in_a_clan is False:
+        logger.change_status("Checking if in a clan before donating")
+        in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
+        if in_a_clan_return == "restart":
+            logger.change_status(
+                status="Error 05708425 Failure with check_if_in_a_clan"
+            )
+            return "restart"
 
-    # handle not in a clan
-    if not in_a_clan_return:
-        logger.change_status("Not in a clan, so skipping donate state")
-        return next_state
+        if not in_a_clan_return:
+            return next_state
+    else:
+        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+
+    # if in a clan, update logger's in_a_clan value
+    logger.update_in_a_clan_value(True)
+    print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
 
     # run donate cards main
     if donate_cards_main(vm_index, logger) is False:

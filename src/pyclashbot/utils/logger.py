@@ -130,6 +130,7 @@ class Logger:
         self.current_account = "-"
         self.account_switches = 0
         self.switch_account_attempts = 0
+        self.in_a_clan = False
 
         # restart stats
         self.auto_restarts = 0
@@ -232,6 +233,11 @@ class Logger:
         if self.path_of_legends_1v1_fights < self.trophy_road_1v1_fights:
             return "path_of_legends"
         return "trophy_road"
+
+    def update_in_a_clan_value(self,in_a_clan:bool):
+        self.in_a_clan = in_a_clan
+
+
 
     @_updates_log
     def calc_win_rate(self):

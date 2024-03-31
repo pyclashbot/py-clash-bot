@@ -2,6 +2,7 @@
 This module contains the main entry point for the py-clash-bot program.
 It provides a GUI interface for users to configure and run the bot.
 """
+
 import random
 import sys
 import webbrowser
@@ -68,7 +69,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
-        "path_of_legends_1v1_battle_user_toggle":values["path_of_legends_1v1_user_toggle"],
+        "path_of_legends_1v1_battle_user_toggle": values[
+            "path_of_legends_1v1_user_toggle"
+        ],
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
