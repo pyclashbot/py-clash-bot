@@ -1,20 +1,25 @@
 # py-clash-bot Job Descriptions
 
-| Job                                   | Description                                                                                                               |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **1v1 Battles**                      |        Play Trophy Road 1v1 matches                                   |
-| **2v2 Battles**                      |      Play a 2v2 match with a random teammate                                      |
-| **Open Chests**                       |       Unlock and open your chests                                    |
-| **Random Requesting**           |         Request a random card from your clan                                  |
-| **Donates**                    |      Donate cards to your clan                                     |
-| **Card Mastery Colection**          |       Collect Card Mastery Rewards                                    |
-| **Free Offers Collection**      |       Purchase FREE offers from the shop                                    |
-| **Gold Offers Collection**           |    Purchase card offers for gold from the shop                                       |
-| **Disable win/loss tracking**           |       Disable the tracking of wins and losses                                    |
-| **War Participation**                   |   Fight in Clan War battles                                        |
-| **Open Bannerbox**           |     Open Bannerbox chests                                      |
-| **Daily Rewards**            |      Collect Daily Rewards                                     |
-| **Card Upgrading**           |     Upgrade your current deck                                      |
-| **Random Decks**             |     Randomize your #2 deck slot                                  |
-
-
+|Type |   Job                                   | Description                                                                                                               |
+| ---|---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+|    Battle|**Trophy Road 1v1 Battles**          |      Fight in trophy road 1v1 battles                                 |
+|      |**Path of legends 1v1 battles**      |      Fight in Path of legends 1v1 battles                                    |
+|      |**2v2 Battles**                      |      Fight in 2v2 battles                                    |
+|      |**War Battles**                      |      Fight in clan war battles                                  |
+|      |**Random Decks**                     |      Randomize your deck number 2 slot before every game                                  |
+|      |**Random Plays**                     |      Play cards completely randomly (recommended for low-end machines)                                  |
+|      |**Disable Win/Loss tracking**        |      Skip checking if the game was a win/loss after each fight                                  |
+|      |**Skip fights when full chests**     |      Skip fighting when all chest slots are full                                  |
+| | |   |
+|Collection Jobs|**Open Chests**                    |        Unlock and open chests earned from battles                                 |
+|      |**Battlepass Rewards**                      |      Collect bannerbox rewards (works for non- battlepass owners too)                                 |
+|      |**Card Mastery Rewards**                    |      Collect card mastery rewards earned from battles                                  |
+|      |**Daily Challenge Rewards**                 |      Collect daily/weekly challenge rewards                                  |
+|      |**Level Up Rewards**                        |      Collect level up rewards                                   |
+|      |**Open Bannerbox Chests**                   |      Open bannerbox crates                                   |
+| | |   |
+|   Card Jobs|**Request Cards**                    |     Request cards from your clan                                       |
+|      |**Donate Cards**                    |      Donate cards to your clan                                  |
+|      |**Buy FREE Shop Offers**                    |      Buy the daily free shop offers from the shop                                  |
+|      |**Buy Shop Offers for Gold**                    |      Buy the daily shop offers for gold from the shop                                  |
+|      |**Upgrade Cards**                    |      Upgrade your current deck after each fight                                  |
