@@ -23,6 +23,7 @@ from pyclashbot.memu.client import (
     click,
     screenshot,
     scroll_down_in_request_page,
+    scroll_up_on_left_side_of_screen,
 )
 from pyclashbot.utils.logger import Logger
 
@@ -51,8 +52,7 @@ def find_request_button(vm_index, logger: Logger):
     )
 
     coord = get_first_location(locations)
-    logger.log(
-        f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
+    logger.log(f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
     if coord is None:
         return None
     return [coord[1], coord[0]]
@@ -77,25 +77,31 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
-            "Not on clash main for the start of request_state()")
-        logger.log(
-            "These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status("Not on clash main for the start of request_state()")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
         return "restart"
 
-    # if not in a clan, return
-    logger.change_status("Checking if in a clan before requesting")
-    in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
-    if in_a_clan_return == "restart":
-        logger.change_status(
-            status="Error 05708425 Failure with check_if_in_a_clan")
-        return "restart"
+    # if logger says we're not in a clan, check if we are in a clan
+    if logger.in_a_clan is False:
+        logger.change_status("Checking if in a clan before requesting")
+        in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
+        if in_a_clan_return == "restart":
+            logger.change_status(
+                status="Error 05708425 Failure with check_if_in_a_clan"
+            )
+            return "restart"
 
-    if not in_a_clan_return:
-        return next_state
+        if not in_a_clan_return:
+            return next_state
+    else:
+        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+
+    # if in a clan, update logger's in_a_clan value
+    logger.update_in_a_clan_value(True)
+    print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
 
     # get to clan page
     logger.change_status("Getting to clan tab to request a card")
@@ -131,6 +137,10 @@ def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
 
 
 def count_scrolls_in_request_page(vm_index) -> int:
+    # scroll up to top
+    for _ in range(3):
+        scroll_up_on_left_side_of_screen(vm_index)
+
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
     while check_if_can_scroll_in_request_page(vm_index):
@@ -225,8 +235,7 @@ def do_request(vm_index, logger: Logger) -> None:
     time.sleep(3)
 
     # max scrolls
-    logger.change_status(
-        status="Counting the maximum scrolls in the request page")
+    logger.change_status(status="Counting the maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
     logger.log(f"Found {max_scrolls} scrolls maximum in request page")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
@@ -270,8 +279,7 @@ def do_request(vm_index, logger: Logger) -> None:
         logger.add_request()
 
         requests = logger.get_requests()
-        logger.log(
-            f"Incremented requests stat from {prev_requests} to {requests}")
+        logger.log(f"Incremented requests stat from {prev_requests} to {requests}")
 
         time.sleep(3)
         break
