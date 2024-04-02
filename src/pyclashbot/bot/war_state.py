@@ -25,7 +25,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_up, scroll_down
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS = [
@@ -57,7 +57,7 @@ def find_war_battle_icon(vm_index):
         screenshot(vm_index),
         folder_name,
         names,
-        0.9,
+        0.7,
     )
 
     coord = get_first_location(locations)
@@ -233,7 +233,7 @@ def wait_for_war_page(vm_index, logger) -> str:
 
         # Click on the Clan menu button
         click(vm_index, 279, 625)
-        time.sleep(1)  # Wait for a second after clicking
+        time.sleep(2)  # Wait for a second after clicking
 
     logger.log("Done waiting for war page")
     return "good"
@@ -405,36 +405,49 @@ def check_for_locked_clan_war_screen(vm_index):
 
 
 def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good"]:
-    """method to cycle through the various clan
-    pages while searching for a war battle icon to click"""
-
+    """
+    Cycles through clan pages while searching for a war battle icon to click. 
+    If the icon is not immediately found, it attempts to refresh the view by clicking on deadspace 
+    and performing random scrolls.
+    """
     start_time = time.time()
-    # FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT
+    # Coordinates to click outside of interactive areas
+    DEADSPACE_COORD = (3, 475)
 
     while time.time() - start_time < FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
         if check_for_locked_clan_war_screen(vm_index):
             logger.change_status("Clan war is locked. Skipping war battle...")
             return "locked"
 
-        coord = find_war_battle_icon(vm_index)
+        # If on the war page, try to find the battle icon
+        if check_if_on_war_page(vm_index):
+            coord = find_war_battle_icon(vm_index)
+            if coord is None:
+                click(vm_index, *DEADSPACE_COORD)  # Click deadspace
+                # Adjust the range for probability
+                action_decision = random.randint(1, 10)
 
-        if coord is None:
-            if random.randint(0, 1) == 1:
-                click(
-                    vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
-                time.sleep(1.5)
+                # More likely to scroll up than down
+                if action_decision <= 7:  # 70% chance to scroll up
+                    scroll_up(vm_index)
+                else:  # 30% chance to scroll down
+                    scroll_down(vm_index)
 
+                time.sleep(2)  # Wait a bit before trying again
+                continue
+            else:
+                click(vm_index, coord[0], coord[1])  # Click the found icon
+                return "good"
+        else:
+            # If not on the war page, perform actions to navigate there
+            click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
+            time.sleep(2)
             if random.randint(0, 1) == 1:
                 scroll_up(vm_index)
-                time.sleep(1.5)
-            continue
-
-        click(vm_index, coord[0], coord[1])
-        return "good"
+            time.sleep(2)
 
     logger.change_status(
-        "Failed to find_and_click_war_battle_icon(), returning restart"
-    )
+        "Failed to find_and_click_war_battle_icon(), returning restart.")
     return "restart"
 
 
@@ -447,29 +460,27 @@ def check_if_on_war_page(vm_index):
     """
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-        iar[26][18],  # X: 18 Y: 26
-        iar[45][42],  # X: 42 Y: 45
-        iar[44][58],  # X: 58 Y: 44
-        iar[30][65],  # X: 65 Y: 30
-        iar[20][126],  # X: 126 Y: 20
-        iar[30][143],  # X: 143 Y: 30
-        iar[20][293],  # X: 293 Y: 20
-        iar[52][354],  # X: 354 Y: 52
+        iar[18][20],  # X: 20 Y: 18
+        iar[46][42],  # X: 42 Y: 46
+        iar[20][124],  # X: 124 Y: 20
+        iar[20][297],  # X: 297 Y: 20
+        iar[58][400],  # X: 400 Y: 58
+        iar[617][246],  # X: 246 Y: 617
+        iar[589][267],  # X: 267 Y: 589
     ]
 
     colors = [
-        (255, 106, 144),  # X: 18 Y: 26
-        (232, 223, 229),  # X: 42 Y: 45
-        (255, 133, 189),  # X: 58 Y: 44
-        (253, 104, 142),  # X: 65 Y: 30
-        (251, 237, 232),  # X: 126 Y: 20
-        (7, 130, 202),   # X: 143 Y: 30
-        (251, 237, 232),  # X: 293 Y: 20
-        (254, 107, 145),  # X: 354 Y: 52
+        (255, 110, 147),  # X: 20 Y: 18
+        (230, 221, 229),  # X: 42 Y: 46
+        (251, 237, 232),  # X: 124 Y: 20
+        (251, 237, 232),  # X: 297 Y: 20
+        (250, 81, 125),   # X: 400 Y: 58
+        (153, 118, 80),   # X: 246 Y: 617
+        (242, 123, 19),   # X: 267 Y: 589
     ]
 
     for i, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[i], tol=30):
+        if not pixel_is_equal(pixel, colors[i], tol=35):
             return False
     return True
 
