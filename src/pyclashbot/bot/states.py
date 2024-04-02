@@ -30,6 +30,8 @@ from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
 from pyclashbot.memu.docker import start_memu_dock_mode
 
+mode_used_in_1v1 = None
+
 
 def state_tree(
     vm_index,
@@ -38,6 +40,7 @@ def state_tree(
     job_list,
 ) -> str:
     """method to handle and loop between the various states of the bot"""
+    global mode_used_in_1v1
     start_time = time.time()
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
@@ -69,7 +72,8 @@ def state_tree(
     if state == "restart":  # --> account_switch
         next_state = "account_switch"
 
-        logger.log("Entered the restart state after a failure in another state...")
+        logger.log(
+            "Entered the restart state after a failure in another state...")
 
         # print("Bot is in restart state. Press enter to continue!!!!!!")
         # print("Bot is in restart state. Press enter to continue!!!!!!")
@@ -128,7 +132,8 @@ def state_tree(
             return next_state
 
         account_total = job_list["account_switching_slider"]
-        logger.log(f"Doing switch #{job_list['next_account']} of {account_total}")
+        logger.log(
+            f"Doing switch #{job_list['next_account']} of {account_total}")
 
         accout_index = job_list["next_account"]
 
@@ -174,7 +179,8 @@ def state_tree(
             return next_state
 
         # run this state
-        logger.log('Open chests is toggled and ready. Running "open_chests_state()"')
+        logger.log(
+            'Open chests is toggled and ready. Running "open_chests_state()"')
         return open_chests_state(vm_index, logger, next_state)
 
     if state == "level_up_chest":  # --> randomize_deck
@@ -195,7 +201,8 @@ def state_tree(
         if not logger.check_if_can_collect_level_up_chest(
             job_list["level_up_chest_increment_user_input"]
         ):
-            logger.log("Can't open level up chest at this time, skipping this state")
+            logger.log(
+                "Can't open level up chest at this time, skipping this state")
             return next_state
 
         # run this state
@@ -334,7 +341,8 @@ def state_tree(
         if not logger.check_if_can_battlepass_collect(
             job_list["battlepass_collect_increment_user_input"]
         ):
-            logger.change_status("Battlepass collect is not ready. Skipping this state")
+            logger.change_status(
+                "Battlepass collect is not ready. Skipping this state")
             return next_state
 
         return collect_battlepass_state(vm_index, logger, next_state)
@@ -382,14 +390,18 @@ def state_tree(
                 chest_status == "available"
                 for chest_status in get_chest_statuses(vm_index)
             ):
-                logger.change_status("All chests are available, skipping fight state")
+                logger.change_status(
+                    "All chests are available, skipping fight state")
                 return next_state
 
         # if both are toggled, choose the lest used fight type
         if _1v1_toggle and _2v2_toggle:
-            logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
+            logger.log(
+                "Both 1v1 and 2v2 are selected. Choosing the less used one")
             if logger.get_1v1_fights() < logger.get_2v2_fights():
-                return start_1v1_fight_state(vm_index, logger, mode=fight_mode)
+                next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
+                    vm_index, logger, mode=fight_mode)
+                return next_1v1_state
 
             return start_2v2_fight_state(vm_index, logger)
 
@@ -403,8 +415,10 @@ def state_tree(
             print(f"path_of_legends_toggle is {path_of_legends_toggle}")
 
             print(f"Fight mode is gonna be: {fight_mode}")
-
-            return start_1v1_fight_state(vm_index, logger, fight_mode)
+            next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
+                vm_index, logger, mode=fight_mode)
+            print(f"Fight mode is : {mode_used_in_1v1}")
+            return next_1v1_state
 
         # if only 2v2 is toggled
         elif _2v2_toggle:
@@ -420,7 +434,8 @@ def state_tree(
 
         random_fight_mode = job_list["random_plays_user_toggle"]
 
-        print(f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
+        print(
+            f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
 
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
@@ -432,12 +447,14 @@ def state_tree(
         next_state = "end_fight"
 
         random_fight_mode = job_list["random_plays_user_toggle"]
-        print(f'random_fight_mode is {random_fight_mode} in state == "1v1_fight"')
+        print(
+            f"Random fight mode is {random_fight_mode} in state == '1v1_fight'")
 
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
-        return do_1v1_fight_state(vm_index, logger, next_state, random_fight_mode)
+        print(f"Fight mode is {mode_used_in_1v1}")
+        return do_1v1_fight_state(vm_index, logger, next_state, random_fight_mode, mode_used_in_1v1, False)
 
     if state == "end_fight":  # --> war
         next_state = "war"

@@ -54,7 +54,8 @@ HAND_CARDS_COORDS = [
     (341, 563),
 ]
 CLOSE_THIS_CHALLENGE_PAGE_BUTTON = (27, 22)
-_2V2_BATTLE_ICON_COORD = (327, 483)  # coord of the button on the challenges tab
+# coord of the button on the challenges tab
+_2V2_BATTLE_ICON_COORD = (327, 483)
 _2V2_BATTLE_BUTTON_COORD_2 = (
     209,
     433,
@@ -81,6 +82,7 @@ def do_2v2_fight_state(
     logger: Logger,
     next_state,
     random_fight_mode: Boolean,
+    called_from_launching=False,
 ):
     """method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
 
@@ -100,7 +102,7 @@ def do_2v2_fight_state(
     # if regular fight mode, run the fight loop
     if (
         not random_fight_mode
-        and _2v2_fight_loop(vm_index=vm_index, logger=logger) == "restart"
+        and _2v2_fight_loop(vm_index, logger) == "restart"
     ):
         logger.log("Error 698245 Failuring in 2v2 regular fight loop")
         return "restart"
@@ -108,51 +110,102 @@ def do_2v2_fight_state(
     # if random fight mode, run the random fight loop
     if (
         random_fight_mode
-        and _2v2_random_fight_loop(vm_index=vm_index, logger=logger) == "restart"
+        and _2v2_random_fight_loop(vm_index, logger) == "restart"
     ):
         logger.log("Error 655 Failuring in 2v2 random fight loop")
         return "restart"
 
-    logger.add_2v2_fight()
+    if not called_from_launching:
+        logger.add_2v2_fight()
 
     time.sleep(10)
 
     return next_state
 
 
-def do_1v1_fight_state(vm_index, logger: Logger, next_state, random_fight_mode):
-    """method to handle the entirety of the 1v1 battle state (start fight, do fight, end fight)"""
+def do_1v1_fight_state(vm_index, logger: Logger, next_state, random_fight_mode, fight_mode_choosed, called_from_launching=False):
+    """Handle the entirety of the 1v1 battle state (start fight, do fight, end fight)."""
 
-    logger.change_status(status="do_1v1_fight_state state")
-    logger.change_status(status="waiting for 1v1 battle start")
+    logger.change_status("do_1v1_fight_state state")
+    logger.change_status("Waiting for 1v1 battle to start")
 
-    print(f"random_fight_mode is {random_fight_mode} in do_1v1_fight_state()")
+    print(f"Random fight mode is {random_fight_mode} in do_1v1_fight_state()")
+    print(f"Fight mode is {fight_mode_choosed}")
 
-    # wait for battle start
+    # Wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 856585736 wait_for_1v1_battle_start() in do_1v1_fight_state()"
-        )
+            "Error waiting for 1v1 battle to start in do_1v1_fight_state()")
         return "restart"
 
-    logger.change_status(status="Battle started!")
+    logger.change_status("Battle started!")
+    logger.change_status("Starting fight loop")
 
-    logger.change_status(status="Starting fight loop")
-
-    # run regular fight loop if random mode not toggles
+    # Run regular fight loop if random mode not toggled
     if not random_fight_mode and _1v1_fight_loop(vm_index, logger) == "restart":
-        logger.log("Error 884458245 Failuring in fight loop")
+        logger.log("Failure in fight loop")
         return "restart"
 
-    # run random fight loop if random mode toggled
+    # Run random fight loop if random mode toggled
     if random_fight_mode and _1v1_random_fight_loop(vm_index, logger) == "restart":
-        logger.log("Error 35236 Failuring in fight loop")
+        logger.log("Failure in fight loop")
         return "restart"
 
-    logger.add_1v1_fight()
-
+    # Only log the fight if not called from the start
+    if not called_from_launching:
+        logger.add_1v1_fight()
+        if fight_mode_choosed == "trophy_road":
+            logger.increment_trophy_road_fights()
+        elif fight_mode_choosed == "path_of_legends":
+            logger.increment_path_of_legends_fights()
     time.sleep(10)
     return next_state
+
+
+def check_both_1v1_modes_available(vm_index):
+    """
+    Check if the Path of Legends mode is available, indicating that both 1v1 modes are available.
+
+    Args:
+        vm_index (int): Index of the virtual machine.
+
+    Returns:
+        bool: True if Path of Legends mode is available (implying both modes are available), False otherwise.
+    """
+    iar = numpy.asarray(screenshot(vm_index))
+
+    # Accessing the pixel at position Y: 439, X: 279 (numpy arrays are accessed with [row, column])
+    battle_button_pixel = iar[439][279]
+    expected_colors = [
+        [35, 205, 255],  # Possible color 1
+        [82, 249, 255]   # Possible color 2
+    ]
+
+    # Check if the color of the pixel matches any of the expected colors with a tolerance
+    for expected_color in expected_colors:
+        if pixel_is_equal(battle_button_pixel, expected_color, tol=50):
+            return True
+    return False
+
+
+def check_if_on_path_of_legends_mode(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[415][392],
+        iar[386][370],
+        iar[410][387],
+    ]
+    colors = [
+        [179, 47, 92],
+        [170, 34, 80],
+        [181, 48, 92],
+    ]
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+
+    return True
 
 
 def check_if_on_path_of_legends_mode(vm_index):
@@ -216,7 +269,10 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
                 "Failed to get from events tab to clash main after locked events page"
             )
             return "restart"
-        return start_1v1_fight_state(vm_index, logger)
+        next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
+            vm_index, logger, mode="both")
+        print(f"Fight mode is : {mode_used_in_1v1}")
+        return next_1v1_state
 
     # click 2v2 icon location
     click_2v2_icon_button(vm_index)
@@ -262,7 +318,8 @@ def start_path_of_legends_1v1_state(vm_index, logger: Logger, next_state):
     logger.change_status("Starting path of legends 1v1")
 
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Not on clash main to start path of legends fight!")
+        logger.change_status(
+            "Not on clash main to start path of legends fight!")
         return "restart"
 
     if not check_if_on_path_of_legends_mode(vm_index):
@@ -272,9 +329,7 @@ def start_path_of_legends_1v1_state(vm_index, logger: Logger, next_state):
 
     # if still not on path of legends mode, then its not unlocked. so this fight will be trophy road
     if not check_if_on_path_of_legends_mode(vm_index):
-        logger.increment_trophy_road_fights()
-    else:
-        logger.increment_path_of_legends_fights()
+        print("Not on path of legends mode")
 
     # click fight battle button to start fight
     click(vm_index, 207, 400)
@@ -291,20 +346,30 @@ def start_1v1_fight_state(
 
     print("Mode in start_1v1_fight_state():", mode)
 
-    if mode == "both":
-        mode = logger.choose_trophy_road_or_path_of_legends()
-        print(f"logger choose mode: {mode}")
+    # Check if both 1v1 modes are available
+    both_modes_available = check_both_1v1_modes_available(vm_index)
+    if both_modes_available:
+        print("Both Trophy Road and Path of Legends modes are available.")
+        # If the initial mode was "both", or no specific mode was chosen,
+        # let the logger decide which mode to use based on other criteria
+        if mode == "both":
+            mode = logger.choose_trophy_road_or_path_of_legends()
+            print(f"Logger chose mode: {mode}")
+    else:
+        # If not both modes are available, force the mode to "trophy_road"
+        mode = "trophy_road"
+        print("Only Trophy Road mode available. Mode set to Trophy Road.")
 
     if mode == "path_of_legends":
-        logger.change_status("Starting a path of legends battle")
-        return start_path_of_legends_1v1_state(vm_index, logger, next_state)
+        logger.change_status("Starting a Path of Legends battle")
+        return start_path_of_legends_1v1_state(vm_index, logger, next_state), mode
     else:
-        logger.change_status("Starting a tropy road battle")
-        logger.increment_trophy_road_fights()
+        # Default to Trophy Road if mode is not explicitly "path_of_legends"
+        logger.change_status("Starting a Trophy Road battle")
         if start_trophy_road_fight(vm_index, logger) is False:
             return "restart"
 
-    return next_state
+    return next_state, mode
 
 
 def start_trophy_road_fight(vm_index, logger) -> bool:
@@ -315,7 +380,8 @@ def start_trophy_road_fight(vm_index, logger) -> bool:
         logger.change_status(
             status="ERROR 46246 Not on main menu for start of start 1v1 fight"
         )
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -376,7 +442,8 @@ def click_2v2_icon_button(vm_index) -> None:
 
 def click_2v2_battle_button(vm_index) -> None:
     """method to click the 2v2 battle button on the challenges tab"""
-    click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
+    click(
+        vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
 
 
 def click_quickmatch_button(vm_index) -> None:
@@ -491,13 +558,16 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
             return "restart"
 
         if mode == "1v1" and not check_for_in_battle_with_delay(vm_index):
-            logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
+            logger.change_status(
+                status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
         if mode == "2v2" and not check_for_in_battle_with_delay(vm_index):
-            logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
+            logger.change_status(
+                status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
 
-    logger.change_status(f"Took {str(time.time() - start_time)[:4]}s for 4 elixer.")
+    logger.change_status(
+        f"Took {str(time.time() - start_time)[:4]}s for 4 elixer.")
 
     return True
 
@@ -522,9 +592,9 @@ def check_enemy_tower_statuses(
     """method to scan pixels during a battle to determine
     which of  the enemy towers are alive or destroyed"""
 
-    #'alive'
+    # 'alive'
     # or
-    #'destroyed'
+    # 'destroyed'
 
     iar = numpy.asarray(screenshot(vm_index))
 
@@ -573,7 +643,8 @@ def end_fight_state(
         win_check_return = check_if_previous_game_was_win(vm_index, logger)
 
         if win_check_return == "restart":
-            logger.log("Error 885869 Failed while checking if previous game was a win")
+            logger.log(
+                "Error 885869 Failed while checking if previous game was a win")
             return "restart"
 
         if win_check_return:
@@ -594,14 +665,10 @@ def check_if_previous_game_was_win(
 
     logger.change_status(status="Checking if last game was a win/loss")
 
-    # if not on main, return restart
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
-    if clash_main_check is not True:
-        logger.change_status(status='54676 Error Not on main menu, returning "restart"')
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
-        for pixel in clash_main_check:
-            logger.log(f"   {pixel}")
-
+    # Use wait_for_clash_main_menu to ensure we are on the main menu.
+    if not wait_for_clash_main_menu(vm_index, logger, deadspace_click=True):
+        logger.change_status(
+            status='Error Not on main menu, returning "restart"')
         return "restart"
 
     # get to clash main options menu
@@ -770,6 +837,8 @@ def get_to_main_after_fight(vm_index, logger):
             print("Not on events page...")
 
         time.sleep(1)
+        print("Clicking on deadspace to close potential pop-up windows.")
+        click(vm_index, 1, 435)
 
     return False
 
@@ -815,7 +884,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
                 )
                 break
 
-        #play champ ability if its available
+        # play champ ability if its available
         if check_for_champion_ability(vm_index):
             play__champion_ability(vm_index)
             logger.change_status('Played champion ability')
@@ -878,36 +947,37 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         )
 
     cards_played = logger.get_cards_played()
-    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
+    logger.change_status(
+        f"Played ~{cards_played - prev_cards_played} cards this fight")
 
     return "good"
 
 
-
 def check_for_champion_ability(vm_index):
-    iar=numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot(vm_index))
     pixels = [
         iar[462][324],
         iar[453][334],
         iar[462][336],
     ]
     colors = [
-[215 , 28,223],
-[240 , 39, 254],
-[239,  40 ,251],
+        [215, 28, 223],
+        [240, 39, 254],
+        [239,  40, 251],
     ]
 
     # for p in pixels:print(p)
 
     for p in pixels:
         for c in colors:
-            if pixel_is_equal(p,c,tol=30):
+            if pixel_is_equal(p, c, tol=30):
                 return True
 
     return False
 
+
 def play__champion_ability(vm_index):
-    click(vm_index,330,460)
+    click(vm_index, 330, 460)
 
 
 def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
@@ -918,7 +988,8 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     # choose a side to favor this fight
     favorite_side = random.choice(["left", "right"])
 
-    logger.change_status(status=f"Going to favor {favorite_side} this fight...")
+    logger.change_status(
+        status=f"Going to favor {favorite_side} this fight...")
 
     # count plays
     plays = 0
@@ -937,7 +1008,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
             f"Waited {str(time.time() - elixer_wait_start_time)[:5]}s for 4 elixer"
         )
 
-        #play champ ability if its available
+        # play champ ability if its available
         if check_for_champion_ability(vm_index):
             play__champion_ability(vm_index)
             logger.change_status('Played champion ability')
@@ -1064,4 +1135,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    _2v2_fight_loop(12, Logger() )
+    _2v2_fight_loop(12, Logger())
