@@ -39,9 +39,7 @@ def find_request_button(vm_index, logger: Logger):
         list[int] or None: The coordinates of the request button if found, or None if not found.
     """
     folder_name = "request_button"
-
     size: int = get_file_count(folder_name)
-
     names = make_reference_image_list(size)
 
     locations = find_references(
@@ -52,10 +50,15 @@ def find_request_button(vm_index, logger: Logger):
     )
 
     coord = get_first_location(locations)
-    logger.log(f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
+
+    # Check if coord is None before logging and returning the coordinates
     if coord is None:
+        logger.log("Request button not found.")
         return None
-    return [coord[1], coord[0]]
+    else:
+        logger.log(
+            f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
+        return [coord[1], coord[0]]
 
 
 def request_state(vm_index, logger: Logger, next_state: str) -> str:
@@ -77,8 +80,10 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main for the start of request_state()")
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status(
+            "Not on clash main for the start of request_state()")
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -97,7 +102,8 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         if not in_a_clan_return:
             return next_state
     else:
-        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+        print(
+            f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
 
     # if in a clan, update logger's in_a_clan value
     logger.update_in_a_clan_value(True)
@@ -226,63 +232,60 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
     return False
 
 
-def do_request(vm_index, logger: Logger) -> None:
-    logger.change_status(status="Doing request")
+def do_request(vm_index, logger: Logger) -> bool:
+    logger.change_status(status="Initiating request process")
 
-    # click request button
-    logger.change_status(status="Clicking request button")
+    # Click the request button
+    logger.change_status(status="Clicking the request button")
     click(vm_index=vm_index, x_coord=77, y_coord=536)
     time.sleep(3)
 
-    # max scrolls
-    logger.change_status(status="Counting the maximum scrolls in the request page")
+    # Determine the maximum number of scrolls in the request page
+    logger.change_status(
+        status="Determining maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
-    logger.log(f"Found {max_scrolls} scrolls maximum in request page")
+    logger.log(f"Maximum scrolls found in the request page: {max_scrolls}")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
-    logger.log(f"Gonna do {random_scroll_amount} scrolls in request page")
+    logger.log(f"Scrolling {random_scroll_amount} times in the request page")
 
+    # Perform random scrolling in the request page
     do_random_scrolling_in_request_page(
-        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
-    )
+        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount)
 
-    random_click_timeout = 35  # s
+    # Timeout settings for random clicking
+    random_click_timeout = 35  # seconds
     random_click_start_time = time.time()
+    attempt_count = 0  # Keep track of the number of attempts
 
-    while 1:
-        if time.time() - random_click_start_time > random_click_timeout:
+    # Attempt to click on a random card and find the request button
+    coord = None
+    while coord is None:
+        # Timeout check to avoid infinite loop
+        if time.time() - random_click_start_time > random_click_timeout or attempt_count > 6:
             logger.change_status(
-                "5913578 Clicked randomly for a random card to request too many times!"
-            )
+                "Timeout or too many attempts while trying to click a random card for request")
             return False
 
-        # click card
-        logger.change_status(status="Clicking random card to request")
-        click(
-            vm_index=vm_index,
-            x_coord=random.randint(a=67, b=358),
-            y_coord=random.randint(a=211, b=547),
-        )
+        # Click on a random card
+        logger.change_status(status="Clicking a random card to request")
+        click(vm_index=vm_index, x_coord=random.randint(
+            a=67, b=358), y_coord=random.randint(a=211, b=547))
         time.sleep(3)
 
-        logger.change_status(status="Clicking request")
-
-        # get request button coord
+        # Attempt to find the request button
         coord = find_request_button(vm_index, logger)
-        if coord is None:
-            continue
+        attempt_count += 1
 
-        # Click request button coord
-        click(vm_index, coord[0], coord[1])
+    # Click the found request button
+    logger.change_status(status="Clicking the request button")
+    click(vm_index, coord[0], coord[1])
 
-        prev_requests = logger.get_requests()
-
-        logger.add_request()
-
-        requests = logger.get_requests()
-        logger.log(f"Incremented requests stat from {prev_requests} to {requests}")
-
-        time.sleep(3)
-        break
+    # Update request statistics
+    prev_requests = logger.get_requests()
+    logger.add_request()
+    requests = logger.get_requests()
+    logger.log(f"Request stats updated from {prev_requests} to {requests}")
+    time.sleep(3)
 
     return True
 

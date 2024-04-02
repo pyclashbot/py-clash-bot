@@ -14,8 +14,8 @@ import psutil
 import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
-from pyclashbot.memu.client import click,screenshot
-from pyclashbot.bot.nav import  check_if_on_clash_main_menu
+from pyclashbot.memu.client import click, screenshot
+from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
 from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
@@ -29,17 +29,15 @@ MANUAL_VM_WAIT_TIME = 10
 MANUAL_CLASH_MAIN_WAIT_TIME = 10
 
 
-
 def check_vm_size(vm_index):
     try:
-        home_button_press(vm_index,clicks=1)
+        home_button_press(vm_index, clicks=1)
 
         image = screenshot(vm_index)
         print(image.size)
         print(image.shape)
 
-        height,width,_ = image.shape
-
+        height, width, _ = image.shape
 
         if width != 419 or height != 633:
             print(f"Size is bad: {width},{height}")
@@ -48,9 +46,9 @@ def check_vm_size(vm_index):
         print(f"Size is good: {width},{height}")
         return True
     except Exception as e:
-        print("sizing error:",e)
+        print("sizing error:", e)
 
-    #in the case of errors, just return True to avoid infinite loop
+    # in the case of errors, just return True to avoid infinite loop
     return True
 
 
@@ -105,6 +103,13 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
                     f"Took {str(time.time() - start_time)[:5]}s to launch emulator"
                 )
                 return True
+            # Check if a battle is detected at start
+            battle_start_result = check_if_in_battle_at_start(vm_index, logger)
+            if battle_start_result == "good":
+                return True  # Successfully handled starting battle or end-of-battle scenario
+            elif battle_start_result == "restart":
+                # Need to restart the process due to issues detected
+                return restart_emulator(logger, start_time)
 
             # click deadspace
             click(vm_index, 5, 350)
@@ -115,7 +120,8 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
                 logger.log(p)
 
         if clash_main_check is not True:
-            logger.log("Clash main wait timed out! These are the pixels it saw:")
+            logger.log(
+                "Clash main wait timed out! These are the pixels it saw:")
             for p in clash_main_check:
                 logger.log(p)
             return restart_emulator(logger, start_time)
@@ -140,7 +146,8 @@ def skip_ads(vm_index):
             pmc.trigger_keystroke_vm("home", vm_index=vm_index)
             time.sleep(1)
     except Exception as err:  # pylint: disable=broad-except
-        print(f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
+        print(
+            f"Fail sending home clicks to skip ads... Redoing restart...\n{err}")
         return "fail"
     return "success"
 
@@ -169,9 +176,11 @@ def check_for_vm(logger: Logger) -> int:
             )
             return vm_index
 
-        logger.change_status('Failed to find "pyclashbot" emulator. Retrying...')
+        logger.change_status(
+            'Failed to find "pyclashbot" emulator. Retrying...')
 
-    logger.change_status("Didn't find a vm named 'pyclashbot', creating one...")
+    logger.change_status(
+        "Didn't find a vm named 'pyclashbot', creating one...")
 
     new_vm_index = create_vm()
     logger.change_status(f"New VM index is {new_vm_index}")
@@ -299,7 +308,8 @@ def start_memuc_console() -> int:
     # pylint: disable=protected-access
     console_path = join(pmc._get_memu_top_level(), "MEMuConsole.exe")
     # pylint: disable=consider-using-with
-    process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
+    process = subprocess.Popen(
+        console_path, creationflags=subprocess.DETACHED_PROCESS)
 
     # ensure the process actually started
     time.sleep(2)
@@ -418,7 +428,8 @@ def reset_clashbot_emulator(logger):
     # find which index emulator is at with a 60s timeout
     vm_index = get_clashbot_vm_index()
 
-    logger.change_status("Failed to find an existing clashbot emulator. Creating one!")
+    logger.change_status(
+        "Failed to find an existing clashbot emulator. Creating one!")
 
     # delete old emulator
     if vm_index is not False:
@@ -428,7 +439,8 @@ def reset_clashbot_emulator(logger):
                 f"Successfully deleted old emulator of index {vm_index}!"
             )
         else:
-            logger.change_status(f"Failed to delete old emulator of index {vm_index}")
+            logger.change_status(
+                f"Failed to delete old emulator of index {vm_index}")
 
     # make new emulator
     vm_index = create_vm()

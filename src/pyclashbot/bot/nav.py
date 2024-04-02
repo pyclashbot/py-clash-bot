@@ -68,7 +68,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             status=f"Waiting for 2v2 battle to start for {time_taken}s"
         )
 
-        if check_if_in_battle(vm_index=vm_index):
+        if check_if_in_battle(vm_index) == '2v2':
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
@@ -100,7 +100,7 @@ def wait_for_1v1_battle_start(
         logger.change_status(status="Waiting for 1v1 battle to start")
     else:
         logger.log(message="Waiting for 1v1 battle to start")
-    while not check_if_in_battle(vm_index=vm_index):
+    while check_if_in_battle(vm_index) != '1v1':
         time_taken: float = time.time() - start_time
         if time_taken > 60:
             logger.change_status(
@@ -131,40 +131,154 @@ def check_for_in_battle_with_delay(vm_index):
     timeout = 3  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_if_in_battle(vm_index):
+        if check_if_in_battle(vm_index) != 'None':
             return True
     return False
 
 
 def check_if_in_battle(vm_index) -> bool:
     """
-    Checks if the virtual machine is in a 2v2 battle.
+    Checks if the virtual machine is in a 1v1 or 2v2 battle.
 
     Args:
         vm_index (int): The index of the virtual machine.
 
     Returns:
-        bool: True if the virtual machine is in a 2v2 battle, False otherwise.
+        str: '2v2' if the battle is in 2v2, '1v1' if the battle is in 1v1, 'None' otherwise.
     """
     iar = numpy.asarray(screenshot(vm_index))
 
+    # Pixels to check for any type of battle
     pixels = [
         iar[517][56],
         iar[533][67],
         iar[616][115],
     ]
 
+    # Expected colors for the above pixels
     colors = [
         [255, 255, 255],
         [255, 255, 255],
         [236, 91, 252],
     ]
 
-    for index, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[index], tol=55):
-            return False
+    # Check if all the pixels match for an ongoing battle
+    if all(pixel_is_equal(pixels[index], colors[index], tol=55) for index in range(len(pixels))):
+        # Specific check for 2v2 battle
+        combat_2v2_pixel = iar[506][135]
+        combat_2v2_color = [169, 29, 172]
 
-    return True
+        if pixel_is_equal(combat_2v2_pixel, combat_2v2_color, tol=50):
+            # print("It's a 2v2 fight")
+            return '2v2'
+        else:
+            # print("It's a 1v1 fight")
+            return '1v1'
+    else:
+        return 'None'
+
+
+def check_if_in_battle_at_start(vm_index, logger):
+    """
+    Checks if the game is currently in a battle at startup and handles it accordingly.
+    Also checks if the game is on the end-of-battle screen and returns to the main menu.
+
+    Args:
+        vm_index (int): Index of the virtual machine.
+        logger (Logger): Logger instance for logging messages.
+    """
+    # Local imports to avoid circular imports
+    from pyclashbot.bot.do_fight_state import do_2v2_fight_state, do_1v1_fight_state, get_to_main_after_fight
+    battle_status = check_if_in_battle(vm_index)
+    if battle_status == '1v1':
+        logger.log("Detected in battle status: 1v1. Engaging in battle.")
+        fight_result = do_1v1_fight_state(
+            vm_index, logger, "next_state", False, "none", True)
+    elif battle_status == '2v2':
+        logger.log("Detected in battle status: 2v2. Engaging in battle.")
+        fight_result = do_2v2_fight_state(
+            vm_index, logger, "next_state", False, True)
+    else:
+        # If not currently in a battle, check if it's the end-of-battle screen
+        if check_end_of_battle_screen(vm_index):
+            logger.log("Detected end of battle screen.")
+            if not get_to_main_after_fight(vm_index, logger):
+                logger.log("Failed to return to Clash Main Menu after fight.")
+                return "restart"
+            else:
+                logger.log(
+                    "Successfully returned to Clash Main Menu after fight.")
+                return "good"  # Indicate successful handling after the end of the battle
+        return "no"  # Indicate no battle detected or no end-of-battle screen
+
+    # Attempt to return to the main menu after the battle, if a fight was detected
+    if fight_result not in ['restart', None]:
+        if not get_to_main_after_fight(vm_index, logger):
+            logger.log("Failed to return to Clash Main Menu after fight.")
+            return "restart"
+        else:
+            logger.log("Successfully returned to Clash Main Menu after fight.")
+            return "good"  # Indicate successful return to main menu after fight
+
+    return "no"  # Default case if fight_result is 'restart' or None
+
+
+def check_end_of_battle_screen(vm_index):
+    """
+    Checks if the current screen is the end-of-battle screen for either 1v1 or 2v2 battles.
+
+    Args:
+        vm_index (int): Index of the virtual machine.
+
+    Returns:
+        bool: True if on the end-of-battle screen, False otherwise.
+    """
+    iar = numpy.asarray(screenshot(vm_index))
+
+    # Pixels to check for 1v1 battle end screen
+    pixels_1v1 = [
+        ((74, 179), (64, 12, 150)),
+        ((129, 206), (71, 14, 159)),
+        ((337, 179), (57, 23, 129)),
+        ((349, 179), (46, 10, 109)),
+        ((349, 367), (120, 65, 25)),
+        ((337, 367), (153, 86, 33)),
+        ((129, 393), (187, 102, 40)),
+        ((74, 367), (171, 93, 35)),
+        ((180, 547), (255, 187, 104)),  # OK Button
+        ((214, 555), (255, 255, 255)),
+        ((244, 565), (255, 175, 78)),
+        ((59, 518), (255, 255, 255)),   # Emote bubble
+        ((73, 518), (255, 255, 255)),
+        ((59, 528), (0, 0, 0)),
+        ((74, 528), (0, 0, 0)),
+    ]
+
+    # Pixels to check for 2v2 battle end screen
+    pixels_2v2 = [
+        ((40, 11), (255, 153, 51)),
+        ((209, 35), (255, 203, 51)),
+        ((400, 35), (255, 153, 51)),
+        ((392, 15), (135, 134, 253)),
+        ((400, 17), (255, 255, 255)),
+        ((408, 23), (60, 60, 253)),
+        ((16, 600), (83, 66, 52)),   # Bottom bar
+        ((408, 600), (83, 66, 52)),
+        ((53, 593), (255, 187, 105)),
+        ((109, 612), (255, 175, 78)),
+        ((77, 600), (255, 255, 255)),
+        ((340, 593), (255, 255, 255)),
+    ]
+
+    # Check for 1v1 end screen
+    is_1v1_end = all(pixel_is_equal(iar[y][x], expected_color, tol=30) for (
+        x, y), expected_color in pixels_1v1)
+
+    # Check for 2v2 end screen
+    is_2v2_end = all(pixel_is_equal(iar[y][x], expected_color, tol=30) for (
+        x, y), expected_color in pixels_2v2)
+
+    return is_1v1_end or is_2v2_end
 
 
 def get_to_clash_main_from_clan_page(
@@ -202,7 +316,8 @@ def get_to_clash_main_from_clan_page(
     else:
         logger.log("Waiting for clash main")
     if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.change_status(status="Error 3253, failure waiting for clash main")
+        logger.change_status(
+            status="Error 3253, failure waiting for clash main")
         return "restart"
     return "good"
 
@@ -217,7 +332,8 @@ def open_war_chest_obstruction(vm_index, logger):
     """
     logger.log("Found a war chest on the way to getting to the clan page.")
     logger.log("Opening this chest real quick")
-    click(vm_index, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
+    click(
+        vm_index, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
     time.sleep(2)
     click(
         vm_index,
@@ -309,13 +425,15 @@ def get_to_clan_tab_from_clash_main(
         if check_for_boot_reward(vm_index):
             collect_boot_reward(vm_index)
             logger.add_war_chest_collect()
-            print(f"Incremented war chest collects to {logger.war_chest_collects}")
+            print(
+                f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # check for a war chest obstructing the nav
         if check_for_war_chest_obstruction(vm_index):
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
-            print(f"Incremented war chest collects to {logger.war_chest_collects}")
+            print(
+                f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # if on the clan tab chat page, return
         if check_if_on_clan_chat_page(vm_index):
@@ -379,7 +497,8 @@ def handle_war_popup_pages(vm_index, logger):
             print("Found war chest obstruction")
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
-            print(f"Incremented war chest collects to {logger.war_chest_collects}")
+            print(
+                f"Incremented war chest collects to {logger.war_chest_collects}")
             time.sleep(1)
             return True
 
@@ -573,7 +692,7 @@ def check_for_final_results_page(vm_index) -> bool:
 
 def check_if_on_clan_chat_page(vm_index) -> bool:
     """
-    Checks if the bot is on the clan chat page.
+    Checks if the bot is currently on the clan chat page by comparing specific pixel colors.
 
     Args:
         vm_index (int): The index of the virtual machine.
@@ -581,13 +700,25 @@ def check_if_on_clan_chat_page(vm_index) -> bool:
     Returns:
         bool: True if the bot is on the clan chat page, False otherwise.
     """
-    if not region_is_color(vm_index, [204, 537, 10, 8], (183, 96, 252)):
-        return False
-    if not region_is_color(vm_index, [352, 536, 16, 10], (76, 175, 255)):
-        return False
-    if not region_is_color(vm_index, [310, 612, 25, 12], (80, 118, 153)):
-        return False
-    return True
+    iar = numpy.asarray(screenshot(vm_index))
+    # Define the pixel positions and their expected colors
+    pixels = [
+        (iar[15][9], (141, 84, 69)),  # X: 9 Y: 15
+        (iar[22][324], (245, 231, 222)),  # X: 324 Y: 22
+        (iar[36][346], (128, 129, 254)),  # X: 346 Y: 36
+        (iar[65][410], (192, 125, 101)),  # X: 410 Y: 65
+        (iar[589][268], (243, 123, 19)),  # X: 268 Y: 589
+        (iar[589][243], (141, 107, 73)),  # X: 243 Y: 589
+        (iar[528][337], (255, 255, 255)),  # X: 337 Y: 528
+        (iar[542][310], (255, 175, 78)),  # X: 310 Y: 542
+    ]
+
+    # Iterate through each pixel and its expected color
+    for pixel, expected_color in pixels:
+        if not pixel_is_equal(pixel, expected_color, tol=50):
+            return False  # If any pixel doesn't match, return False immediately
+
+    return True  # If all pixels match their expected colors, return True
 
 
 def check_if_on_profile_page(vm_index) -> bool:
@@ -1199,7 +1330,8 @@ def wait_for_clash_main_challenges_tab(
             return "restart"
 
     if printmode:
-        logger.change_status(status="Done waiting for clash main challenges tab")
+        logger.change_status(
+            status="Done waiting for clash main challenges tab")
     else:
         logger.log("Done waiting for clash main challenges tab")
     return "good"
@@ -1361,7 +1493,8 @@ def wait_for_battle_log_page(
             return "restart"
 
     if printmode:
-        logger.change_status(status="Done waiting for battle log page to appear")
+        logger.change_status(
+            status="Done waiting for battle log page to appear")
     else:
         logger.log("Done waiting for battle log page to appear")
 
@@ -1443,7 +1576,8 @@ def wait_for_clash_main_burger_button_options_menu(
     start_time = time.time()
 
     if printmode:
-        logger.change_status(status="Waiting for clash main options menu to appear")
+        logger.change_status(
+            status="Waiting for clash main options menu to appear")
     else:
         logger.log("Waiting for clash main options menu to appear")
     while not check_if_on_clash_main_burger_button_options_menu(vm_index):
