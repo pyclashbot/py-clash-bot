@@ -14,7 +14,7 @@ from pyclashbot.bot.do_fight_state import (
     start_2v2_fight_state,
 )
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
-from pyclashbot.bot.nav import wait_for_clash_main_menu
+from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
 from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
@@ -28,6 +28,7 @@ from pyclashbot.memu.launcher import (
 from pyclashbot.bot.buy_shop_offers import buy_shop_offers_state
 from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
+from pyclashbot.memu.client import click
 from pyclashbot.memu.docker import start_memu_dock_mode
 
 mode_used_in_1v1 = None
@@ -97,21 +98,41 @@ def state_tree(
         logger.log("Starting clash app again")
         start_clash_royale(logger, vm_index)
 
-        # wait for clash main
-        logger.change_status("Waiting for clash royale main menu")
-        logger.log("Running wait_for_clash_main_menu()")
-        if wait_for_clash_main_menu(vm_index, logger) is False:
+        # wait for clash main to appear
+        logger.change_status("Waiting for CR main menu")
+        clash_main_wait_start_time = time.time()
+        clash_main_wait_timeout = 240  # s
+        time.sleep(12)
+        while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
+            clash_main_check = check_if_on_clash_main_menu(vm_index)
+            if clash_main_check is True:
+                break
+            # Check if a battle is detected at start
+            battle_start_result = check_if_in_battle_at_start(vm_index, logger)
+            if battle_start_result == "good":
+                break  # Successfully handled starting battle or end-of-battle scenario
+            elif battle_start_result == "restart":
+                # Need to restart the process due to issues detected
+                return "restart"
+
+            # click deadspace
+            click(vm_index, 5, 350)
+
+            logger.log("Not on clash main")
+            logger.log("Pixels are: ")
+            for p in clash_main_check:
+                logger.log(p)
+
+        if clash_main_check is not True:
             logger.log(
-                'Waited too long for clashmain in "restart". Recursively redoing restart state'
-            )
+                "Clash main wait timed out! These are the pixels it saw:")
+            for p in clash_main_check:
+                logger.log(p)
             return "restart"
 
         logger.log('Detected clash main at the end of "restart" state.')
-
         logger.log(
-            f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
-        )
-
+            f"This state: {state} took {str(time.time() - start_time)[:5]}seconds")
         logger.log(f"Next state is {next_state}")
 
         return next_state
