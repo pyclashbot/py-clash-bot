@@ -26,6 +26,34 @@ from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.nav import get_to_profile_page, wait_for_clash_main_menu
 
 
+def find_claim_button(vm_index):
+    """
+    Finds the location of the claim button for the free gift in the clan page.
+
+    Args:
+        vm_index (int): The index of the virtual machine to search for the claim button.
+
+    Returns:
+        list[int] or None: The coordinates of the claim button if found, or None if not found.
+    """
+    folder_name = "claim_clan_button"
+    size = get_file_count(folder_name)
+    names = make_reference_image_list(size)
+
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        0.79,
+    )
+
+    coord = get_first_location(locations)
+    if coord is not None:
+        return [coord[1], coord[0]]  # Return coordinates
+
+    return None
+
+
 def donate_cards_state(vm_index, logger: Logger, next_state):
     """
     This function represents the state of donating cards in Clash of Clans.
@@ -42,8 +70,10 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main for the start of request_state()")
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status(
+            "Not on clash main for the start of request_state()")
+        logger.log(
+            "These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -62,7 +92,8 @@ def donate_cards_state(vm_index, logger: Logger, next_state):
         if not in_a_clan_return:
             return next_state
     else:
-        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+        print(
+            f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
 
     # if in a clan, update logger's in_a_clan value
     logger.update_in_a_clan_value(True)
@@ -157,6 +188,13 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
         # click donate buttons that exist on this page, then scroll a little
         for _ in range(3):
             loops = 0
+            # Try to claim free gift if available
+            claim_button_coord = find_claim_button(vm_index)
+            if claim_button_coord:
+                logger.log(
+                    "Claim button found. Claiming free gift from clan mate.")
+                click(vm_index, *claim_button_coord)
+                time.sleep(3)
             while find_and_click_donates(vm_index, logger) is True:
                 logger.change_status("Found a donate button")
                 loops += 1
@@ -164,7 +202,8 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
                     return False
                 time.sleep(0.5)
 
-            logger.change_status("Scrolling up to search for more donate requests")
+            logger.change_status(
+                "Scrolling up to search for more donate requests")
             scroll_up(vm_index)
             time.sleep(1)
 
@@ -228,7 +267,6 @@ def find_donate_buttons(vm_index):
     start_time = time.time()
     coords = []
 
-
     for _ in range(10):
         try:
             left = 238
@@ -238,10 +276,9 @@ def find_donate_buttons(vm_index):
 
             image = screenshot(vm_index)
 
-
-            t = random.randint(top,bottom)
+            t = random.randint(top, bottom)
             width = right-left
-            region = [left,t, width, 100]
+            region = [left, t, width, 100]
 
             image = crop_image(image, region)
 
@@ -312,6 +349,7 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    while 1:print(find_donate_buttons(12))
+    while 1:
+        print(find_donate_buttons(12))
 
     # print(find_donate_button(screenshot(12)))
