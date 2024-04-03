@@ -27,7 +27,8 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("293587 Not on clash main to do account switching")
+        logger.change_status(
+            "293587 Not on clash main to do account switching")
         return False
 
     # click options burger
@@ -57,8 +58,10 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
-    logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
-    click(vm_index, account_coord[0], account_coord[1], clicks=3, interval=0.33)
+    logger.change_status(
+        f"Clicking account index #{account_index_to_switch_to}")
+    click(vm_index, account_coord[0],
+          account_coord[1], clicks=3, interval=0.33)
     logger.change_status(f"Selected account #{account_index_to_switch_to}")
 
     time.sleep(6)
@@ -73,6 +76,8 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
         time.sleep(2)
 
     logger.change_status(f"Switched to account #{account_index_to_switch_to}")
+    # Reset logger's in_a_clan value
+    logger.update_in_a_clan_value(False)
     logger.increment_account_switches()
     return True
 
