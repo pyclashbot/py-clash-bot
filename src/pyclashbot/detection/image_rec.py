@@ -1,3 +1,4 @@
+import time
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from os import walk
 from os.path import abspath, dirname, join
@@ -5,7 +6,7 @@ from os.path import abspath, dirname, join
 import cv2
 import numpy as np
 
-from pyclashbot.memu.client import screenshot
+from pyclashbot.memu.client import screenshot, click
 from pyclashbot.utils.image_handler import open_from_path
 
 
@@ -35,31 +36,6 @@ def make_reference_image_list(size):
     return reference_image_list
 
 
-# image comparison
-
-
-def crop_image(image: np.ndarray, region: list) -> np.ndarray:
-    """
-    Crop the given image using the specified region.
-
-    Parameters:
-    - image: numpy.ndarray
-        The image to be cropped.
-    - region: list [left, top, width, height]
-        The region to be cropped, denoted by [left, top, width, height].
-
-    Returns:
-    - cropped_image: numpy.ndarray
-        The cropped image.
-    """
-    left, top, width, height = region
-
-    # Crop the image using array slicing
-    cropped_image = image[top : top + height, left : left + width]
-
-    return cropped_image
-
-
 def get_first_location(
     locations: list[list[int] | None], flip=False
 ) -> list[int] | None:
@@ -80,6 +56,37 @@ def get_first_location(
         ),
         None,
     )
+
+
+def find_and_click_button_by_image(vm_index, folder_name) -> bool:
+    """
+    Finds and clicks on a button based on image recognition.
+
+    Args:
+        vm_index (int): The index of the virtual machine.
+        folder_name (str): The name of the folder containing reference images for the button.
+    """
+    # Create a list of reference image names from the folder
+    names = make_reference_image_list(get_file_count(folder_name))
+
+    # Find references in the screenshot
+    locations = find_references(
+        screenshot(vm_index),
+        folder_name,
+        names,
+        tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
+    )
+
+    # Get the first location of the detected reference
+    coord = get_first_location(locations)
+
+    if coord is None:
+        return False
+    else:
+        # Click on the detected button location
+        click(vm_index, coord[1], coord[0])
+        time.sleep(2)
+        return True
 
 
 def crop_image(image: np.ndarray, region: list) -> np.ndarray:

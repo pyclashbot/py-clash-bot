@@ -1548,10 +1548,4 @@ def identify_card(card_data):
 
 
 if __name__ == "__main__":
-    # right tower arrows = 292,146
-    # left tower arrows = 116,149
-
-    coord = ()
-    from pyclashbot.memu.client import click
-
-    click(12, coord[0], coord[1])
+    pass

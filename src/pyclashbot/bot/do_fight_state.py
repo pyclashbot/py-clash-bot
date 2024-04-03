@@ -30,7 +30,6 @@ from pyclashbot.bot.nav import (
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     pixel_is_equal,
-    region_is_color,
 )
 from pyclashbot.memu.client import (
     click,
@@ -100,18 +99,12 @@ def do_2v2_fight_state(
     logger.change_status(status="Starting fight loop")
 
     # if regular fight mode, run the fight loop
-    if (
-        not random_fight_mode
-        and _2v2_fight_loop(vm_index, logger) == "restart"
-    ):
+    if not random_fight_mode and _2v2_fight_loop(vm_index, logger) == "restart":
         logger.log("Error 698245 Failuring in 2v2 regular fight loop")
         return "restart"
 
     # if random fight mode, run the random fight loop
-    if (
-        random_fight_mode
-        and _2v2_random_fight_loop(vm_index, logger) == "restart"
-    ):
+    if random_fight_mode and _2v2_random_fight_loop(vm_index, logger) == "restart":
         logger.log("Error 655 Failuring in 2v2 random fight loop")
         return "restart"
 
@@ -123,7 +116,14 @@ def do_2v2_fight_state(
     return next_state
 
 
-def do_1v1_fight_state(vm_index, logger: Logger, next_state, random_fight_mode, fight_mode_choosed, called_from_launching=False):
+def do_1v1_fight_state(
+    vm_index,
+    logger: Logger,
+    next_state,
+    random_fight_mode,
+    fight_mode_choosed,
+    called_from_launching=False,
+):
     """Handle the entirety of the 1v1 battle state (start fight, do fight, end fight)."""
 
     logger.change_status("do_1v1_fight_state state")
@@ -135,7 +135,8 @@ def do_1v1_fight_state(vm_index, logger: Logger, next_state, random_fight_mode, 
     # Wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
         logger.change_status(
-            "Error waiting for 1v1 battle to start in do_1v1_fight_state()")
+            "Error waiting for 1v1 battle to start in do_1v1_fight_state()"
+        )
         return "restart"
 
     logger.change_status("Battle started!")
@@ -178,7 +179,7 @@ def check_both_1v1_modes_available(vm_index):
     battle_button_pixel = iar[439][279]
     expected_colors = [
         [35, 205, 255],  # Possible color 1
-        [82, 249, 255]   # Possible color 2
+        [82, 249, 255],  # Possible color 2
     ]
 
     # Check if the color of the pixel matches any of the expected colors with a tolerance
@@ -186,26 +187,6 @@ def check_both_1v1_modes_available(vm_index):
         if pixel_is_equal(battle_button_pixel, expected_color, tol=50):
             return True
     return False
-
-
-def check_if_on_path_of_legends_mode(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[415][392],
-        iar[386][370],
-        iar[410][387],
-    ]
-    colors = [
-        [179, 47, 92],
-        [170, 34, 80],
-        [181, 48, 92],
-    ]
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=25):
-            return False
-
-    return True
 
 
 def check_if_on_path_of_legends_mode(vm_index):
@@ -270,7 +251,8 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
             )
             return "restart"
         next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
-            vm_index, logger, mode="both")
+            vm_index, logger, mode="both"
+        )
         print(f"Fight mode is : {mode_used_in_1v1}")
         return next_1v1_state
 
@@ -318,8 +300,7 @@ def start_path_of_legends_1v1_state(vm_index, logger: Logger, next_state):
     logger.change_status("Starting path of legends 1v1")
 
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(
-            "Not on clash main to start path of legends fight!")
+        logger.change_status("Not on clash main to start path of legends fight!")
         return "restart"
 
     if not check_if_on_path_of_legends_mode(vm_index):
@@ -380,8 +361,7 @@ def start_trophy_road_fight(vm_index, logger) -> bool:
         logger.change_status(
             status="ERROR 46246 Not on main menu for start of start 1v1 fight"
         )
-        logger.log(
-            "These are the pixels the bot saw after failing to find clash main:")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -442,8 +422,7 @@ def click_2v2_icon_button(vm_index) -> None:
 
 def click_2v2_battle_button(vm_index) -> None:
     """method to click the 2v2 battle button on the challenges tab"""
-    click(
-        vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
+    click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
 
 
 def click_quickmatch_button(vm_index) -> None:
@@ -558,16 +537,13 @@ def wait_for_4_elixer(vm_index, logger, mode="1v1"):
             return "restart"
 
         if mode == "1v1" and not check_for_in_battle_with_delay(vm_index):
-            logger.change_status(
-                status="Not in battle, stopping waiting for 4 elixer.")
+            logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
         if mode == "2v2" and not check_for_in_battle_with_delay(vm_index):
-            logger.change_status(
-                status="Not in battle, stopping waiting for 4 elixer.")
+            logger.change_status(status="Not in battle, stopping waiting for 4 elixer.")
             return "no battle"
 
-    logger.change_status(
-        f"Took {str(time.time() - start_time)[:4]}s for 4 elixer.")
+    logger.change_status(f"Took {str(time.time() - start_time)[:4]}s for 4 elixer.")
 
     return True
 
@@ -643,8 +619,7 @@ def end_fight_state(
         win_check_return = check_if_previous_game_was_win(vm_index, logger)
 
         if win_check_return == "restart":
-            logger.log(
-                "Error 885869 Failed while checking if previous game was a win")
+            logger.log("Error 885869 Failed while checking if previous game was a win")
             return "restart"
 
         if win_check_return:
@@ -667,8 +642,7 @@ def check_if_previous_game_was_win(
 
     # Use wait_for_clash_main_menu to ensure we are on the main menu.
     if not wait_for_clash_main_menu(vm_index, logger, deadspace_click=True):
-        logger.change_status(
-            status='Error Not on main menu, returning "restart"')
+        logger.change_status(status='Error Not on main menu, returning "restart"')
         return "restart"
 
     # get to clash main options menu
@@ -887,7 +861,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # play champ ability if its available
         if check_for_champion_ability(vm_index):
             play__champion_ability(vm_index)
-            logger.change_status('Played champion ability')
+            logger.change_status("Played champion ability")
             continue
 
         this_play_start_time = time.time()
@@ -947,8 +921,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         )
 
     cards_played = logger.get_cards_played()
-    logger.change_status(
-        f"Played ~{cards_played - prev_cards_played} cards this fight")
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
     return "good"
 
@@ -963,7 +936,7 @@ def check_for_champion_ability(vm_index):
     colors = [
         [215, 28, 223],
         [240, 39, 254],
-        [239,  40, 251],
+        [239, 40, 251],
     ]
 
     # for p in pixels:print(p)
@@ -988,8 +961,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     # choose a side to favor this fight
     favorite_side = random.choice(["left", "right"])
 
-    logger.change_status(
-        status=f"Going to favor {favorite_side} this fight...")
+    logger.change_status(status=f"Going to favor {favorite_side} this fight...")
 
     # count plays
     plays = 0
@@ -1011,7 +983,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # play champ ability if its available
         if check_for_champion_ability(vm_index):
             play__champion_ability(vm_index)
-            logger.change_status('Played champion ability')
+            logger.change_status("Played champion ability")
             continue
 
         if elixer_wait_return == "restart":

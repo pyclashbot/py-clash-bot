@@ -442,10 +442,10 @@ def identify_hand_cards(vm_index):
     for i,top_left in enumerate(top_lefts):
         pixels = get_pixels_and_count(iar, top_left)
         color_dict = colors_from_pixels(pixels)
-        id = identify_card_from_color_dict(color_dict)
-        card_ids.append(id)
+        identification = identify_card_from_color_dict(color_dict)
+        card_ids.append(identification)
 
-        print(i+1, id, color_dict)
+        print(i+1, identification, color_dict)
 
     return card_ids
 
