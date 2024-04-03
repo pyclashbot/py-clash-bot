@@ -114,7 +114,4 @@ def card_mastery_rewards_exist(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 12
-    logger = Logger()
-
-    collect_card_mastery_rewards(vm_index, logger)
+    pass
