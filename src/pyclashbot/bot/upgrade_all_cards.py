@@ -105,9 +105,9 @@ def detect_arrow_color(vm_index: int, card_index: int, y_positions: list[int]) -
 
     # Color checks for green, blue, and yellow arrows
     color_checks = {
-        'green': [(86, 255, 11), (80, 246, 8)],
-        'blue': [(255, 211, 0), (255, 181, 0)],
-        'yellow': [(60, 232, 255), (35, 223, 255)],
+        "green": [(86, 255, 11), (80, 246, 8)],
+        "blue": [(255, 211, 0), (255, 181, 0)],
+        "yellow": [(60, 232, 255), (35, 223, 255)],
     }
 
     # Iterate through each color to check the predefined pixels
@@ -123,7 +123,7 @@ def detect_arrow_color(vm_index: int, card_index: int, y_positions: list[int]) -
         if color_match:
             return color
 
-    return 'unknown'
+    return "unknown"
 
 
 def detect_elixir_logo(vm_index: int) -> bool:
@@ -186,34 +186,35 @@ def handle_tower_troops(vm_index, logger: Logger):
     while upgraded:
         upgraded = False  # Reset upgrade flag for each cycle
         for card_index in range(1, 4):  # Iterate through the 3 Tower Troops cards
-            color = detect_arrow_color(
-                vm_index, card_index, y_positions_tower_troops)
-            if color == 'green':
+            color = detect_arrow_color(vm_index, card_index, y_positions_tower_troops)
+            if color == "green":
                 logger.change_status(
-                    status=f"Detected green arrow for Tower Troops card {card_index}. Upgrading...")
-                click(vm_index, *
-                      tower_troops_card_click_coords[card_index - 1])
+                    status=f"Detected green arrow for Tower Troops card {card_index}. Upgrading..."
+                )
+                click(vm_index, *tower_troops_card_click_coords[card_index - 1])
                 time.sleep(2)
 
-                click(vm_index, *
-                      tower_troops_upgrade_button_coords[card_index - 1])
+                click(vm_index, *tower_troops_upgrade_button_coords[card_index - 1])
                 time.sleep(2)
 
                 if not find_and_click_button_by_image(vm_index, "upgrade_button"):
                     logger.change_status(
-                        "Failed to find the second upgrade button. Skipping this card.")
+                        "Failed to find the second upgrade button. Skipping this card."
+                    )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
                 if check_for_missing_gold_popup(vm_index):
                     logger.change_status(
-                        "Missing gold popup exists. Skipping this upgradable card.")
+                        "Missing gold popup exists. Skipping this upgradable card."
+                    )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
                 if not find_and_click_button_by_image(vm_index, "confirm_button"):
                     logger.change_status(
-                        "Failed to find the confirm button. Upgrade may not have been completed.")
+                        "Failed to find the confirm button. Upgrade may not have been completed."
+                    )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
@@ -223,7 +224,8 @@ def handle_tower_troops(vm_index, logger: Logger):
                 logger.add_card_upgraded()
                 card_upgrades = logger.get_card_upgrades()
                 logger.log(
-                    f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}")
+                    f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
+                )
                 logger.change_status("Successfully upgraded the card")
 
                 reset_ui_state(vm_index)
@@ -243,7 +245,7 @@ def detect_and_upgrade(vm_index, logger, y_positions):
         upgraded_this_cycle = False
         for card_index in range(1, 5):  # Assuming card_index goes from 1 to 4
             color = detect_arrow_color(vm_index, card_index, y_positions)
-            if color == 'green':
+            if color == "green":
                 logger.log(f"Upgrading card {card_index} with green arrow.")
                 if upgrade_card(vm_index, logger, card_index):
                     upgraded_this_cycle = True
@@ -252,17 +254,15 @@ def detect_and_upgrade(vm_index, logger, y_positions):
             break  # Exit loop if no cards were upgraded in this cycle
 
 
-def upgrade_cards_state(vm_index, logger: Logger, next_state):
+def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Upgrade cards state")
     logger.add_card_upgrade_attempt()
 
     # If not on clash main, return restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
-            "Not on clash main at the start of upgrade_cards_state()")
-        logger.log(
-            "These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status("Not on clash main at the start of upgrade_cards_state()")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
         return "restart"
@@ -271,7 +271,8 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 0751389 Failure getting to card page from clash main in Upgrade State")
+            status="Error 0751389 Failure getting to card page from clash main in Upgrade State"
+        )
         return "restart"
 
     # Click the collection button
@@ -284,8 +285,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     time.sleep(1)
     if is_boosted_section_present(vm_index):
         # If the "Boosted" section is present
-        logger.change_status(
-            "Navigating to the 'Boosted' section of the cards.")
+        logger.change_status("Navigating to the 'Boosted' section of the cards.")
         click(vm_index, 80, 520)  # Click to reach the "Boosted" section
         time.sleep(1)
         click(vm_index, 21, 415)  # Click empty space
@@ -336,8 +336,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     # Wait for main
     if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
-        logger.change_status(
-            "Failed to wait for clash main after upgrading cards")
+        logger.change_status("Failed to wait for clash main after upgrading cards")
         return "restart"
 
     logger.update_time_of_last_card_upgrade(time.time())
@@ -372,8 +371,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
 
     # Use find_and_click_second_upgrade_button to find and click the second Upgrade button
     if not find_and_click_button_by_image(vm_index, "upgrade_button"):
-        logger.log(
-            "Failed to find the second upgrade button. Skipping this card.")
+        logger.log("Failed to find the second upgrade button. Skipping this card.")
         # Click on empty space to ensure the UI is not stuck in an unexpected state
         reset_ui_state(vm_index)
         return False
@@ -388,7 +386,8 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     # Use find_and_click_confirm_button to find and click the Confirm button
     if not find_and_click_button_by_image(vm_index, "confirm_button"):
         logger.log(
-            "Failed to find the confirm button. Upgrade may not have been completed.")
+            "Failed to find the confirm button. Upgrade may not have been completed."
+        )
         return False
 
     # Click on empty space to close the upgrade window
@@ -399,7 +398,8 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     logger.add_card_upgraded()
     card_upgrades = logger.get_card_upgrades()
     logger.log(
-        f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}")
+        f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
+    )
     logger.change_status("Successfully upgraded the card")
     return True
 

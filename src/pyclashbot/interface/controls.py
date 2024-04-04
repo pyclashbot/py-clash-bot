@@ -1,4 +1,5 @@
 """pysimplegui layout for the controls tab"""
+
 import PySimpleGUI as sg
 
 from pyclashbot.interface.theme import THEME
@@ -17,34 +18,29 @@ def make_job_increment_control_object(key):
 
 
 job_increments_titles_column = [
-
-                [sg.Text("Request Random Card Every:")],
-                [sg.Text("Donate Cards Every:")],
-                [sg.Text("Collect Free Offer Every:")],
-                [sg.Text("Upgrade Current Deck Every:")],
-                [sg.Text("Collect Daily Rewards Every:")],
-                [sg.Text("Collect Card Mastery Every:")],
-                [sg.Text("Open Chests Every:")],
-                [sg.Text("Randomize Deck Every:")],
-                [sg.Text("Do War Attack Every:")],
-                [sg.Text("Collect Battlepass Every:")],
-                [sg.Text("Collect Level Up Chest Every:")],
-                [sg.Text("Switch Account Every:")],
-
+    [sg.Text("Request Random Card Every:")],
+    [sg.Text("Donate Cards Every:")],
+    [sg.Text("Collect Free Offer Every:")],
+    [sg.Text("Upgrade Current Deck Every:")],
+    [sg.Text("Collect Daily Rewards Every:")],
+    [sg.Text("Collect Card Mastery Every:")],
+    [sg.Text("Open Chests Every:")],
+    [sg.Text("Randomize Deck Every:")],
+    [sg.Text("Do War Attack Every:")],
+    [sg.Text("Collect Battlepass Every:")],
+    [sg.Text("Collect Level Up Chest Every:")],
+    [sg.Text("Collect Trophy Road Rewards Every:")],
+    [sg.Text("Switch Account Every:")],
 ]
 
 
-games_titles_column = [
-
-
-]
+games_titles_column = []
 
 for _ in range(len(job_increments_titles_column)):
     games_titles_column.append([sg.Text("games")])
 
 
 controls = [
-
     # whole box
     [
         # title column
@@ -80,9 +76,21 @@ controls = [
                     )
                 ],
                 [make_job_increment_control_object("war_attack_increment_user_input")],
-                [make_job_increment_control_object("battlepass_collect_increment_user_input")],
-                [make_job_increment_control_object("level_up_chest_increment_user_input")],
-
+                [
+                    make_job_increment_control_object(
+                        "battlepass_collect_increment_user_input"
+                    )
+                ],
+                [
+                    make_job_increment_control_object(
+                        "level_up_chest_increment_user_input"
+                    )
+                ],
+                [
+                    make_job_increment_control_object(
+                        "trophy_road_reward_increment_user_input"
+                    )
+                ],
                 [
                     make_job_increment_control_object(
                         "account_switching_increment_user_input"
@@ -99,5 +107,4 @@ controls = [
     ],
     [sg.VP()],
     [sg.HSep(color="lightgray")],
-
 ]

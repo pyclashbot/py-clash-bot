@@ -111,6 +111,11 @@ rewards_tab = [
             "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=True
         ),
     ],
+    [
+        job_check_box(
+            "Trophy Road Rewards", "trophy_road_rewards_user_toggle", default_value=True
+        ),
+    ],
 ]
 
 
@@ -136,6 +141,10 @@ card_collection_tab = [
     [
         job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=True),
     ],
+[
+        job_check_box("Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=True),
+    ],
+
 ]
 
 
