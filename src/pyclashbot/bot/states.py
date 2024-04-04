@@ -624,5 +624,6 @@ def state_tree_tester(vm_index):
 
 
 if __name__ == "__main__":
-    # state_tree_tester(12)
-    clip_that()
+    state_tree_tester(12)
+    # clip_that()
+1
