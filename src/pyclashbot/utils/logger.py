@@ -124,6 +124,7 @@ class Logger:
         self.war_chest_collects = 0
         self.level_up_chest_collects = 0
         self.level_up_chest_attempts = 0
+        self.trophy_road_reward_collect_attempts=0
 
         # account stuff
         self.account_order = "-"
@@ -448,6 +449,51 @@ class Logger:
     def get_chests_opened(self):
         """return chests_unlocked stat"""
         return self.chests_unlocked
+
+
+    def add_trophy_reward_collect_attempt(self):
+        self.trophy_road_reward_collect_attempts += 1
+
+
+    def check_if_can_collect_trophy_road_rewards(self, increment):
+        increment = int(increment)
+        if increment <= 1:
+            self.log(f"Increment is {increment} so can always collect_trophy_road_rewards")
+            return True
+
+        # count trophy_road_reward_collect_attempts
+        trophy_road_reward_collect_attempts = self.trophy_road_reward_collect_attempts
+
+        # count games
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        # if trophy_road_reward_collect_attempts is zero return true
+        if trophy_road_reward_collect_attempts == 0:
+            self.log(
+                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+            )
+            return True
+
+        # if games_played is zero return true
+        if games_played == 0:
+            self.log(
+                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+            )
+            return True
+
+        # if games_played / increment > trophy_road_reward_collect_attempts
+        if games_played / increment >= trophy_road_reward_collect_attempts:
+            self.log(
+                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Can't collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+        )
+        return False
+
+
 
     def check_if_can_open_chests(self, increment):
         """check if can open chests using logger's games_played and

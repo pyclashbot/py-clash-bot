@@ -17,6 +17,8 @@ from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
 from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
+from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
+from pyclashbot.bot.upgrade_all_cards import upgrade_all_cards_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.battlepass import collect_battlepass_state
 from pyclashbot.bot.war_state import war_state
@@ -73,8 +75,7 @@ def state_tree(
     if state == "restart":  # --> account_switch
         next_state = "account_switch"
 
-        logger.log(
-            "Entered the restart state after a failure in another state...")
+        logger.log("Entered the restart state after a failure in another state...")
 
         # print("Bot is in restart state. Press enter to continue!!!!!!")
         # print("Bot is in restart state. Press enter to continue!!!!!!")
@@ -124,15 +125,15 @@ def state_tree(
                 logger.log(p)
 
         if clash_main_check is not True:
-            logger.log(
-                "Clash main wait timed out! These are the pixels it saw:")
+            logger.log("Clash main wait timed out! These are the pixels it saw:")
             for p in clash_main_check:
                 logger.log(p)
             return "restart"
 
         logger.log('Detected clash main at the end of "restart" state.')
         logger.log(
-            f"This state: {state} took {str(time.time() - start_time)[:5]}seconds")
+            f"This state: {state} took {str(time.time() - start_time)[:5]}seconds"
+        )
         logger.log(f"Next state is {next_state}")
 
         return next_state
@@ -153,8 +154,7 @@ def state_tree(
             return next_state
 
         account_total = job_list["account_switching_slider"]
-        logger.log(
-            f"Doing switch #{job_list['next_account']} of {account_total}")
+        logger.log(f"Doing switch #{job_list['next_account']} of {account_total}")
 
         accout_index = job_list["next_account"]
 
@@ -200,8 +200,7 @@ def state_tree(
             return next_state
 
         # run this state
-        logger.log(
-            'Open chests is toggled and ready. Running "open_chests_state()"')
+        logger.log('Open chests is toggled and ready. Running "open_chests_state()"')
         return open_chests_state(vm_index, logger, next_state)
 
     if state == "level_up_chest":  # --> randomize_deck
@@ -222,8 +221,7 @@ def state_tree(
         if not logger.check_if_can_collect_level_up_chest(
             job_list["level_up_chest_increment_user_input"]
         ):
-            logger.log(
-                "Can't open level up chest at this time, skipping this state")
+            logger.log("Can't open level up chest at this time, skipping this state")
             return next_state
 
         # run this state
@@ -249,8 +247,8 @@ def state_tree(
 
         return randomize_deck_state(vm_index, logger, next_state)
 
-    if state == "upgrade":  # --> request
-        next_state = "request"
+    if state == "upgrade":  # --> upgrade_all
+        next_state = "upgrade_all"
 
         # if job not selected, return next state
         if not job_list["upgrade_user_toggle"]:
@@ -266,6 +264,56 @@ def state_tree(
 
         # return output of this state
         return upgrade_cards_state(vm_index, logger, next_state)
+
+    if state == "upgrade_all":  # --> trophy_rewards
+        next_state = "trophy_rewards"
+
+        # if 'upgrade_user_toggle' is toggled on, return next state
+        if job_list["upgrade_user_toggle"]:
+            logger.change_status(
+                "Regular upgrade is toggled. Skipping 'UPGRADE ALL' state"
+            )
+            return next_state
+
+        # if job isnt selected, just return the next state
+        if not job_list["upgrade_all_cards_user_toggle"]:
+            logger.change_status(
+                "Upgrade all cards is not toggled. Skipping this state"
+            )
+            return next_state
+
+        # if job is available, increment attempts, run the state
+        if logger.check_if_can_card_upgrade():
+            logger.change_status("Upgrade all cards is ready!")
+            logger.add_card_upgrade_attempt()
+            return upgrade_all_cards_state(vm_index, logger, next_state)
+
+        # else just return next state
+        logger.change_status("Upgrade all cards isn't ready!")
+        return next_state
+
+    if state == "trophy_rewards":  # --> request
+        next_state = "request"
+
+        # if job isnt selected, just return the next state
+        if not job_list["trophy_road_rewards_user_toggle"]:
+            logger.change_status(
+                "Trophy rewards collection is not toggled. Skipping this state"
+            )
+            return next_state
+
+        # if job is available, increment attempts, run the state
+        if logger.check_if_can_collect_trophy_road_rewards(
+            job_list["trophy_road_reward_increment_user_input"]
+        ):
+            logger.change_status("Trophy rewards collection is ready!")
+            logger.add_trophy_reward_collect_attempt()
+            return collect_trophy_road_rewards_state(vm_index, logger, next_state)
+
+        # else just return next state
+        logger.change_status("Trophy rewards collection isn't ready!")
+
+        return next_state
 
     if state == "request":  # --> donate
         next_state = "donate"
@@ -362,8 +410,7 @@ def state_tree(
         if not logger.check_if_can_battlepass_collect(
             job_list["battlepass_collect_increment_user_input"]
         ):
-            logger.change_status(
-                "Battlepass collect is not ready. Skipping this state")
+            logger.change_status("Battlepass collect is not ready. Skipping this state")
             return next_state
 
         return collect_battlepass_state(vm_index, logger, next_state)
@@ -411,17 +458,16 @@ def state_tree(
                 chest_status == "available"
                 for chest_status in get_chest_statuses(vm_index)
             ):
-                logger.change_status(
-                    "All chests are available, skipping fight state")
+                logger.change_status("All chests are available, skipping fight state")
                 return next_state
 
         # if both are toggled, choose the lest used fight type
         if _1v1_toggle and _2v2_toggle:
-            logger.log(
-                "Both 1v1 and 2v2 are selected. Choosing the less used one")
+            logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
             if logger.get_1v1_fights() < logger.get_2v2_fights():
                 next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
-                    vm_index, logger, mode=fight_mode)
+                    vm_index, logger, mode=fight_mode
+                )
                 return next_1v1_state
 
             return start_2v2_fight_state(vm_index, logger)
@@ -437,7 +483,8 @@ def state_tree(
 
             print(f"Fight mode is gonna be: {fight_mode}")
             next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
-                vm_index, logger, mode=fight_mode)
+                vm_index, logger, mode=fight_mode
+            )
             print(f"Fight mode is : {mode_used_in_1v1}")
             return next_1v1_state
 
@@ -455,8 +502,7 @@ def state_tree(
 
         random_fight_mode = job_list["random_plays_user_toggle"]
 
-        print(
-            f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
+        print(f'random_fight_mode is {random_fight_mode} in state == "2v2_fight"')
 
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
@@ -468,14 +514,15 @@ def state_tree(
         next_state = "end_fight"
 
         random_fight_mode = job_list["random_plays_user_toggle"]
-        print(
-            f"Random fight mode is {random_fight_mode} in state == '1v1_fight'")
+        print(f"Random fight mode is {random_fight_mode} in state == '1v1_fight'")
 
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
         print(f"Fight mode is {mode_used_in_1v1}")
-        return do_1v1_fight_state(vm_index, logger, next_state, random_fight_mode, mode_used_in_1v1, False)
+        return do_1v1_fight_state(
+            vm_index, logger, next_state, random_fight_mode, mode_used_in_1v1, False
+        )
 
     if state == "end_fight":  # --> war
         next_state = "war"
@@ -507,33 +554,41 @@ def state_tree(
     return "fail"
 
 
+def clip_that():
+    import pyautogui
+    pyautogui.click(860,1197)
+    time.sleep(1)
+
+
 def state_tree_tester(vm_index):
     logger = Logger()
     state = "account_switch"
     job_list = {
         # job toggles
-        "open_battlepass_user_toggle": False,
-        "open_chests_user_toggle": False,
+        "open_battlepass_user_toggle": True,
+        "open_chests_user_toggle": True,
         "request_user_toggle": True,
         "donate_toggle": True,
-        "card_mastery_user_toggle": False,
-        "free_offer_user_toggle": False,
-        "gold_offer_user_toggle": False,
+        "card_mastery_user_toggle": True,
+        "free_offer_user_toggle": True,
+        "gold_offer_user_toggle": True,
         "trophy_road_1v1_battle_user_toggle": False,
-        "path_of_legends_1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": False,
-        "upgrade_user_toggle": False,
-        "war_user_toggle": False,
-        "random_decks_user_toggle": False,
-        "open_bannerbox_user_toggle": False,
-        "daily_rewards_user_toggle": False,
-        "battlepass_collect_user_toggle": False,
-        "level_up_chest_user_toggle": False,
+        "path_of_legends_1v1_battle_user_toggle": True,
+        "2v2_battle_user_toggle": True,
+        "upgrade_user_toggle": True,
+        "war_user_toggle": True,
+        "random_decks_user_toggle": True,
+        "open_bannerbox_user_toggle": True,
+        "daily_rewards_user_toggle": True,
+        "battlepass_collect_user_toggle": True,
+        "level_up_chest_user_toggle": True,
+        "upgrade_all_cards_user_toggle": True,
+        "trophy_road_rewards_user_toggle": True,
         # keep these off
-        "disable_win_track_toggle": False,
-        "skip_fight_if_full_chests_user_toggle": False,
-        "random_plays_user_toggle": False,
-        "memu_attach_mode_toggle": False,
+        "disable_win_track_toggle": True,
+        "skip_fight_if_full_chests_user_toggle": True,
+        "random_plays_user_toggle": True,
+        "memu_attach_mode_toggle": True,
         # job increments
         "card_upgrade_increment_user_input": 1,
         "shop_buy_increment_user_input": 1,
@@ -546,6 +601,7 @@ def state_tree_tester(vm_index):
         "war_attack_increment_user_input": 1,
         "battlepass_collect_increment_user_input": 1,
         "level_up_chest_increment_user_input": 1,
+        "trophy_road_reward_increment_user_input": 1,
         # account switching input info
         "account_switching_increment_user_input": 1,
         "account_switching_toggle": False,
@@ -561,7 +617,12 @@ def state_tree_tester(vm_index):
             state,
             job_list,
         )
+        if state == 'restart':
+            print('Restart state')
+            print('Clipping that')
+            clip_that()
 
 
 if __name__ == "__main__":
-    state_tree_tester(12)
+    # state_tree_tester(12)
+    clip_that()

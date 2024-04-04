@@ -2,13 +2,17 @@ import time
 import numpy
 import random
 
-from pyclashbot.bot.nav import wait_for_clash_main_menu, check_if_on_path_of_legends_clash_main, check_if_on_clash_main_menu
+from pyclashbot.bot.nav import (
+    wait_for_clash_main_menu,
+    check_if_on_path_of_legends_clash_main,
+    check_if_on_clash_main_menu,
+)
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
-def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: str):
+def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state: str):
     # Verify if already in the clash main menu.
     if not wait_for_clash_main_menu(vm_index, logger):
         logger.change_status("Not in clash main menu")
@@ -17,7 +21,8 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
     # Check if in Path of Legends mode, attempting to navigate back to Trophy Road if so.
     if check_if_on_path_of_legends_clash_main(vm_index) is True:
         logger.change_status(
-            "Detected Path of Legends, attempting to navigate back to Trophy Road...")
+            "Detected Path of Legends, attempting to navigate back to Trophy Road..."
+        )
         # Click on the specified coordinates to attempt to switch views.
         click(vm_index, 277, 400)
         time.sleep(2)  # Wait for the UI to possibly update.
@@ -25,16 +30,17 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
         # Re-check if successfully navigated back to Trophy Road.
         if check_if_on_path_of_legends_clash_main(vm_index) is True:
             logger.change_status(
-                "Failed to navigate back to Trophy Road from Path of Legends")
+                "Failed to navigate back to Trophy Road from Path of Legends"
+            )
             # Return "restart" if still in Path of Legends after clicking.
             return "restart"
     rewards_collected_result = 0
     # Checks if Trophy Road rewards are available and attempts to collect them.
     while check_for_trophy_road_rewards(vm_index):
-        logger.change_status(
-            "Trophy Road rewards detected. Attempting to collect...")
+        logger.change_status("Trophy Road rewards detected. Attempting to collect...")
         trophy_road_state, rewards_collected = collect_trophy_road_rewards(
-            vm_index, logger)
+            vm_index, logger
+        )
         if trophy_road_state is not True:
             logger.change_status("Failed to collect Trophy Road rewards.")
             return "restart"
@@ -42,7 +48,8 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
         # Check if in Path of Legends mode, attempting to navigate back to Trophy Road if so.
         if check_if_on_path_of_legends_clash_main(vm_index) is True:
             logger.change_status(
-                "Detected Path of Legends, attempting to navigate back to Trophy Road...")
+                "Detected Path of Legends, attempting to navigate back to Trophy Road..."
+            )
             # Click on the specified coordinates to attempt to switch views.
             click(vm_index, 277, 400)
             time.sleep(2)  # Wait for the UI to possibly update.
@@ -50,7 +57,8 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
             # Re-check if successfully navigated back to Trophy Road.
             if check_if_on_path_of_legends_clash_main(vm_index) is True:
                 logger.change_status(
-                    "Failed to navigate back to Trophy Road from Path of Legends")
+                    "Failed to navigate back to Trophy Road from Path of Legends"
+                )
                 # Return "restart" if still in Path of Legends after clicking.
                 return "restart"
 
@@ -58,7 +66,8 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
         logger.change_status("No Trophy Road rewards detected.")
     else:
         logger.change_status(
-            f"{rewards_collected_result} Trophy Road rewards collected.")
+            f"{rewards_collected_result} Trophy Road rewards collected."
+        )
     return next_state
 
 
@@ -135,7 +144,10 @@ def collect_trophy_road_rewards(vm_index, logger):
             time.sleep(1)
             logger.change_status("Collecting rewards...")
             # Randomly click left or right to collect rewards et go back to trophy road rewards menu
-            while not check_if_on_trophy_road_rewards_menu(vm_index) and collecting_attempts < 30:
+            while (
+                not check_if_on_trophy_road_rewards_menu(vm_index)
+                and collecting_attempts < 30
+            ):
                 if random.randint(0, 1):
                     click(vm_index, 138, 186)  # Left
                 else:
@@ -145,7 +157,7 @@ def collect_trophy_road_rewards(vm_index, logger):
                 time.sleep(1)
                 collecting_attempts += 1
                 if check_if_on_clash_main_menu(vm_index) is True:
-                    ("Back to main menu.")
+                    #Back to main menu
                     return True, rewards_collected
                 if collecting_attempts >= 30:
                     logger.change_status("Collected too much.")
@@ -158,11 +170,13 @@ def collect_trophy_road_rewards(vm_index, logger):
         click(vm_index, 210, 608)
         if wait_for_clash_main_menu(vm_index, logger):
             logger.change_status(
-                "Successfully returned to clash main menu after collecting rewards.")
+                "Successfully returned to clash main menu after collecting rewards."
+            )
             return True, rewards_collected
         else:
             logger.change_status(
-                "Failed to return to clash main menu after collecting rewards.")
+                "Failed to return to clash main menu after collecting rewards."
+            )
             return False, rewards_collected
     else:
         logger.change_status("Failed to enter Trophy Road rewards menu.")
@@ -191,13 +205,17 @@ def find_collect_button(vm_index):
 
     # Check the left position for expected colors.
     left_pixel_color = iar[left_position[1]][left_position[0]]
-    if any(pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors):
+    if any(
+        pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors
+    ):
         # Return "left" if a matching color is found at the left position.
         return "left"
 
     # Check the right position for expected colors.
     right_pixel_color = iar[right_position[1]][right_position[0]]
-    if any(pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors):
+    if any(
+        pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors
+    ):
         # Return "right" if a matching color is found at the right position.
         return "right"
 
