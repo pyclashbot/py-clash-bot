@@ -155,23 +155,23 @@ def collect_path_of_legends_rewards(vm_index, logger):
                 # Re-check for more buttons after each claim.
                 button = find_claim_rewards_buttons(vm_index)
             return True
-
+        if not claim_rewards_sequence():
+            return False, rewards_collected
         if check_if_ultimate_champion(vm_index):
             logger.change_status(
                 "Identified as Ultimate Champion; bypassing crown search.")
             while not check_last_door(vm_index):
-                if not claim_rewards_sequence():
-                    return False, rewards_collected
                 logger.change_status("Scrolling to look for more rewards...")
                 scroll_up(vm_index)
                 time.sleep(2)
+                if not claim_rewards_sequence():
+                    return False, rewards_collected
         else:
             while not (check_current_step(vm_index) or check_last_door(vm_index)):
-                if not claim_rewards_sequence():
-                    return False, rewards_collected
-                logger.change_status("Scrolling to look for more rewards...")
                 scroll_up(vm_index)
                 time.sleep(2)
+                if not claim_rewards_sequence():
+                    return False, rewards_collected
 
         logger.change_status("Reached the end of rewards.")
         click(vm_index, 210, 606)  # Click to go back to the main menu.
