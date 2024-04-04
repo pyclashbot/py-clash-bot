@@ -119,6 +119,7 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
             for p in clash_main_check:
                 logger.log(p)
 
+        clash_main_check = check_if_on_clash_main_menu(vm_index)
         if clash_main_check is not True:
             logger.log(
                 "Clash main wait timed out! These are the pixels it saw:")
