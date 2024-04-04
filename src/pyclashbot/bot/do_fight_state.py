@@ -30,7 +30,6 @@ from pyclashbot.bot.nav import (
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     pixel_is_equal,
-    region_is_color,
 )
 from pyclashbot.memu.client import (
     click,
