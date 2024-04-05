@@ -652,6 +652,7 @@ class Logger:
         """check if can upgrade cards using logger's games_played and
         card_upgrade_attempts stats and user input increment arg"""
 
+        print(f'Can upgrade increment is {increment}')
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always upgrade cards")
