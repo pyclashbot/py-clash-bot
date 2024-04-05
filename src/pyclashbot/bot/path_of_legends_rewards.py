@@ -10,7 +10,7 @@ from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 
-def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: str):
+def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: str):
     """
     Attempts to collect Path of Legends rewards if available.
 
