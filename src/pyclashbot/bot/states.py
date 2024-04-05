@@ -266,9 +266,11 @@ def state_tree(
         return upgrade_cards_state(vm_index, logger, next_state)
 
     if state == "upgrade_all":  # --> trophy_rewards
+        print('Running upgrade_all state')
         next_state = "trophy_rewards"
 
         # if 'upgrade_user_toggle' is toggled on, return next state
+        print('Checking if upgrade_user_toggle job is toggled')
         if job_list["upgrade_user_toggle"]:
             logger.change_status(
                 "Regular upgrade is toggled. Skipping 'UPGRADE ALL' state"
@@ -276,6 +278,7 @@ def state_tree(
             return next_state
 
         # if job isnt selected, just return the next state
+        print('Checking if upgrade_all_cards_user_toggle job is toggled')
         if not job_list["upgrade_all_cards_user_toggle"]:
             logger.change_status(
                 "Upgrade all cards is not toggled. Skipping this state"
@@ -283,7 +286,8 @@ def state_tree(
             return next_state
 
         # if job is available, increment attempts, run the state
-        if logger.check_if_can_card_upgrade():
+        print('Checking if upgrade_all job is ready...')
+        if logger.check_if_can_card_upgrade(job_list["card_upgrade_increment_user_input"]):
             logger.change_status("Upgrade all cards is ready!")
             logger.add_card_upgrade_attempt()
             return upgrade_all_cards_state(vm_index, logger, next_state)
