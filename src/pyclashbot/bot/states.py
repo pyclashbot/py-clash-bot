@@ -585,10 +585,10 @@ def state_tree_tester(vm_index):
         "upgrade_all_cards_user_toggle": True,
         "trophy_road_rewards_user_toggle": True,
         # keep these off
-        "disable_win_track_toggle": True,
-        "skip_fight_if_full_chests_user_toggle": True,
-        "random_plays_user_toggle": True,
-        "memu_attach_mode_toggle": True,
+        "disable_win_track_toggle": False,
+        "skip_fight_if_full_chests_user_toggle": False,
+        "random_plays_user_toggle": False,
+        "memu_attach_mode_toggle": False,
         # job increments
         "card_upgrade_increment_user_input": 1,
         "shop_buy_increment_user_input": 1,
@@ -626,4 +626,4 @@ def state_tree_tester(vm_index):
 if __name__ == "__main__":
     state_tree_tester(12)
     # clip_that()
-1
+
