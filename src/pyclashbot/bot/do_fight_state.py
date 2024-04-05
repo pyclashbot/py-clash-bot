@@ -779,6 +779,8 @@ def get_to_main_after_fight(vm_index, logger):
     start_time = time.time()
     clicked_ok_or_exit = False
 
+    logger.change_status('Returning to clash main after the fight...')
+
     while time.time() - start_time < timeout:
         print("Checking if on clash main after a fight...")
 
