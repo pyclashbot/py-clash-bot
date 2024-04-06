@@ -173,18 +173,30 @@ def check_both_1v1_modes_available(vm_index):
     """
     iar = numpy.asarray(screenshot(vm_index))
 
-    # Accessing the pixel at position Y: 439, X: 279 (numpy arrays are accessed with [row, column])
-    battle_button_pixel = iar[439][279]
-    expected_colors = [
-        [35, 205, 255],  # Possible color 1
-        [82, 249, 255]   # Possible color 2
-    ]
+    # Define positions and their expected colors
+    positions_and_colors = {
+        (439, 279): [
+            [35, 205, 255],
+            [82, 249, 255],
+        ],
+        (435, 279): [
+            [63, 214, 255],
+            [81, 252, 255],
+        ],
+    }
 
-    # Check if the color of the pixel matches any of the expected colors with a tolerance
-    for expected_color in expected_colors:
-        if pixel_is_equal(battle_button_pixel, expected_color, tol=50):
-            return True
-    return False
+    # Iterate through each position and set of expected colors
+    for position, expected_colors in positions_and_colors.items():
+        # numpy arrays are accessed with [row, column], so use y before x
+        y, x = position
+        battle_button_pixel = iar[y][x]
+
+        # Check if the color of the pixel matches any of the expected colors with a tolerance
+        for expected_color in expected_colors:
+            if pixel_is_equal(battle_button_pixel, expected_color, tol=60):
+                return True  # If a match is found, return True immediately
+
+    return False  # Return False if no matching colors were found at either position
 
 
 def check_if_on_path_of_legends_mode(vm_index):
