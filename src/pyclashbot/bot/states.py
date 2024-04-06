@@ -110,6 +110,7 @@ def state_tree(
             # Check if a battle is detected at start
             battle_start_result = check_if_in_battle_at_start(vm_index, logger)
             if battle_start_result == "good":
+                clash_main_check = True
                 break  # Successfully handled starting battle or end-of-battle scenario
             elif battle_start_result == "restart":
                 # Need to restart the process due to issues detected
@@ -123,7 +124,6 @@ def state_tree(
             for p in clash_main_check:
                 logger.log(p)
 
-        clash_main_check = check_if_on_clash_main_menu(vm_index)
         if clash_main_check is not True:
             logger.log(
                 "Clash main wait timed out! These are the pixels it saw:")
