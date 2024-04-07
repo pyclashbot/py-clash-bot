@@ -85,20 +85,26 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
         return "restart"
 
-    # check if in a clan
-    logger.change_status(status="Making sure in a clan before war battle")
-    in_a_clan_check = war_state_check_if_in_a_clan(vm_index, logger)
+    # if logger says we're not in a clan, check if we are in a clan
+    if logger.in_a_clan is False:
+        logger.change_status("Making sure in a clan before war battle")
+        in_a_clan_return = war_state_check_if_in_a_clan(vm_index, logger)
+        if in_a_clan_return == "restart":
+            logger.change_status(
+                status="Error 502835 Failure while checking if in a clan before war battle"
+            )
+            return "restart"
 
-    if in_a_clan_check == "restart":
-        logger.change_status(
-            status="Error 502835 Failure while checking if in a clan before war battle"
-        )
-        return "restart"
+        if not in_a_clan_return:
+            logger.change_status(status="Not in a clan so skipping war...")
+            return next_state
+    else:
+        print(
+            f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
 
-    if not in_a_clan_check:
-        logger.change_status(status="Not in a clan so skipping war...")
-
-        return next_state
+    # if in a clan, update logger's in_a_clan value
+    logger.update_in_a_clan_value(True)
+    print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
 
     # get to clan page
     logger.change_status(status="Starting a war battle")

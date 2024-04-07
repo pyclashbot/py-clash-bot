@@ -99,12 +99,18 @@ def do_2v2_fight_state(
     logger.change_status(status="Starting fight loop")
 
     # if regular fight mode, run the fight loop
-    if not random_fight_mode and _2v2_fight_loop(vm_index, logger) == "restart":
+    if (
+        not random_fight_mode
+        and _2v2_fight_loop(vm_index, logger) == "restart"
+    ):
         logger.log("Error 698245 Failuring in 2v2 regular fight loop")
         return "restart"
 
     # if random fight mode, run the random fight loop
-    if random_fight_mode and _2v2_random_fight_loop(vm_index, logger) == "restart":
+    if (
+        random_fight_mode
+        and _2v2_random_fight_loop(vm_index, logger) == "restart"
+    ):
         logger.log("Error 655 Failuring in 2v2 random fight loop")
         return "restart"
 
@@ -116,14 +122,7 @@ def do_2v2_fight_state(
     return next_state
 
 
-def do_1v1_fight_state(
-    vm_index,
-    logger: Logger,
-    next_state,
-    random_fight_mode,
-    fight_mode_choosed,
-    called_from_launching=False,
-):
+def do_1v1_fight_state(vm_index, logger: Logger, next_state, random_fight_mode, fight_mode_choosed, called_from_launching=False):
     """Handle the entirety of the 1v1 battle state (start fight, do fight, end fight)."""
 
     logger.change_status("do_1v1_fight_state state")
@@ -135,8 +134,7 @@ def do_1v1_fight_state(
     # Wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
         logger.change_status(
-            "Error waiting for 1v1 battle to start in do_1v1_fight_state()"
-        )
+            "Error waiting for 1v1 battle to start in do_1v1_fight_state()")
         return "restart"
 
     logger.change_status("Battle started!")
@@ -263,8 +261,7 @@ def start_2v2_fight_state(vm_index, logger: Logger) -> Literal["restart", "2v2_f
             )
             return "restart"
         next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
-            vm_index, logger, mode="both"
-        )
+            vm_index, logger, mode="both")
         print(f"Fight mode is : {mode_used_in_1v1}")
         return next_1v1_state
 
@@ -513,18 +510,39 @@ def mag_dump(vm_index, logger):
         (274, 599),
         (336, 555),
     ]
+    card_names = ['card1', 'card2', 'card3', 'card4']
+    # Initialise last played times
+    last_played_times = {card: 0 for card in card_names}
 
     logger.log("Mag dumping...")
-    for index in range(3):
-        print(f"mag dump play {index}")
-        card_coord = random.choice(card_coords)
-        play_coord = (random.randint(101, 440), random.randint(50, 526))
+    initial_card_status = check_if_card_is_played(vm_index)
 
+    for _ in range(3):  # Assume you want to attempt to dump 3 cards
+        card_index = random.randint(0, 3)  # Choose a random card
+        card_name = card_names[card_index]
+        card_coord = card_coords[card_index]
+
+        # Simulate playing the card
         click(vm_index, card_coord[0], card_coord[1])
         time.sleep(0.1)
-
+        play_coord = (random.randint(101, 440), random.randint(50, 526))
         click(vm_index, play_coord[0], play_coord[1])
-        time.sleep(0.1)
+        time.sleep(0.2)
+
+        # Check if the chosen card has been played by comparing initial and current card status
+        current_card_status = check_if_card_is_played(vm_index)
+        current_time = time.time()
+
+        # Only log the card as played if more than 0.8 second have passed since it was last played
+        if (initial_card_status[card_name] != current_card_status[card_name] and
+                (current_time - last_played_times[card_name]) > 1.8):
+            logger.add_card_played()
+            print(f"{card_name} played.")
+            # Update the last played time for this card
+            last_played_times[card_name] = current_time
+
+        # Update initial status for next iteration
+        initial_card_status = current_card_status
 
 
 def wait_for_4_elixer(vm_index, logger, mode="1v1"):
@@ -883,7 +901,7 @@ def _2v2_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # play champ ability if its available
         if check_for_champion_ability(vm_index):
             play__champion_ability(vm_index)
-            logger.change_status("Played champion ability")
+            logger.change_status('Played champion ability')
             continue
 
         this_play_start_time = time.time()
@@ -959,7 +977,7 @@ def check_for_champion_ability(vm_index):
     colors = [
         [215, 28, 223],
         [240, 39, 254],
-        [239, 40, 251],
+        [239,  40, 251],
     ]
 
     # for p in pixels:print(p)
@@ -992,7 +1010,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     prev_cards_played = logger.get_cards_played()
 
     # while in battle:
-    while check_if_in_battle(vm_index):
+    while check_if_in_battle(vm_index) != 'None':
         logger.log(f"Battle play #{plays}:")
 
         # wait for 6 elixer
@@ -1007,7 +1025,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # play champ ability if its available
         if check_for_champion_ability(vm_index):
             play__champion_ability(vm_index)
-            logger.change_status("Played champion ability")
+            logger.change_status('Played champion ability')
             continue
 
         if elixer_wait_return == "restart":
@@ -1113,21 +1131,67 @@ def _1v1_random_fight_loop(vm_index, logger):
     """method for handling dynamicly timed 1v1 fight"""
 
     logger.change_status(status="Starting 1v1 battle with random plays")
+    time.sleep(2)
 
     mag_dump(vm_index, logger)
-    for _ in range(random.randint(1, 3)):
-        logger.add_card_played()
 
     # while in battle:
-    while check_if_in_battle(vm_index):
-        time.sleep(8)
-
+    while check_if_in_battle(vm_index) != 'None':
+        time.sleep(7.5)
         mag_dump(vm_index, logger)
-        for _ in range(random.randint(1, 3)):
-            logger.add_card_played()
 
     logger.change_status("Finished with 1v1 battle with random plays...")
     return "good"
+
+
+def check_if_card_is_played(vm_index):
+    """
+    Checks if each of the four cards shows at least 3 out of 4 pixels of a specific color
+    in two consecutive screenshots, taken 0.5 seconds apart.
+
+    Args:
+        vm_index (int): The index of the virtual machine.
+
+    Returns:
+        dict: A dictionary indicating if each card is detected as played based on color matching.
+    """
+    # Define the search areas for each card and the target color
+    card_areas = {
+        'card1': {'x_range': (135, 151), 'y': 565},
+        'card2': {'x_range': (202, 218), 'y': 565},
+        'card3': {'x_range': (269, 286), 'y': 565},
+        'card4': {'x_range': (336, 353), 'y': 565},
+    }
+    target_color = (118, 55, 9)
+    tolerance = 55
+
+    # Function to check cards based on a single screenshot
+    def check_cards_from_screenshot(screenshot_array):
+        card_status = {}
+        for card, area in card_areas.items():
+            row_pixels = screenshot_array[area['y'],
+                                          area['x_range'][0]:area['x_range'][1]+1]
+            match_count = numpy.sum(
+                numpy.all(numpy.abs(row_pixels - target_color) <= tolerance, axis=-1))
+            card_status[card] = match_count >= 3
+        return card_status
+
+    # Take the first screenshot and check cards
+    first_screenshot_array = numpy.asarray(screenshot(vm_index))
+    first_check = check_cards_from_screenshot(first_screenshot_array)
+
+    # Wait 0.12 seconds before taking the second screenshot
+    time.sleep(0.12)
+
+    # Take the second screenshot and check cards
+    second_screenshot_array = numpy.asarray(screenshot(vm_index))
+    second_check = check_cards_from_screenshot(second_screenshot_array)
+
+    # Combine results: only confirm a card as played if both checks agree
+    confirmed_card_status = {
+        card: first_check[card] and second_check[card] for card in first_check}
+
+    return confirmed_card_status
 
 
 if __name__ == "__main__":
