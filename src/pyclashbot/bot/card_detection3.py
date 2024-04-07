@@ -150,7 +150,15 @@ card_color_data = {
         "Indigo": 948,
         "Violet": 88,
     },
-    "fireball":{'Red': 0, 'Orange': 0, 'Yellow': 125, 'Green': 0, 'Blue': 1030, 'Indigo': 1331, 'Violet': 778},
+    "fireball": {
+        "Red": 0,
+        "Orange": 0,
+        "Yellow": 125,
+        "Green": 0,
+        "Blue": 1030,
+        "Indigo": 1331,
+        "Violet": 778,
+    },
     "princess": {
         "Red": 14,
         "Orange": 496,
@@ -250,7 +258,15 @@ card_color_data = {
         "Indigo": 1709,
         "Violet": 1001,
     },
-    "inferno_tower2":{'Red': 0, 'Orange': 1, 'Yellow': 544, 'Green': 153, 'Blue': 0, 'Indigo': 2066, 'Violet': 500},
+    "inferno_tower2": {
+        "Red": 0,
+        "Orange": 1,
+        "Yellow": 544,
+        "Green": 153,
+        "Blue": 0,
+        "Indigo": 2066,
+        "Violet": 500,
+    },
     "inferno_tower": {
         "Red": 1,
         "Orange": 104,
@@ -314,8 +330,11 @@ card_color_data = {
         "Indigo": 420,
         "Violet": 105,
     },
-
 }
+
+
+
+
 
 
 PLAY_COORDS = {
@@ -349,6 +368,10 @@ PLAY_COORDS = {
         "right": [(247, 396), (264, 440), (343, 442)],
     },
 }
+
+
+
+
 
 
 def identify_card_from_color_dict(color_dict):
@@ -427,6 +450,7 @@ def get_pixels_and_count(iar, topleft):
     return pixels
 
 
+#card identification, grouping, and play coords
 def identify_hand_cards(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
     top_lefts = [
@@ -438,14 +462,14 @@ def identify_hand_cards(vm_index):
 
     card_ids = []
 
-    print('\n')
-    for i,top_left in enumerate(top_lefts):
+    print("\n")
+    for i, top_left in enumerate(top_lefts):
         pixels = get_pixels_and_count(iar, top_left)
         color_dict = colors_from_pixels(pixels)
         identification = identify_card_from_color_dict(color_dict)
         card_ids.append(identification)
 
-        print(i+1, identification, color_dict)
+        print(i + 1, identification, color_dict)
 
     return card_ids
 
@@ -537,6 +561,7 @@ def get_play_coords_for_card(vm_index, card_index, side_preference):
     return identity, coords
 
 
+#available cards
 def check_which_cards_are_available(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
@@ -602,5 +627,4 @@ def count_purple_colors_in_pixel_list(pixel_list):
 
 
 if __name__ == "__main__":
-    while 1:
-        print(identify_hand_cards(12))
+    pass

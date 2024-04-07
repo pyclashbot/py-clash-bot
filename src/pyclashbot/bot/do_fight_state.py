@@ -9,7 +9,7 @@ from typing import Literal
 from xmlrpc.client import Boolean
 
 
-from pyclashbot.bot.card_detection3 import (
+from pyclashbot.bot.card_detection4 import (
     get_play_coords_for_card,
     check_which_cards_are_available,
 )
