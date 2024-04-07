@@ -707,6 +707,8 @@ card_color_data = {
             "Maroon": 0,
         },
     ],
+    'fireball':[{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 29, 'Indigo': 410, 'Violet': 0, 'Cyan': 9, 'Magenta': 0, 'Pink': 50, 'Turquoise': 287, 'Lime': 0, 'Purple': 0, 'Brown': 0, 'Teal': 106, 'Maroon': 0}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 154, 'Indigo': 356, 'Violet': 1, 'Cyan': 6, 'Magenta': 0, 'Pink': 61, 'Turquoise': 240, 'Lime': 0, 'Purple': 1, 'Brown': 0, 'Teal': 72, 'Maroon': 0}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 0, 'Indigo': 180, 'Violet': 7, 'Cyan': 6, 'Magenta': 19, 'Pink': 102, 'Turquoise': 330, 'Lime': 0, 'Purple': 11, 'Brown': 0, 'Teal': 235, 'Maroon':
+1}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 11, 'Indigo': 316, 'Violet': 2, 'Cyan': 11, 'Magenta': 40, 'Pink': 63, 'Turquoise': 327, 'Lime': 0, 'Purple': 6, 'Brown': 0, 'Teal': 115, 'Maroon': 0}],
     "goblin_drill": [
         {
             "Red": 0,
@@ -2894,4 +2896,8 @@ def calculate_play_coords(card_grouping: str, side_preference: str):
 
 
 if __name__ == "__main__":
-    pass
+    all_data = get_all_pixel_data(12)
+    for data in all_data:
+        id = find_closest_card(data)
+        print(id)
+
