@@ -319,8 +319,6 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
 
     # enable the stop button after the thread is started
     window["Stop"].update(disabled=False)
-    window["-Pause-Resume-Button-"].update(text="Pause")
-    window["-Pause-Resume-Button-"].update(disabled=False)
 
     return thread
 
@@ -336,8 +334,6 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     """
     logger.change_status(status="Stopping")
     window["Stop"].update(disabled=True)
-    window["-Pause-Resume-Button-"].update(text="Pause")
-    window["-Pause-Resume-Button-"].update(disabled=True)
     thread.shutdown(kill=False)  # send the shutdown flag to the thread
 
 
@@ -381,7 +377,6 @@ def handle_thread_finished(
             window[key].update(disabled=False)
         if thread.logger.errored:
             window["Stop"].update(disabled=True)
-            window["-Pause-Resume-Button-"].update(disabled=True)
         else:
             # reset the logger
             logger = Logger(timed=False)
@@ -424,7 +419,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
 
-        # on pause/resume event, pause/resume the thread
         elif event == "-Collapse-Button-":
             window["-Collapse-Button-"].update(
                 text="Expand" if window["-tab-group-"].visible else "Collapse"
