@@ -341,23 +341,6 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     thread.shutdown(kill=False)  # send the shutdown flag to the thread
 
 
-def pause_resume_button_event(logger: Logger, window, thread: PausableThread) -> None:
-    """method for temporarily stopping the main bot thread
-    args:
-        logger, the logger object for for stats storage and printing
-        window, the gui window
-        thread: the main bot thread
-    returns:
-        None
-    """
-    if thread.toggle_pause():
-        logger.change_status(status="Pausing")
-        window["-Pause-Resume-Button-"].update(text="Resume")
-    else:
-        logger.change_status(status="Resuming")
-        window["-Pause-Resume-Button-"].update(text="Pause")
-
-
 def update_layout(window: sg.Window, logger: Logger) -> None:
     """method for updaing the values in the gui's window
     args:
@@ -442,8 +425,11 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
             stop_button_event(logger, window, thread)
 
         # on pause/resume event, pause/resume the thread
-        elif event == "-Pause-Resume-Button-" and thread is not None:
-            pause_resume_button_event(logger, window, thread)
+        elif event == "-Collapse-Button-":
+            window["-Collapse-Button-"].update(
+                text="Expand" if window["-tab-group-"].visible else "Collapse"
+            )
+            window["-tab-group-"].update(visible=not window["-tab-group-"].visible)
 
         # upon changing any user settings, save the current settings
         elif event in user_config_keys:

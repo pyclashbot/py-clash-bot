@@ -84,16 +84,18 @@ RANDOM_DONATE_IMAGE = get_random_donate_image_path()
 DONATE_BUTTON_LAYOUTS = [
     [
         [
-            sg.Button(
-                image_source=RANDOM_DONATE_IMAGE,
-                size=(70, 7),
-                key=DONATE_BUTTON_KEY,
-            )
-            if RANDOM_DONATE_IMAGE is not None
-            else sg.Button(
-                "Donate",
-                size=(70, 7),
-                key=DONATE_BUTTON_KEY,
+            (
+                sg.Button(
+                    image_source=RANDOM_DONATE_IMAGE,
+                    size=(70, 7),
+                    key=DONATE_BUTTON_KEY,
+                )
+                if RANDOM_DONATE_IMAGE is not None
+                else sg.Button(
+                    "Donate",
+                    size=(70, 7),
+                    key=DONATE_BUTTON_KEY,
+                )
             ),
         ]
     ],
@@ -106,11 +108,7 @@ controls_layout = [
     [
         sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
         sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
-    ]
-]
-
-
-account_switching_layout = [
+    ],
     [
         sg.Frame(
             layout=[
@@ -149,7 +147,7 @@ account_switching_layout = [
                 ],
             ],
             title="Account Switching",
-            # expand_x=True,
+            expand_x=True,
         ),
         sg.Frame(
             layout=[
@@ -162,18 +160,33 @@ account_switching_layout = [
                 ],
             ],
             title="Memu Docking",
-            expand_x=True,
             expand_y=True,
+            expand_x=True,
         ),
-        sg.Frame(layout=bot_stats, title="Bot Stats", expand_x=True, expand_y=True),
-    ]
+    ],
 ]
 
 
 stats_tab_layout = [
     [
         sg.Column(
-            [[sg.Frame(layout=battle_stats, title="Battle Stats", expand_x=True)]],
+            [
+                [
+                    sg.Frame(
+                        layout=battle_stats,
+                        title="Battle Stats",
+                        expand_x=True,
+                        expand_y=True,
+                    )
+                ],
+                [
+                    sg.Frame(
+                        layout=bot_stats,
+                        title="Bot Stats",
+                        expand_x=True,
+                    ),
+                ],
+            ],
             expand_x=True,
             expand_y=True,
         ),
@@ -184,12 +197,13 @@ stats_tab_layout = [
                         layout=collection_stats,
                         title="Collection Stats",
                         expand_x=True,
-                    )
+                        expand_y=True,
+                    ),
                 ],
             ],
             expand_x=True,
-            expand_y=True,
             justification="right",
+            expand_y=True,
         ),
     ]
 ]
@@ -228,69 +242,76 @@ time_status_bar_layout = [
 main_layout = [
     [
         # layout:List[List[Tab]]
-        sg.TabGroup(
-            layout=[
-                [sg.Tab("Controls", controls_layout)],
-                [sg.Tab("Stats", stats_tab_layout)],
-            ]
-        ),
+        sg.pin(
+            sg.Column(
+                [
+                    [
+                        sg.TabGroup(
+                            layout=[
+                                [sg.Tab("Controls", controls_layout)],
+                                [sg.Tab("Stats", stats_tab_layout)],
+                            ],
+                        ),
+                    ],
+                ],
+                key="-tab-group-",
+            )
+        )
     ],
-    [account_switching_layout],
     [
         sg.Button(
             "Start",
-            # expand_x=True,
+            expand_x=True,
             button_color="Lime Green",
             border_width=3,
-            size=(23, 1),
+            # size=(23, 1),
         ),
         sg.Button(
             "Stop",
             disabled=True,
-            #   expand_x=True,
+            expand_x=True,
             border_width=2,
-            size=(23, 1),
+            # size=(23, 1),
         ),
         sg.Button(
-            "Pause",
-            disabled=True,
-            key="-Pause-Resume-Button-",
-            # expand_x=True,
+            "Collapse",
+            key="-Collapse-Button-",
+            expand_x=True,
             border_width=2,
-            size=(23, 1),
+            # size=(23, 1),
         ),
     ],
     [
         sg.Button(
             "Discord",
             key="discord",
-            # expand_x=True,
+            expand_x=True,
             button_color="#7289da",
             border_width=2,
-            size=(17, 1),
-        ),
-        sg.Button(
-            "Upload Log",
-            key="upload-log",
-            # expand_x=True,
-            size=(17, 1),
-            border_width=2,
+            # size=(17, 1),
         ),
         sg.Button(
             "Refresh Emulator",
             key="refresh_emualtor_key",
-            # expand_x=True,
+            expand_x=True,
             button_color="#FFD700",
             border_width=2,
-            size=(17, 1),
+            # size=(17, 1),
+        ),
+        sg.Button(
+            "Upload Log",
+            key="upload-log",
+            expand_x=True,
+            # size=(17, 1),
+            border_width=2,
         ),
         sg.Button(
             "Report Bug",
             key="bug-report",
-            # expand_x=True,
+            expand_x=True,
             button_color="#FF0000",
             border_width=2,
-            size=(16, 1),
+            # size=(16, 1),
         ),
     ],
     [donate_button_layout_tab],
@@ -320,8 +341,8 @@ user_config_keys = [
     "daily_rewards_user_toggle",
     "random_plays_user_toggle",
     "skip_fight_if_full_chests_user_toggle",
-    'trophy_road_rewards_user_toggle',
-    'upgrade_all_cards_user_toggle',
+    "trophy_road_rewards_user_toggle",
+    "upgrade_all_cards_user_toggle",
     # job increment controls keys
     "request_increment_user_input",
     "donate_increment_user_input",
@@ -334,9 +355,9 @@ user_config_keys = [
     "war_attack_increment_user_input",
     "battlepass_collect_increment_user_input",
     "account_switching_increment_user_input",
-    'level_up_chest_increment_user_input',
-    'level_up_chest_user_toggle',
-    'trophy_road_reward_increment_user_input',
+    "level_up_chest_increment_user_input",
+    "level_up_chest_user_toggle",
+    "trophy_road_reward_increment_user_input",
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",
