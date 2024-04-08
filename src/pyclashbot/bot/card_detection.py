@@ -3205,10 +3205,10 @@ def get_card_group(card_id) -> str:
 
     for group, cards in CARD_GROUPS.items():
         if card_id in cards:
-            print(f"This card group is: {group}")
+            # print(f"This card group is: {group}")
             return group
 
-    print(f'This card group is: {"No group"}')
+    # print(f'This card group is: {"No group"}')
     return "No group"
 
 

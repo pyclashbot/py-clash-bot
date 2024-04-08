@@ -15,7 +15,7 @@ from pyclashbot.memu.launcher import reset_clashbot_emulator
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
-from pyclashbot.utils.thread import PausableThread, StoppableThread
+from pyclashbot.utils.thread import  StoppableThread
 from PySimpleGUI import Window
 from pyclashbot.memu.memu_closer import close_memuc_processes
 
