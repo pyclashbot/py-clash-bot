@@ -57,6 +57,9 @@ collection_stats_titles: list[list[Text]] = [
     [
         sg.Text("War Chest Collects"),
     ],
+    [
+        sg.Text("Season Shop Buys"),
+    ],
 ]
 
 collection_stats_values: list[list[Text]] = [
@@ -95,6 +98,9 @@ collection_stats_values: list[list[Text]] = [
     ],
     [
         stat_box("war_chest_collects"),
+    ],
+    [
+        stat_box("season_shop_buys"),
     ],
 ]
 

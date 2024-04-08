@@ -124,7 +124,9 @@ class Logger:
         self.war_chest_collects = 0
         self.level_up_chest_collects = 0
         self.level_up_chest_attempts = 0
-        self.trophy_road_reward_collect_attempts=0
+        self.trophy_road_reward_collect_attempts = 0
+        self.season_shop_buys = 0
+        self.season_shop_buys_attempts = 0
 
         # account stuff
         self.account_order = "-"
@@ -160,28 +162,34 @@ class Logger:
         """updates the stats with a dictionary of mutable statistics"""
         with self.stats_mutex:
             self.stats = {
+                # fight stats
                 "wins": self.wins,
                 "losses": self.losses,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
                 "path_of_legends_1v1_fights": self.path_of_legends_1v1_fights,
                 "2v2_fights": self._2v2_fights,
-                "upgrades": self.cards_upgraded,
-                "requests": self.requests,
-                "war_chest_collects": self.war_chest_collects,
-                "donates": self.donates,
-                "restarts_after_failure": self.restarts_after_failure,
-                "chests_unlocked": self.chests_unlocked,
-                "cards_played": self.cards_played,
                 "war_fights": self.war_fights,
+                "winrate": self.winrate,
+                "card_randomizations": self.card_randomizations,
+                # collection stats
+                "war_chest_collects": self.war_chest_collects,
+                "chests_unlocked": self.chests_unlocked,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "shop_offer_collections": self.shop_offer_collections,
                 "battlepass_collects": self.battlepass_collects,
                 "level_up_chest_collects": self.level_up_chest_collects,
                 "bannerbox_collects": self.bannerbox_collects,
                 "daily_rewards": self.daily_rewards,
+                "season_shop_buys": self.season_shop_buys,
+                # card stats
+                "upgrades": self.cards_upgraded,
+                "requests": self.requests,
+                "donates": self.donates,
+                "cards_played": self.cards_played,
+                # bot stats
+                "restarts_after_failure": self.restarts_after_failure,
                 "current_status": self.current_status,
-                "winrate": self.winrate,
-                "card_randomizations": self.card_randomizations,
+                # account stuff
                 "current_account": self.current_account,
                 "account_switches": self.account_switches,
                 "account_order": self.account_order,
@@ -224,6 +232,13 @@ class Logger:
             hours, minutes, seconds = 0, 0, 0
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
+    def increment_season_shop_buys_attempts(self):
+        self.season_shop_buys_attempts += 1
+
+
+    def increment_season_shop_buys(self):
+        self.season_shop_buys += 1
+
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1
 
@@ -235,10 +250,8 @@ class Logger:
             return "path_of_legends"
         return "trophy_road"
 
-    def update_in_a_clan_value(self,in_a_clan:bool):
+    def update_in_a_clan_value(self, in_a_clan: bool):
         self.in_a_clan = in_a_clan
-
-
 
     @_updates_log
     def calc_win_rate(self):
@@ -450,15 +463,15 @@ class Logger:
         """return chests_unlocked stat"""
         return self.chests_unlocked
 
-
     def add_trophy_reward_collect_attempt(self):
         self.trophy_road_reward_collect_attempts += 1
-
 
     def check_if_can_collect_trophy_road_rewards(self, increment):
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always collect_trophy_road_rewards")
+            self.log(
+                f"Increment is {increment} so can always collect_trophy_road_rewards"
+            )
             return True
 
         # count trophy_road_reward_collect_attempts
@@ -492,8 +505,6 @@ class Logger:
             f"Can't collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
         )
         return False
-
-
 
     def check_if_can_open_chests(self, increment):
         """check if can open chests using logger's games_played and
@@ -652,7 +663,7 @@ class Logger:
         """check if can upgrade cards using logger's games_played and
         card_upgrade_attempts stats and user input increment arg"""
 
-        print(f'Can upgrade increment is {increment}')
+        print(f"Can upgrade increment is {increment}")
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always upgrade cards")
@@ -958,6 +969,38 @@ class Logger:
             f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts"
         )
         return False
+
+    def check_if_can_buy_season_shop_offers(self, increment) -> bool:
+        """method to check if can switch account given
+        attempts, games played, and user increment input"""
+
+        if increment == 1:
+            self.log(f"Increment is {increment} so can always switch account")
+            return True
+
+        season_shop_buys_attempts = self.season_shop_buys_attempts
+
+        games_played = self._1v1_fights + self._2v2_fights + self.war_fights
+
+        if games_played == 0:
+            self.log(
+                f"Can buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
+            )
+            return True
+
+        if games_played / int(increment) >= season_shop_buys_attempts:
+            self.log(
+                f"Can buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
+            )
+            return True
+
+        self.log(
+            f"Can't buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
+        )
+        return False
+
+
+
 
     def update_time_of_last_request(self, input_time) -> None:
         """sets logger's time_of_last_request to input_time"""
