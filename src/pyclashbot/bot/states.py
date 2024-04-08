@@ -32,6 +32,7 @@ from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.daily_challenge_collection import collect_daily_rewards_state
 from pyclashbot.memu.client import click
 from pyclashbot.memu.docker import start_memu_dock_mode
+from pyclashbot.bot.season_shop_offers import collect_season_shop_offers_state
 
 mode_used_in_1v1 = None
 
@@ -266,11 +267,11 @@ def state_tree(
         return upgrade_cards_state(vm_index, logger, next_state)
 
     if state == "upgrade_all":  # --> trophy_rewards
-        print('Running upgrade_all state')
+        print("Running upgrade_all state")
         next_state = "trophy_rewards"
 
         # if 'upgrade_user_toggle' is toggled on, return next state
-        print('Checking if upgrade_user_toggle job is toggled')
+        print("Checking if upgrade_user_toggle job is toggled")
         if job_list["upgrade_user_toggle"]:
             logger.change_status(
                 "Regular upgrade is toggled. Skipping 'UPGRADE ALL' state"
@@ -278,7 +279,7 @@ def state_tree(
             return next_state
 
         # if job isnt selected, just return the next state
-        print('Checking if upgrade_all_cards_user_toggle job is toggled')
+        print("Checking if upgrade_all_cards_user_toggle job is toggled")
         if not job_list["upgrade_all_cards_user_toggle"]:
             logger.change_status(
                 "Upgrade all cards is not toggled. Skipping this state"
@@ -286,8 +287,10 @@ def state_tree(
             return next_state
 
         # if job is available, increment attempts, run the state
-        print('Checking if upgrade_all job is ready...')
-        if logger.check_if_can_card_upgrade(job_list["card_upgrade_increment_user_input"]):
+        print("Checking if upgrade_all job is ready...")
+        if logger.check_if_can_card_upgrade(
+            job_list["card_upgrade_increment_user_input"]
+        ):
             logger.change_status("Upgrade all cards is ready!")
             logger.add_card_upgrade_attempt()
             return upgrade_all_cards_state(vm_index, logger, next_state)
@@ -419,8 +422,8 @@ def state_tree(
 
         return collect_battlepass_state(vm_index, logger, next_state)
 
-    if state == "card_mastery":  # --> start_fight
-        next_state = "start_fight"
+    if state == "card_mastery":  # --> season_shop
+        next_state = "season_shop"
 
         # if job not selected, return next state
         if not job_list["card_mastery_user_toggle"]:
@@ -436,6 +439,23 @@ def state_tree(
 
         # return output of this state
         return card_mastery_state(vm_index, logger, next_state)
+
+    if state == "season_shop":  # --> start_fight
+        next_state = "start_fight"
+
+        # if job isnt toggled, return next state
+        if not job_list["season_shop_buys_user_toggle"]:
+            logger.change_status("Season shop buys is not toggled. Skipping this state")
+            return next_state
+
+        # if job isnt ready yet, return next state
+        if not logger.check_if_can_buy_season_shop_offers(
+            job_list["season_shop_buys_increment_user_input"]
+        ):
+            logger.change_status("Season shop buys is not ready. Skipping this state")
+            return next_state
+
+        return collect_season_shop_offers_state(vm_index, logger, next_state)
 
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
@@ -560,7 +580,8 @@ def state_tree(
 
 def clip_that():
     import pyautogui
-    pyautogui.click(860,1197)
+
+    pyautogui.click(860, 1197)
     time.sleep(1)
 
 
@@ -588,11 +609,14 @@ def state_tree_tester(vm_index):
         "level_up_chest_user_toggle": True,
         "upgrade_all_cards_user_toggle": True,
         "trophy_road_rewards_user_toggle": True,
+        "season_shop_buys_user_toggle": True,
+
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "random_plays_user_toggle": False,
         "memu_attach_mode_toggle": False,
+
         # job increments
         "card_upgrade_increment_user_input": 1,
         "shop_buy_increment_user_input": 1,
@@ -606,6 +630,8 @@ def state_tree_tester(vm_index):
         "battlepass_collect_increment_user_input": 1,
         "level_up_chest_increment_user_input": 1,
         "trophy_road_reward_increment_user_input": 1,
+        "season_shop_buys_increment_user_input": 1,
+
         # account switching input info
         "account_switching_increment_user_input": 1,
         "account_switching_toggle": False,
@@ -621,13 +647,12 @@ def state_tree_tester(vm_index):
             state,
             job_list,
         )
-        if state == 'restart':
-            print('Restart state')
-            print('Clipping that')
-            clip_that()
+        if state == "restart":
+            print("Restart state")
+            # print("Clipping that")
+            # clip_that()
 
 
 if __name__ == "__main__":
     state_tree_tester(12)
     # clip_that()
-

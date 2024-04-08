@@ -343,6 +343,7 @@ user_config_keys = [
     "skip_fight_if_full_chests_user_toggle",
     "trophy_road_rewards_user_toggle",
     "upgrade_all_cards_user_toggle",
+    "season_shop_buys_user_toggle",
     # job increment controls keys
     "request_increment_user_input",
     "donate_increment_user_input",
@@ -358,6 +359,7 @@ user_config_keys = [
     "level_up_chest_increment_user_input",
     "level_up_chest_user_toggle",
     "trophy_road_reward_increment_user_input",
+    "season_shop_buys_increment_user_input",
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",

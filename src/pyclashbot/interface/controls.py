@@ -30,6 +30,7 @@ job_increments_titles_column = [
     [sg.Text("Collect Battlepass Every:")],
     [sg.Text("Collect Level Up Chest Every:")],
     [sg.Text("Collect Trophy Road Rewards Every:")],
+    [sg.Text("Collect Season Shop Rewards Every:")],
     [sg.Text("Switch Account Every:")],
 ]
 
@@ -91,6 +92,12 @@ controls = [
                         "trophy_road_reward_increment_user_input"
                     )
                 ],
+[
+                    make_job_increment_control_object(
+                        "season_shop_buys_increment_user_input"
+                    )
+                ],
+
                 [
                     make_job_increment_control_object(
                         "account_switching_increment_user_input"
