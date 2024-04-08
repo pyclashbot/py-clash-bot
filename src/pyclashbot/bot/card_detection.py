@@ -69,7 +69,7 @@ PLAY_COORDS = {
         "right": [(295, 185)],
     },
     "rocket": {
-        "left": [(118, 194)],
+        "left": [(118, 185)],
         "right": [(295, 185)],
     },
     "lightning": {
