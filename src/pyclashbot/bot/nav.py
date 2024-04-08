@@ -377,25 +377,32 @@ def collect_boot_reward(vm_index):
 
 
 def check_for_boot_reward(vm_index):
-    """method to find the elixer price icon in a cropped image"""
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[350][150],
+        iar[377][174],
+        iar[379][198],
+        iar[378][210],
+        iar[390][250],
+        iar[355][273],
+        iar[395][146],
+    ]
+    colors = [
+[ 39 ,189, 255],
+[255, 255, 255],
+[255, 255, 255],
+[ 43, 190, 255],
+[ 89 ,135, 208],
+[ 62 ,199, 255],
+[ 43, 190, 255],
+    ]
+    # for p in pixels:print(p)
 
-    folder = "collect_war_boot"
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
 
-    names = make_reference_image_list(get_file_count(folder))
-
-    locations: list[list[int] | None] = find_references(
-        screenshot(vm_index),
-        folder,
-        names,
-        tolerance=0.52,
-    )
-
-    coord = get_first_location(locations)
-
-    if coord is None:
-        return None
-
-    return [coord[1], coord[0]]
+    return True
 
 
 def get_to_clan_tab_from_clash_main(
@@ -1597,4 +1604,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    print(check_if_on_card_page(12))
+    print(check_for_boot_reward(12))
