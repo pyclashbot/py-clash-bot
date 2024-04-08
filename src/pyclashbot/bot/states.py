@@ -600,7 +600,7 @@ def state_tree_tester(vm_index):
         "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": True,
         "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": True,
+        "upgrade_user_toggle": False,
         "war_user_toggle": True,
         "random_decks_user_toggle": True,
         "open_bannerbox_user_toggle": True,
@@ -610,13 +610,11 @@ def state_tree_tester(vm_index):
         "upgrade_all_cards_user_toggle": True,
         "trophy_road_rewards_user_toggle": True,
         "season_shop_buys_user_toggle": True,
-
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "random_plays_user_toggle": False,
         "memu_attach_mode_toggle": False,
-
         # job increments
         "card_upgrade_increment_user_input": 1,
         "shop_buy_increment_user_input": 1,
@@ -631,13 +629,12 @@ def state_tree_tester(vm_index):
         "level_up_chest_increment_user_input": 1,
         "trophy_road_reward_increment_user_input": 1,
         "season_shop_buys_increment_user_input": 1,
-
         # account switching input info
         "account_switching_increment_user_input": 1,
-        "account_switching_toggle": False,
+        "account_switching_toggle": True,
         "account_switching_slider": 1,
         "next_account": 0,
-        "random_account_switch_list": [0],
+        "random_account_switch_list": [0,1],
     }
 
     while 1:
