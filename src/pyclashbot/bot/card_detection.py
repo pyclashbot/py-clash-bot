@@ -84,6 +84,11 @@ PLAY_COORDS = {
         "left": [(50,182)],
         "right": [(355,178)],
     },
+    "goblin_drill":{
+        "left": [(91,149),(122,183)],
+        "right": [(305,177),(334,154)],
+
+    },
     "graveyard": {
         "left": [(69, 163)],
         "right": [(348, 170)],
@@ -102,6 +107,7 @@ CARD_GROUPS: dict[str, list[str]] = {
     "lightning": ["lightning"],
     "log": ["log"],
     "tornado": ["tornado"],
+    "goblin_drill":['goblin_drill'],
     "graveyard": ["graveyard"],
     "turret": [
         "bomb_tower",
