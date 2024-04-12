@@ -15,7 +15,7 @@ from pyclashbot.memu.launcher import reset_clashbot_emulator
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
-from pyclashbot.utils.thread import  StoppableThread
+from pyclashbot.utils.thread import StoppableThread
 from PySimpleGUI import Window
 from pyclashbot.memu.memu_closer import close_memuc_processes
 
@@ -87,12 +87,14 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
         "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
-        'season_shop_buys_user_toggle':values['season_shop_buys_user_toggle'],
+        "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
         # job increments
         "trophy_road_reward_increment_user_input": values[
             "trophy_road_reward_increment_user_input"
         ],
-        'season_shop_buys_increment_user_input':values['season_shop_buys_increment_user_input'],
+        "season_shop_buys_increment_user_input": values[
+            "season_shop_buys_increment_user_input"
+        ],
         "card_upgrade_increment_user_input": values[
             "card_upgrade_increment_user_input"
         ],
