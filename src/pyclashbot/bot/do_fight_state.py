@@ -44,6 +44,8 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
 )
 
+yolo_images_save_path = r'C:\My Files\my Programs\YOYO_PYCB\images'
+
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
 HAND_CARDS_COORDS = [
@@ -524,7 +526,9 @@ def mag_dump(vm_index, logger):
         time.sleep(0.1)
 
 
-def wait_for_elixer(vm_index, logger, random_elixer_wait) -> Boolean | Literal['restart'] | Literal['no battle']:
+def wait_for_elixer(
+    vm_index, logger, random_elixer_wait
+) -> Boolean | Literal["restart"] | Literal["no battle"]:
     """method to wait for 4 elixer during a battle"""
 
     start_time = time.time()
@@ -845,54 +849,83 @@ def get_to_main_after_fight(vm_index, logger):
 # main fight loops
 
 
-
 def play_a_card(vm_index, logger) -> Boolean:
-    logger.change_status('Looking at which cards are available')
-    #check which cards are available
+    logger.change_status("Looking at which cards are available")
+    # check which cards are available
     card_indicies = check_which_cards_are_available(vm_index)
-    logger.change_status(f'These cards are available: {card_indicies}')
+    logger.change_status(f"These cards are available: {card_indicies}")
 
-    #pick a random card index
+    # pick a random card index
     if len(card_indicies) == 0:
-        logger.change_status('No cards ready yet...')
+        logger.change_status("No cards ready yet...")
         return True
 
     card_index = random.choice(card_indicies)
-    logger.change_status(f'Choosing this card index: {card_index}')
+    logger.change_status(f"Choosing this card index: {card_index}")
 
-    #get a coord based on the selected side
+    # get a coord based on the selected side
     card_id, play_coord = get_play_coords_for_card(vm_index, card_index, "left")
 
-    #if coord is none for whatever reason, just skip this play
+    # if coord is none for whatever reason, just skip this play
     if play_coord is None:
         logger.change_status("Bad play coord. Redoing...")
         return False
 
-    print(f'Playing card: {card_id} at {play_coord}')
+    print(f"Playing card: {card_id} at {play_coord}")
 
-    #click the card index
+    # click the card index
     random_card_coord = HAND_CARDS_COORDS[card_index]
     click(vm_index, random_card_coord[0], random_card_coord[1])
     time.sleep(0.1)
 
-    #click the play coord
+    # click the play coord
     click(vm_index, play_coord[0], play_coord[1])
     logger.add_card_played()
 
     return True
 
 
+import os
+from PIL import Image
+import cv2
+
+def save_fight_image(vm_index):
+    # Assuming screenshot() returns a BGR NumPy array
+    bgr_image = screenshot(vm_index)
+
+    # Convert BGR to RGB
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+
+    # Convert NumPy array to PIL image
+    image = Image.fromarray(rgb_image)
+
+    folder_path = yolo_images_save_path
+
+    if os.path.exists(folder_path):
+        print("Folder exists.")
+    else:
+        print("Folder does not exist. Creating folder...")
+        os.makedirs(folder_path)
+
+    path = os.path.join(folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png")
+    image.save(path)
+
+    print('Saved a fight image')
+
+
 def _2v2_fight_loop(vm_index: int, logger: Logger):
     prev_cards_played = logger.get_cards_played()
 
     while check_for_in_battle_with_delay(vm_index):
+        save_fight_image(vm_index)
+
         random_elixer_wait_count = random.randint(3, 7)
 
         wait_output = wait_for_elixer(vm_index, logger, random_elixer_wait_count)
 
         if wait_output == "restart":
             logger.change_status("Failure while waiting for elixer")
-            return 'restart'
+            return "restart"
 
         if check_for_champion_ability(vm_index):
             logger.change_status("Playing champion ability!")
@@ -900,18 +933,19 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
             continue
 
         if not check_if_in_battle(vm_index):
-            'Not in a battle anymore'
+            "Not in a battle anymore"
             break
 
-        print('playing a card in 2v2...')
+        print("playing a card in 2v2...")
         play_a_card(vm_index, logger)
 
-    logger.change_status('End of the 2v2 fight!')
+    logger.change_status("End of the 2v2 fight!")
     time.sleep(3)
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
     return "good"
+
 
 def check_for_champion_ability(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
@@ -1095,5 +1129,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    while 1:
-        _2v2_fight_loop(12, Logger())
+    save_fight_image(12)
