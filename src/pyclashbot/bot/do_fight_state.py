@@ -905,8 +905,7 @@ def save_fight_image(vm_index):
     if os.path.exists(folder_path):
         print("Folder exists.")
     else:
-        print("Folder does not exist. Creating folder...")
-        os.makedirs(folder_path)
+        return
 
     path = os.path.join(folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png")
     image.save(path)
