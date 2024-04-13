@@ -67,10 +67,10 @@ battle_tab = (
         job_check_box("2v2 battles", "2v2_user_toggle", default_value=True),
     ],
     [
-        job_check_box("War battles", "war_user_toggle", default_value=True),
+        job_check_box("War battles", "war_user_toggle", default_value=False),
     ],
     [
-        job_check_box("Random decks", "random_decks_user_toggle", default_value=True),
+        job_check_box("Random decks", "random_decks_user_toggle", default_value=False),
     ],
     [
         job_check_box("Random plays", "random_plays_user_toggle", default_value=False),
@@ -96,32 +96,32 @@ rewards_tab = [
     ],
     [
         job_check_box(
-            "Battlepass rewards", "open_battlepass_user_toggle", default_value=True
+            "Battlepass rewards", "open_battlepass_user_toggle", default_value=False
         ),
     ],
     [
         job_check_box(
-            "Card mastery rewards", "card_mastery_user_toggle", default_value=True
+            "Card mastery rewards", "card_mastery_user_toggle", default_value=False
         ),
     ],
     [
         job_check_box(
-            "Daily Challenge Rewards", "daily_rewards_user_toggle", default_value=True
+            "Daily Challenge Rewards", "daily_rewards_user_toggle", default_value=False
         ),
     ],
     [
         job_check_box(
-            "Level Up Rewards", "level_up_chest_user_toggle", default_value=True
+            "Level Up Rewards", "level_up_chest_user_toggle", default_value=False
         ),
     ],
     [
         job_check_box(
-            "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=True
+            "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False
         ),
     ],
     [
         job_check_box(
-            "Trophy Road Rewards", "trophy_road_rewards_user_toggle", default_value=True
+            "Trophy Road Rewards", "trophy_road_rewards_user_toggle", default_value=False
         ),
     ],
 ]
@@ -129,10 +129,10 @@ rewards_tab = [
 
 card_collection_tab = [
     [
-        job_check_box("Request cards", "request_user_toggle", default_value=True),
+        job_check_box("Request cards", "request_user_toggle", default_value=False),
     ],
     [
-        job_check_box("Donate cards", "donate_toggle", default_value=True),
+        job_check_box("Donate cards", "donate_toggle", default_value=False),
     ],
     [
         job_check_box(
@@ -147,16 +147,16 @@ card_collection_tab = [
         ),
     ],
     [
-        job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=True),
+        job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=False),
     ],
     [
         job_check_box(
-            "Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=True
+            "Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=False
         ),
     ],
     [
         job_check_box(
-            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=True
+            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=False
         ),
     ],
 ]
