@@ -552,7 +552,7 @@ def wait_for_elixer(
 
         if not check_for_in_battle_with_delay(vm_index):
             logger.change_status(status="Not in battle, stopping waiting for elixer.")
-            break
+            return 'no battle'
 
     logger.change_status(
         f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer."
@@ -850,6 +850,7 @@ def get_to_main_after_fight(vm_index, logger):
 
 
 def play_a_card(vm_index, logger) -> Boolean:
+    print('\n')
     logger.change_status("Looking at which cards are available")
     # check which cards are available
     card_indicies = check_which_cards_are_available(vm_index)
@@ -871,7 +872,7 @@ def play_a_card(vm_index, logger) -> Boolean:
         logger.change_status("Bad play coord. Redoing...")
         return False
 
-    print(f"Playing card: {card_id} at {play_coord}")
+    logger.change_status(f"Playing card: {card_id} at {play_coord}")
 
     # click the card index
     random_card_coord = HAND_CARDS_COORDS[card_index]
@@ -926,6 +927,10 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
         if wait_output == "restart":
             logger.change_status("Failure while waiting for elixer")
             return "restart"
+
+        if wait_output == 'no battle':
+            logger.change_status('Not in a 1v1 battle anymore!')
+            break
 
         if check_for_champion_ability(vm_index):
             logger.change_status("Playing champion ability!")
@@ -990,12 +995,12 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
     # while in battle:
     while check_if_in_battle(vm_index):
+        print('\n')
         logger.log(f"Battle play #{plays}:")
 
         # wait for 6 elixer
-        logger.log("Waiting for 6 elixer")
-
         random_elixer_wait = random.randint(3, 7)
+        logger.log(f"Waiting for {random_elixer_wait} elixer")
         elixer_wait_start_time = time.time()
         elixer_wait_return = wait_for_elixer(vm_index, logger, random_elixer_wait)
         logger.change_status(
@@ -1129,4 +1134,5 @@ def _1v1_random_fight_loop(vm_index, logger):
 
 
 if __name__ == "__main__":
-    save_fight_image(12)
+    # _1v1_fight_loop(12, Logger())
+    _2v2_fight_loop(12, Logger())
