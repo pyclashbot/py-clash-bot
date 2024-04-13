@@ -44,7 +44,7 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
 )
 
-yolo_images_save_path = r'C:\My Files\my Programs\YOYO_PYCB\images'
+yolo_images_save_path = r"C:\My Files\my Programs\clash_fight_images"
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
