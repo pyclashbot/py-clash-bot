@@ -898,29 +898,39 @@ from PIL import Image
 import cv2
 
 def save_fight_image(vm_index):
-    # Assuming screenshot() returns a BGR NumPy array
-    bgr_image = screenshot(vm_index)
+    #screenshot twice
 
-    # Convert BGR to RGB
-    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+    for i in range(2):
 
-    # Convert NumPy array to PIL image
-    image = Image.fromarray(rgb_image)
+        # Assuming screenshot() returns a BGR NumPy array
+        bgr_image = screenshot(vm_index)
 
-    folder_path = yolo_images_save_path
+        # Convert BGR to RGB
+        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
 
-    if not verify_matt_pc():
-        return
+        # Convert NumPy array to PIL image
+        image = Image.fromarray(rgb_image)
 
-    if os.path.exists(folder_path):
-        print("Folder exists.")
-    else:
-        return
+        folder_path = yolo_images_save_path
 
-    path = os.path.join(folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png")
-    image.save(path)
+        if not verify_matt_pc():
+            return
 
-    print('Saved a fight image')
+        if os.path.exists(folder_path):
+            # print("Folder exists.")
+            pass
+        else:
+            print("Folder doesnt exist.")
+
+            return
+
+        path = os.path.join(folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png")
+        image.save(path)
+
+        print('Saved a fight image')
+
+        if i == 0:
+            time.sleep(0.5)
 
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
@@ -931,6 +941,7 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
         random_elixer_wait_count = random.randint(3, 7)
 
         wait_output = wait_for_elixer(vm_index, logger, random_elixer_wait_count)
+        save_fight_image(vm_index)
 
         if wait_output == "restart":
             logger.change_status("Failure while waiting for elixer")
@@ -951,7 +962,6 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
 
         print("playing a card in 2v2...")
         play_a_card(vm_index, logger)
-        save_fight_image(vm_index)
 
 
     logger.change_status("End of the 2v2 fight!")
@@ -1146,3 +1156,4 @@ def _1v1_random_fight_loop(vm_index, logger):
 if __name__ == "__main__":
     # _1v1_fight_loop(12, Logger())
     _2v2_fight_loop(12, Logger())
+
