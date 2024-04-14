@@ -885,6 +885,13 @@ def play_a_card(vm_index, logger) -> Boolean:
 
     return True
 
+def verify_matt_pc():
+    import socket
+    computer_name = socket.gethostname()
+    if computer_name == "MATT-PC":
+        return True
+    return False
+
 
 import os
 from PIL import Image
@@ -901,6 +908,9 @@ def save_fight_image(vm_index):
     image = Image.fromarray(rgb_image)
 
     folder_path = yolo_images_save_path
+
+    if not verify_matt_pc():
+        return
 
     if os.path.exists(folder_path):
         print("Folder exists.")
