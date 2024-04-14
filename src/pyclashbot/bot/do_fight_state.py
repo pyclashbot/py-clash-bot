@@ -927,7 +927,6 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
     prev_cards_played = logger.get_cards_played()
 
     while check_for_in_battle_with_delay(vm_index):
-        save_fight_image(vm_index)
 
         random_elixer_wait_count = random.randint(3, 7)
 
@@ -952,6 +951,8 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
 
         print("playing a card in 2v2...")
         play_a_card(vm_index, logger)
+        save_fight_image(vm_index)
+
 
     logger.change_status("End of the 2v2 fight!")
     time.sleep(3)
