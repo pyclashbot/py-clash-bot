@@ -63,5 +63,4 @@ def configure_vm(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 0
-    configure_vm(vm_index)
+    pass
