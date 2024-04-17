@@ -17,9 +17,16 @@
 |      |**Daily Challenge Rewards**                 |      Collect daily/weekly challenge rewards                                  |
 |      |**Level Up Rewards**                        |      Collect level up rewards                                   |
 |      |**Open Bannerbox Chests**                   |      Open bannerbox crates                                   |
+|      |**Trophy Road Rewards**                   |      Collect rewards gained by climbing the trophy road ladder                                   |
+|      |**Season Shop Buys**                   |     Spends currency gained from 2v2 battles and other events randomly                                   |
 | | |   |
 |   Card Jobs|**Request Cards**                    |     Request cards from your clan                                       |
 |      |**Donate Cards**                    |      Donate cards to your clan                                  |
 |      |**Buy FREE Shop Offers**                    |      Buy the daily free shop offers from the shop                                  |
 |      |**Buy Shop Offers for Gold**                    |      Buy the daily shop offers for gold from the shop                                  |
 |      |**Upgrade Cards**                    |      Upgrade your current deck after each fight                                  |
+|      |**Upgrade All Cards**                    |      Upgrade every card in your collection                                  |
+| | |   |
+|   Bot Settings|**Memu Docking**                    |    Resize and attach the emulator to the GUI                                    |
+|      |**Account Switching toggle**                    |     Switch between several accounts using SSID                            |
+|      |**Account Switching slide**                    |     Indicate how many accounts to switch between                           |
