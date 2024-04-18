@@ -44,6 +44,9 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
 )
 
+
+
+SAVE_FIGHT_IMAGES = False
 yolo_images_save_path = r"C:\My Files\my Programs\clash_fight_images"
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
@@ -954,7 +957,8 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
         random_elixer_wait_count = random.randint(3, 7)
 
         wait_output = wait_for_elixer(vm_index, logger, random_elixer_wait_count)
-        save_fight_image(vm_index)
+        if SAVE_FIGHT_IMAGES:
+            save_fight_image(vm_index)
 
         if wait_output == "restart":
             logger.change_status("Failure while waiting for elixer")
@@ -1035,8 +1039,8 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         # wait for 6 elixer
         random_elixer_wait = random.randint(3, 7)
         elixer_wait_return = wait_for_elixer(vm_index, logger, random_elixer_wait)
-        save_fight_image(vm_index)
-
+        if SAVE_FIGHT_IMAGES:
+            save_fight_image(vm_index)
         #if a failure during elixer wait
         if elixer_wait_return == "restart":
             logger.change_status(
