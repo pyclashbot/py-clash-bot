@@ -609,7 +609,7 @@ def state_tree_tester(vm_index):
         "level_up_chest_user_toggle": False,
         "upgrade_all_cards_user_toggle": False,
         "trophy_road_rewards_user_toggle": True,
-        "season_shop_buys_user_toggle": True,
+        "season_shop_buys_user_toggle": False,
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
