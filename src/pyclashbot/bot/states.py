@@ -591,10 +591,10 @@ def state_tree_tester(vm_index):
     job_list = {
         # job toggles
         "open_battlepass_user_toggle": True,
-        "open_chests_user_toggle": True,
+        "open_chests_user_toggle": False,
         "request_user_toggle": True,
         "donate_toggle": True,
-        "card_mastery_user_toggle": True,
+        "card_mastery_user_toggle": False,
         "free_offer_user_toggle": True,
         "gold_offer_user_toggle": True,
         "trophy_road_1v1_battle_user_toggle": False,
@@ -602,12 +602,12 @@ def state_tree_tester(vm_index):
         "2v2_battle_user_toggle": True,
         "upgrade_user_toggle": False,
         "war_user_toggle": True,
-        "random_decks_user_toggle": True,
+        "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": True,
         "daily_rewards_user_toggle": True,
         "battlepass_collect_user_toggle": True,
-        "level_up_chest_user_toggle": True,
-        "upgrade_all_cards_user_toggle": True,
+        "level_up_chest_user_toggle": False,
+        "upgrade_all_cards_user_toggle": False,
         "trophy_road_rewards_user_toggle": True,
         "season_shop_buys_user_toggle": True,
         # keep these off
@@ -634,7 +634,7 @@ def state_tree_tester(vm_index):
         "account_switching_toggle": True,
         "account_switching_slider": 1,
         "next_account": 0,
-        "random_account_switch_list": [0,1],
+        "random_account_switch_list": [0,1,2],
     }
 
     while 1:
@@ -646,6 +646,7 @@ def state_tree_tester(vm_index):
         )
         if state == "restart":
             print("Restart state")
+            input('Enter to continue...')
             # print("Clipping that")
             # clip_that()
 
@@ -653,3 +654,5 @@ def state_tree_tester(vm_index):
 if __name__ == "__main__":
     state_tree_tester(12)
     # clip_that()
+
+    # card_mastery_state(12, Logger(), 'next_state')
