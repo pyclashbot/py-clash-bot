@@ -149,11 +149,17 @@ def count_scrolls_in_request_page(vm_index) -> int:
 
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
+    timeout = 60#s
+    start_time = time.time()
     while check_if_can_scroll_in_request_page(vm_index):
         print(f"One scroll down. Count is {scrolls}")
         scroll_down_in_request_page(vm_index)
         scrolls += 1
         time.sleep(1)
+
+        #if taken too much time, return 5
+        if time.time() - start_time > timeout:
+            return 5
 
     # close request screen with deadspace click
     click(vm_index, 15, 300, clicks=3, interval=1)
