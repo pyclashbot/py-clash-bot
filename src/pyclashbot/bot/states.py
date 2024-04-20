@@ -592,8 +592,8 @@ def state_tree_tester(vm_index):
         # job toggles
         "open_battlepass_user_toggle": True,
         "open_chests_user_toggle": False,
-        "request_user_toggle": True,
-        "donate_toggle": True,
+        "request_user_toggle": False,
+        "donate_toggle": False,
         "card_mastery_user_toggle": False,
         "free_offer_user_toggle": True,
         "gold_offer_user_toggle": True,
