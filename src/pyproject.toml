@@ -17,7 +17,7 @@ include = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
+python = ">=3.12.0,<3.13"
 opencv-python = "^4.9.0"
 numpy = "^1.26.4"
 pysimplegui = "^4.0.0"
@@ -34,7 +34,7 @@ optional = true
 
 
 [tool.poetry.group.build.dependencies]
-cx-freeze = "^6.15.16"
+cx-freeze = "^7.0.0"
 poethepoet = "^0.25.0"
 
 
@@ -101,7 +101,7 @@ interpreter = "powershell"
 
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py312']
 include = '\.pyi?$'
 exclude = '''
 (
@@ -127,7 +127,7 @@ profile = "black"
 
 [tool.pylint.main]
 ignore = ["build", "debug"]
-py-version = "3.10"
+py-version = "3.12"
 suggestion-mode = true
 disable = [
   "C0114", # missing-module-docstring

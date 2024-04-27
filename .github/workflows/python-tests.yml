@@ -13,12 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python: ["3.11"]
+        python: ["3.12"]
         experimental: [false]
-        # include:
-        #   - os: windows-latest
-        #     python: "3.12-dev"
-        #     experimental: true
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     steps:
