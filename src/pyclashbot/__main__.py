@@ -16,10 +16,10 @@ from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
-from PySimpleGUI import Window
 from pyclashbot.memu.memu_closer import close_memuc_processes
 
 initalize_pylogging()
+
 
 
 def read_window(
@@ -268,7 +268,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
     )
 
 
-def start_button_event(logger: Logger, window: Window, values) -> WorkerThread | None:
+def start_button_event(logger: Logger, window: sg.Window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
