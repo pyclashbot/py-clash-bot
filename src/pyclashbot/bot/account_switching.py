@@ -27,8 +27,7 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "293587 Not on clash main to do account switching")
+        logger.change_status("293587 Not on clash main to do account switching")
         return False
 
     # click options burger
@@ -39,10 +38,11 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
     # click switch SSID button
     logger.change_status("Clicking switch SSID button")
     click(vm_index, 221, 368)
+    time.sleep(4)
 
     # wait for switch ssid page
     # wait_for_switch_ssid_page(vm_index, logger)
-    time.sleep(10)
+    # time.sleep(10)
 
     # Perform the scrolling
     if account_index_to_switch_to in [5, 6, 7]:
@@ -58,10 +58,8 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
-    logger.change_status(
-        f"Clicking account index #{account_index_to_switch_to}")
-    click(vm_index, account_coord[0],
-          account_coord[1], clicks=3, interval=0.33)
+    logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
+    click(vm_index, account_coord[0], account_coord[1], clicks=3, interval=0.33)
     logger.change_status(f"Selected account #{account_index_to_switch_to}")
 
     time.sleep(6)
@@ -83,4 +81,24 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
 
 if __name__ == "__main__":
-    pass
+    vm_index = 12
+    logger = Logger()
+
+    my_list = [
+        "matthew",
+        "PY-CLASHBOT#1",
+        "PY-CLASHBOT#3",
+        "PY-CLASHBOT#4",
+        "PY-CLASHBOT#7",
+        "PY-CLASHBOT#10",
+        "PY-CLASHBOT#11",
+        "PY-CLASHBOT#12",
+    ]
+
+    for i, name in enumerate(my_list):
+        print(f"Switching to name: {name} at index: {i}")
+        switch_accounts(vm_index, logger, i)
+        input(f"Is this {name}?")
+
+    # switch_accounts(vm_index, logger, 4)
+
