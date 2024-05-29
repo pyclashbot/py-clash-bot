@@ -1,14 +1,17 @@
-from fastai.vision.all import *
+from pyclashbot.memu.client import screenshot
+from fastai.learner import load_learner
+import time
+import numpy as np
 
 ANNOTATION_TEXT_FILE_PATH = r"src\pyclashbot\detection\models\tower_annotations.txt"
 
+
 TOWER_REGIONS = [
-    (95, 116, 155, 176),
-    (268, 116, 328, 176),
-    (95, 362, 155, 422),
-    (268, 362, 328, 422),
+    (95, 116, 155, 176),  # left enemy
+    (268, 116, 328, 176),  # right enemy
+    (95, 362, 155, 422),  # left friendly
+    (268, 362, 328, 422),  # right friendly
 ]
-# left top right bottom
 
 
 def get_raw_annotations(directory):
@@ -43,11 +46,35 @@ learn_inf = load_learner(
 )
 
 
-img = Image.open(
-    r"C:\My Files\my Programs\clash\tower_annotator\annotated_images\screenshot1713106915.994428_0.png"
-)
-img.show()
-label, _, probs = learn_inf.predict(img)
-print(f"This is a {label}")
-print(f"prob of destroyed: {convert_to_percent(probs[0].item())}%")
-print(f"prob of alive: {convert_to_percent(probs[1].item())}%")
+def get_tower_statuses(vm_index):
+    idx2tower = {
+        0: "enemy_left",
+        1: "enemy_right",
+        2: "ally_left",
+        3: "ally_right",
+    }
+
+    def parse_output(index, label, probs):
+        print(idx2tower[index], label)
+
+    tower_statuses = []
+
+    ss = screenshot(vm_index)
+
+    # regions are definted as left, top, right,bottom
+    for i, region in enumerate(TOWER_REGIONS):
+        iar = np.asarray(ss)
+
+        # crop the iar to the region
+        iar = iar[region[1] : region[3], region[0] : region[2]]
+        label, _, probs = learn_inf.predict(iar)
+
+        parse_output(i, label, probs)
+
+    return tower_statuses
+
+
+while 1:
+    start_time = time.time()
+    print("====================================")
+    get_tower_statuses(12)
