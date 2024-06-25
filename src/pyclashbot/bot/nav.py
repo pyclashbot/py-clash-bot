@@ -1041,48 +1041,8 @@ def get_to_card_page_from_clash_main(
     return "good"
 
 
-def check_if_on_card_page2(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[115][158],
-        iar[117][245],
-        iar[120][207],
-        iar[476][57],
-    ]
-
-    colors = [
-        [129, 78, 32],
-        [225, 200, 177],
-        [189, 179, 179],
-        [235, 1, 240],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(p, colors[i], tol=15):
-            return False
-    return True
 
 
-def check_if_on_card_page3(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[477][57],
-        iar[126][35],
-        iar[126][329],
-    ]
-
-    colors = [
-        [237, 0, 245],
-        [201, 81, 1],
-        [201, 82, 0],
-    ]
-
-    for i, p in enumerate(pixels):
-        # print(p)
-        if not pixel_is_equal(p, colors[i], tol=15):
-            return False
-    return True
 
 
 def check_if_on_underleveled_card_page(vm_index):
@@ -1118,23 +1078,33 @@ def check_if_on_card_page(vm_index) -> bool:
     Returns:
         bool: True if the bot is on the card page, False otherwise.
     """
-
-
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
-        iar[110][294],
-        iar[137][317],
-        iar[117][310],
-        iar[479][56],
-        iar[485][56],
+        iar[433][58],
+        iar[101][55],
+        iar[108][48],
+        iar[116][59],
+        iar[58][82],
+        iar[64][179],
+        iar[62][108],
+        iar[67][146],
+        iar[77][185],
+        iar[77][84],
+
     ]
 
+
     colors = [
-        [250, 208,  44],
-        [185 , 69,   0],
-        [239 ,181,  31],
-        [212 ,175, 157],
-        [ 40 , 71, 113],
+[222 ,  0, 235],
+[255 ,255, 255],
+[255 ,255, 255],
+[255 ,255, 255],
+[203 ,137,  44],
+[195 ,126,  34],
+[255 ,255, 255],
+[255 ,255, 255],
+[177 ,103,  15],
+[178 ,104,  15],
     ]
 
 
@@ -1593,6 +1563,5 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    while 1:
-        print(check_if_on_card_page(12))
+    while 1:print(check_if_on_card_page(12))
 
