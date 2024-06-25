@@ -64,11 +64,7 @@ def check_for_underleveled_deck_options_location(vm_index):
 
 
 def click_deck_options(vm_index):
-    if check_for_underleveled_deck_options_location(vm_index):
-        print("Detected underleveled deck options location. Clicking...")
-        click(vm_index, 366, 444)
-    else:
-        click(vm_index, 354, 480)
+    click(vm_index, 53, 110)
 
 
 def click_delete_deck_button(vm_index):
@@ -143,6 +139,8 @@ def check_for_randomize_deck_icon(vm_index):
 
 
 def randomize_deck(vm_index: int, logger: Logger) -> bool:
+    start_time = time.time()
+
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
         logger.change_status("Failed to get to card page from main. Returning False")
@@ -150,53 +148,20 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
 
     # click on deck 2
     logger.change_status("Randomizing deck 2...")
-    click(vm_index, 109, 123)
+    click(vm_index, 145, 107)
 
     # click on deck options
     print("Click deck options")
     click_deck_options(vm_index)
-    time.sleep(1)
+    time.sleep(0.1)
 
-    if check_for_randomize_deck_icon(vm_index):
-        print("Doing the underleveled method for deck randomization")
+    # click random deck button
+    click(vm_index, 130, 187)
+    time.sleep(0.1)
 
-        # click randomize
-        click(vm_index, 298, 229)
-        time.sleep(0.33)
-
-        # click OK
-        print("Clicking OK")
-        click(vm_index, 283, 387)
-        time.sleep(1.33)
-
-    else:
-        print("Doing the regular method for deck randomization")
-
-        # click delete deck
-        print("Clicking delete")
-        click_delete_deck_button(vm_index)
-        time.sleep(0.33)
-
-        # click OK
-        print("Clicking OK")
-        click(vm_index, 283, 387)
-        time.sleep(0.33)
-
-        # click empty card 1 slot
-        logger.change_status("Randomizing deck 2...")
-        print("Clicking empty card 1 slot")
-        click(vm_index, 81, 218)
-        time.sleep(4)
-
-        # click randomize button
-        print("Clicking randomize button")
-        click(vm_index, 262, 396)
-        wait_for_filled_deck(vm_index)
-
-        # click OK
-        print("Clicking OK to randomize")
-        click(vm_index, 211, 591)
-        time.sleep(2)
+    # click OK
+    click(vm_index, 280, 390)
+    time.sleep(0.1)
 
     # increment logger's deck randomization sta
     logger.add_card_randomization()
@@ -204,7 +169,7 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
     # get to clash main
     logger.change_status("Returning to clash main")
     click(vm_index, 248, 603)
-    time.sleep(2)
+    time.sleep(1)
 
     # if not on clash main, return false
     if check_if_on_clash_main_menu(vm_index) is False:
@@ -212,8 +177,8 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
             "Failed to get to clash main after randomizing deck. Returning False"
         )
         return False
-    time.sleep(1)
 
+    logger.change_status("Randomized deck 2 in " + str(time.time() - start_time)[:5] + "s")
     return True
 
 
