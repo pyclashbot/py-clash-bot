@@ -18,7 +18,7 @@ from pyclashbot.detection.image_rec import (
     get_first_location,
 )
 
-_2V2_START_WAIT_TIMEOUT = 120  # s
+_2V2_START_WAIT_TIMEOUT = 180  # s
 CLAN_TAB_BUTTON_COORDS_FROM_MAIN = [315, 597]
 PROFILE_PAGE_COORD = [88, 93]
 CLASH_MAIN_COORD_FROM_CLAN_PAGE = [178, 593]
@@ -72,10 +72,7 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "g
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        if random.randint(0, 2) == 1:
-            click(vm_index=vm_index, x_coord=20, y_coord=200)
-
-        time.sleep(1)
+        click(vm_index=vm_index, x_coord=20, y_coord=200)
 
     return False
 
@@ -108,8 +105,7 @@ def wait_for_1v1_battle_start(
             )
             return "restart"
         print("Waiting for 1v1 start")
-        if random.randint(1, 3) == 3:
-            click(vm_index=vm_index, x_coord=200, y_coord=200)
+        click(vm_index=vm_index, x_coord=200, y_coord=200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")
