@@ -1118,16 +1118,7 @@ def check_if_on_card_page(vm_index) -> bool:
     Returns:
         bool: True if the bot is on the card page, False otherwise.
     """
-    if check_if_on_underleveled_card_page(vm_index):
-        print("Detected underleveled card page!")
-        return True
 
-    # some pixel checks for card pages of newer accounts
-    if check_if_on_card_page2(vm_index):
-        return True
-
-    if check_if_on_card_page3(vm_index):
-        return True
 
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
@@ -1139,15 +1130,13 @@ def check_if_on_card_page(vm_index) -> bool:
     ]
 
     colors = [
-        [168, 76, 3],
-        [83, 32, 1],
-        [255, 238, 230],
-        [173, 92, 1],
-        [178, 96, 1],
+        [250, 208,  44],
+        [185 , 69,   0],
+        [239 ,181,  31],
+        [212 ,175, 157],
+        [ 40 , 71, 113],
     ]
 
-    # for p in pixels:
-    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
@@ -1604,4 +1593,6 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    print(check_for_boot_reward(12))
+    while 1:
+        print(check_if_on_card_page(12))
+
