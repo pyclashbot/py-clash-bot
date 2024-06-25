@@ -46,7 +46,7 @@ from pyclashbot.detection.image_rec import (
 
 
 
-SAVE_FIGHT_IMAGES = False
+SAVE_FIGHT_IMAGES = True
 yolo_images_save_path = r"C:\My Files\my Programs\clash_fight_images"
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
@@ -913,6 +913,7 @@ import os
 from PIL import Image
 import cv2
 
+
 def save_fight_image(vm_index):
     #screenshot twice
     start_time = time.time()
@@ -948,6 +949,7 @@ def save_fight_image(vm_index):
             time.sleep(0.5)
 
     print(f'saved fight images in {str(time.time() - start_time)[:3]}s')
+
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
     prev_cards_played = logger.get_cards_played()

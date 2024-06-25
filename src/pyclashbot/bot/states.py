@@ -602,7 +602,7 @@ def state_tree_tester(vm_index):
         "2v2_battle_user_toggle": True,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
-        "random_decks_user_toggle": False,
+        "random_decks_user_toggle": True,
         "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
         "battlepass_collect_user_toggle": False,
