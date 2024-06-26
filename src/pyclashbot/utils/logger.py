@@ -275,7 +275,7 @@ class Logger:
 
         #if they're all zero, return a random one
         if all(count == 0 for count in mode2count.values()):
-            return random.choice(["2v2", "trophy_road", "queens_journey", "path_of_legends"])
+            return random.choice(list(mode2count.keys()))
 
         lowest_fight_type = min(mode2count, key=mode2count.get)
         return lowest_fight_type
