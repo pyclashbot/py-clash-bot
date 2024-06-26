@@ -10,8 +10,9 @@ from pyclashbot.bot.do_fight_state import (
     do_1v1_fight_state,
     do_2v2_fight_state,
     end_fight_state,
-    start_1v1_fight_state,
-    start_2v2_fight_state,
+    start_2v2_fight,
+    start_fight,
+    start_1v1_type_fight,
 )
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
@@ -460,65 +461,38 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        _1v1_toggle = (
-            job_list["trophy_road_1v1_battle_user_toggle"]
-            or job_list["path_of_legends_1v1_battle_user_toggle"]
-        )
         _2v2_toggle = job_list["2v2_battle_user_toggle"]
-
         trophy_road_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
         path_of_legends_toggle = job_list["path_of_legends_1v1_battle_user_toggle"]
+        goblin_queens_journey_toggle = job_list[
+            "goblin_queens_journey_1v1_battle_user_toggle"
+        ]
 
-        fight_mode = "trophy_road"
-        if _1v1_toggle:
-            if trophy_road_toggle and path_of_legends_toggle:
-                fight_mode = "both"
-            elif path_of_legends_toggle:
-                fight_mode = "path_of_legends"
+        mode2toggle = {
+            "2v2": _2v2_toggle,
+            "trophy_road": trophy_road_toggle,
+            "path_of_legends": path_of_legends_toggle,
+            "queens_journey": goblin_queens_journey_toggle,
+        }
 
-        # if all chests slots are taken, skip starting a battle
-        if job_list["skip_fight_if_full_chests_user_toggle"]:
-            if all(
-                chest_status == "available"
-                for chest_status in get_chest_statuses(vm_index)
-            ):
-                logger.change_status("All chests are available, skipping fight state")
-                return next_state
+        #if all are toggled off, return next_state
+        if not any(mode2toggle.values()):
+            logger.log("No fight modes are toggled. Skipping this state")
+            return next_state
 
-        # if both are toggled, choose the lest used fight type
-        if _1v1_toggle and _2v2_toggle:
-            logger.log("Both 1v1 and 2v2 are selected. Choosing the less used one")
-            if logger.get_1v1_fights() < logger.get_2v2_fights():
-                next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
-                    vm_index, logger, mode=fight_mode
-                )
-                return next_1v1_state
+        mode = logger.pick_lowest_fight_type_count(mode2toggle)
+        print(f'Lowest mode is: {mode}')
 
-            return start_2v2_fight_state(vm_index, logger)
+        if start_fight(vm_index,logger,mode) is False:
+            logger.change_status("Failed while starting fight")
+            return "restart"
 
-        # if only 1v1 is toggled
-        elif _1v1_toggle:
-            logger.log("1v1 is toggled")
-            trophy_road_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
-            path_of_legends_toggle = job_list["path_of_legends_1v1_battle_user_toggle"]
-
-            print(f"trophy_road_toggle is {trophy_road_toggle}")
-            print(f"path_of_legends_toggle is {path_of_legends_toggle}")
-
-            print(f"Fight mode is gonna be: {fight_mode}")
-            next_1v1_state, mode_used_in_1v1 = start_1v1_fight_state(
-                vm_index, logger, mode=fight_mode
-            )
-            print(f"Fight mode is : {mode_used_in_1v1}")
-            return next_1v1_state
-
-        # if only 2v2 is toggled
-        elif _2v2_toggle:
-            logger.log("2v2 is toggled")
-            return start_2v2_fight_state(vm_index, logger)
+        if mode == "2v2":
+            next_state = "2v2_fight"
+        else:
+            next_state = "1v1_fight"
 
         # if neither, go to NEXT_STATE
-        logger.log("Neither 1v1 or 2v2 is toggled. Skipping this state")
         return next_state
 
     if state == "2v2_fight":  # --> end_fight
@@ -597,13 +571,13 @@ def state_tree_tester(vm_index):
         "card_mastery_user_toggle": False,
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
-        "trophy_road_1v1_battle_user_toggle": True,
-        "path_of_legends_1v1_battle_user_toggle": True,
-        'goblin_queens_journey_1v1_battle_user_toggle':True,
+        "trophy_road_1v1_battle_user_toggle": False,
+        "path_of_legends_1v1_battle_user_toggle": False,
+        "goblin_queens_journey_1v1_battle_user_toggle": True,
         "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
-        "random_decks_user_toggle": False,
+        "random_decks_user_toggle": True,
         "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
         "battlepass_collect_user_toggle": False,
@@ -635,7 +609,7 @@ def state_tree_tester(vm_index):
         "account_switching_increment_user_input": 1,
         "account_switching_slider": 1,
         "next_account": 0,
-        "random_account_switch_list": [0,1,2],
+        "random_account_switch_list": [0, 1, 2],
     }
 
     while 1:
@@ -647,7 +621,7 @@ def state_tree_tester(vm_index):
         )
         if state == "restart":
             print("Restart state")
-            input('Enter to continue...')
+            input("Enter to continue...")
             # print("Clipping that")
             # clip_that()
 
