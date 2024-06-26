@@ -3217,10 +3217,14 @@ def get_card_group(card_id) -> str:
     # print(f'This card group is: {"No group"}')
     return "No group"
 
+import time
 
-def get_play_coords_for_card(vm_index, card_index, side_preference):
+def get_play_coords_for_card(vm_index, logger,card_index, side_preference):
     # get the ID of this card(ram_rider, zap, etc)
+    id_cards_start_time = time.time()
     identity = identify_hand_cards(vm_index)[card_index]
+    time_taken = str(time.time()  - id_cards_start_time)[:3]
+    logger.change_status(f'Identified card as {identity} ({time_taken}s)')
 
     # get the grouping of this card (hog, turret, spell, etc)
     group = get_card_group(identity)
@@ -3232,6 +3236,7 @@ def get_play_coords_for_card(vm_index, card_index, side_preference):
 
 
 def calculate_play_coords(card_grouping: str, side_preference: str):
+    #if there is a dedicated coordinate for this card
     if PLAY_COORDS.get(card_grouping):
         group_datum = PLAY_COORDS[card_grouping]
         if side_preference == "left" and "left" in group_datum:
@@ -3241,6 +3246,7 @@ def calculate_play_coords(card_grouping: str, side_preference: str):
         if "coords" in group_datum:
             return random.choice(group_datum["coords"])
 
+    #if there is no dedicated coordinate for this card
     if side_preference == "left":
         return (random.randint(60, 206), random.randint(281, 456))
     return (random.randint(210, 351), random.randint(281, 456))
