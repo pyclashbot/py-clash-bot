@@ -69,6 +69,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
+        'goblin_queens_journey_1v1_battle_user_toggle': values['goblin_queens_journey_1v1_battle_user_toggle'],
         "path_of_legends_1v1_battle_user_toggle": values[
             "path_of_legends_1v1_user_toggle"
         ],
