@@ -876,7 +876,7 @@ def play_a_card(vm_index, logger) -> Boolean:
 
     # get a coord based on the selected side
     play_coord_calculation_start_time = time.time()
-    card_id, play_coord = get_play_coords_for_card(vm_index, card_index, "left")
+    card_id, play_coord = get_play_coords_for_card(vm_index, logger,card_index, 'left')
     play_coord_calculation_time_taken = str(
         time.time() - play_coord_calculation_start_time
     )[:3]
