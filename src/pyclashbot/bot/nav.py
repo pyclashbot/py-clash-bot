@@ -1497,22 +1497,35 @@ def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
         bool: True if the virtual machine is on the clash main burger
         button options menu, False otherwise.
     """
-    if (
-        check_line_for_color(
-            vm_index, x_1=182, y_1=78, x_2=208, y_2=101, color=(46, 152, 252)
-        )
-        and check_line_for_color(
-            vm_index, x_1=184, y_1=196, x_2=206, y_2=215, color=(46, 152, 252)
-        )
-        and check_line_for_color(
-            vm_index, x_1=182, y_1=360, x_2=210, y_2=384, color=(24, 144, 252)
-        )
-        and check_line_for_color(
-            vm_index, x_1=182, y_1=128, x_2=208, y_2=151, color=(45, 151, 252)
-        )
-    ):
-        return True
-    return False
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[42][256],
+        iar[41][275],
+        iar[41][282],
+        iar[42][293],
+        iar[44][325],
+        iar[32][239],
+        iar[34][336],
+        iar[50][248],
+        iar[49][336],
+    ]
+    colors = [
+[255 ,255 ,255],
+[255 ,255 ,255],
+[255 ,255 ,255],
+[255 ,255 ,254],
+[255 ,255 ,255],
+[255 ,187 ,105],
+[255 ,187 ,105],
+[255 ,175  ,78],
+[255 ,175  ,78],
+
+    ]
+    for i,color in enumerate(colors):
+        if not pixel_is_equal(pixels[i], color, tol=25):
+            return False
+    return True
+
 
 
 def wait_for_clash_main_burger_button_options_menu(
@@ -1553,6 +1566,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    while 1:
-        print(check_if_on_clash_main_menu(12))
-    # (check_if_on_clash_main_menu(12))
+    pass
