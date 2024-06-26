@@ -332,6 +332,7 @@ user_config_keys = [
     "free_offer_user_toggle",
     "gold_offer_user_toggle",
     "trophy_road_1v1_user_toggle",
+    'goblin_queens_journey_1v1_battle_user_toggle',
     "path_of_legends_1v1_user_toggle",
     "2v2_user_toggle",
     "card_upgrade_user_toggle",
