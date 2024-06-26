@@ -1,7 +1,9 @@
+
 """import logging for file logging"""
 
 import logging
 import pprint
+import random
 import threading
 import time
 import zipfile
@@ -12,6 +14,7 @@ from os.path import basename, exists, expandvars, getmtime, join
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.pastebin import upload_pastebin
 from pyclashbot.utils.versioning import __version__
+
 
 MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
@@ -95,6 +98,7 @@ class Logger:
         self._1v1_fights = 0
         self._2v2_fights = 0
         self.trophy_road_1v1_fights = 0
+        self.queens_journey_fights = 0
         self.path_of_legends_1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
@@ -166,6 +170,7 @@ class Logger:
                 "wins": self.wins,
                 "losses": self.losses,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
+                "queens_journey_fights": self.queens_journey_fights,
                 "path_of_legends_1v1_fights": self.path_of_legends_1v1_fights,
                 "2v2_fights": self._2v2_fights,
                 "war_fights": self.war_fights,
@@ -235,9 +240,11 @@ class Logger:
     def increment_season_shop_buys_attempts(self):
         self.season_shop_buys_attempts += 1
 
-
     def increment_season_shop_buys(self):
         self.season_shop_buys += 1
+
+    def increment_queens_journey_fights(self):
+        self.queens_journey_fights += 1
 
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1
@@ -245,10 +252,33 @@ class Logger:
     def increment_path_of_legends_fights(self):
         self.path_of_legends_1v1_fights += 1
 
-    def choose_trophy_road_or_path_of_legends(self):
-        if self.path_of_legends_1v1_fights < self.trophy_road_1v1_fights:
-            return "path_of_legends"
-        return "trophy_road"
+    def pick_lowest_fight_type_count(self, mode2toggle):
+        _2v2_fights = self._2v2_fights
+        trophy_road_1v1_fights = self.trophy_road_1v1_fights
+        queens_journey_fights = self.queens_journey_fights
+        path_of_legends_1v1_fights = self.path_of_legends_1v1_fights
+
+        mode2count = {}
+
+        if mode2toggle["2v2"]:
+            mode2count["2v2"] = _2v2_fights
+        if mode2toggle["trophy_road"]:
+            mode2count["trophy_road"] = trophy_road_1v1_fights
+        if mode2toggle["queens_journey"]:
+            mode2count["queens_journey"] = queens_journey_fights
+        if mode2toggle["path_of_legends"]:
+            mode2count["path_of_legends"] = path_of_legends_1v1_fights
+
+        print("{:^15} : {:^15}".format("mode", "count"))
+        for mode, count in mode2count.items():
+            print("{:^15} : {:^15}".format(mode, count))
+
+        #if they're all zero, return a random one
+        if all(count == 0 for count in mode2count.values()):
+            return random.choice(["2v2", "trophy_road", "queens_journey", "path_of_legends"])
+
+        lowest_fight_type = min(mode2count, key=mode2count.get)
+        return lowest_fight_type
 
     def update_in_a_clan_value(self, in_a_clan: bool):
         self.in_a_clan = in_a_clan
@@ -357,7 +387,7 @@ class Logger:
         self.account_switches += 1
 
     @_updates_log
-    def add_2v2_fight(self) -> None:
+    def increment_2v2_fights(self) -> None:
         """add fight to log"""
         self._2v2_fights += 1
 
@@ -998,9 +1028,6 @@ class Logger:
             f"Can't buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
         )
         return False
-
-
-
 
     def update_time_of_last_request(self, input_time) -> None:
         """sets logger's time_of_last_request to input_time"""
