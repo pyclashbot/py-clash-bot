@@ -1063,17 +1063,44 @@ def check_if_on_underleveled_card_page(vm_index):
     return True
 
 
+def check_if_on_goblin_mode_card_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[108][175],
+        iar[112][189],
+        iar[103][254],
+        iar[109][295],
+        iar[446][54],
+        iar[446][64],
+        iar[444][49],
+        iar[14][210],
+        iar[14][325],
+
+    ]
+    # for p in pixels:print(p)
+    colors = [
+[255 ,255, 255],
+[255, 255, 255],
+[255, 255, 255],
+[255, 255, 255],
+[223 ,  1, 237],
+[228  , 0, 243],
+[186 ,  8, 190],
+[255, 255, 255],
+[255 ,255, 255],
+    ]
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i], p, tol=15):
+            return False
+
+    return True
+
+
 def check_if_on_card_page(vm_index) -> bool:
-    """
-    Checks if the bot is currently on the card page by looking for
-    specific colors in certain regions of the screen.
+    if check_if_on_goblin_mode_card_page(vm_index):
+        return True
 
-    Args:
-        vm_index (int): The index of the virtual machine to check.
-
-    Returns:
-        bool: True if the bot is on the card page, False otherwise.
-    """
     iar = numpy.asarray(screenshot(vm_index))
     pixels = [
         iar[433][58],
@@ -1577,4 +1604,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    pass
+    print(check_if_on_goblin_mode_card_page(12))
