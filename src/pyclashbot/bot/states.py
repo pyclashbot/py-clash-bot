@@ -461,18 +461,11 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        _2v2_toggle = job_list["2v2_battle_user_toggle"]
-        trophy_road_toggle = job_list["trophy_road_1v1_battle_user_toggle"]
-        path_of_legends_toggle = job_list["path_of_legends_1v1_battle_user_toggle"]
-        goblin_queens_journey_toggle = job_list[
-            "goblin_queens_journey_1v1_battle_user_toggle"
-        ]
-
         mode2toggle = {
-            "2v2": _2v2_toggle,
-            "trophy_road": trophy_road_toggle,
-            "path_of_legends": path_of_legends_toggle,
-            "queens_journey": goblin_queens_journey_toggle,
+            "2v2": job_list["2v2_battle_user_toggle"],
+            "trophy_road": job_list["trophy_road_1v1_battle_user_toggle"],
+            "path_of_legends": job_list["path_of_legends_1v1_battle_user_toggle"],
+            "queens_journey": job_list["goblin_queens_journey_1v1_battle_user_toggle"],
         }
 
         for mode, toggle in mode2toggle.items():
