@@ -1417,7 +1417,11 @@ def get_to_activity_log(
     else:
         logger.log("Clicking activity log button")
     click(vm_index, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
-    wait_for_battle_log_page(vm_index, logger, printmode)
+    if wait_for_battle_log_page(vm_index, logger, printmode) == 'restart':
+        logger.change_status(
+            status="Error 923593 Waited too long for battle log page, restarting vm"
+        )
+        return "restart"
 
     return "good"
 
@@ -1459,31 +1463,38 @@ def wait_for_battle_log_page(
 
 
 def check_if_on_battle_log_page(vm_index) -> bool:
-    """
-    Checks if the virtual machine is on the battle log page.
+    iar = numpy.asarray(screenshot(vm_index))
 
-    Args:
-        vm_index (int): The index of the virtual machine.
+    pixels = [
+        iar[72][160],
+        iar[71][187],
+        iar[71][197],
+        iar[72][231],
+        iar[73][258],
+        iar[64][366],
+        iar[79][365],
+        iar[70][365],
+        iar[62][92],
+        iar[77][316],
+    ]
+    # for p in pixels:print(p)
+    colors = [
+[255 ,255 ,255],
+[255 ,255 ,255],
+[255 ,255 ,255],
+[255 ,255 ,255],
+[255 ,255 ,255],
+[147 ,135 ,254],
+[ 38  ,38 ,240],
+[255 ,255 ,255],
+[138 ,122 ,115],
+[124 ,106  ,99],
+    ]
 
-    Returns:
-        bool: True if the virtual machine is on the battle log page, False otherwise.
-    """
-    line1 = check_line_for_color(
-        vm_index, x_1=353, y_1=62, x_2=376, y_2=83, color=(231, 28, 28)
-    )
-    line2 = check_line_for_color(
-        vm_index, x_1=154, y_1=64, x_2=173, y_2=83, color=(255, 255, 255)
-    )
-    line3 = check_line_for_color(
-        vm_index, x_1=248, y_1=67, x_2=262, y_2=83, color=(255, 255, 255)
-    )
-    line4 = check_line_for_color(
-        vm_index, x_1=9, y_1=208, x_2=27, y_2=277, color=(11, 45, 67)
-    )
-
-    if line1 and line2 and line3 and line4:
-        return True
-    return False
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
 
 
 def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
