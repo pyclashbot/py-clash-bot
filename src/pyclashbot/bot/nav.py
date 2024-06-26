@@ -959,7 +959,6 @@ def check_if_on_clash_main_menu(vm_index):
     Returns True if on main menu, False if not.
     """
 
-
     iar = numpy.asarray(screenshot(vm_index))
 
     # get raw pixels from image array
@@ -1032,7 +1031,7 @@ def get_to_card_page_from_clash_main(
         click(
             vm_index, CARD_PAGE_ICON_FROM_CARD_PAGE[0], CARD_PAGE_ICON_FROM_CARD_PAGE[1]
         )
-        time.sleep(2)
+        time.sleep(3)
 
     if printmode:
         logger.change_status(status="Made it to card page")
@@ -1075,19 +1074,18 @@ def check_if_on_goblin_mode_card_page(vm_index):
         iar[444][49],
         iar[14][210],
         iar[14][325],
-
     ]
     # for p in pixels:print(p)
     colors = [
-[255 ,255, 255],
-[255, 255, 255],
-[255, 255, 255],
-[255, 255, 255],
-[223 ,  1, 237],
-[228  , 0, 243],
-[186 ,  8, 190],
-[255, 255, 255],
-[255 ,255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [223, 1, 237],
+        [228, 0, 243],
+        [186, 8, 190],
+        [255, 255, 255],
+        [255, 255, 255],
     ]
 
     for i, p in enumerate(pixels):
@@ -1097,8 +1095,41 @@ def check_if_on_goblin_mode_card_page(vm_index):
     return True
 
 
+def check_if_on_path_of_legends_mode_card_page(vm_index):
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[108][175],
+        iar[112][189],
+        iar[103][254],
+        iar[109][295],
+        iar[446][54],
+        iar[446][64],
+        iar[444][49],
+        iar[14][210],
+        iar[14][325],
+    ]
+    colors = [
+        [186, 105, 143],
+        [254, 254, 254],
+        [229, 188, 206],
+        [213, 175, 191],
+        [224, 1, 237],
+        [229, 0, 244],
+        [187, 7, 191],
+        [255, 255, 255],
+        [255, 255, 255],
+    ]
+
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(colors[i], p, tol=15):
+            print(i)
+            return False
+
+    return True
+
+
 def check_if_on_card_page(vm_index) -> bool:
-    if check_if_on_goblin_mode_card_page(vm_index):
+    if check_if_on_goblin_mode_card_page(vm_index) or check_if_on_path_of_legends_mode_card_page(vm_index):
         return True
 
     iar = numpy.asarray(screenshot(vm_index))
@@ -1444,7 +1475,7 @@ def get_to_activity_log(
     else:
         logger.log("Clicking activity log button")
     click(vm_index, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
-    if wait_for_battle_log_page(vm_index, logger, printmode) == 'restart':
+    if wait_for_battle_log_page(vm_index, logger, printmode) == "restart":
         logger.change_status(
             status="Error 923593 Waited too long for battle log page, restarting vm"
         )
@@ -1506,16 +1537,16 @@ def check_if_on_battle_log_page(vm_index) -> bool:
     ]
     # for p in pixels:print(p)
     colors = [
-[255 ,255 ,255],
-[255 ,255 ,255],
-[255 ,255 ,255],
-[255 ,255 ,255],
-[255 ,255 ,255],
-[147 ,135 ,254],
-[ 38  ,38 ,240],
-[255 ,255 ,255],
-[138 ,122 ,115],
-[124 ,106  ,99],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [147, 135, 254],
+        [38, 38, 240],
+        [255, 255, 255],
+        [138, 122, 115],
+        [124, 106, 99],
     ]
 
     for i, p in enumerate(pixels):
@@ -1548,22 +1579,20 @@ def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
         iar[49][336],
     ]
     colors = [
-[255 ,255 ,255],
-[255 ,255 ,255],
-[255 ,255 ,255],
-[255 ,255 ,254],
-[255 ,255 ,255],
-[255 ,187 ,105],
-[255 ,187 ,105],
-[255 ,175  ,78],
-[255 ,175  ,78],
-
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 254],
+        [255, 255, 255],
+        [255, 187, 105],
+        [255, 187, 105],
+        [255, 175, 78],
+        [255, 175, 78],
     ]
-    for i,color in enumerate(colors):
+    for i, color in enumerate(colors):
         if not pixel_is_equal(pixels[i], color, tol=25):
             return False
     return True
-
 
 
 def wait_for_clash_main_burger_button_options_menu(
@@ -1604,4 +1633,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    print(check_if_on_goblin_mode_card_page(12))
+    print(check_if_on_path_of_legends_mode_card_page(12))
