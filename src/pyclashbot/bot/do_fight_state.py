@@ -922,41 +922,41 @@ import cv2
 
 
 def save_fight_image(vm_index):
+    if random.randint(0,1)==1:
+        print('Skipping saving fight image')
+        return
+
     # screenshot twice
     start_time = time.time()
-    for i in range(2):
 
-        # Assuming screenshot() returns a BGR NumPy array
-        bgr_image = screenshot(vm_index)
+    # Assuming screenshot() returns a BGR NumPy array
+    bgr_image = screenshot(vm_index)
 
-        # Convert BGR to RGB
-        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+    # Convert BGR to RGB
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
 
-        # Convert NumPy array to PIL image
-        image = Image.fromarray(rgb_image)
+    # Convert NumPy array to PIL image
+    image = Image.fromarray(rgb_image)
 
-        folder_path = yolo_images_save_path
+    folder_path = yolo_images_save_path
 
-        if not verify_matt_pc():
-            return
+    if not verify_matt_pc():
+        return
 
-        if os.path.exists(folder_path):
-            # print("Folder exists.")
-            pass
-        else:
-            print("Folder doesnt exist.")
+    if os.path.exists(folder_path):
+        # print("Folder exists.")
+        pass
+    else:
+        print("Folder doesnt exist.")
 
-            return
+        return
 
-        path = os.path.join(
-            folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png"
-        )
-        image.save(path)
+    path = os.path.join(
+        folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png"
+    )
+    image.save(path)
 
-        if i == 0:
-            time.sleep(0.5)
-
-    print(f"saved fight images in {str(time.time() - start_time)[:3]}s")
+    print(f"saved fight image in {str(time.time() - start_time)[:3]}s")
 
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
