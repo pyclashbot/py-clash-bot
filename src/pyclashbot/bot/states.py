@@ -475,6 +475,9 @@ def state_tree(
             "queens_journey": goblin_queens_journey_toggle,
         }
 
+        for mode, toggle in mode2toggle.items():
+            print('{:^14} : {}'.format(mode,toggle))
+
         #if all are toggled off, return next_state
         if not any(mode2toggle.values()):
             logger.log("No fight modes are toggled. Skipping this state")
@@ -571,13 +574,13 @@ def state_tree_tester(vm_index):
         "card_mastery_user_toggle": False,
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
-        "trophy_road_1v1_battle_user_toggle": False,
+        "trophy_road_1v1_battle_user_toggle": True,
         "path_of_legends_1v1_battle_user_toggle": False,
-        "goblin_queens_journey_1v1_battle_user_toggle": True,
-        "2v2_battle_user_toggle": False,
+        "goblin_queens_journey_1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": True,
         "upgrade_user_toggle": False,
         "war_user_toggle": False,
-        "random_decks_user_toggle": True,
+        "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
         "battlepass_collect_user_toggle": False,
