@@ -10,13 +10,11 @@ from pyclashbot.bot.do_fight_state import (
     do_1v1_fight_state,
     do_2v2_fight_state,
     end_fight_state,
-    start_2v2_fight,
     start_fight,
-    start_1v1_type_fight,
 )
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
-from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
+from pyclashbot.bot.open_chests_state import  open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
 from pyclashbot.bot.upgrade_all_cards import upgrade_all_cards_state
@@ -469,17 +467,17 @@ def state_tree(
         }
 
         for mode, toggle in mode2toggle.items():
-            print('{:^14} : {}'.format(mode,toggle))
+            print("{:^14} : {}".format(mode, toggle))
 
-        #if all are toggled off, return next_state
+        # if all are toggled off, return next_state
         if not any(mode2toggle.values()):
             logger.log("No fight modes are toggled. Skipping this state")
             return next_state
 
         mode = logger.pick_lowest_fight_type_count(mode2toggle)
-        print(f'Lowest mode is: {mode}')
+        print(f"Lowest mode is: {mode}")
 
-        if start_fight(vm_index,logger,mode) is False:
+        if start_fight(vm_index, logger, mode) is False:
             logger.change_status("Failed while starting fight")
             return "restart"
 
@@ -622,8 +620,9 @@ def state_tree_tester(vm_index):
             # clip_that()
 
 
+
+
+
 if __name__ == "__main__":
     state_tree_tester(12)
-    # clip_that()
 
-    # card_mastery_state(12, Logger(), 'next_state')
