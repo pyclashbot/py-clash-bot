@@ -312,19 +312,19 @@ def start_1v1_type_fight(vm_index, mode):
 
 
 def start_fight(vm_index, logger, mode):
-    def do_job_incrementing(logger,mode):
-        if mode == 'trophy_road':
+    # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen','2v2']
+    def do_job_incrementing(logger, mode):
+        if mode == "trophy_road":
             logger.increment_trophy_road_fights()
-        elif mode == 'path_of_legends':
+        elif mode == "path_of_legends":
             logger.increment_path_of_legends_fights()
-        elif mode == 'queens_journey':
+        elif mode == "queens_journey":
             logger.increment_queens_journey_fights()
-        elif mode == '2v2':
+        elif mode == "2v2":
             logger.increment_2v2_fights()
 
-    # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen','2v2']
     logger.change_status(f"Starting a {mode} fight")
-    do_job_incrementing(logger,mode)
+    do_job_incrementing(logger, mode)
     if mode == "2v2":
         return start_2v2_fight(vm_index, logger)
     else:
@@ -812,14 +812,12 @@ def get_to_main_after_fight(vm_index, logger):
             print("Made it to clash main after a fight")
             return True
 
-
         # check for trophy reward screen
         if check_for_trophy_reward_menu(vm_index):
             print("Found trophy reward menu!\nHandling Trophy Reward Menu")
             handle_trophy_reward_menu(vm_index, logger, printmode=False)
             time.sleep(3)
             continue
-
 
         # check for OK button after battle
         if not clicked_ok_or_exit:
@@ -831,7 +829,6 @@ def get_to_main_after_fight(vm_index, logger):
                 click(vm_index, ok_button_coord[0], ok_button_coord[1])
                 clicked_ok_or_exit = True
                 continue
-
 
         # if on events page, click clash main button
         if check_for_events_page(vm_index):
@@ -876,7 +873,7 @@ def play_a_card(vm_index, logger) -> Boolean:
 
     # get a coord based on the selected side
     play_coord_calculation_start_time = time.time()
-    card_id, play_coord = get_play_coords_for_card(vm_index, logger,card_index, 'left')
+    card_id, play_coord = get_play_coords_for_card(vm_index, logger, card_index, "left")
     play_coord_calculation_time_taken = str(
         time.time() - play_coord_calculation_start_time
     )[:3]
@@ -922,10 +919,6 @@ import cv2
 
 
 def save_fight_image(vm_index):
-    if random.randint(0,1)==1:
-        print('Skipping saving fight image')
-        return
-
     # screenshot twice
     start_time = time.time()
 
@@ -1123,5 +1116,41 @@ def _1v1_random_fight_loop(vm_index, logger):
     return "good"
 
 
+def fight_image_save_debug(vm_index,fights = 2):
+    logger = Logger()
+    import random
+
+
+    for _ in range(fights):
+        # if not on clash main ,return Falase
+        if not check_if_on_clash_main_menu(vm_index):
+            print(f"Start this method on clash main!")
+            return False
+
+        # start a random fight
+        mode = random.choice(["trophy_road", "2v2"])
+        print(f"Testing with this fight mode: {mode}")
+        start_fight(vm_index, logger, mode)
+
+        if mode == "trophy_road":
+            do_1v1_fight_state(
+                vm_index,
+                logger,
+                "next_state",
+                False,
+                "trophy_road",
+                called_from_launching=False,
+            )
+        elif mode == "2v2":
+            do_2v2_fight_state(
+                vm_index,
+                logger,
+                "next_state",
+                False,
+            )
+
+        end_fight_state(vm_index, logger, "next_state", True)
+
+
 if __name__ == "__main__":
-    pass
+    fight_image_save_debug(12,fights = 2)
