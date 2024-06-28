@@ -1,7 +1,6 @@
 """pysimplegui layout for stats tab"""
 
 import PySimpleGUI as sg
-from PySimpleGUI.PySimpleGUI import Text
 from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
@@ -20,7 +19,7 @@ def stat_box(stat_name: str, size=(4, 1)) -> sg.Text:
 
 # collection stats
 
-collection_stats_titles: list[list[Text]] = [
+collection_stats_titles: list[list[sg.Text]] = [
     [
         sg.Text("Requests: "),
     ],
@@ -62,7 +61,7 @@ collection_stats_titles: list[list[Text]] = [
     ],
 ]
 
-collection_stats_values: list[list[Text]] = [
+collection_stats_values: list[list[sg.Text]] = [
     [
         stat_box("requests"),
     ],
