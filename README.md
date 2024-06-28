@@ -31,6 +31,10 @@ _Join the [Discord server](https://discord.gg/mx4W9qRNgF)!_
 
 <img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
 
+## Artificial Intelligence Computer Vision
+![Troop_detector_demo_croppedgif](https://github.com/pyclashbot/py-clash-bot/assets/105177840/c21b6c20-d95b-4798-ab82-7e438f489276)
+
+
 ## Contribute
 
 We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/pyclashbot/py-clash-bot/issues) or check out [how to contribute directly](https://github.com/pyclashbot/py-clash-bot/blob/master/CONTRIBUTING.md).
