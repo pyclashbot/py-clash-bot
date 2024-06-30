@@ -23,7 +23,7 @@ from pyclashbot.memu.client import (
     click,
     screenshot,
     scroll_down_in_request_page,
-    scroll_up_on_left_side_of_screen,
+    scroll_up_in_request_page,
 )
 from pyclashbot.utils.logger import Logger
 
@@ -56,8 +56,7 @@ def find_request_button(vm_index, logger: Logger):
         logger.log("Request button not found.")
         return None
     else:
-        logger.log(
-            f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
+        logger.log(f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
         return [coord[1], coord[0]]
 
 
@@ -80,10 +79,8 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
-            "Not on clash main for the start of request_state()")
-        logger.log(
-            "These are the pixels the bot saw after failing to find clash main:")
+        logger.change_status("Not on clash main for the start of request_state()")
+        logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
 
@@ -102,8 +99,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         if not in_a_clan_return:
             return next_state
     else:
-        print(
-            f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
 
     # if in a clan, update logger's in_a_clan value
     logger.update_in_a_clan_value(True)
@@ -144,12 +140,12 @@ def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
 
 def count_scrolls_in_request_page(vm_index) -> int:
     # scroll up to top
-    for _ in range(3):
-        scroll_up_on_left_side_of_screen(vm_index)
+    for _ in range(5):
+        scroll_up_in_request_page(vm_index)
 
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
-    timeout = 60#s
+    timeout = 60  # s
     start_time = time.time()
     while check_if_can_scroll_in_request_page(vm_index):
         print(f"One scroll down. Count is {scrolls}")
@@ -157,7 +153,7 @@ def count_scrolls_in_request_page(vm_index) -> int:
         scrolls += 1
         time.sleep(1)
 
-        #if taken too much time, return 5
+        # if taken too much time, return 5
         if time.time() - start_time > timeout:
             return 5
 
@@ -247,8 +243,7 @@ def do_request(vm_index, logger: Logger) -> bool:
     time.sleep(3)
 
     # Determine the maximum number of scrolls in the request page
-    logger.change_status(
-        status="Determining maximum scrolls in the request page")
+    logger.change_status(status="Determining maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
     logger.log(f"Maximum scrolls found in the request page: {max_scrolls}")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
@@ -256,7 +251,8 @@ def do_request(vm_index, logger: Logger) -> bool:
 
     # Perform random scrolling in the request page
     do_random_scrolling_in_request_page(
-        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount)
+        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
+    )
 
     # Timeout settings for random clicking
     random_click_timeout = 35  # seconds
@@ -267,15 +263,22 @@ def do_request(vm_index, logger: Logger) -> bool:
     coord = None
     while coord is None:
         # Timeout check to avoid infinite loop
-        if time.time() - random_click_start_time > random_click_timeout or attempt_count > 6:
+        if (
+            time.time() - random_click_start_time > random_click_timeout
+            or attempt_count > 6
+        ):
             logger.change_status(
-                "Timeout or too many attempts while trying to click a random card for request")
+                "Timeout or too many attempts while trying to click a random card for request"
+            )
             return False
 
         # Click on a random card
         logger.change_status(status="Clicking a random card to request")
-        click(vm_index=vm_index, x_coord=random.randint(
-            a=67, b=358), y_coord=random.randint(a=211, b=547))
+        click(
+            vm_index=vm_index,
+            x_coord=random.randint(a=67, b=358),
+            y_coord=random.randint(a=211, b=547),
+        )
         time.sleep(3)
 
         # Attempt to find the request button
