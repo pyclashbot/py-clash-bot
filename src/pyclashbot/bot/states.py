@@ -571,15 +571,15 @@ def state_tree_tester(vm_index):
         "trophy_road_rewards_user_toggle": False,
         "request_user_toggle": False,
         "donate_toggle": False,
-
-
-        "open_battlepass_user_toggle": True,
-        "card_mastery_user_toggle": True,
         "free_offer_user_toggle": True,
         "gold_offer_user_toggle": True,
+        "daily_rewards_user_toggle": True,
+        "open_battlepass_user_toggle": True,
+
+
+        "card_mastery_user_toggle": True,
         "war_user_toggle": True,
         "open_bannerbox_user_toggle": True,
-        "daily_rewards_user_toggle": True,
         "battlepass_collect_user_toggle": True,
         "level_up_chest_user_toggle": True,
         "season_shop_buys_user_toggle": True,

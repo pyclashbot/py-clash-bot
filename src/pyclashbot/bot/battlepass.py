@@ -123,7 +123,7 @@ def collect_battlepass(vm_index, logger) -> bool:
     return True
 
 
-def collect_1_battlepass_reward(vm_index, logger):
+def collect_1_battlepass_reward(vm_index, logger) -> bool:
     logger.change_status("Collecting a battlepass reward")
 
     # open battlepass
