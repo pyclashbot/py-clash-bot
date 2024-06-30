@@ -269,9 +269,9 @@ class Logger:
         if mode2toggle["path_of_legends"]:
             mode2count["path_of_legends"] = path_of_legends_1v1_fights
 
-        print("{:^15} : {:^15}".format("mode", "count"))
+        print("{:^17} : {:^15}".format("mode", "count"))
         for mode, count in mode2count.items():
-            print("{:^15} : {:^15}".format(mode, count))
+            print("{:^17} : {:^15}".format(mode, count))
 
         #if they're all zero, return a random one
         if all(count == 0 for count in mode2count.values()):
