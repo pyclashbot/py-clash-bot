@@ -38,7 +38,7 @@ def buy_shop_offers_state(
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main to being buying offers. Returning restart"
         )
         return "restart"
@@ -52,14 +52,14 @@ def buy_shop_offers_state(
         )
         is not True
     ):
-        logger.change_status("Failed to buy offers. Returning restart")
+        logger.change_status(vm_index,"Failed to buy offers. Returning restart")
         return "restart"
 
     time.sleep(3)
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("Not on clash main after buying offers. Returning restart")
+        logger.change_status(vm_index,"Not on clash main after buying offers. Returning restart")
         return "restart"
 
     return next_state
@@ -72,9 +72,9 @@ def buy_shop_offers_main(
     free_offers_toggle: bool,
 ) -> bool:
     # get to shop page
-    logger.change_status("Getting to shop page to buy offers")
+    logger.change_status(vm_index,"Getting to shop page to buy offers")
     if get_to_shop_page_from_clash_main(vm_index, logger) is False:
-        logger.change_status("Failed to get to shop page to buy offers")
+        logger.change_status(vm_index,"Failed to get to shop page to buy offers")
         return False
 
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
@@ -83,13 +83,13 @@ def buy_shop_offers_main(
 
     start_time = time.time()
     done_buying = False
-    logger.change_status("Starting to buy offers")
+    logger.change_status(vm_index,"Starting to buy offers")
     while 1 and done_buying is False:
         if time.time() - start_time > SHOP_BUY_TIMEOUT:
             break
 
         # scroll a little
-        logger.change_status("Searching for offers to buy")
+        logger.change_status(vm_index,"Searching for offers to buy")
         print("Time taken in shop: ", str(time.time() - start_time)[:5])
         scroll_down_slowly_in_shop_page(vm_index)
         time.sleep(1)
@@ -103,7 +103,7 @@ def buy_shop_offers_main(
                 and done_buying is False
             ):
                 purchase_total += 1
-                logger.change_status("Bought an offer from the shop!")
+                logger.change_status(vm_index,"Bought an offer from the shop!")
                 time.sleep(2)
                 start_time = time.time()
 
@@ -125,7 +125,7 @@ def buy_shop_offers_main(
                     done_buying = True
                     break
 
-    logger.change_status("Done buying offers. Returning to clash main")
+    logger.change_status(vm_index,"Done buying offers. Returning to clash main")
 
     # get to clash main from shop page
     click(vm_index, 245, 596)

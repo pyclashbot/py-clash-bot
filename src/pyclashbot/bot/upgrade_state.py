@@ -65,14 +65,14 @@ CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
-    logger.change_status(status="Upgrade cards state")
+    logger.change_status(vm_index,status="Upgrade cards state")
     logger.add_card_upgrade_attempt()
 
     # if not on clash main, return restart
     print('Making sure on clash main before upgrading cards')
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main at the start of upgrade_cards_state()")
         logger.log(
             "These are the pixels the bot saw after failing to find clash main:")
@@ -82,9 +82,9 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         return "restart"
 
     # get to card page
-    logger.change_status(status="Getting to card page")
+    logger.change_status(vm_index,status="Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(vm_index,
             status="Error 0751389 Failure getting to card page from clash main in Upgrade State"
         )
         return "restart"
@@ -108,7 +108,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
             print("Upgraded a card")
 
     time.sleep(2)
-    logger.change_status(status="Done upgrading cards")
+    logger.change_status(vm_index,status="Done upgrading cards")
     click(vm_index, 211, 607)
     time.sleep(1)
 
@@ -119,7 +119,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     # wait for main
     if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Failed to wait for clash main after upgrading cards")
         return "restart"
 
@@ -181,20 +181,20 @@ def upgrade_card(vm_index, logger: Logger, card_index):
         None
     """
     upgraded_a_card = False
-    logger.change_status(status=f"Upgrading card index: {card_index}")
+    logger.change_status(vm_index,status=f"Upgrading card index: {card_index}")
 
     # click the card
     # click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
     # time.sleep(2)
 
     # click the upgrade button
-    logger.change_status(status="Clicking the upgrade button for this card")
+    logger.change_status(vm_index,status="Clicking the upgrade button for this card")
     coord = UPGRADE_BUTTON_COORDS[card_index]
     click(vm_index, coord[0], coord[1])
     time.sleep(2)
 
     # click second upgrade button
-    logger.change_status(status="Clicking the second upgrade button")
+    logger.change_status(vm_index,status="Clicking the second upgrade button")
     if check_for_second_upgrade_button_condition_1(vm_index):
         click(
             vm_index,
@@ -220,7 +220,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
             f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
         )
         # click confirm upgrade button
-        logger.change_status(status="Clicking the confirm upgrade button")
+        logger.change_status(vm_index,status="Clicking the confirm upgrade button")
         if check_for_confirm_upgrade_button_condition_1(vm_index):
             click(
                 vm_index,
@@ -239,13 +239,13 @@ def upgrade_card(vm_index, logger: Logger, card_index):
         click(vm_index, CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
         time.sleep(2)
 
-        logger.change_status("Upgraded this card")
+        logger.change_status(vm_index,"Upgraded this card")
     else:
         logger.log("Missing gold popup exists. Skipping this upgradable card.")
         upgraded_a_card = False
 
     # click deadspace
-    logger.change_status(
+    logger.change_status(vm_index,
         status="Clicking deadspace after attemping upgrading this card"
     )
     for _ in range(4):
@@ -297,7 +297,7 @@ def check_for_missing_gold_popup(vm_index):
 
 
 def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
-    logger.change_status(status=f"Checking if {card_index} is upgradable")
+    logger.change_status(vm_index,status=f"Checking if {card_index} is upgradable")
 
     # click the selected card
     card_coord = CARD_COORDS[card_index]

@@ -9,11 +9,11 @@ import time
 def collect_daily_rewards_state(vm_index, logger, next_state):
     # First check if all rewards have already been collected
     if check_if_rewards_collected(vm_index):
-        logger.change_status("All daily rewards have been collected")
+        logger.change_status(vm_index,"All daily rewards have been collected")
         return next_state
 
     if not collect_all_daily_rewards(vm_index, logger):
-        logger.change_status("Failed to collect daily rewards")
+        logger.change_status(vm_index,"Failed to collect daily rewards")
         return "restart"
 
     return next_state
@@ -42,7 +42,7 @@ def check_if_rewards_collected(vm_index) -> bool:
 def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main at start of collect_challenge_rewards(). Returning False")
         return False
 
@@ -62,7 +62,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     for i, (x, y) in enumerate(reward_positions):
         if rewards[i]:
             click(vm_index, x, y)
-            logger.change_status(reward_messages[i])
+            logger.change_status(vm_index,reward_messages[i])
             logger.add_daily_reward()
             time.sleep(1)
 
@@ -77,7 +77,7 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
                 click(vm_index, 15, 450, clicks=15, interval=0.33)
 
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main after collect_challenge_rewards(). Returning False")
         return False
 
@@ -119,39 +119,39 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
 
 def collect_all_daily_rewards(vm_index, logger) -> bool:
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main at start of collect_daily_rewards(). Returning False")
         return False
 
     if not check_if_daily_rewards_button_exists(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Daily rewards button doesn't exist. Assuming rewards already collected or not available.")
         return True
 
     rewards = check_which_rewards_are_available(vm_index, logger)
     if rewards is False:
-        logger.change_status("Error checking which rewards are available")
+        logger.change_status(vm_index,"Error checking which rewards are available")
         return False
 
     if not any(rewards):
-        logger.change_status("No daily rewards available to collect")
+        logger.change_status(vm_index,"No daily rewards available to collect")
         return True
 
     if not collect_challenge_rewards(vm_index, logger, rewards):
-        logger.change_status("Failed to collect challenge rewards")
+        logger.change_status(vm_index,"Failed to collect challenge rewards")
         return False
 
     return True
 
 
 def check_which_rewards_are_available(vm_index, logger):
-    logger.change_status("Checking which daily rewards are available")
+    logger.change_status(vm_index,"Checking which daily rewards are available")
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         time.sleep(3)
         if check_if_on_clash_main_menu(vm_index) is not True:
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Not on clash main before check_which_rewards_are_available() "
             )
 
@@ -168,7 +168,7 @@ def check_which_rewards_are_available(vm_index, logger):
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main after check_which_rewards_are_available()"
         )
         return False

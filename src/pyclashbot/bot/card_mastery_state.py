@@ -12,16 +12,16 @@ from pyclashbot.memu.client import screenshot
 
 
 def card_mastery_state(vm_index, logger, next_state):
-    logger.change_status("Going to collect card mastery rewards")
+    logger.change_status(vm_index,"Going to collect card mastery rewards")
 
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
+        logger.change_status(vm_index,
             'Not on clash main menu for card_mastery_state() returning "restart"'
         )
         return "restart"
 
     if collect_card_mastery_rewards(vm_index, logger) is False:
-        logger.change_status(
+        logger.change_status(vm_index,
             'Failed somewhere in collect_card_mastery_rewards(), returning "restart"'
         )
         return "restart"
@@ -31,35 +31,35 @@ def card_mastery_state(vm_index, logger, next_state):
 
 def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
     # get to card page
-    logger.change_status("Collecting card mastery rewards...")
+    logger.change_status(vm_index,"Collecting card mastery rewards...")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(vm_index,
             "Failed to get to card page to collect mastery rewards! Returning false"
         )
         return False
     time.sleep(3)
 
     if not card_mastery_rewards_exist(vm_index):
-        logger.change_status("No card mastery rewards to collect.")
+        logger.change_status(vm_index,"No card mastery rewards to collect.")
         time.sleep(1)
 
     else:
         # while card mastery icon exists:
         while card_mastery_rewards_exist(vm_index):
-            logger.change_status("Detected card mastery rewards")
+            logger.change_status(vm_index,"Detected card mastery rewards")
             #   click card mastery icon
             collect_first_mastery_reward(vm_index)
-            logger.change_status("Collected a card mastery reward!")
+            logger.change_status(vm_index,"Collected a card mastery reward!")
             logger.add_card_mastery_reward_collection()
             time.sleep(2)
 
     # get to clash main
-    logger.change_status("Returning to clash main menu")
+    logger.change_status(vm_index,"Returning to clash main menu")
     click(vm_index, 243, 600)
 
     # wait for main to appear
     if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Failed to get back to clash main menu from card page! Returning false"
         )
         return False

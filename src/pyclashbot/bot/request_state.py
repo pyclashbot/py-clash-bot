@@ -73,13 +73,13 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     Returns:
         str: The next state to transition to after this state is complete.
     """
-    logger.change_status(status="Doing request state!")
+    logger.change_status(vm_index,status="Doing request state!")
     logger.add_request_attempt()
 
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main for the start of request_state()")
+        logger.change_status(vm_index,"Not on clash main for the start of request_state()")
         logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
@@ -88,10 +88,10 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
 
     # if logger says we're not in a clan, check if we are in a clan
     if logger.in_a_clan is False:
-        logger.change_status("Checking if in a clan before requesting")
+        logger.change_status(vm_index,"Checking if in a clan before requesting")
         in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
         if in_a_clan_return == "restart":
-            logger.change_status(
+            logger.change_status(vm_index,
                 status="Error 05708425 Failure with check_if_in_a_clan"
             )
             return "restart"
@@ -106,9 +106,9 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
 
     # get to clan page
-    logger.change_status("Getting to clan tab to request a card")
+    logger.change_status(vm_index,"Getting to clan tab to request a card")
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
-        logger.change_status(status="ERROR 74842744443 Not on clan tab")
+        logger.change_status(vm_index,status="ERROR 74842744443 Not on clan tab")
         return "restart"
 
     logger.update_time_of_last_request(time.time())
@@ -119,7 +119,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         if not do_request(vm_index, logger):
             return "restart"
     else:
-        logger.change_status(status="Can't request right now.")
+        logger.change_status(vm_index,status="Can't request right now.")
 
     # click clash main icon
     click(vm_index, 178, 593)
@@ -131,11 +131,11 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
 
 
 def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
-    logger.change_status(status="Doing random scrolling in request page")
+    logger.change_status(vm_index,status="Doing random scrolling in request page")
     for _ in range(scrolls):
         scroll_down_in_request_page(vm_index)
         time.sleep(1)
-    logger.change_status(status="Done with random scrolling in request page")
+    logger.change_status(vm_index,status="Done with random scrolling in request page")
 
 
 def count_scrolls_in_request_page(vm_index) -> int:
@@ -178,12 +178,12 @@ def request_state_check_if_in_a_clan(
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(status="ERROR 385462623 Not on clash main menu")
+        logger.change_status(vm_index,status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(vm_index,
             status="Error 9076092860923485 Failure with get_to_profile_page"
         )
         return "restart"
@@ -193,12 +193,12 @@ def request_state_check_if_in_a_clan(
 
     # print clan status
     if not in_a_clan:
-        logger.change_status("Not in a clan, so can't request!")
+        logger.change_status(vm_index,"Not in a clan, so can't request!")
 
     # click deadspace to leave
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.change_status(
+        logger.change_status(vm_index,
             status="Error 87258301758939 Failure with wait_for_clash_main_menu"
         )
         return "restart"
@@ -235,15 +235,15 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
 
 
 def do_request(vm_index, logger: Logger) -> bool:
-    logger.change_status(status="Initiating request process")
+    logger.change_status(vm_index,status="Initiating request process")
 
     # Click the request button
-    logger.change_status(status="Clicking the request button")
+    logger.change_status(vm_index,status="Clicking the request button")
     click(vm_index=vm_index, x_coord=77, y_coord=536)
     time.sleep(3)
 
     # Determine the maximum number of scrolls in the request page
-    logger.change_status(status="Determining maximum scrolls in the request page")
+    logger.change_status(vm_index,status="Determining maximum scrolls in the request page")
     max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
     logger.log(f"Maximum scrolls found in the request page: {max_scrolls}")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
@@ -267,13 +267,13 @@ def do_request(vm_index, logger: Logger) -> bool:
             time.time() - random_click_start_time > random_click_timeout
             or attempt_count > 6
         ):
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Timeout or too many attempts while trying to click a random card for request"
             )
             return False
 
         # Click on a random card
-        logger.change_status(status="Clicking a random card to request")
+        logger.change_status(vm_index,status="Clicking a random card to request")
         click(
             vm_index=vm_index,
             x_coord=random.randint(a=67, b=358),
@@ -286,7 +286,7 @@ def do_request(vm_index, logger: Logger) -> bool:
         attempt_count += 1
 
     # Click the found request button
-    logger.change_status(status="Clicking the request button")
+    logger.change_status(vm_index,status="Clicking the request button")
     click(vm_index, coord[0], coord[1])
 
     # Update request statistics

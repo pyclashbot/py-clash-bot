@@ -188,7 +188,7 @@ def handle_tower_troops(vm_index, logger: Logger):
         for card_index in range(1, 4):  # Iterate through the 3 Tower Troops cards
             color = detect_arrow_color(vm_index, card_index, y_positions_tower_troops)
             if color == "green":
-                logger.change_status(
+                logger.change_status(vm_index,
                     status=f"Detected green arrow for Tower Troops card {card_index}. Upgrading..."
                 )
                 click(vm_index, *tower_troops_card_click_coords[card_index - 1])
@@ -198,21 +198,21 @@ def handle_tower_troops(vm_index, logger: Logger):
                 time.sleep(2)
 
                 if not find_and_click_button_by_image(vm_index, "upgrade_button"):
-                    logger.change_status(
+                    logger.change_status(vm_index,
                         "Failed to find the second upgrade button. Skipping this card."
                     )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
                 if check_for_missing_gold_popup(vm_index):
-                    logger.change_status(
+                    logger.change_status(vm_index,
                         "Missing gold popup exists. Skipping this upgradable card."
                     )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
                 if not find_and_click_button_by_image(vm_index, "confirm_button"):
-                    logger.change_status(
+                    logger.change_status(vm_index,
                         "Failed to find the confirm button. Upgrade may not have been completed."
                     )
                     reset_ui_state(vm_index)
@@ -226,7 +226,7 @@ def handle_tower_troops(vm_index, logger: Logger):
                 logger.log(
                     f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
                 )
-                logger.change_status("Successfully upgraded the card")
+                logger.change_status(vm_index,"Successfully upgraded the card")
 
                 reset_ui_state(vm_index)
                 break  # Restart detection from the first card
@@ -255,28 +255,28 @@ def detect_and_upgrade(vm_index, logger, y_positions):
 
 
 def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
-    logger.change_status(status="Upgrade cards state")
+    logger.change_status(vm_index,status="Upgrade cards state")
     logger.add_card_upgrade_attempt()
 
     # If not on clash main, return restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main at the start of upgrade_cards_state()")
+        logger.change_status(vm_index,"Not on clash main at the start of upgrade_cards_state()")
         logger.log("These are the pixels the bot saw after failing to find clash main:")
         for pixel in clash_main_check:
             logger.log(f"   {pixel}")
         return "restart"
 
     # Get to card page
-    logger.change_status(status="Getting to card page")
+    logger.change_status(vm_index,status="Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
-        logger.change_status(
+        logger.change_status(vm_index,
             status="Error 0751389 Failure getting to card page from clash main in Upgrade State"
         )
         return "restart"
 
     # Click the collection button
-    logger.change_status(status="Clicking the collection button")
+    logger.change_status(vm_index,status="Clicking the collection button")
     click(vm_index, 290, 69)
     logger.log("Clicked on the collection button to view all cards.")
     time.sleep(2)
@@ -285,7 +285,7 @@ def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
     time.sleep(1)
     if is_boosted_section_present(vm_index):
         # If the "Boosted" section is present
-        logger.change_status("Navigating to the 'Boosted' section of the cards.")
+        logger.change_status(vm_index,"Navigating to the 'Boosted' section of the cards.")
         click(vm_index, 80, 520)  # Click to reach the "Boosted" section
         time.sleep(1)
         click(vm_index, 21, 415)  # Click empty space
@@ -294,7 +294,7 @@ def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
         detect_and_upgrade(vm_index, logger, [465, 471])
 
         # Then navigate to the "Found" section of the cards
-        logger.change_status("Navigating to the 'Found' section of the cards.")
+        logger.change_status(vm_index,"Navigating to the 'Found' section of the cards.")
         click(vm_index, 166, 561)  # Click to reach the "Found" section
         time.sleep(1)
         click(vm_index, 21, 415)  # Click empty space
@@ -304,7 +304,7 @@ def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
 
     else:
         # If the "Boosted" section is not present, directly navigate to the "Found" section
-        logger.change_status("Navigating to the 'Found' section of the cards.")
+        logger.change_status(vm_index,"Navigating to the 'Found' section of the cards.")
         # Adjust if necessary to correctly target the "Found" section directly
         click(vm_index, 80, 520)
         time.sleep(1)
@@ -330,13 +330,13 @@ def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
         time.sleep(0.5)
 
     # Return to clash main
-    logger.change_status("Returning to clash main")
+    logger.change_status(vm_index,"Returning to clash main")
     click(vm_index, 243, 600)
     time.sleep(3)
 
     # Wait for main
     if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
-        logger.change_status("Failed to wait for clash main after upgrading cards")
+        logger.change_status(vm_index,"Failed to wait for clash main after upgrading cards")
         return "restart"
 
     logger.update_time_of_last_card_upgrade(time.time())
@@ -355,7 +355,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     Returns:
         None
     """
-    logger.change_status(status=f"Upgrading card index: {card_index}")
+    logger.change_status(vm_index,status=f"Upgrading card index: {card_index}")
 
     # Coordinates for clicking on the card and the first upgrade button
     card_click_coords = [(81, 412), (164, 412), (252, 412), (339, 412)]
@@ -400,7 +400,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     logger.log(
         f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
     )
-    logger.change_status("Successfully upgraded the card")
+    logger.change_status(vm_index,"Successfully upgraded the card")
     return True
 
 

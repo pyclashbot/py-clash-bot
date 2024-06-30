@@ -16,19 +16,19 @@ from pyclashbot.memu.client import screenshot, click, scroll_up_a_little
 
 def collect_battlepass_state(vm_index, logger, next_state):
     if not check_if_on_clash_main_menu(vm_index=vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main before collecting battlepass, returning restart"
         )
         return "restart"
 
     if collect_battlepass(vm_index, logger) is False:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Failed somewhere in collect_battlepass(), returning restart"
         )
         return "restart"
 
     if not check_if_on_clash_main_menu(vm_index=vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main after collecting battlepass, returning restart"
         )
         return "restart"
@@ -91,40 +91,40 @@ def check_if_on_battlepass_page(vm_index):
 
 
 def collect_battlepass(vm_index, logger) -> bool:
-    logger.change_status("Collecting battlepass rewards...")
+    logger.change_status(vm_index,"Collecting battlepass rewards...")
 
     # if not on main to begin, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Not on clash main to being battlepass collection. returning False"
         )
         return False
     print("On clash main for battlepass collection")
 
     if not check_for_battlepass_reward_icon_with_delay(vm_index):
-        logger.change_status("No battlepass rewards to collect")
+        logger.change_status(vm_index,"No battlepass rewards to collect")
         return True
 
     # while rewards exist:
     while check_for_battlepass_reward_icon_with_delay(vm_index) is True:
         if collect_1_battlepass_reward(vm_index, logger) is True:
-            logger.change_status("Successfully collected a battlepass reward")
+            logger.change_status(vm_index,"Successfully collected a battlepass reward")
         else:
-            logger.change_status("Failed to collect a battlepass reward")
+            logger.change_status(vm_index,"Failed to collect a battlepass reward")
         time.sleep(1)
 
     time.sleep(10)
 
     # if not on clash main, return false
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("Not on clash main after claiming battlepass rewards")
+        logger.change_status(vm_index,"Not on clash main after claiming battlepass rewards")
         return False
 
     return True
 
 
 def collect_1_battlepass_reward(vm_index, logger) -> bool:
-    logger.change_status("Collecting a battlepass reward")
+    logger.change_status(vm_index,"Collecting a battlepass reward")
 
     # open battlepass
     click(vm_index, 341, 123)
@@ -139,7 +139,7 @@ def collect_1_battlepass_reward(vm_index, logger) -> bool:
         )
 
         if claim_rewards_coord is None:
-            logger.change_status(
+            logger.change_status(vm_index,
                 "No claim rewards button, clicking more rewards button"
             )
             click(vm_index, 70, 120)
@@ -148,7 +148,7 @@ def collect_1_battlepass_reward(vm_index, logger) -> bool:
 
         # if collect coord is too high, scroll a little and continue
         if claim_rewards_coord[1] < 160:
-            logger.change_status("Claim rewards button too high, scrolling a little")
+            logger.change_status(vm_index,"Claim rewards button too high, scrolling a little")
             scroll_up_a_little(vm_index)
             time.sleep(3)
 
@@ -158,7 +158,7 @@ def collect_1_battlepass_reward(vm_index, logger) -> bool:
         )
 
         # claim the reward
-        logger.change_status('Clicking "Claim Rewards" button')
+        logger.change_status(vm_index,'Clicking "Claim Rewards" button')
         click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
         time.sleep(3)
 

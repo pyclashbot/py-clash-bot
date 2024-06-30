@@ -225,14 +225,25 @@ time_status_bar_layout = [
             [
                 sg.Input(
                     "Idle",
-                    key="current_status",
+                    key="current_status_1",
                     use_readonly_for_disable=True,
                     disabled=True,
                     text_color="blue",
                     expand_x=True,
                     tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
                 ),
-            ]
+            ],
+            [
+                sg.Input(
+                    "Idle",
+                    key="current_status_2",
+                    use_readonly_for_disable=True,
+                    disabled=True,
+                    text_color="blue",
+                    expand_x=True,
+                    tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
+                ),
+            ],
         ],
         expand_x=True,
     )
@@ -317,7 +328,6 @@ main_layout = [
     [donate_button_layout_tab],
     [time_status_bar_layout],
 ]
-
 
 # a list of all the keys that contain user configuration
 user_config_keys = [

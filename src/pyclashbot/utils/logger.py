@@ -1,4 +1,3 @@
-
 """import logging for file logging"""
 
 import logging
@@ -88,8 +87,6 @@ class Logger:
         # immutable statistics
         self.start_time = time.time() if timed else None
 
-        ####STATISTICS
-
         # fight stats
         self.wins = 0
         self.losses = 0
@@ -146,11 +143,15 @@ class Logger:
 
         # bot stats
         self.current_state = "No state"
-        self.current_status = "Idle"
+        # self.current_status = "Idle"
         self.time_of_last_request = 0
         self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
         self.total_accounts = 0
+        self.vm_indicies = []
+        self.vm_index2logger_index = {}
+        self.current_status_1 = "Idle"
+        self.current_status_2 = "Idle"
 
         # track errored logger
         self.errored = False
@@ -160,7 +161,8 @@ class Logger:
 
     def _update_log(self) -> None:
         self._update_stats()
-        logging.info(self.current_status)
+        logging.info(self.current_status_1)
+        logging.info(self.current_status_2)
 
     def _update_stats(self) -> None:
         """updates the stats with a dictionary of mutable statistics"""
@@ -193,7 +195,9 @@ class Logger:
                 "cards_played": self.cards_played,
                 # bot stats
                 "restarts_after_failure": self.restarts_after_failure,
-                "current_status": self.current_status,
+                # "current_status": self.current_status,
+                "current_status_1": self.current_status_1,
+                "current_status_2": self.current_status_2,
                 # account stuff
                 "current_account": self.current_account,
                 "account_switches": self.account_switches,
@@ -273,7 +277,7 @@ class Logger:
         for mode, count in mode2count.items():
             print("{:^17} : {:^15}".format(mode, count))
 
-        #if they're all zero, return a random one
+        # if they're all zero, return a random one
         if all(count == 0 for count in mode2count.values()):
             return random.choice(list(mode2count.keys()))
 
@@ -310,6 +314,15 @@ class Logger:
     def increment_battlepass_collects(self):
         """Increment the logger's battlepass_collects count by 1."""
         self.battlepass_collects += 1
+
+    def add_vm_index(self, index):
+        # update the vm_indicies list
+        self.vm_indicies.append(index)
+
+        # update the vm_index2logger_index dict
+        self.vm_index2logger_index = {}
+        for i, vm_index in enumerate(self.vm_indicies):
+            self.vm_index2logger_index[vm_index] = i + 1
 
     @_updates_log
     def add_shop_offer_collection(self) -> None:
@@ -412,13 +425,29 @@ class Logger:
         self.daily_rewards += 1
 
     @_updates_log
-    def change_status(self, status) -> None:
+    def change_status(self, vm_index, status) -> None:
         """change status of bot in log
 
         Args:
             status (str): status of bot
         """
-        self.current_status = status
+        # get the proper logger for this status
+        logger_index = None
+        try:
+            logger_index = self.vm_index2logger_index[vm_index]
+        except:
+            pass
+
+
+        # if the logger index is 1, or None:
+        if logger_index == 1 or logger_index is None:
+            self.current_status_1 = str(vm_index) + ": " + status
+
+        # if the logger index is 1:
+        if logger_index == 2:
+            self.current_status_2 = str(vm_index) + ": " + status
+
+        # always log the status
         self.log(status)
 
     @_updates_log
@@ -796,7 +825,8 @@ class Logger:
         # if games_played / increment > donate_attempts
         if games_played / increment >= donate_attempts:
             self.change_status(
-                f"Can donate. attempts = {donate_attempts} & games played = {games_played}"
+                vm_index,
+                f"Can donate. attempts = {donate_attempts} & games played = {games_played}",
             )
             return True
 
@@ -850,7 +880,9 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always collect battlepass rewards")
+            self.log(
+                f"Increment is {increment} so can always collect battlepass rewards"
+            )
             return True
 
         # count battlepass_collect_attempts
@@ -1086,5 +1118,4 @@ class Logger:
 
 
 if __name__ == "__main__":
-    initalize_pylogging()
-    logger = Logger()
+    pass
