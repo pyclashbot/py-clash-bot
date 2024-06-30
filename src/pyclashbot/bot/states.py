@@ -557,28 +557,32 @@ def state_tree_tester(vm_index):
     logger = Logger()
     state = "account_switch"
     job_list = {
-        # job toggles
-        "open_battlepass_user_toggle": False,
-        "open_chests_user_toggle": False,
-        "request_user_toggle": False,
-        "donate_toggle": False,
-        "card_mastery_user_toggle": False,
-        "free_offer_user_toggle": False,
-        "gold_offer_user_toggle": False,
-        "trophy_road_1v1_battle_user_toggle": True,
+        #battle toggles
+        "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": False,
         "goblin_queens_journey_1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": False,
-        "war_user_toggle": False,
+        "2v2_battle_user_toggle": False,
+
+        # job toggles
+        "open_chests_user_toggle": False,
         "random_decks_user_toggle": False,
-        "open_bannerbox_user_toggle": False,
-        "daily_rewards_user_toggle": False,
-        "battlepass_collect_user_toggle": False,
-        "level_up_chest_user_toggle": False,
-        "upgrade_all_cards_user_toggle": False,
+        "upgrade_user_toggle": False,
+        "upgrade_all_cards_user_toggle": False, #busted
         "trophy_road_rewards_user_toggle": False,
-        "season_shop_buys_user_toggle": False,
+        "request_user_toggle": False,
+        "donate_toggle": False,
+
+
+        "open_battlepass_user_toggle": True,
+        "card_mastery_user_toggle": True,
+        "free_offer_user_toggle": True,
+        "gold_offer_user_toggle": True,
+        "war_user_toggle": True,
+        "open_bannerbox_user_toggle": True,
+        "daily_rewards_user_toggle": True,
+        "battlepass_collect_user_toggle": True,
+        "level_up_chest_user_toggle": True,
+        "season_shop_buys_user_toggle": True,
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
