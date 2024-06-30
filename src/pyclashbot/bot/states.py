@@ -407,7 +407,7 @@ def state_tree(
     if state == "battlepass_rewards":  # --> card_mastery
         next_state = "card_mastery"
 
-        if not job_list["battlepass_collect_user_toggle"]:
+        if not job_list["open_battlepass_user_toggle"]:
             logger.change_status(
                 "Battlepass collect is not toggled. Skipping this state"
             )
@@ -467,7 +467,7 @@ def state_tree(
         }
 
         for mode, toggle in mode2toggle.items():
-            print("{:^14} : {}".format(mode, toggle))
+            print("{:^17} : {}".format(mode, toggle))
 
         # if all are toggled off, return next_state
         if not any(mode2toggle.values()):
@@ -571,18 +571,19 @@ def state_tree_tester(vm_index):
         "trophy_road_rewards_user_toggle": False,
         "request_user_toggle": False,
         "donate_toggle": False,
-        "free_offer_user_toggle": True,
-        "gold_offer_user_toggle": True,
-        "daily_rewards_user_toggle": True,
-        "open_battlepass_user_toggle": True,
-
-
-        "card_mastery_user_toggle": True,
+        "free_offer_user_toggle": False,
+        "gold_offer_user_toggle": False,
+        "daily_rewards_user_toggle": False,#unchecked
+        "open_battlepass_user_toggle": False,
+        "open_bannerbox_user_toggle": False,#unchecked
+        "season_shop_buys_user_toggle": False,
         "war_user_toggle": True,
-        "open_bannerbox_user_toggle": True,
-        "battlepass_collect_user_toggle": True,
+
+
+
+
+        "card_mastery_user_toggle": False,#unchecked
         "level_up_chest_user_toggle": True,
-        "season_shop_buys_user_toggle": True,
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
