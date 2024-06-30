@@ -3,6 +3,7 @@ This module contains the main entry point for the py-clash-bot program.
 It provides a GUI interface for users to configure and run the bot.
 """
 
+from ast import List
 import random
 import sys
 import webbrowser
@@ -11,7 +12,7 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import DONATE_BUTTON_KEY, create_window
-from pyclashbot.memu.launcher import reset_clashbot_emulator
+from pyclashbot.memu.launcher import get_vms
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
@@ -270,7 +271,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
     )
 
 
-def start_button_event(logger: Logger, window: Window, values) -> WorkerThread | None:
+def start_button_event(logger, window: Window, values) -> WorkerThread | None:
     """method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
@@ -305,9 +306,10 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     logger.update_account_order_var(job_dictionary["random_account_switch_list"])
 
     logger.log("Start Button Event")
-    logger.change_status(status="Starting the bot!")
+    logger.change_status(None,status="Starting the bot!")
     save_current_settings(values)
 
+    logger.log_job_dictionary(job_dictionary)
     logger.log_job_dictionary(job_dictionary)
 
     for key in disable_keys:
@@ -319,9 +321,15 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     # setup the main thread and start it
     print("Starting main thread")
     thread_args = job_dictionary
-    # args: tuple[list[str], int] = (jobs, acc_count)
-    thread = WorkerThread(logger, thread_args)
-    thread.start()
+
+    vm_count = 2
+    vm_indicies = get_vms(logger, vm_count)
+
+    # run threads
+    for vm_index in vm_indicies:
+        logger.add_vm_index(vm_index)
+        thread = WorkerThread(logger, vm_index, thread_args)
+        thread.start()
 
     # enable the stop button after the thread is started
     window["Stop"].update(disabled=False)
@@ -338,10 +346,9 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     returns:
         None
     """
-    logger.change_status(status="Stopping")
+    logger.change_status(vm_index,status="Stopping")
     window["Stop"].update(disabled=True)
     thread.shutdown(kill=False)  # send the shutdown flag to the thread
-
 
 def update_layout(window: sg.Window, logger: Logger) -> None:
     """method for updaing the values in the gui's window
@@ -356,8 +363,8 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
     stats = logger.get_stats()
     if stats is not None:
         for stat, val in stats.items():
+            # update current status key to that of the correct display key
             window[stat].update(val)  # type: ignore
-
 
 def exit_button_event(thread) -> None:
     """
@@ -371,7 +378,6 @@ def exit_button_event(thread) -> None:
     """
     if thread is not None:
         thread.shutdown(kill=True)
-
 
 def handle_thread_finished(
     window: sg.Window, thread: WorkerThread | None, logger: Logger
@@ -389,7 +395,6 @@ def handle_thread_finished(
             thread = None
     return thread, logger
 
-
 def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
     """method for displaying the main gui"""
 
@@ -401,7 +406,7 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 
     # track worker thread and logger
     thread: WorkerThread | None = None
-    logger = Logger(timed=False)
+    logger = Logger(timed=True)
 
     # run the gui
     while True:
@@ -418,7 +423,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 
         # on start event, start the thread
         if event == "Start":
-            logger = Logger(timed=True)
             thread = start_button_event(logger, window, values)
 
         # on stop event, stop the thread
@@ -449,7 +453,7 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 
         # refresh emulator button
         elif event == "refresh_emualtor_key":
-            reset_clashbot_emulator(logger)
+            print("Deprecated")
 
         # donate event
         elif event in ("donate", DONATE_BUTTON_KEY):
@@ -466,8 +470,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
         # on Help button event, open the help gui
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
-
-            # handle when thread is finished
 
         update_layout(window, logger)
 

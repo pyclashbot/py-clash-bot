@@ -27,16 +27,16 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("293587 Not on clash main to do account switching")
+        logger.change_status(vm_index,"293587 Not on clash main to do account switching")
         return False
 
     # click options burger
-    logger.change_status("Opening clash main options menu")
+    logger.change_status(vm_index,"Opening clash main options menu")
     click(vm_index, 386, 66)
     time.sleep(3)
 
     # click switch SSID button
-    logger.change_status("Clicking switch SSID button")
+    logger.change_status(vm_index,"Clicking switch SSID button")
     click(vm_index, 221, 368)
     time.sleep(4)
 
@@ -46,7 +46,7 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # Perform the scrolling
     if account_index_to_switch_to in [5, 6, 7]:
-        logger.change_status(
+        logger.change_status(vm_index,
             f"Scrolling down to reach account #{account_index_to_switch_to}"
         )
         if account_index_to_switch_to == 5:  # 6th account
@@ -58,13 +58,13 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
-    logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
+    logger.change_status(vm_index,f"Clicking account index #{account_index_to_switch_to}")
     click(vm_index, account_coord[0], account_coord[1], clicks=3, interval=0.33)
-    logger.change_status(f"Selected account #{account_index_to_switch_to}")
+    logger.change_status(vm_index,f"Selected account #{account_index_to_switch_to}")
 
     time.sleep(6)
 
-    logger.change_status("Waiting for clash main on new account...")
+    logger.change_status(vm_index,"Waiting for clash main on new account...")
     if wait_for_clash_main_menu(vm_index, logger) is False:
         return False
     time.sleep(4)
@@ -73,7 +73,7 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
         handle_trophy_reward_menu(vm_index, logger, printmode=False)
         time.sleep(2)
 
-    logger.change_status(f"Switched to account #{account_index_to_switch_to}")
+    logger.change_status(vm_index,f"Switched to account #{account_index_to_switch_to}")
     # Reset logger's in_a_clan value
     logger.update_in_a_clan_value(False)
     logger.increment_account_switches()

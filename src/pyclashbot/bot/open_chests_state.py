@@ -38,7 +38,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     open_chests_start_time = time.time()
 
     logger.add_chest_unlock_attempt()
-    logger.change_status(status="Opening chests state")
+    logger.change_status(vm_index,status="Opening chests state")
 
     # handle being on trophy road meu
     if check_for_trophy_reward_menu(vm_index):
@@ -55,23 +55,23 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
 
         return "restart"
 
-    logger.change_status(
+    logger.change_status(vm_index,
         status="Handling obstructing notifications before opening chests"
     )
     if handle_clash_main_tab_notifications(vm_index, logger) is False:
-        logger.change_status(
+        logger.change_status(vm_index,
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications"
         )
         return "restart"
 
     # if not on clash main return
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
+        logger.change_status(vm_index,
             status="Error 827358235 Not on clash main menu, returning to start state"
         )
         return "restart"
 
-    logger.change_status(status="Opening chests...")
+    logger.change_status(vm_index,status="Opening chests...")
     # check which chests are available
     statuses = get_chest_statuses(vm_index)  # available/unavailable
 
@@ -81,7 +81,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
         if status == "available":
             logger.log(f"Chest #{chest_index} is available")
             if open_chest(vm_index, logger, chest_index) == "restart":
-                logger.change_status("Error 9988572 Failure with open_chest")
+                logger.change_status(vm_index,"Error 9988572 Failure with open_chest")
                 return "restart"
         logger.log(
             f"Took {str(time.time() - start_time)[:5]}s to investigate chest #{chest_index}"
@@ -163,13 +163,13 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
     # if its unlockable, unlock it
     if check_if_chest_is_unlockable(vm_index):
         logger.add_chest_unlocked()
-        logger.change_status("This chest is unlockable!")
+        logger.change_status(vm_index,"This chest is unlockable!")
         click(vm_index, UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 
     if check_if_can_queue_chest(vm_index):
         logger.add_chest_unlocked()
-        logger.change_status("This chest is queueable!")
+        logger.change_status(vm_index,"This chest is queueable!")
         click(vm_index, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 

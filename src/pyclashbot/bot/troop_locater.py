@@ -234,7 +234,7 @@ def choose_play_side(logger, vm_index) -> str:
     middle_x = 209
 
     if locations is None:
-        logger.change_status(
+        logger.change_status(vm_index,
             f"No troops detected... choosing random side {str(time.time() - start_time)[:5]}s"
         )
         return random.choice(["left", "right"])
@@ -250,18 +250,18 @@ def choose_play_side(logger, vm_index) -> str:
 
     # if locations count is 3 or below, just choose a random side
     if len(locations) < 3:
-        logger.change_status(
+        logger.change_status(vm_index,
             f"No troops detected... choosing random side {str(time.time() - start_time)[:5]}s"
         )
         return random.choice(["left", "right"])
 
     if left_count > right_count:
-        logger.change_status(
+        logger.change_status(vm_index,
             f"Choosing left side: {left_count}L | {right_count}R {str(time.time() - start_time)[:5]}s"
         )
         return "left"
 
-    logger.change_status(
+    logger.change_status(vm_index,
         f"Choosing right side: {left_count}L | {right_count}R {str(time.time() - start_time)[:5]}s"
     )
     return "right"

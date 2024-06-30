@@ -24,48 +24,48 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
     """
     # Check if already in the Clash main menu.
     if not wait_for_clash_main_menu(vm_index, logger):
-        logger.change_status("Not in Clash main menu")
+        logger.change_status(vm_index,"Not in Clash main menu")
         return "restart"
 
     # Detect if both 1v1 modes are available, implying Path of Legends is accessible.
     if check_both_1v1_modes_available(vm_index):
-        logger.change_status("Detected both 1v1 modes.")
+        logger.change_status(vm_index,"Detected both 1v1 modes.")
 
         # Attempt to navigate to Path of Legends if not already there.
         if check_if_on_path_of_legends_clash_main(vm_index) != True:
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Not in Path of Legends, attempting to switch...")
             click(vm_index, 277, 400)
             time.sleep(2)  # Wait for UI to update.
 
             if check_if_on_path_of_legends_clash_main(vm_index) != True:
-                logger.change_status("Failed to navigate to Path of Legends")
+                logger.change_status(vm_index,"Failed to navigate to Path of Legends")
                 return "restart"
 
         rewards_collected_result = 0
         # Collect rewards as long as Path of Legends rewards are detected.
         if check_for_path_of_legends_rewards(vm_index):
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Path of Legends rewards detected. Attempting to collect...")
             path_of_legends_state, rewards_collected = collect_path_of_legends_rewards(
                 vm_index, logger)
             if not path_of_legends_state:
-                logger.change_status(
+                logger.change_status(vm_index,
                     "Failed to collect Path of Legends rewards.")
                 return "restart"
             else:
                 rewards_collected_result += rewards_collected
 
         if rewards_collected_result == 0:
-            logger.change_status("No Path of Legends rewards detected.")
+            logger.change_status(vm_index,"No Path of Legends rewards detected.")
             time.sleep(2)
         else:
-            logger.change_status(
+            logger.change_status(vm_index,
                 f"{rewards_collected_result} Path of Legends rewards collected.")
             time.sleep(2)
         return next_state
     else:
-        logger.change_status("Path of Legends mode not available")
+        logger.change_status(vm_index,"Path of Legends mode not available")
         time.sleep(2)
         return next_state
 
@@ -126,7 +126,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
     time.sleep(2)  # Wait a bit for the menu to open.
 
     if check_if_on_path_of_legends_rewards_menu(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Successfully entered the Path of Legends rewards menu.")
         time.sleep(1.5)
 
@@ -135,7 +135,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
             button = find_claim_rewards_buttons(vm_index)
             print(f"{button}")
             while button:
-                logger.change_status("Claiming reward...")
+                logger.change_status(vm_index,"Claiming reward...")
                 # Click on the found "Claim Rewards" button.
                 click(vm_index, *button)
                 time.sleep(1)  # Allow time for reward claim animation.
@@ -146,7 +146,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
                     time.sleep(0.5)
                     collecting_attempts += 1
                     if collecting_attempts >= 30:
-                        logger.change_status(
+                        logger.change_status(vm_index,
                             "Excessive collection attempts; returning False.")
                         return False
                 logger.add_bannerbox_collect()
@@ -158,10 +158,10 @@ def collect_path_of_legends_rewards(vm_index, logger):
         if not claim_rewards_sequence():
             return False, rewards_collected
         if check_if_ultimate_champion(vm_index):
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Identified as Ultimate Champion; bypassing crown search.")
             while not check_last_door(vm_index):
-                logger.change_status("Scrolling to look for more rewards...")
+                logger.change_status(vm_index,"Scrolling to look for more rewards...")
                 scroll_up(vm_index)
                 time.sleep(2)
                 if not claim_rewards_sequence():
@@ -173,19 +173,19 @@ def collect_path_of_legends_rewards(vm_index, logger):
                 if not claim_rewards_sequence():
                     return False, rewards_collected
 
-        logger.change_status("Reached the end of rewards.")
+        logger.change_status(vm_index,"Reached the end of rewards.")
         click(vm_index, 210, 606)  # Click to go back to the main menu.
         time.sleep(2)
 
         if wait_for_clash_main_menu(vm_index, logger):
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Successfully returned to Clash main menu after collecting rewards.")
             return True, rewards_collected
         else:
-            logger.change_status("Failed to return to Clash main menu.")
+            logger.change_status(vm_index,"Failed to return to Clash main menu.")
             return False, rewards_collected
     else:
-        logger.change_status(
+        logger.change_status(vm_index,
             "Failed to enter the Path of Legends rewards menu.")
         return False, rewards_collected
 

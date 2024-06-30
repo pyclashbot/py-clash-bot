@@ -3224,7 +3224,7 @@ def get_play_coords_for_card(vm_index, logger,card_index, side_preference):
     id_cards_start_time = time.time()
     identity = identify_hand_cards(vm_index)[card_index]
     time_taken = str(time.time()  - id_cards_start_time)[:3]
-    logger.change_status(f'Identified card as {identity} ({time_taken}s)')
+    logger.change_status(vm_index,f'Identified card as {identity} ({time_taken}s)')
 
     # get the grouping of this card (hog, turret, spell, etc)
     group = get_card_group(identity)

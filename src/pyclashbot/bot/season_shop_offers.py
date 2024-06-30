@@ -86,7 +86,7 @@ def close_season_shop_page(vm_index):
 
 
 def buy_season_shop_offers(vm_index, logger: Logger):
-    logger.change_status("Collecting season shop offers!")
+    logger.change_status(vm_index,"Collecting season shop offers!")
 
     # open shop
     click(vm_index, 328, 187)
@@ -101,23 +101,23 @@ def buy_season_shop_offers(vm_index, logger: Logger):
         #     scroll(vm_index, 200, 400, 200, 240)
 
         # click a random offer
-        logger.change_status('Clicking random season shop offer')
+        logger.change_status(vm_index,'Clicking random season shop offer')
         click_random_season_shop_offer(vm_index)
         time.sleep(2)
 
         # if purchase confirmation doesnt appear, that means we're out of money
         if not check_for_purchase_confirmation_page(vm_index):
-            logger.change_status("No more currency to buy season shop offers!")
+            logger.change_status(vm_index,"No more currency to buy season shop offers!")
             break
 
         # buy this random offer
-        logger.change_status('Buying this random season shop offer')
+        logger.change_status(vm_index,'Buying this random season shop offer')
         click_buy_season_shop_offer(vm_index)
         logger.increment_season_shop_buys()
         time.sleep(1)
 
         # click deadspace to close the purchase confirmation
-        logger.change_status('Bought this random season shop offer!')
+        logger.change_status(vm_index,'Bought this random season shop offer!')
         for _ in range(6):
             season_shop_deadspace_click(vm_index)
             time.sleep(0.33)
@@ -131,7 +131,7 @@ def buy_season_shop_offers(vm_index, logger: Logger):
 
     # if not on main by the end, return 'restart'
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Not on clash main after buying season shop offers!")
+        logger.change_status(vm_index,"Not on clash main after buying season shop offers!")
         return False
 
     # otherwise return True for good return
@@ -144,7 +144,7 @@ def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: 
 
     # if not on main, return 'restart'
     if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Not on clash main for collect_season_shop_offers_state()")
+        logger.change_status(vm_index,"Not on clash main for collect_season_shop_offers_state()")
 
     # get to events tab
     get_to_challenges_tab_from_main(vm_index, logger)
@@ -152,7 +152,7 @@ def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: 
 
     # if cant collect rewards, return next_state
     if not check_if_can_collect_season_shop_offers(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             f"Cant collect season shop offers. Returning next state as : {next_state}"
         )
         return next_state

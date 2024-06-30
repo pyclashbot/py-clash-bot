@@ -36,12 +36,12 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
 def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: str):
     # if not in clash main, return false
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status("Not in clash main menu")
+        logger.change_status(vm_index,"Not in clash main menu")
         return "restart"
 
     # if bannerbox rewards are done, return True
     if not check_if_bannerbox_icon_exists_on_clashmain(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Account doesn't have bannerbox icon. Skipping bannerbox rewards"
         )
         return next_state
@@ -52,14 +52,14 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
 
 
 def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
-    logger.change_status("Checking bannerbox rewards availability")
+    logger.change_status(vm_index,"Checking bannerbox rewards availability")
 
     # Check if the bannerbox icon is yellow (i.e., if there are enough tickets)
     if not check_if_bannerbox_icon_have_a_star(vm_index):
-        logger.change_status("Not enough tickets for bannerbox rewards.")
+        logger.change_status(vm_index,"Not enough tickets for bannerbox rewards.")
         return True  # There are no tickets, but this is not an error
 
-    logger.change_status("Opening bannerbox rewards...")
+    logger.change_status(vm_index,"Opening bannerbox rewards...")
 
     # Open bannerbox button on clash main
     click(
@@ -71,7 +71,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
 
     # if 100 tickets button is greyed, then we've collected all the banners this season
     if check_for_collected_all_bannerbox_rewards_icon(vm_index):
-        logger.change_status(
+        logger.change_status(vm_index,
             "Already collected all bannerbox rewards this season.")
 
         # click deadspace to get back to main
@@ -79,7 +79,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
 
         # if not back on main, return False
         if check_if_on_clash_main_menu(vm_index) is not True:
-            logger.change_status(
+            logger.change_status(vm_index,
                 "Failed to return to main after being maxed on bannerboxes. Restarting"
             )
             return False
@@ -96,13 +96,13 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
 
     # check if the second '100 tickets' purchase button is Red or not
     if not check_if_can_purchase_100_tickets_bannerbox(vm_index):
-        logger.change_status("Bannerbox not available.")
+        logger.change_status(vm_index,"Bannerbox not available.")
 
         # click deadspace a bunch, then return
         click(vm_index, 10, 450, clicks=10, interval=0.33)
         return True
 
-    logger.change_status("Bannerbox is available! Buying it...")
+    logger.change_status(vm_index,"Bannerbox is available! Buying it...")
 
     # click the second '100 tickets' purchase button
     click(
@@ -113,7 +113,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     logger.add_bannerbox_collect()
 
     # click deadspace until back on clash main
-    logger.change_status("Skipping through bannerbox rewards...")
+    logger.change_status(vm_index,"Skipping through bannerbox rewards...")
     deadspace_click_timeout = 30  # s
     deadspace_click_start_time = time.time()
     while check_if_on_clash_main_menu(vm_index) is not True:
