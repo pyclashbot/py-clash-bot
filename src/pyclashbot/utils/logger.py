@@ -809,7 +809,7 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always Collect Free Offers")
+            self.log(f"Increment is {increment} so can always do shop buy")
             return True
 
         # count shop_buy_attempts
@@ -850,7 +850,7 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always Collect Free Offers")
+            self.log(f"Increment is {increment} so can always collect battlepass rewards")
             return True
 
         # count battlepass_collect_attempts
@@ -891,7 +891,7 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always Collect Free Offers")
+            self.log(f"Increment is {increment} so can always Collect daily rewards")
             return True
 
         # count daily_reward_attempts
