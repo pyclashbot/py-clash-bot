@@ -14,7 +14,7 @@ from pyclashbot.bot.do_fight_state import (
 )
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
-from pyclashbot.bot.open_chests_state import  open_chests_state
+from pyclashbot.bot.open_chests_state import open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
 from pyclashbot.bot.upgrade_all_cards import upgrade_all_cards_state
@@ -557,32 +557,27 @@ def state_tree_tester(vm_index):
     logger = Logger()
     state = "account_switch"
     job_list = {
-        #battle toggles
+        # battle toggles
         "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": False,
         "goblin_queens_journey_1v1_battle_user_toggle": False,
         "2v2_battle_user_toggle": False,
-
         # job toggles
         "open_chests_user_toggle": False,
         "random_decks_user_toggle": False,
         "upgrade_user_toggle": False,
-        "upgrade_all_cards_user_toggle": False, #busted
+        "upgrade_all_cards_user_toggle": False,  # busted
         "trophy_road_rewards_user_toggle": False,
         "request_user_toggle": False,
         "donate_toggle": False,
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
-        "daily_rewards_user_toggle": False,#unchecked
+        "daily_rewards_user_toggle": False,  # unchecked
         "open_battlepass_user_toggle": False,
-        "open_bannerbox_user_toggle": False,#unchecked
+        "open_bannerbox_user_toggle": False,  # unchecked
         "season_shop_buys_user_toggle": False,
         "war_user_toggle": True,
-
-
-
-
-        "card_mastery_user_toggle": False,#unchecked
+        "card_mastery_user_toggle": False,  # unchecked
         "level_up_chest_user_toggle": True,
         # keep these off
         "disable_win_track_toggle": False,
@@ -625,9 +620,5 @@ def state_tree_tester(vm_index):
             # clip_that()
 
 
-
-
-
 if __name__ == "__main__":
     state_tree_tester(12)
-
