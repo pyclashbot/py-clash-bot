@@ -3,16 +3,16 @@ import time
 from typing import Any
 
 from pyclashbot.bot.states import state_tree
-from pyclashbot.memu.launcher import check_for_vm
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
 
 class WorkerThread(PausableThread):
-    def __init__(self, logger: Logger, args, kwargs=None) -> None:
+    def __init__(self, logger: Logger,vm_index, args, kwargs=None) -> None:
         super().__init__(args, kwargs)
         self.logger: Logger = logger
         self.in_a_clan = False
+        self.vm_index = vm_index
 
     def run(self) -> None:
         try:
@@ -20,13 +20,12 @@ class WorkerThread(PausableThread):
             # logger = Logger()
             state = "start"
 
-            vm_index = check_for_vm(self.logger)
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
                 # code to run
                 state: str | tuple[None, None] = state_tree(
-                    vm_index,
+                    self.vm_index,
                     self.logger,
                     state,
                     jobs,

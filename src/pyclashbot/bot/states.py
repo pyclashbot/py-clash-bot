@@ -65,7 +65,7 @@ def state_tree(
 
         next_state = "account_switch"
 
-        restart_emulator(logger)
+        restart_emulator(logger,vm_index)
 
         logger.log(
             f"Emulator boot sequence took {str(time.time() - start_time)[:5]} seconds"
