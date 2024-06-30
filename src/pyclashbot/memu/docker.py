@@ -3,121 +3,114 @@ import time
 import pygetwindow as gw
 
 GUI_NAME = "py-clash-bot | dev"
-MEMU_CLIENT_NAME = "(pyclashbot-96)"
-CLANSPAM_NAME = "(clanspam-11)"
-
-def get_window_pos(name):
-    try:
-        window = gw.getWindowsWithTitle(name)[0]
-        return window.topleft
-    except IndexError:
-        return None
-
-def move_window(name,x,y):
-    try:
-        window = gw.getWindowsWithTitle(name)[0]
-        window.moveTo(x,y)
-    except IndexError:
-        return None
-
-def get_window_size(name):
-    try:
-        window = gw.getWindowsWithTitle(name)[0]
-        return window.size
-    except IndexError:
-        return None
-
-
-def resize_window(name,w,h):
-    try:
-        window = gw.getWindowsWithTitle(name)[0]
-        window.resizeTo(w,h)
-    except IndexError:
-        return None
-
-
-def dock_memu():
-    gui_topleft = get_window_pos(GUI_NAME)
-    gui_size = get_window_size(GUI_NAME)
-    gui_width = gui_size[0]
-    gui_topright = (gui_topleft[0]+gui_width,gui_topleft[1])
-
-    gui_topright = (gui_topright[0]-7,gui_topright[1])
-
-    move_window(MEMU_CLIENT_NAME,gui_topright[0],gui_topright[1])
-
-
-def resize_memu():
-    ratio = 0.6326836581709145
-    gui_size = get_window_size(GUI_NAME)
-
-    new_height = gui_size[1] - 7
-
-    new_width = int(new_height*ratio)+1
-
-    resize_window(MEMU_CLIENT_NAME,new_width,new_height)
-
-
-def check_sizing():
-    gui_size = get_window_size(GUI_NAME)
-    memu_size = get_window_size(MEMU_CLIENT_NAME)
-
-    gui_height = gui_size[1]
-    memu_height = memu_size[1]
-
-    # print(gui_height,memu_height)
-
-    value = abs(gui_height - memu_height - 8)
-
-    if value > 2:
-        return False
-    return True
-
-
-def check_position():
-    gui_topleft = get_window_pos(GUI_NAME)
-    gui_size = get_window_size(GUI_NAME)
-    gui_width = gui_size[0]
-    gui_topright = (gui_topleft[0]+gui_width,gui_topleft[1])
-
-    memu_topleft = get_window_pos(MEMU_CLIENT_NAME)
-
-    memu_topleft = (memu_topleft[0]+7, memu_topleft[1])
-
-
-    x_diff = abs(gui_topright[0] - memu_topleft[0])
-    y_diff = abs(gui_topright[1] - memu_topleft[1])
-
-    if x_diff > 4 or y_diff > 1:
-        return False
-
-    return True
-
+MEMU_CLIENT_NAME = "(pyclashbot-96"
 
 
 def docker_main():
-    while 1:
+    def get_clashbot_windows():
+        good_titles = []
+        titles = gw.getAllTitles()
+        for title in titles:
+            if MEMU_CLIENT_NAME in title:
+                good_titles.append(title)
+
+        return good_titles
+
+    def get_gui_name():
+        titles = gw.getAllTitles()
+        for title in titles:
+            if GUI_NAME in title:
+                return title
+        return None
+
+    def get_pos(window_name):
+        window = gw.getWindowsWithTitle(window_name)[0]
+        pos= window.topleft
+        pos = (pos[0], pos[1])
+        return pos
+
+    def get_size(window_name):
+        window = gw.getWindowsWithTitle(window_name)[0]
+        w,h= window.size
+        return (w,h)
+
+    def resize_window(name,h):
+        #get the current position
+        good_ratio = 1.56
+        new_width = int(h/good_ratio)
+
+        #get the window's current size
+        diff_buffer = 3
+        current_width,current_height = get_size(name)
+        diff = abs(current_width-new_width) + abs(current_height-h)
+        if diff < diff_buffer:
+            return
+
         try:
-            if not check_sizing():
-                print('[docker] resize...')
-                resize_memu()
-                continue
-            if not check_position():
-                print('[docker] Dock...')
-                dock_memu()
-                continue
-            time.sleep(0.33)
-        except:
-            pass
+            window = gw.getWindowsWithTitle(name)[0]
+            window.resizeTo(new_width,h)
+            print('Resized window:',name)
+        except IndexError:
+            return None
+
+    def calc_toplefts(gui_name,vm_names):
+        buffer = 0
+
+        vm_window_coords = []
+
+        gui_width,gui_height = get_size(gui_name)
+        gui_pos = get_pos(gui_name)
+        current_x_coord = gui_pos[0] + gui_width + buffer - 9
+        for vm_name in vm_names:
+            this_coord = (current_x_coord,gui_pos[1])
+            vm_window_coords.append(this_coord)
+            this_vm_size = get_size(vm_name)
+            current_x_coord+= this_vm_size[0] + buffer
+
+        return vm_window_coords
+
+    def move_window(name,x,y):
+        #get the current position of the window
+        diff_buffer = 3
+        pos = get_pos(name)
+        diff = abs(pos[0]-x) + abs(pos[1]-y)
+        if diff < diff_buffer:
+            return
+
+        try:
+            window = gw.getWindowsWithTitle(name)[0]
+            window.moveTo(x,y)
+            print('Moved window:',name)
+        except IndexError:
+            return None
+
+    while 1:
+        vm_windows = get_clashbot_windows()
+        gui_window = get_gui_name()
+
+        #get gui size
+        _,gui_h = get_size(gui_window)
+
+        #resize every clashbot window to the same height as the gui
+        for clashbot_window in vm_windows:
+            resize_window(clashbot_window,gui_h)
+
+        #calc new coords for vm windows
+        new_coords = calc_toplefts(gui_window,vm_windows)
+        for i,coord in enumerate(new_coords):
+            vm_name = vm_windows[i]
+            move_window(vm_name,coord[0],coord[1])
+
+        time.sleep(0.05)
+
 
 
 
 def start_memu_dock_mode():
-    print('Starting memu docking!')
+    print("Starting memu docking!")
     threading.Thread(target=docker_main).start()
 
 
-
-
 if __name__ == "__main__":
-    pass
+    start_memu_dock_mode()
+
