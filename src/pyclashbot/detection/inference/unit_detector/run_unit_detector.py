@@ -5,7 +5,7 @@ from time import perf_counter
 import cv2
 
 from pyclashbot.detection.inference.draw import draw_bboxes
-from pyclashbot.detection.inference.unit_detector import UnitDetector
+from pyclashbot.detection.inference.unit_detector.unit_detector import UnitDetector
 from pyclashbot.memu.client import screenshot
 from pyclashbot.memu.pmc import pmc
 
