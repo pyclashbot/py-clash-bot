@@ -43,9 +43,8 @@ def collect_level_up_chest(vm_index, logger: Logger) -> bool:
             logger.change_status(vm_index,"Timed out waiting for level up chest to be collected")
             return False
 
-        print("Clicking deadspace to skip thru rewards")
+        print("Clicking deadspace to skip thru rewards: {time.time() - start_time }")
         click(vm_index, 19, 450)
-        time.sleep(1)
 
     return True
 
