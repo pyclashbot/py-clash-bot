@@ -12,7 +12,7 @@ from pyclashbot.memu.pmc import pmc
 logging.basicConfig(level=logging.INFO)
 
 logging.info("Starting VM")
-vm_index = 12
+vm_index = 0
 pmc.start_vm(vm_index)
 logging.info("VM started")
 
