@@ -137,14 +137,12 @@ def state_tree(
         next_state = "open_chests"
 
         # if job not selected, return next state
-        if  job_list["accounts_slider"] == 1:
+        if job_list["accounts_slider"] == 1:
             logger.log("Account switching isn't toggled. Skipping this state")
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_switch_account(
-            job_list["switch_account_increment"]
-        ):
+        if not logger.check_if_can_switch_account(job_list["switch_account_increment"]):
             logger.log("Account switching job isn't ready. Skipping this state")
             return next_state
 
@@ -172,8 +170,9 @@ def state_tree(
 
         # update current account # to GUI
         logger.change_current_account(
-            job_list["random_account_switch_list"][accout_index],vm_index
-            #account_id,vm_index
+            job_list["random_account_switch_list"][accout_index],
+            vm_index,
+            # account_id,vm_index
         )
 
         return next_state
@@ -189,9 +188,7 @@ def state_tree(
 
         # if job not ready, skip this state
         logger.log('Checking if "open_chests_increment" is ready')
-        if not logger.check_if_can_open_chests(
-            job_list["open_chests_increment"]
-        ):
+        if not logger.check_if_can_open_chests(job_list["open_chests_increment"]):
             logger.log("Can't open chests at this time, skipping this state")
             return next_state
 
@@ -203,13 +200,13 @@ def state_tree(
         next_state = "randomize_deck"
 
         # if job not selected, skip this state
-        logger.log('Checking if "level_up_chest_user_toggle" is on')
+        logger.log('Checking if "level_up_chest_toggle" is on')
         if not job_list["level_up_chest_toggle"]:
-            logger.log("level_up_chest_user_toggle is off, skipping this state")
+            logger.log("level_up_chest_toggle is off, skipping this state")
             return next_state
 
         # if job not ready, skip this state
-        logger.log('Checking if "open_chests_increment_user_input" is ready')
+        logger.log('Checking if "open_chests_increment" is ready')
         if not logger.check_if_can_collect_level_up_chest(
             job_list["level_up_chest_increment"]
         ):
@@ -229,12 +226,10 @@ def state_tree(
         if not job_list["random_decks_toggle"]:
             logger.log("deck randomization isn't toggled. skipping this state")
             return next_state
-        logger.log('Deck randomization is toggled')
+        logger.log("Deck randomization is toggled")
 
         # if randomize deck isn't ready, return next state
-        if not logger.check_if_can_randomize_deck(
-            job_list["randomize_deck_increment"]
-        ):
+        if not logger.check_if_can_randomize_deck(job_list["randomize_deck_increment"]):
             logger.log("deck randomization isn't ready. skipping this state")
             return next_state
 
@@ -249,9 +244,7 @@ def state_tree(
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_card_upgrade(
-            job_list["upgrade_deck_increment"]
-        ):
+        if not logger.check_if_can_card_upgrade(job_list["upgrade_deck_increment"]):
             logger.log("Upgrade state isn't ready, skipping this state")
             return next_state
 
@@ -262,8 +255,8 @@ def state_tree(
         print("Running upgrade_all state")
         next_state = "trophy_rewards"
 
-        # if 'upgrade_user_toggle' is toggled on, return next state
-        print("Checking if upgrade_user_toggle job is toggled")
+        # if 'upgrade_toggle' is toggled on, return next state
+        print("Checking if upgrade_toggle job is toggled")
         if job_list["upgrade_all_cards_toggle"] is False:
             logger.change_status(
                 vm_index, "Regular upgrade isnt toggled. Skipping 'UPGRADE ALL' state"
@@ -271,7 +264,7 @@ def state_tree(
             return next_state
 
         # if job isnt ready, just return the next state
-        print("Checking if upgrade_all_cards_user_toggle job is toggled")
+        print("Checking if upgrade_all_cards_toggle job is toggled")
         if not job_list["upgrade_deck_increment"]:
             logger.change_status(
                 vm_index, "Upgrade all cards is not toggled. Skipping this state"
@@ -280,9 +273,7 @@ def state_tree(
 
         # if job is available, increment attempts, run the state
         print("Checking if upgrade_all job is ready...")
-        if logger.check_if_can_card_upgrade(
-            job_list["upgrade_deck_increment"]
-        ):
+        if logger.check_if_can_card_upgrade(job_list["upgrade_deck_increment"]):
             logger.change_status(vm_index, "Upgrade all cards is ready!")
             logger.add_card_upgrade_attempt()
             return upgrade_all_cards_state(vm_index, logger, next_state)
@@ -324,7 +315,7 @@ def state_tree(
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_request(job_list["request_card_increment"]):
+        if not logger.check_if_can_request(job_list["request_increment"]):
             logger.log("Request job isn't ready. Skipping")
             return next_state
 
@@ -359,7 +350,7 @@ def state_tree(
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_shop_buy(job_list["free_shop_offer_increment"]):
+        if not logger.check_if_can_shop_buy(job_list["shop_buy_increment_user_input"]):
             logger.log("Free shop_buy isn't ready")
             return next_state
 
@@ -384,7 +375,7 @@ def state_tree(
         next_state = "battlepass_rewards"
 
         # if job not toggled, return next state
-        if not job_list["daily_challenge_rewards_toggle"]:
+        if not job_list["daily_rewards_toggle"]:
             logger.log("daily_rewards job isn't toggled. Skipping")
             return next_state
 
@@ -407,9 +398,7 @@ def state_tree(
             )
             return next_state
 
-        if not logger.check_if_can_battlepass_collect(
-            job_list["battlepass_increment"]
-        ):
+        if not logger.check_if_can_battlepass_collect(job_list["battlepass_increment"]):
             logger.change_status(
                 vm_index, "Battlepass collect is not ready. Skipping this state"
             )
@@ -553,55 +542,60 @@ def clip_that():
     time.sleep(1)
 
 
+
+
+
+
+
 def state_tree_tester(vm_index):
     logger = Logger()
     state = "account_switch"
     job_list = {
         # battle toggles
-        "trophy_road_1v1_battle_user_toggle": False,
-        "path_of_legends_1v1_battle_user_toggle": False,
-        "goblin_queens_journey_1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": False,
+        "trophy_road_toggle": False,
+        "path_of_legends_toggle": False,
+        "goblin_queen_toggle": False,
+        "2v2_toggle": False,
         # job toggles
-        "open_chests_user_toggle": False,
-        "random_decks_user_toggle": False,
-        "upgrade_user_toggle": False,
-        "upgrade_all_cards_user_toggle": False,  # busted
-        "trophy_road_rewards_user_toggle": False,
-        "request_user_toggle": False,
+        "open_chests_toggle": False,
+        "random_decks_toggle": False,
+        "level_up_chest_toggle": False,
+        "upgrade_cards_toggle": False,
+        "trophy_road_rewards_toggle": False,
+        "request_toggle": False,
         "donate_toggle": False,
-        "free_offer_user_toggle": False,
-        "gold_offer_user_toggle": False,
-        "daily_rewards_user_toggle": False,  # unchecked
-        "open_battlepass_user_toggle": False,
-        "open_bannerbox_user_toggle": False,  # unchecked
-        "season_shop_buys_user_toggle": False,
-        "war_user_toggle": True,
-        "card_mastery_user_toggle": False,  # unchecked
-        "level_up_chest_user_toggle": True,
+        "free_shop_offers_toggle": False,
+        "gold_shop_offers_toggle": False,
+        "daily_rewards_toggle": False,
+        "battlepass_toggle": False,
+        "bannerbox_toggle": False,
+        "season_shop_toggle": False,
+        "war_toggle": False,
+        "card_mastery_toggle": False,
+        "upgrade_all_cards_toggle": False,
         # keep these off
         "disable_win_track_toggle": False,
-        "skip_fight_if_full_chests_user_toggle": False,
-        "random_plays_user_toggle": False,
+        "skip_fight_if_full_chests_toggle": False,
+        "random_plays_toggle": False,
         "memu_attach_mode_toggle": False,
         # job increments
-        "card_upgrade_increment_user_input": 1,
+        "upgrade_deck_increment": 1,
         "shop_buy_increment_user_input": 1,
-        "request_increment_user_input": 1,
-        "donate_increment_user_input": 1,
-        "daily_reward_increment_user_input": 1,
-        "card_mastery_collect_increment_user_input": 1,
-        "open_chests_increment_user_input": 1,
-        "deck_randomization_increment_user_input": 1,
-        "war_attack_increment_user_input": 1,
-        "battlepass_collect_increment_user_input": 1,
-        "level_up_chest_increment_user_input": 1,
-        "trophy_road_reward_increment_user_input": 1,
-        "season_shop_buys_increment_user_input": 1,
+        "request_increment": 1,
+        "donate_increment": 1,
+        "daily_rewards_increment": 1,
+        "card_mastery_increment": 1,
+        "open_chests_increment": 1,
+        "randomize_deck_increment": 1,
+        "war_attack_increment": 1,
+        "battlepass_increment": 1,
+        "level_up_chest_increment": 1,
+        "trophy_road_rewards_increment": 1,
+        "season_shop_rewards_increment": 1,
         # account switching input info
         "account_switching_toggle": False,
-        "account_switching_increment_user_input": 1,
-        "account_switching_slider": 1,
+        "account_switching_increment": 1,
+        "accounts_slider": 1,
         "next_account": 0,
         "random_account_switch_list": [0, 1, 2],
     }
@@ -621,4 +615,4 @@ def state_tree_tester(vm_index):
 
 
 if __name__ == "__main__":
-    state_tree_tester(12)
+    state_tree_tester(0)
