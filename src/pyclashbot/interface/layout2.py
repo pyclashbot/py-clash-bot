@@ -349,8 +349,11 @@ def make_time_status_bar_layout():
 
 
 def make_donate_layout():
+    image_folder = r"src\pyclashbot\interface\assets"
+    image_name = random.choice(os.listdir(image_folder))
+    image_path = os.path.join(image_folder, image_name)
     image_layout = [
-        sg.Image(random.choice(os.listdir(r"src\pyclashbot\interface\assets"))),
+        sg.Image(image_path),
     ]
 
     return image_layout
