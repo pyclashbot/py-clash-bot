@@ -39,8 +39,8 @@ def docker_main():
         good_ratio = 1.56
         new_width = int(h / good_ratio)
 
-        #adjust h a little lower
-        adjustment  =9 #pixels shorter
+        # adjust h a little lower
+        adjustment = 9  # pixels shorter
         h -= adjustment
         if h < 1:
             h = 1
@@ -64,7 +64,7 @@ def docker_main():
 
         vm_window_coords = []
 
-        #reverse the order of vm names
+        # reverse the order of vm names
         vm_names = vm_names[::-1]
 
         gui_width, gui_height = get_size(gui_name)
