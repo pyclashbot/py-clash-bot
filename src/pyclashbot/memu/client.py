@@ -30,7 +30,7 @@ def screenshot(vm_index: int) -> ndarray:
     return screen_shotter[vm_index]
 
 
-def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
+def click(vm_index, x_coord, y_coord, clicks=1, interval=0.0):
     """Method for clicking a given coordinate
 
     Args:
