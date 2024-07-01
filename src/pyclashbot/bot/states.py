@@ -315,7 +315,7 @@ def state_tree(
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_request(job_list["request_increment"]):
+        if not logger.check_if_can_request(job_list["request_card_increment"]):
             logger.log("Request job isn't ready. Skipping")
             return next_state
 
@@ -350,7 +350,7 @@ def state_tree(
             return next_state
 
         # if job not ready, reutrn next state
-        if not logger.check_if_can_shop_buy(job_list["shop_buy_increment_user_input"]):
+        if not logger.check_if_can_shop_buy(job_list["free_shop_offer_increment"]):
             logger.log("Free shop_buy isn't ready")
             return next_state
 
