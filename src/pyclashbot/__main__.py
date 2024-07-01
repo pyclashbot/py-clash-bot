@@ -8,7 +8,6 @@ import os
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface.layout2 import make_window, user_config_keys, make_job_dict
 from pyclashbot.memu.launcher import close_everything_memu, get_vms
-from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
@@ -29,11 +28,11 @@ if not os.path.exists(config_dir):
 def save_configuration(values, keys_to_store, file_path):
     """Method to save the configuration to a file."""
     print("saving configuration")
-    print('values',values)
-    print('keys_to_store')
+    print("values", values)
+    print("keys_to_store")
     for key in keys_to_store:
-        print('\t',key)
-    print('file_path',file_path)
+        print("\t", key)
+    print("file_path", file_path)
     config = {}
     for key in keys_to_store:
         config[key] = values[key]
@@ -146,7 +145,7 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     returns:
         None
     """
-    logger.change_status(vm_index, status="Stopping")
+    logger.change_status(None, status="Stopping")
     window["Stop"].update(disabled=True)
     thread.shutdown(kill=False)  # send the shutdown flag to the thread
 
@@ -188,7 +187,7 @@ def handle_thread_finished(
     """method for handling when the worker thread is finished"""
     # enable the start button and configuration after the thread is stopped
     if thread is not None and not thread.is_alive():
-        for key in disable_keys:
+        for key in user_config_keys:
             window[key].update(disabled=False)
         if thread.logger.errored:
             window["Stop"].update(disabled=True)
@@ -199,7 +198,7 @@ def handle_thread_finished(
     return thread, logger
 
 
-def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
+def main_gui(start_on_run=False) -> None:
     """method for displaying the main gui"""
 
     # create gui window
@@ -216,7 +215,7 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
     while True:
         event, values = read_window(window, timeout=10)
 
-        if event != '__TIMEOUT__':
+        if event != "__TIMEOUT__":
             print(event)
 
         if start_on_run:
@@ -237,7 +236,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
         # on stop event, stop the thread
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
-
 
         # on Donate button event, open the donation link in browser
         elif event == "bug-report":
