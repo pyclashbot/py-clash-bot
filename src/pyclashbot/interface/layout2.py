@@ -9,7 +9,7 @@ from pyclashbot.interface.stats import (
     collection_stats,
 )
 
-#config keys
+# config keys
 fightOption2key = {
     # fight stuff
     "Trophy road 1v1 battles": "trophy_road_toggle",
@@ -57,24 +57,25 @@ increment2key = {
     "Switch Account Every:": "switch_account_increment",
 }
 
-#compile config into a togglable list of keys
-user_config_keys = ['memu_attach_mode_toggle',]
-for key_index in [1,2]:
+# compile config into a togglable list of keys
+user_config_keys = []
+for key_index in [1, 2]:
     for fight_option, key in fightOption2key.items():
-        user_config_keys.append(f'{key}_{key_index}')
+        user_config_keys.append(f"{key}_{key_index}")
 
     for rewards_option, key in rewardsOption2key.items():
-        user_config_keys.append(f'{key}_{key_index}')
+        user_config_keys.append(f"{key}_{key_index}")
 
     for collection_option, key in collectionOption2key.items():
-        user_config_keys.append(f'{key}_{key_index}')
+        user_config_keys.append(f"{key}_{key_index}")
 
     for increment_text, key in increment2key.items():
-        user_config_keys.append(f'{key}_{key_index}')
+        user_config_keys.append(f"{key}_{key_index}")
 
-    user_config_keys.append(f'bot_toggle_{key_index}')
+    user_config_keys.append(f"bot_toggle_{key_index}")
 
-#buttons layout
+
+# buttons layout
 def make_buttons_layout():
     button2colorKey = {
         "Start": ("GREEN", "start_key"),
@@ -94,7 +95,8 @@ def make_buttons_layout():
     general_settings_layout = [[buttons_group]]
     return general_settings_layout
 
-#bot controls page
+
+# bot controls page
 def make_controls_layout(key_index):
     def make_bot_toggle_frame(key_index):
         default = True
@@ -179,7 +181,8 @@ def make_controls_layout(key_index):
         ),
     ]
 
-#stats page
+
+# stats page
 def make_stats_layout():
     stats_tab_layout = [
         [
@@ -223,7 +226,8 @@ def make_stats_layout():
     ]
     return stats_tab_layout
 
-#time and bot status bar
+
+# time and bot status bar
 def make_time_status_bar_layout():
     time_status_bar_layout = [
         sg.Frame(
@@ -232,6 +236,15 @@ def make_time_status_bar_layout():
                 [
                     sg.Column(
                         [
+                            # account switching stuff
+                            [
+                                sg.Text("Bot #1 Accounts:"),
+                                sg.Slider(
+                                    range=(1, 8),
+                                    orientation="horizontal",
+                                    key="accounts_slider_1",
+                                ),
+                            ],
                             [
                                 sg.Input(
                                     "Idle",
@@ -250,18 +263,6 @@ def make_time_status_bar_layout():
                                 sg.Text(
                                     "-1",
                                     key="bot_1_vm_index",
-                                    text_color="blue",
-                                    expand_x=True,
-                                ),
-                            ],
-                            [
-                                sg.Text(
-                                    "Account index: ",
-                                    text_color="blue",
-                                ),
-                                sg.Text(
-                                    "-1",
-                                    key="current_account_1",
                                     text_color="blue",
                                     expand_x=True,
                                 ),
@@ -292,6 +293,14 @@ def make_time_status_bar_layout():
                     sg.Column(
                         [
                             [
+                                sg.Text("Bot #2 Accounts:"),
+                                sg.Slider(
+                                    range=(1, 8),
+                                    orientation="horizontal",
+                                    key="accounts_slider_2",
+                                ),
+                            ],
+                            [
                                 sg.Input(
                                     "Idle",
                                     key="current_status_2",
@@ -309,18 +318,6 @@ def make_time_status_bar_layout():
                                 sg.Text(
                                     "-1",
                                     key="bot_2_vm_index",
-                                    text_color="blue",
-                                    expand_x=True,
-                                ),
-                            ],
-                            [
-                                sg.Text(
-                                    "Account index: ",
-                                    text_color="blue",
-                                ),
-                                sg.Text(
-                                    "-1",
-                                    key="current_account_2",
                                     text_color="blue",
                                     expand_x=True,
                                 ),
@@ -348,31 +345,6 @@ def make_time_status_bar_layout():
     return time_status_bar_layout
 
 
-def make_general_settings_layout():
-    layout = []
-
-    # account switching stuff
-    asl = [
-        sg.Text("Bot #1 Accounts:"),
-        sg.Slider(range=(1, 8), orientation="horizontal", key="accounts_slider_1"),
-    ]
-    layout.append(asl)
-    asl = [
-        sg.Text("Bot #2 Accounts:"),
-        sg.Slider(range=(1, 8), orientation="horizontal", key="accounts_slider_2"),
-    ]
-    layout.append(asl)
-
-    # docking
-    docking = [
-        sg.Text("Docking:"),
-        sg.Checkbox("Dock", default=False, key="memu_attach_mode_toggle"),
-    ]
-    layout.append(docking)
-
-    return layout
-
-
 def make_donate_layout():
     image_layout = [
         sg.Image(r"src\pyclashbot\interface\assets\donate1.png"),
@@ -383,7 +355,6 @@ def make_donate_layout():
 
 def make_window():
     # Define the layout for each tab
-    general_settings_tab = make_general_settings_layout()
     bot1_tab = [make_controls_layout(1)]
     bot2_tab = [make_controls_layout(2)]
     stats_tab = make_stats_layout()
@@ -394,12 +365,6 @@ def make_window():
             sg.TabGroup(
                 [
                     [
-                        sg.Tab(
-                            "General Settings",
-                            general_settings_tab,
-                            expand_x=True,
-                            expand_y=True,
-                        ),
                         sg.Tab(
                             "Bot #1 Settings", bot1_tab, expand_x=True, expand_y=True
                         ),
@@ -446,7 +411,7 @@ def make_job_dict(values):
         return False
 
     def format_key(key):
-        key = key.replace('_1','').replace('_2','')
+        key = key.replace("_1", "").replace("_2", "")
         return key
 
     def make_account_order_list(count):
@@ -457,7 +422,6 @@ def make_job_dict(values):
                 list.append(r)
 
         return list
-
 
     botIndex2jobList = {
         1: {},

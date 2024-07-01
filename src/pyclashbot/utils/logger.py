@@ -208,8 +208,6 @@ class Logger:
                 "current_status_1": self.current_status_1,
                 "current_status_2": self.current_status_2,
                 # account stuff
-                "current_account_1": self.current_account_1,
-                "current_account_2": self.current_account_2,
                 "account_switches": self.account_switches,
             }
 
