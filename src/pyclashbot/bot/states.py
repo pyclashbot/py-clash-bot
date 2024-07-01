@@ -58,10 +58,8 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> account_switch
-        if job_list["memu_attach_mode_toggle"]:
-            print("Starting docking mode")
-            start_memu_dock_mode()
-        print("Skipping docking mode")
+        print("Starting docking mode")
+        start_memu_dock_mode()
 
         account_switch_list_key = (
             f"account_order_{logger.vm_index2logger_index[vm_index]}"
