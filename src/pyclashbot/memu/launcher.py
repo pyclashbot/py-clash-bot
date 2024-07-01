@@ -149,7 +149,7 @@ def skip_ads(vm_index):
 
 def get_vms(logger: Logger, count: int):
     def create_new_clashbot_vm(clashbot_index):
-        logger.change_status(vm_index,"Creating new clashbot vm...")
+        logger.change_status(None,"Creating new clashbot vm...")
         new_vm_index = create_vm()
         rename_vm(
             vm_index=new_vm_index, name=EMULATOR_BASENAME + "_" + str(clashbot_index)

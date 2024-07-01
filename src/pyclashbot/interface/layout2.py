@@ -1,13 +1,16 @@
 import random
-
-WINDOW_SIZE = (800, 600)
-
+import os
 import PySimpleGUI as sg
+
+
 from pyclashbot.interface.stats import (
     battle_stats,
     bot_stats,
     collection_stats,
 )
+
+
+WINDOW_SIZE = (800, 600)
 
 # config keys
 fightOption2key = {
@@ -347,7 +350,7 @@ def make_time_status_bar_layout():
 
 def make_donate_layout():
     image_layout = [
-        sg.Image(r"src\pyclashbot\interface\assets\donate1.png"),
+        sg.Image(random.choice(os.listdir(r"src\pyclashbot\interface\assets"))),
     ]
 
     return image_layout
