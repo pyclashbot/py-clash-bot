@@ -10,6 +10,7 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 from pyclashbot.memu.client import screenshot
+from pyclashbot.bot.nav import check_if_on_card_page
 
 
 def card_mastery_state(vm_index, logger, next_state):
@@ -52,7 +53,13 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
         while card_mastery_rewards_exist_with_delay(vm_index):
             logger.change_status(vm_index, "Detected card mastery rewards")
             #   click card mastery icon
-            collect_first_mastery_reward(vm_index)
+            if collect_first_mastery_reward(vm_index) is False:
+                logger.change_status(
+                    vm_index,
+                    "Failed to collect this card mastery reward!",
+                )
+                return False
+
             logger.change_status(vm_index, "Collected a card mastery reward!")
             logger.add_card_mastery_reward_collection()
             time.sleep(2)
@@ -74,24 +81,30 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
 
 def collect_first_mastery_reward(vm_index):
     # click the card mastery reward icon
-    click(vm_index, 318, 444)
-    time.sleep(3)
+    click(vm_index, 350, 440)
+    time.sleep(0.5)
 
-    # click first card
-    click(vm_index, 99, 166)
-    time.sleep(3)
+    # click first card in the list of rewards
+    click(vm_index, 100, 160)
+    time.sleep(0.5)
 
-    # click rewards at specific Y positions
-    y_positions = [316, 403, 488]
-    for y in y_positions:
-        click(vm_index, 200, y)
-        time.sleep(0.5)
+    # click all the possible reward regions
+    y_coords = [310, 390, 480]
+    for y_coord in y_coords:
+        click(vm_index, 200, y_coord)
 
-    # click deadspace a bunch
-    click(vm_index, 5, 355, clicks=15, interval=0.5)
-    time.sleep(3)
+    # click deadspace
+    ds = (14, 278)
+    ds_click_timeout = 60  # s
+    ds_start_time = time.time()
+    while not check_if_on_card_page(vm_index):
+        click(vm_index, *ds)
 
-    click(vm_index, 243, 600)
+        if time.time() - ds_start_time > ds_click_timeout:
+            print("Clicked deadspace after collecting card mastery reward for too long")
+            return False
+
+    return True
 
 
 def card_mastery_rewards_exist_with_delay(vm_index):
@@ -128,6 +141,4 @@ def card_mastery_rewards_exist(vm_index):
 
 
 if __name__ == "__main__":
-    while 1:
-        start_time = time.time()
-        print(card_mastery_rewards_exist_with_delay(0),time.time() - start_time)
+    collect_first_mastery_reward(0)
