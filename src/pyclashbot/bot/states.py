@@ -375,7 +375,7 @@ def state_tree(
         next_state = "battlepass_rewards"
 
         # if job not toggled, return next state
-        if not job_list["daily_rewards_toggle"]:
+        if not job_list["daily_challenge_rewards_toggle"]:
             logger.log("daily_rewards job isn't toggled. Skipping")
             return next_state
 
