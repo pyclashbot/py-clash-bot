@@ -55,8 +55,8 @@ increment2key = {
     "Do War Attack Every:": "war_increment",
     "Collect Battlepass Every:": "battlepass_increment",
     "Collect Level Up Chest Every:": "level_up_chest_increment",
-    "Collect Trophy Road Rewards Every:": "trophy_road_rewards_increment",
-    "Collect Season Shop Rewards Every:": "season_shop_rewards_increment",
+    "Collect Trophy Rewards Every:": "trophy_road_rewards_increment",
+    "Buy from Season Shop Every:": "season_shop_rewards_increment",
     "Switch Account Every:": "switch_account_increment",
 }
 
@@ -80,23 +80,29 @@ for key_index in [1, 2]:
 
 # buttons layout
 def make_buttons_layout():
-    button2colorKey = {
-        "Start": ("GREEN", "start_key"),
-        "Stop": ("RED", "Stop"),
-        # "Collapse": ("GREEN", "-Collapse-Button-"),
-        "Bug Report": ("grey", "bug-report"),
-        "Upload Log": ("dark grey", "upload-log"),
-        "Donate": ("GREEN", "donate"),
-        "Discord": ("Purple", "discord"),
-        "Exit": ("RED", "Exit"),
-    }
+    button_infos = [
+        # ('text', 'key', 'text_color', 'button_color', 'button_width', 'button_height')
+        ('Start', 'start_key', 'black', 'lawn green', 13, 1),
+        ('Stop', 'stop_key', 'black', 'firebrick2', 13, 1),
+        ('Bug Report', 'bug_report_key', 'black', 'indian red', 13, 1),
+        ('Upload Log', 'upload_log_key', 'black', 'aquamarine', 13, 1),
+        ('Discord', 'discord_key', 'black', 'medium purple', 13, 1),
+        ('Exit', 'exit_key', 'black', 'red2', 13, 1),
+    ]
+
     buttons_group = []
-    for button, colorkey in button2colorKey.items():
-        color, key = colorkey
-        button = sg.Button(button, key=key, button_color=color)
+    for text, key, text_color, button_color, button_width, button_height in button_infos:
+        button = sg.Button(
+            text,
+            key=key,
+            button_color=(text_color, button_color),
+            size=(button_width, button_height)
+        )
         buttons_group.append(button)
+
     general_settings_layout = [[buttons_group]]
     return general_settings_layout
+
 
 
 # bot controls page
@@ -119,8 +125,10 @@ def make_controls_layout(key_index):
         for increment_text, key in increment2key.items():
             key = key + f"_{key_index}"
             item = [
-                sg.Text(increment_text, size=(30, 1)),
-                sg.Input("1", size=(5, 1), key=key, background_color="grey"),
+                sg.Text(increment_text, size=(25, 1)),
+                sg.Input("1", size=(5, 1), key=key, background_color="lavender",text_color='black'),
+                sg.Text('battles'),
+
             ]
             lt.append(item)
         frame = sg.Frame(
@@ -162,9 +170,12 @@ def make_controls_layout(key_index):
         collection_options_layout = []
         for collection_option, key in collectionOption2key.items():
             key = key + f"_{key_index}"
+            disabled = False
+            if 'upgrade_all_cards' in key:
+                disabled = True
             collection_options_layout.append(
                 [
-                    sg.Checkbox(collection_option, key=key),
+                    sg.Checkbox(collection_option, key=key,disabled=disabled ),
                 ]
             )
         collection_options_tab = [sg.Tab("Collections", collection_options_layout)]
@@ -343,6 +354,8 @@ def make_time_status_bar_layout():
                     ),
                 ]
             ],
+            expand_x=True,
+            expand_y=True,
         ),
     ]
     return time_status_bar_layout
@@ -350,10 +363,11 @@ def make_time_status_bar_layout():
 
 def make_donate_layout():
     image_folder = r"src\pyclashbot\interface\assets"
-    image_name = random.choice(os.listdir(image_folder))
+    image_names = [f for f in os.listdir(image_folder) if f.endswith(".png")]
+    image_name = random.choice(image_names)
     image_path = os.path.join(image_folder, image_name)
     image_layout = [
-        sg.Image(image_path),
+        sg.Button('', image_filename=image_path, key='donate_key', button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0),
     ]
 
     return image_layout
