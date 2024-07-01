@@ -7,6 +7,7 @@ import contextlib
 import subprocess
 import sys
 import time
+import random
 from os.path import join
 
 import psutil
@@ -59,12 +60,8 @@ def restart_emulator(logger, vm_index,start_time=time.time(), open_clash=True):
         logger (Logger): Logger object
         start_time (float, optional): Start time. Defaults to time.time().
     """
-    # Rest of the code...
-    # stop all vms
-    close_everything_memu()
 
     # check for the pyclashbot vm, if not found then create it
-
     configure_vm(vm_index=vm_index)
 
     # start the vm
@@ -81,6 +78,7 @@ def restart_emulator(logger, vm_index,start_time=time.time(), open_clash=True):
     if not check_vm_size(vm_index):
         logger.log("Error 1010 VM size is bad")
         return restart_emulator(logger,vm_index, start_time)
+    logger.change_status(vm_index,status="Good VM configuration!")
 
     # if open_clash is toggled, open CR
     if open_clash:
@@ -102,6 +100,7 @@ def restart_emulator(logger, vm_index,start_time=time.time(), open_clash=True):
                 )
                 return True
             # Check if a battle is detected at start
+            if random.randint(1,3)==3:start_clash_royale(logger, vm_index)
             battle_start_result = check_if_in_battle_at_start(vm_index, logger)
             if battle_start_result == "good":
                 return True  # Successfully handled starting battle or end-of-battle scenario

@@ -48,137 +48,166 @@ def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbo
     )
 
 
-battle_tab = (
-    [
-        job_check_box(
-            "Trophy road 1v1 battles",
-            "trophy_road_1v1_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Goblin Queen's Journey battles",
-            "goblin_queens_journey_1v1_battle_user_toggle",
-            default_value=False,
-        ),
-    ],
+def make_battle_tab(index):
 
-    [
-        job_check_box(
-            "Path of Legends 1v1 battles",
-            "path_of_legends_1v1_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box("2v2 battles", "2v2_user_toggle", default_value=True),
-    ],
-    [
-        job_check_box("War battles", "war_user_toggle", default_value=False),
-    ],
-    [
-        job_check_box("Random decks", "random_decks_user_toggle", default_value=False),
-    ],
-    [
-        job_check_box("Random plays", "random_plays_user_toggle", default_value=False),
-    ],
-    [
-        job_check_box(
-            "Disable win/loss tracking", "disable_win_track_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Skip fight when full chests",
-            "skip_fight_if_full_chests_user_toggle",
-            default_value=False,
-        ),
-    ],
-)
+    battle_tab = (
+        [
+            job_check_box(
+                "Trophy road 1v1 battles",
+                f"trophy_road_1v1_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Goblin Queen's Journey battles",
+                f"goblin_queens_journey_1v1_battle_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Path of Legends 1v1 battles",
+                f"path_of_legends_1v1_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box("2v2 battles", f"2v2_user_toggle_{index}", default_value=True),
+        ],
+        [
+            job_check_box("War battles", f"war_user_toggle_{index}", default_value=False),
+        ],
+        [
+            job_check_box(
+                "Random decks", f"random_decks_user_toggle_{index}", default_value=False
+            ),
+        ],
+        [
+            job_check_box(
+                "Random plays", f"random_plays_user_toggle_{index}", default_value=False
+            ),
+        ],
+        [
+            job_check_box(
+                "Disable win/loss tracking",
+                f"disable_win_track_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Skip fight when full chests",
+                f"skip_fight_if_full_chests_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+    )
 
-
-rewards_tab = [
-    [
-        job_check_box("Open chests", "open_chests_user_toggle", default_value=True),
-    ],
-    [
-        job_check_box(
-            "Battlepass rewards", "open_battlepass_user_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Card mastery rewards", "card_mastery_user_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Daily Challenge Rewards", "daily_rewards_user_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Level Up Rewards", "level_up_chest_user_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Trophy Road Rewards", "trophy_road_rewards_user_toggle", default_value=False
-        ),
-    ],
-]
+    return battle_tab
 
 
-card_collection_tab = [
-    [
-        job_check_box("Request cards", "request_user_toggle", default_value=False),
-    ],
-    [
-        job_check_box("Donate cards", "donate_toggle", default_value=False),
-    ],
-    [
-        job_check_box(
-            "Buy FREE shop offers", "free_offer_user_toggle", default_value=True
-        ),
-    ],
-    [
-        job_check_box(
-            "Buy shop offers for GOLD",
-            "gold_offer_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=False),
-    ],
-    [
-        job_check_box(
-            "Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=False
-        ),
-    ],
-    [
-        job_check_box(
-            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=False
-        ),
-    ],
-]
-
-
-jobs_checklist = [
-    [
-        # layout:List[List[Tab]]
-        sg.TabGroup(
-            layout=[
-                [sg.Tab("Battle Jobs", battle_tab)],
-                [sg.Tab("Collection Jobs", rewards_tab)],
-                [sg.Tab("Cards Jobs", card_collection_tab)],
-            ]
-        )
+def make_rewards_tab(index):
+    rewards_tab = [
+        [
+            job_check_box("Open chests", f"open_chests_user_toggle_{index}", default_value=True),
+        ],
+        [
+            job_check_box(
+                "Battlepass rewards", f"open_battlepass_user_toggle_{index}", default_value=False
+            ),
+        ],
+        [
+            job_check_box(
+                "Card mastery rewards", f"card_mastery_user_toggle_{index}", default_value=False
+            ),
+        ],
+        [
+            job_check_box(
+                "Daily Challenge Rewards",
+                f"daily_rewards_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Level Up Rewards", f"level_up_chest_user_toggle_{index}", default_value=False
+            ),
+        ],
+        [
+            job_check_box(
+                "Open Bannerbox Chests",
+                f"open_bannerbox_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Trophy Road Rewards",
+                f"trophy_road_rewards_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
     ]
-]
+
+    return rewards_tab
+
+
+def make_card_collection_tab(index):
+    card_collection_tab = [
+        [
+            job_check_box("Request cards", f"request_user_toggle_{index}", default_value=False),
+        ],
+        [
+            job_check_box("Donate cards", f"donate_toggle_{index}", default_value=False),
+        ],
+        [
+            job_check_box(
+                "Buy FREE shop offers", f"free_offer_user_toggle_{index}", default_value=True
+            ),
+        ],
+        [
+            job_check_box(
+                "Buy shop offers for GOLD",
+                f"gold_offer_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Upgrade Cards", f"card_upgrade_user_toggle_{index}", default_value=False
+            ),
+        ],
+        [
+            job_check_box(
+                "Upgrade ALL Cards",
+                f"upgrade_all_cards_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+        [
+            job_check_box(
+                "Season Shop Offers",
+                f"season_shop_buys_user_toggle_{index}",
+                default_value=False,
+            ),
+        ],
+    ]
+
+    return card_collection_tab
+
+
+def make_jobs_checklist(index):
+    jobs_checklist = [
+        [
+            # layout:List[List[Tab]]
+            sg.TabGroup(
+                layout=[
+                    [sg.Tab("Battle Jobs", make_battle_tab(index))],
+                    [sg.Tab("Collection Jobs", make_rewards_tab(index))],
+                    [sg.Tab("Cards Jobs", make_card_collection_tab(index))],
+                ]
+            )
+        ]
+    ]
+    return jobs_checklist
