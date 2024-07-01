@@ -41,77 +41,80 @@ for _ in range(len(job_increments_titles_column)):
     games_titles_column.append([sg.Text("games")])
 
 
-controls = [
-    # whole box
+def make_controls_tab(index):
+    controls = [
+        # whole box
+        [
+            # title column
+            sg.Column(
+                job_increments_titles_column,
+                justification="left",
+            ),
+            # input text column
+            sg.Column(
+                [
+                    [make_job_increment_control_object(f"request_increment_user_input_{index}")],
+                    [make_job_increment_control_object(f"donate_increment_user_input_{index}")],
+                    [make_job_increment_control_object(f"shop_buy_increment_user_input_{index}")],
+                    [
+                        make_job_increment_control_object(
+                            f"card_upgrade_increment_user_input_{index}"
+                        )
+                    ],
+                    [
+                        make_job_increment_control_object(
+                            f"daily_reward_increment_user_input_{index}"
+                        )
+                    ],
+                    [
+                        make_job_increment_control_object(
+                            f"card_mastery_collect_increment_user_input_{index}"
+                        )
+                    ],
+                    [make_job_increment_control_object(f"open_chests_increment_user_input_{index}")],
+                    [
+                        make_job_increment_control_object(
+                            f"deck_randomization_increment_user_input_{index}"
+                        )
+                    ],
+                    [make_job_increment_control_object(f"war_attack_increment_user_input_{index}")],
+                    [
+                        make_job_increment_control_object(
+                            f"battlepass_collect_increment_user_input_{index}"
+                        )
+                    ],
+                    [
+                        make_job_increment_control_object(
+                            f"level_up_chest_increment_user_input_{index}"
+                        )
+                    ],
+                    [
+                        make_job_increment_control_object(
+                            f"trophy_road_reward_increment_user_input_{index}"
+                        )
+                    ],
     [
-        # title column
-        sg.Column(
-            job_increments_titles_column,
-            justification="left",
-        ),
-        # input text column
-        sg.Column(
-            [
-                [make_job_increment_control_object("request_increment_user_input")],
-                [make_job_increment_control_object("donate_increment_user_input")],
-                [make_job_increment_control_object("shop_buy_increment_user_input")],
-                [
-                    make_job_increment_control_object(
-                        "card_upgrade_increment_user_input"
-                    )
-                ],
-                [
-                    make_job_increment_control_object(
-                        "daily_reward_increment_user_input"
-                    )
-                ],
-                [
-                    make_job_increment_control_object(
-                        "card_mastery_collect_increment_user_input"
-                    )
-                ],
-                [make_job_increment_control_object("open_chests_increment_user_input")],
-                [
-                    make_job_increment_control_object(
-                        "deck_randomization_increment_user_input"
-                    )
-                ],
-                [make_job_increment_control_object("war_attack_increment_user_input")],
-                [
-                    make_job_increment_control_object(
-                        "battlepass_collect_increment_user_input"
-                    )
-                ],
-                [
-                    make_job_increment_control_object(
-                        "level_up_chest_increment_user_input"
-                    )
-                ],
-                [
-                    make_job_increment_control_object(
-                        "trophy_road_reward_increment_user_input"
-                    )
-                ],
-[
-                    make_job_increment_control_object(
-                        "season_shop_buys_increment_user_input"
-                    )
-                ],
+                        make_job_increment_control_object(
+                            f"season_shop_buys_increment_user_input_{index}"
+                        )
+                    ],
 
-                [
-                    make_job_increment_control_object(
-                        "account_switching_increment_user_input"
-                    )
+                    [
+                        make_job_increment_control_object(
+                            f"account_switching_increment_user_input_{index}"
+                        )
+                    ],
                 ],
-            ],
-            justification="right",
-        ),
-        # end titles column
-        sg.Column(
-            games_titles_column,
-            justification="left",
-        ),
-    ],
-    [sg.VP()],
-    [sg.HSep(color="lightgray")],
-]
+                justification="right",
+            ),
+            # end titles column
+            sg.Column(
+                games_titles_column,
+                justification="left",
+            ),
+        ],
+        [sg.VP()],
+        [sg.HSep(color="lightgray")],
+    ]
+
+    return controls

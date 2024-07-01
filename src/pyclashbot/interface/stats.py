@@ -19,8 +19,7 @@ def stat_box(stat_name: str, size=(4, 1)) -> sg.Text:
 
 
 # collection stats
-
-collection_stats_titles: list[list[Text]] = [
+collection_stats_title_text_elements: list[list[Text]] = [
     [
         sg.Text("Requests: "),
     ],
@@ -106,7 +105,7 @@ collection_stats_values: list[list[Text]] = [
 
 collection_stats = [
     [
-        sg.Column(collection_stats_titles, element_justification="right"),
+        sg.Column(collection_stats_title_text_elements, element_justification="right"),
         sg.Column(collection_stats_values, element_justification="left"),
     ]
 ]

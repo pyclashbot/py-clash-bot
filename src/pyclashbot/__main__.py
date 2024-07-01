@@ -1,18 +1,13 @@
-"""
-This module contains the main entry point for the py-clash-bot program.
-It provides a GUI interface for users to configure and run the bot.
-"""
-
-from ast import List
 import random
 import sys
 import webbrowser
+import time
 import PySimpleGUI as sg
+import pickle
+import os
 from pyclashbot.bot.worker import WorkerThread
-from pyclashbot.interface import disable_keys, user_config_keys
-from pyclashbot.interface.joblist import no_jobs_popup
-from pyclashbot.interface.layout import DONATE_BUTTON_KEY, create_window
-from pyclashbot.memu.launcher import get_vms
+from pyclashbot.interface.layout2 import make_window, user_config_keys, make_job_dict
+from pyclashbot.memu.launcher import close_everything_memu, get_vms
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
@@ -21,6 +16,56 @@ from PySimpleGUI import Window
 from pyclashbot.memu.memu_closer import close_memuc_processes
 
 initalize_pylogging()
+
+# Define the configuration file path
+config_dir = os.path.join(os.getenv("APPDATA"), "py-clash-bot")
+config_file_path = os.path.join(config_dir, "config.pkl")
+
+# Create the directory if it doesn't exist
+if not os.path.exists(config_dir):
+    os.makedirs(config_dir)
+
+
+def save_configuration(values, keys_to_store, file_path):
+    """Method to save the configuration to a file."""
+    print("saving configuration")
+    print('values',values)
+    print('keys_to_store')
+    for key in keys_to_store:
+        print('\t',key)
+    print('file_path',file_path)
+    config = {}
+    for key in keys_to_store:
+        config[key] = values[key]
+    with open(file_path, "wb") as file:
+        pickle.dump(config, file)
+    print(f"Configuration saved to {file_path}")
+
+
+def load_configuration(window, file_path):
+    """Method to load the configuration from a file and update the window.
+    If the file does not exist, create an empty configuration file.
+    """
+    print("loading configuration")
+    if os.path.exists(file_path):
+        with open(file_path, "rb") as file:
+            config = pickle.load(file)
+        for key, value in config.items():
+            print(key, value)
+            if key in window.AllKeysDict:
+                window[key].update(value)
+        print(f"Configuration loaded from {file_path}")
+    else:
+        print(f"No configuration file found at {file_path}. Creating a new one.")
+        # Create an empty configuration file
+        with open(file_path, "wb") as file:
+            pickle.dump({}, file)
+        print(f"Empty configuration file created at {file_path}")
+
+
+def save_current_settings(values):
+    """Method to save the current settings to the configuration file."""
+    save_configuration(values, user_config_keys, config_file_path)
 
 
 def read_window(
@@ -44,276 +89,16 @@ def read_window(
     return read_result
 
 
-def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
-    """Create a dictionary of job toggles and increments based on the values of the GUI window.
-
-    Args:
-        values: A dictionary of the values of the GUI window.
-
-    Returns:
-        A dictionary of job toggles and increments based on the values of the GUI window.
-    """
-
-    random_account_switch_list = make_random_account_switching_dict(
-        int(values["account_switching_slider"])
-    )
-    print("random_account_switch_list: ", random_account_switch_list)
-
-    jobs_dictionary: dict[str, str | int] = {
-        # job toggles
-        "open_battlepass_user_toggle": values["open_battlepass_user_toggle"],
-        "open_chests_user_toggle": values["open_chests_user_toggle"],
-        "request_user_toggle": values["request_user_toggle"],
-        "donate_toggle": values["donate_toggle"],
-        "card_mastery_user_toggle": values["card_mastery_user_toggle"],
-        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
-        "free_offer_user_toggle": values["free_offer_user_toggle"],
-        "gold_offer_user_toggle": values["gold_offer_user_toggle"],
-        "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
-        "goblin_queens_journey_1v1_battle_user_toggle": values[
-            "goblin_queens_journey_1v1_battle_user_toggle"
-        ],
-        "path_of_legends_1v1_battle_user_toggle": values[
-            "path_of_legends_1v1_user_toggle"
-        ],
-        "2v2_battle_user_toggle": values["2v2_user_toggle"],
-        "upgrade_user_toggle": values["card_upgrade_user_toggle"],
-        "war_user_toggle": values["war_user_toggle"],
-        "random_decks_user_toggle": values["random_decks_user_toggle"],
-        "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
-        "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
-        "random_plays_user_toggle": values["random_plays_user_toggle"],
-        "skip_fight_if_full_chests_user_toggle": values[
-            "skip_fight_if_full_chests_user_toggle"
-        ],
-        "disable_win_track_toggle": values["disable_win_track_toggle"],
-        "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
-        "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
-        "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
-        "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
-        # job increments
-        "trophy_road_reward_increment_user_input": values[
-            "trophy_road_reward_increment_user_input"
-        ],
-        "season_shop_buys_increment_user_input": values[
-            "season_shop_buys_increment_user_input"
-        ],
-        "card_upgrade_increment_user_input": values[
-            "card_upgrade_increment_user_input"
-        ],
-        "shop_buy_increment_user_input": values["shop_buy_increment_user_input"],
-        "request_increment_user_input": values["request_increment_user_input"],
-        "donate_increment_user_input": values["donate_increment_user_input"],
-        "daily_reward_increment_user_input": values[
-            "daily_reward_increment_user_input"
-        ],
-        "card_mastery_collect_increment_user_input": values[
-            "card_mastery_collect_increment_user_input"
-        ],
-        "open_chests_increment_user_input": values["open_chests_increment_user_input"],
-        "deck_randomization_increment_user_input": values[
-            "deck_randomization_increment_user_input"
-        ],
-        "war_attack_increment_user_input": values["war_attack_increment_user_input"],
-        "battlepass_collect_increment_user_input": values[
-            "battlepass_collect_increment_user_input"
-        ],
-        "level_up_chest_increment_user_input": values[
-            "level_up_chest_increment_user_input"
-        ],
-        # account switching input info
-        "account_switching_increment_user_input": values[
-            "account_switching_increment_user_input"
-        ],
-        "account_switching_toggle": values["account_switching_toggle"],
-        "account_switching_slider": int(values["account_switching_slider"]),
-        "next_account": 0,
-        "random_account_switch_list": random_account_switch_list,
-    }
-
-    return jobs_dictionary
-
-
-def make_random_account_switching_dict(count):
-    old_list = []
-    for i in range(count):
-        old_list.append(i)
-
-    new_list = []
-    while len(new_list) < len(old_list):
-        random_choice = random.choice(old_list)
-        if random_choice not in new_list:
-            new_list.append(random_choice)
-
-    return new_list
-
-
-def check_for_invalid_job_increment_input(job_dictionary):
-    """
-    Check if the job increments in the job dictionary are valid.
-
-    Args:
-        job_dictionary: A dictionary containing job information.
-
-    Returns:
-        False if all job increments are valid, otherwise
-        returns the key of the invalid job increment.
-    """
-    items = job_dictionary.items()
-
-    for key, value in items:
-        if key == "random_account_switch_list":
-            continue
-
-        # if its a bool then its a good type input
-        if isinstance(value, bool):
-            continue
-
-        # if its an int, then its a good type input
-        if isinstance(value, int):
-            continue
-
-        # if it includes chars that aren't numbers, then its a bad type input
-        if value == "":
-            return key
-
-        for char in value:
-            if char not in "1234567890":
-                return key
-
-    return False
-
-
-def check_for_no_jobs_in_job_dictionary(job_dict):
-    """
-    Check if there are no jobs in the job dictionary.
-
-    Args:
-        job_dict: A dictionary containing job information.
-
-    Returns:
-        True if there are no jobs in the dictionary, False otherwise.
-    """
-    for i in job_dict.items():
-        if i[1]:
-            return False
-
-    return True
-
-
-def save_current_settings(values) -> None:
-    """method for caching the user's current settings
-    args:
-        values: dictionary of the values of the window
-    returns:
-        None
-    """
-    # read the currently selected values for each key in user_coinfig_keys
-    user_settings = {key: values[key] for key in user_config_keys if key in values}
-    # cache the user settings
-    print("Cached settings")
-    USER_SETTINGS_CACHE.cache_data(user_settings)
-
-
-def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
-    """method for loading settings to the gui
-    args:
-        settings: dictionary of the settings to load
-        window: the gui window
-    """
-
-    if not settings and USER_SETTINGS_CACHE.exists():
-        read_window(window)  # read the window to edit the layout
-        user_settings = USER_SETTINGS_CACHE.load_data()
-        if user_settings is not None:
-            settings = user_settings
-
-    if settings is not None:
-        for key in user_config_keys:
-            if key in settings:
-                window[key].update(settings[key])  # type: ignore
-        window.refresh()  # refresh the window to update the layout
-
-
-def show_invalid_job_increment_input_popup(key) -> None:
-    """
-    Display a popup message indicating that the job increment input is invalid.
-
-    Args:
-        key: A string representing the key of the job increment input.
-
-    Returns:
-        None
-    """
-
-    # A dictionary mapping the job increment input keys to their corresponding job names.
-    key_to_job_dict: dict[str, str] = {
-        "card_upgrade_increment_user_input": "Card Upgrade Increment",
-        "shop_buy_increment_user_input": "Shop Purchase Increment",
-        "request_increment_user_input": "Request Increment",
-        "donate_increment_user_input": "Donate Increment",
-        "daily_reward_increment_user_input": "Daily Reward Increment",
-        "card_mastery_collect_increment_user_input": "Card Mastery Collect Increment",
-        "open_chests_increment_user_input": "Open Chests Increment",
-        "deck_randomization_increment_user_input": "Randomize Deck Increment",
-        "war_attack_increment_user_input": "War Attack Increment",
-        "battlepass_collect_increment_user_input": "battlepass_collect_increment_user_input",
-        "account_switching_increment_user_input": "Account Switching Increment",
-    }
-
-    # Get the job name corresponding to the given key.
-    key_string = key_to_job_dict[key]
-
-    # Display a popup message indicating that the job increment input is invalid.
-    sg.popup(
-        f"Invalid job increment input for key: {key_string}",
-        title="Invalid Job Increment Input",
-    )
-
-
 def start_button_event(logger, window: Window, values) -> WorkerThread | None:
-    """method for starting the main bot thread
-    args:
-        logger, the logger object for for stats storage and printing
-        window, the gui window
-        values: dictionary of the values of the window
-    returns:
-        None
-    """
-
     # print window layout
     window["Stats"].select()
+    logger.start_time = time.time()
 
     # make job dictionary
-    job_dictionary: dict[str, str | int] = make_job_dictionary(values)
-
-    if job_increment_input_check := check_for_invalid_job_increment_input(
-        job_dictionary
-    ):
-        logger.log("Job increment inputs are invalid")
-        logger.log(f"Offensive increment input for key: [{job_increment_input_check}]")
-        show_invalid_job_increment_input_popup(job_increment_input_check)
-        logger.log("invalid job increment input")
-        return None
-
-    # handle no jobs selected
-    if check_for_no_jobs_in_job_dictionary(job_dictionary):
-        no_jobs_popup()
-        logger.log("No jobs are selected!")
-        return None
-
-    # updaet logger's update_account_order_var
-    logger.update_account_order_var(job_dictionary["random_account_switch_list"])
+    job_dictionary: dict[str, str | int] = make_job_dict(values)
 
     logger.log("Start Button Event")
-    logger.change_status(None,status="Starting the bot!")
-    save_current_settings(values)
-
-    logger.log_job_dictionary(job_dictionary)
-    logger.log_job_dictionary(job_dictionary)
-
-    for key in disable_keys:
-        window[key].update(disabled=True)
+    logger.change_status(None, status="Starting the bot!")
 
     # close existing memuc processes
     close_memuc_processes()
@@ -322,19 +107,34 @@ def start_button_event(logger, window: Window, values) -> WorkerThread | None:
     print("Starting main thread")
     thread_args = job_dictionary
 
-    vm_count = 2
-    vm_indicies = get_vms(logger, vm_count)
+    vm_indicies = get_vms(logger, 2)
 
-    # run threads
-    for vm_index in vm_indicies:
+    print(job_dictionary)
+
+    close_everything_memu()
+
+    if job_dictionary[1]["bot_toggle"] is True:
+        vm_index = vm_indicies[0]
+        logger.set_bot_vm_index(vm_index, 1)
         logger.add_vm_index(vm_index)
+        logger.set_bot_account_order(job_dictionary[1]["account_order_1"], 1)
+        thread_args = job_dictionary[1]
         thread = WorkerThread(logger, vm_index, thread_args)
+        print("Initialized bot workerthread #1")
+        thread.start()
+
+    if job_dictionary[2]["bot_toggle"] is True:
+        vm_index = vm_indicies[1]
+        logger.set_bot_vm_index(vm_index, 2)
+        logger.add_vm_index(vm_index)
+        logger.set_bot_account_order(job_dictionary[2]["account_order_2"], 2)
+        thread_args = job_dictionary[2]
+        thread = WorkerThread(logger, vm_index, thread_args)
+        print("Initialized bot workerthread #2")
         thread.start()
 
     # enable the stop button after the thread is started
     window["Stop"].update(disabled=False)
-
-    return thread
 
 
 def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
@@ -346,9 +146,10 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
     returns:
         None
     """
-    logger.change_status(vm_index,status="Stopping")
+    logger.change_status(vm_index, status="Stopping")
     window["Stop"].update(disabled=True)
     thread.shutdown(kill=False)  # send the shutdown flag to the thread
+
 
 def update_layout(window: sg.Window, logger: Logger) -> None:
     """method for updaing the values in the gui's window
@@ -366,6 +167,7 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
             # update current status key to that of the correct display key
             window[stat].update(val)  # type: ignore
 
+
 def exit_button_event(thread) -> None:
     """
     Method for handling the exit button event. Shuts down the thread if it is still running.
@@ -378,6 +180,7 @@ def exit_button_event(thread) -> None:
     """
     if thread is not None:
         thread.shutdown(kill=True)
+
 
 def handle_thread_finished(
     window: sg.Window, thread: WorkerThread | None, logger: Logger
@@ -395,14 +198,15 @@ def handle_thread_finished(
             thread = None
     return thread, logger
 
+
 def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
     """method for displaying the main gui"""
 
     # create gui window
-    window = create_window()
+    window = make_window()
 
     # load the last cached settings
-    load_settings(settings, window)
+    load_configuration(window, config_file_path)
 
     # track worker thread and logger
     thread: WorkerThread | None = None
@@ -411,6 +215,10 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
     # run the gui
     while True:
         event, values = read_window(window, timeout=10)
+
+        if event != '__TIMEOUT__':
+            print(event)
+
         if start_on_run:
             event = "Start"
             start_on_run = False
@@ -422,22 +230,14 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
             break
 
         # on start event, start the thread
-        if event == "Start":
-            thread = start_button_event(logger, window, values)
+        if event == "Start" or event == "start_key":
+            start_button_event(logger, window, values)
+            save_configuration(values, user_config_keys, config_file_path)
 
         # on stop event, stop the thread
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
 
-        elif event == "-Collapse-Button-":
-            window["-Collapse-Button-"].update(
-                text="Expand" if window["-tab-group-"].visible else "Collapse"
-            )
-            window["-tab-group-"].update(visible=not window["-tab-group-"].visible)
-
-        # upon changing any user settings, save the current settings
-        elif event in user_config_keys:
-            save_current_settings(values)
 
         # on Donate button event, open the donation link in browser
         elif event == "bug-report":
@@ -456,7 +256,7 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
             print("Deprecated")
 
         # donate event
-        elif event in ("donate", DONATE_BUTTON_KEY):
+        elif event in ("donate", "donate"):
             urls = {
                 "https://github.com/sponsors/matthewmiglio?o=sd&sc=t",
                 "https://www.paypal.com/donate/"
