@@ -200,10 +200,10 @@ class Logger:
                 "cards_played": self.cards_played,
                 # bot stats
                 "restarts_after_failure": self.restarts_after_failure,
-                'bot_1_vm_index':self.bot_1_vm_index,
-                'bot_2_vm_index':self.bot_2_vm_index,
-                'account_order_1':self.bot_1_account_order,
-                'account_order_2':self.bot_2_account_order,
+                "bot_1_vm_index": self.bot_1_vm_index,
+                "bot_2_vm_index": self.bot_2_vm_index,
+                "account_order_1": self.bot_1_account_order,
+                "account_order_2": self.bot_2_account_order,
                 # "current_status": self.current_status,
                 "current_status_1": self.current_status_1,
                 "current_status_2": self.current_status_2,
@@ -294,14 +294,14 @@ class Logger:
     def update_in_a_clan_value(self, in_a_clan: bool):
         self.in_a_clan = in_a_clan
 
-    def set_bot_account_order(self,account_order,logger_index):
+    def set_bot_account_order(self, account_order, logger_index):
         if logger_index == 1:
             self.bot_1_account_order = account_order
         elif logger_index == 2:
             self.bot_2_account_order = account_order
 
     @_updates_log
-    def set_bot_vm_index(self,vm_index,logger_index):
+    def set_bot_vm_index(self, vm_index, logger_index):
         if logger_index == 1:
             self.bot_1_vm_index = vm_index
         elif logger_index == 2:
@@ -455,11 +455,11 @@ class Logger:
         logger_index = None
         try:
             logger_index = self.vm_index2logger_index[vm_index]
-        except:
+        except KeyError:
             pass
 
         if logger_index is None:
-            self.current_status_1 =  status
+            self.current_status_1 = status
 
         # if the logger index is 1, or None:
         if logger_index == 1:
@@ -478,16 +478,13 @@ class Logger:
         self.restarts_after_failure += 1
 
     @_updates_log
-    def change_current_account(self, account_id,vm_index):
+    def change_current_account(self, account_id, vm_index):
         logger_index = self.vm_index2logger_index[vm_index]
 
-        if logger_index == 1:self.current_account_1 = account_id
-        elif logger_index == 2:self.current_account_2 = account_id
-
-    @_updates_log
-    def update_account_order_var(self, account_order):
-        self.account_order_1 = account_order
-        self.account_order_2 = account_order
+        if logger_index == 1:
+            self.current_account_1 = account_id
+        elif logger_index == 2:
+            self.current_account_2 = account_id
 
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""
@@ -850,8 +847,7 @@ class Logger:
 
         # if games_played / increment > donate_attempts
         if games_played / increment >= donate_attempts:
-            self.change_status(
-                vm_index,
+            self.log(
                 f"Can donate. attempts = {donate_attempts} & games played = {games_played}",
             )
             return True
@@ -1088,14 +1084,13 @@ class Logger:
         """sets logger's time_of_last_request to input_time"""
         self.time_of_last_request = input_time
 
-    def set_total_accounts(self, vm_index,count):
+    def set_total_accounts(self, vm_index, count):
         # self.total_accounts_1 = count
         index = self.vm_index2logger_index[vm_index]
         if index == 1:
             self.total_accounts_1 = count
         elif index == 2:
             self.total_accounts_2 = count
-
 
     def update_time_of_last_card_upgrade(self, input_time) -> None:
         """sets logger's time_of_last_card_upgrade to input_time"""
