@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QApplication,
     QWidget,
     QTabWidget,
@@ -13,8 +13,8 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QHeaderView,
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QColor
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QColor
 from pyclashbot.interface.pyqt_themes import THEMES
 
 print("Available themes:")
@@ -155,7 +155,9 @@ class MyApp(QWidget):
             "background-color: #FF6347; color: white; font-size: 16px; padding: 10px;"
         )  # Pastel red
         bug_report_button.setFixedSize(100, 50)
-        bug_report_button.clicked.connect(lambda: self.print_button_pressed("Bug Report"))
+        bug_report_button.clicked.connect(
+            lambda: self.print_button_pressed("Bug Report")
+        )
 
         # Add Upload Log button
         upload_log_button = QPushButton("Upload Log")
@@ -163,14 +165,15 @@ class MyApp(QWidget):
             "background-color: #87CEFA; color: white; font-size: 16px; padding: 10px;"
         )  # Pastel blue
         upload_log_button.setFixedSize(100, 50)
-        upload_log_button.clicked.connect(lambda: self.print_button_pressed("Upload Log"))
+        upload_log_button.clicked.connect(
+            lambda: self.print_button_pressed("Upload Log")
+        )
 
-        #add all the buttons to the layout
+        # Add all the buttons to the layout
         layout.addWidget(start_button)
         layout.addWidget(discord_button)
         layout.addWidget(bug_report_button)
         layout.addWidget(upload_log_button)
-
 
         # Create a vertical layout for the tabs
         main_layout = QVBoxLayout()
