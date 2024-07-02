@@ -31,7 +31,8 @@ color2rbg = {
 
 
 def get_elixir_count(iar):
-    negative_color = (115 , 49 ,  4)
+    negative_color = (115, 49, 4)
+
     def color_is_negative(color):
         tol = 30 * 3
         diff = 0
@@ -108,10 +109,10 @@ class FightVision:
         self.get_unit_data()
         self.get_hand_cards()
         self.get_tower_statuses()
-        self.elixir_count=get_elixir_count(self.image)
+        self.elixir_count = get_elixir_count(self.image)
 
     def make_display_image(self):
-        def draw_elixir_count(image,count):
+        def draw_elixir_count(image, count):
             text = f"Elixir: {count}"
             color = color2rbg["yellow"]
             image = draw_text(
@@ -132,7 +133,7 @@ class FightVision:
             ]
             color = (0, 0, 255)
             for i, pred in enumerate(preds):
-                if 'alive' in pred:
+                if "alive" in pred:
                     color = color2rbg["green"]
                 else:
                     color = color2rbg["red"]
@@ -192,7 +193,7 @@ class FightVision:
         image = draw_troop_positions(image, self.unit_positions)
         image = draw_hand_cards(image, self.hand_cards)
         image = draw_tower_statuses(image, self.tower_statuses)
-        image = draw_elixir_count(image,self.elixir_count)
+        image = draw_elixir_count(image, self.elixir_count)
         return image
 
     def run_detection_demo(self):
@@ -205,12 +206,8 @@ class FightVision:
                 break
 
 
-####TODO ADD ELIXIR DETECTOR
-
 if __name__ == "__main__":
     vm_index = 0
     fight = FightVision(vm_index)
 
     fight.run_detection_demo()
-
-
