@@ -19,6 +19,7 @@ logging.info("VM started")
 current_path = os.path.dirname(os.path.realpath(__file__))
 model_path = os.path.join(current_path, "unit_detector.onnx")
 
+
 def detection(detector):
     durations: dict[str, tuple[float, float]] = {}
     start = perf_counter()
@@ -69,10 +70,4 @@ def detection_loop(use_gpu):
 
 
 if __name__ == "__main__":
-    durations = detection_loop(use_gpu=True)
-
-    import pandas as pd
-
-    durations = pd.DataFrame(durations)
-    durations = durations.iloc[1:]
-    logging.info("\n" + str(durations.describe()))
+    pass

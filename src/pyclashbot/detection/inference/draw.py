@@ -36,6 +36,37 @@ def draw_bbox(
     )
 
 
+
+def draw_text(
+    image,
+    text,
+    position=(10, 10),
+    font_size=40,
+    font_color=(255, 255, 255),
+    font=cv2.FONT_HERSHEY_SIMPLEX,
+    thickness=2,
+):
+    """
+    Draws text on the given image using cv2.
+
+    Parameters:
+    - image: numpy.ndarray representing the image to draw on.
+    - text: str, the text to be drawn.
+    - position: tuple (x, y), the starting position of the text (default: (10, 10)).
+    - font_size: int, font size in pixels (default: 40).
+    - font_color: tuple (r, g, b), color of the text in RGB format (default: white).
+    - font: cv2 font type, font for text rendering (default: cv2.FONT_HERSHEY_SIMPLEX).
+    - thickness: int, thickness of the text characters (default: 2).
+
+    Returns:
+    - numpy.ndarray: Image with text drawn.
+    """
+    cv2.putText(image, text, position, font, font_size / 10, font_color, thickness)
+    return image
+
+
+
+
 def draw_bboxes(
     image: np.ndarray,
     pred: np.ndarray,
