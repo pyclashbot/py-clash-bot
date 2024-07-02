@@ -7,6 +7,9 @@ from pyclashbot.detection.inference.unit_detector.unit_detector import UnitDetec
 from pyclashbot.detection.inference.hand_card_classifier.hand_card_classifier import (
     HandClassifier,
 )
+from pyclashbot.detection.inference.unit_side_classifier.unit_side_classifier import (
+    UnitSideClassifier,
+)
 from pyclashbot.detection.inference.draw import draw_bboxes, draw_text
 
 unit_detector_model_path = (
@@ -17,6 +20,9 @@ hand_card_classifier_model_path = (
 )
 tower_status_classifier_model_path = (
     r"src\pyclashbot\detection\inference\tower_status_classifier\tower_classifier.onnx"
+)
+unit_side_classifier_model_path = (
+    r"src\pyclashbot\detection\inference\unit_side_classifier\unit_side_classifier.onnx"
 )
 
 color2rbg = {
@@ -70,19 +76,31 @@ class FightVision:
         self.tower_status_classifier = TowerClassifier(
             tower_status_classifier_model_path, use_gpu=True
         )
+        self.unitClassifier = UnitSideClassifier(unit_side_classifier_model_path, True)
+
         # image stuff
         self.vm_index = vm_index
         self.image = None
+
         # fight data predictions
         self.hand_cards = [None, None, None, None]
         self.unit_positions = []
         self.tower_statuses = [None, None, None, None]
         self.elixir_count = 0
+        self.unit_side_predictions = []
+
         # demo stuff
         self.display_image = None
 
     def update_image(self, image):
         self.image = image
+
+    def predict_unit_sides(self):
+        preds = [
+            self.unitClassifier.run(self.image, unit_bbox)
+            for unit_bbox in self.unit_positions
+        ]
+        self.unit_side_predictions = preds
 
     def get_unit_data(self):
         # returns a list of bboxes and their cooresponding confidences
@@ -90,6 +108,7 @@ class FightVision:
         pred = self.unit_detector.run(inp)
         pred = self.unit_detector.postprocess(pred)
         self.unit_positions = pred
+        self.predict_unit_sides()
         return pred
 
     def get_hand_cards(self):
@@ -149,8 +168,7 @@ class FightVision:
 
         def draw_troop_positions(image, bboxes) -> None:
             image = cv2.resize(image, (640, 640))
-            for bbox in bboxes:
-                print(bbox)
+
             image = draw_bboxes(image, bboxes, (640, 640))
             return image
 
@@ -179,16 +197,6 @@ class FightVision:
 
             return image
 
-        print("Troops:")
-        for t in self.unit_positions:
-            print("\t", t)
-        print("Hand Cards:")
-        for c in self.hand_cards:
-            print("\t", c)
-        print("Tower Statuses:")
-        for s in self.tower_statuses:
-            print("\t", s)
-
         image = self.image
         image = draw_troop_positions(image, self.unit_positions)
         image = draw_hand_cards(image, self.hand_cards)
@@ -200,11 +208,36 @@ class FightVision:
         while True:
             self.update_image(screenshot(self.vm_index))
             self.predict_fight_data()
+            self.make_printout()
             image_with_text = self.make_display_image()
             cv2.imshow("Predictions", image_with_text)
             if cv2.waitKey(25) == 27:  # ESC key to break
                 break
 
+    def make_printout(self):
+        def print_hand_cards(hand_cards):
+            print('Hand cards:')
+            string = ''
+            for card in hand_cards:
+                string += '{:^20} |'.format(card)
+            #remove last char
+            string = string[:-1]
+            print(string)
+
+        def print_unit_positions(unit_positions):
+            print('Unit positions:')
+            for unit in unit_positions:
+                print(unit)
+
+        hand_cards = self.hand_cards
+        unit_positions = self.unit_positions
+        tower_statuses = self.tower_statuses
+        elixir_count = self.elixir_count
+        unit_side_predictions = self.unit_side_predictions
+
+        # print_hand_cards(hand_cards)
+        print_unit_positions(unit_positions)
+        print('\n')
 
 if __name__ == "__main__":
     vm_index = 0
