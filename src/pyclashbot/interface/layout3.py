@@ -1,5 +1,4 @@
 import sys
-
 from PyQt6.QtWidgets import (
     QApplication,
     QWidget,
@@ -14,7 +13,6 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QHeaderView,
 )
-
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
 from pyclashbot.interface.pyqt_themes import THEMES
@@ -138,20 +136,41 @@ class MyApp(QWidget):
         discord_button = QPushButton("Discord")
         discord_color = QColor(114, 137, 218)  # Discord's blue-purple hue
         discord_button.setStyleSheet(
-            f"background-color: {discord_color.name()}; color: white; font-size: 16px; padding: 10px;"
+            f"background-color: {discord_color.lighter(150).name()}; color: white; font-size: 16px; padding: 10px;"
         )
         discord_button.setFixedSize(100, 50)
         discord_button.clicked.connect(lambda: self.print_button_pressed("Discord"))
-        layout.addWidget(discord_button)
 
         # Add START button
         start_button = QPushButton("START")
         start_button.setStyleSheet(
-            "background-color: green; color: white; font-size: 16px; padding: 10px;"
-        )
+            "background-color: #9ACD32; color: white; font-size: 16px; padding: 10px;"
+        )  # Pastel green
         start_button.setFixedSize(100, 50)
         start_button.clicked.connect(lambda: self.print_button_pressed("START"))
+
+        # Add Bug Report button
+        bug_report_button = QPushButton("Bug Report")
+        bug_report_button.setStyleSheet(
+            "background-color: #FF6347; color: white; font-size: 16px; padding: 10px;"
+        )  # Pastel red
+        bug_report_button.setFixedSize(100, 50)
+        bug_report_button.clicked.connect(lambda: self.print_button_pressed("Bug Report"))
+
+        # Add Upload Log button
+        upload_log_button = QPushButton("Upload Log")
+        upload_log_button.setStyleSheet(
+            "background-color: #87CEFA; color: white; font-size: 16px; padding: 10px;"
+        )  # Pastel blue
+        upload_log_button.setFixedSize(100, 50)
+        upload_log_button.clicked.connect(lambda: self.print_button_pressed("Upload Log"))
+
+        #add all the buttons to the layout
         layout.addWidget(start_button)
+        layout.addWidget(discord_button)
+        layout.addWidget(bug_report_button)
+        layout.addWidget(upload_log_button)
+
 
         # Create a vertical layout for the tabs
         main_layout = QVBoxLayout()
@@ -181,8 +200,6 @@ class MyApp(QWidget):
         tab2_layout = QVBoxLayout()
         tab2_label = QLabel("Stuff to show on bot settings page")
         tab2_layout.addWidget(tab2_label)
-
-
 
         self.nested_tab_widget = QTabWidget()
         self.nested_tab_bar = self.nested_tab_widget.tabBar()
@@ -246,8 +263,8 @@ class MyApp(QWidget):
         nested_tab = QWidget()
         nested_tab_layout = QVBoxLayout()
 
-        bot_enablet_text = str(title).replace(' Settings','')
-        enable_bot_checkbox = QCheckBox(f'Enable {bot_enablet_text}')
+        bot_enable_text = str(title).replace(" Settings", "")
+        enable_bot_checkbox = QCheckBox(f"Enable {bot_enable_text}")
         enable_bot_checkbox.setChecked(True)
         nested_tab_layout.addWidget(enable_bot_checkbox)
 
@@ -304,6 +321,11 @@ class MyApp(QWidget):
         for key, value in stats_dict.items():
             metric_item = QTableWidgetItem(key)
             value_item = QTableWidgetItem(str(value))
+
+            # Set item flags to make it read-only
+            metric_item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            value_item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+
             table.setItem(row, 0, metric_item)
             table.setItem(row, 1, value_item)
             row += 1
@@ -316,7 +338,7 @@ class MyApp(QWidget):
         table.resizeColumnToContents(0)
 
         # Set horizontal stretch for the second column to fill available space
-        table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         table.setWindowTitle(title)
         return table
