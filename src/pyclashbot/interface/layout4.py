@@ -4,10 +4,10 @@ from PySide6.QtWidgets import (
     QWidget,
     QTabWidget,
     QVBoxLayout,
+    QHBoxLayout,
     QLabel,
     QCheckBox,
     QSpinBox,
-    QHBoxLayout,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
@@ -110,7 +110,7 @@ collectionStatsDict = {
 }
 
 
-class MyApp(QWidget):
+class FrontEnd(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -182,7 +182,7 @@ class MyApp(QWidget):
 
         # Create first tab (General Settings)
         tab1 = QWidget()
-        tab1_layout = QVBoxLayout()
+        general_settings_tab_layout = QVBoxLayout()
 
         # Add placeholder text
         placeholder_text = QLabel(
@@ -190,19 +190,23 @@ class MyApp(QWidget):
             "This is placeholder text. This is placeholder text. This is placeholder text."
         )
         placeholder_text.setWordWrap(True)
-        tab1_layout.addWidget(placeholder_text)
+        general_settings_tab_layout.addWidget(placeholder_text)
 
         # Add 'enable docking' checkbox
         enable_docking_checkbox = QCheckBox("Enable docking")
-        tab1_layout.addWidget(enable_docking_checkbox)
+        general_settings_tab_layout.addWidget(enable_docking_checkbox)
 
-        tab1.setLayout(tab1_layout)
+        # add 'enable analytics' checkbox
+        enable_analytics_checkbox = QCheckBox("Enable Analytics")
+        general_settings_tab_layout.addWidget(enable_analytics_checkbox)
+
+        tab1.setLayout(general_settings_tab_layout)
 
         # Create second tab (Bot Settings)
-        tab2 = QWidget()
-        tab2_layout = QVBoxLayout()
-        tab2_label = QLabel("Stuff to show on bot settings page")
-        tab2_layout.addWidget(tab2_label)
+        bot_settings_tab = QWidget()
+        bot_settings_layout = QVBoxLayout()
+        bot_settings_page_text = QLabel("Stuff to show on bot settings page")
+        bot_settings_layout.addWidget(bot_settings_page_text)
 
         self.nested_tab_widget = QTabWidget()
         self.nested_tab_bar = self.nested_tab_widget.tabBar()
@@ -224,25 +228,42 @@ class MyApp(QWidget):
             self.plus_button, Qt.Corner.TopRightCorner
         )
 
-        tab2_layout.addWidget(self.nested_tab_widget)
-        tab2.setLayout(tab2_layout)
+        bot_settings_layout.addWidget(self.nested_tab_widget)
+        bot_settings_tab.setLayout(bot_settings_layout)
 
         # Create third tab (Runtime Statistics)
         tab3 = QWidget()
         tab3_layout = QVBoxLayout()
 
         # Create tables for statistics
-        bot_stats_table = self.create_stats_table(botStatsDict, "Bot Stats")
-        battle_stats_table = self.create_stats_table(battleStatsDict, "Battle Stats")
+        bot_stats_table = self.create_stats_table(botStatsDict, "Bot statistics")
+        battle_stats_table = self.create_stats_table(
+            battleStatsDict, "Battle statistics"
+        )
         collection_stats_table = self.create_stats_table(
-            collectionStatsDict, "Collection Stats"
+            collectionStatsDict, "Collection statistics"
         )
 
         # Add tables to horizontal layout
-        table_layout = QHBoxLayout()
-        table_layout.addWidget(bot_stats_table)
-        table_layout.addWidget(battle_stats_table)
-        table_layout.addWidget(collection_stats_table)
+        table_layout = QHBoxLayout()  # Change to QHBoxLayout to align tables in a row
+
+        # Add titles and tables to the layout
+        bot_stats_layout = QVBoxLayout()
+        bot_stats_layout.addWidget(QLabel("Bot statistics"))
+        bot_stats_layout.addWidget(bot_stats_table)
+
+        battle_stats_layout = QVBoxLayout()
+        battle_stats_layout.addWidget(QLabel("Battle statistics"))
+        battle_stats_layout.addWidget(battle_stats_table)
+
+        collection_stats_layout = QVBoxLayout()
+        collection_stats_layout.addWidget(QLabel("Collection statistics"))
+        collection_stats_layout.addWidget(collection_stats_table)
+
+        # Add the vertical layouts to the horizontal layout
+        table_layout.addLayout(bot_stats_layout)
+        table_layout.addLayout(battle_stats_layout)
+        table_layout.addLayout(collection_stats_layout)
 
         # Add the horizontal layout to the vertical tab layout
         tab3_layout.addLayout(table_layout)
@@ -251,7 +272,7 @@ class MyApp(QWidget):
 
         # Add tabs to the QTabWidget
         tab_widget.addTab(tab1, "General Settings")
-        tab_widget.addTab(tab2, "Bot Settings")
+        tab_widget.addTab(bot_settings_tab, "Bot Settings")
         tab_widget.addTab(tab3, "Runtime Statistics")
 
         main_layout.addLayout(layout)
@@ -356,6 +377,6 @@ class MyApp(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ex = MyApp()
+    ex = FrontEnd()
     ex.show()
     sys.exit(app.exec())
