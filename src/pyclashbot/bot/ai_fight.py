@@ -1,3 +1,4 @@
+import time
 import cv2
 from pyclashbot.detection.inference.tower_status_classifier.tower_status_classifier import (
     TowerClassifier,
@@ -96,6 +97,12 @@ class FightVision:
         self.tower_statuses = [None, None, None, None]
         self.elixir_count = 0
         self.unit_side_predictions = []
+        self.durations = {
+            "unit_data": 0,
+            "hand_cards": 0,
+            "tower_statuses": 0,
+            "elixir_count": 0,
+        }
 
         # demo stuff
         self.display_image = None
@@ -134,10 +141,21 @@ class FightVision:
         return pred
 
     def predict_fight_data(self):
+        unit_data_start_time = time.time()
         self.get_unit_data()
+        self.durations["unit_data"] += time.time() - unit_data_start_time
+
+        hand_cards_start_time = time.time()
         self.get_hand_cards()
+        self.durations["hand_cards"] += time.time() - hand_cards_start_time
+
+        tower_statuses_start_time = time.time()
         self.get_tower_statuses()
+        self.durations["tower_statuses"] += time.time() - tower_statuses_start_time
+
+        elixir_count_start_time = time.time()
         self.elixir_count = get_elixir_count(self.image)
+        self.durations["elixir_count"] += time.time() - elixir_count_start_time
 
     def make_display_image(self):
         def draw_elixir_count(image, count):
@@ -226,15 +244,16 @@ class FightVision:
 
     def run_detection_demo(self):
         while True:
+            start_time = time.time()
             self.update_image(screenshot(self.vm_index))
             self.predict_fight_data()
-            self.make_printout()
+            self.print_fight_data()
             image_with_text = self.make_display_image()
             cv2.imshow("Predictions", image_with_text)
             if cv2.waitKey(25) == 27:  # ESC key to break
                 break
 
-    def make_printout(self):
+    def print_fight_data(self):
         def print_hand_cards(hand_cards):
             print("Hand cards:")
             string = ""
@@ -258,6 +277,25 @@ class FightVision:
 
                 print(label, bbox)
 
+        def print_duration_dict():
+            def format_time(s):
+                s = str(s)
+                return s[:5] + "s"
+
+            def format_percent(p):
+                p = str(p)
+                p = p.split(".")[0]
+                return p + "%"
+
+            print("\n\n")
+            total_time = sum(self.durations.values())
+            for label, time in self.durations.items():
+                percent = time / total_time * 100
+                percent = format_percent(percent)
+                total_time += time
+                time = format_time(time)
+                print("{:^15}: {:^7} {}".format(label, time, percent))
+
         hand_cards = self.hand_cards
         ready_cards = self.ready_hand_cards
         unit_positions = self.unit_positions
@@ -265,13 +303,11 @@ class FightVision:
         elixir_count = self.elixir_count
         unit_side_predictions = self.unit_side_predictions
 
-        # print_hand_cards(hand_cards)
-        # print_units(unit_positions, unit_side_predictions)
-        print(ready_cards)
+        print_duration_dict()
 
 
 if __name__ == "__main__":
-    vm_index = 0
+    vm_index = 1
     fight = FightVision(vm_index)
 
     fight.run_detection_demo()
