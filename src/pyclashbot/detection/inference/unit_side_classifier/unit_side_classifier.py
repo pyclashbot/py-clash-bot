@@ -23,14 +23,44 @@ def convert_pil_to_numpy(image):
 
 class UnitSideClassifier(OnnxDetector):
     def preprocess(self, image, bbox):
+        def to_readable(digit):
+            digit = float(digit)
+            digit = str(digit)
+            digit = digit[:3]
+            return float(digit)
+
+        def convert_bbox(bbox):
+            BBOX_EXPAND_FACTOR = 1.0
+
+            def xywh2xyxy(bbox):
+                center_x,center_y,w,h = bbox
+                horizontal_adjustment = (w/2)*BBOX_EXPAND_FACTOR
+                vertical_adjustment = (h/2)*BBOX_EXPAND_FACTOR
+
+                left = center_x - horizontal_adjustment
+                top = center_y - vertical_adjustment
+                right = center_x + horizontal_adjustment
+                bottom = center_y + vertical_adjustment
+
+                return (left,top,right,bottom)
+
+            bbox = [float(b) for b in bbox]
+            bbox = bbox[:4]
+            bbox = xywh2xyxy(bbox)
+            return bbox
+
+        #convert to rgb from bgr
+        image = image[..., ::-1]
         #convert the image to PIL
         image = Image.fromarray(image)
         # convert image to 640x640
         image=resize_pil_image(image,640)
-        # convert bbox to 640x640 dims
-        bbox = [int(b*640) for b in bbox]
         # crop image to bbox
+        bbox = convert_bbox(bbox)
         crop = crop_image(image,bbox)
+        #resize to 64
+        crop = resize_pil_image(crop,64)
+        # crop.show()
         # convert back to numpy
         crop = convert_pil_to_numpy(crop)
 
@@ -43,18 +73,16 @@ class UnitSideClassifier(OnnxDetector):
             return conf
 
         output = [float(o) for o in output]
-        if output[0] > output[1]:
-            return "enemy " + format_confidence(output[0])
+        if output[1] > output[0]:
+            return "enemy " + format_confidence(output[1])
         else:
-            return "ally " + format_confidence(output[1])
+            return "ally " + format_confidence(output[0])
 
     def run(self, image,bbox):
-        images = self.preprocess(image,bbox)
-        outputs = []
-        for img in images:
-            outputs.append(self._infer(img).astype(np.float32)[0])
+        image = self.preprocess(image,bbox)
+        output = self._infer(image).astype(np.float32)[0]
 
-        return [self.postprocess(output) for output in outputs]
+        return self.postprocess(output)
 
 
 
