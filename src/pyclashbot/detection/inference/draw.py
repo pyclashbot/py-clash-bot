@@ -1,5 +1,3 @@
-
-
 from functools import lru_cache
 
 import cv2
@@ -21,8 +19,11 @@ def draw_bbox(
     color: tuple[int, int, int],
 ):
     label = str(label)
-    bbox = bbox.astype(int)
+    # bbox = bbox.astype(int)
+    bbox = [int(x) for x in bbox]
     # (x_center,y_center,width,height)
+
+    width = bbox[2]
 
     x1 = bbox[0] - bbox[2] // 2
     y1 = bbox[1] - bbox[3] // 2
@@ -31,10 +32,13 @@ def draw_bbox(
 
     cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
 
-    cv2.putText(
-        image, label, (bbox[0] + 20, bbox[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2
-    )
+    text_x_pos = x1
+    text_y_pos = y1 - 10
 
+
+    cv2.putText(
+        image, label, (text_x_pos, text_y_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2
+    )
 
 
 def draw_text(
@@ -65,22 +69,26 @@ def draw_text(
     return image
 
 
-
-
 def draw_bboxes(
     image: np.ndarray,
     pred: np.ndarray,
+    labels,
     pred_dims: tuple[int, int],
 ):
-    num_classes = pred.shape[1] - 5
-    colors = generate_colors(num_classes)
+    colors = [
+        (255, 0, 0),  # blue
+        (0, 0, 255),  # red
+    ]
 
     height = image.shape[:2][0]
     width = image.shape[:2][1]
 
-    for row in pred:
-        label = np.argmax(row[5:])
-        color = colors[int(label)]
+    for i, row in enumerate(pred):
+        label = labels[i]
+        if "ally" in label:
+            color = colors[0]
+        else:
+            color = colors[1]
 
         bbox = row[:4]
         bbox[0] = (bbox[0] / pred_dims[0]) * width

@@ -10,7 +10,10 @@ from pyclashbot.detection.inference.hand_card_classifier.hand_card_classifier im
 from pyclashbot.detection.inference.unit_side_classifier.unit_side_classifier import (
     UnitSideClassifier,
 )
-from pyclashbot.detection.inference.draw import draw_bboxes, draw_text
+from pyclashbot.detection.inference.card_ready_classifier.card_ready_classifier import (
+    CardReadyClassifier,
+)
+from pyclashbot.detection.inference.draw import draw_bboxes, draw_text, draw_bbox
 
 unit_detector_model_path = (
     r"src\pyclashbot\detection\inference\unit_detector\unit_detector.onnx"
@@ -24,6 +27,7 @@ tower_status_classifier_model_path = (
 unit_side_classifier_model_path = (
     r"src\pyclashbot\detection\inference\unit_side_classifier\unit_side_classifier.onnx"
 )
+card_ready_classifier_model_path = r"src\pyclashbot\detection\inference\card_ready_classifier\card_ready_classifier.onnx"
 
 color2rbg = {
     "green": (0, 255, 0),
@@ -77,6 +81,9 @@ class FightVision:
             tower_status_classifier_model_path, use_gpu=True
         )
         self.unitClassifier = UnitSideClassifier(unit_side_classifier_model_path, True)
+        self.card_ready_classifier = CardReadyClassifier(
+            card_ready_classifier_model_path, True
+        )
 
         # image stuff
         self.vm_index = vm_index
@@ -84,6 +91,7 @@ class FightVision:
 
         # fight data predictions
         self.hand_cards = [None, None, None, None]
+        self.ready_hand_cards = [False, False, False, False]
         self.unit_positions = []
         self.tower_statuses = [None, None, None, None]
         self.elixir_count = 0
@@ -113,11 +121,12 @@ class FightVision:
 
     def get_hand_cards(self):
         pred = self.hand_classifier.run(self.image)
+        ready_predictions = self.card_ready_classifier.run(self.image)
         cards = []
         for card, _ in pred:
             cards.append(card)
         self.hand_cards = cards
-        return cards
+        self.ready_hand_cards = ready_predictions
 
     def get_tower_statuses(self):
         pred = self.tower_status_classifier.run(self.image)
@@ -132,23 +141,28 @@ class FightVision:
 
     def make_display_image(self):
         def draw_elixir_count(image, count):
+            bbox = [386, 624, 387, 17]
+
             text = f"Elixir: {count}"
             color = color2rbg["yellow"]
-            image = draw_text(
-                image=image,
-                text=text,
-                position=(135, 625),
-                font_size=5,
-                font_color=color,
+
+            draw_bbox(
+                image,
+                bbox,
+                text,
+                color,
             )
             return image
 
         def draw_tower_statuses(image, preds):
-            text_coords = [
-                (129, 183),
-                (405, 183),
-                (129, 360),
-                (405, 360),
+            # draw all the labels
+
+            tower_bbox_size = 75
+            tower_bboxes = [
+                (180, 135, tower_bbox_size, tower_bbox_size),
+                (463, 135, tower_bbox_size, tower_bbox_size),
+                (180, 398, tower_bbox_size, tower_bbox_size),
+                (463, 398, tower_bbox_size, tower_bbox_size),
             ]
             color = (0, 0, 255)
             for i, pred in enumerate(preds):
@@ -156,28 +170,31 @@ class FightVision:
                     color = color2rbg["green"]
                 else:
                     color = color2rbg["red"]
-                draw_text(
-                    image=image,
-                    text=pred.replace("_", " "),
-                    position=(text_coords[i][0], text_coords[i][1]),
-                    font_size=5,
-                    font_color=color,
+
+                bbox = tower_bboxes[i]
+
+                draw_bbox(
+                    image,
+                    bbox,
+                    pred,
+                    color,
                 )
 
             return image
 
-        def draw_troop_positions(image, bboxes) -> None:
+        def draw_troop_positions(image, bboxes, sides) -> None:
             image = cv2.resize(image, (640, 640))
 
-            image = draw_bboxes(image, bboxes, (640, 640))
+            image = draw_bboxes(image, bboxes, sides, (640, 640))
             return image
 
         def draw_hand_cards(image, predictions):
-            text_coords = [
-                (165, 522),
-                (285, 522),
-                (387, 522),
-                (490, 522),
+            card_sizes = (468 - 377, 608 - 523)
+            card_bboxes = [
+                (215, 567, card_sizes[0], card_sizes[1]),
+                (319, 567, card_sizes[0], card_sizes[1]),
+                (422, 567, card_sizes[0], card_sizes[1]),
+                (524, 567, card_sizes[0], card_sizes[1]),
             ]
 
             for i, pred in enumerate(predictions):
@@ -187,18 +204,21 @@ class FightVision:
                     color = color2rbg["red"]
                 else:
                     color = color2rbg["green"]
-                image = draw_text(
-                    image=image,
-                    text=text,
-                    position=(text_coords[i][0], text_coords[i][1]),
-                    font_size=5,
-                    font_color=color,
-                )
 
+                text = text[:13].replace("(", "").replace(")", "")
+                bbox = card_bboxes[i]
+                draw_bbox(
+                    image,
+                    bbox,
+                    text,
+                    color,
+                )
             return image
 
         image = self.image
-        image = draw_troop_positions(image, self.unit_positions)
+        image = draw_troop_positions(
+            image, self.unit_positions, self.unit_side_predictions
+        )
         image = draw_hand_cards(image, self.hand_cards)
         image = draw_tower_statuses(image, self.tower_statuses)
         image = draw_elixir_count(image, self.elixir_count)
@@ -216,28 +236,39 @@ class FightVision:
 
     def make_printout(self):
         def print_hand_cards(hand_cards):
-            print('Hand cards:')
-            string = ''
+            print("Hand cards:")
+            string = ""
             for card in hand_cards:
-                string += '{:^20} |'.format(card)
-            #remove last char
+                string += "{:^20} |".format(card)
+            # remove last char
             string = string[:-1]
             print(string)
 
-        def print_unit_positions(unit_positions):
-            print('Unit positions:')
-            for unit in unit_positions:
-                print(unit)
+        def print_units(unit_positions, unit_classes):
+            def format_number(number):
+                number = float(number)
+                number = str(number)[:4]
+                return number
+
+            print("Unit positions:")
+            for i, unit_pos in enumerate(unit_positions):
+                label = unit_side_predictions[i]
+                bbox = unit_pos[:4]
+                bbox = [format_number(b) for b in bbox]
+
+                print(label, bbox)
 
         hand_cards = self.hand_cards
+        ready_cards = self.ready_hand_cards
         unit_positions = self.unit_positions
         tower_statuses = self.tower_statuses
         elixir_count = self.elixir_count
         unit_side_predictions = self.unit_side_predictions
 
         # print_hand_cards(hand_cards)
-        print_unit_positions(unit_positions)
-        print('\n')
+        # print_units(unit_positions, unit_side_predictions)
+        print(ready_cards)
+
 
 if __name__ == "__main__":
     vm_index = 0
