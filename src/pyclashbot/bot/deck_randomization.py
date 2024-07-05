@@ -140,6 +140,7 @@ def check_for_randomize_deck_icon(vm_index):
 
 def randomize_deck(vm_index: int, logger: Logger) -> bool:
     start_time = time.time()
+    randomizes = 3
 
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
@@ -151,17 +152,18 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
     click(vm_index, 145, 107)
 
     # click on deck options
-    print("Click deck options")
-    click_deck_options(vm_index)
-    time.sleep(0.1)
+    for _ in range(randomizes):
+        print("Click deck options")
+        click_deck_options(vm_index)
+        time.sleep(0.1)
 
-    # click random deck button
-    click(vm_index, 130, 187)
-    time.sleep(0.1)
+        # click random deck button
+        click(vm_index, 130, 187)
+        time.sleep(0.1)
 
-    # click OK
-    click(vm_index, 280, 390)
-    time.sleep(0.1)
+        # click OK
+        click(vm_index, 280, 390)
+        time.sleep(0.1)
 
     # increment logger's deck randomization sta
     logger.add_card_randomization()
