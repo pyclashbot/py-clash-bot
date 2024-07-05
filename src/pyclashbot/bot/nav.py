@@ -1027,7 +1027,6 @@ def get_to_card_page_from_clash_main(
         time_taken = time.time() - start_time
         if time_taken > 60:
             return "restart"
-
         click(
             vm_index, CARD_PAGE_ICON_FROM_CARD_PAGE[0], CARD_PAGE_ICON_FROM_CARD_PAGE[1]
         )
