@@ -29,8 +29,11 @@ from sklearn.cluster import DBSCAN
 """
 TODO
 -something to target princess type cards with arrows
+-play goblin barrel on top of tower
 -fireball troops that are on top of towers
 -xbox and mortar stuff
+-target goblin barrels on towers
+-comprehensive dataframe of units and their aspects (type, attacktype, cost, groundtype, )
 """
 
 
@@ -284,7 +287,7 @@ defensive_blacklist = [
     "battle_ram",
     "graveyard",
     "freeze",
-    'tornado',
+    "tornado",
     "lightning",
     "rocket",
     "rage",
@@ -312,6 +315,10 @@ defensive_blacklist = [
     "goblin_hut",
     "tombstone",
     "zap_spell",
+]
+mortar_cards= [
+    'mortar',
+    'xbow',
 ]
 
 def get_elixir_count(iar):
@@ -509,6 +516,7 @@ class FightVision:
         returns:
             (card_index,coord) where card_index = int(0-3) and coord = (x,y)
         """
+
         def get_ready_card_indicies():
             ready_indicies = []
             for i, ready in enumerate(self.ready_hand_cards):
@@ -547,17 +555,16 @@ class FightVision:
                 else:
                     side2positions["ally"].append(bbox2coord(unit_position))
 
-
-            vert_split = 322 #line goes up the middle
-            horizontal_split = 220 #line go across the moddle
+            vert_split = 322  # line goes up the middle
+            horizontal_split = 220  # line go across the moddle
             left = 72
             right = 588
             top = 319
             bottom = 312
             board_regions = [  # xyxy
-                (left, top,vert_split, horizontal_split),  # topleft
-                (vert_split, top, vert_split,right ),  # topright
-                (left,horizontal_split, vert_split, bottom),  # bottomleft
+                (left, top, vert_split, horizontal_split),  # topleft
+                (vert_split, top, vert_split, right),  # topright
+                (left, horizontal_split, vert_split, bottom),  # bottomleft
                 (vert_split, horizontal_split, right, bottom),  # bottomright
             ]
 
@@ -621,7 +628,7 @@ class FightVision:
             tower_left_coord = (296, 343)
             tower_right_coord = (344, 347)
 
-            #pick out the cards that are playable
+            # pick out the cards that are playable
             ready_card_indicies = get_ready_card_indicies()
 
             # see if there are any defensive_melee_units to defend with
@@ -674,7 +681,6 @@ class FightVision:
                 else:
                     return (defensive_card_index, defend_right_ranged_coord)
 
-
             defensive_card_index = -1
             for card_index in ready_card_indicies:
                 card = self.hand_cards[card_index]
@@ -692,13 +698,15 @@ class FightVision:
             # else just return a random card to try and defend as best as possible
             card_indicies = get_ready_card_indicies()
             for card_index in card_indicies:
-                #if card is in defensive blacklist, skip
+                # if card is in defensive blacklist, skip
                 if self.hand_cards[card_index] in defensive_blacklist:
                     continue
                 if side == "left":
                     return (card_index, defend_left_melee_coord)
                 else:
                     return (card_index, defend_right_melee_coord)
+
+            return False
 
         def check_for_defensive_play():
             # focus on the last 2 (our right and left lanes)
@@ -745,26 +753,25 @@ class FightVision:
             left_waiting_coord = random.choice([(114, 418), (159, 462), (277, 404)])
             right_waiting_coord = random.choice([(503, 471), (445, 446), (402, 410)])
 
-            #if there are no enemies and elixer is below 5, just wait
-            if (side2positions["enemy"]) == [] and self.elixir_count < 5:
+            # if there are no enemies and elixer is below 5, just wait
+            if self.elixir_count < 5:
                 return False
 
-
-            #get play coord
-            coord=random.choice([left_waiting_coord,right_waiting_coord])
+            # get play coord
+            coord = random.choice([left_waiting_coord, right_waiting_coord])
             if quandrant2enemyCount[2] == 0 and quandrant2enemyCount[3] == 0:
                 if quandrant2enemyCount[0] > 0:
                     coord = left_waiting_coord
                 elif quandrant2enemyCount[1] > 0:
                     coord = right_waiting_coord
 
-            #if a waiting_troop card is available, return that as the play
+            # if a waiting_troop card is available, return that as the play
             for card_index in get_ready_card_indicies():
                 card = self.hand_cards[card_index]
                 if card in waiting_troops:
                     return (card_index, coord)
 
-            #otherwise return false
+            # otherwise return false
             return False
 
         def check_for_max_elixir_play():
@@ -864,6 +871,35 @@ class FightVision:
 
             return False
 
+        def check_for_mortar_play():
+            mortar_positions = [
+                (187,306),#left bridge
+                (459,314),#right bridge
+                (264,291),#left middle
+                (360,297),#right middle
+            ]
+
+            #if both enemy towers already destroyed, skip mortar play
+            if "alive" not in self.tower_statuses[0] and "alive" not in self.tower_statuses[1]:
+                return False
+
+            #if there are enemies, skip mortar play
+            if side2positions["enemy"] != []:
+                return False
+
+            #if bot is below 3 elixir, skip mortar play
+            if self.elixir_count < 5:
+                return False
+
+            #if any cards are mortars, return a random mortar play
+            ready_card_indicies = get_ready_card_indicies()
+            for card_index in ready_card_indicies:
+                card = self.hand_cards[card_index]
+                if card in mortar_cards:
+                    return (card_index, random.choice(mortar_positions))
+
+            return False
+
 
         # attack clusters with anti_cluster_spells
         cluster_play = check_for_cluster_plays(self.hand_cards, self.clusters)
@@ -883,13 +919,17 @@ class FightVision:
             self.play_type = "attack"
             return attack_play
 
-
-
         # check for spawner plays
         spawner_play = check_for_spawner_play()
         if spawner_play is not False:
             self.play_type = "spawner"
             return spawner_play
+
+        # check for mortar plays
+        mortar_play = check_for_mortar_play()
+        if mortar_play is not False and mortar_play is not None:
+            self.play_type = "mortar"
+            return mortar_play
 
         # check for waiting plays
         waiting_play = check_for_waiting_play()
