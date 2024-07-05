@@ -923,10 +923,8 @@ def save_fight_image(image):
     if not verify_matt_pc():
         return
 
-    # screenshot twice
-    start_time = time.time()
 
-    # Convert NumPy array to PIL image
+    image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
     image = Image.fromarray(image)
 
     folder_path = yolo_images_save_path
@@ -1068,6 +1066,15 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         while time.time() - start_time < duration:
             if not check_if_in_battle(vm_index):
                 return False
+    def printout(fv):
+        def format_coord(c):
+            x,y = c
+            x,y = int(x),int(y)
+            coord_string = f'({x},{y})'
+            return coord_string
+        play_coord = format_coord(fv.play_coord)
+        print('|{:^18} | {:^18} | {:^15}|'.format(fv.play_type,fv.hand_cards[fv.play_card], play_coord))
+
 
     logger.change_status(vm_index,status="Starting battle loop")
 
@@ -1083,7 +1090,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
         fv.predict_fight_data()
         if fv.play_card is not None:
             fv.make_play()
-            print('{:^18}  {:^18} {:^15}'.format(fv.play_type,fv.hand_cards[fv.play_card], str(fv.play_coord)))
+            printout(fv)
         if wait_duration(start_time,play_loop_time) is False:
             print('Done fighting')
             return 'good'
@@ -1173,4 +1180,4 @@ def fight_image_save_debug(vm_index,fights = 2):
 
 
 if __name__ == "__main__":
-    pass
+    save_fight_image(screenshot(1))
