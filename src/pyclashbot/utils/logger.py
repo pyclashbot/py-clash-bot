@@ -280,7 +280,7 @@ class Logger:
         if mode2toggle["path_of_legends"]:
             mode2count["path_of_legends"] = path_of_legends_1v1_fights
 
-        print("{:^17} : {:^15}".format("mode", "count"))
+        print("\n{:^17} : {:^15}".format("mode", "count"))
         for mode, count in mode2count.items():
             print("{:^17} : {:^15}".format(mode, count))
 
