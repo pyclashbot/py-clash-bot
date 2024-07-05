@@ -1,6 +1,7 @@
 import random
 import time
 import cv2
+from pyclashbot.bot.unit_data import get_units
 from pyclashbot.detection.inference.tower_status_classifier.tower_status_classifier import (
     TowerClassifier,
 )
@@ -17,10 +18,8 @@ from pyclashbot.detection.inference.card_ready_classifier.card_ready_classifier 
 )
 from pyclashbot.detection.inference.draw import (
     draw_bboxes,
-    draw_text,
     draw_bbox,
     draw_arrow,
-    draw_point,
 )
 import numpy as np
 from sklearn.cluster import DBSCAN
@@ -28,12 +27,12 @@ from sklearn.cluster import DBSCAN
 
 """
 TODO
--something to target princess type cards with arrows
--play goblin barrel / miner on top of tower
--fireball troops that are on top of towers
--target goblin barrels on towers
--comprehensive dataframe of units and their aspects (type, attacktype, cost, groundtype, )
--smooth way to use hero power well
+    -something to target princess type cards with arrows
+    -play goblin barrel / miner on top of tower
+    -fireball troops that are on top of towers
+    -target goblin barrels on towers
+    -implement the get_units() function to query for units that attack single or splash depending on the threat
+    -smooth way to use hero power well
 """
 
 
@@ -59,18 +58,9 @@ color2rbg = {
     "white": (255, 255, 255),
     "black": (0, 0, 0),
 }
-anti_cluster_spells = [
-    "arrows",
-    "barbarian_barrel",
-    "log",
-    "freeze",
-    "tornado",
-    "earthquake",
-    "fireball",
-    "snowball",
-    "rage",
-    "zap_spell",
-]
+
+
+
 defensive_melee_units = [
     "baby_dragon",
     "barbarians",
@@ -605,7 +595,7 @@ class FightVision:
             # if there are anti_cluster_spells in the hand, select that card index
             for card_index in get_ready_card_indicies():
                 card = hand_cards[card_index]
-                if card and card in anti_cluster_spells:
+                if card and card in get_units(card_type = 'spell', attack_type='anti_cluster',max_cost=self.elixir_count):
                     y_adjustment = 50
 
                     target_cluster = random.choice(clusters)
