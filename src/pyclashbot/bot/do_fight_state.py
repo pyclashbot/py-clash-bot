@@ -1081,7 +1081,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     fv = FightVision(vm_index)
 
     # while in battle:
-    play_loop_time = 3
+    play_loop_time = 0
     while check_for_in_battle_with_delay(vm_index):
         start_time = time.time()
         fight_image = screenshot(vm_index)
