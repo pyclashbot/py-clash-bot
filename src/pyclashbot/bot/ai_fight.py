@@ -3,7 +3,7 @@ import cv2
 from pyclashbot.detection.inference.tower_status_classifier.tower_status_classifier import (
     TowerClassifier,
 )
-from pyclashbot.memu.client import screenshot
+from pyclashbot.memu.client import screenshot, click
 from pyclashbot.detection.inference.unit_detector.unit_detector import UnitDetector
 from pyclashbot.detection.inference.hand_card_classifier.hand_card_classifier import (
     HandClassifier,
@@ -14,7 +14,16 @@ from pyclashbot.detection.inference.unit_side_classifier.unit_side_classifier im
 from pyclashbot.detection.inference.card_ready_classifier.card_ready_classifier import (
     CardReadyClassifier,
 )
-from pyclashbot.detection.inference.draw import draw_bboxes, draw_text, draw_bbox
+from pyclashbot.detection.inference.draw import (
+    draw_bboxes,
+    draw_text,
+    draw_bbox,
+    draw_arrow,
+    draw_point,
+)
+import numpy as np
+from sklearn.cluster import DBSCAN
+
 
 unit_detector_model_path = (
     r"src\pyclashbot\detection\inference\unit_detector\unit_detector.onnx"
@@ -71,6 +80,149 @@ def get_elixir_count(iar):
     return 10
 
 
+def cluster_unit_bboxes(unit_bboxes, unit_side_predictions):  # -> list:
+    """
+    unit_bboxes: list of unscaled bboxes: [[123,345,15,15],[262,152,45,23],[600,580,29,27]] #centerx,centery,width,height
+    unit_side_predictions: list of side prediction + confidence tuples: [("ally",0.99),("enemy",0.82),("ally",0.93)]
+    """
+
+    def cluster_points(points, eps, min_samples=2):  # -> list:
+        """
+        Clusters points using the DBSCAN algorithm and returns the coordinates and sizes of the clusters.
+
+        Parameters:
+        ----------
+        points : list of lists
+            List of points, where each point is represented as a list [x, y].
+        eps : int or float, optional
+            Maximum distance between two points to be considered in the same neighborhood (for DBSCAN). Default is 50.
+        min_samples : int, optional
+            Minimum number of points to form a cluster (for DBSCAN). Default is 2.
+
+        Returns:
+        -------
+        list of lists
+            List of clusters, where each cluster is represented as a list with:
+            [center_x, center_y, width, height]
+        """
+        # Convert points to numpy array
+        points_array = np.array(points)
+
+        # Cluster the points using DBSCAN
+        db = DBSCAN(eps=eps, min_samples=min_samples).fit(points_array)
+        labels = db.labels_
+
+        # Extract cluster information
+        clusters = {}
+        for idx, label in enumerate(labels):
+            if label == -1:  # Ignore noise
+                continue
+            if label not in clusters:
+                clusters[label] = []
+            clusters[label].append(points_array[idx])
+
+        # Calculate cluster coordinates and sizes
+        cluster_bboxes = []
+        for label, cluster_points in clusters.items():
+            cluster_points = np.array(cluster_points)
+            min_x, min_y = cluster_points.min(axis=0)
+            max_x, max_y = cluster_points.max(axis=0)
+
+            # Calculate width and height of the cluster bounding box
+            width = max_x - min_x
+            height = max_y - min_y
+
+            # Calculate center coordinates
+            center_x = min_x + width / 2
+            center_y = min_y + height / 2
+
+            bbox = [center_x, center_y, width, height]
+            cluster_bboxes.append(bbox)
+
+        return cluster_bboxes
+
+    def convert_bbox_to_coord(bbox):  # -> tuple:
+        coord = (bbox[0], bbox[1])
+
+        return coord
+
+    enemy_coords = []
+    for i, side in enumerate(unit_side_predictions):
+        if "enemy" in side:
+            unit_coord = convert_bbox_to_coord(unit_bboxes[i])
+            enemy_coords.append(unit_coord)
+
+    if len(enemy_coords) < 4:
+        return []
+
+    clusters = cluster_points(enemy_coords, eps=50, min_samples=4)
+
+    return clusters
+
+
+anti_cluster_spells = [
+    "arrows",
+    "barbarian_barrel",
+    "log",
+    "freeze",
+    "lightning",
+    "tornado",
+    "earthquake",
+    "fireball",
+    "rocket",
+    "snowball",
+    "rage",
+    "zap_spell",
+]
+
+import random
+
+
+def make_play(elixir_count, hand_cards, ready_hand_cards, clusters):
+    """
+    params:
+        elixir_count:int
+        hand_cards: list[str] of length 4 where str is the card name
+        ready_hand_cards: list[bool] of length 4
+        clusters: list[bbox] where bbox = [center_x, center_y, width, height]
+    returns:
+        (card_index,coord) where card_index = int(0-3) and coord = (x,y)
+    """
+
+    # return a (card, coord) tuple given fight data
+
+    # if elixir count is less than 2, return (None,None)
+    if elixir_count < 2:
+        return (None, None)
+
+    # if every value in ready_hand_cards is false, return (None,None)
+    if not any(ready_hand_cards):
+        return (None, None)
+
+    # attack clusters with anti_cluster_spells
+    if len(clusters) > 0:
+        print(f"There are clusters")
+        # if there are anti_cluster_spells in the hand, select that card index
+        random.shuffle(hand_cards)
+        for card_index, card in enumerate(hand_cards):
+            if card and card in anti_cluster_spells:
+                print(f"Found anti cluster spell: {card} at index {card_index}")
+                y_adjustment = 50
+
+                target_cluster = random.choice(clusters)
+                x, y = target_cluster[:2]
+
+                # adjust the y coord to account for troop movement
+                y += y_adjustment
+
+                coord = (x, y)
+
+                return (card_index, coord)
+
+    # if no checks occured, return (None,None) meaning no card, no coord
+    return (None, None)
+
+
 class FightVision:
     def __init__(self, vm_index):
         # models
@@ -97,15 +249,67 @@ class FightVision:
         self.tower_statuses = [None, None, None, None]
         self.elixir_count = 0
         self.unit_side_predictions = []
+        self.cluster_predictions = []
+
+        # play calculations
+        self.play_card = None
+        self.play_coord = (None, None)
+
+        # tracking inference times for different models
         self.durations = {
             "unit_data": 0,
             "hand_cards": 0,
             "tower_statuses": 0,
             "elixir_count": 0,
+            "clusters": 0,
+            "play_calculation": 0,
         }
 
         # demo stuff
         self.display_image = None
+
+    def make_play(self):  # -> tuple[None, None] | tuple[int, tuple]:
+        """
+        params:
+            elixir_count:int
+            hand_cards: list[str] of length 4 where str is the card name
+            ready_hand_cards: list[bool] of length 4
+            clusters: list[bbox] where bbox = [center_x, center_y, width, height]
+        returns:
+            (card_index,coord) where card_index = int(0-3) and coord = (x,y)
+        """
+
+        # return a (card, coord) tuple given fight data
+
+        # if elixir count is less than 2, return (None,None)
+        if self.elixir_count < 2:
+            return (None, None)
+
+        # if every value in ready_hand_cards is false, return (None,None)
+        if not any(self.ready_hand_cards):
+            return (None, None)
+
+        # attack clusters with anti_cluster_spells
+        if len(self.cluster_predictions) > 0:
+            print(f"There are clusters")
+            # if there are anti_cluster_spells in the hand, select that card index
+            for card_index, card in enumerate(self.hand_cards):
+                if card and card in anti_cluster_spells:
+                    print(f"Found anti cluster spell: {card} at index {card_index}")
+                    y_adjustment = 50
+
+                    target_cluster = random.choice(self.cluster_predictions)
+                    x, y = target_cluster[:2]
+
+                    # adjust the y coord to account for troop movement
+                    y += y_adjustment
+
+                    coord = (x, y)
+
+                    return (card_index, coord)
+
+        # if no checks occured, return (None,None) meaning no card, no coord
+        return (None, None)
 
     def update_image(self, image):
         self.image = image
@@ -141,23 +345,68 @@ class FightVision:
         return pred
 
     def predict_fight_data(self):
+        # unit position + unit side predictions
         unit_data_start_time = time.time()
         self.get_unit_data()
         self.durations["unit_data"] += time.time() - unit_data_start_time
 
+        # hand card classifications + ready predictinos
         hand_cards_start_time = time.time()
         self.get_hand_cards()
         self.durations["hand_cards"] += time.time() - hand_cards_start_time
 
+        # tower status predictions
         tower_statuses_start_time = time.time()
         self.get_tower_statuses()
         self.durations["tower_statuses"] += time.time() - tower_statuses_start_time
 
+        # elixir status detection
         elixir_count_start_time = time.time()
         self.elixir_count = get_elixir_count(self.image)
         self.durations["elixir_count"] += time.time() - elixir_count_start_time
 
+        # cluter calculation
+        cluster_start_time = time.time()
+        clusters = cluster_unit_bboxes(self.unit_positions, self.unit_side_predictions)
+        self.cluster_predictions = clusters
+        self.durations["clusters"] += time.time() - cluster_start_time
+
+        # calculate the best play given the fight data
+        play_calculation_start_time = time.time()
+        self.play_card, self.play_coord = self.make_play()
+        self.durations["play_calculation"] += time.time() - play_calculation_start_time
+
     def make_display_image(self):
+        def draw_best_play(image):
+            best_coord = self.play_coord
+            best_card = self.play_card
+
+            if best_coord is None or best_card is None:
+                return image
+
+            cardIndex2coord = {
+                0: (142, 561),
+                1: (210, 563),
+                2: (272, 561),
+                3: (341, 563),
+            }
+
+            draw_arrow(image, cardIndex2coord[best_card], best_coord, (255, 255, 0))
+
+            return image
+
+        def draw_clusters(image, clusters):
+            # draw all the cluster bboxes
+            for bbox in clusters:
+                draw_bbox(
+                    image,
+                    bbox,
+                    "enemy_cluster",
+                    (255, 0, 255),
+                )
+
+            return image
+
         def draw_elixir_count(image, count):
             bbox = [386, 624, 387, 17]
 
@@ -240,70 +489,22 @@ class FightVision:
         image = draw_hand_cards(image, self.hand_cards)
         image = draw_tower_statuses(image, self.tower_statuses)
         image = draw_elixir_count(image, self.elixir_count)
+        image = draw_clusters(image, self.cluster_predictions)
+        image = draw_best_play(image)
         return image
 
     def run_detection_demo(self):
+        def print_play(coord, card_index):
+            if coord is None or card_index is None:
+                print("No play")
+
         while True:
-            start_time = time.time()
             self.update_image(screenshot(self.vm_index))
             self.predict_fight_data()
-            self.print_fight_data()
             image_with_text = self.make_display_image()
             cv2.imshow("Predictions", image_with_text)
             if cv2.waitKey(25) == 27:  # ESC key to break
                 break
-
-    def print_fight_data(self):
-        def print_hand_cards(hand_cards):
-            print("Hand cards:")
-            string = ""
-            for card in hand_cards:
-                string += "{:^20} |".format(card)
-            # remove last char
-            string = string[:-1]
-            print(string)
-
-        def print_units(unit_positions, unit_classes):
-            def format_number(number):
-                number = float(number)
-                number = str(number)[:4]
-                return number
-
-            print("Unit positions:")
-            for i, unit_pos in enumerate(unit_positions):
-                label = unit_side_predictions[i]
-                bbox = unit_pos[:4]
-                bbox = [format_number(b) for b in bbox]
-
-                print(label, bbox)
-
-        def print_duration_dict():
-            def format_time(s):
-                s = str(s)
-                return s[:5] + "s"
-
-            def format_percent(p):
-                p = str(p)
-                p = p.split(".")[0]
-                return p + "%"
-
-            print("\n\n")
-            total_time = sum(self.durations.values())
-            for label, time in self.durations.items():
-                percent = time / total_time * 100
-                percent = format_percent(percent)
-                total_time += time
-                time = format_time(time)
-                print("{:^15}: {:^7} {}".format(label, time, percent))
-
-        hand_cards = self.hand_cards
-        ready_cards = self.ready_hand_cards
-        unit_positions = self.unit_positions
-        tower_statuses = self.tower_statuses
-        elixir_count = self.elixir_count
-        unit_side_predictions = self.unit_side_predictions
-
-        print_duration_dict()
 
 
 if __name__ == "__main__":
