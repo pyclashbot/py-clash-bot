@@ -29,11 +29,11 @@ from sklearn.cluster import DBSCAN
 """
 TODO
 -something to target princess type cards with arrows
--play goblin barrel on top of tower
+-play goblin barrel / miner on top of tower
 -fireball troops that are on top of towers
--xbox and mortar stuff
 -target goblin barrels on towers
 -comprehensive dataframe of units and their aspects (type, attacktype, cost, groundtype, )
+-smooth way to use hero power well
 """
 
 
@@ -67,7 +67,6 @@ anti_cluster_spells = [
     "tornado",
     "earthquake",
     "fireball",
-    "rocket",
     "snowball",
     "rage",
     "zap_spell",
@@ -310,6 +309,7 @@ defensive_blacklist = [
     "mortar",
     "tesla",
     "xbow",
+    'balloon',
     "barbarian_hut",
     "elixir_collector",
     "goblin_hut",
@@ -900,6 +900,43 @@ class FightVision:
 
             return False
 
+        def play_hero_power(vm_index):
+            click(vm_index,344,480)
+
+        def check_for_hero_power_play(image) -> bool:
+            def power_is_available(image) -> bool:
+                def pixel_is_equal(p1,p2,tol=30) -> bool:
+                    tol = tol *3 #for 3 dimensions
+                    diff = 0
+                    for i in range(3):
+                        diff += abs(p1[i] - p2[i])
+                    if diff < tol:
+                        return True
+                    return False
+
+                pixels = [
+                    image[462][323],
+                    image[452][333],
+                ]
+
+                colors = [
+                    [210 , 28, 218],
+                    [235 , 34, 252],
+                ]
+
+                for i, p in enumerate(pixels):
+                    color = colors[i]
+                    if not pixel_is_equal(p,color):
+                        return False
+                return True
+
+            #if elixir is below 3, lets not play hero power
+            if self.elixir_count < 3:
+                return False
+
+            #if hero power is available, return True
+            return power_is_available(image)
+
 
         # attack clusters with anti_cluster_spells
         cluster_play = check_for_cluster_plays(self.hand_cards, self.clusters)
@@ -918,6 +955,11 @@ class FightVision:
         if attack_play is not False:
             self.play_type = "attack"
             return attack_play
+
+        #check for hero power play
+        if check_for_hero_power_play(self.image):
+            play_hero_power(self.vm_index)
+            return (None,None)
 
         # check for spawner plays
         spawner_play = check_for_spawner_play()
@@ -1177,3 +1219,8 @@ if __name__ == "__main__":
     fight = FightVision(vm_index)
 
     fight.run_detection_demo(make_plays=True)
+
+
+
+
+
