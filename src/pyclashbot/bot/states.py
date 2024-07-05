@@ -455,6 +455,8 @@ def state_tree(
             "queens_journey": job_list["goblin_queen_toggle"],
         }
 
+
+        print("\n{:^17} : {}".format('mode', 'toggle'))
         for mode, toggle in mode2toggle.items():
             print("{:^17} : {}".format(mode, toggle))
 
@@ -464,7 +466,7 @@ def state_tree(
             return next_state
 
         mode = logger.pick_lowest_fight_type_count(mode2toggle)
-        print(f"Lowest mode is: {mode}")
+        print(f"Lowest mode is: {mode}\n")
 
         if start_fight(vm_index, logger, mode) is False:
             logger.change_status(vm_index, "Failed while starting fight")
@@ -542,11 +544,6 @@ def clip_that():
     time.sleep(1)
 
 
-
-
-
-
-
 def state_tree_tester(vm_index):
     logger = Logger()
     state = "account_switch"
@@ -555,10 +552,10 @@ def state_tree_tester(vm_index):
         "trophy_road_toggle": False,
         "path_of_legends_toggle": False,
         "goblin_queen_toggle": False,
-        "2v2_toggle": False,
+        "2v2_toggle": True,
         # job toggles
         "open_chests_toggle": False,
-        "random_decks_toggle": False,
+        "random_decks_toggle": True,
         "level_up_chest_toggle": False,
         "upgrade_cards_toggle": False,
         "trophy_road_rewards_toggle": False,
@@ -566,7 +563,7 @@ def state_tree_tester(vm_index):
         "donate_toggle": False,
         "free_shop_offers_toggle": False,
         "gold_shop_offers_toggle": False,
-        "daily_rewards_toggle": False,
+        "daily_challenge_rewards_toggle": False,
         "battlepass_toggle": False,
         "bannerbox_toggle": False,
         "season_shop_toggle": False,
@@ -574,7 +571,7 @@ def state_tree_tester(vm_index):
         "card_mastery_toggle": False,
         "upgrade_all_cards_toggle": False,
         # keep these off
-        "disable_win_track_toggle": False,
+        "disable_win_loss_tracking_toggle": False,
         "skip_fight_if_full_chests_toggle": False,
         "random_plays_toggle": False,
         "memu_attach_mode_toggle": False,
@@ -615,4 +612,4 @@ def state_tree_tester(vm_index):
 
 
 if __name__ == "__main__":
-    state_tree_tester(0)
+    state_tree_tester(1)
