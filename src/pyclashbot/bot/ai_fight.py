@@ -1,3 +1,4 @@
+import random
 import time
 import cv2
 from pyclashbot.detection.inference.tower_status_classifier.tower_status_classifier import (
@@ -38,7 +39,6 @@ unit_side_classifier_model_path = (
     r"src\pyclashbot\detection\inference\unit_side_classifier\unit_side_classifier.onnx"
 )
 card_ready_classifier_model_path = r"src\pyclashbot\detection\inference\card_ready_classifier\card_ready_classifier.onnx"
-
 color2rbg = {
     "green": (0, 255, 0),
     "yellow": (0, 255, 255),
@@ -48,6 +48,181 @@ color2rbg = {
     "white": (255, 255, 255),
     "black": (0, 0, 0),
 }
+anti_cluster_spells = [
+    "arrows",
+    "barbarian_barrel",
+    "log",
+    "freeze",
+    "lightning",
+    "tornado",
+    "earthquake",
+    "fireball",
+    "rocket",
+    "snowball",
+    "rage",
+    "zap_spell",
+]
+defensive_melee_units = [
+    "baby_dragon",
+    "barbarians",
+    "royal_delivery",
+    "bowler",
+    "dark_prince",
+    "e_spirit",
+    "elite_barbarians",
+    "giant_skeleton",
+    "goblin_gang",
+    "goblins",
+    "golden_knight",
+    "guards",
+    "knight",
+    "lumberjack",
+    "mega_knight",
+    "mighty_miner",
+    "mini_pekka",
+    "monk",
+    "pekka",
+    "_prince",
+    "rascals",
+    "royal_ghost",
+    "royal_recruits",
+    "skeleton_army",
+    "skeletons",
+    "spear_goblins",
+    "valkyrie",
+    "goblin_cage",
+]
+defensive_ranged_units = [
+    "archer_queen",
+    "archers",
+    "baby_dragon",
+    'bandit',
+    "bomber",
+    "cannon_cart",
+    "dart_goblin",
+    "e_dragon",
+    "e_spirit",
+    "e_wizard",
+    "executioner",
+    "firecracker",
+    "fire_spirit",
+    "fisherman",
+    "flying_machine",
+    "goblin_gang",
+    "hunter",
+    "ice_wizard",
+    "goblin_demolisher",
+    "little_prince",
+    "magic_archer",
+    "mother_witch",
+    "musketeer",
+    "night_witch",
+    "princess",
+    "rascals",
+    "skeleton_dragons",
+    "sparky",
+    "spear_goblins",
+    "three_musketeers",
+    "wizard",
+    "witch",
+    "zappies",
+]
+tower_cards = [
+    "bomb_tower",
+    "cannon_tower",
+    "inferno_tower",
+    "tesla",
+    "goblin_cage",
+    "tombstone",
+]
+spawner_cards = [
+    "barbarian_hut",
+    "elixir_collector",
+    "furnace",
+    "goblin_hut",
+    "tombstone",
+]
+waiting_troops = [
+    "archer_queen",
+    "archers",
+    "baby_dragon",
+    "balloon",
+    "bandit",
+    "barbarians",
+    "bats",
+    "inferno_dragon",
+    "battle_ram",
+    "bomber",
+    "royal_delivery",
+    "bowler",
+    "cannon_cart",
+    "dark_prince",
+    "dart_goblin",
+    "e_dragon",
+    "e_giant",
+    "e_spirit",
+    "e_wizard",
+    "elite_barbarians",
+    "elixir_golem",
+    "executioner",
+    "firecracker",
+    "fire_spirit",
+    "fisherman",
+    "flying_machine",
+    "giant_regular",
+    "giant_skeleton",
+    "goblin_gang",
+    "goblin_giant",
+    "goblins",
+    "golden_knight",
+    "golem",
+    "guards",
+    "healer",
+    "heal_spirit",
+    "hog_rider",
+    "hunter",
+    "ice_golem",
+    "ice_spirit",
+    "ice_wizard",
+    "goblin_demolisher",
+    "knight",
+    "lava_hound",
+    "little_prince",
+    "lumberjack",
+    "magic_archer",
+    "mega_knight",
+    "mega_minion",
+    "mighty_miner",
+    "miner",
+    "mini_pekka",
+    "minion_horde",
+    "minions",
+    "monk",
+    "mother_witch",
+    "musketeer",
+    "night_witch",
+    "pekka",
+    "phoenix",
+    "_prince",
+    "princess",
+    "ram_rider",
+    "rascals",
+    "royal_ghost",
+    "royal_giant",
+    "royal_recruits",
+    "skeleton_army",
+    "skeleton_barrel",
+    "skeleton_dragons",
+    "skeleton_king",
+    "skeletons",
+    "sparky",
+    "spear_goblins",
+    "three_musketeers",
+    "valkyrie",
+    "wizard",
+    "witch",
+    "zappies",
+]
 
 
 def get_elixir_count(iar):
@@ -160,67 +335,8 @@ def cluster_unit_bboxes(unit_bboxes, unit_side_predictions):  # -> list:
     return clusters
 
 
-anti_cluster_spells = [
-    "arrows",
-    "barbarian_barrel",
-    "log",
-    "freeze",
-    "lightning",
-    "tornado",
-    "earthquake",
-    "fireball",
-    "rocket",
-    "snowball",
-    "rage",
-    "zap_spell",
-]
-
-import random
 
 
-def make_play(elixir_count, hand_cards, ready_hand_cards, clusters):
-    """
-    params:
-        elixir_count:int
-        hand_cards: list[str] of length 4 where str is the card name
-        ready_hand_cards: list[bool] of length 4
-        clusters: list[bbox] where bbox = [center_x, center_y, width, height]
-    returns:
-        (card_index,coord) where card_index = int(0-3) and coord = (x,y)
-    """
-
-    # return a (card, coord) tuple given fight data
-
-    # if elixir count is less than 2, return (None,None)
-    if elixir_count < 2:
-        return (None, None)
-
-    # if every value in ready_hand_cards is false, return (None,None)
-    if not any(ready_hand_cards):
-        return (None, None)
-
-    # attack clusters with anti_cluster_spells
-    if len(clusters) > 0:
-        print(f"There are clusters")
-        # if there are anti_cluster_spells in the hand, select that card index
-        random.shuffle(hand_cards)
-        for card_index, card in enumerate(hand_cards):
-            if card and card in anti_cluster_spells:
-                print(f"Found anti cluster spell: {card} at index {card_index}")
-                y_adjustment = 50
-
-                target_cluster = random.choice(clusters)
-                x, y = target_cluster[:2]
-
-                # adjust the y coord to account for troop movement
-                y += y_adjustment
-
-                coord = (x, y)
-
-                return (card_index, coord)
-
-    # if no checks occured, return (None,None) meaning no card, no coord
-    return (None, None)
 
 
 class FightVision:
@@ -248,8 +364,8 @@ class FightVision:
         self.unit_positions = []
         self.tower_statuses = [None, None, None, None]
         self.elixir_count = 0
-        self.unit_side_predictions = []
-        self.cluster_predictions = []
+        self.unit_sides = []
+        self.clusters = []
 
         # play calculations
         self.play_card = None
@@ -271,15 +387,10 @@ class FightVision:
     def make_play(self):  # -> tuple[None, None] | tuple[int, tuple]:
         """
         params:
-            elixir_count:int
-            hand_cards: list[str] of length 4 where str is the card name
-            ready_hand_cards: list[bool] of length 4
-            clusters: list[bbox] where bbox = [center_x, center_y, width, height]
+            #TODO
         returns:
             (card_index,coord) where card_index = int(0-3) and coord = (x,y)
         """
-
-        # return a (card, coord) tuple given fight data
 
         # if elixir count is less than 2, return (None,None)
         if self.elixir_count < 2:
@@ -289,16 +400,73 @@ class FightVision:
         if not any(self.ready_hand_cards):
             return (None, None)
 
-        # attack clusters with anti_cluster_spells
-        if len(self.cluster_predictions) > 0:
-            print(f"There are clusters")
+
+        def preprocess():
+            def coord_in_region(coord, region):
+                x, y = coord
+                x1, y1, x2, y2 = region
+                return x1 <= x <= x2 and y1 <= y <= y2
+            def bbox2coord(bbox):
+                return bbox[:2]
+
+            # make a dict of enemy and ally positions for ez access
+            side2positions = {
+                "ally": [],
+                "enemy": [],
+            }
+            for i, unit_position in enumerate(self.unit_positions):
+                if "enemy" in self.unit_sides[i]:
+                    side2positions["enemy"].append(bbox2coord(unit_position))
+                else:
+                    side2positions["ally"].append(bbox2coord(unit_position))
+
+            board_regions = [  # xyxy
+                (82,64,316,263),  # topleft
+                (321,60,541,267),  # topright
+                (92,269,311,489),  # bottomleft
+                (318,288,547,476),  # bottomright
+            ]
+
+            # make a dict of quandrants to counts
+            quandrant2enemyCount = {
+                0: 0,
+                1: 0,
+                2: 0,
+                3: 0,
+            }
+            quandrant2allyCount = {
+                0: 0,
+                1: 0,
+                2: 0,
+                3: 0,
+            }
+
+            # fill out the dicts
+            ally_positions = side2positions["ally"]
+            enemy_positions = side2positions["enemy"]
+            for i, region in enumerate(board_regions):
+                for ally_position in ally_positions:
+                    if coord_in_region(ally_position, region):
+                        quandrant2allyCount[i] += 1
+                for enemy_position in enemy_positions:
+                    if coord_in_region(enemy_position, region):
+                        quandrant2enemyCount[i] += 1
+
+            return side2positions, quandrant2enemyCount, quandrant2allyCount
+
+        side2positions, quandrant2enemyCount, quandrant2allyCount = preprocess()
+
+        # use anti-cluster spells against clusters (arrows on a skeleton army)
+        def check_for_cluster_plays(hand_cards, clusters):
+            if len(clusters) == 0:
+                return False
+
             # if there are anti_cluster_spells in the hand, select that card index
-            for card_index, card in enumerate(self.hand_cards):
+            for card_index, card in enumerate(hand_cards):
                 if card and card in anti_cluster_spells:
-                    print(f"Found anti cluster spell: {card} at index {card_index}")
                     y_adjustment = 50
 
-                    target_cluster = random.choice(self.cluster_predictions)
+                    target_cluster = random.choice(clusters)
                     x, y = target_cluster[:2]
 
                     # adjust the y coord to account for troop movement
@@ -307,6 +475,165 @@ class FightVision:
                     coord = (x, y)
 
                     return (card_index, coord)
+
+            return False
+
+        def get_defense_play(side='left'):
+            def get_ready_card_index():
+                for i,ready in enumerate(self.ready_hand_cards):
+                    if ready:
+                        return i
+                return -1
+
+            defend_left_melee_coord = (183,358)
+            defend_left_ranged_coord = random.choice([(116,412),(267,407)])
+            defend_right_melee_coord = (451,363)
+            defend_right_ranged_coord = random.choice([(394,401),(510,411)])
+            tower_left_coord = (296,343)
+            tower_right_coord = (344,347)
+
+            #try to defend with a defensive_melee_units
+            defensive_card_index=-1
+            for defensive_card in defensive_melee_units:
+                if defensive_card in self.hand_cards:
+                    defensive_card_index = self.hand_cards.index(defensive_card)
+                    if self.ready_hand_cards[defensive_card_index] is False:
+                        continue
+                    break
+            if defensive_card_index != -1:
+                if side == 'left':
+                    return (defensive_card_index, defend_left_melee_coord)
+                else:
+                    return (defensive_card_index, defend_right_melee_coord)
+
+            #try to defend with a defensive_ranged_units
+            for defensive_card in defensive_ranged_units:
+                if defensive_card in self.hand_cards:
+                    defensive_card_index = self.hand_cards.index(defensive_card)
+                    if self.ready_hand_cards[defensive_card_index] is False:
+                        continue
+                    break
+            if defensive_card_index != -1:
+                if side == 'left':
+                    return (defensive_card_index, defend_left_ranged_coord)
+                else:
+                    return (defensive_card_index, defend_right_ranged_coord)
+
+            #try to defend with a tower_card
+            tower_card_index=-1
+            for tower_card in tower_cards:
+                if tower_card in self.hand_cards:
+                    tower_card_index = self.hand_cards.index(tower_card)
+                    if self.ready_hand_cards[tower_card_index] is False:
+                        continue
+                    break
+            if tower_card_index != -1:
+                if side == 'left':
+                    return (tower_card_index, tower_left_coord)
+                else:
+                    return (tower_card_index, tower_right_coord)
+
+            #else just return a random card to try and defend as best as possible
+
+            card_index = get_ready_card_index()
+            if card_index == -1:
+                card_index = random.randint(0,3)
+            if side == 'left':
+                return (card_index, defend_left_melee_coord)
+            else:
+                return (card_index, defend_right_melee_coord)
+
+        def check_for_defensive_play():
+            # focus on the last 2 (our right and left lanes)
+            left_lane_index = 2
+            right_lane_index = 3
+
+            # if there are more enemies on the right lane than allies, defend the right lane
+            if (
+                quandrant2enemyCount[right_lane_index]
+                > quandrant2allyCount[right_lane_index]
+            ):
+                print("defend right")
+                return get_defense_play(side='right')
+
+            # if there are more enemies on the left lane than allies, defend the left lane
+            if quandrant2enemyCount[left_lane_index] > quandrant2allyCount[left_lane_index]:
+                print("defend left")
+                return get_defense_play(side='left')
+
+            return False
+
+        def check_for_spawner_play():
+            #if there are enemies in the 3rd or 4th quadrant, dont play spawners
+            if quandrant2enemyCount[2] > 0 or quandrant2enemyCount[3] > 0:
+                return False
+
+            #pick a spot for the spawner based on ally tower statuses
+            play_coord=random.choice([(470,454),(131,448)])
+            if 'destroyed' in self.tower_statuses[2]:
+                play_coord = (470,454)
+            if 'destroyed' in self.tower_statuses[3]:
+                play_coord = (131,448)
+
+            for i, card in enumerate(self.hand_cards):
+                if card in spawner_cards:
+                    if self.ready_hand_cards[i] is False:
+                        continue
+                    return (i, play_coord)
+
+            return False
+
+        def check_for_waiting_play():
+            left_waiting_coord = random.choice([(114,418),(159,462),(277,404)])
+            right_waiting_coord = random.choice([(503,471),(445,446),(402,410)])
+
+            #see if there is a waiting troop in the hand
+            waiting_troop_index = -1
+            for i, card in enumerate(self.hand_cards):
+                if self.ready_hand_cards[i] is False:
+                        continue
+                if card in waiting_troops:
+                    waiting_troop_index = i
+                    break
+            if waiting_troop_index == -1:
+                return False
+
+            #if there are no enemies on 3rd or 4th quadrant (our side of the board)
+            if quandrant2enemyCount[2] == 0 and quandrant2enemyCount[3] == 0:
+                #if there are enemies in the 1st quadrant (their left side)
+                if quandrant2enemyCount[0] > 0:
+                    return (waiting_troop_index, left_waiting_coord)
+                #if there are enemies in the 2nd quadrant (their right side)
+                if quandrant2enemyCount[1] > 0:
+                    return (waiting_troop_index, right_waiting_coord)
+                return False
+
+            return False
+
+
+        #check for defense
+        defense_play = check_for_defensive_play()
+        if defense_play is not False:
+            print('Doing a cluster play')
+            return defense_play
+
+        # attack clusters with anti_cluster_spells
+        cluster_play = check_for_cluster_plays(self.hand_cards, self.clusters)
+        if cluster_play is not False:
+            print('Doing a cluster play')
+            return cluster_play
+
+        #check for spawner plays
+        spawner_play = check_for_spawner_play()
+        if spawner_play is not False:
+            print('Doing a spawner play')
+            return spawner_play
+
+        #check for waiting plays
+        waiting_play = check_for_waiting_play()
+        if waiting_play is not False:
+            print('Doing a waiting play')
+            return waiting_play
 
         # if no checks occured, return (None,None) meaning no card, no coord
         return (None, None)
@@ -319,7 +646,7 @@ class FightVision:
             self.unitClassifier.run(self.image, unit_bbox)
             for unit_bbox in self.unit_positions
         ]
-        self.unit_side_predictions = preds
+        self.unit_sides = preds
 
     def get_unit_data(self):
         # returns a list of bboxes and their cooresponding confidences
@@ -367,8 +694,8 @@ class FightVision:
 
         # cluter calculation
         cluster_start_time = time.time()
-        clusters = cluster_unit_bboxes(self.unit_positions, self.unit_side_predictions)
-        self.cluster_predictions = clusters
+        clusters = cluster_unit_bboxes(self.unit_positions, self.unit_sides)
+        self.clusters = clusters
         self.durations["clusters"] += time.time() - cluster_start_time
 
         # calculate the best play given the fight data
@@ -385,10 +712,10 @@ class FightVision:
                 return image
 
             cardIndex2coord = {
-                0: (142, 561),
-                1: (210, 563),
-                2: (272, 561),
-                3: (341, 563),
+                0: (214,567),
+                1: (320,567),
+                2: (421, 567),
+                3: (526, 567),
             }
 
             draw_arrow(image, cardIndex2coord[best_card], best_coord, (255, 255, 0))
@@ -484,24 +811,58 @@ class FightVision:
 
         image = self.image
         image = draw_troop_positions(
-            image, self.unit_positions, self.unit_side_predictions
+            image, self.unit_positions, self.unit_sides
         )
         image = draw_hand_cards(image, self.hand_cards)
         image = draw_tower_statuses(image, self.tower_statuses)
         image = draw_elixir_count(image, self.elixir_count)
-        image = draw_clusters(image, self.cluster_predictions)
+        image = draw_clusters(image, self.clusters)
         image = draw_best_play(image)
         return image
 
-    def run_detection_demo(self):
-        def print_play(coord, card_index):
-            if coord is None or card_index is None:
-                print("No play")
+    def run_detection_demo(self,make_plays=False):
+        def make_play():
+            hand_card_coords = [
+            (142, 561),
+            (210, 563),
+            (272, 561),
+            (341, 563),
+        ]
+
+            def convert_coord(coord,old_dims,new_dims):
+                x,y = coord
+                x = int((x/old_dims[0])*new_dims[0])
+                y = int((y/old_dims[1])*new_dims[1])
+                return x,y
+
+
+            #grab info from FightVision
+            card_index = self.play_card
+            play_coord = self.play_coord
+
+            #if no play, make no play
+            if card_index is None or play_coord is None:
+                return
+
+            #convert play coord to useable
+            play_coord = convert_coord(play_coord,(640,640),(419,633))
+
+            #convert card_index to useable
+            card_coord = hand_card_coords[card_index]
+
+            click(self.vm_index, card_coord[0], card_coord[1])
+            click(self.vm_index, play_coord[0], play_coord[1])
+
 
         while True:
             self.update_image(screenshot(self.vm_index))
             self.predict_fight_data()
             image_with_text = self.make_display_image()
+            print('\n')
+            for label,duration in self.durations.items():
+                print('{:^16} : {}'.format(label,duration))
+            if make_plays:
+                make_play()
             cv2.imshow("Predictions", image_with_text)
             if cv2.waitKey(25) == 27:  # ESC key to break
                 break
@@ -511,4 +872,4 @@ if __name__ == "__main__":
     vm_index = 1
     fight = FightVision(vm_index)
 
-    fight.run_detection_demo()
+    fight.run_detection_demo(make_plays=True)
