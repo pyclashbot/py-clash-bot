@@ -32,8 +32,7 @@ _Join the [Discord server](https://discord.gg/mx4W9qRNgF)!_
 <img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
 
 ## Artificial Intelligence Computer Vision
-![fight_vision_demo_gif](https://github.com/pyclashbot/py-clash-bot/assets/105177840/d1d32450-e565-4150-914d-f23e88146e7c)
-
+![clashbot_fightvision_playmaker_demo_gif](https://github.com/pyclashbot/py-clash-bot/assets/105177840/a6fa7046-1317-4b1a-8ab5-36ed43bb1410)
 
 ## Contribute
 
