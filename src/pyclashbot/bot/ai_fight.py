@@ -59,8 +59,6 @@ color2rbg = {
     "black": (0, 0, 0),
 }
 
-
-
 defensive_melee_units = [
     "baby_dragon",
     "barbarians",
@@ -271,6 +269,9 @@ attack_cards = [
     "valkyrie",
     "wall_breakers",
 ]
+
+
+
 defensive_blacklist = [
     "clone",
     "battle_ram",
@@ -299,17 +300,18 @@ defensive_blacklist = [
     "mortar",
     "tesla",
     "xbow",
-    'balloon',
+    "balloon",
     "barbarian_hut",
     "elixir_collector",
     "goblin_hut",
     "tombstone",
     "zap_spell",
 ]
-mortar_cards= [
-    'mortar',
-    'xbow',
-]
+
+
+
+mortar_cards = get_units(card_type= 'mortar_type',attack_type = 'mortar')
+
 
 def get_elixir_count(iar):
     negative_color = (115, 49, 4)
@@ -453,6 +455,60 @@ def make_play(play_card, play_coord, vm_index):
     click(vm_index, play_coord[0], play_coord[1])
 
 
+def get_ready_card_indicies(image):
+    def is_greyscale(color):
+        tol = 8
+        diff = 0
+        avg = sum(color) / 3
+        for i in range(3):
+            diff += abs(color[i] - avg)
+        return diff < tol
+
+    #make dict of the pixel data for each card
+    cardIndex2pixels = {
+        0: [
+            image[544][127],
+            image[547][154],
+            image[564][157],
+        ],
+        1: [
+            image[543][195],
+            image[572][228],
+            image[540][219],
+        ],
+        2: [
+            image[536][261],
+            image[571][262],
+            image[540][291],
+        ],
+        3: [
+            image[540][330],
+            image[571][331],
+            image[541][357],
+        ],
+    }
+
+    #check which cards are ready by checking for greyscale pixels
+    cardIndex2readiness = {}
+    for card_index, pixels in cardIndex2pixels.items():
+        if (
+            is_greyscale(pixels[0])
+            and is_greyscale(pixels[1])
+            and is_greyscale(pixels[2])
+        ):
+            cardIndex2readiness[card_index] = False
+        else:
+            cardIndex2readiness[card_index] = True
+
+    #unpack the ready cards
+    ready_indicies = []
+    for card_index, ready in cardIndex2readiness.items():
+        if ready:
+            ready_indicies.append(card_index)
+
+    return ready_indicies
+
+
 class FightVision:
     def __init__(self, vm_index):
         # models
@@ -507,21 +563,13 @@ class FightVision:
             (card_index,coord) where card_index = int(0-3) and coord = (x,y)
         """
 
-        def get_ready_card_indicies():
-            ready_indicies = []
-            for i, ready in enumerate(self.ready_hand_cards):
-                if ready:
-                    ready_indicies.append(i)
-            random.shuffle(ready_indicies)
-            return ready_indicies
-
         # if elixir count is less than 2, return (None,None)
         if self.elixir_count < 2:
             self.play_type = "no elixir"
             return (None, None)
 
         # if every value in ready_hand_cards is false, return (None,None)
-        if len(get_ready_card_indicies()) == 0:
+        if len(get_ready_card_indicies(self.image)) == 0:
             self.play_type = "no cards"
             return (None, None)
 
@@ -593,9 +641,12 @@ class FightVision:
                 return False
 
             # if there are anti_cluster_spells in the hand, select that card index
-            for card_index in get_ready_card_indicies():
-                card = hand_cards[card_index]
-                if card and card in get_units(card_type = 'spell', attack_type='anti_cluster',max_cost=self.elixir_count):
+            for card_index in get_ready_card_indicies(self.image):
+                if hand_cards[card_index]  in get_units(
+                    card_type="spell_type",
+                    attack_type="anti_cluster",
+                    max_cost=self.elixir_count,
+                ):
                     y_adjustment = 50
 
                     target_cluster = random.choice(clusters)
@@ -619,7 +670,7 @@ class FightVision:
             tower_right_coord = (344, 347)
 
             # pick out the cards that are playable
-            ready_card_indicies = get_ready_card_indicies()
+            ready_card_indicies = get_ready_card_indicies(self.image)
 
             # see if there are any defensive_melee_units to defend with
             defensive_card_index = -1
@@ -686,7 +737,7 @@ class FightVision:
                     return (defensive_card_index, tower_right_coord)
 
             # else just return a random card to try and defend as best as possible
-            card_indicies = get_ready_card_indicies()
+            card_indicies = get_ready_card_indicies(self.image)
             for card_index in card_indicies:
                 # if card is in defensive blacklist, skip
                 if self.hand_cards[card_index] in defensive_blacklist:
@@ -731,7 +782,7 @@ class FightVision:
             if "destroyed" in self.tower_statuses[3]:
                 play_coord = (131, 448)
 
-            ready_card_indicies = get_ready_card_indicies()
+            ready_card_indicies = get_ready_card_indicies(self.image)
             for card_index in ready_card_indicies:
                 card = self.hand_cards[card_index]
                 if card in spawner_cards:
@@ -756,7 +807,7 @@ class FightVision:
                     coord = right_waiting_coord
 
             # if a waiting_troop card is available, return that as the play
-            for card_index in get_ready_card_indicies():
+            for card_index in get_ready_card_indicies(self.image):
                 card = self.hand_cards[card_index]
                 if card in waiting_troops:
                     return (card_index, coord)
@@ -787,7 +838,7 @@ class FightVision:
                 side = "left"
 
             # see if we have a melee card to play
-            ready_card_indicies = get_ready_card_indicies()
+            ready_card_indicies = get_ready_card_indicies(self.image)
             for card_index in ready_card_indicies:
                 card_name = self.hand_cards[card_index]
                 if card_name in defensive_melee_units:
@@ -828,6 +879,10 @@ class FightVision:
             return (random.randint(0, 3), left_side_melee)
 
         def check_for_attack_play():
+            # if bot has less than 4 elixir, skip attack play
+            if self.elixir_count < 4:
+                return False
+
             # if there are enemies, skip attack play
             if side2positions["enemy"] != []:
                 return False
@@ -852,7 +907,7 @@ class FightVision:
             else:
                 coord = right_attack_coord
 
-            ready_card_indicies = get_ready_card_indicies()
+            ready_card_indicies = get_ready_card_indicies(self.image)
 
             for card_index in ready_card_indicies:
                 card = self.hand_cards[card_index]
@@ -863,26 +918,29 @@ class FightVision:
 
         def check_for_mortar_play():
             mortar_positions = [
-                (187,306),#left bridge
-                (459,314),#right bridge
-                (264,291),#left middle
-                (360,297),#right middle
+                (187, 306),  # left bridge
+                (459, 314),  # right bridge
+                (264, 291),  # left middle
+                (360, 297),  # right middle
             ]
 
-            #if both enemy towers already destroyed, skip mortar play
-            if "alive" not in self.tower_statuses[0] and "alive" not in self.tower_statuses[1]:
+            # if both enemy towers already destroyed, skip mortar play
+            if (
+                "alive" not in self.tower_statuses[0]
+                and "alive" not in self.tower_statuses[1]
+            ):
                 return False
 
-            #if there are enemies, skip mortar play
+            # if there are enemies, skip mortar play
             if side2positions["enemy"] != []:
                 return False
 
-            #if bot is below 3 elixir, skip mortar play
+            # if bot is below 3 elixir, skip mortar play
             if self.elixir_count < 5:
                 return False
 
-            #if any cards are mortars, return a random mortar play
-            ready_card_indicies = get_ready_card_indicies()
+            # if any cards are mortars, return a random mortar play
+            ready_card_indicies = get_ready_card_indicies(self.image)
             for card_index in ready_card_indicies:
                 card = self.hand_cards[card_index]
                 if card in mortar_cards:
@@ -891,12 +949,12 @@ class FightVision:
             return False
 
         def play_hero_power(vm_index):
-            click(vm_index,344,480)
+            click(vm_index, 344, 480)
 
         def check_for_hero_power_play(image) -> bool:
             def power_is_available(image) -> bool:
-                def pixel_is_equal(p1,p2,tol=30) -> bool:
-                    tol = tol *3 #for 3 dimensions
+                def pixel_is_equal(p1, p2, tol=30) -> bool:
+                    tol = tol * 3  # for 3 dimensions
                     diff = 0
                     for i in range(3):
                         diff += abs(p1[i] - p2[i])
@@ -910,23 +968,22 @@ class FightVision:
                 ]
 
                 colors = [
-                    [210 , 28, 218],
-                    [235 , 34, 252],
+                    [210, 28, 218],
+                    [235, 34, 252],
                 ]
 
                 for i, p in enumerate(pixels):
                     color = colors[i]
-                    if not pixel_is_equal(p,color):
+                    if not pixel_is_equal(p, color):
                         return False
                 return True
 
-            #if elixir is below 3, lets not play hero power
+            # if elixir is below 3, lets not play hero power
             if self.elixir_count < 3:
                 return False
 
-            #if hero power is available, return True
+            # if hero power is available, return True
             return power_is_available(image)
-
 
         # attack clusters with anti_cluster_spells
         cluster_play = check_for_cluster_plays(self.hand_cards, self.clusters)
@@ -946,10 +1003,10 @@ class FightVision:
             self.play_type = "attack"
             return attack_play
 
-        #check for hero power play
+        # check for hero power play
         if check_for_hero_power_play(self.image):
             play_hero_power(self.vm_index)
-            return (None,None)
+            return (None, None)
 
         # check for spawner plays
         spawner_play = check_for_spawner_play()
@@ -1190,15 +1247,31 @@ class FightVision:
         click(self.vm_index, play_coord[0], play_coord[1])
 
     def run_detection_demo(self, make_plays=False):
+        def print_durations():
+            print("\n")
+            for label, duration in self.durations.items():
+                print("{:^16} : {}".format(label, duration))
+        def print_play():
+            def format_coord(c):
+                x,y = c
+                x,y = int(x),int(y)
+                coord_string = f'({x},{y})'
+                return coord_string
+            if self.play_coord is not None:
+                play_coord = format_coord(self.play_coord)
+            else:
+                print('|{:^18} | {:^18} | {:^15}|'.format(self.play_type, "None", "None"))
+                return
+            print('|{:^18} | {:^18} | {:^15}|'.format(self.play_type,self.hand_cards[self.play_card], play_coord))
+
         while True:
             self.update_image(screenshot(self.vm_index))
             self.predict_fight_data()
             image_with_text = self.make_display_image()
-            print("\n")
-            for label, duration in self.durations.items():
-                print("{:^16} : {}".format(label, duration))
+
             if make_plays:
                 self.make_play()
+                print_play()
             cv2.imshow("Predictions", image_with_text)
             if cv2.waitKey(25) == 27:  # ESC key to break
                 break
@@ -1207,10 +1280,11 @@ class FightVision:
 if __name__ == "__main__":
     vm_index = 1
     fight = FightVision(vm_index)
-
     fight.run_detection_demo(make_plays=True)
 
+    # print("\n" * 10)
+    # while 1:
+    #     image = screenshot(1)
+    #     get_ready_card_indicies(image)
 
-
-
-
+    #     break
