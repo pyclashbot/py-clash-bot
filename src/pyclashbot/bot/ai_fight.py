@@ -30,8 +30,7 @@ TODO
     -something to target princess type cards with arrows
     -play goblin barrel / miner on top of tower
     -fireball troops that are on top of towers
-    -target goblin barrels on towers
-    -implement the get_units() function to query for units that attack single or splash depending on the threat
+    -implement the get_units() for defense to prio splash over single when needed
     -smooth way to use hero power well
 """
 
@@ -59,36 +58,7 @@ color2rbg = {
     "black": (0, 0, 0),
 }
 
-defensive_melee_units = [
-    "baby_dragon",
-    "barbarians",
-    "royal_delivery",
-    "bowler",
-    "dark_prince",
-    "e_spirit",
-    "elite_barbarians",
-    "giant_skeleton",
-    "goblin_gang",
-    "goblins",
-    "golden_knight",
-    "guards",
-    "knight",
-    "lumberjack",
-    "mega_knight",
-    "mighty_miner",
-    "mini_pekka",
-    "monk",
-    "pekka",
-    "_prince",
-    "rascals",
-    "royal_ghost",
-    "royal_recruits",
-    "skeleton_army",
-    "skeletons",
-    "spear_goblins",
-    "valkyrie",
-    "goblin_cage",
-]
+
 defensive_ranged_units = [
     "archer_queen",
     "archers",
@@ -220,19 +190,7 @@ waiting_troops = [
     "witch",
     "zappies",
 ]
-tower_attack_spells = [
-    "arrows",
-    "log",
-    "earthquake",
-    "fireball",
-    "graveyard",
-    "rocket",
-    "poison",
-    "goblin_drill",
-    "snowball",
-    "miner",
-    "zap_spell",
-]
+
 attack_cards = [
     "balloon",
     "bandit",
@@ -269,7 +227,6 @@ attack_cards = [
     "valkyrie",
     "wall_breakers",
 ]
-
 
 
 defensive_blacklist = [
@@ -309,8 +266,7 @@ defensive_blacklist = [
 ]
 
 
-
-mortar_cards = get_units(card_type= 'mortar_type',attack_type = 'mortar')
+mortar_cards = get_units(card_type="mortar_type", attack_type="mortar")
 
 
 def get_elixir_count(iar):
@@ -464,7 +420,7 @@ def get_ready_card_indicies(image):
             diff += abs(color[i] - avg)
         return diff < tol
 
-    #make dict of the pixel data for each card
+    # make dict of the pixel data for each card
     cardIndex2pixels = {
         0: [
             image[544][127],
@@ -488,7 +444,7 @@ def get_ready_card_indicies(image):
         ],
     }
 
-    #check which cards are ready by checking for greyscale pixels
+    # check which cards are ready by checking for greyscale pixels
     cardIndex2readiness = {}
     for card_index, pixels in cardIndex2pixels.items():
         if (
@@ -500,7 +456,7 @@ def get_ready_card_indicies(image):
         else:
             cardIndex2readiness[card_index] = True
 
-    #unpack the ready cards
+    # unpack the ready cards
     ready_indicies = []
     for card_index, ready in cardIndex2readiness.items():
         if ready:
@@ -642,7 +598,7 @@ class FightVision:
 
             # if there are anti_cluster_spells in the hand, select that card index
             for card_index in get_ready_card_indicies(self.image):
-                if hand_cards[card_index]  in get_units(
+                if hand_cards[card_index] in get_units(
                     card_type="spell_type",
                     attack_type="anti_cluster",
                     max_cost=self.elixir_count,
@@ -674,6 +630,9 @@ class FightVision:
 
             # see if there are any defensive_melee_units to defend with
             defensive_card_index = -1
+            defensive_melee_units = get_units(
+                card_type="melee", max_cost=self.elixir_count
+            )
             for card_index in ready_card_indicies:
                 card = self.hand_cards[card_index]
                 if card in defensive_melee_units:
@@ -795,7 +754,7 @@ class FightVision:
             right_waiting_coord = random.choice([(503, 471), (445, 446), (402, 410)])
 
             # if there are no enemies and elixer is below 5, just wait
-            if self.elixir_count < 5:
+            if self.elixir_count < 7:
                 return False
 
             # get play coord
@@ -837,44 +796,42 @@ class FightVision:
             if left_side_count > right_side_count:
                 side = "left"
 
-            # see if we have a melee card to play
+            # grab ready cards:
             ready_card_indicies = get_ready_card_indicies(self.image)
+
+            # see if we have a melee card to play
+            melee_units = get_units(card_type="melee_type", max_cost=self.elixir_count)
             for card_index in ready_card_indicies:
                 card_name = self.hand_cards[card_index]
-                if card_name in defensive_melee_units:
+                if card_name in melee_units:
                     if side == "left":
                         return (card_index, left_side_melee)
                     else:
                         return (card_index, right_side_melee)
 
             # see if we have a ranged card to play
+            ranged_units = get_units(
+                card_type="ranged_type", max_cost=self.elixir_count
+            )
             for card_index in ready_card_indicies:
                 card_name = self.hand_cards[card_index]
-                if card_name in defensive_ranged_units:
+                if card_name in ranged_units:
                     if side == "left":
                         return (card_index, left_side_melee)
                     else:
                         return (card_index, right_side_melee)
 
-            # see if we have a tower card to play
+            # see if we have a turret card to play
+            turret_units = get_units(
+                card_type="turret_type", max_cost=self.elixir_count
+            )
             for card_index in ready_card_indicies:
                 card_name = self.hand_cards[card_index]
-                if card_name in tower_cards:
+                if card_name in turret_units:
                     if side == "left":
                         return (card_index, left_side_turret)
                     else:
                         return (card_index, right_side_turret)
-
-            # see if we have a tower attack spell to play
-            for card_index in ready_card_indicies:
-                card_name = self.hand_cards[card_index]
-                if card_name in tower_attack_spells:
-                    # if we should play left and the left tower is alive,
-                    if side == "left" and "destroyed" not in self.tower_statuses[0]:
-                        return (card_index, left_side_spell)
-                    # else
-                    else:
-                        return (card_index, right_side_spell)
 
             return (random.randint(0, 3), left_side_melee)
 
@@ -887,32 +844,78 @@ class FightVision:
             if side2positions["enemy"] != []:
                 return False
 
-            left_attack_coord = random.choice(
-                [
-                    (148, 291),
-                    (184, 295),
-                ]
-            )
-            right_attack_coord = random.choice(
-                [
-                    (524, 295),
-                    (441, 300),
-                ]
-            )
-
-            # if there are more allies in quadrant 1 than quadrant 2, attack left
-            coord = random.choice([left_attack_coord, right_attack_coord])
-            if quandrant2allyCount[0] > quandrant2allyCount[1]:
-                coord = left_attack_coord
-            else:
-                coord = right_attack_coord
+            side = "left"
+            # if the left side tower is 'destroyed' go right
+            if "destroyed" in self.tower_statuses[0]:
+                side = "right"
 
             ready_card_indicies = get_ready_card_indicies(self.image)
 
+            hog_type_play_coords = {
+                'left': [(130,297),(191,297)],
+                'right': [(525,296),(454,298)],
+            }
+            giant_type_play_coords = {
+                'left': [(113,394),(278,392)],
+                'right': [(375,402),(509,396)],
+            }
+            mortar_type_play_coords = {
+                'left': [(220,313),(292,301)],
+                'right': [(369,295),(418,310)],
+            }
+            spawner_type_play_coords = {
+                'left': [(119,447),(192,448),(272,402)],
+                'right': [(380,407),(426,456),(512,456)],
+            }
+
+            # see if we can play a hog type play on the bridge
+            hog_type_cards = get_units(
+                max_cost=self.elixir_count,
+                attack_type="tower",
+                card_type="hog_type",
+            )
             for card_index in ready_card_indicies:
                 card = self.hand_cards[card_index]
-                if card in attack_cards:
-                    return (card_index, coord)
+                if card in hog_type_cards:
+                    if side == 'left':
+                        return (card_index, random.choice(hog_type_play_coords['left']))
+                    return (card_index, random.choice(hog_type_play_coords['right']))
+
+            # see if we can play a giant type card in the back
+            giant_type_cards = get_units(
+                max_cost=self.elixir_count,
+                card_type="tank_type",
+            )
+            for card_index in ready_card_indicies:
+                card = self.hand_cards[card_index]
+                if card in giant_type_cards:
+                    if side == 'left':
+                        return (card_index, random.choice(giant_type_play_coords['left']))
+                    return (card_index, random.choice(giant_type_play_coords['right']))
+
+            # see if we can play a spawner type card in the back
+            spawner_type_cards =get_units(
+                max_cost=self.elixir_count,
+                card_type="spawner_type",
+            )
+            for card_index in ready_card_indicies:
+                card = self.hand_cards[card_index]
+                if card in spawner_type_cards:
+                    if side == 'left':
+                        return (card_index, random.choice(spawner_type_play_coords['left']))
+                    return (card_index, random.choice(spawner_type_play_coords['right']))
+
+            # see if we can play a mortar type card
+            mortar_type_cards =get_units(
+                max_cost=self.elixir_count,
+                card_type="mortar_type",
+            )
+            for card_index in ready_card_indicies:
+                card = self.hand_cards[card_index]
+                if card in mortar_type_cards:
+                    if side == 'left':
+                        return (card_index, random.choice(mortar_type_play_coords['left']))
+                    return (card_index, random.choice(mortar_type_play_coords['right']))
 
             return False
 
@@ -1014,11 +1017,12 @@ class FightVision:
             self.play_type = "spawner"
             return spawner_play
 
+        #moved this to the attack play
         # check for mortar plays
-        mortar_play = check_for_mortar_play()
-        if mortar_play is not False and mortar_play is not None:
-            self.play_type = "mortar"
-            return mortar_play
+        # mortar_play = check_for_mortar_play()
+        # if mortar_play is not False and mortar_play is not None:
+        #     self.play_type = "mortar"
+        #     return mortar_play
 
         # check for waiting plays
         waiting_play = check_for_waiting_play()
@@ -1251,18 +1255,26 @@ class FightVision:
             print("\n")
             for label, duration in self.durations.items():
                 print("{:^16} : {}".format(label, duration))
+
         def print_play():
             def format_coord(c):
-                x,y = c
-                x,y = int(x),int(y)
-                coord_string = f'({x},{y})'
+                x, y = c
+                x, y = int(x), int(y)
+                coord_string = f"({x},{y})"
                 return coord_string
+
             if self.play_coord is not None:
                 play_coord = format_coord(self.play_coord)
             else:
-                print('|{:^18} | {:^18} | {:^15}|'.format(self.play_type, "None", "None"))
+                print(
+                    "|{:^18} | {:^18} | {:^15}|".format(self.play_type, "None", "None")
+                )
                 return
-            print('|{:^18} | {:^18} | {:^15}|'.format(self.play_type,self.hand_cards[self.play_card], play_coord))
+            print(
+                "|{:^18} | {:^18} | {:^15}|".format(
+                    self.play_type, self.hand_cards[self.play_card], play_coord
+                )
+            )
 
         while True:
             self.update_image(screenshot(self.vm_index))
@@ -1281,10 +1293,3 @@ if __name__ == "__main__":
     vm_index = 1
     fight = FightVision(vm_index)
     fight.run_detection_demo(make_plays=True)
-
-    # print("\n" * 10)
-    # while 1:
-    #     image = screenshot(1)
-    #     get_ready_card_indicies(image)
-
-    #     break
