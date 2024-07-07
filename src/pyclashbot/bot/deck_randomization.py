@@ -54,7 +54,6 @@ def check_for_underleveled_deck_options_location(vm_index):
     ]
 
     # for p in pixels:
-    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):
@@ -98,7 +97,6 @@ def check_for_underleveled_delete_deck_button_location(vm_index):
     ]
 
     # for p in pixels:
-    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):
@@ -129,7 +127,6 @@ def check_for_randomize_deck_icon(vm_index):
     ]
 
     # for p in pixels:
-    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):
@@ -212,7 +209,7 @@ def check_for_filled_deck(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
