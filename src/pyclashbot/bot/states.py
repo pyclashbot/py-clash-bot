@@ -552,10 +552,10 @@ def state_tree_tester(vm_index):
         "trophy_road_toggle": False,
         "path_of_legends_toggle": False,
         "goblin_queen_toggle": False,
-        "2v2_toggle": True,
+        "2v2_toggle": False,
         # job toggles
         "open_chests_toggle": False,
-        "random_decks_toggle": True,
+        "random_decks_toggle": False,
         "level_up_chest_toggle": False,
         "upgrade_cards_toggle": False,
         "trophy_road_rewards_toggle": False,
@@ -568,7 +568,7 @@ def state_tree_tester(vm_index):
         "bannerbox_toggle": False,
         "season_shop_toggle": False,
         "war_toggle": False,
-        "card_mastery_toggle": False,
+        "card_mastery_toggle": True,
         "upgrade_all_cards_toggle": False,
         # keep these off
         "disable_win_loss_tracking_toggle": False,
@@ -606,9 +606,6 @@ def state_tree_tester(vm_index):
         )
         if state == "restart":
             print("Restart state")
-            input("Enter to continue...")
-            # print("Clipping that")
-            # clip_that()
 
 
 if __name__ == "__main__":
