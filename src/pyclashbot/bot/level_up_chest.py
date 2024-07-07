@@ -67,10 +67,10 @@ def check_for_level_up_chest(vm_index):
     ]
 
     # for p in pixels:
-        # print(p)
+
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=15):
             return True
 

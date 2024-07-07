@@ -403,7 +403,6 @@ def check_for_boot_reward(vm_index):
         [62, 199, 255],
         [43, 190, 255],
     ]
-    # for p in pixels:print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(p, colors[i], tol=25):
@@ -535,7 +534,7 @@ def check_for_battle_day_results_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=25):
             return False
     return True
@@ -563,7 +562,7 @@ def check_for_daily_defenses_rank_page_3(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
@@ -585,7 +584,7 @@ def check_for_daily_defenses_rank_page_4(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
@@ -613,7 +612,7 @@ def check_for_daily_defenses_rank_page_2(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=25):
             return False
     return True
@@ -637,7 +636,7 @@ def check_for_daily_defenses_rank_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
@@ -1074,7 +1073,6 @@ def check_if_on_goblin_mode_card_page(vm_index):
         iar[14][210],
         iar[14][325],
     ]
-    # for p in pixels:print(p)
     colors = [
         [255, 255, 255],
         [255, 255, 255],
@@ -1121,7 +1119,6 @@ def check_if_on_path_of_legends_mode_card_page(vm_index):
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
-            print(i)
             return False
 
     return True
@@ -1307,10 +1304,9 @@ def check_for_events_page(vm_index):
         [154, 119, 80],
     ]
 
-    # for p in pixels:print(p)
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(colors[i], p, tol=15):
             return False
     return True
@@ -1534,7 +1530,6 @@ def check_if_on_battle_log_page(vm_index) -> bool:
         iar[62][92],
         iar[77][316],
     ]
-    # for p in pixels:print(p)
     colors = [
         [255, 255, 255],
         [255, 255, 255],

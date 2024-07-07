@@ -391,7 +391,7 @@ def check_for_locked_events_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True
@@ -933,8 +933,10 @@ def save_fight_image(image):
     if not os.path.exists(folder_path):
         return
 
+    unique_name = f'screenshot{time.time() + random.randint(0, 9)}'.replace('.','') + '.png'
+
     path = os.path.join(
-        folder_path, f"screenshot{time.time() + random.randint(0, 9)}.png"
+        folder_path, unique_name
     )
     image.save(path)
 
@@ -994,7 +996,6 @@ def check_for_champion_ability(vm_index):
         [239, 40, 251],
     ]
 
-    # for p in pixels:print(p)
 
     for p in pixels:
         for c in colors:
@@ -1179,5 +1180,22 @@ def fight_image_save_debug(vm_index,fights = 2):
         end_fight_state(vm_index, logger, "next_state", True)
 
 
+
+def save_fight_screenshots(vm_index,duaration,interval):
+    start_time = time.time()
+    while time.time() - start_time < duaration:
+        save_fight_image(screenshot(vm_index))
+        print(f'\tsaved image : {str(time.time() - start_time)[:5]}s')
+        time.sleep(interval)
+
+
 if __name__ == "__main__":
-    save_fight_image(screenshot(1))
+    duration = 9
+    interval = 0.6
+    interval = interval + (random.choice([-1,1]) * (random.randint(2,4)/10))
+    duration = duration + random.randint(-3,3)
+
+    print(f'\nDuration: {duration}\nInterval: {interval}')
+
+    save_fight_screenshots(1,duration,interval=0)
+
