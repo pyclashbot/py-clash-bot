@@ -52,7 +52,7 @@ def check_vm_size(vm_index):
     return True
 
 
-def restart_emulator(logger, vm_index,start_time=time.time(), open_clash=True):
+def restart_emulator(logger, vm_index, start_time=time.time(), open_clash=True):
     """
     Restart the emulator.
 
@@ -65,48 +65,49 @@ def restart_emulator(logger, vm_index,start_time=time.time(), open_clash=True):
     configure_vm(vm_index=vm_index)
 
     # start the vm
-    logger.change_status(vm_index,status="Opening the pyclashbot emulator...")
+    logger.change_status(vm_index, status="Opening the pyclashbot emulator...")
     out = pmc.start_vm(vm_index=vm_index)
     print(f"Opened the pyclashbot emulator with output:\n{out}")
 
     # skip ads
     if skip_ads(vm_index) == "fail":
         logger.log("Error 99 Failed to skip ads")
-        return restart_emulator(logger,vm_index, start_time)
+        return restart_emulator(logger, vm_index, start_time)
 
     print(check_vm_size(vm_index))
     if not check_vm_size(vm_index):
         logger.log("Error 1010 VM size is bad")
-        return restart_emulator(logger,vm_index, start_time)
-    logger.change_status(vm_index,status="Good VM configuration!")
+        return restart_emulator(logger, vm_index, start_time)
+    logger.change_status(vm_index, status="Good VM configuration!")
 
     # if open_clash is toggled, open CR
     if open_clash:
         # start clash royale
-        logger.change_status(vm_index,"Starting clash royale")
+        logger.change_status(vm_index, "Starting clash royale")
         start_clash_royale(logger, vm_index)
 
         # wait for clash main to appear
-        logger.change_status(vm_index,"Waiting for CR main menu")
+        logger.change_status(vm_index, "Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
         time.sleep(12)
         while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
             clash_main_check = check_if_on_clash_main_menu(vm_index)
             if clash_main_check is True:
-                logger.change_status(vm_index,"Detected clash main!")
+                logger.change_status(vm_index, "Detected clash main!")
                 logger.log(
                     f"Took {str(time.time() - start_time)[:5]}s to launch emulator"
                 )
                 return True
             # Check if a battle is detected at start
-            if random.randint(1,3)==3:start_clash_royale(logger, vm_index)
+            if random.randint(1, 3) == 3:
+                start_clash_royale(logger, vm_index)
             battle_start_result = check_if_in_battle_at_start(vm_index, logger)
             if battle_start_result == "good":
                 return True  # Successfully handled starting battle or end-of-battle scenario
             elif battle_start_result == "restart":
                 # Need to restart the process due to issues detected
-                return restart_emulator(logger,vm_index, start_time)
+                return restart_emulator(logger, vm_index, start_time)
 
             # click deadspace
             click(vm_index, 5, 350)
@@ -120,7 +121,7 @@ def restart_emulator(logger, vm_index,start_time=time.time(), open_clash=True):
             logger.log("Clash main wait timed out! These are the pixels it saw:")
             for p in clash_main_check:
                 logger.log(p)
-            return restart_emulator(logger,vm_index,start_time)
+            return restart_emulator(logger, vm_index, start_time)
 
     print("Skipping clash open sequence")
     logger.log(f"Took {str(time.time() - start_time)[:5]}s to launch emulator")
@@ -149,7 +150,7 @@ def skip_ads(vm_index):
 
 def get_vms(logger: Logger, count: int):
     def create_new_clashbot_vm(clashbot_index):
-        logger.change_status(None,"Creating new clashbot vm...")
+        logger.change_status(None, "Creating new clashbot vm...")
         new_vm_index = create_vm()
         rename_vm(
             vm_index=new_vm_index, name=EMULATOR_BASENAME + "_" + str(clashbot_index)
@@ -171,7 +172,7 @@ def get_vms(logger: Logger, count: int):
         create_new_clashbot_vm(len(vms))
         vms = find_clashbot_vms()
 
-    logger.change_status(None,f"Found {len(vms)} vms: {vms}")
+    logger.change_status(None, f"Found {len(vms)} vms: {vms}")
     return vms
 
 
@@ -194,25 +195,31 @@ def check_for_vm(logger: Logger) -> int:
         vm_index = get_vm_index(logger, EMULATOR_BASENAME)
 
         if vm_index != -1:
-            logger.change_status(vm_index,
-                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} tries'
+            logger.change_status(
+                vm_index,
+                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} tries',
             )
             return vm_index
 
-        logger.change_status(vm_index,'Failed to find "pyclashbot" emulator. Retrying...')
+        logger.change_status(
+            vm_index, 'Failed to find "pyclashbot" emulator. Retrying...'
+        )
 
-    logger.change_status(vm_index,"Didn't find a vm named 'pyclashbot', creating one...")
+    logger.change_status(
+        vm_index, "Didn't find a vm named 'pyclashbot', creating one..."
+    )
 
     new_vm_index = create_vm()
-    logger.change_status(vm_index,f"New VM index is {new_vm_index}")
+    logger.change_status(vm_index, f"New VM index is {new_vm_index}")
 
     configure_vm(vm_index=new_vm_index)
 
-    logger.change_status(vm_index,"Setting language")
+    logger.change_status(vm_index, "Setting language")
     rename_vm(vm_index=new_vm_index, name=EMULATOR_BASENAME)
 
-    logger.change_status(vm_index,
-        f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s"
+    logger.change_status(
+        vm_index,
+        f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s",
     )
 
     return new_vm_index
@@ -236,14 +243,15 @@ def start_clash_royale(logger: Logger, vm_index):
 
     if not found:
         # notify user that clash royale is not installed, program will exit
-        logger.change_status(vm_index,
-            status="Clash royale is not installed. Please install it and restart"
+        logger.change_status(
+            vm_index,
+            status="Clash royale is not installed. Please install it and restart",
         )
         show_clash_royale_setup_gui()
 
     # start Clash Royale
     pmc.start_app_vm(APK_BASE_NAME, vm_index)
-    logger.change_status(vm_index,status="Successfully initialized Clash app")
+    logger.change_status(vm_index, status="Successfully initialized Clash app")
 
 
 # making/configuring emulator methods
@@ -315,7 +323,7 @@ def stop_vm(vm_index):
 
 def launch_vm(logger, vm_index):
     """Launches the VM with the given index."""
-    logger.change_status(vm_index,status=f"Launching VM {vm_index}")
+    logger.change_status(vm_index, status=f"Launching VM {vm_index}")
     pmc.start_vm(vm_index=vm_index)
 
 
@@ -352,7 +360,7 @@ def close_clash_royale_app(logger, vm_index):
     apk_base_name = "com.supercell.clashroyale"
 
     pmc.stop_app_vm(apk_base_name, vm_index)
-    logger.change_status(vm_index,status=f"Clash Royale stopped on vm {vm_index}")
+    logger.change_status(vm_index, status=f"Clash Royale stopped on vm {vm_index}")
 
 
 def close_everything_memu():
