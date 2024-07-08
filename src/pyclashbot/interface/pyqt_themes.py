@@ -251,3 +251,9 @@ QLabel {
 
 
 """
+
+
+print("Available themes:")
+for title, theme in THEMES.items():
+    print(f"\t{title}")
+print('\n')
