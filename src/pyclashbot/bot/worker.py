@@ -2,7 +2,7 @@ import random
 import time
 from typing import Any
 
-from pyclashbot.bot.states import state_tree
+from pyclashbot.bot.states_old import state_tree
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
