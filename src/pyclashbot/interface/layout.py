@@ -1,7 +1,14 @@
-import sys
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import Qt, Slot
+from pyclashbot.interface.layout_data import (
+    botStatsDict,
+    battleStatsDict,
+    collectionStatsDict,
+    tabName2jobList,
+    JOB_DEFAULT_STATES,
+)
+from pyclashbot.interface.pyqt_themes import THEMES
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication,
     QWidget,
     QTabWidget,
     QVBoxLayout,
@@ -11,262 +18,277 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QPushButton,
     QTableWidget,
-    QSizePolicy,
     QTableWidgetItem,
     QHeaderView,
+    QSizePolicy,
 )
-from pyclashbot.interface.layout_data import (
-    botStatsDict,
-    battleStatsDict,
-    collectionStatsDict,
-    tabName2jobList,
-    JOB_DEFAULT_STATES,
-)
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Slot
+from pyclashbot.bot.event_dispatcher import event_dispatcher
+
 from PySide6.QtGui import QFont, QColor
+
 from pyclashbot.interface.pyqt_themes import THEMES
 
 theme = THEMES["midnight_blue_theme"]
 
 
 class FrontEnd(QWidget):
-    start_button_pressed = Signal()  # Custom signal
+
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
 
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Py-ClashBot")
+        self.resize(800, 600)
+
+        self.job_checkboxes = {}
+        self.job_spinboxes = {}
+        self.worker = None
 
         self.initUI()
 
+        # Connect the signals from the event dispatcher to the slots
+        event_dispatcher.update_stats.connect(self.update_stats)
+        event_dispatcher.increment_stat.connect(self.increment_stat)
+        event_dispatcher.overwrite_stat.connect(self.overwrite_stat)
+
     def initUI(self):
-        self.setWindowTitle("Py-ClashBot")
-        self.resize(800, 600)  # Set the window size to 800x600
+        self.setupTopLayout()
+        self.setupTabWidget()
+        self.setupRuntimeStatsTab()
 
-        # Top layout for title and buttons
-        top_layout = QHBoxLayout()
+        main_layout = QVBoxLayout(self)
+        main_layout.addLayout(self.topLayout)
+        main_layout.addWidget(self.tabWidget)
 
-        # Add title text
+    @Slot(dict)
+    def update_stats(self, stats):
+        for key, value in stats.items():
+            if key in botStatsDict:
+                botStatsDict[key] = value
+                self.update_table(self.bot_stats_table, botStatsDict)
+            elif key in battleStatsDict:
+                battleStatsDict[key] = value
+                self.update_table(self.battle_stats_table, battleStatsDict)
+            elif key in collectionStatsDict:
+                collectionStatsDict[key] = value
+                self.update_table(self.collection_stats_table, collectionStatsDict)
+
+    @Slot(str)
+    def increment_stat(self, stat):
+        if stat in botStatsDict:
+            botStatsDict[stat] += 1
+            self.update_table(self.bot_stats_table, botStatsDict)
+        elif stat in battleStatsDict:
+            battleStatsDict[stat] += 1
+            self.update_table(self.battle_stats_table, battleStatsDict)
+        elif stat in collectionStatsDict:
+            collectionStatsDict[stat] += 1
+            self.update_table(self.collection_stats_table, collectionStatsDict)
+
+    @Slot(str, object)
+    def overwrite_stat(self, stat, value):
+        if stat in botStatsDict:
+            botStatsDict[stat] = value
+            self.update_table(self.bot_stats_table, botStatsDict)
+        elif stat in battleStatsDict:
+            battleStatsDict[stat] = value
+            self.update_table(self.battle_stats_table, battleStatsDict)
+        elif stat in collectionStatsDict:
+            collectionStatsDict[stat] = value
+            self.update_table(self.collection_stats_table, collectionStatsDict)
+
+    def update_table(self, table_widget, stats_dict):
+        table_widget.clearContents()
+        self.populate_stats_table(table_widget, stats_dict)
+
+    def populate_stats_table(self, table_widget, stats_dict):
+        table_widget.setRowCount(len(stats_dict))
+        for row, (stat, value) in enumerate(stats_dict.items()):
+            stat_item = QTableWidgetItem(stat)
+            value_item = QTableWidgetItem(str(value))
+            table_widget.setItem(row, 0, stat_item)
+            table_widget.setItem(row, 1, value_item)
+
+
+
+    def setupTopLayout(self):
+        self.topLayout = QHBoxLayout()
+
+        self.addTitleLabel()
+        self.addButtons()
+
+    def addTitleLabel(self):
         title_label = QLabel("Py-ClashBot")
         title_font = QFont("Arial", 24, QFont.Weight.Bold)
         title_label.setFont(title_font)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        top_layout.addWidget(title_label)
+        self.topLayout.addWidget(title_label)
 
-        # Add buttons
+    def addButtons(self):
         buttons_layout = QHBoxLayout()
 
-        # Add Discord button
-        discord_button = QPushButton("Discord")
-        discord_color = QColor(114, 137, 218)  # Discord's blue-purple hue
-        discord_button.setStyleSheet(
-            f"background-color: {discord_color.lighter(150).name()}; color: white; font-size: 16px; padding: 10px;"
+        discord_button = self.createButton(
+            "Discord",
+            QColor(114, 137, 218).lighter(150).name(),
+            self.onDiscordButtonClick,
         )
-        discord_button.setFixedSize(100, 50)
-        discord_button.clicked.connect(lambda: self.print_button_pressed("Discord"))
+        start_button = self.createButton("START", "#9ACD32", self.start_button_clicked)
+        bug_report_button = self.createButton(
+            "Bug Report", "#FF6347", self.onBugReportButtonClick
+        )
+        upload_log_button = self.createButton(
+            "Upload Log", "#87CEFA", self.onUploadLogButtonClick
+        )
+
         buttons_layout.addWidget(discord_button)
-
-        # Add START button
-        start_button = QPushButton("START")
-        start_button.setStyleSheet(
-            "background-color: #9ACD32; color: white; font-size: 16px; padding: 10px;"
-        )  # Pastel green
-        start_button.setFixedSize(100, 50)
-        start_button.clicked.connect(self.start_button_clicked)
         buttons_layout.addWidget(start_button)
-
-        # Add Bug Report button
-        bug_report_button = QPushButton("Bug Report")
-        bug_report_button.setStyleSheet(
-            "background-color: #FF6347; color: white; font-size: 16px; padding: 10px;"
-        )  # Pastel red
-        bug_report_button.setFixedSize(100, 50)
-        bug_report_button.clicked.connect(
-            lambda: self.print_button_pressed("Bug Report")
-        )
         buttons_layout.addWidget(bug_report_button)
-
-        # Add Upload Log button
-        upload_log_button = QPushButton("Upload Log")
-        upload_log_button.setStyleSheet(
-            "background-color: #87CEFA; color: white; font-size: 16px; padding: 10px;"
-        )  # Pastel blue
-        upload_log_button.setFixedSize(100, 50)
-        upload_log_button.clicked.connect(
-            lambda: self.print_button_pressed("Upload Log")
-        )
         buttons_layout.addWidget(upload_log_button)
 
-        # Add buttons layout to top layout
-        top_layout.addLayout(buttons_layout)
+        self.topLayout.addLayout(buttons_layout)
 
-        # Main layout for the entire window
-        main_layout = QVBoxLayout()
+    def createButton(self, text, background_color, click_handler):
+        button = QPushButton(text)
+        button.setStyleSheet(
+            f"background-color: {background_color}; color: white; font-size: 16px; padding: 10px;"
+        )
+        button.setFixedSize(100, 50)
+        button.clicked.connect(click_handler)
+        return button
 
-        # Add top layout (title and buttons) to main layout
-        main_layout.addLayout(top_layout)
+    def onDiscordButtonClick(self):
+        print("Discord button clicked!")
 
-        # Create a tab widget
-        tab_widget = QTabWidget()
+    def onBugReportButtonClick(self):
+        print("Bug Report button clicked!")
 
-        # Create first tab (General Settings)
+    def onUploadLogButtonClick(self):
+        print("Upload Log button clicked!")
+
+    def setupTabWidget(self):
+        self.tabWidget = QTabWidget()
+
+        self.setupGeneralSettingsTab()
+        self.setupBotSettingsTab()
+
+    def setupGeneralSettingsTab(self):
         tab1 = QWidget()
-        general_settings_tab_layout = QVBoxLayout()
+        layout = QVBoxLayout(tab1)
 
-        # Add placeholder text
         placeholder_text = QLabel(
             "This is placeholder text. This is placeholder text. This is placeholder text. "
             "This is placeholder text. This is placeholder text. This is placeholder text."
         )
         placeholder_text.setWordWrap(True)
-        general_settings_tab_layout.addWidget(placeholder_text)
+        layout.addWidget(placeholder_text)
 
-        # Add 'enable docking' checkbox
         self.enable_docking_checkbox = QCheckBox("Enable docking")
-        general_settings_tab_layout.addWidget(self.enable_docking_checkbox)
+        layout.addWidget(self.enable_docking_checkbox)
 
-        # Add 'enable analytics' checkbox
         self.enable_analytics_checkbox = QCheckBox("Enable Analytics")
-        general_settings_tab_layout.addWidget(self.enable_analytics_checkbox)
+        layout.addWidget(self.enable_analytics_checkbox)
 
-        tab1.setLayout(general_settings_tab_layout)
+        self.tabWidget.addTab(tab1, "General Settings")
 
-        # Create second tab (Bot Settings)
+    def setupBotSettingsTab(self):
         bot_settings_tab = QWidget()
-        bot_settings_layout = QVBoxLayout()
+        layout = QVBoxLayout(bot_settings_tab)
+
         bot_settings_page_text = QLabel("Stuff to show on bot settings page")
-        bot_settings_layout.addWidget(bot_settings_page_text)
+        layout.addWidget(bot_settings_page_text)
 
         self.nested_tab_widget = QTabWidget()
-        self.nested_tab_bar = self.nested_tab_widget.tabBar()
+        self.create_nested_job_list_tabs()
 
-        # Create nested tabs
-        self.create_nested_tabs()
+        layout.addWidget(self.nested_tab_widget)
 
-        # Add "plus" button to add new tabs
-        self.plus_button = QPushButton("+")
-        self.plus_button.setFixedSize(30, 30)
-        self.plus_button.clicked.connect(self.add_new_tab)
-        self.nested_tab_bar.setMovable(True)
-        self.nested_tab_bar.setTabsClosable(False)
-        self.nested_tab_bar.setExpanding(True)
+        self.tabWidget.addTab(bot_settings_tab, "Bot Settings")
 
-        self.nested_tab_widget.setCornerWidget(
-            self.plus_button, Qt.Corner.TopRightCorner
-        )
-
-        bot_settings_layout.addWidget(self.nested_tab_widget)
-        bot_settings_tab.setLayout(bot_settings_layout)
-
-        tab_widget.addTab(tab1, "General Settings")
-        tab_widget.addTab(bot_settings_tab, "Bot Settings")
-
-        # Create third tab (Runtime Statistics)
-        runtime_stats_tab = QWidget()
-        runtime_stats_layout = QVBoxLayout()
-        runtime_stats_page_text = QLabel("Stuff to show on runtime statistics page")
-        runtime_stats_layout.addWidget(runtime_stats_page_text)
-
-        # Add table widget to display bot stats
-        self.bot_stats_table = QTableWidget()
-        self.bot_stats_table.setColumnCount(2)
-        self.bot_stats_table.setRowCount(len(botStatsDict))
-        self.bot_stats_table.setHorizontalHeaderLabels(["Stat", "Value"])
-        self.bot_stats_table.horizontalHeader().setStretchLastSection(True)
-        self.bot_stats_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch
-        )
-        self.bot_stats_table.verticalHeader().setVisible(False)
-        self.bot_stats_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self.bot_stats_table.setEditTriggers(QTableWidget.NoEditTriggers)
-
-        # Populate bot stats table with initial data
-        self.populate_stats_table(self.bot_stats_table, botStatsDict)
-        runtime_stats_layout.addWidget(self.bot_stats_table)
-
-        # Add table widget to display battle stats
-        self.battle_stats_table = QTableWidget()
-        self.battle_stats_table.setColumnCount(2)
-        self.battle_stats_table.setRowCount(len(battleStatsDict))
-        self.battle_stats_table.setHorizontalHeaderLabels(["Stat", "Value"])
-        self.battle_stats_table.horizontalHeader().setStretchLastSection(True)
-        self.battle_stats_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch
-        )
-        self.battle_stats_table.verticalHeader().setVisible(False)
-        self.battle_stats_table.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Preferred
-        )
-        self.battle_stats_table.setEditTriggers(QTableWidget.NoEditTriggers)
-
-        # Populate battle stats table with initial data
-        self.populate_stats_table(self.battle_stats_table, battleStatsDict)
-        runtime_stats_layout.addWidget(self.battle_stats_table)
-
-        # Add table widget to display collection stats
-        self.collection_stats_table = QTableWidget()
-        self.collection_stats_table.setColumnCount(2)
-        self.collection_stats_table.setRowCount(len(collectionStatsDict))
-        self.collection_stats_table.setHorizontalHeaderLabels(["Stat", "Value"])
-        self.collection_stats_table.horizontalHeader().setStretchLastSection(True)
-        self.collection_stats_table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.Stretch
-        )
-        self.collection_stats_table.verticalHeader().setVisible(False)
-        self.collection_stats_table.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Preferred
-        )
-        self.collection_stats_table.setEditTriggers(QTableWidget.NoEditTriggers)
-
-        # Populate collection stats table with initial data
-        self.populate_stats_table(self.collection_stats_table, collectionStatsDict)
-        runtime_stats_layout.addWidget(self.collection_stats_table)
-
-        runtime_stats_tab.setLayout(runtime_stats_layout)
-        tab_widget.addTab(runtime_stats_tab, "Runtime Statistics")
-
-        main_layout.addWidget(tab_widget)
-        self.setLayout(main_layout)
-
-    def print_button_pressed(self, button_name):
-        print(f"{button_name} button pressed")
-
-    def start_button_clicked(self):
-        print("Start button clicked!")
-        self.start_button_pressed.emit()  # Emit the custom signal
-
-    def create_nested_tabs(self):
+    def create_nested_job_list_tabs(self):
         for tab_name, job_list in tabName2jobList.items():
             nested_tab = QWidget()
-            nested_tab_layout = QVBoxLayout()
+            layout = QVBoxLayout(nested_tab)
 
             for job_name, toggle_name, increment_name in job_list:
+                job_layout = QHBoxLayout()
+
                 job_toggle_checkbox = QCheckBox(job_name)
                 job_toggle_checkbox.setObjectName(toggle_name)
                 job_toggle_checkbox.setChecked(JOB_DEFAULT_STATES.get(job_name, False))
-                nested_tab_layout.addWidget(job_toggle_checkbox)
+                job_layout.addWidget(job_toggle_checkbox)
+                self.job_checkboxes[job_name] = job_toggle_checkbox
 
                 if increment_name:
                     job_spin_box = QSpinBox()
                     job_spin_box.setObjectName(increment_name)
                     job_spin_box.setValue(JOB_DEFAULT_STATES.get(job_name, 0))
-                    nested_tab_layout.addWidget(job_spin_box)
+                    job_layout.addWidget(job_spin_box)
+                    self.job_spinboxes[job_name] = job_spin_box
+                else:
+                    placeholder_label = QLabel(" ")  # Adding a space as a placeholder
+                    job_layout.addWidget(placeholder_label)
 
-            nested_tab.setLayout(nested_tab_layout)
+                layout.addLayout(job_layout)
+
             self.nested_tab_widget.addTab(nested_tab, tab_name)
 
+    def setupRuntimeStatsTab(self):
+        runtime_stats_tab = QWidget()
+        layout = QVBoxLayout(runtime_stats_tab)
+
+        self.bot_stats_layout, self.bot_stats_table = self.create_table_with_title(
+            "Bot Stats", botStatsDict
+        )
+        self.battle_stats_layout, self.battle_stats_table = (
+            self.create_table_with_title("Battle Stats", battleStatsDict)
+        )
+        self.collection_stats_layout, self.collection_stats_table = (
+            self.create_table_with_title("Collection Stats", collectionStatsDict)
+        )
+
+        layout.addLayout(self.bot_stats_layout)
+        layout.addSpacing(20)
+        layout.addLayout(self.battle_stats_layout)
+        layout.addSpacing(20)
+        layout.addLayout(self.collection_stats_layout)
+
+        self.tabWidget.addTab(runtime_stats_tab, "Runtime Statistics")
+
+    def create_table_with_title(self, title, stats_dict):
+        layout = QVBoxLayout()
+
+        title_label = QLabel(title)
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title_label)
+
+        table_widget = QTableWidget()
+        table_widget.setColumnCount(2)
+        table_widget.setRowCount(len(stats_dict))
+        table_widget.setHorizontalHeaderLabels(["Stat", "Value"])
+        table_widget.horizontalHeader().setStretchLastSection(True)
+        table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        table_widget.verticalHeader().setVisible(False)
+        table_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        table_widget.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        self.populate_stats_table(table_widget, stats_dict)
+        layout.addWidget(table_widget)
+
+        return layout, table_widget
+
     def populate_stats_table(self, table_widget, stats_dict):
-        row = 0
-        for stat, value in stats_dict.items():
+        table_widget.setRowCount(len(stats_dict))
+        for row, (stat, value) in enumerate(stats_dict.items()):
             stat_item = QTableWidgetItem(stat)
             value_item = QTableWidgetItem(str(value))
             table_widget.setItem(row, 0, stat_item)
             table_widget.setItem(row, 1, value_item)
-            row += 1
 
-    def add_new_tab(self):
-        # Example of adding a new tab dynamically
-        new_tab = QWidget()
-        new_tab_layout = QVBoxLayout()
-        new_tab_label = QLabel("New Tab Content")
-        new_tab_layout.addWidget(new_tab_label)
-        new_tab.setLayout(new_tab_layout)
-        self.nested_tab_widget.addTab(new_tab, "New Tab")
+    def start_button_clicked(self):
+        print("start button clicked")
