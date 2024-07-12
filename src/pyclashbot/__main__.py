@@ -1,30 +1,39 @@
-from PySide6.QtWidgets import QApplication
 import sys
-from pyclashbot.interface.layout import FrontEnd
+from pyclashbot.bot.stats import window, app
 from pyclashbot.bot.states import StateTree
-from threading import Thread
-
-
-def run_backend():
-    job_list = ["fight", "upgrade", "restart"]
-    state_tree = StateTree(job_list)
-    state_tree.run()
-
+from PySide6.QtCore import QThread
 
 def main():
-    app = QApplication(sys.argv)
-
-    # Initialize frontend
-    frontend = FrontEnd()
-    frontend.show()
-
-    # Start backend in a separate thread
-    backend_thread = Thread(target=run_backend)
-    backend_thread.start()
-
-    # Run the application
+    window.start_button.clicked.connect(on_start_button_clicked)
+    window.show()
     sys.exit(app.exec())
 
 
+
+def start_worker_thread():
+    thread = QThread()
+    jobs = window.get_checkboxes()  # Correct instance of Layout class
+    worker = StateTree(jobs=jobs)
+    worker.moveToThread(thread)
+
+    thread.started.connect(worker.run)
+    worker.finished.connect(thread.quit)
+    worker.finished.connect(worker.deleteLater)
+    thread.finished.connect(thread.deleteLater)
+
+    # Ensure the thread and worker are properly managed
+    window.thread = thread
+    window.worker = worker
+
+    thread.start()
+
+def on_start_button_clicked():
+    print('Start button!')
+
+    # Create and start the worker thread
+    start_worker_thread()
+
+
 if __name__ == "__main__":
+    print('\n'*50)
     main()

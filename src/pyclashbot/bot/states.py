@@ -1,14 +1,21 @@
+from PySide6.QtCore import QObject, Signal, Slot
+from pyclashbot.bot.stats import stats
 import time
-from pyclashbot.bot.event_dispatcher import event_dispatcher
-from pyclashbot.bot.update_stats import increment_bot_failures,stat_tester
+from pyclashbot.bot.test_state import do_fight
 
-class StateTree:
-    def __init__(self, job_list):
-        self.job_list = job_list
+class StateTree(QObject):
+    def __init__(self, jobs=False):
+        super().__init__()
+        self.jobs = jobs
 
+    finished = Signal()
+
+    @Slot()
     def run(self):
-        print("Running statetree.run()")
-        while True:
-            time.sleep(1)
-            stat_tester()
+        print("Jobs in state tree:")
+        for job_name, value in self.jobs.items():
+            print('  -{:^40} : {}'.format(job_name, value))
 
+        while True:
+            do_fight()
+            time.sleep(10)
