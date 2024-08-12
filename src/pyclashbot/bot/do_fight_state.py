@@ -1,5 +1,6 @@
 """random module for randomizing fight plays"""
 
+import collections
 import numpy
 import random
 import time
@@ -10,10 +11,11 @@ from xmlrpc.client import Boolean
 
 
 from pyclashbot.bot.card_detection import (
+    create_default_bridge_iar,
     get_play_coords_for_card,
     check_which_cards_are_available,
+    switch_side,
 )
-from pyclashbot.bot.troop_locater import choose_play_side
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -27,7 +29,6 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
     check_for_events_page,
 )
-from pyclashbot.bot.ai_fight import FightVision
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     pixel_is_equal,
@@ -44,10 +45,6 @@ from pyclashbot.detection.image_rec import (
     get_file_count,
     get_first_location,
 )
-
-
-SAVE_FIGHT_IMAGES = True
-yolo_images_save_path = r"C:\My_Files\my Programs\clash_fight_images"
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
@@ -73,11 +70,16 @@ ELIXER_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
 
 EMOTE_BUTTON_COORD_IN_2V2 = (67, 521)
 EMOTES_COORDS_IN_2V2 = [
-    (144, 545),
+    (124, 419),
     (182, 420),
-    (308, 470),
-    (327, 544),
+    (255, 411),
+    (312, 423),
+    #(144, 545),
+    #(327, 544),
+    (133, 471),
+    (188, 472),
     (243, 469),
+    (308, 470),
 ]
 
 
@@ -94,14 +96,14 @@ def do_2v2_fight_state(
 
     # wait for battle start
     if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) is not True:
-        logger.change_status(vm_index,
+        logger.change_status(
             status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()"
         )
         return "restart"
 
-    logger.change_status(vm_index,status="2v2 Battle started!")
+    logger.change_status(status="2v2 Battle started!")
 
-    logger.change_status(vm_index,status="Starting fight loop")
+    logger.change_status(status="Starting fight loop")
 
     # if regular fight mode, run the fight loop
     if not random_fight_mode and _2v2_fight_loop(vm_index, logger) == "restart":
@@ -128,21 +130,21 @@ def do_1v1_fight_state(
 ):
     """Handle the entirety of the 1v1 battle state (start fight, do fight, end fight)."""
 
-    logger.change_status(vm_index,"do_1v1_fight_state state")
-    logger.change_status(vm_index,"Waiting for 1v1 battle to start")
+    logger.change_status("do_1v1_fight_state state")
+    logger.change_status("Waiting for 1v1 battle to start")
 
     print(f"Random fight mode is {random_fight_mode} in do_1v1_fight_state()")
     print(f"Fight mode is {fight_mode_choosed}")
 
     # Wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
-        logger.change_status(vm_index,
+        logger.change_status(
             "Error waiting for 1v1 battle to start in do_1v1_fight_state()"
         )
         return "restart"
 
-    logger.change_status(vm_index,"Battle started!")
-    logger.change_status(vm_index,"Starting fight loop")
+    logger.change_status("Battle started!")
+    logger.change_status("Starting fight loop")
 
     # Run regular fight loop if random mode not toggled
     if not random_fight_mode and _1v1_fight_loop(vm_index, logger) == "restart":
@@ -175,7 +177,7 @@ def check_both_1v1_modes_available(vm_index):
     Returns:
         bool: True if Path of Legends mode is available (implying both modes are available), False otherwise.
     """
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
 
     # Define positions and their expected colors
     positions_and_colors = {
@@ -204,7 +206,7 @@ def check_both_1v1_modes_available(vm_index):
 
 
 def check_if_on_path_of_legends_mode(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
     pixels = [
         iar[415][392],
         iar[386][370],
@@ -225,7 +227,7 @@ def check_if_on_path_of_legends_mode(vm_index):
 
 def get_current_fight_mode(vm_index):
     # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen']
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
 
     pixels = [
         iar[543][397],
@@ -324,7 +326,7 @@ def start_fight(vm_index, logger, mode):
         elif mode == "2v2":
             logger.increment_2v2_fights()
 
-    logger.change_status(vm_index,f"Starting a {mode} fight")
+    logger.change_status(f"Starting a {mode} fight")
     do_job_incrementing(logger, mode)
     if mode == "2v2":
         return start_2v2_fight(vm_index, logger)
@@ -335,8 +337,8 @@ def start_fight(vm_index, logger, mode):
 def start_2v2_fight(vm_index, logger: Logger) -> Boolean:
     """method to handle starting a 2v2 fight"""
 
-    logger.change_status(vm_index,status="Start fight state")
-    logger.change_status(vm_index,status="Starting 2v2 mode")
+    logger.change_status(status="Start fight state")
+    logger.change_status(status="Starting 2v2 mode")
 
     # get to challenges tab
     if get_to_challenges_tab_from_main(vm_index, logger) == "restart":
@@ -345,35 +347,37 @@ def start_2v2_fight(vm_index, logger: Logger) -> Boolean:
     # check for then close popup
     if check_for_challenge_page_on_events_tab(vm_index):
         close_this_challenge_page(vm_index)
+        for _ in range(10):
+            scroll_up_on_left_side_of_screen(vm_index)
         time.sleep(1)
 
     # scroll up
-    for _ in range(10):
+    for _ in range(3):
         scroll_up_on_left_side_of_screen(vm_index)
     time.sleep(1)
 
     # if there is a locked events page, return restart
     if check_for_locked_events_page(vm_index):
-        logger.change_status(vm_index,"Locked events page!")
+        logger.change_status("Locked events page!")
         return False
 
     # click 2v2 icon location
     click_2v2_icon_button(vm_index)
-    time.sleep(1)
+    time.sleep(0.41)
 
     # click battle button
     click_2v2_battle_button(vm_index)
-    time.sleep(1)
+    time.sleep(0.4)
 
     # click quickmatch button
     click_quickmatch_button(vm_index)
-    time.sleep(1)
+    time.sleep(0.3)
 
     return True
 
 
 def check_for_locked_events_page(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
     pixels = [
         iar[254][93],
         iar[122][240],
@@ -391,7 +395,7 @@ def check_for_locked_events_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True
@@ -400,7 +404,7 @@ def check_for_locked_events_page(vm_index):
 def check_for_challenge_page_on_events_tab(vm_index):
     """method to check for the presence of an ongoing challenge page in the events tab"""
 
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
     pixels = [
         iar[612][317],
         iar[600][394],
@@ -448,35 +452,10 @@ def click_quickmatch_button(vm_index) -> None:
 
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
-
-def choose_play_side_barebones(
-    vm_index, favorite_side
-):  # -> Any | Literal['right', 'left']:
-    """method to choose a play side given a favorite side"""
-
-    # get tower_statuses
-    tower_statuses = check_enemy_tower_statuses(vm_index)
-
-    # if left is destroyed and right is alive, return right
-    if tower_statuses[0] == "destroyed" and tower_statuses[1] == "alive":
-        return "right"
-
-    # else, if right is destroyed and left is alive, return left
-    if tower_statuses[1] == "destroyed" and tower_statuses[0] == "alive":
-        return "left"
-
-    # if neither are destroyed, return favorite_side
-    choices = [favorite_side] * 7 + [
-        side for side in ["left", "right"] if side != favorite_side
-    ] * 3
-
-    return random.choice(choices)
-
-
 def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
     """method to do an emote in a 2v2 match"""
 
-    logger.change_status(vm_index,"Hitting an emote")
+    logger.change_status("Hitting an emote")
 
     # click emote button
     click(vm_index, EMOTE_BUTTON_COORD_IN_2V2[0], EMOTE_BUTTON_COORD_IN_2V2[1])
@@ -484,29 +463,8 @@ def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
 
     emote_coord = random.choice(EMOTES_COORDS_IN_2V2)
     click(vm_index, emote_coord[0], emote_coord[1])
-    time.sleep(0.33)
 
     return "good"
-
-
-def check_if_at_max_elixer(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[612][304],
-        iar[612][312],
-    ]
-
-    colors = [
-        [250, 141, 245],
-        [255, 156, 255],
-    ]
-
-    for index, pixel in enumerate(pixels):
-        color = colors[index]
-        if not pixel_is_equal(pixel, color, tol=35):
-            return False
-
-    return True
 
 
 def mag_dump(vm_index, logger):
@@ -529,110 +487,65 @@ def mag_dump(vm_index, logger):
         click(vm_index, play_coord[0], play_coord[1])
         time.sleep(0.1)
 
-
 def wait_for_elixer(
-    vm_index, logger, random_elixer_wait
+    vm_index, logger, random_elixer_wait, WAIT_THRESHOLD = 5000, PLAY_THRESHOLD = 10000
 ) -> Boolean | Literal["restart"] | Literal["no battle"]:
     """method to wait for 4 elixer during a battle"""
 
     start_time = time.time()
 
-    while count_elixer(vm_index) <= random_elixer_wait:
-        logger.change_status(vm_index,
-            f"Waiting for {random_elixer_wait} elixer for {str(time.time() - start_time)[:4]}s..."
+    while not count_elixer(vm_index, random_elixer_wait):
+        wait_time = time.time() - start_time
+        logger.change_status(
+            f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s..."
         )
 
-        # play champ ability if its available
-        if check_for_champion_ability(vm_index):
-            play_champion_ability(vm_index)
-            logger.change_status(vm_index,"Played champion ability")
-
-        if len(check_which_cards_are_available(vm_index)) == 4:
-            logger.change_status(vm_index,"All cards are available!")
+        card_inhand = len(check_which_cards_are_available(vm_index, True, False))
+        action_offset, _ = switch_side()
+        if action_offset > PLAY_THRESHOLD and card_inhand > 0:
+            logger.change_status("Too much going on, playing now")
+            return True
+        
+        if action_offset > WAIT_THRESHOLD and card_inhand == 4:
+            logger.change_status("All cards are available!")
             return True
 
-        if check_if_at_max_elixer(vm_index):
-            logger.change_status(vm_index,"Max elixer!")
-            break
-
-        if time.time() - start_time > ELIXER_WAIT_TIMEOUT:
-            logger.change_status(vm_index,status="Waited too long for elixer")
+        if wait_time > ELIXER_WAIT_TIMEOUT:
+            logger.change_status(status="Waited too long for elixer")
             return "restart"
 
         if not check_for_in_battle_with_delay(vm_index):
-            logger.change_status(vm_index,status="Not in battle, stopping waiting for elixer.")
+            logger.change_status(status="Not in battle, stopping waiting for elixer.")
             return "no battle"
 
-    logger.change_status(vm_index,
+    logger.change_status(
         f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer."
     )
 
     return True
 
 
-def count_elixer(vm_index) -> bool:
+elixer_coords = [
+    [613, 149],
+    [613, 165],
+    [613, 188],
+    [613, 212],
+    [613, 240],
+    [613, 262],
+    [613, 287],
+    [613, 314],
+    [613, 339],
+    [613, 364],
+]
+elixer_color = [240, 137, 244]
+
+def count_elixer(vm_index, elixer_count) -> bool:
     """method to check for 4 elixer during a battle"""
+    iar = screenshot(vm_index)
 
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[613][149],
-        iar[613][165],
-        iar[613][188],
-        iar[613][212],
-        iar[613][240],
-        iar[613][262],
-        iar[613][287],
-        iar[613][314],
-        iar[613][339],
-        iar[613][364],
-    ]
-
-    positive_color = [255, 164, 255]
-
-    bool_list = []
-
-    for p in pixels:
-        if pixel_is_equal(p, positive_color, tol=65):
-            bool_list.append(True)
-
-    return sum(bool_list)
-
-
-def check_enemy_tower_statuses(
-    vm_index,
-) -> tuple[Literal["alive", "destroyed"], Literal["alive", "destroyed"]]:
-    """method to scan pixels during a battle to determine
-    which of  the enemy towers are alive or destroyed"""
-
-    # 'alive'
-    # or
-    # 'destroyed'
-
-    iar = numpy.asarray(screenshot(vm_index))
-
-    left_tower_pixel = iar[117][102]
-    right_tower_pixel = iar[118][280]
-
-    left_tower_pixel = [
-        left_tower_pixel[2],
-        left_tower_pixel[1],
-        left_tower_pixel[0],
-    ]
-    right_tower_pixel = [
-        right_tower_pixel[2],
-        right_tower_pixel[1],
-        right_tower_pixel[0],
-    ]
-
-    left_tower_status = "destroyed"
-    if pixel_is_equal([187, 143, 44], left_tower_pixel, tol=30):
-        left_tower_status = "alive"
-
-    right_tower_status = "destroyed"
-    if pixel_is_equal([232, 188, 44], right_tower_pixel, tol=30):
-        right_tower_status = "alive"
-
-    return (left_tower_status, right_tower_status)
+    if pixel_is_equal(iar[elixer_coords[elixer_count - 1][0], elixer_coords[elixer_count - 1][1]], elixer_color, tol=65):
+        return True
+    return False
 
 
 def end_fight_state(
@@ -674,30 +587,30 @@ def check_if_previous_game_was_win(
 ) -> bool | Literal["restart"]:
     """method to handle the checking if the previous game was a win or loss"""
 
-    logger.change_status(vm_index,status="Checking if last game was a win/loss")
+    logger.change_status(status="Checking if last game was a win/loss")
 
     # Use wait_for_clash_main_menu to ensure we are on the main menu.
     if not wait_for_clash_main_menu(vm_index, logger, deadspace_click=True):
-        logger.change_status(vm_index,status='Error Not on main menu, returning "restart"')
+        logger.change_status(status='Error Not on main menu, returning "restart"')
         return "restart"
 
     # get to clash main options menu
     if get_to_activity_log(vm_index, logger) == "restart":
-        logger.change_status(vm_index,
+        logger.change_status(
             status="Error 8967203948 get_to_activity_log() in check_if_previous_game_was_win()"
         )
 
         return "restart"
 
-    logger.change_status(vm_index,status="Checking if last game was a win...")
+    logger.change_status(status="Checking if last game was a win...")
     is_a_win = check_pixels_for_win_in_battle_log(vm_index)
-    logger.change_status(vm_index,status=f"Last game is win: {is_a_win}")
+    logger.change_status(status=f"Last game is win: {is_a_win}")
 
     # close battle log
-    logger.change_status(vm_index,status="Returning to clash main")
+    logger.change_status(status="Returning to clash main")
     click(vm_index, CLOSE_BATTLE_LOG_BUTTON[0], CLOSE_BATTLE_LOG_BUTTON[1])
     if wait_for_clash_main_menu(vm_index, logger) is False:
-        logger.change_status(vm_index,
+        logger.change_status(
             status="Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()"
         )
         return "restart"
@@ -745,7 +658,7 @@ def find_exit_battle_button(vm_index):
 
 
 def find_ok_battle_button2(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = screenshot(vm_index)
 
     pixels = [
         iar[545][178],
@@ -795,7 +708,7 @@ def get_to_main_after_fight(vm_index, logger):
     start_time = time.time()
     clicked_ok_or_exit = False
 
-    logger.change_status(vm_index,"Returning to clash main after the fight...")
+    logger.change_status("Returning to clash main after the fight...")
 
     while time.time() - start_time < timeout:
 
@@ -849,252 +762,189 @@ def get_to_main_after_fight(vm_index, logger):
 
 # main fight loops
 
+# Initialize a deque with a maximum length of 3 to store the last three chosen cards
+last_three_cards = collections.deque(maxlen=3)
+
+def select_card_index(card_indices, last_three_cards):
+    # First preference: Cards not in the last_three_cards queue
+    preferred_cards = [index for index in card_indices if index not in last_three_cards]
+    
+    # Second preference: Cards not among the last two added to the queue
+    if not preferred_cards and len(last_three_cards) == 3:
+        preferred_cards = [index for index in card_indices if index not in list(last_three_cards)[-2:]]
+
+    # Third preference: Any card except the most recently added one
+    if not preferred_cards:
+        preferred_cards = [index for index in card_indices if index != last_three_cards[-1]]
+
+    # Fallback: If all else fails, consider all cards
+    if not preferred_cards:
+        preferred_cards = card_indices
+
+    return random.choice(preferred_cards) if preferred_cards else None
 
 def play_a_card(vm_index, logger) -> Boolean:
     print("\n")
 
     # check which cards are available
-    logger.change_status(vm_index,"Looking at which cards are available")
+    logger.change_status("Looking at which cards are available")
     available_card_check_start_time = time.time()
-    card_indicies = check_which_cards_are_available(vm_index)
+    card_indicies = check_which_cards_are_available(vm_index, False, True)
+    
+    if not card_indicies:
+        logger.change_status("No cards ready yet...")
+        return False
+    
     available_card_check_time_taken = str(
         time.time() - available_card_check_start_time
     )[:3]
-    logger.change_status(vm_index,
+
+    logger.change_status(
         f"These cards are available: {card_indicies} ({available_card_check_time_taken}s)"
     )
 
-    # pick a random card index
-    if len(card_indicies) == 0:
-        logger.change_status(vm_index,"No cards ready yet...")
-        return False
-
-    card_index = random.choice(card_indicies)
-    logger.change_status(vm_index,f"Choosing this card index: {card_index}")
+    card_index = select_card_index(card_indicies, last_three_cards)
+    if card_index not in last_three_cards:
+        last_three_cards.append(card_index)
+    logger.change_status(f"Choosing this card index: {card_index}")
 
     # get a coord based on the selected side
     play_coord_calculation_start_time = time.time()
-    card_id, play_coord = get_play_coords_for_card(vm_index, logger, card_index, "left")
+    card_id, play_coord = get_play_coords_for_card(vm_index, logger, card_index)
     play_coord_calculation_time_taken = str(
         time.time() - play_coord_calculation_start_time
     )[:3]
 
-    # if coord is none for whatever reason, just skip this play
-    if play_coord is None:
-        logger.change_status(vm_index,"Bad play coord. Redoing...")
-        return False
-
-    logger.change_status(vm_index,
+    logger.change_status(
         f"Calculated play for: {card_id} at {play_coord} ({play_coord_calculation_time_taken}s)"
     )
 
     # click the card index
     click_and_play_card_start_time = time.time()
-    random_card_coord = HAND_CARDS_COORDS[card_index]
-    click(vm_index, random_card_coord[0], random_card_coord[1])
-    time.sleep(0.1)
+    click(vm_index, HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
 
     # click the play coord
     click(vm_index, play_coord[0], play_coord[1])
-    logger.add_card_played()
     click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[
         :3
     ]
-    logger.change_status(vm_index,f"Made the play {click_and_play_card_time_taken}s")
 
+    logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
+    logger.add_card_played()
+
+    if random.randint(0, 9) == 1:
+        emote_in_2v2(vm_index, logger)
     return True
 
+elixer_count = [3, 4, 5, 6, 7, 8, 9]
+percentage_first_5 = [0, 0, 0, 0, 0.3, 0.3, 0.4]
+percentage_single = [0.05, 0.05, 0.1, 0.15, 0.15, 0.3, 0.2]
+percentage_double = [0.05, 0.05, 0.1, 0.15, 0.25, 0.3, 0.1]
+percentage_triple = [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0]
+global elapsed_time
+def _2v2_fight_loop(vm_index: int, logger: Logger):
+    create_default_bridge_iar(vm_index)
+    last_three_cards = collections.deque(maxlen=3)
+    ingame_time = time.time()
+    prev_cards_played = logger.get_cards_played()
+    while check_for_in_battle_with_delay(vm_index):
+        global elapsed_time
+        elapsed_time = time.time() - ingame_time
+        if elapsed_time < 7:  # Less than 5 seconds
+            percentage = percentage_first_5
+            WAIT_THRESHOLD = 6000
+            PLAY_THRESHOLD = 10000
+        elif elapsed_time < 90:  # Less than 2 minutes
+            percentage = percentage_single
+            WAIT_THRESHOLD = 6000
+            PLAY_THRESHOLD = 10000
+        elif elapsed_time < 200:  # Less than 4 minutes
+            percentage = percentage_double
+            WAIT_THRESHOLD = 7000
+            PLAY_THRESHOLD = 11000
+        else:  # 4 minutes or more
+            percentage = percentage_triple
+            WAIT_THRESHOLD = 8000
+            PLAY_THRESHOLD = 12000
 
-def verify_matt_pc():
-    import socket
+        wait_output = wait_for_elixer(vm_index, logger, random.choices(elixer_count, weights = percentage, k=1)[0], WAIT_THRESHOLD, PLAY_THRESHOLD)
+        
+        if wait_output == "restart":
+            logger.change_status("Failure while waiting for elixer")
+            return "restart"
 
-    computer_name = socket.gethostname()
-    if computer_name == "MATT-PC":
-        return True
-    return False
+        if wait_output == "no battle" or not check_if_in_battle(vm_index):
+            logger.change_status("Not in a 2v2 battle anymore!")
+            break
 
+        # print("playing a card in 2v2...")
+        play_start_time = time.time()
+        if play_a_card(vm_index, logger) is False:
+            logger.change_status("Failed to play a card, retrying...")
+        # play_time_taken = str(time.time() - play_start_time)[:4]
+        logger.change_status(f"Made a play in {str(time.time() - play_start_time)[:4]}s")
 
-import os
-from PIL import Image
-import cv2
+    logger.change_status("End of the 2v2 fight!")
+    time.sleep(2.13)
+    cards_played = logger.get_cards_played()
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
-
-def save_fight_image(image):
-    if not verify_matt_pc():
-        return
-
-
-    image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
-    image = Image.fromarray(image)
-
-    folder_path = yolo_images_save_path
-
-
-    if not os.path.exists(folder_path):
-        return
-
-    unique_name = f'screenshot{time.time() + random.randint(0, 9)}'.replace('.','') + '.png'
-
-    path = os.path.join(
-        folder_path, unique_name
-    )
-    image.save(path)
-
-
-
-# def _2v2_fight_loop(vm_index: int, logger: Logger):
-#     prev_cards_played = logger.get_cards_played()
-
-#     while check_for_in_battle_with_delay(vm_index):
-
-#         random_elixer_wait_count = random.randint(3, 7)
-
-#         wait_output = wait_for_elixer(vm_index, logger, random_elixer_wait_count)
-#         if SAVE_FIGHT_IMAGES:
-#             save_fight_image(vm_index)
-
-#         if wait_output == "restart":
-#             logger.change_status(vm_index,"Failure while waiting for elixer")
-#             return "restart"
-
-#         if wait_output == "no battle":
-#             logger.change_status(vm_index,"Not in a 1v1 battle anymore!")
-#             break
-
-#         if not check_if_in_battle(vm_index):
-#             "Not in a battle anymore"
-#             break
-
-#         print("playing a card in 2v2...")
-#         play_start_time = time.time()
-#         if play_a_card(vm_index, logger) is False:
-#             logger.change_status(vm_index,"Failed to play a card, retrying...")
-#         play_time_taken = str(time.time() - play_start_time)[:4]
-#         logger.change_status(vm_index,f"Made a play in {play_time_taken}s")
-
-#     logger.change_status(vm_index,"End of the 2v2 fight!")
-#     time.sleep(3)
-#     cards_played = logger.get_cards_played()
-#     logger.change_status(vm_index,f"Played ~{cards_played - prev_cards_played} cards this fight")
-
-#     return "good"
-
-def _2v2_fight_loop(vm_index, logger: Logger):
-    return _1v1_fight_loop(vm_index, logger)
-
-
-def check_for_champion_ability(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[462][324],
-        iar[453][334],
-        iar[462][336],
-    ]
-    colors = [
-        [215, 28, 223],
-        [240, 39, 254],
-        [239, 40, 251],
-    ]
-
-
-    for p in pixels:
-        for c in colors:
-            if pixel_is_equal(p, c, tol=30):
-                return True
-
-    return False
-
-
-def play_champion_ability(vm_index):
-    click(vm_index, 330, 460)
-
-
-# def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
-#     """method for handling dynamicly timed 1v1 fight"""
-
-#     logger.change_status(vm_index,status="Starting battle loop")
-
-#     # choose a side to favor this fight
-#     favorite_side = random.choice(["left", "right"])
-
-#     logger.change_status(vm_index,status=f"Going to favor {favorite_side} this fight...")
-
-#     # count plays
-#     plays = 0
-#     prev_cards_played = logger.get_cards_played()
-
-#     # while in battle:
-#     while check_if_in_battle(vm_index):
-#         print("\n")
-#         logger.log(f"Battle play #{plays}:")
-
-#         # wait for 6 elixer
-#         random_elixer_wait = random.randint(3, 7)
-        # elixer_wait_return = wait_for_elixer(vm_index, logger, random_elixer_wait)
-#         if SAVE_FIGHT_IMAGES:
-#             save_fight_image(vm_index)
-#         # if a failure during elixer wait
-#         if elixer_wait_return == "restart":
-#             logger.change_status(vm_index,
-#                 status="Error 788455 wait_for_6_elixer() in fight_loop()"
-#             )
-#             return "restart"
-
-#         # if the battle is over
-#         if elixer_wait_return == "no battle":
-#             break
-
-#         # make a play
-#         print("Playing a card in 1v1...")
-#         play_start_time = time.time()
-#         if play_a_card(vm_index, logger) is False:
-#             logger.change_status(vm_index,"Failed to play a card, retrying...")
-
-#         play_time_taken = str(time.time() - play_start_time)[:4]
-#         logger.change_status(vm_index,f"Made a play in {play_time_taken}s")
-#         plays += 1
-
-#     cards_played = logger.get_cards_played()
-#     logger.change_status(vm_index,
-#         f"Played ~{cards_played - prev_cards_played} cards this 1v1 game"
-#     )
-#     return "good"
-
+    return "good"
 
 
 def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
-    def wait_duration(start_time,duration):
-        while time.time() - start_time < duration:
-            if not check_if_in_battle(vm_index):
-                return False
-    def printout(fv):
-        def format_coord(c):
-            x,y = c
-            x,y = int(x),int(y)
-            coord_string = f'({x},{y})'
-            return coord_string
-        play_coord = format_coord(fv.play_coord)
-        print('|{:^18} | {:^18} | {:^15}|'.format(fv.play_type,fv.hand_cards[fv.play_card], play_coord))
-
-
-    logger.change_status(vm_index,status="Starting battle loop")
-
-    fv = FightVision(vm_index)
-
-    # while in battle:
-    play_loop_time = 0
+    """method for handling dynamicly timed 1v1 fight"""
+    create_default_bridge_iar(vm_index)
+    last_three_cards = collections.deque(maxlen=3)
+    ingame_time = time.time()
+    prev_cards_played = logger.get_cards_played()
     while check_for_in_battle_with_delay(vm_index):
-        start_time = time.time()
-        fight_image = screenshot(vm_index)
-        if random.randint(0,1)==0:save_fight_image(fight_image)
-        fv.update_image(fight_image)
-        fv.predict_fight_data()
-        if fv.play_card is not None:
-            fv.make_play()
-            printout(fv)
-        if wait_duration(start_time,play_loop_time) is False:
-            print('Done fighting')
-            return 'good'
+        global elapsed_time
+        elapsed_time = time.time() - ingame_time
+        if elapsed_time < 7:  # Less than 5 seconds
+            percentage = percentage_first_5
+            WAIT_THRESHOLD = 6000
+            PLAY_THRESHOLD = 9000
+        elif elapsed_time < 90:  # Less than 2 minutes
+            percentage = percentage_single
+            WAIT_THRESHOLD = 6000
+            PLAY_THRESHOLD = 9000
+        elif elapsed_time < 200:  # Less than 4 minutes
+            percentage = percentage_double
+            WAIT_THRESHOLD = 7000
+            PLAY_THRESHOLD = 10000
+        else:  # 4 minutes or more
+            percentage = percentage_triple
+            WAIT_THRESHOLD = 8000
+            PLAY_THRESHOLD = 11000
+
+        wait_output = wait_for_elixer(vm_index, logger, random.choices(elixer_count, weights = percentage, k=1)[0], WAIT_THRESHOLD, PLAY_THRESHOLD)
+        
+        if wait_output == "restart":
+            logger.change_status("Failure while waiting for elixer")
+            return "restart"
+
+        if wait_output == "no battle":
+            logger.change_status("Not in a 1v1 battle anymore!")
+            break
+
+        if not check_if_in_battle(vm_index):
+            "Not in a battle anymore"
+            break
+
+        # print("playing a card in 1v1...")
+        play_start_time = time.time()
+        if play_a_card(vm_index, logger) is False:
+            logger.change_status("Failed to play a card, retrying...")
+        # play_time_taken = str(time.time() - play_start_time)[:4]
+        logger.change_status(f"Made a play in {str(time.time() - play_start_time)[:4]}s")
+
+    logger.change_status("End of the 1v1 fight!")
+    time.sleep(2.13)
+    cards_played = logger.get_cards_played()
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
+
+    return "good"
 
 
 def _2v2_random_fight_loop(vm_index, logger: Logger):
@@ -1114,11 +964,11 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
             emote_in_2v2(vm_index, logger)
 
         # increment plays counter
-        logger.change_status(vm_index,
+        logger.change_status(
             f"Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n"
         )
 
-    logger.change_status(vm_index,"Finished with this 2v2 fight")
+    logger.change_status("Finished with this 2v2 fight")
 
     return "good"
 
@@ -1126,7 +976,7 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 def _1v1_random_fight_loop(vm_index, logger):
     """method for handling dynamicly timed 1v1 fight"""
 
-    logger.change_status(vm_index,status="Starting 1v1 battle with random plays")
+    logger.change_status(status="Starting 1v1 battle with random plays")
 
     mag_dump(vm_index, logger)
     for _ in range(random.randint(1, 3)):
@@ -1140,7 +990,7 @@ def _1v1_random_fight_loop(vm_index, logger):
         for _ in range(random.randint(1, 3)):
             logger.add_card_played()
 
-    logger.change_status(vm_index,"Finished with 1v1 battle with random plays...")
+    logger.change_status("Finished with 1v1 battle with random plays...")
     return "good"
 
 
@@ -1180,22 +1030,5 @@ def fight_image_save_debug(vm_index,fights = 2):
         end_fight_state(vm_index, logger, "next_state", True)
 
 
-
-def save_fight_screenshots(vm_index,duaration,interval):
-    start_time = time.time()
-    while time.time() - start_time < duaration:
-        save_fight_image(screenshot(vm_index))
-        print(f'\tsaved image : {str(time.time() - start_time)[:5]}s')
-        time.sleep(interval)
-
-
 if __name__ == "__main__":
-    duration = 9
-    interval = 0.6
-    interval = interval + (random.choice([-1,1]) * (random.randint(2,4)/10))
-    duration = duration + random.randint(-3,3)
-
-    print(f'\nDuration: {duration}\nInterval: {interval}')
-
-    save_fight_screenshots(1,duration,interval=0)
-
+    fight_image_save_debug(12,fights = 2)

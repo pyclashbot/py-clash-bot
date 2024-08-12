@@ -5,3 +5,4 @@ __version__
 __pycache__
 build
 start.bat
+pyproject copy.toml

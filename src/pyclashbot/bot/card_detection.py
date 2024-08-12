@@ -1,13 +1,9 @@
 from pyclashbot.detection import pixel_is_equal
-from pyclashbot.memu.client import screenshot
+from pyclashbot.memu.client import click, screenshot
 import numpy
-import math
 import random
-
-
-to_test = [
-    "graveyard",
-]
+import time
+from collections import Counter
 
 # play coord data
 PLAY_COORDS = {
@@ -16,29 +12,45 @@ PLAY_COORDS = {
         "left": [(116, 160)],
         "right": [(302, 160)],
     },
+    "big_win_con": {
+        "left": [(115, 332)],
+        "right": [(295, 336)],
+    },
+    "bigboi": {
+         "left": [(115, 332)],
+         "right": [(295, 336)],
+    },
     "hog": {
         "left": [(77, 281), (113, 286), (154, 283)],
         "right": [(257, 283), (300, 284), (353, 283)],
     },
     "turret": {
-        "left": [(224, 300), (224, 334)],
-        "right": [(224, 300), (224, 334)],
+        "left": [(224, 320), (191, 351), (182, 362), (202, 339)],
+        "right": [(224, 320), (224, 334), (214, 360), (211, 381)],
     },
     "miner": {
-        "left": [(86, 156), (90, 104), (109,129), (142, 153)],
-        "right": [(274, 152), (306, 111), (339, 111), (323, 157)],
+        "left": [(86, 156), (90, 104), (143, 113), (142, 153)],
+        "right": [(274, 152), (276, 111), (339, 111), (323, 157)],
     },
     "goblin_barrel": {
-        "left": [(115, 134), (115, 134), (60, 96)],
-        "right": [(300, 137), (300, 137), (356, 106)],
+        "left": [(115, 161), (116, 161), (117, 161)],
+        "right": [(300, 161), (302, 161), (301, 161)],
     },
     "xbow": {
-        "left": [(170, 288)],
-        "right": [(254, 284)],
+        "left": [(209, 355), (202, 381)],
+        "right": [(216, 355), (205, 381)],
     },
     "spawner": {
-        "left": [(69, 442), (158, 444), (166, 394)],
-        "right": [(247, 396), (264, 440), (343, 442)],
+        "left": [(69, 442), (158, 444), (166, 394), (102, 451)],
+        "right": [(247, 396), (264, 440), (343, 442), (312, 456)],
+    },
+    "long_range": {
+        "left": [(70, 463), (184, 398), (166, 394), (211, 471)],
+        "right": [(247, 396), (264, 440), (343, 463), (191, 473)],
+    },
+    "princess": {
+        "left": [(70, 463), (240, 400), (191, 471), (220, 402)],
+        "right": [(343, 463), (184, 398), (211, 473), (166, 394)],
     },
     "earthquake": {
         "left": [(118, 185)],
@@ -90,19 +102,35 @@ PLAY_COORDS = {
 
     },
     "graveyard": {
-        "left": [(69, 163)],
-        "right": [(348, 170)],
+        "left": [(88, 157)],
+        "right": [(325, 156)],
     },
 }
 
 CARD_GROUPS: dict[str, list[str]] = {
+    "long_range": [
+        "witch",
+        "night_witch",
+    ],
+    "princess": [
+        "princess",
+    ],
+    "bigboi":[
+        "royal_delivery",
+        "mighty_miner",
+        "mega_knight",
+    ],
     "earthquake": ["earthquake"],
-    "fireball": ["fireball"],
+    "fireball": ["fireball"] ,
     "freeze": ["freeze"],
     "poison": ["poison"],
     "arrows": ["arrows"],
     "snowball": ["snowball"],
-    "zap": ["zap"],
+    "zap": [
+        "zap",
+        "gob_curse",
+        "void"
+    ],
     "rocket": ["rocket"],
     "lightning": ["lightning"],
     "log": ["log"],
@@ -115,29 +143,35 @@ CARD_GROUPS: dict[str, list[str]] = {
         "tesla",
         "goblin_cage",
         "inferno_tower",
-        "inferno_tower2",
     ],
     "hog": [
+        "evo_battle_ram",
         "battle_ram",
         "wall_breakers",
-        "princess",
         "ram_rider",
         "skeleton_barrel",
         "hog",
         "royal_hogs",
     ],
     "miner": [
-        "goblin_drill",
         "miner",
     ],
     "goblin_barrel": [
         "goblin_barrel",
+        "evo_goblin_barrel",
     ],
     "xbow": [
         "xbow",
         "mortar",
     ],
     "spawner": [
+        "wizard",
+        "flying_machine",
+        "magic_archer",
+        "dart_goblin",
+        "archers",
+        "evo_fire_cracker",
+        "fire_cracker",
         "tombstone",
         "goblin_hut",
         "barb_hut",
@@ -145,9 +179,25 @@ CARD_GROUPS: dict[str, list[str]] = {
     ],
 }
 
-
 # card color data
 card_color_data = {
+    "evo_goblin_barrel": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 94, 'Blue': 0, 'Indigo': 41, 'Violet': 21, 'Cyan': 0, 'Magenta': 54, 'Pink': 210, 'Turquoise': 212, 'Lime': 2, 'Purple': 33, 'Brown': 9, 'Teal': 204, 'Maroon': 11}, {'Red': 0, 'Orange': 2, 'Yellow': 0, 'Green': 46, 'Blue': 0, 'Indigo': 12, 'Violet': 42, 'Cyan': 0, 'Magenta': 0, 'Pink': 319, 'Turquoise': 133, 'Lime': 9, 'Purple': 118, 'Brown': 45, 'Teal': 160, 'Maroon': 5}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 41, 'Blue': 0, 'Indigo': 128, 'Violet': 22, 'Cyan': 0, 'Magenta': 36, 'Pink': 248, 'Turquoise': 114, 'Lime': 24, 'Purple': 36, 'Brown': 39, 'Teal': 189, 'Maroon': 14}, {'Red': 0, 'Orange': 11, 'Yellow': 0, 'Green': 7, 'Blue': 0, 'Indigo': 54, 'Violet': 24, 'Cyan': 0, 'Magenta': 45, 'Pink': 138, 'Turquoise': 283, 'Lime': 0, 'Purple': 24, 'Brown': 44, 'Teal': 253, 'Maroon': 8}],
+    "evo_battle_ram": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 91, 'Blue': 0, 'Indigo': 238, 'Violet': 30, 'Cyan': 0, 'Magenta': 0, 'Pink': 195, 'Turquoise': 10, 'Lime': 3, 'Purple': 177, 'Brown': 10, 'Teal': 63, 'Maroon': 74}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 23, 'Blue': 0, 'Indigo': 147, 'Violet': 9, 'Cyan': 0, 'Magenta': 7, 'Pink': 476, 'Turquoise': 19, 'Lime': 0, 'Purple': 155, 'Brown': 7, 'Teal': 32, 'Maroon': 16}, {'Red': 0, 'Orange': 0, 'Yellow': 1, 'Green': 109, 'Blue': 0, 'Indigo': 227, 'Violet': 46, 'Cyan': 0, 'Magenta': 22, 'Pink': 106, 'Turquoise': 52, 'Lime': 3, 'Purple': 37, 'Brown': 3, 'Teal': 204, 'Maroon': 81}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 38, 'Blue': 0, 'Indigo': 175, 'Violet': 33, 'Cyan': 0, 'Magenta': 72, 'Pink': 312, 'Turquoise': 67, 'Lime': 1, 'Purple': 89, 'Brown': 31, 'Teal': 71, 'Maroon': 2}],
+    "evo_fire_cracker": [{'Red': 0, 'Orange': 23, 'Yellow': 0, 'Green': 1, 'Blue': 0, 'Indigo': 99, 'Violet': 65, 'Cyan': 0, 'Magenta': 31, 'Pink': 269, 'Turquoise': 224, 'Lime': 0, 'Purple': 1, 'Brown': 84, 'Teal': 78, 'Maroon': 16}, {'Red': 0, 'Orange': 0, 'Yellow': 2, 'Green': 7, 'Blue': 0, 'Indigo': 100, 'Violet': 78, 'Cyan': 0, 'Magenta': 61, 'Pink': 365, 'Turquoise': 112, 'Lime': 0, 'Purple': 8, 'Brown': 70, 'Teal': 78, 'Maroon': 10}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 0, 'Indigo': 203, 'Violet': 59, 'Cyan': 0, 'Magenta': 41, 'Pink': 41, 'Turquoise': 48, 'Lime': 0, 'Purple': 48, 'Brown': 43, 'Teal': 137, 'Maroon': 271}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 20, 'Blue': 0, 'Indigo': 312, 'Violet': 53, 'Cyan': 0, 'Magenta': 67, 'Pink': 97, 'Turquoise': 85, 'Lime': 0, 'Purple': 76, 'Brown': 57, 'Teal': 40, 'Maroon': 84}],
+    "mighty_miner": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 1, 'Blue': 16, 'Indigo': 170, 'Violet': 3, 'Cyan': 0, 'Magenta': 0, 'Pink': 73, 'Turquoise': 360, 'Lime': 0, 'Purple': 35, 'Brown': 179, 'Teal': 54, 'Maroon': 0}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 7, 'Blue': 12, 'Indigo': 209, 'Violet': 0, 'Cyan': 13, 'Magenta': 0, 'Pink': 161, 'Turquoise': 183, 'Lime': 0, 'Purple': 65, 'Brown': 166, 'Teal': 70, 'Maroon': 5}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 1, 'Blue': 30, 'Indigo': 301, 'Violet': 16, 'Cyan': 0, 'Magenta': 21, 'Pink': 105, 'Turquoise': 148, 'Lime': 0, 'Purple': 17, 'Brown': 118, 'Teal': 130, 'Maroon': 4}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 26, 'Indigo': 81, 'Violet': 11, 'Cyan': 0, 'Magenta': 37, 'Pink': 88, 'Turquoise': 297, 'Lime': 0, 'Purple': 12, 'Brown': 186, 'Teal': 28, 'Maroon': 125}],
+    "mega_knight": [{'Red': 0, 'Orange': 0, 'Yellow': 1, 'Green': 39, 'Blue': 0, 'Indigo': 208, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 191, 'Turquoise': 31, 'Lime': 0, 'Purple': 1, 'Brown': 306, 'Teal': 10, 'Maroon': 104}, {'Red': 0, 'Orange': 1, 'Yellow': 0, 'Green': 29, 'Blue': 0, 'Indigo': 163, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 253, 'Turquoise': 17, 'Lime': 0, 'Purple': 2, 'Brown': 162, 'Teal': 3, 'Maroon': 261}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 25, 'Blue': 0, 'Indigo': 139, 'Violet': 6, 'Cyan': 0, 'Magenta': 23, 'Pink': 138, 'Turquoise': 3, 'Lime': 0, 'Purple': 13, 'Brown': 273, 'Teal': 0, 'Maroon': 271}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 5, 'Blue': 0, 'Indigo': 63, 'Violet': 3, 'Cyan': 0, 'Magenta': 39, 'Pink': 454, 'Turquoise': 0, 'Lime': 0, 'Purple': 11, 'Brown': 235, 'Teal': 0, 'Maroon': 81}],
+    "bowler": [{'Red': 0, 'Orange': 1, 'Yellow': 0, 'Green': 2, 'Blue': 0, 'Indigo': 2, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 570, 'Turquoise': 1, 'Lime': 0, 'Purple': 19, 'Brown': 284, 'Teal': 0, 'Maroon': 12}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 2, 'Blue': 0, 'Indigo': 2, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 787, 'Turquoise': 10, 'Lime': 0, 'Purple': 0, 'Brown': 70, 'Teal': 1, 'Maroon': 19}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 0, 'Indigo': 20, 'Violet': 10, 'Cyan': 0, 'Magenta': 19, 'Pink': 575, 'Turquoise': 1, 'Lime': 0, 'Purple': 9, 'Brown': 238, 'Teal': 0, 'Maroon': 19}, {'Red': 0, 'Orange': 9, 'Yellow': 0, 'Green': 2, 'Blue': 0, 'Indigo': 27, 'Violet': 1, 'Cyan': 0, 'Magenta': 40, 'Pink': 364, 'Turquoise': 5, 'Lime': 0, 'Purple': 31, 'Brown': 381, 'Teal': 2, 'Maroon': 29}],
+    "furnace": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 4, 'Blue': 0, 'Indigo': 211, 'Violet': 7, 'Cyan': 0, 'Magenta': 9, 'Pink': 126, 'Turquoise': 69, 'Lime': 0, 'Purple': 10, 'Brown': 66, 'Teal': 271, 'Maroon': 118}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 17, 'Blue': 0, 'Indigo': 246, 'Violet': 4, 'Cyan': 0, 'Magenta': 3, 'Pink': 155, 'Turquoise': 223, 'Lime': 0, 'Purple': 21, 'Brown': 113, 'Teal': 71, 'Maroon': 38}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 43, 'Blue': 0, 'Indigo': 308, 'Violet': 15, 'Cyan': 0, 'Magenta': 19, 'Pink': 21, 'Turquoise': 46, 'Lime': 0, 'Purple': 13, 'Brown': 47, 'Teal': 285, 'Maroon': 94}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 12, 'Blue': 0, 'Indigo': 92, 'Violet': 3, 'Cyan': 0, 'Magenta': 39, 'Pink': 62, 'Turquoise': 90, 'Lime': 0, 'Purple': 32, 'Brown': 373, 'Teal': 172, 'Maroon': 16}],
+    "night_witch": [{'Red': 0, 'Orange': 15, 'Yellow': 4, 'Green': 198, 'Blue': 0, 'Indigo': 101, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 211, 'Turquoise': 0, 'Lime': 0, 'Purple': 3, 'Brown': 221, 'Teal': 0, 'Maroon': 138}, {'Red': 0, 'Orange': 3, 'Yellow': 4, 'Green': 45, 'Blue': 0, 'Indigo': 176, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 103, 'Turquoise': 33, 'Lime': 0, 'Purple': 2, 'Brown': 382, 'Teal': 59, 'Maroon': 84}, {'Red': 0, 'Orange': 1, 'Yellow': 17, 'Green': 39, 'Blue': 0, 'Indigo': 214, 'Violet': 11, 'Cyan': 0, 'Magenta': 19, 'Pink': 123, 'Turquoise': 0, 'Lime': 0, 'Purple': 40, 'Brown': 191, 'Teal': 0, 'Maroon': 236}, {'Red': 0, 'Orange': 2, 'Yellow': 8, 'Green': 76, 'Blue': 0, 'Indigo': 213, 'Violet': 6, 'Cyan': 0, 'Magenta': 37, 'Pink': 230, 'Turquoise': 9, 'Lime': 0, 'Purple': 28, 'Brown': 157, 'Teal': 4, 'Maroon': 121}],
+    "witch": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 3, 'Blue': 0, 'Indigo': 192, 'Violet': 30, 'Cyan': 0, 'Magenta': 2, 'Pink': 133, 'Turquoise': 1, 'Lime': 0, 'Purple': 56, 'Brown': 196, 'Teal': 0, 'Maroon': 278}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 1, 'Blue': 0, 'Indigo': 23, 'Violet': 27, 'Cyan': 0, 'Magenta': 6, 'Pink': 80, 'Turquoise': 2, 'Lime': 0, 'Purple': 3, 'Brown': 626, 'Teal': 0, 'Maroon': 123}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 7, 'Blue': 0, 'Indigo': 341, 'Violet': 29, 'Cyan': 0, 'Magenta': 19, 'Pink': 111, 'Turquoise': 89, 'Lime': 0, 'Purple': 158, 'Brown': 42, 'Teal': 23, 'Maroon': 72}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 9, 'Blue': 0, 'Indigo': 186, 'Violet': 20, 'Cyan': 0, 'Magenta': 40, 'Pink': 177, 'Turquoise': 86, 'Lime': 0, 'Purple': 109, 'Brown': 162, 'Teal': 20, 'Maroon': 82}],
+    "wizard": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 1, 'Blue': 0, 'Indigo': 51, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 126, 'Turquoise': 4, 'Lime': 0, 'Purple': 19, 'Brown': 438, 'Teal': 58, 'Maroon': 194}, {'Red': 0, 'Orange': 11, 'Yellow': 0, 'Green': 4, 'Blue': 0, 'Indigo': 157, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 373, 'Turquoise': 117, 'Lime': 0, 'Purple': 5, 'Brown': 117, 'Teal': 77, 'Maroon': 30}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 3, 'Blue': 0, 'Indigo': 402, 'Violet': 10, 'Cyan': 0, 'Magenta': 19, 'Pink': 18, 'Turquoise': 14, 'Lime': 0, 'Purple': 18, 'Brown': 107, 'Teal': 127, 'Maroon': 173}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 12, 'Blue': 0, 'Indigo': 396, 'Violet': 1, 'Cyan': 0, 'Magenta': 40, 'Pink': 33, 'Turquoise': 74, 'Lime': 0, 'Purple': 15, 'Brown': 18, 'Teal': 152, 'Maroon': 150}],
+    "flying_machine": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 31, 'Blue': 0, 'Indigo': 263, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 90, 'Turquoise': 128, 'Lime': 0, 'Purple': 5, 'Brown': 11, 'Teal': 363, 'Maroon': 0}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 1, 'Blue': 0, 'Indigo': 95, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 252, 'Turquoise': 361, 'Lime': 0, 'Purple': 0, 'Brown': 0, 'Teal': 182, 'Maroon': 0}, {'Red': 0, 'Orange': 7, 'Yellow': 0, 'Green': 13, 'Blue': 0, 'Indigo': 320, 'Violet': 8, 'Cyan': 0, 'Magenta': 18, 'Pink': 41, 'Turquoise': 67, 'Lime': 0, 'Purple': 40, 'Brown': 80, 'Teal': 293, 'Maroon': 4}, {'Red': 0, 'Orange': 54, 'Yellow': 0, 'Green': 4, 'Blue': 0, 'Indigo': 141, 'Violet': 2, 'Cyan': 0, 'Magenta': 42, 'Pink': 493, 'Turquoise': 65, 'Lime': 0, 'Purple': 18, 'Brown': 8, 'Teal': 63, 'Maroon': 1}],
+    "dart_goblin": [{'Red': 0, 'Orange': 30, 'Yellow': 0, 'Green': 299, 'Blue': 9, 'Indigo': 17, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 117, 'Turquoise': 189, 'Lime': 0, 'Purple': 0, 'Brown': 61, 'Teal': 164, 'Maroon': 5}, {'Red': 0, 'Orange': 2, 'Yellow': 0, 'Green': 142, 'Blue': 5, 'Indigo': 19, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 98, 'Turquoise': 76, 'Lime': 0, 'Purple': 0, 'Brown': 64, 'Teal': 184, 'Maroon': 301}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 120, 'Blue': 0, 'Indigo': 98, 'Violet': 14, 'Cyan': 0, 'Magenta': 22, 'Pink': 12, 'Turquoise': 36, 'Lime': 0, 'Purple': 8, 'Brown': 186, 'Teal': 389, 'Maroon': 6}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 68, 'Blue': 0, 'Indigo': 128, 'Violet': 5, 'Cyan': 0, 'Magenta': 38, 'Pink': 34, 'Turquoise': 23, 'Lime': 0, 'Purple': 6, 'Brown': 87, 'Teal': 245, 'Maroon': 257}],
+    "archers": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 8, 'Blue': 0, 'Indigo': 230, 'Violet': 299, 'Cyan': 1, 'Magenta': 2, 'Pink': 90, 'Turquoise': 39, 'Lime': 0, 'Purple': 115, 'Brown': 43, 'Teal': 63, 'Maroon': 1}, {'Red': 0, 'Orange': 1, 'Yellow': 0, 'Green': 6, 'Blue': 0, 'Indigo': 154, 'Violet': 274, 'Cyan': 0, 'Magenta': 0, 'Pink': 216, 'Turquoise': 72, 'Lime': 0, 'Purple': 20, 'Brown': 88, 'Teal': 55, 'Maroon': 5}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 14, 'Blue': 0, 'Indigo': 508, 'Violet': 41, 'Cyan': 0, 'Magenta': 22, 'Pink': 15, 'Turquoise': 99, 'Lime': 0, 'Purple': 36, 'Brown': 19, 'Teal': 109, 'Maroon': 28}, {'Red': 0, 'Orange': 1, 'Yellow': 0, 'Green': 14, 'Blue': 3, 'Indigo': 384, 'Violet': 11, 'Cyan': 0, 'Magenta': 38, 'Pink': 98, 'Turquoise': 119, 'Lime': 0, 'Purple': 20, 'Brown': 88, 'Teal': 80, 'Maroon': 35}],
+    "fire_cracker": [{'Red': 0, 'Orange': 6, 'Yellow': 0, 'Green': 37, 'Blue': 0, 'Indigo': 370, 'Violet': 17, 'Cyan': 0, 'Magenta': 0, 'Pink': 57, 'Turquoise': 25, 'Lime': 0, 'Purple': 29, 'Brown': 262, 'Teal': 69, 'Maroon': 19}, {'Red': 0, 'Orange': 79, 'Yellow': 0, 'Green': 19, 'Blue': 0, 'Indigo': 180, 'Violet': 116, 'Cyan': 0, 'Magenta': 0, 'Pink': 77, 'Turquoise': 20, 'Lime': 0, 'Purple': 99, 'Brown': 265, 'Teal': 12, 'Maroon': 24}, {'Red': 0, 'Orange': 1, 'Yellow': 0, 'Green': 49, 'Blue': 0, 'Indigo': 249, 'Violet': 55, 'Cyan': 0, 'Magenta': 21, 'Pink': 81, 'Turquoise': 68, 'Lime': 0, 'Purple': 17, 'Brown': 130, 'Teal': 81, 'Maroon': 139}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 93, 'Blue': 0, 'Indigo': 134, 'Violet': 41, 'Cyan': 0, 'Magenta': 39, 'Pink': 56, 'Turquoise': 152, 'Lime': 0, 'Purple': 70, 'Brown': 2, 'Teal': 114, 'Maroon': 190}],
+    "princess": [{'Red': 0, 'Orange': 35, 'Yellow': 0, 'Green': 77, 'Blue': 0, 'Indigo': 308, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 118, 'Turquoise': 102, 'Lime': 0, 'Purple': 4, 'Brown': 59, 'Teal': 105, 'Maroon': 83}, {'Red': 0, 'Orange': 180, 'Yellow': 14, 'Green': 124, 'Blue': 0, 'Indigo': 184, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 162, 'Turquoise': 54, 'Lime': 0, 'Purple': 1, 'Brown': 38, 'Teal': 79, 'Maroon': 55}, {'Red': 0, 'Orange': 19, 'Yellow': 0, 'Green': 58, 'Blue': 0, 'Indigo': 209, 'Violet': 17, 'Cyan': 0, 'Magenta': 16, 'Pink': 238, 'Turquoise': 67, 'Lime': 0, 'Purple': 9, 'Brown': 58, 'Teal': 101, 'Maroon': 99}, {'Red': 1, 'Orange': 0, 'Yellow': 0, 'Green': 5, 'Blue': 0, 'Indigo': 165, 'Violet': 10, 'Cyan': 0, 'Magenta': 38, 'Pink': 261, 'Turquoise': 143, 'Lime': 0, 'Purple': 10, 'Brown': 90, 'Teal': 119, 'Maroon': 49}],
+    "magic_archer": [{'Red': 0, 'Orange': 17, 'Yellow': 1, 'Green': 9, 'Blue': 0, 'Indigo': 44, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 281, 'Turquoise': 224, 'Lime': 0, 'Purple': 7, 'Brown': 216, 'Teal': 57, 'Maroon': 35}, {'Red': 0, 'Orange': 1, 'Yellow': 0, 'Green': 8, 'Blue': 0, 'Indigo': 100, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 77, 'Turquoise': 395, 'Lime': 0, 'Purple': 1, 'Brown': 27, 'Teal': 216, 'Maroon': 66}, {'Red': 0, 'Orange': 6, 'Yellow': 10, 'Green': 179, 'Blue': 0, 'Indigo': 135, 'Violet': 9, 'Cyan': 0, 'Magenta': 18, 'Pink': 126, 'Turquoise': 274, 'Lime': 0, 'Purple': 9, 'Brown': 25, 'Teal': 95, 'Maroon': 5}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 40, 'Blue': 4, 'Indigo': 200, 'Violet': 5, 'Cyan': 0, 'Magenta': 42, 'Pink': 83, 'Turquoise': 230, 'Lime': 0, 'Purple': 16, 'Brown': 52, 'Teal': 195, 'Maroon': 24}],
+    "goblin_cage": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 18, 'Blue': 0, 'Indigo': 38, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 95, 'Turquoise': 190, 'Lime': 0, 'Purple': 0, 'Brown': 240, 'Teal': 232, 'Maroon': 78}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 24, 'Blue': 0, 'Indigo': 0, 'Violet': 0, 'Cyan': 1, 'Magenta': 0, 'Pink': 63, 'Turquoise': 243, 'Lime': 0, 'Purple': 0, 'Brown': 166, 'Teal': 157, 'Maroon': 237}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 193, 'Blue': 0, 'Indigo': 148, 'Violet': 8, 'Cyan': 0, 'Magenta': 18, 'Pink': 59, 'Turquoise': 113, 'Lime': 0, 'Purple': 10, 'Brown': 136, 'Teal': 203, 'Maroon': 3}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 46, 'Blue': 9, 'Indigo': 178, 'Violet': 2, 'Cyan': 0, 'Magenta': 42, 'Pink': 63, 'Turquoise': 163, 'Lime': 0, 'Purple': 16, 'Brown': 235, 'Teal': 136, 'Maroon': 1}],
     "tornado": [
         {
             "Red": 0,
@@ -814,80 +864,6 @@ card_color_data = {
             "Maroon": 16,
         },
     ],
-    "furnace": [
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 5,
-            "Blue": 0,
-            "Indigo": 208,
-            "Violet": 7,
-            "Cyan": 0,
-            "Magenta": 12,
-            "Pink": 129,
-            "Turquoise": 67,
-            "Lime": 0,
-            "Purple": 6,
-            "Brown": 77,
-            "Teal": 267,
-            "Maroon": 113,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 16,
-            "Blue": 0,
-            "Indigo": 216,
-            "Violet": 1,
-            "Cyan": 0,
-            "Magenta": 3,
-            "Pink": 182,
-            "Turquoise": 229,
-            "Lime": 0,
-            "Purple": 11,
-            "Brown": 109,
-            "Teal": 92,
-            "Maroon": 32,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 57,
-            "Blue": 0,
-            "Indigo": 297,
-            "Violet": 15,
-            "Cyan": 0,
-            "Magenta": 19,
-            "Pink": 25,
-            "Turquoise": 43,
-            "Lime": 0,
-            "Purple": 10,
-            "Brown": 45,
-            "Teal": 287,
-            "Maroon": 93,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 20,
-            "Blue": 1,
-            "Indigo": 85,
-            "Violet": 2,
-            "Cyan": 0,
-            "Magenta": 42,
-            "Pink": 67,
-            "Turquoise": 97,
-            "Lime": 0,
-            "Purple": 7,
-            "Brown": 360,
-            "Teal": 187,
-            "Maroon": 23,
-        },
-    ],
     "freeze": [
         {
             "Red": 0,
@@ -1108,80 +1084,6 @@ card_color_data = {
             "Brown": 387,
             "Teal": 73,
             "Maroon": 119,
-        },
-    ],
-    "goblin_cage": [
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 16,
-            "Blue": 0,
-            "Indigo": 6,
-            "Violet": 0,
-            "Cyan": 2,
-            "Magenta": 0,
-            "Pink": 101,
-            "Turquoise": 191,
-            "Lime": 0,
-            "Purple": 0,
-            "Brown": 259,
-            "Teal": 244,
-            "Maroon": 72,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 24,
-            "Blue": 0,
-            "Indigo": 0,
-            "Violet": 0,
-            "Cyan": 0,
-            "Magenta": 0,
-            "Pink": 101,
-            "Turquoise": 242,
-            "Lime": 0,
-            "Purple": 0,
-            "Brown": 143,
-            "Teal": 148,
-            "Maroon": 233,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 206,
-            "Blue": 0,
-            "Indigo": 107,
-            "Violet": 7,
-            "Cyan": 0,
-            "Magenta": 21,
-            "Pink": 61,
-            "Turquoise": 114,
-            "Lime": 0,
-            "Purple": 11,
-            "Brown": 168,
-            "Teal": 194,
-            "Maroon": 2,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 44,
-            "Blue": 11,
-            "Indigo": 163,
-            "Violet": 1,
-            "Cyan": 1,
-            "Magenta": 38,
-            "Pink": 88,
-            "Turquoise": 153,
-            "Lime": 0,
-            "Purple": 17,
-            "Brown": 229,
-            "Teal": 146,
-            "Maroon": 0,
         },
     ],
     "graveyard": [
@@ -1626,80 +1528,6 @@ card_color_data = {
             "Brown": 377,
             "Teal": 0,
             "Maroon": 52,
-        },
-    ],
-    "princess": [
-        {
-            "Red": 0,
-            "Orange": 28,
-            "Yellow": 0,
-            "Green": 68,
-            "Blue": 0,
-            "Indigo": 285,
-            "Violet": 0,
-            "Cyan": 0,
-            "Magenta": 0,
-            "Pink": 92,
-            "Turquoise": 284,
-            "Lime": 0,
-            "Purple": 7,
-            "Brown": 24,
-            "Teal": 103,
-            "Maroon": 0,
-        },
-        {
-            "Red": 0,
-            "Orange": 167,
-            "Yellow": 15,
-            "Green": 126,
-            "Blue": 0,
-            "Indigo": 166,
-            "Violet": 0,
-            "Cyan": 0,
-            "Magenta": 0,
-            "Pink": 129,
-            "Turquoise": 193,
-            "Lime": 0,
-            "Purple": 4,
-            "Brown": 18,
-            "Teal": 73,
-            "Maroon": 0,
-        },
-        {
-            "Red": 0,
-            "Orange": 20,
-            "Yellow": 0,
-            "Green": 54,
-            "Blue": 0,
-            "Indigo": 158,
-            "Violet": 14,
-            "Cyan": 0,
-            "Magenta": 19,
-            "Pink": 180,
-            "Turquoise": 226,
-            "Lime": 0,
-            "Purple": 10,
-            "Brown": 63,
-            "Teal": 121,
-            "Maroon": 26,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 9,
-            "Blue": 0,
-            "Indigo": 160,
-            "Violet": 9,
-            "Cyan": 0,
-            "Magenta": 40,
-            "Pink": 228,
-            "Turquoise": 256,
-            "Lime": 0,
-            "Purple": 5,
-            "Brown": 75,
-            "Teal": 106,
-            "Maroon": 3,
         },
     ],
     "tombstone": [
@@ -2368,80 +2196,6 @@ card_color_data = {
             "Maroon": 345,
         },
     ],
-    "ram_rider": [
-        {
-            "Red": 0,
-            "Orange": 3,
-            "Yellow": 0,
-            "Green": 0,
-            "Blue": 0,
-            "Indigo": 66,
-            "Violet": 0,
-            "Cyan": 0,
-            "Magenta": 0,
-            "Pink": 64,
-            "Turquoise": 548,
-            "Lime": 0,
-            "Purple": 4,
-            "Brown": 33,
-            "Teal": 172,
-            "Maroon": 1,
-        },
-        {
-            "Red": 0,
-            "Orange": 0,
-            "Yellow": 0,
-            "Green": 20,
-            "Blue": 2,
-            "Indigo": 163,
-            "Violet": 0,
-            "Cyan": 0,
-            "Magenta": 0,
-            "Pink": 28,
-            "Turquoise": 514,
-            "Lime": 0,
-            "Purple": 0,
-            "Brown": 21,
-            "Teal": 142,
-            "Maroon": 1,
-        },
-        {
-            "Red": 0,
-            "Orange": 17,
-            "Yellow": 0,
-            "Green": 10,
-            "Blue": 0,
-            "Indigo": 286,
-            "Violet": 15,
-            "Cyan": 0,
-            "Magenta": 16,
-            "Pink": 57,
-            "Turquoise": 252,
-            "Lime": 0,
-            "Purple": 9,
-            "Brown": 60,
-            "Teal": 157,
-            "Maroon": 12,
-        },
-        {
-            "Red": 0,
-            "Orange": 2,
-            "Yellow": 0,
-            "Green": 20,
-            "Blue": 0,
-            "Indigo": 103,
-            "Violet": 9,
-            "Cyan": 0,
-            "Magenta": 39,
-            "Pink": 94,
-            "Turquoise": 495,
-            "Lime": 0,
-            "Purple": 6,
-            "Brown": 3,
-            "Teal": 115,
-            "Maroon": 5,
-        },
-    ],
     "inferno_tower": [
         {
             "Red": 0,
@@ -2960,6 +2714,8 @@ card_color_data = {
             "Maroon": 33,
         },
     ],
+    "gob_curse": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 534, 'Blue': 0, 'Indigo': 98, 'Violet': 0, 'Cyan': 0, 'Magenta': 0, 'Pink': 47, 'Turquoise': 11, 'Lime': 0, 'Purple': 0, 'Brown': 0, 'Teal': 201, 'Maroon': 0}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 250, 'Blue': 0, 'Indigo': 34, 'Violet': 0, 'Cyan': 2, 'Magenta': 0, 'Pink': 53, 'Turquoise': 115, 'Lime': 2, 'Purple': 0, 'Brown': 0, 'Teal': 435, 'Maroon': 0}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 238, 'Blue': 0, 'Indigo': 79, 'Violet': 13, 'Cyan': 29, 'Magenta': 15, 'Pink': 16, 'Turquoise': 172, 'Lime': 0, 'Purple': 10, 'Brown': 0, 'Teal': 306, 'Maroon': 13}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 202, 'Blue': 0, 'Indigo': 82, 'Violet': 3, 'Cyan': 5, 'Magenta': 40, 'Pink': 34, 'Turquoise': 170, 'Lime': 0, 'Purple': 13, 'Brown': 7, 'Teal': 333, 'Maroon': 2}],
+    "void": [{'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 2, 'Blue': 42, 'Indigo': 676, 'Violet': 13, 'Cyan': 1, 'Magenta': 0, 'Pink': 49, 'Turquoise': 19, 'Lime': 0, 'Purple': 30, 'Brown': 1, 'Teal': 3, 'Maroon': 55}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 3, 'Blue': 90, 'Indigo': 465, 'Violet': 3, 'Cyan': 1, 'Magenta': 0, 'Pink': 89, 'Turquoise': 118, 'Lime': 0, 'Purple': 63, 'Brown': 0, 'Teal': 6, 'Maroon': 53}, {'Red': 0, 'Orange': 0, 'Yellow': 0, 'Green': 0, 'Blue': 84, 'Indigo': 621, 'Violet': 27, 'Cyan': 38, 'Magenta': 16, 'Pink': 21, 'Turquoise': 21, 'Lime': 0, 'Purple': 45, 'Brown': 1, 'Teal': 9, 'Maroon': 8}, {'Red': 1, 'Orange': 0, 'Yellow': 0, 'Green': 1, 'Blue': 87, 'Indigo': 456, 'Violet': 35, 'Cyan': 45, 'Magenta': 38, 'Pink': 45, 'Turquoise': 102, 'Lime': 0, 'Purple': 77, 'Brown': 0, 'Teal': 2, 'Maroon': 2}],
 }
 
 # card image stuff
@@ -2996,247 +2752,179 @@ COLORS = {
     "Maroon": [128, 0, 0],
 }
 
+COLORS_ARRAY = numpy.array(list(COLORS.values()))
+COLORS_KEYS = list(COLORS.keys())
 
-# identification methods
-def make_pixel_dict_from_color_list(color_list):
-    pixel_dict = {
-        "Red": 0,
-        "Orange": 0,
-        "Yellow": 0,
-        "Green": 0,
-        "Blue": 0,
-        "Indigo": 0,
-        "Violet": 0,
-        "Cyan": 0,
-        "Magenta": 0,
-        "Pink": 0,
-        "Turquoise": 0,
-        "Lime": 0,
-        "Purple": 0,
-        "Brown": 0,
-        "Teal": 0,
-        "Maroon": 0,
-    }
-
-    for color in color_list:
-        pixel_dict[color] += 1
-
-    return pixel_dict
-
+# Pre-compute numpy arrays for each card's corner data
+for card_name, card_data in card_color_data.items():
+    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
+    
+def calculate_offset(card_name, card_data, collected_data_array):
+    total_offset = 0
+    for i, corner_data_array in enumerate(card_data):
+        offset = numpy.sum(numpy.abs(collected_data_array[i] - corner_data_array))
+        total_offset += offset
+    return card_name, total_offset
 
 def find_closest_card(collected_data):
-    offsets_dict = {}
-
-    # for each card in the card_color_data
-    for card_name, card_data in card_color_data.items():
-        total_offset = 0
-        # for each corner
-        for i, corner_data in enumerate(collected_data):
-            # print(f'This is the corner data: {corner_data}')
-            # for each color in the corner data
-            for color_name, color_value in corner_data.items():
-                # print(f'This color: {color_name} has a value of {color_value}')
-
-                # get the difference between the corner color and the card color
-                offset = abs(color_value - card_data[i][color_name])
-                # print(f'This color: {color_name} has a offset of {offset}')
-                # add the offset to the total offset
-                total_offset += offset
-
-        offsets_dict[card_name] = total_offset
-
     best_card = None
-    best_offset = None
-    for card_name, offset in offsets_dict.items():
-        if best_offset is None or offset < best_offset:
+    best_offset = 1001
+
+    collected_data_array = numpy.array([list(corner.values()) for corner in collected_data])
+
+    for card_name, card_data in card_color_data.items():
+        card_name, total_offset = calculate_offset(card_name, card_data, collected_data_array)
+        if total_offset < best_offset:
+            best_offset = total_offset
             best_card = card_name
-            best_offset = offset
 
     if best_offset > 1000:
         return "UNKNOWN"
 
     return best_card
 
+# identification methods
+def make_pixel_dict_from_color_list(color_list):
+    # Initialize the pixel_dict with zeros
+    pixel_dict = dict.fromkeys(COLORS.keys(), 0)
 
-def color_from_pixel(pixel):
+    # Count the occurrences of each color in color_list
+    color_counts = Counter(color_list)
 
-    # Calculate the Euclidean distance between the pixel and each color
-    distances = {
-        color: math.sqrt(sum((a - b) ** 2 for a, b in zip(pixel, COLORS[color])))
-        for color in COLORS
-    }
+    # Update the pixel_dict with the counts
+    pixel_dict.update(color_counts)
 
-    # Find the color with the minimum distance
-    closest_color = min(distances, key=distances.get)
+    return pixel_dict
 
-    return closest_color
+def color_from_pixel(pixels):
+    # Calculate the Euclidean distance between the pixels and each color
+    distances = numpy.linalg.norm(COLORS_ARRAY - pixels[:, None], axis=2)
 
+    # Find the color with the minimum distance for each pixel
+    closest_colors = [COLORS_KEYS[i] for i in numpy.argmin(distances, axis=1)]
 
-def get_topleft_corner_pixels(topleft, iar):
-    colors = []
-    x_range = (topleft[0], topleft[0] + HALF_WIDTH)
-    y_range = (topleft[1], topleft[1] + HALF_HEIGHT)
-    for x in range(x_range[0], x_range[1]):
-        for y in range(y_range[0], y_range[1]):  # Corrected this line
-            pixel = iar[y][x]
-            colors.append(color_from_pixel(pixel))
+    return closest_colors
+
+def get_corner_pixels(x_range, y_range, iar):
+    # Get all pixels in the range
+    pixels = iar[y_range[0]:y_range[1], x_range[0]:x_range[1]].reshape(-1, 3)
+
+    # Get the color for each pixel
+    colors = color_from_pixel(pixels)
+
     return make_pixel_dict_from_color_list(colors)
 
+def get_all_pixel_data(vm_index, chosen_card_index):
+    topleft = toplefts[chosen_card_index]
 
-def get_topright_corner_pixels(topleft, iar):
-    colors = []
-    x_range = (topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH)
-    y_range = (topleft[1], topleft[1] + HALF_HEIGHT)
-    for x in range(x_range[0], x_range[1]):
-        for y in range(y_range[0], y_range[1]):
-            pixel = iar[y][x]
-            colors.append(color_from_pixel(pixel))
-    return make_pixel_dict_from_color_list(colors)
+    corners = [
+        ((topleft[0], topleft[0] + HALF_WIDTH), (topleft[1], topleft[1] + HALF_HEIGHT)),
+        ((topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH), (topleft[1], topleft[1] + HALF_HEIGHT)),
+        ((topleft[0], topleft[0] + HALF_WIDTH), (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT)),
+        ((topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH), (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT)),
+    ]
 
+    color_list = [get_corner_pixels(*corner, battle_iar) for corner in corners]
+    
+    # print(f"card_name: {color_list},")
+    return color_list
 
-def get_bottomleft_corner_pixels(topleft, iar):
-    colors = []
-    x_range = (topleft[0], topleft[0] + HALF_WIDTH)
-    y_range = (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT)
-    for x in range(x_range[0], x_range[1]):
-        for y in range(y_range[0], y_range[1]):
-            pixel = iar[y][x]
-            colors.append(color_from_pixel(pixel))
-    return make_pixel_dict_from_color_list(colors)
-
-
-def get_bottomright_corner_pixels(topleft, iar):
-    colors = []
-    x_range = (topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH)
-    y_range = (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT)
-    for x in range(x_range[0], x_range[1]):
-        for y in range(y_range[0], y_range[1]):
-            pixel = iar[y][x]
-            colors.append(color_from_pixel(pixel))
-    return make_pixel_dict_from_color_list(colors)
-
-
-def get_all_pixel_data(vm_index):
-    color_lists = []
-
-    iar = numpy.asarray((screenshot(vm_index)))
-    for topleft in toplefts:
-        topleft_pixels = get_topleft_corner_pixels(topleft, iar)
-        topright_pixels = get_topright_corner_pixels(topleft, iar)
-        bottomleft_pixels = get_bottomleft_corner_pixels(topleft, iar)
-        bottomright_pixels = get_bottomright_corner_pixels(topleft, iar)
-
-        color_list = [
-            topleft_pixels,
-            topright_pixels,
-            bottomleft_pixels,
-            bottomright_pixels,
-        ]
-
-        color_lists.append(color_list)
-
-    return color_lists
-
-
-def check_which_cards_are_available(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
-
-    card_1_pixels = []
-    card_2_pixels = []
-    card_3_pixels = []
-    card_4_pixels = []
-
-    card_toplefts = [
+purple_color = numpy.array([255, 43, 227])
+card_toplefts = numpy.array([
         [133, 582],
         [199, 583],
         [266, 583],
         [334, 582],
-    ]
-    width = 20
-    height = 20
+])
 
-    for i, topleft in enumerate(card_toplefts):
-        for x in range(width):
-            for y in range(height):
-                x_coord = topleft[0] + x
-                y_coord = topleft[1] + y
+# Pre-calculate x_coords and y_coords for each card
+card_coords = [(numpy.arange(topleft[0], topleft[0] + 20), numpy.arange(topleft[1], topleft[1] + 20)) for topleft in card_toplefts]
 
-                if i == 0:
-                    card_1_pixels.append(iar[y_coord][x_coord])
-                if i == 1:
-                    card_2_pixels.append(iar[y_coord][x_coord])
-                if i == 2:
-                    card_3_pixels.append(iar[y_coord][x_coord])
-                if i == 3:
-                    card_4_pixels.append(iar[y_coord][x_coord])
+global play_side
+global battle_iar
 
-    purple_count_1 = count_purple_colors_in_pixel_list(card_1_pixels)
-    purple_count_2 = count_purple_colors_in_pixel_list(card_2_pixels)
-    purple_count_3 = count_purple_colors_in_pixel_list(card_3_pixels)
-    purple_count_4 = count_purple_colors_in_pixel_list(card_4_pixels)
+play_side = "left"
 
+def check_which_cards_are_available(vm_index, check_champion = False, check_side = False):
+    global battle_iar
+    battle_iar = screenshot(vm_index)
     card_exists_list = []
 
-    if purple_count_1 > 25:
-        card_exists_list.append(0)
+    if (check_champion and (check_for_champion_ability(battle_iar[462][324], battle_iar[453][334], battle_iar[462][336]))):
+            click(vm_index, 330, 460)
+    
+    if check_side:
+        global play_side
+        _, play_side = switch_side()
 
-    if purple_count_2 > 25:
-        card_exists_list.append(1)
-
-    if purple_count_3 > 25:
-        card_exists_list.append(2)
-
-    if purple_count_4 > 25:
-        card_exists_list.append(3)
+    for i, coords in enumerate(card_coords):
+        x_coords, y_coords = coords
+        iar_pixels = battle_iar[numpy.ix_(y_coords, x_coords)]
+        purple_pixels = numpy.all(numpy.abs(iar_pixels - purple_color) <= 30, axis=-1)
+        count = numpy.sum(purple_pixels)
+        if count >= 26:
+            card_exists_list.append(i)
 
     return card_exists_list
 
+def check_for_champion_ability(a, b, c):
+    pixels = numpy.array([a, b, c])
+    colors = numpy.array([
+        [215, 28, 223],
+        [240, 39, 254],
+        [239, 40, 251],
+    ])
 
-def count_purple_colors_in_pixel_list(pixel_list):
-    purple_color = [255, 43, 227]
-    count = 0
-    for p in pixel_list:
-        if pixel_is_equal(p, purple_color, tol=30):
-            count += 1
+    for p in pixels:
+        if numpy.any(numpy.all(numpy.abs(colors - p) <= 30, axis=1)):
+            return True
 
-    return count
+    return False
 
+def identify_hand_cards(vm_index, card_index):
+    color_chosen_card = get_all_pixel_data(vm_index, card_index)
+    return find_closest_card(color_chosen_card)
 
-def identify_hand_cards(vm_index):
-    color_lists = get_all_pixel_data(vm_index)
-    return [find_closest_card(color_list) for color_list in color_lists]
-
+# Create the reverse lookup dictionary
+CARD_TO_GROUP = {card: group for group, cards in CARD_GROUPS.items() for card in cards}
 
 def get_card_group(card_id) -> str:
+    # Use the reverse lookup dictionary for O(1) lookups
+    return CARD_TO_GROUP.get(card_id, "No group")
 
-    for group, cards in CARD_GROUPS.items():
-        if card_id in cards:
-            # print(f"This card group is: {group}")
-            return group
-
-    # print(f'This card group is: {"No group"}')
-    return "No group"
-
-import time
-
-def get_play_coords_for_card(vm_index, logger,card_index, side_preference):
+def get_play_coords_for_card(vm_index, logger, card_index):
     # get the ID of this card(ram_rider, zap, etc)
     id_cards_start_time = time.time()
-    identity = identify_hand_cards(vm_index)[card_index]
+    identity = identify_hand_cards(vm_index, card_index)
     time_taken = str(time.time()  - id_cards_start_time)[:3]
-    logger.change_status(vm_index,f'Identified card as {identity} ({time_taken}s)')
+    logger.change_status(f'Identified card as {identity} ({time_taken}s)')
 
     # get the grouping of this card (hog, turret, spell, etc)
     group = get_card_group(identity)
 
     # get the play coords of this grouping
-    coords = calculate_play_coords(group, side_preference)
+    coords = calculate_play_coords(group, play_side)
 
     return identity, coords
 
 
 def calculate_play_coords(card_grouping: str, side_preference: str):
     #if there is a dedicated coordinate for this card
+    if card_grouping == "No group":
+        from pyclashbot.bot.do_fight_state import elapsed_time
+        if elapsed_time < 12:  # Less than 5 seconds
+            if side_preference == "left":
+                return (random.randint(60, 206), random.randint(441, 456))
+            return (random.randint(210, 351), random.randint(441, 456))
+        elif elapsed_time < 80:  # Less than 2 minutes
+            if side_preference == "left":
+                return (random.randint(60, 206), random.randint(360, 456))
+            return (random.randint(210, 351), random.randint(360, 456))
+        else:  # 2 minutes or more
+            if side_preference == "left":
+                return (random.randint(60, 206), random.randint(281, 456))
+            return (random.randint(210, 351), random.randint(281, 456))
+    
     if PLAY_COORDS.get(card_grouping):
         group_datum = PLAY_COORDS[card_grouping]
         if side_preference == "left" and "left" in group_datum:
@@ -3246,14 +2934,35 @@ def calculate_play_coords(card_grouping: str, side_preference: str):
         if "coords" in group_datum:
             return random.choice(group_datum["coords"])
 
-    #if there is no dedicated coordinate for this card
-    if side_preference == "left":
-        return (random.randint(60, 206), random.randint(281, 456))
-    return (random.randint(210, 351), random.randint(281, 456))
+
+
+bridge_iar = 0
+def create_default_bridge_iar(vm_index):
+    global bridge_iar
+    bridge_iar = screenshot(vm_index)
+
+bridge_pixel = [
+        [100, 200],
+        [275, 200]  
+    ]
+
+def switch_side():
+    bridge_color_offset = []
+    for i, bridge in enumerate(bridge_pixel):
+        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
+        step = len(all_coords) // 3500
+        pixel_coords = numpy.array(all_coords[::step][:3500])
+        iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
+        bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
+        bridge_color_offset.append(numpy.linalg.norm(iar_pixels - bridge_iar_pixels))
+
+    if bridge_color_offset[0] > bridge_color_offset[1]:
+        return bridge_color_offset[0], "left"
+    return bridge_color_offset[1], "right"
 
 
 if __name__ == "__main__":
-    all_data = get_all_pixel_data(12)
+    all_data = get_all_pixel_data(12, 0)
     for data in all_data:
         id = find_closest_card(data)
         if id == "UNKNOWN":
