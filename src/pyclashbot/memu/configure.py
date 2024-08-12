@@ -4,14 +4,9 @@ A module for configuring Memu VMs.
 
 import time
 import logging
-import numpy
-import psutil
 from pymemuc import ConfigKeys
 
 from pyclashbot.memu.pmc import pmc
-
-cpu_count: int = psutil.cpu_count(logical=False)
-total_mem = psutil.virtual_memory()[0] // 1024 // 1024
 
 # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
 MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
@@ -23,10 +18,6 @@ MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
     "resolution_height": 633,
     "vbox_dpi": 160,
     "cpucap": 50,
-    "cpus": numpy.clip(cpu_count // 2, 2, 6),
-    # "cpus": 1,
-    "memory": numpy.clip(total_mem // 2, 2048, 4096),
-    # "memory": 1024,
     "fps": 40,
     "turbo_mode": 0,
     "enable_audio": 0,

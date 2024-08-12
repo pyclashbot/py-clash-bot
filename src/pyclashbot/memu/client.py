@@ -30,7 +30,7 @@ def screenshot(vm_index: int) -> ndarray:
     return screen_shotter[vm_index]
 
 
-def click(vm_index, x_coord, y_coord, clicks=1, interval=0.0):
+def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
     """Method for clicking a given coordinate
 
     Args:
@@ -40,10 +40,11 @@ def click(vm_index, x_coord, y_coord, clicks=1, interval=0.0):
         clicks (int, optional): Amount of clicks. Defaults to 1.
         interval (float, optional): Interval between clicks. Defaults to 0.1.
     """
-
-    for _ in range(clicks):
-        send_click(vm_index, x_coord, y_coord)
-        time.sleep(interval)
+    if clicks == 1: send_click(vm_index, x_coord, y_coord)
+    else :
+        for _ in range(clicks):
+            send_click(vm_index, x_coord, y_coord)
+            time.sleep(interval)
 
 
 
@@ -74,9 +75,6 @@ def scroll_up_on_left_side_of_screen(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     send_swipe(vm_index, 66, 300, 66, 400)
 
-def scroll_up_in_request_page(vm_index):
-    """Method for scrolling up faster when interacting with a scrollable menu"""
-    send_swipe(vm_index, 66, 300, 66, 600)
 
 def scroll_down(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
@@ -88,7 +86,7 @@ def scroll_down(vm_index):
 
 def scroll_down_in_request_page(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
-    send_swipe(vm_index, 43, 350, 43, 180)
+    send_swipe(vm_index, 43, 350, 43, 280)
 
     send_swipe(vm_index, 100, 385, 330, 385)
 
