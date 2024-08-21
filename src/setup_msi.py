@@ -16,7 +16,7 @@ UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
 try:
     VERSION = sys.argv[sys.argv.index("--target-version") + 1]
 except (ValueError, IndexError):
-    VERSION = "2.2.0"
+    VERSION = "v0.0.0"
 
 
 build_exe_options = {
