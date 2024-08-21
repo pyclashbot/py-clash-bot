@@ -43,7 +43,8 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main at start of collect_challenge_rewards(). Returning False")
+            "Not on clash main at start of collect_challenge_rewards(). Returning False"
+        )
         return False
 
     # Open the daily rewards menu
@@ -78,7 +79,8 @@ def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
 
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main after collect_challenge_rewards(). Returning False")
+            "Not on clash main after collect_challenge_rewards(). Returning False"
+        )
         return False
 
     return True
@@ -120,12 +122,14 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
 def collect_all_daily_rewards(vm_index, logger) -> bool:
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main at start of collect_daily_rewards(). Returning False")
+            "Not on clash main at start of collect_daily_rewards(). Returning False"
+        )
         return False
 
     if not check_if_daily_rewards_button_exists(vm_index):
         logger.change_status(
-            "Daily rewards button doesn't exist. Assuming rewards already collected or not available.")
+            "Daily rewards button doesn't exist. Assuming rewards already collected or not available."
+        )
         return True
 
     rewards = check_which_rewards_are_available(vm_index, logger)
@@ -192,8 +196,9 @@ def check_rewards_menu_pixels(vm_index):
 
     expected_color = [65, 209, 49]
 
-    rewards_available = [pixel_is_equal(
-        pixel, expected_color, tol=35) for pixel in pixels]
+    rewards_available = [
+        pixel_is_equal(pixel, expected_color, tol=35) for pixel in pixels
+    ]
     return rewards_available
 
 

@@ -14,7 +14,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click,  screenshot
+from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
@@ -115,11 +115,7 @@ def get_chest_statuses(vm_index):
         iar[550][340],
     ]
 
-    colors = [
-        [94, 51, 16],
-        [20, 64, 9],
-        [101, 35, 62]
-    ]
+    colors = [[94, 51, 16], [20, 64, 9], [101, 35, 62]]
 
     statuses = []
     for pixel in pixels:
@@ -159,7 +155,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
     coord = chest_coords[chest_index]
     click(vm_index, coord[0], coord[1])
     time.sleep(3)
-    
+
     # if its unlockable, unlock it
     if check_if_chest_is_unlockable(vm_index):
         logger.add_chest_unlocked()
@@ -172,7 +168,6 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
         logger.change_status("This chest is queueable!")
         click(vm_index, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
         time.sleep(1)
-
 
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
@@ -248,4 +243,4 @@ def check_if_chest_is_unlockable(vm_index):
 
 
 if __name__ == "__main__":
-    print(open_chests_state(12, Logger(), 'next_state'))
+    print(open_chests_state(12, Logger(), "next_state"))

@@ -157,7 +157,7 @@ def collect_trophy_road_rewards(vm_index, logger):
                 time.sleep(1)
                 collecting_attempts += 1
                 if check_if_on_clash_main_menu(vm_index) is True:
-                    #Back to main menu
+                    # Back to main menu
                     return True, rewards_collected
                 if collecting_attempts >= 30:
                     logger.change_status("Collected too much.")

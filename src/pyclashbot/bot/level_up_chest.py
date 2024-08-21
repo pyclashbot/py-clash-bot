@@ -61,14 +61,14 @@ def check_for_level_up_chest(vm_index):
     ]
 
     colors = [
-[255 ,236,  65],
-[255 ,218,  70],
-[255 ,203,  70],
-[255, 165,  27],
+        [255, 236, 65],
+        [255, 218, 70],
+        [255, 203, 70],
+        [255, 165, 27],
     ]
 
     # for p in pixels:
-        # print(p)
+    # print(p)
 
     for i, p in enumerate(pixels):
         # print(p)

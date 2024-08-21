@@ -1,4 +1,5 @@
 """Versioning for the program"""
+
 from os.path import exists, isfile, join, pardir, dirname
 
 VERSION_FILE = join(dirname(__file__), pardir, "__version__")

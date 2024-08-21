@@ -18,7 +18,6 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
     pixels = [
         iar[194][353],
         iar[188][353],
-
     ]
     colors = [
         [2, 199, 255],
@@ -71,8 +70,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
 
     # if 100 tickets button is greyed, then we've collected all the banners this season
     if check_for_collected_all_bannerbox_rewards_icon(vm_index):
-        logger.change_status(
-            "Already collected all bannerbox rewards this season.")
+        logger.change_status("Already collected all bannerbox rewards this season.")
 
         # click deadspace to get back to main
         click(vm_index, 5, 450, clicks=4, interval=1)

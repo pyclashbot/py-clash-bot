@@ -1,7 +1,10 @@
 import time
 import numpy
 
-from pyclashbot.bot.nav import wait_for_clash_main_menu, check_if_on_path_of_legends_clash_main
+from pyclashbot.bot.nav import (
+    wait_for_clash_main_menu,
+    check_if_on_path_of_legends_clash_main,
+)
 from pyclashbot.bot.do_fight_state import check_both_1v1_modes_available
 from pyclashbot.detection.image_rec import (
     pixel_is_equal,
@@ -33,8 +36,7 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
 
         # Attempt to navigate to Path of Legends if not already there.
         if check_if_on_path_of_legends_clash_main(vm_index) != True:
-            logger.change_status(
-                "Not in Path of Legends, attempting to switch...")
+            logger.change_status("Not in Path of Legends, attempting to switch...")
             click(vm_index, 277, 400)
             time.sleep(2)  # Wait for UI to update.
 
@@ -46,12 +48,13 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
         # Collect rewards as long as Path of Legends rewards are detected.
         if check_for_path_of_legends_rewards(vm_index):
             logger.change_status(
-                "Path of Legends rewards detected. Attempting to collect...")
+                "Path of Legends rewards detected. Attempting to collect..."
+            )
             path_of_legends_state, rewards_collected = collect_path_of_legends_rewards(
-                vm_index, logger)
+                vm_index, logger
+            )
             if not path_of_legends_state:
-                logger.change_status(
-                    "Failed to collect Path of Legends rewards.")
+                logger.change_status("Failed to collect Path of Legends rewards.")
                 return "restart"
             else:
                 rewards_collected_result += rewards_collected
@@ -61,7 +64,8 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
             time.sleep(2)
         else:
             logger.change_status(
-                f"{rewards_collected_result} Path of Legends rewards collected.")
+                f"{rewards_collected_result} Path of Legends rewards collected."
+            )
             time.sleep(2)
         return next_state
     else:
@@ -126,8 +130,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
     time.sleep(2)  # Wait a bit for the menu to open.
 
     if check_if_on_path_of_legends_rewards_menu(vm_index):
-        logger.change_status(
-            "Successfully entered the Path of Legends rewards menu.")
+        logger.change_status("Successfully entered the Path of Legends rewards menu.")
         time.sleep(1.5)
 
         def claim_rewards_sequence():
@@ -140,14 +143,18 @@ def collect_path_of_legends_rewards(vm_index, logger):
                 click(vm_index, *button)
                 time.sleep(1)  # Allow time for reward claim animation.
                 collecting_attempts = 0
-                while not check_if_on_path_of_legends_rewards_menu(vm_index) and collecting_attempts < 30:
+                while (
+                    not check_if_on_path_of_legends_rewards_menu(vm_index)
+                    and collecting_attempts < 30
+                ):
                     # Click on deadspace to ensure staying in the menu.
                     click(vm_index, 20, 395)
                     time.sleep(0.5)
                     collecting_attempts += 1
                     if collecting_attempts >= 30:
                         logger.change_status(
-                            "Excessive collection attempts; returning False.")
+                            "Excessive collection attempts; returning False."
+                        )
                         return False
                 logger.add_bannerbox_collect()
                 rewards_collected += 1
@@ -155,11 +162,13 @@ def collect_path_of_legends_rewards(vm_index, logger):
                 # Re-check for more buttons after each claim.
                 button = find_claim_rewards_buttons(vm_index)
             return True
+
         if not claim_rewards_sequence():
             return False, rewards_collected
         if check_if_ultimate_champion(vm_index):
             logger.change_status(
-                "Identified as Ultimate Champion; bypassing crown search.")
+                "Identified as Ultimate Champion; bypassing crown search."
+            )
             while not check_last_door(vm_index):
                 logger.change_status("Scrolling to look for more rewards...")
                 scroll_up(vm_index)
@@ -179,14 +188,14 @@ def collect_path_of_legends_rewards(vm_index, logger):
 
         if wait_for_clash_main_menu(vm_index, logger):
             logger.change_status(
-                "Successfully returned to Clash main menu after collecting rewards.")
+                "Successfully returned to Clash main menu after collecting rewards."
+            )
             return True, rewards_collected
         else:
             logger.change_status("Failed to return to Clash main menu.")
             return False, rewards_collected
     else:
-        logger.change_status(
-            "Failed to enter the Path of Legends rewards menu.")
+        logger.change_status("Failed to enter the Path of Legends rewards menu.")
         return False, rewards_collected
 
 
@@ -264,9 +273,9 @@ def find_claim_rewards_buttons(vm_index):
     # Define the relative positions and colors for the "Claim Rewards" button pattern
     color_offsets_and_patterns = [
         ((373, 30), (48, 209, 255)),  # Light Blue
-        ((373, 13), (71, 222, 56)),   # Green
+        ((373, 13), (71, 222, 56)),  # Green
         ((373, 37), (24, 165, 231)),  # Blue
-        ((373, 0), (88, 205, 72)),    # Light Green
+        ((373, 0), (88, 205, 72)),  # Light Green
     ]
     tolerance = 55
 
@@ -313,9 +322,9 @@ def check_current_step(vm_index):
     crown_colors_positions = [
         (209, (230, 151, 38)),  # Gold
         (209, (236, 32, 194)),  # Pink
-        (209, (0, 146, 209)),   # Blue
+        (209, (0, 146, 209)),  # Blue
         (245, (223, 28, 182)),  # Purple
-        (211, (175, 5, 156))    # Darker Pink
+        (211, (175, 5, 156)),  # Darker Pink
     ]
     tolerance = 35
 
@@ -392,7 +401,7 @@ def check_if_on_path_of_legends_rewards_menu(vm_index):
         ((214, 607), (255, 255, 255)),
         ((73, 534), (25, 109, 159)),
         ((48, 521), (255, 234, 244)),
-        ((73, 570), (217, 66, 140))
+        ((73, 570), (217, 66, 140)),
     ]
 
     # Iterate through each pixel position and check if the color matches the expected color with a tolerance of 35.

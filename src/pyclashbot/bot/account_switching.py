@@ -101,4 +101,3 @@ if __name__ == "__main__":
         input(f"Is this {name}?")
 
     # switch_accounts(vm_index, logger, 4)
-

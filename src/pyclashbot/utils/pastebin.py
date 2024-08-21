@@ -1,4 +1,5 @@
 """A module for uploading pastes to pastebin.com"""
+
 from os.path import dirname, exists, isfile, join, pardir
 
 import requests

@@ -23,7 +23,7 @@ build_exe_options = {
     "excludes": ["test", "setuptools"],
     "include_files": [
         "..\\assets\\pixel-pycb.ico",
-                      ],
+    ],
     "include_msvcr": True,
 }
 

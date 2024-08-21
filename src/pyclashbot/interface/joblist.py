@@ -63,7 +63,6 @@ battle_tab = (
             default_value=False,
         ),
     ],
-
     [
         job_check_box(
             "Path of Legends 1v1 battles",
@@ -129,7 +128,9 @@ rewards_tab = [
     ],
     [
         job_check_box(
-            "Trophy Road Rewards", "trophy_road_rewards_user_toggle", default_value=False
+            "Trophy Road Rewards",
+            "trophy_road_rewards_user_toggle",
+            default_value=False,
         ),
     ],
 ]
@@ -142,8 +143,10 @@ card_collection_tab = [
     [
         job_check_box("Donate cards", "donate_toggle", default_value=False),
     ],
-        [
-        job_check_box("Donate cards for FREE ", "free_donate_toggle", default_value=False),
+    [
+        job_check_box(
+            "Donate cards for FREE ", "free_donate_toggle", default_value=False
+        ),
     ],
     [
         job_check_box(
@@ -152,7 +155,9 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Buy shop offers for GOLD", "gold_offer_user_toggle", default_value=False,
+            "Buy shop offers for GOLD",
+            "gold_offer_user_toggle",
+            default_value=False,
         ),
     ],
     [

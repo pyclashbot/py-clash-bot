@@ -1,4 +1,3 @@
-
 """import logging for file logging"""
 
 import logging
@@ -273,7 +272,7 @@ class Logger:
         for mode, count in mode2count.items():
             print("{:^15} : {:^15}".format(mode, count))
 
-        #if they're all zero, return a random one
+        # if they're all zero, return a random one
         if all(count == 0 for count in mode2count.values()):
             return random.choice(list(mode2count.keys()))
 

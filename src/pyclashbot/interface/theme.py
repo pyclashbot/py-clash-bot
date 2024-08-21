@@ -3,7 +3,7 @@ import random
 
 # THEME = "SystemDefaultForReal"
 # THEME ='Material1'
-THEME ='Material2'
+THEME = "Material2"
 # THEME ='reddit'
 
 
@@ -11,6 +11,6 @@ THEME ='Material2'
 sg.theme(THEME)
 
 
-#Material1
-#Material2
-#reddit
+# Material1
+# Material2
+# reddit

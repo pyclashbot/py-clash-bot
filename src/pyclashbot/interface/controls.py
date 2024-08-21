@@ -92,12 +92,11 @@ controls = [
                         "trophy_road_reward_increment_user_input"
                     )
                 ],
-[
+                [
                     make_job_increment_control_object(
                         "season_shop_buys_increment_user_input"
                     )
                 ],
-
                 [
                     make_job_increment_control_object(
                         "account_switching_increment_user_input"

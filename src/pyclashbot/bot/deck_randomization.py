@@ -178,7 +178,9 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
         )
         return False
 
-    logger.change_status("Randomized deck 2 in " + str(time.time() - start_time)[:5] + "s")
+    logger.change_status(
+        "Randomized deck 2 in " + str(time.time() - start_time)[:5] + "s"
+    )
     return True
 
 
