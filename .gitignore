@@ -3,8 +3,3 @@ cert
 node_modules
 build
 dist
-src/pyclashbot/bot/card_detection_switchlane.py
-src/pyclashbot/bot/do_fight_state_backup.txt
-src/pyclashbot/bot/do_fight_state_trytofix.txt
-src/pyclashbot/bot/DONOTUSE_open_chests_state_with_gem copy.py
-src/pyclashbot/bot/DONOTUSE_open_chests_state_with_gem.py
