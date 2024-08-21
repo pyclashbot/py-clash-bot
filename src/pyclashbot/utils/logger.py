@@ -1,3 +1,4 @@
+
 """import logging for file logging"""
 
 import logging
@@ -87,6 +88,8 @@ class Logger:
         # immutable statistics
         self.start_time = time.time() if timed else None
 
+        ####STATISTICS
+
         # fight stats
         self.wins = 0
         self.losses = 0
@@ -130,8 +133,8 @@ class Logger:
         self.season_shop_buys_attempts = 0
 
         # account stuff
-        self.current_account_1 = "-"
-        self.current_account_2 = "-"
+        self.account_order = "-"
+        self.current_account = "-"
         self.account_switches = 0
         self.switch_account_attempts = 0
         self.in_a_clan = False
@@ -143,20 +146,11 @@ class Logger:
 
         # bot stats
         self.current_state = "No state"
-        # self.current_status = "Idle"
+        self.current_status = "Idle"
         self.time_of_last_request = 0
         self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
-        self.total_accounts_1 = 0
-        self.total_accounts_2 = 0
-        self.vm_indicies = []
-        self.vm_index2logger_index = {}
-        self.current_status_1 = "Idle"
-        self.current_status_2 = "Idle"
-        self.bot_1_vm_index = -1
-        self.bot_2_vm_index = -1
-        self.bot_1_account_order = []
-        self.bot_2_account_order = []
+        self.total_accounts = 0
 
         # track errored logger
         self.errored = False
@@ -166,8 +160,7 @@ class Logger:
 
     def _update_log(self) -> None:
         self._update_stats()
-        logging.info(self.current_status_1)
-        logging.info(self.current_status_2)
+        logging.info(self.current_status)
 
     def _update_stats(self) -> None:
         """updates the stats with a dictionary of mutable statistics"""
@@ -200,15 +193,11 @@ class Logger:
                 "cards_played": self.cards_played,
                 # bot stats
                 "restarts_after_failure": self.restarts_after_failure,
-                "bot_1_vm_index": self.bot_1_vm_index,
-                "bot_2_vm_index": self.bot_2_vm_index,
-                "account_order_1": self.bot_1_account_order,
-                "account_order_2": self.bot_2_account_order,
-                # "current_status": self.current_status,
-                "current_status_1": self.current_status_1,
-                "current_status_2": self.current_status_2,
+                "current_status": self.current_status,
                 # account stuff
+                "current_account": self.current_account,
                 "account_switches": self.account_switches,
+                "account_order": self.account_order,
             }
 
     def get_stats(self):
@@ -280,11 +269,11 @@ class Logger:
         if mode2toggle["path_of_legends"]:
             mode2count["path_of_legends"] = path_of_legends_1v1_fights
 
-        print("\n{:^17} : {:^15}".format("mode", "count"))
+        print("{:^15} : {:^15}".format("mode", "count"))
         for mode, count in mode2count.items():
-            print("{:^17} : {:^15}".format(mode, count))
+            print("{:^15} : {:^15}".format(mode, count))
 
-        # if they're all zero, return a random one
+        #if they're all zero, return a random one
         if all(count == 0 for count in mode2count.values()):
             return random.choice(list(mode2count.keys()))
 
@@ -293,19 +282,6 @@ class Logger:
 
     def update_in_a_clan_value(self, in_a_clan: bool):
         self.in_a_clan = in_a_clan
-
-    def set_bot_account_order(self, account_order, logger_index):
-        if logger_index == 1:
-            self.bot_1_account_order = account_order
-        elif logger_index == 2:
-            self.bot_2_account_order = account_order
-
-    @_updates_log
-    def set_bot_vm_index(self, vm_index, logger_index):
-        if logger_index == 1:
-            self.bot_1_vm_index = vm_index
-        elif logger_index == 2:
-            self.bot_2_vm_index = vm_index
 
     @_updates_log
     def calc_win_rate(self):
@@ -334,15 +310,6 @@ class Logger:
     def increment_battlepass_collects(self):
         """Increment the logger's battlepass_collects count by 1."""
         self.battlepass_collects += 1
-
-    def add_vm_index(self, index):
-        # update the vm_indicies list
-        self.vm_indicies.append(index)
-
-        # update the vm_index2logger_index dict
-        self.vm_index2logger_index = {}
-        for i, vm_index in enumerate(self.vm_indicies):
-            self.vm_index2logger_index[vm_index] = i + 1
 
     @_updates_log
     def add_shop_offer_collection(self) -> None:
@@ -445,31 +412,13 @@ class Logger:
         self.daily_rewards += 1
 
     @_updates_log
-    def change_status(self, vm_index, status) -> None:
+    def change_status(self, status) -> None:
         """change status of bot in log
 
         Args:
             status (str): status of bot
         """
-        # get the proper logger for this status
-        logger_index = None
-        try:
-            logger_index = self.vm_index2logger_index[vm_index]
-        except KeyError:
-            pass
-
-        if logger_index is None:
-            self.current_status_1 = status
-
-        # if the logger index is 1, or None:
-        if logger_index == 1:
-            self.current_status_1 = status
-
-        # if the logger index is 1:
-        if logger_index == 2:
-            self.current_status_2 = status
-
-        # always log the status
+        self.current_status = status
         self.log(status)
 
     @_updates_log
@@ -478,13 +427,12 @@ class Logger:
         self.restarts_after_failure += 1
 
     @_updates_log
-    def change_current_account(self, account_id, vm_index):
-        logger_index = self.vm_index2logger_index[vm_index]
+    def change_current_account(self, account_id):
+        self.current_account = account_id
 
-        if logger_index == 1:
-            self.current_account_1 = account_id
-        elif logger_index == 2:
-            self.current_account_2 = account_id
+    @_updates_log
+    def update_account_order_var(self, account_order):
+        self.account_order = account_order
 
     def add_randomize_deck_attempt(self):
         """increments logger's deck_randomize_attempts by 1"""
@@ -496,6 +444,9 @@ class Logger:
 
     def add_donate_attempt(self):
         self.donate_attempts += 1
+
+    def add_card_mastery_reward_collection_attempts(self):
+        self.card_mastery_reward_collection_attempts += 1
 
     def add_shop_buy_attempt(self):
         """increments logger's free_offer_collection_attempts by 1"""
@@ -847,8 +798,8 @@ class Logger:
 
         # if games_played / increment > donate_attempts
         if games_played / increment >= donate_attempts:
-            self.log(
-                f"Can donate. attempts = {donate_attempts} & games played = {games_played}",
+            self.change_status(
+                f"Can donate. attempts = {donate_attempts} & games played = {games_played}"
             )
             return True
 
@@ -861,7 +812,7 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always do shop buy")
+            self.log(f"Increment is {increment} so can always Collect Free Offers")
             return True
 
         # count shop_buy_attempts
@@ -902,9 +853,7 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(
-                f"Increment is {increment} so can always collect battlepass rewards"
-            )
+            self.log(f"Increment is {increment} so can always Collect Free Offers")
             return True
 
         # count battlepass_collect_attempts
@@ -945,7 +894,7 @@ class Logger:
 
         increment = int(increment)
         if increment <= 1:
-            self.log(f"Increment is {increment} so can always Collect daily rewards")
+            self.log(f"Increment is {increment} so can always Collect Free Offers")
             return True
 
         # count daily_reward_attempts
@@ -1055,6 +1004,9 @@ class Logger:
         return False
 
     def check_if_can_buy_season_shop_offers(self, increment) -> bool:
+        """method to check if can switch account given
+        attempts, games played, and user increment input"""
+
         if increment == 1:
             self.log(f"Increment is {increment} so can always switch account")
             return True
@@ -1084,13 +1036,8 @@ class Logger:
         """sets logger's time_of_last_request to input_time"""
         self.time_of_last_request = input_time
 
-    def set_total_accounts(self, vm_index, count):
-        # self.total_accounts_1 = count
-        index = self.vm_index2logger_index[vm_index]
-        if index == 1:
-            self.total_accounts_1 = count
-        elif index == 2:
-            self.total_accounts_2 = count
+    def set_total_accounts(self, count):
+        self.total_accounts = count
 
     def update_time_of_last_card_upgrade(self, input_time) -> None:
         """sets logger's time_of_last_card_upgrade to input_time"""
@@ -1142,4 +1089,5 @@ class Logger:
 
 
 if __name__ == "__main__":
-    pass
+    initalize_pylogging()
+    logger = Logger()

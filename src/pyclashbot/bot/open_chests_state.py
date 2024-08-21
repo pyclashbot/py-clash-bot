@@ -38,7 +38,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     open_chests_start_time = time.time()
 
     logger.add_chest_unlock_attempt()
-    logger.change_status(vm_index,status="Opening chests state")
+    logger.change_status(status="Opening chests state")
 
     # handle being on trophy road meu
     if check_for_trophy_reward_menu(vm_index):
@@ -49,39 +49,38 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.log("Not on clashmain for the start of open_chests_state()")
-        logger.log("These are the pixels the bot saw after failing to find clash main:")
-        for pixel in clash_main_check:
-            logger.log(f"    {pixel}")
+        # logger.log("These are the pixels the bot saw after failing to find clash main:")
+        # for pixel in clash_main_check:
+        #     logger.log(f"    {pixel}")
 
         return "restart"
 
-    logger.change_status(vm_index,
+    logger.change_status(
         status="Handling obstructing notifications before opening chests"
     )
     if handle_clash_main_tab_notifications(vm_index, logger) is False:
-        logger.change_status(vm_index,
+        logger.change_status(
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications"
         )
         return "restart"
 
     # if not on clash main return
     if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(vm_index,
+        logger.change_status(
             status="Error 827358235 Not on clash main menu, returning to start state"
         )
         return "restart"
 
-    logger.change_status(vm_index,status="Opening chests...")
+    logger.change_status(status="Opening chests...")
     # check which chests are available
     statuses = get_chest_statuses(vm_index)  # available/unavailable
-
     chest_index = 0
     for status in statuses:
         start_time = time.time()
         if status == "available":
             logger.log(f"Chest #{chest_index} is available")
             if open_chest(vm_index, logger, chest_index) == "restart":
-                logger.change_status(vm_index,"Error 9988572 Failure with open_chest")
+                logger.change_status("Error 9988572 Failure with open_chest")
                 return "restart"
         logger.log(
             f"Took {str(time.time() - start_time)[:5]}s to investigate chest #{chest_index}"
@@ -110,25 +109,26 @@ def get_chest_statuses(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
     pixels = [
-        iar[544][90],
-        iar[538][161],
-        iar[541][270],
-        iar[543][335],
+        iar[550][75],
+        iar[550][165],
+        iar[550][257],
+        iar[550][340],
     ]
 
     colors = [
-        [143, 96, 19],
-        [160, 119, 33],
-        [155, 115, 29],
-        [142, 94, 18],
+        [94, 51, 16],
+        [20, 64, 9],
+        [101, 35, 62]
     ]
 
     statuses = []
-    for index, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[index], tol=25):
-            statuses.append("available")
-        else:
-            statuses.append("unavailable")
+    for pixel in pixels:
+        status = "available"
+        for color in colors:
+            if pixel_is_equal(pixel, color, tol=10):
+                status = "unavailable"
+                break
+        statuses.append(status)
     return statuses
 
 
@@ -149,36 +149,36 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
     prev_chests_opened = logger.get_chests_opened()
 
     chest_coords = [
-        (77, 497),
-        (164, 509),
-        (254, 514),
-        (339, 516),
+        (77, 539),
+        (164, 536),
+        (254, 535),
+        (339, 537),
     ]
 
     # click the chest
     coord = chest_coords[chest_index]
     click(vm_index, coord[0], coord[1])
     time.sleep(3)
-
+    
     # if its unlockable, unlock it
     if check_if_chest_is_unlockable(vm_index):
         logger.add_chest_unlocked()
-        logger.change_status(vm_index,"This chest is unlockable!")
+        logger.change_status("This chest is unlockable!")
         click(vm_index, UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 
     if check_if_can_queue_chest(vm_index):
         logger.add_chest_unlocked()
-        logger.change_status(vm_index,"This chest is queueable!")
+        logger.change_status("This chest is queueable!")
         click(vm_index, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
         time.sleep(1)
+
 
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
     while check_if_on_clash_main_menu(vm_index) is not True:
         print("Clicking deadspace to skip chest rewards bc not on clash main")
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-        time.sleep(1)
 
         # if clicked deadspace too much, restart
         if (
