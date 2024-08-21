@@ -3,6 +3,3 @@ dist
 __pb__
 __version__
 __pycache__
-build
-start.bat
-pyproject copy.toml
