@@ -14,7 +14,7 @@ from pyclashbot.bot.do_fight_state import (
 )
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
-from pyclashbot.bot.open_chests_state import  open_chests_state
+from pyclashbot.bot.open_chests_state import  open_chests_state, get_chest_statuses
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
 from pyclashbot.bot.upgrade_all_cards import upgrade_all_cards_state
@@ -184,13 +184,16 @@ def state_tree(
             logger.log("Open chests user toggle is off, skipping this state")
             return next_state
 
-        # if job not ready, skip this state
-        logger.log('Checking if "open_chests_increment_user_input" is ready')
-        if not logger.check_if_can_open_chests(
-            job_list["open_chests_increment_user_input"]
-        ):
-            logger.log("Can't open chests at this time, skipping this state")
-            return next_state
+        # if all chests are available, skip this increment user input check
+        if not job_list["skip_fight_if_full_chests_user_toggle"]:
+            logger.log('"skip_fight_if_full_chests_user_toggle" is off')
+            # if job not ready, skip this state
+            logger.log('Checking if "open_chests_increment_user_input" is ready')
+            if not logger.check_if_can_open_chests(
+                job_list["open_chests_increment_user_input"]
+            ):
+                logger.log("Can't open chests at this time, skipping this state")
+                return next_state
 
         # run this state
         logger.log('Open chests is toggled and ready. Running "open_chests_state()"')
@@ -452,6 +455,10 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
+        if job_list["skip_fight_if_full_chests_user_toggle"] and (get_chest_statuses(vm_index).count("available") == 4):
+            logger.change_status("All chests are available. Skipping fight states")
+            return next_state
+        
         mode2toggle = {
             "2v2": job_list["2v2_battle_user_toggle"],
             "trophy_road": job_list["trophy_road_1v1_battle_user_toggle"],
@@ -537,14 +544,6 @@ def state_tree(
 
     logger.error("Failure in state tree")
     return "fail"
-
-
-def clip_that():
-    import pyautogui
-
-    pyautogui.click(860, 1197)
-    time.sleep(1)
-
 
 def state_tree_tester(vm_index):
     logger = Logger()

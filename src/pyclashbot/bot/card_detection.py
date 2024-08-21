@@ -81,8 +81,8 @@ PLAY_COORDS = {
         "right": [(295, 185)],
     },
     "rocket": {
-        "left": [(118, 180)],
-        "right": [(295, 180)],
+        "left": [(127, 161)],
+        "right": [(282, 162)],
     },
     "lightning": {
         "left": [(118, 185)],
@@ -2950,8 +2950,7 @@ def switch_side():
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
         all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
-        step = len(all_coords) // 3500
-        pixel_coords = numpy.array(all_coords[::step][:3500])
+        pixel_coords = numpy.array(all_coords)
         iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_color_offset.append(numpy.linalg.norm(iar_pixels - bridge_iar_pixels))
