@@ -1,4 +1,5 @@
 import time
+
 import numpy
 
 from pyclashbot.bot.nav import (
@@ -8,9 +9,8 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click
+from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
-from pyclashbot.memu.client import screenshot
 
 
 def card_mastery_state(vm_index, logger, next_state):
@@ -18,13 +18,13 @@ def card_mastery_state(vm_index, logger, next_state):
 
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
-            'Not on clash main menu for card_mastery_state() returning "restart"'
+            'Not on clash main menu for card_mastery_state() returning "restart"',
         )
         return "restart"
 
     if collect_card_mastery_rewards(vm_index, logger) is False:
         logger.change_status(
-            'Failed somewhere in collect_card_mastery_rewards(), returning "restart"'
+            'Failed somewhere in collect_card_mastery_rewards(), returning "restart"',
         )
         return "restart"
 
@@ -36,7 +36,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
     logger.change_status("Collecting card mastery rewards...")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(
-            "Failed to get to card page to collect mastery rewards! Returning false"
+            "Failed to get to card page to collect mastery rewards! Returning false",
         )
         return False
     time.sleep(3)
@@ -63,7 +63,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
     # wait for main to appear
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
-            "Failed to get back to clash main menu from card page! Returning false"
+            "Failed to get back to clash main menu from card page! Returning false",
         )
         return False
 

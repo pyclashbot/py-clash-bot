@@ -14,7 +14,6 @@ from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.pastebin import upload_pastebin
 from pyclashbot.utils.versioning import __version__
 
-
 MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
 
@@ -24,16 +23,16 @@ archive_name: str = join(log_dir, "logs.zip")
 
 
 def compress_logs() -> None:
-    """archive will contain a large text file, all old logs appended together
-    extract the file and read the text to get the old logs"""
-
+    """Archive will contain a large text file, all old logs appended together
+    extract the file and read the text to get the old logs
+    """
     logs: list[str] = sorted(
         [join(log_dir, log) for log in listdir(log_dir) if log.endswith(".txt")],
         key=getmtime,
     )
     if len(logs) >= LOGS_TO_KEEP:
         with zipfile.ZipFile(
-            archive_name, "a" if exists(archive_name) else "w"
+            archive_name, "a" if exists(archive_name) else "w",
         ) as archive:
             for log in logs[:-LOGS_TO_KEEP]:
                 archive.write(log, log.split("\\")[-1])
@@ -41,8 +40,7 @@ def compress_logs() -> None:
 
 
 def initalize_pylogging() -> None:
-    """method to be called once to initalize python logging"""
-
+    """Method to be called once to initalize python logging"""
     if not exists(log_dir):
         makedirs(log_dir)
     logging.basicConfig(
@@ -58,10 +56,10 @@ def initalize_pylogging() -> None:
 (  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
  )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
 (__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
-"""
+""",
     )
     logging.info(
-        "Machine Info: \n%s", pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4)
+        "Machine Info: \n%s", pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
     )
     compress_logs()
 
@@ -70,9 +68,11 @@ class Logger:
     """Class for logging. Allows for cross-thread, console and file logging.
 
     Args:
+    ----
         stats (dict[str, str | int] | None, optional): stats to communicate
             between threads. Defaults to None.
         timed (bool, optional): whether to time the bot. Defaults to True.
+
     """
 
     def __init__(
@@ -162,7 +162,7 @@ class Logger:
         logging.info(self.current_status)
 
     def _update_stats(self) -> None:
-        """updates the stats with a dictionary of mutable statistics"""
+        """Updates the stats with a dictionary of mutable statistics"""
         with self.stats_mutex:
             self.stats = {
                 # fight stats
@@ -200,7 +200,7 @@ class Logger:
             }
 
     def get_stats(self):
-        """get stats"""
+        """Get stats"""
         with self.stats_mutex:
             stats = self.stats
         if stats is not None:
@@ -209,7 +209,7 @@ class Logger:
 
     @staticmethod
     def _updates_log(func):
-        """decorator to specify functions which update the queue with statistics"""
+        """Decorator to specify functions which update the queue with statistics"""
 
         @wraps(func)
         def wrapper(self: "Logger", *args, **kwargs):
@@ -220,15 +220,16 @@ class Logger:
         return wrapper
 
     def log(self, message) -> None:
-        """log something to file and print to console with time and stats"""
+        """Log something to file and print to console with time and stats"""
         log_message = f"[{self.current_state}] {message}"
         logging.info(log_message)
         time_string = self.calc_time_since_start()
         print(f"[{self.current_state}] [{time_string}] {message}")
 
     def calc_time_since_start(self) -> str:
-        """calculate time since start of bot using logger's
-        stats and reutrn as string in hours:mins:seconds"""
+        """Calculate time since start of bot using logger's
+        stats and reutrn as string in hours:mins:seconds
+        """
         if self.start_time is not None:
             hours, remainder = divmod(time.time() - self.start_time, 3600)
             minutes, seconds = divmod(remainder, 60)
@@ -270,7 +271,7 @@ class Logger:
 
         print("{:^15} : {:^15}".format("mode", "count"))
         for mode, count in mode2count.items():
-            print("{:^15} : {:^15}".format(mode, count))
+            print(f"{mode:^15} : {count:^15}")
 
         # if they're all zero, return a random one
         if all(count == 0 for count in mode2count.values()):
@@ -284,7 +285,7 @@ class Logger:
 
     @_updates_log
     def calc_win_rate(self):
-        """calculate win rate using logger's stats and return as string"""
+        """Calculate win rate using logger's stats and return as string"""
         wins = self.wins
         losses = self.losses
 
@@ -302,7 +303,7 @@ class Logger:
 
     @_updates_log
     def set_current_state(self, state_to_set):
-        """set logger's current_state to state_to_set"""
+        """Set logger's current_state to state_to_set"""
         self.current_state = state_to_set
 
     @_updates_log
@@ -312,37 +313,39 @@ class Logger:
 
     @_updates_log
     def add_shop_offer_collection(self) -> None:
-        """add level up chest collection to log"""
+        """Add level up chest collection to log"""
         self.shop_offer_collections += 1
 
     @_updates_log
     def error(self, message: str) -> None:
-        """log error message
+        """Log error message
 
         Args:
+        ----
             message (str): error message
+
         """
         self.errored = True
         logging.error(message)
 
     @_updates_log
     def add_card_mastery_reward_collection(self) -> None:
-        """increment logger's card mastery reward collection counter by 1"""
+        """Increment logger's card mastery reward collection counter by 1"""
         self.card_mastery_reward_collections += 1
 
     @_updates_log
     def add_chest_unlocked(self) -> None:
-        """add chest unlocked to log"""
+        """Add chest unlocked to log"""
         self.chests_unlocked += 1
 
     @_updates_log
     def add_war_fight(self) -> None:
-        """add card played to log"""
+        """Add card played to log"""
         self.war_fights += 1
 
     @_updates_log
     def add_card_played(self) -> None:
-        """add card played to log"""
+        """Add card played to log"""
         self.cards_played += 1
 
     @_updates_log
@@ -355,74 +358,76 @@ class Logger:
 
     @_updates_log
     def add_card_upgraded(self):
-        """add card upgraded to log"""
+        """Add card upgraded to log"""
         self.cards_upgraded += 1
 
     @_updates_log
     def add_win(self):
-        """add win to log"""
+        """Add win to log"""
         self.wins += 1
         self.winrate = self.calc_win_rate()
 
     @_updates_log
     def add_loss(self):
-        """add loss to log"""
+        """Add loss to log"""
         self.losses += 1
         self.winrate = self.calc_win_rate()
 
     @_updates_log
     def add_1v1_fight(self) -> None:
-        """add fight to log"""
+        """Add fight to log"""
         self._1v1_fights += 1
 
     @_updates_log
     def add_card_randomization(self):
-        """incremenet card_randomizations counter"""
+        """Incremenet card_randomizations counter"""
         self.card_randomizations += 1
 
     @_updates_log
     def increment_account_switches(self):
-        """incremenet account_switches counter"""
+        """Incremenet account_switches counter"""
         self.account_switches += 1
 
     @_updates_log
     def increment_2v2_fights(self) -> None:
-        """add fight to log"""
+        """Add fight to log"""
         self._2v2_fights += 1
 
     @_updates_log
     def add_request(self) -> None:
-        """add request to log"""
+        """Add request to log"""
         self.requests += 1
 
     @_updates_log
     def add_war_chest_collect(self) -> None:
-        """add request to log"""
+        """Add request to log"""
         self.war_chest_collects += 1
 
     @_updates_log
     def add_donate(self) -> None:
-        """add donate to log"""
+        """Add donate to log"""
         self.donates += 1
 
     @_updates_log
     def add_daily_reward(self) -> None:
-        """add donate to log"""
+        """Add donate to log"""
         self.daily_rewards += 1
 
     @_updates_log
     def change_status(self, status) -> None:
-        """change status of bot in log
+        """Change status of bot in log
 
         Args:
+        ----
             status (str): status of bot
+
         """
         self.current_status = status
         self.log(status)
 
     @_updates_log
     def add_restart_after_failure(self) -> None:
-        """add request to log"""
+        """Add request to log"""
         self.restarts_after_failure += 1
 
     @_updates_log
@@ -434,11 +439,11 @@ class Logger:
         self.account_order = account_order
 
     def add_randomize_deck_attempt(self):
-        """increments logger's deck_randomize_attempts by 1"""
+        """Increments logger's deck_randomize_attempts by 1"""
         self.deck_randomize_attempts += 1
 
     def add_request_attempt(self):
-        """increments logger's request_attempts by 1"""
+        """Increments logger's request_attempts by 1"""
         self.request_attempts += 1
 
     def add_donate_attempt(self):
@@ -448,51 +453,51 @@ class Logger:
         self.card_mastery_reward_collection_attempts += 1
 
     def add_shop_buy_attempt(self):
-        """increments logger's free_offer_collection_attempts by 1"""
+        """Increments logger's free_offer_collection_attempts by 1"""
         self.shop_buy_attempts += 1
 
     def add_bannerbox_collect(self):
-        """increments logger's bannerbox_collects by 1"""
+        """Increments logger's bannerbox_collects by 1"""
         self.bannerbox_collects += 1
 
     def add_card_upgrade_attempt(self):
-        """increments logger's card_upgrade_attempts by 1"""
+        """Increments logger's card_upgrade_attempts by 1"""
         self.card_upgrade_attempts += 1
 
     def add_chest_unlock_attempt(self):
-        """increments logger's chest_unlock_attempts by 1"""
+        """Increments logger's chest_unlock_attempts by 1"""
         self.chest_unlock_attempts += 1
 
     def add_war_attempt(self):
-        """increments logger's war_attempts by 1"""
+        """Increments logger's war_attempts by 1"""
         self.war_attempts += 1
 
     def add_switch_account_attempt(self) -> None:
-        """add card played to log"""
+        """Add card played to log"""
         self.switch_account_attempts += 1
 
     def get_1v1_fights(self) -> int:
-        """returns logger's 1v1_fights stat"""
+        """Returns logger's 1v1_fights stat"""
         return self._1v1_fights
 
     def get_2v2_fights(self) -> int:
-        """returns logger's 2v2_fights stat"""
+        """Returns logger's 2v2_fights stat"""
         return self._2v2_fights
 
     def get_cards_played(self) -> int:
-        """returns logger's cards_played stat"""
+        """Returns logger's cards_played stat"""
         return self.cards_played
 
     def get_requests(self) -> int:
-        """returns logger's requests stat"""
+        """Returns logger's requests stat"""
         return self.requests
 
     def get_card_upgrades(self) -> int:
-        """returns logger's cards_upgraded stat"""
+        """Returns logger's cards_upgraded stat"""
         return self.cards_upgraded
 
     def get_chests_opened(self):
-        """return chests_unlocked stat"""
+        """Return chests_unlocked stat"""
         return self.chests_unlocked
 
     def add_trophy_reward_collect_attempt(self):
@@ -502,7 +507,7 @@ class Logger:
         increment = int(increment)
         if increment <= 1:
             self.log(
-                f"Increment is {increment} so can always collect_trophy_road_rewards"
+                f"Increment is {increment} so can always collect_trophy_road_rewards",
             )
             return True
 
@@ -515,33 +520,33 @@ class Logger:
         # if trophy_road_reward_collect_attempts is zero return true
         if trophy_road_reward_collect_attempts == 0:
             self.log(
-                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > trophy_road_reward_collect_attempts
         if games_played / increment >= trophy_road_reward_collect_attempts:
             self.log(
-                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+                f"Can collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts"
+            f"Can't collect_trophy_road_rewards. {games_played} Games and {trophy_road_reward_collect_attempts} Attempts",
         )
         return False
 
     def check_if_can_open_chests(self, increment):
-        """check if can open chests using logger's games_played and
-        open_chests attempts stats and user input increment arg"""
-
+        """Check if can open chests using logger's games_played and
+        open_chests attempts stats and user input increment arg
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always open chests")
@@ -556,33 +561,33 @@ class Logger:
         # if chest_unlock_attempts is zero return true
         if chest_unlock_attempts == 0:
             self.log(
-                f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
+                f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
+                f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > chest_unlock_attempts
         if games_played / increment >= chest_unlock_attempts:
             self.log(
-                f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
+                f"Can open chests. {games_played} Games and {chest_unlock_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't open chests. {games_played} Games and {chest_unlock_attempts} Attempts"
+            f"Can't open chests. {games_played} Games and {chest_unlock_attempts} Attempts",
         )
         return False
 
     def check_if_can_collect_card_mastery(self, increment) -> bool:
-        """check if can collect card mastery rewards using logger's games_played and
-        card_mastery_reward_collection_attempts stats and user input increment arg"""
-
+        """Check if can collect card mastery rewards using logger's games_played and
+        card_mastery_reward_collection_attempts stats and user input increment arg
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always collect card mastery")
@@ -597,33 +602,33 @@ class Logger:
         # if card_mastery_reward_collection_attempts is zero return true
         if card_mastery_attempts == 0:
             self.log(
-                f"Can do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
+                f"Can do card mastery. {games_played} Games and {card_mastery_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
+                f"Can do card mastery. {games_played} Games and {card_mastery_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > card_mastery_reward_collection_attempts
         if games_played / increment >= card_mastery_attempts:
             self.log(
-                f"Can do card mastery. {games_played} Games & {card_mastery_attempts} Attempts"
+                f"Can do card mastery. {games_played} Games & {card_mastery_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't do card mastery. {games_played} Games and {card_mastery_attempts} Attempts"
+            f"Can't do card mastery. {games_played} Games and {card_mastery_attempts} Attempts",
         )
         return False
 
     def check_if_can_collect_level_up_chest(self, increment) -> bool:
-        """check if can collect level up chest rewards using logger's games_played and
-        level_up_chest_attempts stats and user input increment arg"""
-
+        """Check if can collect level up chest rewards using logger's games_played and
+        level_up_chest_attempts stats and user input increment arg
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always collect level_up_chest")
@@ -638,26 +643,26 @@ class Logger:
         # if level_up_chest_attempts is zero return true
         if level_up_chest_attempts == 0:
             self.log(
-                f"Can do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts"
+                f"Can do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts"
+                f"Can do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > level_up_chest_attempts
         if games_played / increment >= level_up_chest_attempts:
             self.log(
-                f"Can do level_up_chest. {games_played} Games & {level_up_chest_attempts} Attempts"
+                f"Can do level_up_chest. {games_played} Games & {level_up_chest_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts"
+            f"Can't do level_up_chest. {games_played} Games and {level_up_chest_attempts} Attempts",
         )
         return False
 
@@ -692,9 +697,9 @@ class Logger:
         return False
 
     def check_if_can_card_upgrade(self, increment):
-        """check if can upgrade cards using logger's games_played and
-        card_upgrade_attempts stats and user input increment arg"""
-
+        """Check if can upgrade cards using logger's games_played and
+        card_upgrade_attempts stats and user input increment arg
+        """
         print(f"Can upgrade increment is {increment}")
         increment = int(increment)
         if increment <= 1:
@@ -710,14 +715,14 @@ class Logger:
         # if card_upgrade_attempts is zero return true
         if card_upgrade_attempts == 0:
             self.log(
-                f"Can upgrade. {games_played} Games and {card_upgrade_attempts} Attempts"
+                f"Can upgrade. {games_played} Games and {card_upgrade_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can upgrade. {games_played} Games and {card_upgrade_attempts} Attempts"
+                f"Can upgrade. {games_played} Games and {card_upgrade_attempts} Attempts",
             )
             return True
 
@@ -727,13 +732,12 @@ class Logger:
             return True
 
         self.log(
-            f"Can't upgrade. {games_played} Games and {card_upgrade_attempts} Attempts"
+            f"Can't upgrade. {games_played} Games and {card_upgrade_attempts} Attempts",
         )
         return False
 
     def check_if_can_request(self, increment) -> bool:
-        """method to check if can request given attempts, games played, and user increment input"""
-
+        """Method to check if can request given attempts, games played, and user increment input"""
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always Request")
@@ -748,21 +752,21 @@ class Logger:
         # if request_attempts is zero return true
         if request_attempts == 0:
             self.log(
-                f"Can request bc attempts is {request_attempts} and games played is {games_played}"
+                f"Can request bc attempts is {request_attempts} and games played is {games_played}",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can request bc attempts is {request_attempts} and games played is {games_played}"
+                f"Can request bc attempts is {request_attempts} and games played is {games_played}",
             )
             return True
 
         # if games_played / increment > request_attempts
         if games_played / increment >= request_attempts:
             self.log(
-                f"Can request. attempts = {request_attempts} & games played = {games_played}"
+                f"Can request. attempts = {request_attempts} & games played = {games_played}",
             )
             return True
 
@@ -784,21 +788,21 @@ class Logger:
         # if donate_attempts is zero return true
         if donate_attempts == 0:
             self.log(
-                f"Can donate bc attempts is {donate_attempts} and games played is {games_played}"
+                f"Can donate bc attempts is {donate_attempts} and games played is {games_played}",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can donate bc attempts is {donate_attempts} and games played is {games_played}"
+                f"Can donate bc attempts is {donate_attempts} and games played is {games_played}",
             )
             return True
 
         # if games_played / increment > donate_attempts
         if games_played / increment >= donate_attempts:
             self.change_status(
-                f"Can donate. attempts = {donate_attempts} & games played = {games_played}"
+                f"Can donate. attempts = {donate_attempts} & games played = {games_played}",
             )
             return True
 
@@ -806,9 +810,9 @@ class Logger:
         return False
 
     def check_if_can_shop_buy(self, increment) -> bool:
-        """method to check if can collect free offers given
-        attempts, games played, and user increment input"""
-
+        """Method to check if can collect free offers given
+        attempts, games played, and user increment input
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
@@ -823,33 +827,33 @@ class Logger:
         # if shop_buy_attempts is zero return true
         if shop_buy_attempts == 0:
             self.log(
-                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts"
+                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts"
+                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > shop_buy_attempts
         if games_played / increment >= shop_buy_attempts:
             self.log(
-                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts"
+                f"Can collect shop_buy. {games_played} Games and {shop_buy_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't do shop_buy . {games_played} Games and {shop_buy_attempts} Attempts"
+            f"Can't do shop_buy . {games_played} Games and {shop_buy_attempts} Attempts",
         )
         return False
 
     def check_if_can_battlepass_collect(self, increment) -> bool:
-        """method to check if can collect battlepass given
-        attempts, games played, and user increment input"""
-
+        """Method to check if can collect battlepass given
+        attempts, games played, and user increment input
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
@@ -864,33 +868,33 @@ class Logger:
         # if shop_buy_attempts is zero return true
         if battlepass_collect_attempts == 0:
             self.log(
-                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts"
+                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts"
+                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > battlepass_collect_attempts
         if games_played / increment >= battlepass_collect_attempts:
             self.log(
-                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts"
+                f"Can collect battlepass_collect. {games_played} Games and {battlepass_collect_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't do battlepass_collect . {games_played} Games and {battlepass_collect_attempts} Attempts"
+            f"Can't do battlepass_collect . {games_played} Games and {battlepass_collect_attempts} Attempts",
         )
         return False
 
     def check_if_can_collect_daily_rewards(self, increment) -> bool:
-        """method to check if can collect free offers given
-        attempts, games played, and user increment input"""
-
+        """Method to check if can collect free offers given
+        attempts, games played, and user increment input
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always Collect Free Offers")
@@ -905,33 +909,33 @@ class Logger:
         # if daily_reward_attempts is zero return true
         if daily_reward_attempts == 0:
             self.log(
-                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts"
+                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts"
+                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > shop_buy_attempts
         if games_played / increment >= daily_reward_attempts:
             self.log(
-                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts"
+                f"Can collect collect_daily_rewards. {games_played} Games and {daily_reward_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't do collect_daily_rewards . {games_played} Games and {daily_reward_attempts} Attempts"
+            f"Can't do collect_daily_rewards . {games_played} Games and {daily_reward_attempts} Attempts",
         )
         return False
 
     def check_if_can_randomize_deck(self, increment):
-        """method to check if can randomize deck given
-        attempts, games played, and user increment input"""
-
+        """Method to check if can randomize deck given
+        attempts, games played, and user increment input
+        """
         increment = int(increment)
         if increment <= 1:
             self.log(f"Increment is {increment} so can always randomize deck")
@@ -946,33 +950,33 @@ class Logger:
         # if deck_randomize_attempts is zero return true
         if deck_randomize_attempts == 0:
             self.log(
-                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts",
             )
             return True
 
         # if games_played is zero return true
         if games_played == 0:
             self.log(
-                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts",
             )
             return True
 
         # if games_played / increment > deck_randomize_attempts
         if games_played / increment >= deck_randomize_attempts:
             self.log(
-                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+                f"Can randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts"
+            f"Can't randomize deck. {games_played} Games and {deck_randomize_attempts} Attempts",
         )
         return False
 
     def check_if_can_switch_account(self, increment):
-        """method to check if can switch account given
-        attempts, games played, and user increment input"""
-
+        """Method to check if can switch account given
+        attempts, games played, and user increment input
+        """
         if increment == 1:
             self.log(f"Increment is {increment} so can always switch account")
             return True
@@ -986,26 +990,26 @@ class Logger:
         # if games_played or switch accounts attempts is zero return true
         if games_played == 0:
             self.log(
-                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts"
+                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts",
             )
             return True
 
         # if games_played / int(increment) > switch accounts attempts
         if games_played / int(increment) >= switch_account_attempts:
             self.log(
-                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts"
+                f"Can switch account. {games_played} Games and {switch_account_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts"
+            f"Can't switch account. {games_played} Games and {switch_account_attempts} Attempts",
         )
         return False
 
     def check_if_can_buy_season_shop_offers(self, increment) -> bool:
-        """method to check if can switch account given
-        attempts, games played, and user increment input"""
-
+        """Method to check if can switch account given
+        attempts, games played, and user increment input
+        """
         if increment == 1:
             self.log(f"Increment is {increment} so can always switch account")
             return True
@@ -1016,34 +1020,34 @@ class Logger:
 
         if games_played == 0:
             self.log(
-                f"Can buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
+                f"Can buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts",
             )
             return True
 
         if games_played / int(increment) >= season_shop_buys_attempts:
             self.log(
-                f"Can buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
+                f"Can buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts",
             )
             return True
 
         self.log(
-            f"Can't buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts"
+            f"Can't buy_season_shop_offers. {games_played} Games and {season_shop_buys_attempts} Attempts",
         )
         return False
 
     def update_time_of_last_request(self, input_time) -> None:
-        """sets logger's time_of_last_request to input_time"""
+        """Sets logger's time_of_last_request to input_time"""
         self.time_of_last_request = input_time
 
     def set_total_accounts(self, count):
         self.total_accounts = count
 
     def update_time_of_last_card_upgrade(self, input_time) -> None:
-        """sets logger's time_of_last_card_upgrade to input_time"""
+        """Sets logger's time_of_last_card_upgrade to input_time"""
         self.time_of_last_card_upgrade = input_time
 
     def log_job_dictionary(self, job_dictionary: dict[str, str | int]) -> None:
-        """method for logging the job dictionary
+        """Method for logging the job dictionary
         args:
             job_dictionary: the job dictionary to log
         returns:
@@ -1080,10 +1084,10 @@ class Logger:
         self.log("-------------------------------\n\n")
 
     def upload_log(self) -> str | None:
-        """method to upload log to pastebin"""
-        with open(log_name, "r", encoding="utf-8") as log_file:
+        """Method to upload log to pastebin"""
+        with open(log_name, encoding="utf-8") as log_file:
             return upload_pastebin(
-                f"py-clash-bot log ({basename(log_name)})", log_file.read()
+                f"py-clash-bot log ({basename(log_name)})", log_file.read(),
             )
 
 

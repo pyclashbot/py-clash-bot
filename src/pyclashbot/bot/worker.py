@@ -1,6 +1,4 @@
-import random
 import time
-from typing import Any
 
 from pyclashbot.bot.states import state_tree
 from pyclashbot.memu.launcher import check_for_vm

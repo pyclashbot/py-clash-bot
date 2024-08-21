@@ -8,7 +8,7 @@ PB_KEY_FILE = join(dirname(__file__), pardir, "__pb__")
 PB_KEY = None
 
 if exists(PB_KEY_FILE) and isfile(PB_KEY_FILE):
-    with open(PB_KEY_FILE, "r", encoding="utf-8") as f:
+    with open(PB_KEY_FILE, encoding="utf-8") as f:
         PB_KEY = f.read().strip()
 
 del PB_KEY_FILE
@@ -28,11 +28,14 @@ def upload_pastebin(name: str, text: str) -> str | None:
     """Uploads a paste to pastebin
 
     Args:
+    ----
         name (str): The name of the paste
         text (str): The text of the paste
 
     Returns:
+    -------
         str: The url of the paste
+
     """
     if PB_KEY is None:
         raise PastebinKeyNotSet("Pastebin key is not set")

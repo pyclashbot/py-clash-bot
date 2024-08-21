@@ -8,8 +8,7 @@ sg.theme(THEME)
 
 
 def no_jobs_popup() -> None:
-    """pysimplegui to popup when no jobs are selected."""
-
+    """Pysimplegui to popup when no jobs are selected."""
     # Define the layout of the GUI
     layout = [
         [
@@ -17,7 +16,7 @@ def no_jobs_popup() -> None:
                 "You must select at least one job!",
                 size=(25, 2),
                 justification="center",
-            )
+            ),
         ],
         [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
     ]
@@ -38,8 +37,7 @@ def no_jobs_popup() -> None:
 
 
 def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbox:
-    """returns a checkbox element for the joblist window"""
-
+    """Returns a checkbox element for the joblist window"""
     return sg.Checkbox(
         text,
         default=default_value,
@@ -84,7 +82,7 @@ battle_tab = (
     ],
     [
         job_check_box(
-            "Disable win/loss tracking", "disable_win_track_toggle", default_value=False
+            "Disable win/loss tracking", "disable_win_track_toggle", default_value=False,
         ),
     ],
     [
@@ -103,27 +101,27 @@ rewards_tab = [
     ],
     [
         job_check_box(
-            "Battlepass rewards", "open_battlepass_user_toggle", default_value=False
+            "Battlepass rewards", "open_battlepass_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Card mastery rewards", "card_mastery_user_toggle", default_value=False
+            "Card mastery rewards", "card_mastery_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Daily Challenge Rewards", "daily_rewards_user_toggle", default_value=False
+            "Daily Challenge Rewards", "daily_rewards_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Level Up Rewards", "level_up_chest_user_toggle", default_value=False
+            "Level Up Rewards", "level_up_chest_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False
+            "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False,
         ),
     ],
     [
@@ -145,12 +143,12 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Donate cards for FREE ", "free_donate_toggle", default_value=False
+            "Donate cards for FREE ", "free_donate_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Buy FREE shop offers", "free_offer_user_toggle", default_value=True
+            "Buy FREE shop offers", "free_offer_user_toggle", default_value=True,
         ),
     ],
     [
@@ -165,12 +163,12 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=False
+            "Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=False
+            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=False,
         ),
     ],
 ]
@@ -184,7 +182,7 @@ jobs_checklist = [
                 [sg.Tab("Battle Jobs", battle_tab)],
                 [sg.Tab("Collection Jobs", rewards_tab)],
                 [sg.Tab("Cards Jobs", card_collection_tab)],
-            ]
-        )
-    ]
+            ],
+        ),
+    ],
 ]

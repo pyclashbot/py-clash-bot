@@ -1,5 +1,4 @@
-"""
-This module provides a PyMemuc singleton instance.
+"""This module provides a PyMemuc singleton instance.
 """
 
 import sys

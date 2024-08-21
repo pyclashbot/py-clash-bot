@@ -1,11 +1,11 @@
 import time
+
 import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
-
 
 BANNERBOX_ICON_ON_CLASH_MAIN_PAGE = (350, 195)
 FIRST_100_TICKETS_PURCHASE_BUTTON = (303, 576)
@@ -41,7 +41,7 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
     # if bannerbox rewards are done, return True
     if not check_if_bannerbox_icon_exists_on_clashmain(vm_index):
         logger.change_status(
-            "Account doesn't have bannerbox icon. Skipping bannerbox rewards"
+            "Account doesn't have bannerbox icon. Skipping bannerbox rewards",
         )
         return next_state
 
@@ -78,7 +78,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         # if not back on main, return False
         if check_if_on_clash_main_menu(vm_index) is not True:
             logger.change_status(
-                "Failed to return to main after being maxed on bannerboxes. Restarting"
+                "Failed to return to main after being maxed on bannerboxes. Restarting",
             )
             return False
 

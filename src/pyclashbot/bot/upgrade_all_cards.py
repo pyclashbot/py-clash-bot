@@ -1,5 +1,6 @@
-import numpy
 import time
+
+import numpy
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -8,24 +9,25 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    region_is_color,
-    make_reference_image_list,
-    get_file_count,
     find_references,
+    get_file_count,
     get_first_location,
+    make_reference_image_list,
     pixel_is_equal,
+    region_is_color,
 )
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
 def find_and_click_button_by_image(vm_index, folder_name):
-    """
-    Finds and clicks on a button based on image recognition.
+    """Finds and clicks on a button based on image recognition.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         folder_name (str): The name of the folder containing reference images for the button.
+
     """
     # Create a list of reference image names from the folder
     names = make_reference_image_list(get_file_count(folder_name))
@@ -43,22 +45,23 @@ def find_and_click_button_by_image(vm_index, folder_name):
 
     if coord is None:
         return False
-    else:
-        # Click on the detected button location
-        click(vm_index, coord[1], coord[0])
-        time.sleep(2)
-        return True
+    # Click on the detected button location
+    click(vm_index, coord[1], coord[0])
+    time.sleep(2)
+    return True
 
 
 def is_boosted_section_present(vm_index):
-    """
-    Checks if the 'boosted' section line is present by verifying specific pixels' color.
+    """Checks if the 'boosted' section line is present by verifying specific pixels' color.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if the 'boosted' section is present, False otherwise.
+
     """
     # Convert screenshot to numpy array
     iar = numpy.asarray(screenshot(vm_index))
@@ -83,16 +86,18 @@ def is_boosted_section_present(vm_index):
 
 
 def detect_arrow_color(vm_index: int, card_index: int, y_positions: list[int]) -> str:
-    """
-    Detect the color of the arrow on a card based on predefined pixel positions and colors.
+    """Detect the color of the arrow on a card based on predefined pixel positions and colors.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         card_index (int): The index of the card (1-4).
         y_positions (list[int]): Y positions for color checks.
 
     Returns:
+    -------
         str: The color of the arrow ('green', 'blue', 'yellow', or 'unknown').
+
     """
     # Convert screenshot to numpy array
     iar = numpy.asarray(screenshot(vm_index))
@@ -127,14 +132,16 @@ def detect_arrow_color(vm_index: int, card_index: int, y_positions: list[int]) -
 
 
 def detect_elixir_logo(vm_index: int) -> bool:
-    """
-    Detect if the elixir logo is present on the screen by checking a specific pixel color.
+    """Detect if the elixir logo is present on the screen by checking a specific pixel color.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if the elixir logo color is detected, False otherwise.
+
     """
     # Convert screenshot to numpy array
     iar = numpy.asarray(screenshot(vm_index))
@@ -149,16 +156,16 @@ def detect_elixir_logo(vm_index: int) -> bool:
     # Check if the pixel color matches the elixir color within the tolerance
     if pixel_is_equal(elixir_color, pixel_color, tol=40):
         return True
-    else:
-        return False
+    return False
 
 
 def reset_ui_state(vm_index):
-    """
-    Resets the UI state by clicking on an empty space multiple times.
+    """Resets the UI state by clicking on an empty space multiple times.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
+
     """
     for _ in range(5):  # Click five times to ensure the UI is reset
         click(vm_index, 21, 415)
@@ -166,14 +173,15 @@ def reset_ui_state(vm_index):
 
 
 def handle_tower_troops(vm_index, logger: Logger):
-    """
-    Handles the detection and upgrade of Tower Troops cards if a green arrow is detected,
+    """Handles the detection and upgrade of Tower Troops cards if a green arrow is detected,
     restarting the detection from the first card after every successful upgrade. The UI
     is reset if the process needs to skip a card.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         logger (Logger): The logger object to use for logging.
+
     """
     # Define Y positions for arrow color checks on Tower Troops cards
     y_positions_tower_troops = [348, 353]
@@ -189,7 +197,7 @@ def handle_tower_troops(vm_index, logger: Logger):
             color = detect_arrow_color(vm_index, card_index, y_positions_tower_troops)
             if color == "green":
                 logger.change_status(
-                    status=f"Detected green arrow for Tower Troops card {card_index}. Upgrading..."
+                    status=f"Detected green arrow for Tower Troops card {card_index}. Upgrading...",
                 )
                 click(vm_index, *tower_troops_card_click_coords[card_index - 1])
                 time.sleep(2)
@@ -199,21 +207,21 @@ def handle_tower_troops(vm_index, logger: Logger):
 
                 if not find_and_click_button_by_image(vm_index, "upgrade_button"):
                     logger.change_status(
-                        "Failed to find the second upgrade button. Skipping this card."
+                        "Failed to find the second upgrade button. Skipping this card.",
                     )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
                 if check_for_missing_gold_popup(vm_index):
                     logger.change_status(
-                        "Missing gold popup exists. Skipping this upgradable card."
+                        "Missing gold popup exists. Skipping this upgradable card.",
                     )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
 
                 if not find_and_click_button_by_image(vm_index, "confirm_button"):
                     logger.change_status(
-                        "Failed to find the confirm button. Upgrade may not have been completed."
+                        "Failed to find the confirm button. Upgrade may not have been completed.",
                     )
                     reset_ui_state(vm_index)
                     continue  # Move to the next card
@@ -224,7 +232,7 @@ def handle_tower_troops(vm_index, logger: Logger):
                 logger.add_card_upgraded()
                 card_upgrades = logger.get_card_upgrades()
                 logger.log(
-                    f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
+                    f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}",
                 )
                 logger.change_status("Successfully upgraded the card")
 
@@ -233,13 +241,14 @@ def handle_tower_troops(vm_index, logger: Logger):
 
 
 def detect_and_upgrade(vm_index, logger, y_positions):
-    """
-    Detects, upgrades, and redetects colors if a card was upgraded.
+    """Detects, upgrades, and redetects colors if a card was upgraded.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         logger (Logger): The logger object for logging messages.
         y_positions (list[int]): Y positions for color checks.
+
     """
     while True:
         upgraded_this_cycle = False
@@ -271,7 +280,7 @@ def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 0751389 Failure getting to card page from clash main in Upgrade State"
+            status="Error 0751389 Failure getting to card page from clash main in Upgrade State",
         )
         return "restart"
 
@@ -344,16 +353,18 @@ def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
 
 
 def upgrade_card(vm_index, logger: Logger, card_index):
-    """
-    Upgrades a card with a green arrow detected, ensuring not to proceed if a gold missing popup appears.
+    """Upgrades a card with a green arrow detected, ensuring not to proceed if a gold missing popup appears.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine to perform the upgrade on.
         logger (Logger): The logger object to use for logging.
         card_index (int): The index of the card to upgrade, starting from 1.
 
     Returns:
+    -------
         None
+
     """
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
@@ -386,7 +397,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     # Use find_and_click_confirm_button to find and click the Confirm button
     if not find_and_click_button_by_image(vm_index, "confirm_button"):
         logger.log(
-            "Failed to find the confirm button. Upgrade may not have been completed."
+            "Failed to find the confirm button. Upgrade may not have been completed.",
         )
         return False
 
@@ -398,7 +409,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
     logger.add_card_upgraded()
     card_upgrades = logger.get_card_upgrades()
     logger.log(
-        f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
+        f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}",
     )
     logger.change_status("Successfully upgraded the card")
     return True
@@ -406,11 +417,11 @@ def upgrade_card(vm_index, logger: Logger, card_index):
 
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
-        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17)
+        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17),
     ):
         return False
     if not check_line_for_color(
-        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255)
+        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255),
     ):
         return False
 

@@ -1,11 +1,12 @@
-import time
-import numpy
 import random
+import time
+
+import numpy
 
 from pyclashbot.bot.nav import (
-    wait_for_clash_main_menu,
-    check_if_on_path_of_legends_clash_main,
     check_if_on_clash_main_menu,
+    check_if_on_path_of_legends_clash_main,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
@@ -21,7 +22,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
     # Check if in Path of Legends mode, attempting to navigate back to Trophy Road if so.
     if check_if_on_path_of_legends_clash_main(vm_index) is True:
         logger.change_status(
-            "Detected Path of Legends, attempting to navigate back to Trophy Road..."
+            "Detected Path of Legends, attempting to navigate back to Trophy Road...",
         )
         # Click on the specified coordinates to attempt to switch views.
         click(vm_index, 277, 400)
@@ -30,7 +31,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
         # Re-check if successfully navigated back to Trophy Road.
         if check_if_on_path_of_legends_clash_main(vm_index) is True:
             logger.change_status(
-                "Failed to navigate back to Trophy Road from Path of Legends"
+                "Failed to navigate back to Trophy Road from Path of Legends",
             )
             # Return "restart" if still in Path of Legends after clicking.
             return "restart"
@@ -39,7 +40,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
     while check_for_trophy_road_rewards(vm_index):
         logger.change_status("Trophy Road rewards detected. Attempting to collect...")
         trophy_road_state, rewards_collected = collect_trophy_road_rewards(
-            vm_index, logger
+            vm_index, logger,
         )
         if trophy_road_state is not True:
             logger.change_status("Failed to collect Trophy Road rewards.")
@@ -48,7 +49,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
         # Check if in Path of Legends mode, attempting to navigate back to Trophy Road if so.
         if check_if_on_path_of_legends_clash_main(vm_index) is True:
             logger.change_status(
-                "Detected Path of Legends, attempting to navigate back to Trophy Road..."
+                "Detected Path of Legends, attempting to navigate back to Trophy Road...",
             )
             # Click on the specified coordinates to attempt to switch views.
             click(vm_index, 277, 400)
@@ -57,7 +58,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
             # Re-check if successfully navigated back to Trophy Road.
             if check_if_on_path_of_legends_clash_main(vm_index) is True:
                 logger.change_status(
-                    "Failed to navigate back to Trophy Road from Path of Legends"
+                    "Failed to navigate back to Trophy Road from Path of Legends",
                 )
                 # Return "restart" if still in Path of Legends after clicking.
                 return "restart"
@@ -66,22 +67,24 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
         logger.change_status("No Trophy Road rewards detected.")
     else:
         logger.change_status(
-            f"{rewards_collected_result} Trophy Road rewards collected."
+            f"{rewards_collected_result} Trophy Road rewards collected.",
         )
     return next_state
 
 
 def check_for_trophy_road_rewards(vm_index):
-    """
-    Checks if Trophy Road rewards are available by looking for specific pixel colors
+    """Checks if Trophy Road rewards are available by looking for specific pixel colors
     on the Trophy Road button. If the expected colors are found, it indicates
     that there are unclaimed rewards.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if Trophy Road rewards are available, False otherwise.
+
     """
     # Take a screenshot and convert to a numpy array for pixel access.
     iar = numpy.asarray(screenshot(vm_index))
@@ -110,16 +113,18 @@ def check_for_trophy_road_rewards(vm_index):
 
 
 def collect_trophy_road_rewards(vm_index, logger):
-    """
-    Attempts to collect Trophy Road rewards by navigating to the Trophy Road rewards menu
+    """Attempts to collect Trophy Road rewards by navigating to the Trophy Road rewards menu
     and claiming available rewards.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         logger (Logger): Logger for status updates.
 
     Returns:
+    -------
         bool: True if rewards collection was successful or no rewards were available, False if an error occurred.
+
     """
     rewards_collected = 0
     # Click to potentially open the Trophy Road rewards menu.
@@ -170,29 +175,29 @@ def collect_trophy_road_rewards(vm_index, logger):
         click(vm_index, 210, 608)
         if wait_for_clash_main_menu(vm_index, logger):
             logger.change_status(
-                "Successfully returned to clash main menu after collecting rewards."
+                "Successfully returned to clash main menu after collecting rewards.",
             )
             return True, rewards_collected
-        else:
-            logger.change_status(
-                "Failed to return to clash main menu after collecting rewards."
-            )
-            return False, rewards_collected
-    else:
-        logger.change_status("Failed to enter Trophy Road rewards menu.")
+        logger.change_status(
+            "Failed to return to clash main menu after collecting rewards.",
+        )
         return False, rewards_collected
+    logger.change_status("Failed to enter Trophy Road rewards menu.")
+    return False, rewards_collected
 
 
 def find_collect_button(vm_index):
-    """
-    Checks the screen for the presence of a collect button on the Trophy Road rewards menu.
+    """Checks the screen for the presence of a collect button on the Trophy Road rewards menu.
     It determines if the button is on the left or right side of the screen.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         str: "left" if the collect button is on the left side, "right" if on the right side, or None if not found.
+
     """
     # Capture the current screen of the VM as a numpy array.
     iar = numpy.asarray(screenshot(vm_index))
@@ -223,14 +228,16 @@ def find_collect_button(vm_index):
 
 
 def strikes_detected(vm_index):
-    """
-    Checks if the screen indicates that strikes are detected during the Trophy Road rewards collection process.
+    """Checks if the screen indicates that strikes are detected during the Trophy Road rewards collection process.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if strikes are detected on the screen, indicating a special condition or warning during reward collection. False otherwise.
+
     """
     # Capture the current screen of the VM as a numpy array.
     iar = numpy.asarray(screenshot(vm_index))
@@ -259,14 +266,16 @@ def strikes_detected(vm_index):
 
 
 def check_if_on_trophy_road_rewards_menu(vm_index):
-    """
-    Checks if the current screen is the Trophy Road rewards menu based on specific pixel colors.
+    """Checks if the current screen is the Trophy Road rewards menu based on specific pixel colors.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if the current screen is the Trophy Road rewards menu, False otherwise.
+
     """
     # Capture the current screen of the VM as a numpy array.
     iar = numpy.asarray(screenshot(vm_index))

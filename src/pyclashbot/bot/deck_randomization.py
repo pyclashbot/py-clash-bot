@@ -11,7 +11,6 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 
-
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
 
@@ -22,7 +21,7 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     # if not on clash main, return 'restart'
     if check_if_on_clash_main_menu(vm_index) is False:
         logger.change_status(
-            "Not on clash main for randomize_deck_state(). Returning restart!"
+            "Not on clash main for randomize_deck_state(). Returning restart!",
         )
         return "restart"
 
@@ -174,17 +173,18 @@ def randomize_deck(vm_index: int, logger: Logger) -> bool:
     # if not on clash main, return false
     if check_if_on_clash_main_menu(vm_index) is False:
         logger.change_status(
-            "Failed to get to clash main after randomizing deck. Returning False"
+            "Failed to get to clash main after randomizing deck. Returning False",
         )
         return False
 
     logger.change_status(
-        "Randomized deck 2 in " + str(time.time() - start_time)[:5] + "s"
+        "Randomized deck 2 in " + str(time.time() - start_time)[:5] + "s",
     )
     return True
 
 
 import numpy
+
 from pyclashbot.memu.client import screenshot
 
 

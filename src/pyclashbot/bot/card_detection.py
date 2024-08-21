@@ -1,9 +1,10 @@
-from pyclashbot.detection import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
-import numpy
 import random
 import time
 from collections import Counter
+
+import numpy
+
+from pyclashbot.memu.client import click, screenshot
 
 # play coord data
 PLAY_COORDS = {
@@ -4157,12 +4158,12 @@ def find_closest_card(collected_data):
     best_offset = 1001
 
     collected_data_array = numpy.array(
-        [list(corner.values()) for corner in collected_data]
+        [list(corner.values()) for corner in collected_data],
     )
 
     for card_name, card_data in card_color_data.items():
         card_name, total_offset = calculate_offset(
-            card_name, card_data, collected_data_array
+            card_name, card_data, collected_data_array,
         )
         if total_offset < best_offset:
             best_offset = total_offset
@@ -4240,7 +4241,7 @@ card_toplefts = numpy.array(
         [199, 583],
         [266, 583],
         [334, 582],
-    ]
+    ],
 )
 
 # Pre-calculate x_coords and y_coords for each card
@@ -4265,7 +4266,7 @@ def check_which_cards_are_available(vm_index, check_champion=False, check_side=F
 
     if check_champion and (
         check_for_champion_ability(
-            battle_iar[462][324], battle_iar[453][334], battle_iar[462][336]
+            battle_iar[462][324], battle_iar[453][334], battle_iar[462][336],
         )
     ):
         click(vm_index, 330, 460)
@@ -4292,7 +4293,7 @@ def check_for_champion_ability(a, b, c):
             [215, 28, 223],
             [240, 39, 254],
             [239, 40, 251],
-        ]
+        ],
     )
 
     for p in pixels:
@@ -4341,14 +4342,14 @@ def calculate_play_coords(card_grouping: str, side_preference: str):
             if side_preference == "left":
                 return (random.randint(60, 206), random.randint(441, 456))
             return (random.randint(210, 351), random.randint(441, 456))
-        elif elapsed_time < 80:  # Less than 2 minutes
+        if elapsed_time < 80:  # Less than 2 minutes
             if side_preference == "left":
                 return (random.randint(60, 206), random.randint(360, 456))
             return (random.randint(210, 351), random.randint(360, 456))
-        else:  # 2 minutes or more
-            if side_preference == "left":
-                return (random.randint(60, 206), random.randint(281, 456))
-            return (random.randint(210, 351), random.randint(281, 456))
+        # 2 minutes or more
+        if side_preference == "left":
+            return (random.randint(60, 206), random.randint(281, 456))
+        return (random.randint(210, 351), random.randint(281, 456))
 
     if PLAY_COORDS.get(card_grouping):
         group_datum = PLAY_COORDS[card_grouping]

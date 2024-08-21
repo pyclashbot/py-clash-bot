@@ -1,35 +1,35 @@
 import random
 import time
+
 import numpy
 
+from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import (
-    make_reference_image_list,
-    get_file_count,
     find_references,
+    get_file_count,
     get_first_location,
+    make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
-
-from pyclashbot.memu.client import screenshot, click, scroll_up_a_little
+from pyclashbot.memu.client import click, screenshot, scroll_up_a_little
 
 
 def collect_battlepass_state(vm_index, logger, next_state):
     if not check_if_on_clash_main_menu(vm_index=vm_index):
         logger.change_status(
-            "Not on clash main before collecting battlepass, returning restart"
+            "Not on clash main before collecting battlepass, returning restart",
         )
         return "restart"
 
     if collect_battlepass(vm_index, logger) is False:
         logger.change_status(
-            "Failed somewhere in collect_battlepass(), returning restart"
+            "Failed somewhere in collect_battlepass(), returning restart",
         )
         return "restart"
 
     if not check_if_on_clash_main_menu(vm_index=vm_index):
         logger.change_status(
-            "Not on clash main after collecting battlepass, returning restart"
+            "Not on clash main after collecting battlepass, returning restart",
         )
         return "restart"
 
@@ -96,7 +96,7 @@ def collect_battlepass(vm_index, logger) -> bool:
     # if not on main to begin, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
-            "Not on clash main to being battlepass collection. returning False"
+            "Not on clash main to being battlepass collection. returning False",
         )
         return False
     print("On clash main for battlepass collection")
@@ -135,12 +135,12 @@ def collect_1_battlepass_reward(vm_index, logger):
     start_time = time.time()
     while time.time() - start_time < timeout:
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
-            vm_index, delay=3
+            vm_index, delay=3,
         )
 
         if claim_rewards_coord is None:
             logger.change_status(
-                "No claim rewards button, clicking more rewards button"
+                "No claim rewards button, clicking more rewards button",
             )
             click(vm_index, 70, 120)
             time.sleep(3)
@@ -154,7 +154,7 @@ def collect_1_battlepass_reward(vm_index, logger):
 
         # find the claim rewards button again
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
-            vm_index, delay=3
+            vm_index, delay=3,
         )
 
         # claim the reward
@@ -193,8 +193,7 @@ def find_claim_battlepass_rewards_button_with_delay(vm_index, delay):
 
 
 def find_claim_battlepass_rewards_button(vm_index):
-    """method to find the elixer price icon in a cropped image"""
-
+    """Method to find the elixer price icon in a cropped image"""
     folder = "claim_battlepass_button"
 
     names = make_reference_image_list(get_file_count(folder))

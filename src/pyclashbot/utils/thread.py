@@ -34,7 +34,7 @@ class StoppableThread(threading.Thread):
         self.shutdown_flag.set()
         if kill:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(
-                self.native_id, ctypes.py_object(ThreadKilled)
+                self.native_id, ctypes.py_object(ThreadKilled),
             )
 
 
@@ -50,8 +50,10 @@ class PausableThread(StoppableThread):
     def toggle_pause(self) -> bool:
         """Toggle the pause flag of the thread.
 
-        Returns:
+        Returns
+        -------
             bool: The new state of the pause flag.
+
         """
         if self.pause_flag.is_set():
             self.pause_flag.clear()

@@ -1,8 +1,7 @@
-import numpy
 import time
-
 from typing import Any
 
+import numpy
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -84,7 +83,7 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Getting to card page")
     if get_to_card_page_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 0751389 Failure getting to card page from clash main in Upgrade State"
+            status="Error 0751389 Failure getting to card page from clash main in Upgrade State",
         )
         return "restart"
 
@@ -126,14 +125,16 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
 
 def check_for_second_upgrade_button_condition_1(vm_index) -> bool:
-    """
-    Check if the second upgrade button condition 1 is met.
+    """Check if the second upgrade button condition 1 is met.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if the condition is met, False otherwise.
+
     """
     if not check_line_for_color(vm_index, 201, 473, 203, 503, (56, 228, 72)):
         return False
@@ -146,14 +147,16 @@ def check_for_second_upgrade_button_condition_1(vm_index) -> bool:
 
 
 def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
-    """
-    Check if the confirm upgrade button condition 1 is met.
+    """Check if the confirm upgrade button condition 1 is met.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
 
     Returns:
+    -------
         bool: True if the condition is met, False otherwise.
+
     """
     if not check_line_for_color(vm_index, 201, 401, 201, 432, (56, 228, 72)):
         return False
@@ -166,17 +169,19 @@ def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
 
 
 def upgrade_card(vm_index, logger: Logger, card_index):
-    """
-    Upgrades a card if it is upgradable.
+    """Upgrades a card if it is upgradable.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine to perform the upgrade on.
         logger (Logger): The logger object to use for logging.
         index (int): The index of the card to upgrade.
         upgrade_list (list[bool]): A list of bool values indicating whether each card is upgradable.
 
     Returns:
+    -------
         None
+
     """
     upgraded_a_card = False
     logger.change_status(status=f"Upgrading card index: {card_index}")
@@ -215,7 +220,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
 
         card_upgrades = logger.get_card_upgrades()
         logger.log(
-            f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}"
+            f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}",
         )
         # click confirm upgrade button
         logger.change_status(status="Clicking the confirm upgrade button")
@@ -244,7 +249,7 @@ def upgrade_card(vm_index, logger: Logger, card_index):
 
     # click deadspace
     logger.change_status(
-        status="Clicking deadspace after attemping upgrading this card"
+        status="Clicking deadspace after attemping upgrading this card",
     )
     for _ in range(4):
         click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
@@ -277,11 +282,11 @@ def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
 
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
-        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17)
+        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17),
     ):
         return False
     if not check_line_for_color(
-        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255)
+        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255),
     ):
         return False
 
@@ -307,7 +312,7 @@ def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
     card_is_upgradable = False
     upgrade_coord = UPGRADE_PIXEL_COORDS[card_index]
     if check_if_pixel_indicates_upgradable_card(
-        numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]]
+        numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]],
     ):
         card_is_upgradable = True
 

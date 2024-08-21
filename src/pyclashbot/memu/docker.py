@@ -1,5 +1,6 @@
 import threading
 import time
+
 import pygetwindow as gw
 
 GUI_NAME = "py-clash-bot | dev"
@@ -20,7 +21,7 @@ def move_window(name, x, y):
         window = gw.getWindowsWithTitle(name)[0]
         window.moveTo(x, y)
     except IndexError:
-        return None
+        return
 
 
 def get_window_size(name):
@@ -36,7 +37,7 @@ def resize_window(name, w, h):
         window = gw.getWindowsWithTitle(name)[0]
         window.resizeTo(w, h)
     except IndexError:
-        return None
+        return
 
 
 def dock_memu():

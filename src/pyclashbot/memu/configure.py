@@ -1,9 +1,9 @@
-"""
-A module for configuring Memu VMs.
+"""A module for configuring Memu VMs.
 """
 
-import time
 import logging
+import time
+
 from pymemuc import ConfigKeys
 
 from pyclashbot.memu.pmc import pmc

@@ -1,13 +1,14 @@
 """Unit Test for the image handler"""
 
-import unittest
 import os
+import unittest
+
 import numpy as np
 
 from pyclashbot.utils.image_handler import (
+    InvalidImageError,
     open_from_buffer,
     open_from_path,
-    InvalidImageError,
 )
 
 
@@ -21,7 +22,7 @@ class ImageHandlerTest(unittest.TestCase):
     def test_valid_image_from_buffer(self):
         """Load a valid image from the buffer"""
         with open(
-            os.path.join(self.test_image_folder, "valid_image.png"), "rb"
+            os.path.join(self.test_image_folder, "valid_image.png"), "rb",
         ) as im_file:
             image_data = im_file.read()
             img = open_from_buffer(image_data)
@@ -38,7 +39,7 @@ class ImageHandlerTest(unittest.TestCase):
     def test_invalid_image_from_buffer(self):
         """Test with an invalid image from the buffer"""
         with open(
-            os.path.join(self.test_image_folder, "invalid_image_data.png"), "rb"
+            os.path.join(self.test_image_folder, "invalid_image_data.png"), "rb",
         ) as im_file:
             image_data = im_file.read()
             with self.assertRaises(InvalidImageError):
@@ -53,7 +54,7 @@ class ImageHandlerTest(unittest.TestCase):
     def test_nonexistent_file(self):
         """Test with a nonexistent file"""
         non_existent_path = os.path.join(
-            self.test_image_folder, "nonexistent_image.png"
+            self.test_image_folder, "nonexistent_image.png",
         )
         with self.assertRaises(FileNotFoundError):
             open_from_path(non_existent_path)
