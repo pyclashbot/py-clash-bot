@@ -6,7 +6,7 @@ Welcome to the py-clash-bot project! We appreciate your interest in contributing
 
 To set up a development environment for py-clash-bot, you will need to have the following tools installed:
 
-- [Python 3.11](https://www.python.org/)
+- [Python 3.12](https://www.python.org/)
 - [Poetry](https://python-poetry.org/)
 
 Once you have these tools installed, follow these steps to set up the project:
