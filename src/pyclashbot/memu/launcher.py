@@ -1,5 +1,4 @@
-"""
-This module contains functions for launching and controlling MEmu virtual machines,
+"""This module contains functions for launching and controlling MEmu virtual machines,
 as well as starting and stopping the Clash Royale app within them.
 """
 
@@ -13,8 +12,8 @@ import psutil
 import PySimpleGUI as sg
 from pymemuc import PyMemucError, VMInfo
 
+from pyclashbot.bot.nav import check_if_in_battle_at_start, check_if_on_clash_main_menu
 from pyclashbot.memu.client import click, screenshot
-from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
 from pyclashbot.memu.configure import configure_vm
 from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.logger import Logger
@@ -52,12 +51,13 @@ def check_vm_size(vm_index):
 
 
 def restart_emulator(logger, start_time=time.time(), open_clash=True):
-    """
-    Restart the emulator.
+    """Restart the emulator.
 
     Args:
+    ----
         logger (Logger): Logger object
         start_time (float, optional): Start time. Defaults to time.time().
+
     """
     # Rest of the code...
     # stop all vms
@@ -98,14 +98,14 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
             if check_if_on_clash_main_menu(vm_index) is True:
                 logger.change_status("Detected clash main!")
                 logger.log(
-                    f"Took {str(time.time() - start_time)[:5]}s to launch emulator"
+                    f"Took {str(time.time() - start_time)[:5]}s to launch emulator",
                 )
                 return True
             # Check if a battle is detected at start
             battle_start_result = check_if_in_battle_at_start(vm_index, logger)
             if battle_start_result == "good":
                 return True  # Successfully handled starting battle or end-of-battle scenario
-            elif battle_start_result == "restart":
+            if battle_start_result == "restart":
                 # Need to restart the process due to issues detected
                 return restart_emulator(logger, start_time)
 
@@ -129,14 +129,16 @@ def restart_emulator(logger, start_time=time.time(), open_clash=True):
 
 
 def skip_ads(vm_index):
-    """
-    Skip ads in the emulator.
+    """Skip ads in the emulator.
 
     Args:
+    ----
         vm_index (int): Index of the virtual machine.
 
     Returns:
+    -------
         str: "success" if ads are skipped successfully, "fail" otherwise.
+
     """
     try:
         for _ in range(4):
@@ -152,10 +154,13 @@ def check_for_vm(logger: Logger) -> int:
     """Check for a vm named pyclashbot, create one if it doesn't exist
 
     Args:
+    ----
         logger (Logger): Logger object
 
     Returns:
+    -------
         int: index of the vm
+
     """
     start_time = time.time()
 
@@ -168,7 +173,7 @@ def check_for_vm(logger: Logger) -> int:
 
         if vm_index != -1:
             logger.change_status(
-                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} tries'
+                f'Found a vm named "pyclashbot" (#{vm_index}) in {find_vm_tries} tries',
             )
             return vm_index
 
@@ -185,19 +190,20 @@ def check_for_vm(logger: Logger) -> int:
     rename_vm(vm_index=new_vm_index, name=EMULATOR_NAME)
 
     logger.change_status(
-        f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s"
+        f"Created and configured new pyclashbot emulator in {str(time.time() - start_time)[:5]}s",
     )
 
     return new_vm_index
 
 
 def start_clash_royale(logger: Logger, vm_index):
-    """
-    Start Clash Royale in the emulator.
+    """Start Clash Royale in the emulator.
 
     Args:
+    ----
         logger (Logger): Logger object.
         vm_index (int): Index of the virtual machine.
+
     """
     # Function implementation goes here
 
@@ -210,7 +216,7 @@ def start_clash_royale(logger: Logger, vm_index):
     if not found:
         # notify user that clash royale is not installed, program will exit
         logger.change_status(
-            status="Clash royale is not installed. Please install it and restart"
+            status="Clash royale is not installed. Please install it and restart",
         )
         show_clash_royale_setup_gui()
 
@@ -232,7 +238,7 @@ def rename_vm(
     vm_index: int,
     name: str,
 ):
-    """rename the vm to name"""
+    """Rename the vm to name"""
     pmc.rename_vm(vm_index=vm_index, new_name=name)
 
 
@@ -319,7 +325,7 @@ def stop_memuc_console(process_id: int) -> None:
 
 
 def close_clash_royale_app(logger, vm_index):
-    """using pymemuc check if clash royale is installed"""
+    """Using pymemuc check if clash royale is installed"""
     apk_base_name = "com.supercell.clashroyale"
 
     pmc.stop_app_vm(apk_base_name, vm_index)
@@ -327,8 +333,7 @@ def close_clash_royale_app(logger, vm_index):
 
 
 def close_everything_memu():
-    """
-    Closes all MEmu processes.
+    """Closes all MEmu processes.
     """
     name_list = [
         "MEmuConsole.exe",
@@ -350,10 +355,8 @@ def close_everything_memu():
 
 
 def show_clash_royale_setup_gui():
+    """Displays a GUI window indicating that Clash Royale is not installed or setup.
     """
-    Displays a GUI window indicating that Clash Royale is not installed or setup.
-    """
-
     out_text = """Clash Royale is not installed or setup.
 Please install Clash Royale, finish the in-game tutorial
 and login before using this bot."""
@@ -428,7 +431,7 @@ def reset_clashbot_emulator(logger):
         logger.change_status("Deleting old emulator...")
         if delete_vm(vm_index):
             logger.change_status(
-                f"Successfully deleted old emulator of index {vm_index}!"
+                f"Successfully deleted old emulator of index {vm_index}!",
             )
         else:
             logger.change_status(f"Failed to delete old emulator of index {vm_index}")
@@ -450,7 +453,7 @@ def reset_clashbot_emulator(logger):
             break
 
     logger.change_status(
-        "Emualtor refreshed! Install Clash Royale and restart the bot."
+        "Emualtor refreshed! Install Clash Royale and restart the bot.",
     )
 
 

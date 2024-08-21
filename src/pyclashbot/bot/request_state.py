@@ -29,14 +29,16 @@ from pyclashbot.utils.logger import Logger
 
 
 def find_request_button(vm_index, logger: Logger):
-    """
-    Finds the location of the request button on the screen.
+    """Finds the location of the request button on the screen.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine to search for the request button.
 
     Returns:
+    -------
         list[int] or None: The coordinates of the request button if found, or None if not found.
+
     """
     folder_name = "request_button"
     size: int = get_file_count(folder_name)
@@ -55,23 +57,24 @@ def find_request_button(vm_index, logger: Logger):
     if coord is None:
         logger.log("Request button not found.")
         return None
-    else:
-        logger.log(f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
-        return [coord[1], coord[0]]
+    logger.log(f"The button coordinates were found, X: {coord[1]} Y: {coord[0]}")
+    return [coord[1], coord[0]]
 
 
 def request_state(vm_index, logger: Logger, next_state: str) -> str:
-    """
-    The request state of the bot. This state is responsible for checking if the bot is in a clan,
+    """The request state of the bot. This state is responsible for checking if the bot is in a clan,
     checking if a request can be made, and making a request if possible.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine to run the bot on.
         logger (Logger): The logger object to log messages to.
         next_state (str): The next state to transition to after this state is complete.
 
     Returns:
+    -------
         str: The next state to transition to after this state is complete.
+
     """
     logger.change_status(status="Doing request state!")
     logger.add_request_attempt()
@@ -93,7 +96,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
         if in_a_clan_return == "restart":
             logger.change_status(
-                status="Error 05708425 Failure with check_if_in_a_clan"
+                status="Error 05708425 Failure with check_if_in_a_clan",
             )
             return "restart"
 
@@ -175,7 +178,7 @@ def check_if_can_scroll_in_request_page(vm_index) -> bool:
 
 
 def request_state_check_if_in_a_clan(
-    vm_index, logger: Logger
+    vm_index, logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -185,7 +188,7 @@ def request_state_check_if_in_a_clan(
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 9076092860923485 Failure with get_to_profile_page"
+            status="Error 9076092860923485 Failure with get_to_profile_page",
         )
         return "restart"
 
@@ -200,7 +203,7 @@ def request_state_check_if_in_a_clan(
     click(vm_index, 15, 300)
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
-            status="Error 87258301758939 Failure with wait_for_clash_main_menu"
+            status="Error 87258301758939 Failure with wait_for_clash_main_menu",
         )
         return "restart"
 
@@ -252,7 +255,7 @@ def do_request(vm_index, logger: Logger) -> bool:
 
     # Perform random scrolling in the request page
     do_random_scrolling_in_request_page(
-        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount
+        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount,
     )
 
     # Timeout settings for random clicking
@@ -269,7 +272,7 @@ def do_request(vm_index, logger: Logger) -> bool:
             or attempt_count > 6
         ):
             logger.change_status(
-                "Timeout or too many attempts while trying to click a random card for request"
+                "Timeout or too many attempts while trying to click a random card for request",
             )
             return False
 
@@ -399,13 +402,13 @@ def check_if_can_request_2(vm_index) -> bool:
 def check_for_trade_cards_icon(vm_index) -> bool:
     lines = [
         check_line_for_color(
-            vm_index, x_1=33, y_1=502, x_2=56, y_2=502, color=(47, 69, 105)
+            vm_index, x_1=33, y_1=502, x_2=56, y_2=502, color=(47, 69, 105),
         ),
         check_line_for_color(
-            vm_index, x_1=56, y_1=507, x_2=108, y_2=506, color=(253, 253, 203)
+            vm_index, x_1=56, y_1=507, x_2=108, y_2=506, color=(253, 253, 203),
         ),
         check_line_for_color(
-            vm_index, x_1=37, y_1=515, x_2=125, y_2=557, color=(255, 188, 42)
+            vm_index, x_1=37, y_1=515, x_2=125, y_2=557, color=(255, 188, 42),
         ),
     ]
 

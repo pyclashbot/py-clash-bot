@@ -1,41 +1,44 @@
-"""
-This module contains functions related to donating cards in Clash of Clans.
+"""This module contains functions related to donating cards in Clash of Clans.
 """
 
-import time
 import random
-import numpy
+import time
 from typing import Literal
+
+import numpy
+
 from pyclashbot.bot.nav import (
-    check_if_on_clash_main_menu,
-    check_if_on_profile_page,
-    get_to_clan_tab_from_clash_main,
-    handle_trophy_reward_menu,
     check_for_trophy_reward_menu,
+    check_if_on_clash_main_menu,
+    get_to_clan_tab_from_clash_main,
+    get_to_profile_page,
+    handle_trophy_reward_menu,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
+    condense_coordinates,
+    crop_image,
     find_references,
     get_file_count,
     get_first_location,
     make_reference_image_list,
     pixel_is_equal,
-    crop_image,
-    condense_coordinates,
 )
-from pyclashbot.memu.client import screenshot, click, scroll_up
+from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
-from pyclashbot.bot.nav import get_to_profile_page, wait_for_clash_main_menu
 
 
 def find_claim_button(vm_index):
-    """
-    Finds the location of the claim button for the free gift in the clan page.
+    """Finds the location of the claim button for the free gift in the clan page.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine to search for the claim button.
 
     Returns:
+    -------
         list[int] or None: The coordinates of the claim button if found, or None if not found.
+
     """
     folder_name = "claim_clan_button"
     size = get_file_count(folder_name)
@@ -60,13 +63,14 @@ only_free = False
 
 
 def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle: bool):
-    """
-    This function represents the state of donating cards in Clash of Clans.
+    """This function represents the state of donating cards in Clash of Clans.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         logger (Logger): The logger object for logging.
         next_state: The next state to transition to.
+
     """
     logger.add_donate_attempt()
 
@@ -90,7 +94,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
         if in_a_clan_return == "restart":
             logger.change_status(
-                status="Error 05708425 Failure with check_if_in_a_clan"
+                status="Error 05708425 Failure with check_if_in_a_clan",
             )
             return "restart"
 
@@ -145,7 +149,7 @@ def donate_state_check_pixels_for_clan_flag(vm_index) -> bool:
 
 
 def donate_state_check_if_in_a_clan(
-    vm_index, logger: Logger
+    vm_index, logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, return
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -155,7 +159,7 @@ def donate_state_check_if_in_a_clan(
     # get to profile page
     if get_to_profile_page(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 9076092860923485 Failure with get_to_profile_page"
+            status="Error 9076092860923485 Failure with get_to_profile_page",
         )
         return "restart"
 
@@ -170,7 +174,7 @@ def donate_state_check_if_in_a_clan(
     click(vm_index, 15, 450)
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
-            status="Error 87258301758939 Failure with wait_for_clash_main_menu"
+            status="Error 87258301758939 Failure with wait_for_clash_main_menu",
         )
         return "restart"
 
@@ -308,8 +312,7 @@ def find_donate_buttons(vm_index):
 
 
 def find_donate_button_for_free(image, vm_index, region):
-    """method to find the donate icon for FREE in a cropped image"""
-
+    """Method to find the donate icon for FREE in a cropped image"""
     coord = find_donate_button(image)  # [y,x]
     # print(f"x: {coord[1] + region[0]}, y: {coord[0] + region[1]}")
     if coord != None:
@@ -337,15 +340,13 @@ def find_donate_button_for_free(image, vm_index, region):
         if free_coord is None:
             # print("it's not free")
             return None
-        else:
-            # print("it is!")
-            return [coord[1], coord[0]]
+        # print("it is!")
+        return [coord[1], coord[0]]
     return None
 
 
 def find_donate_button(image):
-    """method to find the donate icon in a cropped image"""
-
+    """Method to find the donate icon in a cropped image"""
     folder = "donate_button_icon"
 
     names = make_reference_image_list(get_file_count(folder))

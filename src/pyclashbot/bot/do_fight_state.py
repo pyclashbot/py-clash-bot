@@ -1,25 +1,22 @@
 """random module for randomizing fight plays"""
 
 import collections
-import numpy
 import random
 import time
 from typing import Literal
-
-
 from xmlrpc.client import Boolean
 
-
 from pyclashbot.bot.card_detection import (
+    check_which_cards_are_available,
     create_default_bridge_iar,
     get_play_coords_for_card,
-    check_which_cards_are_available,
     switch_side,
 )
 from pyclashbot.bot.nav import (
+    check_for_events_page,
+    check_for_in_battle_with_delay,
     check_for_trophy_reward_menu,
     check_if_in_battle,
-    check_for_in_battle_with_delay,
     check_if_on_clash_main_menu,
     get_to_activity_log,
     get_to_challenges_tab_from_main,
@@ -27,10 +24,13 @@ from pyclashbot.bot.nav import (
     wait_for_1v1_battle_start,
     wait_for_2v2_battle_start,
     wait_for_clash_main_menu,
-    check_for_events_page,
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
+    find_references,
+    get_file_count,
+    get_first_location,
+    make_reference_image_list,
     pixel_is_equal,
 )
 from pyclashbot.memu.client import (
@@ -39,12 +39,6 @@ from pyclashbot.memu.client import (
     scroll_up_on_left_side_of_screen,
 )
 from pyclashbot.utils.logger import Logger
-from pyclashbot.detection.image_rec import (
-    make_reference_image_list,
-    find_references,
-    get_file_count,
-    get_first_location,
-)
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
@@ -90,14 +84,13 @@ def do_2v2_fight_state(
     random_fight_mode: Boolean,
     called_from_launching=False,
 ):
-    """method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
-
+    """Method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
     print(f"random_fight_mode is {random_fight_mode} in do_2v2_fight_state()")
 
     # wait for battle start
     if wait_for_2v2_battle_start(vm_index=vm_index, logger=logger) is not True:
         logger.change_status(
-            status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()"
+            status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()",
         )
         return "restart"
 
@@ -129,7 +122,6 @@ def do_1v1_fight_state(
     called_from_launching=False,
 ):
     """Handle the entirety of the 1v1 battle state (start fight, do fight, end fight)."""
-
     logger.change_status("do_1v1_fight_state state")
     logger.change_status("Waiting for 1v1 battle to start")
 
@@ -139,7 +131,7 @@ def do_1v1_fight_state(
     # Wait for battle start
     if wait_for_1v1_battle_start(vm_index, logger) == "restart":
         logger.change_status(
-            "Error waiting for 1v1 battle to start in do_1v1_fight_state()"
+            "Error waiting for 1v1 battle to start in do_1v1_fight_state()",
         )
         return "restart"
 
@@ -168,14 +160,16 @@ def do_1v1_fight_state(
 
 
 def check_both_1v1_modes_available(vm_index):
-    """
-    Check if the Path of Legends mode is available, indicating that both 1v1 modes are available.
+    """Check if the Path of Legends mode is available, indicating that both 1v1 modes are available.
 
     Args:
+    ----
         vm_index (int): Index of the virtual machine.
 
     Returns:
+    -------
         bool: True if Path of Legends mode is available (implying both modes are available), False otherwise.
+
     """
     iar = screenshot(vm_index)
 
@@ -330,13 +324,11 @@ def start_fight(vm_index, logger, mode):
     do_job_incrementing(logger, mode)
     if mode == "2v2":
         return start_2v2_fight(vm_index, logger)
-    else:
-        return start_1v1_type_fight(vm_index, mode)
+    return start_1v1_type_fight(vm_index, mode)
 
 
 def start_2v2_fight(vm_index, logger: Logger) -> Boolean:
-    """method to handle starting a 2v2 fight"""
-
+    """Method to handle starting a 2v2 fight"""
     logger.change_status(status="Start fight state")
     logger.change_status(status="Starting 2v2 mode")
 
@@ -402,8 +394,7 @@ def check_for_locked_events_page(vm_index):
 
 
 def check_for_challenge_page_on_events_tab(vm_index):
-    """method to check for the presence of an ongoing challenge page in the events tab"""
-
+    """Method to check for the presence of an ongoing challenge page in the events tab"""
     iar = screenshot(vm_index)
     pixels = [
         iar[612][317],
@@ -427,8 +418,7 @@ def check_for_challenge_page_on_events_tab(vm_index):
 
 
 def close_this_challenge_page(vm_index) -> None:
-    """method to close an ongoing challenge page on the events tab"""
-
+    """Method to close an ongoing challenge page on the events tab"""
     click(
         vm_index,
         CLOSE_THIS_CHALLENGE_PAGE_BUTTON[0],
@@ -437,25 +427,22 @@ def close_this_challenge_page(vm_index) -> None:
 
 
 def click_2v2_icon_button(vm_index) -> None:
-    """method to click the 2v2 icon on the challenges tab"""
-
+    """Method to click the 2v2 icon on the challenges tab"""
     click(vm_index, _2V2_BATTLE_ICON_COORD[0], _2V2_BATTLE_ICON_COORD[1])
 
 
 def click_2v2_battle_button(vm_index) -> None:
-    """method to click the 2v2 battle button on the challenges tab"""
+    """Method to click the 2v2 battle button on the challenges tab"""
     click(vm_index, _2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
 
 
 def click_quickmatch_button(vm_index) -> None:
-    """method to click the quickmatch button on the 2v2 battle screen"""
-
+    """Method to click the quickmatch button on the 2v2 battle screen"""
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
 def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
-    """method to do an emote in a 2v2 match"""
-
+    """Method to do an emote in a 2v2 match"""
     logger.change_status("Hitting an emote")
 
     # click emote button
@@ -490,16 +477,15 @@ def mag_dump(vm_index, logger):
 
 
 def wait_for_elixer(
-    vm_index, logger, random_elixer_wait, WAIT_THRESHOLD=5000, PLAY_THRESHOLD=10000
-) -> Boolean | Literal["restart"] | Literal["no battle"]:
-    """method to wait for 4 elixer during a battle"""
-
+    vm_index, logger, random_elixer_wait, WAIT_THRESHOLD=5000, PLAY_THRESHOLD=10000,
+) -> Literal["restart", "no battle"] | Boolean:
+    """Method to wait for 4 elixer during a battle"""
     start_time = time.time()
 
     while not count_elixer(vm_index, random_elixer_wait):
         wait_time = time.time() - start_time
         logger.change_status(
-            f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s..."
+            f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
         )
 
         card_inhand = len(check_which_cards_are_available(vm_index, True, False))
@@ -521,7 +507,7 @@ def wait_for_elixer(
             return "no battle"
 
     logger.change_status(
-        f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer."
+        f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer.",
     )
 
     return True
@@ -543,7 +529,7 @@ elixer_color = [240, 137, 244]
 
 
 def count_elixer(vm_index, elixer_count) -> bool:
-    """method to check for 4 elixer during a battle"""
+    """Method to check for 4 elixer during a battle"""
     iar = screenshot(vm_index)
 
     if pixel_is_equal(
@@ -556,9 +542,9 @@ def count_elixer(vm_index, elixer_count) -> bool:
 
 
 def end_fight_state(
-    vm_index, logger: Logger, next_state, disable_win_tracker_toggle=True
+    vm_index, logger: Logger, next_state, disable_win_tracker_toggle=True,
 ):
-    """method to handle the time after a fight and before the next state"""
+    """Method to handle the time after a fight and before the next state"""
     # count the crown score on this end-battle screen
 
     # get to clash main after this fight
@@ -590,10 +576,9 @@ def end_fight_state(
 
 
 def check_if_previous_game_was_win(
-    vm_index, logger: Logger
+    vm_index, logger: Logger,
 ) -> bool | Literal["restart"]:
-    """method to handle the checking if the previous game was a win or loss"""
-
+    """Method to handle the checking if the previous game was a win or loss"""
     logger.change_status(status="Checking if last game was a win/loss")
 
     # Use wait_for_clash_main_menu to ensure we are on the main menu.
@@ -604,7 +589,7 @@ def check_if_previous_game_was_win(
     # get to clash main options menu
     if get_to_activity_log(vm_index, logger) == "restart":
         logger.change_status(
-            status="Error 8967203948 get_to_activity_log() in check_if_previous_game_was_win()"
+            status="Error 8967203948 get_to_activity_log() in check_if_previous_game_was_win()",
         )
 
         return "restart"
@@ -618,7 +603,7 @@ def check_if_previous_game_was_win(
     click(vm_index, CLOSE_BATTLE_LOG_BUTTON[0], CLOSE_BATTLE_LOG_BUTTON[1])
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
-            status="Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()"
+            status="Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()",
         )
         return "restart"
     time.sleep(2)
@@ -627,17 +612,17 @@ def check_if_previous_game_was_win(
 
 
 def check_pixels_for_win_in_battle_log(vm_index) -> bool:
-    """method to check pixels that appear in the battle
-    log to determing if the previous game was a win"""
-
+    """Method to check pixels that appear in the battle
+    log to determing if the previous game was a win
+    """
     line1 = check_line_for_color(
-        vm_index, x_1=47, y_1=135, x_2=109, y_2=154, color=(255, 51, 102)
+        vm_index, x_1=47, y_1=135, x_2=109, y_2=154, color=(255, 51, 102),
     )
     line2 = check_line_for_color(
-        vm_index, x_1=46, y_1=152, x_2=115, y_2=137, color=(255, 51, 102)
+        vm_index, x_1=46, y_1=152, x_2=115, y_2=137, color=(255, 51, 102),
     )
     line3 = check_line_for_color(
-        vm_index, x_1=47, y_1=144, x_2=110, y_2=147, color=(255, 51, 102)
+        vm_index, x_1=47, y_1=144, x_2=110, y_2=147, color=(255, 51, 102),
     )
 
     if line1 and line2 and line3:
@@ -756,8 +741,7 @@ def get_to_main_after_fight(vm_index, logger):
             click(vm_index, 179, 600)
             time.sleep(3)
             continue
-        else:
-            print("Not on events page...")
+        print("Not on events page...")
 
         time.sleep(1)
         print("Clicking on deadspace to close potential pop-up windows.")
@@ -808,11 +792,11 @@ def play_a_card(vm_index, logger) -> Boolean:
         return False
 
     available_card_check_time_taken = str(
-        time.time() - available_card_check_start_time
+        time.time() - available_card_check_start_time,
     )[:3]
 
     logger.change_status(
-        f"These cards are available: {card_indicies} ({available_card_check_time_taken}s)"
+        f"These cards are available: {card_indicies} ({available_card_check_time_taken}s)",
     )
 
     card_index = select_card_index(card_indicies, last_three_cards)
@@ -824,11 +808,11 @@ def play_a_card(vm_index, logger) -> Boolean:
     play_coord_calculation_start_time = time.time()
     card_id, play_coord = get_play_coords_for_card(vm_index, logger, card_index)
     play_coord_calculation_time_taken = str(
-        time.time() - play_coord_calculation_start_time
+        time.time() - play_coord_calculation_start_time,
     )[:3]
 
     logger.change_status(
-        f"Calculated play for: {card_id} at {play_coord} ({play_coord_calculation_time_taken}s)"
+        f"Calculated play for: {card_id} at {play_coord} ({play_coord_calculation_time_taken}s)",
     )
 
     # click the card index
@@ -904,7 +888,7 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
             logger.change_status("Failed to play a card, retrying...")
         # play_time_taken = str(time.time() - play_start_time)[:4]
         logger.change_status(
-            f"Made a play in {str(time.time() - play_start_time)[:4]}s"
+            f"Made a play in {str(time.time() - play_start_time)[:4]}s",
         )
 
     logger.change_status("End of the 2v2 fight!")
@@ -916,7 +900,7 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
 
 
 def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
-    """method for handling dynamicly timed 1v1 fight"""
+    """Method for handling dynamicly timed 1v1 fight"""
     create_default_bridge_iar(vm_index)
     last_three_cards = collections.deque(maxlen=3)
     ingame_time = time.time()
@@ -967,7 +951,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
             logger.change_status("Failed to play a card, retrying...")
         # play_time_taken = str(time.time() - play_start_time)[:4]
         logger.change_status(
-            f"Made a play in {str(time.time() - play_start_time)[:4]}s"
+            f"Made a play in {str(time.time() - play_start_time)[:4]}s",
         )
 
     logger.change_status("End of the 1v1 fight!")
@@ -979,7 +963,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
 
 def _2v2_random_fight_loop(vm_index, logger: Logger):
-    """method to handle a dynamicly timed 2v2 fight"""
+    """Method to handle a dynamicly timed 2v2 fight"""
     start_time = time.time()
 
     # while in battle:
@@ -996,7 +980,7 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
         # increment plays counter
         logger.change_status(
-            f"Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n"
+            f"Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n",
         )
 
     logger.change_status("Finished with this 2v2 fight")
@@ -1005,8 +989,7 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
 
 def _1v1_random_fight_loop(vm_index, logger):
-    """method for handling dynamicly timed 1v1 fight"""
-
+    """Method for handling dynamicly timed 1v1 fight"""
     logger.change_status(status="Starting 1v1 battle with random plays")
 
     mag_dump(vm_index, logger)
@@ -1032,7 +1015,7 @@ def fight_image_save_debug(vm_index, fights=2):
     for _ in range(fights):
         # if not on clash main ,return Falase
         if not check_if_on_clash_main_menu(vm_index):
-            print(f"Start this method on clash main!")
+            print("Start this method on clash main!")
             return False
 
         # start a random fight

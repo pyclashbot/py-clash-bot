@@ -1,11 +1,15 @@
-from pyclashbot.utils.logger import Logger
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
-import numpy
-from pyclashbot.memu.client import screenshot, click, scroll
-from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.bot.nav import get_to_challenges_tab_from_main
 import random
 import time
+
+import numpy
+
+from pyclashbot.bot.nav import (
+    check_if_on_clash_main_menu,
+    get_to_challenges_tab_from_main,
+)
+from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.memu.client import click, screenshot, scroll
+from pyclashbot.utils.logger import Logger
 
 
 def check_if_can_collect_season_shop_offers(vm_index: int) -> bool:
@@ -153,7 +157,7 @@ def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: 
     # if cant collect rewards, return next_state
     if not check_if_can_collect_season_shop_offers(vm_index):
         logger.change_status(
-            f"Cant collect season shop offers. Returning next state as : {next_state}"
+            f"Cant collect season shop offers. Returning next state as : {next_state}",
         )
         return next_state
 

@@ -57,50 +57,50 @@ controls = [
                 [make_job_increment_control_object("shop_buy_increment_user_input")],
                 [
                     make_job_increment_control_object(
-                        "card_upgrade_increment_user_input"
-                    )
+                        "card_upgrade_increment_user_input",
+                    ),
                 ],
                 [
                     make_job_increment_control_object(
-                        "daily_reward_increment_user_input"
-                    )
+                        "daily_reward_increment_user_input",
+                    ),
                 ],
                 [
                     make_job_increment_control_object(
-                        "card_mastery_collect_increment_user_input"
-                    )
+                        "card_mastery_collect_increment_user_input",
+                    ),
                 ],
                 [make_job_increment_control_object("open_chests_increment_user_input")],
                 [
                     make_job_increment_control_object(
-                        "deck_randomization_increment_user_input"
-                    )
+                        "deck_randomization_increment_user_input",
+                    ),
                 ],
                 [make_job_increment_control_object("war_attack_increment_user_input")],
                 [
                     make_job_increment_control_object(
-                        "battlepass_collect_increment_user_input"
-                    )
+                        "battlepass_collect_increment_user_input",
+                    ),
                 ],
                 [
                     make_job_increment_control_object(
-                        "level_up_chest_increment_user_input"
-                    )
+                        "level_up_chest_increment_user_input",
+                    ),
                 ],
                 [
                     make_job_increment_control_object(
-                        "trophy_road_reward_increment_user_input"
-                    )
+                        "trophy_road_reward_increment_user_input",
+                    ),
                 ],
                 [
                     make_job_increment_control_object(
-                        "season_shop_buys_increment_user_input"
-                    )
+                        "season_shop_buys_increment_user_input",
+                    ),
                 ],
                 [
                     make_job_increment_control_object(
-                        "account_switching_increment_user_input"
-                    )
+                        "account_switching_increment_user_input",
+                    ),
                 ],
             ],
             justification="right",

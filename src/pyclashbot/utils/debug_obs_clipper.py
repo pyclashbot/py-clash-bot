@@ -1,6 +1,7 @@
 import time
-import pygetwindow as gw
+
 import pyautogui
+import pygetwindow as gw
 
 
 def obs_window_exists():

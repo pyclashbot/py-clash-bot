@@ -1,4 +1,5 @@
 import time
+
 import numpy
 
 from pyclashbot.bot.nav import (
@@ -7,17 +8,16 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     find_references,
-    get_first_location,
     get_file_count,
+    get_first_location,
     make_reference_image_list,
     pixel_is_equal,
 )
 from pyclashbot.memu.client import (
-    screenshot,
     click,
+    screenshot,
     scroll_down_slowly_in_shop_page,
 )
-
 from pyclashbot.utils.logger import Logger
 
 SHOP_BUY_TIMEOUT = 35
@@ -39,7 +39,7 @@ def buy_shop_offers_state(
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
-            "Not on clash main to being buying offers. Returning restart"
+            "Not on clash main to being buying offers. Returning restart",
         )
         return "restart"
 
@@ -97,7 +97,7 @@ def buy_shop_offers_main(
         if gold_buy_toggle or free_offers_toggle:
             while (
                 buy_offers_from_this_shop_page(
-                    vm_index, logger, gold_buy_toggle, free_offers_toggle
+                    vm_index, logger, gold_buy_toggle, free_offers_toggle,
                 )
                 is True
                 and done_buying is False
@@ -135,8 +135,7 @@ def buy_shop_offers_main(
 
 
 def search_for_free_purchases(vm_index):
-    """method to find the free offer icon image in the shop pages"""
-
+    """Method to find the free offer icon image in the shop pages"""
     folder_name = "free_offer_icon"
     size = get_file_count(folder_name)
     names = make_reference_image_list(size)
@@ -153,8 +152,7 @@ def search_for_free_purchases(vm_index):
 
 
 def search_for_gold_purchases(vm_index):
-    """method to find the offers for gold icon image in the shop pages"""
-
+    """Method to find the offers for gold icon image in the shop pages"""
     folder_name = "offers_for_gold"
     size = get_file_count(folder_name)
     names = make_reference_image_list(size)
@@ -171,7 +169,7 @@ def search_for_gold_purchases(vm_index):
 
 
 def buy_offers_from_this_shop_page(
-    vm_index, logger, gold_buy_toggle, free_offers_toggle
+    vm_index, logger, gold_buy_toggle, free_offers_toggle,
 ):
     coord = None
 
@@ -236,7 +234,7 @@ def shop_buy_tester():
             logger,
             gold_buy_toggle,
             free_offers_toggle,
-        )
+        ),
     )
 
 

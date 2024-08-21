@@ -16,8 +16,7 @@ class InvalidImageError(Exception):
 def open_from_buffer(
     image_data: bytes | bytearray | memoryview | np.ndarray[any],
 ) -> np.ndarray[np.uint8]:
-    """
-    A method to read an image from a byte array
+    """A method to read an image from a byte array
     :param byte_array: the byte array to read the image from
     :return: the image as a numpy array
     :raises InvalidImageError: if the file is not a valid image
@@ -35,14 +34,13 @@ def open_from_buffer(
         raise InvalidImageError("image_data bytes are not a valid image")
     if np.all(img == 255) or np.all(img == 0):
         raise InvalidImageError(
-            "image_data bytes are not a valid image. Image is all white or all black"
+            "image_data bytes are not a valid image. Image is all white or all black",
         )
     return img
 
 
 def open_from_path(path: str) -> np.ndarray[np.uint8]:
-    """
-    A method to validate and open an image file
+    """A method to validate and open an image file
     :param path: the path to the image file
     :return: the image as a numpy array
     :raises FileNotFoundError: if the file does not exist

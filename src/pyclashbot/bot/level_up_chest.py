@@ -1,11 +1,11 @@
-import numpy
 import time
 
+import numpy
 
-from pyclashbot.utils.logger import Logger
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import screenshot, click
+from pyclashbot.memu.client import click, screenshot
+from pyclashbot.utils.logger import Logger
 
 
 def collect_level_up_chest(vm_index, logger: Logger) -> bool:
@@ -13,7 +13,7 @@ def collect_level_up_chest(vm_index, logger: Logger) -> bool:
 
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
-            "Not on clash main for collect_level_up_chest(). Returning False"
+            "Not on clash main for collect_level_up_chest(). Returning False",
         )
         return False
 
@@ -103,12 +103,12 @@ def collect_level_up_chest_state(vm_index, logger, next_state):
     # if somehow not back on clash main after running this state, restart
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
-            "Not on clash main after collect_level_up_chest_state(). Restarting..."
+            "Not on clash main after collect_level_up_chest_state(). Restarting...",
         )
         return "restart"
 
     logger.change_status(
-        f"collect_level_up_chest_state() successful, moving to: {next_state}"
+        f"collect_level_up_chest_state() successful, moving to: {next_state}",
     )
 
     return next_state

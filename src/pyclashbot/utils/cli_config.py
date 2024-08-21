@@ -4,10 +4,12 @@ from argparse import ArgumentParser, Namespace
 
 
 def arg_parser() -> Namespace:
-    """function to parse arguments
+    """Function to parse arguments
 
-    Returns:
+    Returns
+    -------
         Namespace: populated namespace from arguments
+
     """
     parser = ArgumentParser(description="Run py-clash-bot from CLI")
     parser.add_argument(

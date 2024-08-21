@@ -14,7 +14,7 @@ user32 = ctypes.windll.user32
 
 memu_config = configparser.ConfigParser()
 memu_config.read(
-    join(pmc._get_memu_top_level(), "config.ini")  # pylint: disable=protected-access
+    join(pmc._get_memu_top_level(), "config.ini"),  # pylint: disable=protected-access
 )
 
 

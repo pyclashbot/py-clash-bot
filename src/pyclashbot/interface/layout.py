@@ -1,12 +1,10 @@
-"""
-This module defines the layout of the PyClashBot interface using PySimpleGUI.
+"""This module defines the layout of the PyClashBot interface using PySimpleGUI.
 """
 
-import os
-import random
 from os import path
 
 import PySimpleGUI as sg
+from PySimpleGUI import Window
 
 from pyclashbot.interface.controls import controls
 from pyclashbot.interface.joblist import jobs_checklist
@@ -17,7 +15,6 @@ from pyclashbot.interface.stats import (
 )
 from pyclashbot.interface.theme import THEME
 from pyclashbot.utils.versioning import __version__
-from PySimpleGUI import Window
 
 sg.theme(THEME)
 
@@ -95,7 +92,7 @@ stats_tab_layout = [
                         title="Battle Stats",
                         expand_x=True,
                         expand_y=True,
-                    )
+                    ),
                 ],
                 [
                     sg.Frame(
@@ -123,7 +120,7 @@ stats_tab_layout = [
             justification="right",
             expand_y=True,
         ),
-    ]
+    ],
 ]
 
 time_status_bar_layout = [
@@ -139,10 +136,10 @@ time_status_bar_layout = [
                     expand_x=True,
                     tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
                 ),
-            ]
+            ],
         ],
         expand_x=True,
-    )
+    ),
 ]
 
 
@@ -162,8 +159,8 @@ main_layout = [
                     ],
                 ],
                 key="-tab-group-",
-            )
-        )
+            ),
+        ),
     ],
     [
         sg.Button(
@@ -246,10 +243,10 @@ disable_keys = user_config_keys + ["Start"]
 
 
 def create_window() -> Window:
-    """method for creating the main gui window"""
+    """Method for creating the main gui window"""
     icon_path = "pixel-pycb.ico"
     if not path.isfile(path=icon_path):
         icon_path = path.join("..\\..\\..\\assets\\", icon_path)
     return sg.Window(
-        title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path
+        title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path,
     )

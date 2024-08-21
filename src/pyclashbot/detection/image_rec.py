@@ -6,7 +6,7 @@ from os.path import abspath, dirname, join
 import cv2
 import numpy as np
 
-from pyclashbot.memu.client import screenshot, click
+from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.image_handler import open_from_path
 
 
@@ -14,10 +14,13 @@ def get_file_count(folder) -> int:
     """Method to return the amount of a files in a given directory
 
     Args:
+    ----
         directory (str): Directory to count files in
 
     Returns:
+    -------
         int: Amount of files in the given directory
+
     """
     directory = join(dirname(__file__), "reference_images", folder)
 
@@ -37,16 +40,19 @@ def make_reference_image_list(size):
 
 
 def get_first_location(
-    locations: list[list[int] | None], flip=False
+    locations: list[list[int] | None], flip=False,
 ) -> list[int] | None:
-    """get the first location from a list of locations
+    """Get the first location from a list of locations
 
     Args:
+    ----
         locations (list[list[int]]): list of locations
         flip (bool, optional): flip coordinates. Defaults to False.
 
     Returns:
+    -------
         list[int]: location
+
     """
     return next(
         (
@@ -59,12 +65,13 @@ def get_first_location(
 
 
 def find_and_click_button_by_image(vm_index, folder_name) -> bool:
-    """
-    Finds and clicks on a button based on image recognition.
+    """Finds and clicks on a button based on image recognition.
 
     Args:
+    ----
         vm_index (int): The index of the virtual machine.
         folder_name (str): The name of the folder containing reference images for the button.
+
     """
     # Create a list of reference image names from the folder
     names = make_reference_image_list(get_file_count(folder_name))
@@ -82,26 +89,27 @@ def find_and_click_button_by_image(vm_index, folder_name) -> bool:
 
     if coord is None:
         return False
-    else:
-        # Click on the detected button location
-        click(vm_index, coord[1], coord[0])
-        time.sleep(2)
-        return True
+    # Click on the detected button location
+    click(vm_index, coord[1], coord[0])
+    time.sleep(2)
+    return True
 
 
 def crop_image(image: np.ndarray, region: list) -> np.ndarray:
-    """
-    Crop the given image using the specified region.
+    """Crop the given image using the specified region.
 
-    Parameters:
+    Parameters
+    ----------
     - image: numpy.ndarray
         The image to be cropped.
     - region: list [left, top, width, height]
         The region to be cropped, denoted by [left, top, width, height].
 
-    Returns:
+    Returns
+    -------
     - cropped_image: numpy.ndarray
         The cropped image.
+
     """
     left, top, width, height = region
 
@@ -112,13 +120,16 @@ def crop_image(image: np.ndarray, region: list) -> np.ndarray:
 
 
 def check_for_location(locations: list[list[int] | None]):
-    """check for a location
+    """Check for a location
 
     Args:
+    ----
         locations (list[list[int]]): _description_
 
     Returns:
+    -------
         bool: if location is found or not
+
     """
     return any(location is not None for location in locations)
 
@@ -129,16 +140,19 @@ def find_references(
     names: list[str],
     tolerance=0.88,
 ) -> list[list[int] | None]:
-    """find all reference images in a screenshot
+    """Find all reference images in a screenshot
 
     Args:
+    ----
         screenshot (numpy.ndarray): find references in screenshot
         folder (str): folder to find references (from within reference_images)
         names (list[str]): names of references
         tolerance (float, optional): tolerance. Defaults to 0.97.
 
     Returns:
+    -------
         list[list[int] | None]: coordinate locations
+
     """
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images", folder))
@@ -146,7 +160,7 @@ def find_references(
     reference_images = [open_from_path(join(reference_folder, name)) for name in names]
 
     with ThreadPoolExecutor(
-        max_workers=len(reference_images), thread_name_prefix="EmulatorThread"
+        max_workers=len(reference_images), thread_name_prefix="EmulatorThread",
     ) as executor:
         futures: list[Future[list[int] | None]] = [
             executor.submit(
@@ -165,7 +179,7 @@ def compare_images(
     template: np.ndarray,
     threshold=0.8,
 ):
-    """detects pixel location of a template in an image
+    """Detects pixel location of a template in an image
     Args:
         image (numpy.ndarray): image to find template within
         template (numpy.ndarray): template image to match to
@@ -198,7 +212,7 @@ def compare_images(
 
 
 def line_is_color(  # pylint: disable=too-many-arguments
-    vm_index, x_1, y_1, x_2, y_2, color
+    vm_index, x_1, y_1, x_2, y_2, color,
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
@@ -213,7 +227,7 @@ def line_is_color(  # pylint: disable=too-many-arguments
 
 
 def check_line_for_color(  # pylint: disable=too-many-arguments
-    vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int]
+    vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int],
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
@@ -265,15 +279,17 @@ def convert_pixel(bad_format_pixel):
 
 
 def condense_coordinates(coords, distance_threshold=5):
-    """
-    Condense a list of coordinates by removing similar ones.
+    """Condense a list of coordinates by removing similar ones.
 
-    Parameters:
+    Parameters
+    ----------
     - coords: List of coordinates, where each coordinate is a list [x, y].
     - distance_threshold: Maximum distance for coordinates to be considered similar.
 
-    Returns:
+    Returns
+    -------
     - List of condensed coordinates.
+
     """
     condensed_coords = []
 
@@ -294,15 +310,18 @@ def pixel_is_equal(
     pix2: tuple[int, int, int] | list[int],
     tol: float,
 ):
-    """check pixel equality
+    """Check pixel equality
 
     Args:
+    ----
         pix1 (list[int]): [R,G,B] pixel
         pix2 (list[int]): [R,G,B] pixel
         tol (float): tolerance
 
     Returns:
+    -------
         bool: are pixels equal
+
     """
     diff_r = abs(pix1[0] - pix2[0])
     diff_g = abs(pix1[1] - pix2[1])

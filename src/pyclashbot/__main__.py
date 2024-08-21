@@ -1,40 +1,41 @@
-"""
-This module contains the main entry point for the py-clash-bot program.
+"""This module contains the main entry point for the py-clash-bot program.
 It provides a GUI interface for users to configure and run the bot.
 """
 
 import random
 import sys
 import webbrowser
+
 import PySimpleGUI as sg
+from PySimpleGUI import Window
+
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
 from pyclashbot.memu.launcher import reset_clashbot_emulator
+from pyclashbot.memu.memu_closer import close_memuc_processes
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
-from PySimpleGUI import Window
-from pyclashbot.memu.memu_closer import close_memuc_processes
 
 initalize_pylogging()
 
 
 def read_window(
-    window: sg.Window, timeout: int = 10
+    window: sg.Window, timeout: int = 10,
 ) -> tuple[str, dict[str, str | int]]:
     """Method for reading the attributes of the window
     args:
         window: the window to read
         timeout: the timeout for the  read method
 
-    returns:
+    Returns
+    -------
         tuple of the event and the values of the window
 
     """
-
     # have a timeout so the output can be updated when no events are happening
     read_result = window.read(timeout=timeout)  # ms
     if read_result is None:
@@ -47,14 +48,16 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     """Create a dictionary of job toggles and increments based on the values of the GUI window.
 
     Args:
+    ----
         values: A dictionary of the values of the GUI window.
 
     Returns:
+    -------
         A dictionary of job toggles and increments based on the values of the GUI window.
-    """
 
+    """
     random_account_switch_list = make_random_account_switching_dict(
-        int(values["account_switching_slider"])
+        int(values["account_switching_slider"]),
     )
     print("random_account_switch_list: ", random_account_switch_list)
 
@@ -150,15 +153,17 @@ def make_random_account_switching_dict(count):
 
 
 def check_for_invalid_job_increment_input(job_dictionary):
-    """
-    Check if the job increments in the job dictionary are valid.
+    """Check if the job increments in the job dictionary are valid.
 
     Args:
+    ----
         job_dictionary: A dictionary containing job information.
 
     Returns:
+    -------
         False if all job increments are valid, otherwise
         returns the key of the invalid job increment.
+
     """
     items = job_dictionary.items()
 
@@ -186,14 +191,16 @@ def check_for_invalid_job_increment_input(job_dictionary):
 
 
 def check_for_no_jobs_in_job_dictionary(job_dict):
-    """
-    Check if there are no jobs in the job dictionary.
+    """Check if there are no jobs in the job dictionary.
 
     Args:
+    ----
         job_dict: A dictionary containing job information.
 
     Returns:
+    -------
         True if there are no jobs in the dictionary, False otherwise.
+
     """
     for i in job_dict.items():
         if i[1]:
@@ -203,7 +210,7 @@ def check_for_no_jobs_in_job_dictionary(job_dict):
 
 
 def save_current_settings(values) -> None:
-    """method for caching the user's current settings
+    """Method for caching the user's current settings
     args:
         values: dictionary of the values of the window
     returns:
@@ -217,12 +224,11 @@ def save_current_settings(values) -> None:
 
 
 def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
-    """method for loading settings to the gui
+    """Method for loading settings to the gui
     args:
         settings: dictionary of the settings to load
         window: the gui window
     """
-
     if not settings and USER_SETTINGS_CACHE.exists():
         read_window(window)  # read the window to edit the layout
         user_settings = USER_SETTINGS_CACHE.load_data()
@@ -237,16 +243,17 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
 
 
 def show_invalid_job_increment_input_popup(key) -> None:
-    """
-    Display a popup message indicating that the job increment input is invalid.
+    """Display a popup message indicating that the job increment input is invalid.
 
     Args:
+    ----
         key: A string representing the key of the job increment input.
 
     Returns:
+    -------
         None
-    """
 
+    """
     # A dictionary mapping the job increment input keys to their corresponding job names.
     key_to_job_dict: dict[str, str] = {
         "card_upgrade_increment_user_input": "Card Upgrade Increment",
@@ -273,7 +280,7 @@ def show_invalid_job_increment_input_popup(key) -> None:
 
 
 def start_button_event(logger: Logger, window: Window, values) -> WorkerThread | None:
-    """method for starting the main bot thread
+    """Method for starting the main bot thread
     args:
         logger, the logger object for for stats storage and printing
         window, the gui window
@@ -281,7 +288,6 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     returns:
         None
     """
-
     # print window layout
     window["Stats"].select()
 
@@ -289,7 +295,7 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
 
     if job_increment_input_check := check_for_invalid_job_increment_input(
-        job_dictionary
+        job_dictionary,
     ):
         logger.log("Job increment inputs are invalid")
         logger.log(f"Offensive increment input for key: [{job_increment_input_check}]")
@@ -332,7 +338,7 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
 
 
 def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
-    """method for stopping the main bot thread
+    """Method for stopping the main bot thread
     args:
         logger, the logger object for for stats storage and printing
         window, the gui window
@@ -346,7 +352,7 @@ def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
 
 
 def update_layout(window: sg.Window, logger: Logger) -> None:
-    """method for updaing the values in the gui's window
+    """Method for updaing the values in the gui's window
     args:
         window, the gui window
         logger, the logger object for for stats storage and printing
@@ -362,23 +368,25 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
 
 
 def exit_button_event(thread) -> None:
-    """
-    Method for handling the exit button event. Shuts down the thread if it is still running.
+    """Method for handling the exit button event. Shuts down the thread if it is still running.
 
     Args:
+    ----
         thread: The thread to be shut down.
 
     Returns:
+    -------
         None
+
     """
     if thread is not None:
         thread.shutdown(kill=True)
 
 
 def handle_thread_finished(
-    window: sg.Window, thread: WorkerThread | None, logger: Logger
+    window: sg.Window, thread: WorkerThread | None, logger: Logger,
 ):
-    """method for handling when the worker thread is finished"""
+    """Method for handling when the worker thread is finished"""
     # enable the start button and configuration after the thread is stopped
     if thread is not None and not thread.is_alive():
         for key in disable_keys:
@@ -393,8 +401,7 @@ def handle_thread_finished(
 
 
 def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
-    """method for displaying the main gui"""
-
+    """Method for displaying the main gui"""
     # create gui window
     window = create_window()
 
@@ -429,7 +436,7 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
 
         elif event == "-Collapse-Button-":
             window["-Collapse-Button-"].update(
-                text="Expand" if window["-tab-group-"].visible else "Collapse"
+                text="Expand" if window["-tab-group-"].visible else "Collapse",
             )
             window["-tab-group-"].update(visible=not window["-tab-group-"].visible)
 
@@ -440,7 +447,7 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
         # on Donate button event, open the donation link in browser
         elif event == "bug-report":
             webbrowser.open(
-                "https://github.com/pyclashbot/py-clash-bot/issues/new/choose"
+                "https://github.com/pyclashbot/py-clash-bot/issues/new/choose",
             )
 
         elif event == "upload-log":

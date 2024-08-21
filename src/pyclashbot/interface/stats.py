@@ -2,6 +2,7 @@
 
 import PySimpleGUI as sg
 from PySimpleGUI.PySimpleGUI import Text
+
 from pyclashbot.interface.theme import THEME
 
 sg.theme(THEME)
@@ -108,7 +109,7 @@ collection_stats = [
     [
         sg.Column(collection_stats_titles, element_justification="right"),
         sg.Column(collection_stats_values, element_justification="left"),
-    ]
+    ],
 ]
 
 
@@ -182,7 +183,7 @@ battle_stats = [
     [
         sg.Column(battle_stats_titles, element_justification="right"),
         sg.Column(battle_stats_values, element_justification="left"),
-    ]
+    ],
 ]
 
 

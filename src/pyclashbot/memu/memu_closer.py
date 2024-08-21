@@ -2,8 +2,7 @@ import psutil
 
 
 def list_running_processes():
-    """
-    Get the name and PID of every running process.
+    """Get the name and PID of every running process.
     """
     processes = []
     for process in psutil.process_iter(["pid", "name"]):
@@ -12,8 +11,7 @@ def list_running_processes():
 
 
 def terminate_process_by_pid(pid):
-    """
-    Terminate a process given its PID.
+    """Terminate a process given its PID.
     """
     try:
         process = psutil.Process(pid)

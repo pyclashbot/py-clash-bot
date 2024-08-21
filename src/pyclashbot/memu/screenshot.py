@@ -1,5 +1,4 @@
-"""
-A module for getting screenshots from Memu VMs.
+"""A module for getting screenshots from Memu VMs.
 """
 
 import atexit
@@ -28,25 +27,24 @@ image_b64_pattern = re.compile(r"already connected to 127\.0\.0\.1:[\d]*\n\n")
 
 
 class ScreenShotter:
-    """
-    Class for getting screenshots.
+    """Class for getting screenshots.
     Stores adbblitz connections in a dict to avoid reconnecting for each screenshot.
 
     Example:
+    -------
         vm_index = 0
         screen_shotter = ScreenShotter()
         screenshot = screen_shotter[vm_index]
         del screen_shotter # Cleanup
+
     """
 
     def open_from_b64(self, image_b64: str) -> np.ndarray[np.uint8]:
-        """
-        A method to validate and open an image from a base64 string
+        """A method to validate and open an image from a base64 string
         :param image_b64: the base64 string to read the image from
         :return: the image as a numpy array
         :raises InvalidImageError: if the file is not a valid image
         """
-
         try:
             image_data = base64.b64decode(image_b64)
         except (TypeError, ValueError, base64.binascii.Error) as error:
@@ -57,8 +55,7 @@ class ScreenShotter:
         self,
         image_data: bytes | bytearray | memoryview | np.ndarray[any],
     ) -> np.ndarray[np.uint8]:
-        """
-        A method to read an image from a byte array
+        """A method to read an image from a byte array
         :param byte_array: the byte array to read the image from
         :return: the image as a numpy array
         :raises InvalidImageError: if the file is not a valid image
