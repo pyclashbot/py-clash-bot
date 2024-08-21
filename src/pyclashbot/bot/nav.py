@@ -1012,16 +1012,12 @@ def get_to_card_page_from_clash_main(
         logger.log("Getting to card page from clash main")
 
     # change to trophy road
-    click(
-        vm_index, 286, 391 
-    )
+    click(vm_index, 286, 391)
     time.sleep(2.5)
 
-    click(
-        vm_index, 69, 293
-    )
+    click(vm_index, 69, 293)
     time.sleep(2.5)
-    
+
     # click card page icon
     click(
         vm_index, CARD_PAGE_ICON_FROM_CLASH_MAIN[0], CARD_PAGE_ICON_FROM_CLASH_MAIN[1]
@@ -1135,7 +1131,9 @@ def check_if_on_path_of_legends_mode_card_page(vm_index):
 
 
 def check_if_on_card_page(vm_index) -> bool:
-    if check_if_on_goblin_mode_card_page(vm_index) or check_if_on_path_of_legends_mode_card_page(vm_index):
+    if check_if_on_goblin_mode_card_page(
+        vm_index
+    ) or check_if_on_path_of_legends_mode_card_page(vm_index):
         return True
 
     iar = screenshot(vm_index)

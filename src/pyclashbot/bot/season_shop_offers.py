@@ -101,7 +101,7 @@ def buy_season_shop_offers(vm_index, logger: Logger):
         #     scroll(vm_index, 200, 400, 200, 240)
 
         # click a random offer
-        logger.change_status('Clicking random season shop offer')
+        logger.change_status("Clicking random season shop offer")
         click_random_season_shop_offer(vm_index)
         time.sleep(2)
 
@@ -111,13 +111,13 @@ def buy_season_shop_offers(vm_index, logger: Logger):
             break
 
         # buy this random offer
-        logger.change_status('Buying this random season shop offer')
+        logger.change_status("Buying this random season shop offer")
         click_buy_season_shop_offer(vm_index)
         logger.increment_season_shop_buys()
         time.sleep(1)
 
         # click deadspace to close the purchase confirmation
-        logger.change_status('Bought this random season shop offer!')
+        logger.change_status("Bought this random season shop offer!")
         for _ in range(6):
             season_shop_deadspace_click(vm_index)
             time.sleep(0.33)
@@ -139,7 +139,7 @@ def buy_season_shop_offers(vm_index, logger: Logger):
 
 
 def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: str):
-    #increment attempts
+    # increment attempts
     logger.increment_season_shop_buys_attempts()
 
     # if not on main, return 'restart'

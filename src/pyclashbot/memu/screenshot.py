@@ -22,8 +22,10 @@ class InvalidImageError(Exception):
         self.message = message
         super().__init__(self.message)
 
+
 # Compile the regular expression outside of the method
 image_b64_pattern = re.compile(r"already connected to 127\.0\.0\.1:[\d]*\n\n")
+
 
 class ScreenShotter:
     """

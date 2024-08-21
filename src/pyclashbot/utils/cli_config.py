@@ -1,4 +1,5 @@
 """Module to parse arguments from CLI"""
+
 from argparse import ArgumentParser, Namespace
 
 

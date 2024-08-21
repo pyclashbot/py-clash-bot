@@ -1,4 +1,5 @@
 """Unit Test for the image handler"""
+
 import unittest
 import os
 import numpy as np
@@ -19,7 +20,9 @@ class ImageHandlerTest(unittest.TestCase):
 
     def test_valid_image_from_buffer(self):
         """Load a valid image from the buffer"""
-        with open(os.path.join(self.test_image_folder, "valid_image.png"), "rb") as im_file:
+        with open(
+            os.path.join(self.test_image_folder, "valid_image.png"), "rb"
+        ) as im_file:
             image_data = im_file.read()
             img = open_from_buffer(image_data)
             self.assertIsInstance(img, np.ndarray)

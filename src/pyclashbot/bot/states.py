@@ -14,7 +14,7 @@ from pyclashbot.bot.do_fight_state import (
 )
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
 from pyclashbot.bot.nav import check_if_on_clash_main_menu, check_if_in_battle_at_start
-from pyclashbot.bot.open_chests_state import  open_chests_state, get_chest_statuses
+from pyclashbot.bot.open_chests_state import open_chests_state, get_chest_statuses
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
 from pyclashbot.bot.upgrade_all_cards import upgrade_all_cards_state
@@ -122,7 +122,7 @@ def state_tree(
             # for p in clash_main_check:
             #     logger.log(p)
             return state_tree(vm_index, logger, "restart", job_list)
-                
+
         logger.log('Detected clash main at the end of "restart" state.')
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]}seconds"
@@ -337,7 +337,7 @@ def state_tree(
         next_state = "shop_buy"
 
         # if job not selected, return next state
-        if (not job_list["donate_toggle"] and not job_list["free_donate_toggle"]):
+        if not job_list["donate_toggle"] and not job_list["free_donate_toggle"]:
             logger.log("Donate job isn't toggled. Skipping")
             return next_state
 
@@ -347,7 +347,9 @@ def state_tree(
             return next_state
 
         # return output of this state
-        return donate_cards_state(vm_index, logger, next_state, job_list["free_donate_toggle"])
+        return donate_cards_state(
+            vm_index, logger, next_state, job_list["free_donate_toggle"]
+        )
 
     if state == "shop_buy":  # --> bannerbox
         next_state = "bannerbox"
@@ -455,10 +457,12 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        if job_list["skip_fight_if_full_chests_user_toggle"] and (get_chest_statuses(vm_index).count("available") == 4):
+        if job_list["skip_fight_if_full_chests_user_toggle"] and (
+            get_chest_statuses(vm_index).count("available") == 4
+        ):
             logger.change_status("All chests are available. Skipping fight states")
             return next_state
-        
+
         mode2toggle = {
             "2v2": job_list["2v2_battle_user_toggle"],
             "trophy_road": job_list["trophy_road_1v1_battle_user_toggle"],
@@ -500,7 +504,9 @@ def state_tree(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds"
         )
 
-        return do_2v2_fight_state(vm_index, logger, next_state, random_fight_mode, False)
+        return do_2v2_fight_state(
+            vm_index, logger, next_state, random_fight_mode, False
+        )
 
     if state == "1v1_fight":  # --> end_fight
         next_state = "end_fight"
@@ -544,6 +550,7 @@ def state_tree(
 
     logger.error("Failure in state tree")
     return "fail"
+
 
 def state_tree_tester(vm_index):
     logger = Logger()
@@ -613,9 +620,5 @@ def state_tree_tester(vm_index):
             # clip_that()
 
 
-
-
-
 if __name__ == "__main__":
     state_tree_tester(12)
-

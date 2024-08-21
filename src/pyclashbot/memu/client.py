@@ -40,16 +40,17 @@ def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
         clicks (int, optional): Amount of clicks. Defaults to 1.
         interval (float, optional): Interval between clicks. Defaults to 0.1.
     """
-    if clicks == 1: send_click(vm_index, x_coord, y_coord)
-    else :
+    if clicks == 1:
+        send_click(vm_index, x_coord, y_coord)
+    else:
         for _ in range(clicks):
             send_click(vm_index, x_coord, y_coord)
             time.sleep(interval)
 
 
-
 def scroll(vm_index, start_x, start_y, end_x, end_y):
     send_swipe(vm_index, start_x, start_y, end_x, end_y)
+
 
 def scroll_up_fast(vm_index):
     """Method for scrolling up faster when interacting with a scrollable menu"""
@@ -124,7 +125,8 @@ def send_swipe(
         command=f"shell input swipe {x_coord1} {y_coord1} {x_coord2} {y_coord2}",
     )
 
-#TODO
+
+# TODO
 # def send_paste_key(vm_index):
 #     pmc.send_adb_command_vm(
 #         vm_index=vm_index,
@@ -197,8 +199,6 @@ def send_newline_char(vm_index):
         vm_index=vm_index,
         command="shell input keyevent KEYCODE_NUMPAD_ENTER",
     )
-
-
 
 
 if __name__ == "__main__":

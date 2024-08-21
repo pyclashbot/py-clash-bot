@@ -54,10 +54,8 @@ def clip_that():
     time.sleep(0.2)
 
     for _ in range(10):
-        print('Saved an obs clip!!!')
+        print("Saved an obs clip!!!")
 
 
 if __name__ == "__main__":
     print(orientate_obs_window())
-
-

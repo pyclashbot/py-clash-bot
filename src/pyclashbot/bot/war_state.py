@@ -76,8 +76,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     # if not on clash main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
-        logger.change_status(
-            "Error 4848 Not on calshmain for start of war_state()")
+        logger.change_status("Error 4848 Not on calshmain for start of war_state()")
         # logger.log(
         #     "These are the pixels the bot saw after failing to find clash main:")
         # for pixel in clash_main_check:
@@ -105,8 +104,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     logger.log("Getting to clan tab")
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
-        logger.log(
-            "Error 86868243 Took too long to get to clan tab from clash main")
+        logger.log("Error 86868243 Took too long to get to clan tab from clash main")
         return "restart"
 
     # find and click battle icon
@@ -129,8 +127,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
             time.sleep(3)
 
         if check_if_on_clash_main_menu(vm_index) is not True:
-            logger.change_status(
-                "Failed to get to clash main after seeing locked war.")
+            logger.change_status("Failed to get to clash main after seeing locked war.")
             return "restart"
 
         return next_state
@@ -167,8 +164,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     # start battle
     logger.change_status(status="Starting a war battle")
-    click(
-        vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
+    click(vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
     logger.add_war_fight()
 
@@ -181,13 +177,11 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     if do_war_battle(vm_index, logger) == "restart":
         logger.change_status(status="Error 58734 Failed doing war battle")
         return "restart"
-    logger.change_status(
-        status=f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
+    logger.change_status(status=f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
     time.sleep(POST_WAR_FIGHT_WAIT)
 
     # when battle end, leave battle
-    click(
-        vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
+    click(vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
 
     if wait_for_war_page(vm_index, logger) == "restart":
         logger.change_status(status="Error 5135 Waited too long for war page")
@@ -248,8 +242,7 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
     while check_if_in_war_battle(vm_index):
         time_taken = time.time() - start_time
         if time_taken > WAR_BATTLE_TIMEOUT:
-            logger.change_status(
-                status="Error 658725 Ran war fight loop too long")
+            logger.change_status(status="Error 658725 Ran war fight loop too long")
             return "restart"
 
         # click a random card
@@ -359,8 +352,7 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made dec
     logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
     print("clicking edit deck button")
-    click(
-        vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
+    click(vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # click random deck button
@@ -406,8 +398,8 @@ def check_for_locked_clan_war_screen(vm_index):
 
 def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good"]:
     """
-    Cycles through clan pages while searching for a war battle icon to click. 
-    If the icon is not immediately found, it attempts to refresh the view by clicking on deadspace 
+    Cycles through clan pages while searching for a war battle icon to click.
+    If the icon is not immediately found, it attempts to refresh the view by clicking on deadspace
     and performing random scrolls.
     """
     start_time = time.time()
@@ -447,7 +439,8 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
             time.sleep(2)
 
     logger.change_status(
-        "Failed to find_and_click_war_battle_icon(), returning restart.")
+        "Failed to find_and_click_war_battle_icon(), returning restart."
+    )
     return "restart"
 
 
@@ -474,9 +467,9 @@ def check_if_on_war_page(vm_index):
         (230, 221, 229),  # X: 42 Y: 46
         (251, 237, 232),  # X: 124 Y: 20
         (251, 237, 232),  # X: 297 Y: 20
-        (250, 81, 125),   # X: 400 Y: 58
-        (153, 118, 80),   # X: 246 Y: 617
-        (242, 123, 19),   # X: 267 Y: 589
+        (250, 81, 125),  # X: 400 Y: 58
+        (153, 118, 80),  # X: 246 Y: 617
+        (242, 123, 19),  # X: 267 Y: 589
     ]
 
     for i, pixel in enumerate(pixels):

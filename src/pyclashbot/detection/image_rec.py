@@ -177,12 +177,15 @@ def compare_images(
     # Convert image colors
     img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore
     template_gray = cv2.cvtColor(  # type: ignore
-        template, cv2.COLOR_RGB2GRAY  # type: ignore
+        template,
+        cv2.COLOR_RGB2GRAY,  # type: ignore
     )
 
     # Perform match operations.
     res = cv2.matchTemplate(  # type: ignore
-        img_gray, template_gray, cv2.TM_CCOEFF_NORMED  # type: ignore
+        img_gray,
+        template_gray,
+        cv2.TM_CCOEFF_NORMED,  # type: ignore
     )
 
     # Store the coordinates of matched area in a np array

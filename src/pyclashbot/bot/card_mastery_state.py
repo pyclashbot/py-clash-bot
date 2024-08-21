@@ -54,7 +54,7 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
             logger.change_status("Collected a card mastery reward!")
             logger.add_card_mastery_reward_collection()
             time.sleep(2)
-            
+
     logger.add_card_mastery_reward_collection_attempts()
     # get to clash main
     logger.change_status("Returning to clash main menu")
@@ -97,6 +97,7 @@ def collect_first_mastery_reward(vm_index):
 
     return True
 
+
 def card_mastery_rewards_exist_with_delay(vm_index):
     timeout = 2  # s
     start_time = time.time()
@@ -105,6 +106,7 @@ def card_mastery_rewards_exist_with_delay(vm_index):
             return True
 
     return False
+
 
 def card_mastery_rewards_exist(vm_index):
     # Convert the screenshot to a NumPy array for easier access
