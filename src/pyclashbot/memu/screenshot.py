@@ -22,6 +22,8 @@ class InvalidImageError(Exception):
         self.message = message
         super().__init__(self.message)
 
+# Compile the regular expression outside of the method
+image_b64_pattern = re.compile(r"already connected to 127\.0\.0\.1:[\d]*\n\n")
 
 class ScreenShotter:
     """
@@ -70,10 +72,10 @@ class ScreenShotter:
             raise InvalidImageError("image_data bytes cannot be decoded") from error
         if img is None or len(img) == 0 or len(img.shape) != 3 or img.shape[2] != 3:
             raise InvalidImageError("image_data bytes are not a valid image")
-        if np.all(img == 255) or np.all(img == 0):
-            raise InvalidImageError(
-                "image_data bytes are not a valid image. Image is all white or all black"
-            )
+        # if np.all(img == 255) or np.all(img == 0):
+        #     raise InvalidImageError(
+        #         "image_data bytes are not a valid image. Image is all white or all black"
+        #     )
         return img
 
     def __getitem__(self, vm_index: int) -> np.ndarray:
@@ -86,9 +88,7 @@ class ScreenShotter:
                 )
 
                 # remove non-image data from shell output
-                image_b64 = re.sub(
-                    r"already connected to 127\.0\.0\.1:[\d]*\n\n", "", shell_out
-                ).replace("\n", "")
+                image_b64 = image_b64_pattern.sub("", shell_out).replace("\n", "")
                 return self.open_from_b64(image_b64)
 
             except (PyMemucError, FileNotFoundError, InvalidImageError):
