@@ -10,6 +10,8 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import basename, exists, expandvars, getmtime, join
 
+from pyclashbot.memu.configure import EMULATOR_NAME, get_vm_configuration
+from pyclashbot.memu.pmc import get_vm_index
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.pastebin import upload_pastebin
 from pyclashbot.utils.versioning import __version__
@@ -59,7 +61,15 @@ def initalize_pylogging() -> None:
 """,
     )
     logging.info(
-        "Machine Info: \n%s", pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
+        "Machine Info: \n%s",
+        pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
+    )
+
+    vm_index = get_vm_index(EMULATOR_NAME)
+
+    logging.info(
+        "VM Configuration: \n%s",
+        pprint.pformat(get_vm_configuration(vm_index), indent=4),
     )
     compress_logs()
 
