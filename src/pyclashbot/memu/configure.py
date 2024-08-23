@@ -1,12 +1,14 @@
-"""A module for configuring Memu VMs.
-"""
+"""A module for configuring Memu VMs."""
 
 import logging
 import time
 
-from pymemuc import ConfigKeys
+from pymemuc import ConfigKeys, PyMemucError, PyMemucException
 
 from pyclashbot.memu.pmc import pmc
+
+ANDROID_VERSION = "96"  # android 9, 64 bit
+EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
 MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
@@ -51,6 +53,17 @@ def configure_vm(vm_index):
     set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
     logging.info("Configured VM %s", vm_index)
+
+
+def get_vm_configuration(vm_index: int) -> dict[str, str]:
+    current_configuration = {}
+    for key in MEMU_CONFIGURATION:
+        try:
+            current_value = pmc.get_configuration_vm(key, vm_index=vm_index)
+            current_configuration[key] = current_value
+        except PyMemucError as e:
+            logging.exception("Failed to get configuration for key %s: %s", key, e)
+    return current_configuration
 
 
 if __name__ == "__main__":
