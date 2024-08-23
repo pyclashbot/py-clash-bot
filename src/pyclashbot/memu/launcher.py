@@ -10,16 +10,18 @@ from os.path import join
 
 import psutil
 import PySimpleGUI as sg
-from pymemuc import PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import check_if_in_battle_at_start, check_if_on_clash_main_menu
 from pyclashbot.memu.client import click, screenshot
-from pyclashbot.memu.configure import configure_vm
-from pyclashbot.memu.pmc import pmc
+from pyclashbot.memu.configure import EMULATOR_NAME, configure_vm
+from pyclashbot.memu.pmc import get_vm_index, pmc
 from pyclashbot.utils.logger import Logger
+from typing import TYPE_CHECKING
 
-ANDROID_VERSION = "96"  # android 9, 64 bit
-EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
+if TYPE_CHECKING:
+    from pymemuc import VMInfo
+
+
 APK_BASE_NAME = "com.supercell.clashroyale"
 
 
@@ -169,7 +171,7 @@ def check_for_vm(logger: Logger) -> int:
     find_vm_tries = 0
     while time.time() - find_vm_start_time < find_vm_timeout:
         find_vm_tries += 1
-        vm_index = get_vm_index(logger, EMULATOR_NAME)
+        vm_index = get_vm_index(EMULATOR_NAME)
 
         if vm_index != -1:
             logger.change_status(
@@ -243,35 +245,6 @@ def rename_vm(
 
 
 # emulator interaction methods
-
-
-def get_vm_index(logger: Logger, name: str) -> int:
-    """Get the index of the vm with the given name"""
-    # get list of vms on machine
-    vms: list[VMInfo] = pmc.list_vm_info()
-
-    # sorted by index, lowest to highest
-    vms.sort(key=lambda x: x["index"])
-
-    # get the indecies of all vms named pyclashbot
-    vm_indices: list[int] = [vm["index"] for vm in vms if vm["title"] == name]
-
-    # delete all vms except the lowest index, keep looping until there is only one
-    while len(vm_indices) > 1:
-        # as long as no exception is raised, this while loop should exit on first iteration
-        for vm_index in vm_indices[1:]:
-            try:
-                pmc.delete_vm(vm_index)
-                vm_indices.remove(vm_index)
-            except PyMemucError as err:
-                logger.error(str(err))
-                # don't raise error, just continue to loop until its deleted
-                # raise err # if program hangs on deleting vm then uncomment this line
-
-    # return the index. if no vms named pyclashbot exist, return -1
-    return vm_indices[0] if vm_indices else -1
-
-
 def home_button_press(vm_index, clicks=4):
     """Method for skipping the memu ads that popip up when you start memu"""
     for _ in range(clicks):
