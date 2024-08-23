@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "EditorConfig.EditorConfig",
+    "tamasfe.even-better-toml",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "usernamehw.errorlens"
+  ]
+}
