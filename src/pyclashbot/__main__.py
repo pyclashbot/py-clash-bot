@@ -13,7 +13,6 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
-from pyclashbot.memu.launcher import reset_clashbot_emulator
 from pyclashbot.memu.memu_closer import close_memuc_processes
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
@@ -24,7 +23,8 @@ initalize_pylogging()
 
 
 def read_window(
-    window: sg.Window, timeout: int = 10,
+    window: sg.Window,
+    timeout: int = 10,
 ) -> tuple[str, dict[str, str | int]]:
     """Method for reading the attributes of the window
     args:
@@ -384,7 +384,9 @@ def exit_button_event(thread) -> None:
 
 
 def handle_thread_finished(
-    window: sg.Window, thread: WorkerThread | None, logger: Logger,
+    window: sg.Window,
+    thread: WorkerThread | None,
+    logger: Logger,
 ):
     """Method for handling when the worker thread is finished"""
     # enable the start button and configuration after the thread is stopped
@@ -455,10 +457,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
                 url = logger.upload_log()
                 if url is not None:
                     webbrowser.open(url)
-
-        # refresh emulator button
-        elif event == "refresh_emualtor_key":
-            reset_clashbot_emulator(logger)
 
         # on Help button event, open the help gui
         elif event == "discord":
