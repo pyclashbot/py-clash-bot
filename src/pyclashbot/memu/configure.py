@@ -16,7 +16,7 @@ MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
     "win_scaling_percent2": 100,  # 100% scaling
     "is_customed_resolution": 1,
     "resolution_width": 419,
-    "graphics_render_mode": "1",  # use DirectX to avoid black screenshot issue
+    "graphics_render_mode": 0,  # opengl
     "resolution_height": 633,
     "vbox_dpi": 160,
     "cpucap": 50,
