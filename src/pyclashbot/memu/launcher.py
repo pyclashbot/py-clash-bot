@@ -390,4 +390,5 @@ def check_for_emulator_running(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    configure_vm(vm_index=0)
+    rename_vm(vm_index=0, name=EMULATOR_NAME)
