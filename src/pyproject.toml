@@ -27,6 +27,8 @@ requests = "^2.31.0"
 pygetwindow = "^0.0.9"
 pyautogui = "^0.9.54"
 pygame = "^2.5.2"
+clash-net-lib = "0.0.1rc4"
+pydantic = "^2.9.1"
 
 
 [tool.poetry.group.build]
