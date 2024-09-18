@@ -135,7 +135,8 @@ def collect_1_battlepass_reward(vm_index, logger):
     start_time = time.time()
     while time.time() - start_time < timeout:
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
-            vm_index, delay=3,
+            vm_index,
+            delay=3,
         )
 
         if claim_rewards_coord is None:
@@ -154,8 +155,19 @@ def collect_1_battlepass_reward(vm_index, logger):
 
         # find the claim rewards button again
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
-            vm_index, delay=3,
+            vm_index,
+            delay=3,
         )
+
+        if claim_rewards_coord is None:
+            logger.change_status(
+                """This part needs attention. This logic was written forever ago
+                and I cant tell if claim_rewards_coord is supposed to be None at
+                this point, because it CAN be. Should it return False here? Or
+                should it continue and try again? Can't tell. Returning False for
+                safety."""
+            )
+            return False
 
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
