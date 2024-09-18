@@ -868,42 +868,37 @@ def get_to_profile_page(vm_index: int, logger: Logger) -> Literal["restart", "go
 
 
 def check_for_trophy_reward_menu(vm_index) -> bool:
-    """Checks if the user is on the trophy reward menu.
+    iar = screenshot(vm_index)
 
-    Args:
-    ----
-        vm_index (int): The index of the virtual machine.
+    pixels = [
+        iar[592][172],
+        iar[617][180],
+        iar[607][190],
+        iar[603][200],
+        iar[596][210],
+        iar[593][220],
+        iar[600][230],
+        iar[610][235],
+        iar[623][246],
+    ]
+    colors = [
 
-    Returns:
-    -------
-        bool: True if on the trophy reward menu, False otherwise.
-
-    """
-    if not region_is_color(vm_index, region=[172, 599, 22, 12], color=(78, 175, 255)):
-        return False
-    if not region_is_color(vm_index, region=[226, 601, 18, 10], color=(78, 175, 255)):
-        return False
-
-    lines = [
-        check_line_for_color(
-            vm_index,
-            x_1=199,
-            y_1=590,
-            x_2=206,
-            y_2=609,
-            color=(255, 255, 255),
-        ),
-        check_line_for_color(
-            vm_index,
-            x_1=211,
-            y_1=590,
-            x_2=220,
-            y_2=609,
-            color=(255, 255, 255),
-        ),
+[255 ,184  ,68],
+[255 ,175  ,78],
+[255 ,175  ,78],
+[248 ,239 ,227],
+[255 ,187 ,104],
+[255 ,176  ,79],
+[255 ,187 ,104],
+[255 ,175  ,78],
+[253 ,135  ,39],
     ]
 
-    return all(lines)
+    for i, pixel in enumerate(pixels):
+        if not pixel_is_equal(pixel, colors[i], tol=25):
+            return False
+
+    return True
 
 
 def handle_trophy_reward_menu(
@@ -1742,4 +1737,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    print(check_if_on_path_of_legends_mode_card_page(12))
+    while 1:print(check_for_trophy_reward_menu(1))
