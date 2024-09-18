@@ -560,19 +560,19 @@ def state_tree_tester(vm_index):
         # job toggles
         "open_battlepass_user_toggle": True,
         "open_chests_user_toggle": True,
-        "request_user_toggle": True,
-        "donate_toggle": True,
+        "request_user_toggle": False,
+        "donate_toggle": False,
         "free_donate_toggle": True,
         "card_mastery_user_toggle": True,
-        "free_offer_user_toggle": True,
-        "gold_offer_user_toggle": True,
+        "free_offer_user_toggle": False,
+        "gold_offer_user_toggle": False,
         "trophy_road_1v1_battle_user_toggle": True,
         "path_of_legends_1v1_battle_user_toggle": True,
         "goblin_queens_journey_1v1_battle_user_toggle": True,
         "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": True,
+        "upgrade_user_toggle": False,
         "war_user_toggle": True,
-        "random_decks_user_toggle": True,
+        "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": True,
         "daily_rewards_user_toggle": True,
         "battlepass_collect_user_toggle": True,
@@ -617,9 +617,7 @@ def state_tree_tester(vm_index):
         if state == "restart":
             print("Restart state")
             input("Enter to continue...")
-            # print("Clipping that")
-            # clip_that()
 
 
 if __name__ == "__main__":
-    state_tree_tester(12)
+    state_tree_tester(1)
