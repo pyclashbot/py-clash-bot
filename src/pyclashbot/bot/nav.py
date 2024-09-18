@@ -451,18 +451,21 @@ def get_to_clan_tab_from_clash_main(
             return "restart"
 
         # if boot exists, collect boot
+        print('checking for boot...')
         if check_for_boot_reward(vm_index):
             collect_boot_reward(vm_index)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # check for a war chest obstructing the nav
+        print('checking for war check obstruction...')
         if check_for_war_chest_obstruction(vm_index):
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # if on the clan tab chat page, return
+        print('checking if on the clan tab...')
         if check_if_on_clan_chat_page(vm_index):
             break
 
