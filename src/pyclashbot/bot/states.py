@@ -70,6 +70,24 @@ class StateHistory:
             "war": 0.25,  #'state':increment in hours,
         }
 
+    # def make_state2time_increment(self):
+    #     state2time_increment = {
+    #         "account_switch": 0.8,  #'state':increment in hours,
+    #         "open_chests": 1,  #'state':increment in hours,
+    #         "level_up_chests": 0.25,  #'state':increment in hours,
+    #         "upgrade": 0.5,  #'state':increment in hours,
+    #         "trophy_rewards": 0.25,  #'state':increment in hours,
+    #         "request": 1,  #'state':increment in hours,
+    #         "donate": 1,  #'state':increment in hours,
+    #         "shop_buy": 2,  #'state':increment in hours,
+    #         "bannerbox": 1,  #'state':increment in hours,
+    #         "daily_rewards": 0.25,  #'state':increment in hours,
+    #         "battlepass_rewards": 0.25,  #'state':increment in hours,
+    #         "card_mastery": 0.25,  #'state':increment in hours,
+    #         "season_shop": 2,  #'state':increment in hours,
+    #         "war": 0.25,  #'state':increment in hours,
+    #     }
+
     def add_state(self, state):
         time_history_string = f"{state} {time.time()}"
         self.time_history_string_list.append(time_history_string)
@@ -214,7 +232,7 @@ def state_tree(
                 break  # Successfully handled starting battle or end-of-battle scenario
             if battle_start_result == "restart":
                 # Need to restart the process due to issues detected
-                return state_tree(vm_index, logger, "restart", job_list)
+                return state_tree(vm_index, logger, "restart", job_list, state_history)
 
             # click deadspace
             click(
@@ -230,7 +248,7 @@ def state_tree(
             logger.log("Clash main wait timed out! These are the pixels it saw:")
             # for p in clash_main_check:
             #     logger.log(p)
-            return state_tree(vm_index, logger, "restart", job_list)
+            return state_tree(vm_index, logger, "restart", job_list, state_history)
 
         logger.log('Detected clash main at the end of "restart" state.')
         logger.log(
@@ -683,13 +701,14 @@ def state_tree_tester(vm_index):
         "next_account": 0,
         "random_account_switch_list": [0, 1, 2],
     }
+    state_history = StateHistory()
 
     while 1:
         state = state_tree(
             vm_index,
             logger,
             state,
-            job_list,
+            job_list,state_history,
         )
         if state == "restart":
             print("Restart state")
