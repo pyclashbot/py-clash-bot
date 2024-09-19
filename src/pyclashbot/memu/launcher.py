@@ -34,8 +34,6 @@ def check_vm_size(vm_index):
         home_button_press(vm_index, clicks=1)
 
         image = screenshot(vm_index)
-        print(image.size)
-        print(image.shape)
 
         height, width, _ = image.shape
 
@@ -43,7 +41,6 @@ def check_vm_size(vm_index):
             print(f"Size is bad: {width},{height}")
             return False
 
-        print(f"Size is good: {width},{height}")
         return True
     except Exception as e:
         print("sizing error:", e)
@@ -150,8 +147,6 @@ def skip_ads(vm_index):
     return "success"
 
 
-
-
 def get_vm(logger: Logger, render_mode) -> int:
     # find existing vm
     find_vm_timeout = 5  # s
@@ -165,16 +160,16 @@ def get_vm(logger: Logger, render_mode) -> int:
 
     # if we didnt find a vm, make a new one
     if vm_index == -1:
-        print('Creating a new vm...')
+        print("Creating a new vm...")
         vm_index = create_vm()
-        print('Renaming this new vm to', EMULATOR_NAME)
+        print("Renaming this new vm to", EMULATOR_NAME)
         rename_vm(vm_index, name=EMULATOR_NAME)
 
     # config the vm
-    print('Configuring the vm...')
+    print("Configuring the vm...")
     configure_vm(vm_index, render_mode)
 
-    print('Done in get_vm()')
+    print("Done in get_vm()")
     return vm_index
 
 
