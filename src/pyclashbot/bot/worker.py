@@ -1,7 +1,7 @@
 import time
 
 from pyclashbot.bot.states import state_tree
-from pyclashbot.memu.launcher import check_for_vm
+from pyclashbot.memu.launcher import get_vm
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
@@ -13,12 +13,17 @@ class WorkerThread(PausableThread):
         self.in_a_clan = False
 
     def run(self) -> None:
+        # parse render mode out of jobs
+        jobs = self.args  # parse thread args
+        render_mode = "opengl"
+        if jobs["directx_toggle"] is True:
+            render_mode = "directx"
+
         try:
-            jobs = self.args  # parse thread args
             # logger = Logger()
             state = "start"
 
-            vm_index = check_for_vm(self.logger)
+            vm_index = get_vm(self.logger, render_mode=render_mode)
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
