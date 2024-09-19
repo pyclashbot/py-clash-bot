@@ -574,7 +574,7 @@ def state_tree_tester(vm_index):
         "war_user_toggle": True,
         "random_decks_user_toggle": False,
         "open_bannerbox_user_toggle": True,
-        "daily_rewards_user_toggle": True,
+        "daily_rewards_user_toggle": False,
         "battlepass_collect_user_toggle": True,
         "level_up_chest_user_toggle": True,
         "upgrade_all_cards_user_toggle": True,
