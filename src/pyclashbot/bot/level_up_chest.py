@@ -7,6 +7,7 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
+CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 def collect_level_up_chest(vm_index, logger: Logger) -> bool:
     logger.change_status("Checking level up chest")
@@ -44,7 +45,7 @@ def collect_level_up_chest(vm_index, logger: Logger) -> bool:
             return False
 
         print("Clicking deadspace to skip thru rewards")
-        click(vm_index, 19, 450)
+        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 
     return True
