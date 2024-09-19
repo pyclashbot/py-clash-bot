@@ -75,6 +75,7 @@ EMOTES_COORDS_IN_2V2 = [
     (243, 469),
     (308, 470),
 ]
+CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
 def do_2v2_fight_state(
@@ -745,7 +746,7 @@ def get_to_main_after_fight(vm_index, logger):
 
         time.sleep(1)
         print("Clicking on deadspace to close potential pop-up windows.")
-        click(vm_index, 1, 435)
+        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
     return False
 

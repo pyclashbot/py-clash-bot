@@ -36,6 +36,7 @@ from pyclashbot.utils.logger import Logger
 
 mode_used_in_1v1 = None
 
+CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
 def get_render_mode(job_list):
@@ -43,6 +44,10 @@ def get_render_mode(job_list):
     if job_list["directx_toggle"]:
         render_mode = 'directx'
     return render_mode
+
+
+
+
 
 def state_tree(
     vm_index,
@@ -118,7 +123,7 @@ def state_tree(
                 return state_tree(vm_index, logger, "restart", job_list)
 
             # click deadspace
-            click(vm_index, 5, 350)
+            click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
             # logger.log("Not on clash main")
             # logger.log("Pixels are none: ")
@@ -550,7 +555,7 @@ def state_tree_tester(vm_index):
     job_list = {
         # job toggles
         "open_battlepass_user_toggle": True,
-        "open_chests_user_toggle": False,
+        "open_chests_user_toggle": True,
         "request_user_toggle": False,
         "donate_toggle": False,
         "free_donate_toggle": False,

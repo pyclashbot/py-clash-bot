@@ -6,6 +6,8 @@ from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot
 
+CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+
 
 def collect_daily_rewards_state(vm_index, logger, next_state):
     # First check if all rewards have already been collected
@@ -168,7 +170,7 @@ def check_which_rewards_are_available(vm_index, logger):
     rewards = check_rewards_menu_pixels(vm_index)
 
     # click deadspace a bunch
-    click(vm_index, 15, 450, clicks=3, interval=0.33)
+    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1], clicks=3, interval=0.33)
     time.sleep(2)
 
     # if not on clash main, return False

@@ -27,6 +27,7 @@ from pyclashbot.memu.client import (
 )
 from pyclashbot.utils.logger import Logger
 
+CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 def find_request_button(vm_index, logger: Logger):
     """Finds the location of the request button on the screen.
@@ -200,7 +201,7 @@ def request_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, 15, 300)
+    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",

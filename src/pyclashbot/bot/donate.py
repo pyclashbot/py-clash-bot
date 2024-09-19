@@ -27,6 +27,7 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
+CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 def find_claim_button(vm_index):
     """Finds the location of the claim button for the free gift in the clan page.
@@ -171,7 +172,7 @@ def donate_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, 15, 450)
+    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",
