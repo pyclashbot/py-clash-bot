@@ -560,7 +560,7 @@ def state_tree_tester(vm_index):
         "trophy_road_1v1_battle_user_toggle": True,
         "path_of_legends_1v1_battle_user_toggle": True,
         "goblin_queens_journey_1v1_battle_user_toggle": True,
-        "2v2_battle_user_toggle": False,
+        "2v2_battle_user_toggle": True,
         "upgrade_user_toggle": True,
         "war_user_toggle": True,
         "random_decks_user_toggle": True,

@@ -21,7 +21,7 @@ CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
 CHALLENGES_TAB_ICON_FROM_CLASH_MAIN = (380, 598)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT = 240  # seconds
-CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 450)
+CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 520)
 OPEN_WAR_CHEST_BUTTON_COORD = (188, 415)
 OPENING_WAR_CHEST_DEADZONE_COORD = (5, 298)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
@@ -920,6 +920,38 @@ def handle_trophy_reward_menu(
     return "good"
 
 
+
+def check_for_megaknight_evolution_popup(vm_index):
+    iar = screenshot(vm_index)
+    pixels = [
+        iar[585][170],
+        iar[596][208],
+        iar[599][180],
+        iar[610][200],
+        iar[613][190],
+        iar[590][210],
+        iar[595][220],
+        iar[600][230],
+        iar[605][240],
+        iar[615][250],
+    ]
+    colors = [
+       [255 ,186,  53],
+[148 ,133, 114],
+[255, 175,  78],
+[255,178,  79],
+[255 ,175,  78],
+[255, 187, 104],
+[101 , 76,  46],
+[255 ,255, 255],
+[255 ,176,  77],
+[255 ,141,  19],
+    ]
+    for i, c in enumerate(colors):
+        if not pixel_is_equal(c, pixels[i], tol=25):
+            return False
+    return True
+
 def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
@@ -935,6 +967,13 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
         if check_for_trophy_reward_menu(vm_index):
             print("Handling trophy reward menu")
             handle_trophy_reward_menu(vm_index, logger)
+            time.sleep(2)
+            continue
+
+        #handle getting stuck on megaknight evolution popup
+        if check_for_megaknight_evolution_popup(vm_index):
+            print("Handling megaknight evolution popup")
+            click(vm_index, 206,601)
             time.sleep(2)
             continue
 
@@ -1022,7 +1061,6 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
         if not pixel_is_equal(pixel, colors[i], tol=35):
-            print(i, pixel)
             return False
 
     # if all pixels are good, we're on clash main
@@ -1261,10 +1299,7 @@ def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "goo
     return "good"
 
 
-def handle_clash_main_tab_notifications(
-    vm_index,
-    logger: Logger,
-) -> Literal["restart", "good"]:
+def handle_clash_main_tab_notifications(vm_index,logger: Logger,) -> bool:
     """Clicks on the card, shop, and challenges tabs in the Clash Main menu to handle notifications.
 
     Args:
@@ -1738,4 +1773,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 if __name__ == "__main__":
     print("\n\n\n\n\n\n")
-    print(check_if_on_card_page(1))
+    while 1:print(check_for_megaknight_evolution_popup(1))
