@@ -249,9 +249,9 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
     if settings is not None:
         for key in user_config_keys:
             if key in settings:
-                try:
+                if key in list(window.key_dict.keys()):
                     window[key].update(settings[key])  # type: ignore
-                except:
+                else:
                     print(f'This key {key} appears in saved settings, but not the active window.')
         window.refresh()
 
