@@ -255,7 +255,7 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
         # click a random play coord
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
         click(vm_index, random_play_coord[0], random_play_coord[1])
-        time.sleep(9)
+        time.sleep(5)
 
     logger.change_status(status="Done with this war fight")
     return "good"

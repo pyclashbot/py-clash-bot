@@ -131,7 +131,7 @@ def check_for_in_battle_with_delay(vm_index):
     return False
 
 
-def check_if_in_battle(vm_index) -> bool:
+def check_if_in_battle(vm_index)  -> Literal['2v2'] | Literal['1v1'] | Literal['None']:
     """Checks if the virtual machine is in a 1v1 or 2v2 battle.
 
     Args:
@@ -169,9 +169,7 @@ def check_if_in_battle(vm_index) -> bool:
         combat_2v2_color = [169, 29, 172]
 
         if pixel_is_equal(combat_2v2_pixel, combat_2v2_color, tol=50):
-            # print("It's a 2v2 fight")
             return "2v2"
-        # print("It's a 1v1 fight")
         return "1v1"
     return "None"
 
@@ -450,21 +448,21 @@ def get_to_clan_tab_from_clash_main(
             return "restart"
 
         # if boot exists, collect boot
-        print('checking for boot...')
+        print("checking for boot...")
         if check_for_boot_reward(vm_index):
             collect_boot_reward(vm_index)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # check for a war chest obstructing the nav
-        print('checking for war check obstruction...')
+        print("checking for war check obstruction...")
         if check_for_war_chest_obstruction(vm_index):
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # if on the clan tab chat page, return
-        print('checking if on the clan tab...')
+        print("checking if on the clan tab...")
         if check_if_on_clan_chat_page(vm_index):
             break
 
@@ -477,22 +475,15 @@ def get_to_clan_tab_from_clash_main(
         # handle daily defenses rank page
         handle_war_popup_pages(vm_index, logger)
 
-        if random.randint(0, 1) == 1:
-            if random.randint(1, 3) == 1:
-                scroll_up(vm_index)
-                scroll_down(vm_index)
-                time.sleep(2)
-                continue
+        scroll_up(vm_index)
+        scroll_down(vm_index)
 
-        elif random.randint(1, 3) == 1:
-            click(
-                vm_index,
-                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
-                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
-            )
-            time.sleep(2)
-            continue
-        time.sleep(1)
+        click(
+            vm_index,
+            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
+        )
+        time.sleep(2)
 
     # if here, then done
     logger.log("Made it to the clan page from clash main")
@@ -879,16 +870,15 @@ def check_for_trophy_reward_menu(vm_index) -> bool:
         iar[623][246],
     ]
     colors = [
-
-[255 ,184  ,68],
-[255 ,175  ,78],
-[255 ,175  ,78],
-[248 ,239 ,227],
-[255 ,187 ,104],
-[255 ,176  ,79],
-[255 ,187 ,104],
-[255 ,175  ,78],
-[253 ,135  ,39],
+        [255, 184, 68],
+        [255, 175, 78],
+        [255, 175, 78],
+        [248, 239, 227],
+        [255, 187, 104],
+        [255, 176, 79],
+        [255, 187, 104],
+        [255, 175, 78],
+        [253, 135, 39],
     ]
 
     for i, pixel in enumerate(pixels):
@@ -1032,7 +1022,7 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
         if not pixel_is_equal(pixel, colors[i], tol=35):
-            print(i,pixel)
+            print(i, pixel)
             return False
 
     # if all pixels are good, we're on clash main
@@ -1117,77 +1107,100 @@ def check_if_on_underleveled_card_page(vm_index):
     return True
 
 
-def check_if_on_goblin_mode_card_page(vm_index):
-    iar = screenshot(vm_index)
-    pixels = [
-        iar[108][175],
-        iar[112][189],
-        iar[103][254],
-        iar[109][295],
-        iar[446][54],
-        iar[446][64],
-        iar[444][49],
-        iar[14][210],
-        iar[14][325],
-    ]
-    colors = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [223, 1, 237],
-        [228, 0, 243],
-        [186, 8, 190],
-        [255, 255, 255],
-        [255, 255, 255],
-    ]
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(colors[i], p, tol=15):
-            return False
-
-    return True
-
-
-def check_if_on_path_of_legends_mode_card_page(vm_index):
-    iar = screenshot(vm_index)
-    pixels = [
-        iar[108][175],
-        iar[112][189],
-        iar[103][254],
-        iar[109][295],
-        iar[446][54],
-        iar[446][64],
-        iar[444][49],
-        iar[14][210],
-        iar[14][325],
-    ]
-    colors = [
-        [186, 105, 143],
-        [254, 254, 254],
-        [229, 188, 206],
-        [213, 175, 191],
-        [224, 1, 237],
-        [229, 0, 244],
-        [187, 7, 191],
-        [255, 255, 255],
-        [255, 255, 255],
-    ]
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(colors[i], p, tol=15):
-            return False
-
-    return True
-
-
 def check_if_on_card_page(vm_index) -> bool:
-    if check_if_on_goblin_mode_card_page(
-        vm_index,
-    ) or check_if_on_path_of_legends_mode_card_page(vm_index):
+    def check_if_on_card_page2(iar):
+        pixels = [
+            iar[441][58],
+            iar[191][18],
+            iar[211][390],
+            iar[435][325],
+            iar[102][59],
+            iar[109][56],
+            iar[116][55],
+        ]
+        colors = [
+            [232, 0, 248],
+            [105, 43, 1],
+            [105, 44, 1],
+            [249, 186, 100],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+        ]
+        for i, p in enumerate(pixels):
+            if not pixel_is_equal(colors[i], p, tol=15):
+                return False
+
+        return True
+
+    def check_if_on_path_of_legends_mode_card_page(iar):
+        pixels = [
+            iar[108][175],
+            iar[112][189],
+            iar[103][254],
+            iar[109][295],
+            iar[446][54],
+            iar[446][64],
+            iar[444][49],
+            iar[14][210],
+            iar[14][325],
+        ]
+        colors = [
+            [186, 105, 143],
+            [254, 254, 254],
+            [229, 188, 206],
+            [213, 175, 191],
+            [224, 1, 237],
+            [229, 0, 244],
+            [187, 7, 191],
+            [255, 255, 255],
+            [255, 255, 255],
+        ]
+
+        for i, p in enumerate(pixels):
+            if not pixel_is_equal(colors[i], p, tol=15):
+                return False
+
+        return True
+
+    def check_if_on_goblin_mode_card_page(iar):
+        pixels = [
+            iar[108][175],
+            iar[112][189],
+            iar[103][254],
+            iar[109][295],
+            iar[446][54],
+            iar[446][64],
+            iar[444][49],
+            iar[14][210],
+            iar[14][325],
+        ]
+        colors = [
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [223, 1, 237],
+            [228, 0, 243],
+            [186, 8, 190],
+            [255, 255, 255],
+            [255, 255, 255],
+        ]
+
+        for i, p in enumerate(pixels):
+            if not pixel_is_equal(colors[i], p, tol=15):
+                return False
+
         return True
 
     iar = screenshot(vm_index)
+    if check_if_on_card_page2(iar):
+        return True
+    if check_if_on_goblin_mode_card_page(iar):
+        return True
+    if check_if_on_path_of_legends_mode_card_page(iar):
+        return True
+
     pixels = [
         iar[433][58],
         iar[101][55],
@@ -1367,7 +1380,6 @@ def check_for_events_page(vm_index):
         [147, 114, 76],
         [154, 119, 80],
     ]
-
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
@@ -1725,4 +1737,5 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    pass
+    print("\n\n\n\n\n\n")
+    print(check_if_on_card_page(1))

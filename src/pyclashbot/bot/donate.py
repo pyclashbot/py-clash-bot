@@ -338,9 +338,7 @@ def find_donate_button_for_free(image, vm_index, region):
         free_coord = get_first_location(locations)
 
         if free_coord is None:
-            # print("it's not free")
             return None
-        # print("it is!")
         return [coord[1], coord[0]]
     return None
 
