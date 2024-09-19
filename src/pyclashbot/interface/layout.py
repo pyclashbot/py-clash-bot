@@ -68,13 +68,30 @@ controls_layout = [
             layout=[
                 [
                     sg.Checkbox(
-                        "Enabled",
+                        "Dock MEmu",
                         key="memu_attach_mode_toggle",
                         default=False,
                     ),
                 ],
+                [
+                    sg.Text("Render Mode"),
+                    sg.Radio(
+                        enable_events=True,
+                        text=  'OpenGL',
+                        group_id ='render_mode_radio',
+                        default = True,
+                        key = 'opengl_toggle'
+                    ),
+                    sg.Radio(
+                        enable_events=True,
+                        text=  'DirectX',
+                        group_id ='render_mode_radio',
+                        key = 'directx_toggle'
+                    ),
+
+                ],
             ],
-            title="Memu Docking",
+            title="Memu Settings",
             expand_y=True,
             expand_x=True,
         ),
@@ -199,7 +216,6 @@ user_config_keys = [
     "donate_toggle",
     "free_donate_toggle",
     "card_mastery_user_toggle",
-    "memu_attach_mode_toggle",
     "disable_win_track_toggle",
     "free_offer_user_toggle",
     "gold_offer_user_toggle",
@@ -236,6 +252,10 @@ user_config_keys = [
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",
+    #MEmu settings
+    "memu_attach_mode_toggle",
+    "opengl_toggle",
+    "directx_toggle",
 ]
 
 # list of button and checkbox keys to disable when the bot is running
@@ -250,3 +270,19 @@ def create_window() -> Window:
     return sg.Window(
         title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path,
     )
+
+
+def test_window():
+    """Method for testing the window layout"""
+    window = create_window()
+    while True:
+        event, values = window.read()
+        print(event)
+        if event == sg.WIN_CLOSED:
+            break
+    window.close()
+
+
+
+if __name__ == '__main__':
+    test_window()
