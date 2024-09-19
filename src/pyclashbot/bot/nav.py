@@ -1176,7 +1176,6 @@ def check_if_on_path_of_legends_mode_card_page(vm_index):
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
-            print(i)
             return False
 
     return True
