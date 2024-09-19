@@ -13,7 +13,7 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
-from pyclashbot.memu.memu_closer import close_memuc_processes
+from pyclashbot.memu.memu_closer import close_everything_memu
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
@@ -100,7 +100,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
-        "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
+        # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
         "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
         # job increments
         "trophy_road_reward_increment_user_input": values[
@@ -333,10 +333,12 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     logger.log_job_dictionary(job_dictionary)
 
     for key in disable_keys:
-        window[key].update(disabled=True)
+        if key in list(window.key_dict.keys()):
+            window[key].update(disabled=True)
 
     # close existing memuc processes
-    close_memuc_processes()
+    print('Closing everything memu related...')
+    close_everything_memu()
 
     # setup the main thread and start it
     print("Starting main thread")
