@@ -29,7 +29,7 @@ def terminate_process_by_pid(pid):
         return False
 
 
-def close_memuc_processes():
+def close_everything_memu():
     processes = list_running_processes()
 
     bad_pid_list = []
