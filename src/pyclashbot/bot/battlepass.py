@@ -59,7 +59,7 @@ def check_for_battlepass_reward_icon(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -83,7 +83,7 @@ def check_if_on_battlepass_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 

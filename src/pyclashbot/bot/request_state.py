@@ -377,7 +377,7 @@ def check_for_epic_sunday_icon(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True

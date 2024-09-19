@@ -387,7 +387,7 @@ def check_for_locked_events_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True

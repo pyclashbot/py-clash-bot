@@ -25,7 +25,7 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -171,7 +171,7 @@ def check_if_bannerbox_icon_exists_on_clashmain(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
+
         if not pixel_is_equal(p, colors[i], tol=35):
             return True
 

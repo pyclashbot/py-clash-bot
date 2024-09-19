@@ -415,7 +415,6 @@ def check_for_boot_reward(vm_index):
         [62, 199, 255],
         [43, 190, 255],
     ]
-    # for p in pixels:print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(p, colors[i], tol=25):
@@ -552,7 +551,6 @@ def check_for_battle_day_results_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], tol=25):
             return False
     return True
@@ -580,7 +578,6 @@ def check_for_daily_defenses_rank_page_3(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
@@ -602,7 +599,6 @@ def check_for_daily_defenses_rank_page_4(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
@@ -630,7 +626,6 @@ def check_for_daily_defenses_rank_page_2(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], tol=25):
             return False
     return True
@@ -654,7 +649,6 @@ def check_for_daily_defenses_rank_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
@@ -964,12 +958,8 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
         time.sleep(1)
 
     time.sleep(1)
-    out = check_if_on_clash_main_menu(vm_index)
-    if out is not True:
+    if check_if_on_clash_main_menu(vm_index) is not True:
         print("Failed to get to clash main! Saw these pixels before restarting:")
-        # for pixel in out:
-        #     print(pixel)
-        # print("\n")
         return False
 
     return True
@@ -1011,7 +1001,7 @@ def check_if_on_path_of_legends_clash_main(vm_index):
     return True
 
 
-def check_if_on_clash_main_menu(vm_index):
+def check_if_on_clash_main_menu(vm_index) -> bool:
     """Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
     """
@@ -1042,7 +1032,7 @@ def check_if_on_clash_main_menu(vm_index):
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
         if not pixel_is_equal(pixel, colors[i], tol=35):
-            # return pixels
+            print(i,pixel)
             return False
 
     # if all pixels are good, we're on clash main
@@ -1140,7 +1130,6 @@ def check_if_on_goblin_mode_card_page(vm_index):
         iar[14][210],
         iar[14][325],
     ]
-    # for p in pixels:print(p)
     colors = [
         [255, 255, 255],
         [255, 255, 255],
@@ -1380,10 +1369,8 @@ def check_for_events_page(vm_index):
         [154, 119, 80],
     ]
 
-    # for p in pixels:print(p)
 
     for i, p in enumerate(pixels):
-        # print(p)
         if not pixel_is_equal(colors[i], p, tol=15):
             return False
     return True
@@ -1636,7 +1623,6 @@ def check_if_on_battle_log_page(vm_index) -> bool:
         iar[62][92],
         iar[77][316],
     ]
-    # for p in pixels:print(p)
     colors = [
         [255, 255, 255],
         [255, 255, 255],
@@ -1740,4 +1726,4 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    while 1:print(check_for_trophy_reward_menu(1))
+    pass
