@@ -37,6 +37,13 @@ from pyclashbot.utils.logger import Logger
 mode_used_in_1v1 = None
 
 
+
+def get_render_mode(job_list):
+    render_mode = 'open_gl'
+    if job_list["directx_toggle"]:
+        render_mode = 'directx'
+    return render_mode
+
 def state_tree(
     vm_index,
     logger: Logger,
@@ -66,7 +73,7 @@ def state_tree(
 
         next_state = "account_switch"
 
-        restart_emulator(logger)
+        restart_emulator(logger,get_render_mode(job_list))
 
         logger.log(
             f"Emulator boot sequence took {str(time.time() - start_time)[:5]} seconds",
