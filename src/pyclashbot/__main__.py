@@ -139,9 +139,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
 
 
         # account switching input info
-        "account_switching_increment_user_input": values[
-            "account_switching_increment_user_input"
-        ],
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switching_slider": int(values["account_switching_slider"]),
         "next_account": 0,

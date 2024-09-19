@@ -54,7 +54,7 @@ class StateHistory:
         # low as possible while not spamming slow states
 
         self.state2time_increment = {
-            "account_switch": 1,  #'state':increment in hours,
+            "account_switch": 0.8,  #'state':increment in hours,
             "open_chests": 1,  #'state':increment in hours,
             "level_up_chests": 0.25,  #'state':increment in hours,
             "upgrade": 0.5,  #'state':increment in hours,
