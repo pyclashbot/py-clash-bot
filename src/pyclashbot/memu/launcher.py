@@ -154,12 +154,12 @@ def get_vm(logger: Logger, render_mode) -> int:
     vm_index = -1
     while vm_index == -1 and time.time() - find_vm_start_time < find_vm_timeout:
         vm_index = get_vm_index(EMULATOR_NAME)
-        logger.change_status('Failed to find "pyclashbot" emulator. Retrying...')
     if vm_index != -1:
         logger.change_status(f'Found a vm named "pyclashbot" (#{vm_index})!')
 
     # if we didnt find a vm, make a new one
     if vm_index == -1:
+        logger.change_status('Failed to find an existing VM. Creating a new one...')
         print("Creating a new vm...")
         vm_index = create_vm()
         print("Renaming this new vm to", EMULATOR_NAME)
