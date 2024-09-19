@@ -6,7 +6,7 @@ from os import path
 import PySimpleGUI as sg
 from PySimpleGUI import Window
 
-from pyclashbot.interface.controls import controls
+from pyclashbot.interface.controls import job_increment_controls
 from pyclashbot.interface.joblist import jobs_checklist
 from pyclashbot.interface.stats import (
     battle_stats,
@@ -21,7 +21,7 @@ sg.theme(THEME)
 
 controls_layout = [
     [
-        sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
+        # sg.Frame(layout=job_increment_controls, title="Job Increment Controls", expand_x=True, expand_y=True),
         sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
     ],
     [
@@ -77,18 +77,17 @@ controls_layout = [
                     sg.Text("Render Mode"),
                     sg.Radio(
                         enable_events=True,
-                        text=  'OpenGL',
-                        group_id ='render_mode_radio',
-                        default = True,
-                        key = 'opengl_toggle'
+                        text="OpenGL",
+                        group_id="render_mode_radio",
+                        default=True,
+                        key="opengl_toggle",
                     ),
                     sg.Radio(
                         enable_events=True,
-                        text=  'DirectX',
-                        group_id ='render_mode_radio',
-                        key = 'directx_toggle'
+                        text="DirectX",
+                        group_id="render_mode_radio",
+                        key="directx_toggle",
                     ),
-
                 ],
             ],
             title="Memu Settings",
@@ -252,7 +251,7 @@ user_config_keys = [
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",
-    #MEmu settings
+    # MEmu settings
     "memu_attach_mode_toggle",
     "opengl_toggle",
     "directx_toggle",
@@ -268,7 +267,9 @@ def create_window() -> Window:
     if not path.isfile(path=icon_path):
         icon_path = path.join("..\\..\\..\\assets\\", icon_path)
     return sg.Window(
-        title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path,
+        title=f"py-clash-bot | {__version__}",
+        layout=main_layout,
+        icon=icon_path,
     )
 
 
@@ -283,6 +284,5 @@ def test_window():
     window.close()
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_window()
