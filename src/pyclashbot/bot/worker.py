@@ -1,6 +1,6 @@
 import time
 
-from pyclashbot.bot.states import state_tree
+from pyclashbot.bot.states import StateHistory, state_tree
 from pyclashbot.memu.launcher import get_vm
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
@@ -22,6 +22,7 @@ class WorkerThread(PausableThread):
         try:
             # logger = Logger()
             state = "start"
+            state_history = StateHistory()
 
             vm_index = get_vm(self.logger, render_mode=render_mode)
 
@@ -33,6 +34,7 @@ class WorkerThread(PausableThread):
                     self.logger,
                     state,
                     jobs,
+                    state_history
                 )
 
                 while self.pause_flag.is_set():

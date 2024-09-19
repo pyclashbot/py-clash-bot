@@ -41,7 +41,7 @@ for _ in range(len(job_increments_titles_column)):
     games_titles_column.append([sg.Text("games")])
 
 
-controls = [
+job_increment_controls = [
     # whole box
     [
         # title column

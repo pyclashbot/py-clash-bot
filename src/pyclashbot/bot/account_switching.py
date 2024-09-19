@@ -22,8 +22,6 @@ SSID_COORDS = [
 
 
 def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
-    logger.add_switch_account_attempt()
-
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status("293587 Not on clash main to do account switching")
