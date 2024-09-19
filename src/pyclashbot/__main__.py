@@ -22,6 +22,13 @@ from pyclashbot.utils.thread import StoppableThread
 initalize_pylogging()
 
 
+TODO = """
+-make increments NOT user input (prob use a file to store state history)
+-fix job input save/load
+-openGL/DirectX render mode input
+"""
+
+
 def read_window(
     window: sg.Window,
     timeout: int = 10,
@@ -69,7 +76,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "donate_toggle": values["donate_toggle"],
         "free_donate_toggle": values["free_donate_toggle"],
         "card_mastery_user_toggle": values["card_mastery_user_toggle"],
-        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
@@ -133,6 +139,10 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "account_switching_slider": int(values["account_switching_slider"]),
         "next_account": 0,
         "random_account_switch_list": random_account_switch_list,
+        # memu settings
+        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
+        "opengl_toggle": values["opengl_toggle"],
+        "directx_toggle": values["directx_toggle"],
     }
 
     return jobs_dictionary
@@ -239,7 +249,7 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
         for key in user_config_keys:
             if key in settings:
                 window[key].update(settings[key])  # type: ignore
-        window.refresh()  # refresh the window to update the layout
+        window.refresh()
 
 
 def show_invalid_job_increment_input_popup(key) -> None:
