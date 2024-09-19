@@ -154,7 +154,9 @@ def state_tree(
 
         if (
             switch_accounts(
-                vm_index, logger, job_list["random_account_switch_list"][accout_index],
+                vm_index,
+                logger,
+                job_list["random_account_switch_list"][accout_index],
             )
             is False
         ):
@@ -244,8 +246,8 @@ def state_tree(
 
         return randomize_deck_state(vm_index, logger, next_state)
 
-    if state == "upgrade":  # --> upgrade_all
-        next_state = "upgrade_all"
+    if state == "upgrade":  # --> trophy_rewards
+        next_state = "trophy_rewards"
 
         # if job not selected, return next state
         if not job_list["upgrade_user_toggle"]:
@@ -261,39 +263,6 @@ def state_tree(
 
         # return output of this state
         return upgrade_cards_state(vm_index, logger, next_state)
-
-    if state == "upgrade_all":  # --> trophy_rewards
-        print("Running upgrade_all state")
-        next_state = "trophy_rewards"
-
-        # if 'upgrade_user_toggle' is toggled on, return next state
-        print("Checking if upgrade_user_toggle job is toggled")
-        if job_list["upgrade_user_toggle"]:
-            logger.change_status(
-                "Regular upgrade is toggled. Skipping 'UPGRADE ALL' state",
-            )
-            return next_state
-
-        # if job isnt selected, just return the next state
-        print("Checking if upgrade_all_cards_user_toggle job is toggled")
-        if not job_list["upgrade_all_cards_user_toggle"]:
-            logger.change_status(
-                "Upgrade all cards is not toggled. Skipping this state",
-            )
-            return next_state
-
-        # if job is available, increment attempts, run the state
-        print("Checking if upgrade_all job is ready...")
-        if logger.check_if_can_card_upgrade(
-            job_list["card_upgrade_increment_user_input"],
-        ):
-            logger.change_status("Upgrade all cards is ready!")
-            logger.add_card_upgrade_attempt()
-            return upgrade_all_cards_state(vm_index, logger, next_state)
-
-        # else just return next state
-        logger.change_status("Upgrade all cards isn't ready!")
-        return next_state
 
     if state == "trophy_rewards":  # --> request
         next_state = "request"
@@ -349,7 +318,10 @@ def state_tree(
 
         # return output of this state
         return donate_cards_state(
-            vm_index, logger, next_state, job_list["free_donate_toggle"],
+            vm_index,
+            logger,
+            next_state,
+            job_list["free_donate_toggle"],
         )
 
     if state == "shop_buy":  # --> bannerbox
@@ -506,7 +478,11 @@ def state_tree(
         )
 
         return do_2v2_fight_state(
-            vm_index, logger, next_state, random_fight_mode, False,
+            vm_index,
+            logger,
+            next_state,
+            random_fight_mode,
+            False,
         )
 
     if state == "1v1_fight":  # --> end_fight
@@ -520,7 +496,12 @@ def state_tree(
         )
         print(f"Fight mode is {mode_used_in_1v1}")
         return do_1v1_fight_state(
-            vm_index, logger, next_state, random_fight_mode, mode_used_in_1v1, False,
+            vm_index,
+            logger,
+            next_state,
+            random_fight_mode,
+            mode_used_in_1v1,
+            False,
         )
 
     if state == "end_fight":  # --> war
@@ -530,7 +511,10 @@ def state_tree(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
         )
         return end_fight_state(
-            vm_index, logger, next_state, job_list["disable_win_track_toggle"],
+            vm_index,
+            logger,
+            next_state,
+            job_list["disable_win_track_toggle"],
         )
 
     if state == "war":  # --> account_switch
