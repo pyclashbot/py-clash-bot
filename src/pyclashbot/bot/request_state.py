@@ -309,13 +309,19 @@ def check_if_can_request_wrapper(vm_index) -> bool:
         print("Detected epic sunday icon")
         return True
 
+
+
+
+
     if check_for_trade_cards_icon(vm_index):
         print("Detected trade cards icon")
         return False
 
-    if check_for_trade_cards_icon_2(vm_index):
-        print("Detected trade cards icon")
-        return False
+
+
+
+
+
 
     if check_if_can_request_3(vm_index):
         return True
@@ -401,36 +407,41 @@ def check_if_can_request_2(vm_index) -> bool:
 
 
 def check_for_trade_cards_icon(vm_index) -> bool:
-    lines = [
-        check_line_for_color(
-            vm_index, x_1=33, y_1=502, x_2=56, y_2=502, color=(47, 69, 105),
-        ),
-        check_line_for_color(
-            vm_index, x_1=56, y_1=507, x_2=108, y_2=506, color=(253, 253, 203),
-        ),
-        check_line_for_color(
-            vm_index, x_1=37, y_1=515, x_2=125, y_2=557, color=(255, 188, 42),
-        ),
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[518][38],
+        iar[520][42],
+        iar[525][75],
+        iar[526][45],
+        iar[527][50],
+        iar[529][60],
+        iar[530][60],
+        iar[535][70],
+        iar[537][80],
+        iar[540][90],
+        iar[541][100],
+        iar[543][104],
     ]
-
-    return all(lines)
-
-
-def check_for_trade_cards_icon_2(vm_index):
-    if not check_line_for_color(vm_index, 67, 524, 74, 534, (255, 255, 254)):
-        return False
-    if not check_line_for_color(vm_index, 90, 523, 91, 534, (255, 255, 254)):
-        return False
-    if not check_line_for_color(vm_index, 97, 536, 102, 543, (255, 253, 250)):
-        return False
-
-    if not region_is_color(vm_index, [50, 530, 4, 8], (212, 228, 255)):
-        return False
-    if not region_is_color(vm_index, [106, 523, 4, 8], (255, 200, 80)):
-        return False
-    if not region_is_color(vm_index, [104, 536, 12, 8], (255, 188, 42)):
-        return False
+    colors = [
+        [64, 46, 36],
+[ 46, 191, 255],
+[ 73 ,111, 129],
+[ 78 ,185, 232],
+[255 ,238, 237],
+[224, 204, 205],
+[219 ,199, 200],
+[ 37 , 83, 104],
+[ 82, 112, 125],
+[254, 255, 255],
+[250 ,253, 255],
+[ 43 ,189, 253],
+    ]
+    # for p in pixels:print(p)
+    for i, c in enumerate(colors):
+        if not pixel_is_equal(c, pixels[i], tol=10):
+            return False
     return True
+
 
 
 def check_if_can_request_3(vm_index):
@@ -443,6 +454,4 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-    # vm_index = 12
-    # logger = Logger(None)
-    pass
+    while 1:print(check_for_trade_cards_icon(1))
