@@ -108,7 +108,7 @@ def scroll_down_slowly_in_shop_page(vm_index):
     """Method for scrolling down even faster when interacting with a
     scrollable menu using the left side of the screen
     """
-    send_swipe(vm_index, 66, 400, 66, 350)
+    send_swipe(vm_index, 66, 400, 66, 200)
 
     # click deadspace to stop the scroll
     click(vm_index, 10, 200)
@@ -212,4 +212,4 @@ def send_newline_char(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    scroll_down_slowly_in_shop_page(1)
