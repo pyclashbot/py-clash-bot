@@ -29,6 +29,7 @@ from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
+
 def find_request_button(vm_index, logger: Logger):
     """Finds the location of the request button on the screen.
 
@@ -179,7 +180,8 @@ def check_if_can_scroll_in_request_page(vm_index) -> bool:
 
 
 def request_state_check_if_in_a_clan(
-    vm_index, logger: Logger,
+    vm_index,
+    logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -256,7 +258,9 @@ def do_request(vm_index, logger: Logger) -> bool:
 
     # Perform random scrolling in the request page
     do_random_scrolling_in_request_page(
-        vm_index=vm_index, logger=logger, scrolls=random_scroll_amount,
+        vm_index=vm_index,
+        logger=logger,
+        scrolls=random_scroll_amount,
     )
 
     # Timeout settings for random clicking
@@ -309,19 +313,9 @@ def check_if_can_request_wrapper(vm_index) -> bool:
         print("Detected epic sunday icon")
         return True
 
-
-
-
-
     if check_for_trade_cards_icon(vm_index):
         print("Detected trade cards icon")
         return False
-
-
-
-
-
-
 
     if check_if_can_request_3(vm_index):
         return True
@@ -424,24 +418,23 @@ def check_for_trade_cards_icon(vm_index) -> bool:
     ]
     colors = [
         [64, 46, 36],
-[ 46, 191, 255],
-[ 73 ,111, 129],
-[ 78 ,185, 232],
-[255 ,238, 237],
-[224, 204, 205],
-[219 ,199, 200],
-[ 37 , 83, 104],
-[ 82, 112, 125],
-[254, 255, 255],
-[250 ,253, 255],
-[ 43 ,189, 253],
+        [46, 191, 255],
+        [73, 111, 129],
+        [78, 185, 232],
+        [255, 238, 237],
+        [224, 204, 205],
+        [219, 199, 200],
+        [37, 83, 104],
+        [82, 112, 125],
+        [254, 255, 255],
+        [250, 253, 255],
+        [43, 189, 253],
     ]
     # for p in pixels:print(p)
     for i, c in enumerate(colors):
         if not pixel_is_equal(c, pixels[i], tol=10):
             return False
     return True
-
 
 
 def check_if_can_request_3(vm_index):
@@ -454,4 +447,4 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-    while 1:print(check_for_trade_cards_icon(1))
+    pass
