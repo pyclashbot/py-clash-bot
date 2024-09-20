@@ -619,7 +619,8 @@ def state_tree(
         next_state = "war"
 
         logger.log(
-            f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
+            f"This state: {state} took {str(time.time()
+                                             - start_time)[:5]} seconds",
         )
         return end_fight_state(
             vm_index,
@@ -655,12 +656,12 @@ def state_tree_tester(vm_index):
         # job toggles
         "open_battlepass_user_toggle": True,
         "open_chests_user_toggle": True,
-        "request_user_toggle": False,
-        "donate_toggle": False,
-        "free_donate_toggle": False,
+        "request_user_toggle": True,
+        "donate_toggle": True,
+        "free_donate_toggle": True,
         "card_mastery_user_toggle": True,
-        "free_offer_user_toggle": False,
-        "gold_offer_user_toggle": False,
+        "free_offer_user_toggle": True,
+        "gold_offer_user_toggle": True,
         "trophy_road_1v1_battle_user_toggle": True,
         "path_of_legends_1v1_battle_user_toggle": True,
         "goblin_queens_journey_1v1_battle_user_toggle": True,
@@ -695,11 +696,11 @@ def state_tree_tester(vm_index):
         "trophy_road_reward_increment_user_input": 1,
         "season_shop_buys_increment_user_input": 1,
         # account switching input info
-        "account_switching_toggle": False,
+        "account_switching_toggle": True,
         "account_switching_increment_user_input": 1,
         "account_switching_slider": 1,
         "next_account": 0,
-        "random_account_switch_list": [0, 1, 2],
+        "random_account_switch_list": [1, 0],
     }
     state_history = StateHistory()
 
