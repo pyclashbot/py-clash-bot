@@ -320,7 +320,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
     logger.change_status(
         status="Clicking deadspace after attemping upgrading this card",
     )
-    for _ in range(4):
+    for _ in range(6):
         click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
         time.sleep(1)
 
