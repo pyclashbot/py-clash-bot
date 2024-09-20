@@ -92,8 +92,10 @@ def scroll_down(vm_index):
 
 def scroll_down_in_request_page(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
-    send_swipe(vm_index, 43, 350, 43, 280)
+    #vertical swipe
+    send_swipe(vm_index, 43, 350, 43, 140)
 
+    #horizontal swipe to stop the scroll
     send_swipe(vm_index, 100, 385, 330, 385)
 
 
