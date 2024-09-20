@@ -695,7 +695,7 @@ def state_tree_tester(vm_index):
         "trophy_road_reward_increment_user_input": 1,
         "season_shop_buys_increment_user_input": 1,
         # account switching input info
-        "account_switching_toggle": True,
+        "account_switching_toggle": False,
         "account_switching_increment_user_input": 1,
         "account_switching_slider": 1,
         "next_account": 0,
