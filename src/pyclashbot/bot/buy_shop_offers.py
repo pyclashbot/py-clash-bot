@@ -15,7 +15,7 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import (
     click,
-    screenshot,
+    screenshot,scroll_up_in_shop_page,
     scroll_down_slowly_in_shop_page,
 )
 from pyclashbot.utils.logger import Logger
@@ -77,10 +77,11 @@ def buy_shop_offers_main(
         logger.change_status("Failed to get to shop page to buy offers")
         return False
 
+    #scroll all the way to the top
+    scroll_up_in_shop_page(vm_index)
+
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
-
     purchase_total = 0
-
     start_time = time.time()
     done_buying = False
     logger.change_status("Starting to buy offers")
