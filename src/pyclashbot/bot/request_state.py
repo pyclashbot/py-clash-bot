@@ -157,7 +157,7 @@ def count_scrolls_in_request_page(vm_index) -> int:
         print(f"One scroll down. Count is {scrolls}")
         scroll_down_in_request_page(vm_index)
         scrolls += 1
-        time.sleep(1)
+        time.sleep(2)
 
         # if taken too much time, return 5
         if time.time() - start_time > timeout:
@@ -174,8 +174,39 @@ def count_scrolls_in_request_page(vm_index) -> int:
 
 
 def check_if_can_scroll_in_request_page(vm_index) -> bool:
-    if not region_is_color(vm_index, region=[64, 500, 293, 55], color=(222, 235, 241)):
-        return True
+    iar = numpy.asarray(screenshot(vm_index))
+    pixels = [
+        iar[533][58],
+        iar[533][63],
+        iar[533][60],
+        iar[533][90],
+        iar[533][120],
+        iar[533][150],
+        iar[533][180],
+        iar[533][210],
+        iar[533][240],
+        iar[533][270],
+        iar[533][300],
+        iar[529][337],
+    ]
+    colors = [
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+        [241, 235, 222],
+    ]
+
+    for i, c in enumerate(colors):
+        if not pixel_is_equal(c, pixels[i], tol=10):
+            return True
     return False
 
 
@@ -447,4 +478,4 @@ def check_if_can_request_3(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    request_state(1, Logger(), "next_state")
