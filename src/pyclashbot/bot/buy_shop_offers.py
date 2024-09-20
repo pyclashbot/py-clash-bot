@@ -223,8 +223,8 @@ def check_if_on_shop_page(vm_index):
 
 
 def shop_buy_tester():
-    vm_index = 12
-    logger = Logger(None, None)
+    vm_index = 1
+    logger = Logger(None, False)
     gold_buy_toggle = True
     free_offers_toggle = True
 
