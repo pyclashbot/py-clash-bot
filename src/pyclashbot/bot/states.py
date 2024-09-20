@@ -619,8 +619,7 @@ def state_tree(
         next_state = "war"
 
         logger.log(
-            f"This state: {state} took {str(time.time()
-                                             - start_time)[:5]} seconds",
+            f"This state: {state} took {str(time.time()- start_time)[:5]} seconds",
         )
         return end_fight_state(
             vm_index,
