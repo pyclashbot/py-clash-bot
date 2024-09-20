@@ -23,10 +23,10 @@ initalize_pylogging()
 
 
 TODO = """
--make increments NOT user input (prob use a file to store state history)\
 -make request faster
 -speed up shop buy
 -write a get_to_war_page() function for war state to speed it up
+-store in_a_clan per account
 """
 
 
