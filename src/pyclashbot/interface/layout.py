@@ -34,7 +34,7 @@ controls_layout = [
                         default=False,
                     ),
                     sg.Slider(
-                        range=(1, 8),
+                        range=(1, 3),
                         orientation="h",
                         key="account_switching_slider",
                         size=(10, 20),
