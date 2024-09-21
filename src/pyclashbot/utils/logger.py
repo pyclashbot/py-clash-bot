@@ -142,10 +142,10 @@ class Logger:
         self.season_shop_buys_attempts = 0
 
         # account stuff
-        self.account_order = "-"
-        self.current_account = "-"
+        self.current_account = -1
         self.account_switches = 0
         self.switch_account_attempts = 0
+        self.account_index_history = []
         self.in_a_clan = False
 
         # restart stats
@@ -159,7 +159,6 @@ class Logger:
         self.time_of_last_request = 0
         self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
-        self.total_accounts = 0
 
         # track errored logger
         self.errored = False
@@ -204,9 +203,7 @@ class Logger:
                 "restarts_after_failure": self.restarts_after_failure,
                 "current_status": self.current_status,
                 # account stuff
-                "current_account": self.current_account,
                 "account_switches": self.account_switches,
-                "account_order": self.account_order,
             }
 
     def get_stats(self):
@@ -246,6 +243,50 @@ class Logger:
         else:
             hours, minutes, seconds = 0, 0, 0
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+    def add_account_to_account_history(self,i):
+        self.account_index_history.append(i)
+
+    def get_next_account(self,total_count):
+        def get_lowest_value_in_dict(search_dict) -> int:
+            lowest_val = None
+            lowest_index = None
+
+            for index,val in search_dict.items():
+                if val == 0:
+                    return int(index)
+                if (lowest_val is None) or (val <lowest_val):
+                    lowest_val = val
+                    lowest_index = index
+
+            if lowest_index is None:
+                return 0
+
+            return int(lowest_index)
+
+        def print_account_history_dict(index2count):
+            print(f'\nAccount history dict:')
+            print('#{:^6} : {}'.format('Acct #', 'count'))
+            for index, count in index2count.items():
+                print('#{:^6} : {}'.format(index, count))
+            print('\n')
+
+        #make a dict that represents index2count for each index in range(total_count)
+        index2count = {i:0 for i in range(total_count)}
+
+        #populate the dict with the counts of each index in account_index_history
+        for i in self.account_index_history:
+            index2count[i] += 1
+
+        #print the dict
+        print_account_history_dict(index2count)
+
+        #get the index with the lowest count
+        next_account = get_lowest_value_in_dict(index2count)
+
+        return next_account
+
+
 
     def increment_season_shop_buys_attempts(self):
         self.season_shop_buys_attempts += 1
@@ -444,9 +485,7 @@ class Logger:
     def change_current_account(self, account_id):
         self.current_account = account_id
 
-    @_updates_log
-    def update_account_order_var(self, account_order):
-        self.account_order = account_order
+
 
     def add_randomize_deck_attempt(self):
         """Increments logger's deck_randomize_attempts by 1"""
@@ -1049,8 +1088,7 @@ class Logger:
         """Sets logger's time_of_last_request to input_time"""
         self.time_of_last_request = input_time
 
-    def set_total_accounts(self, count):
-        self.total_accounts = count
+
 
     def update_time_of_last_card_upgrade(self, input_time) -> None:
         """Sets logger's time_of_last_card_upgrade to input_time"""
@@ -1102,5 +1140,19 @@ class Logger:
 
 
 if __name__ == "__main__":
-    initalize_pylogging()
+    print('\n'*10)
+
+    # initalize_pylogging()
     logger = Logger()
+    logger.current_account = -1
+    # logger.add_account_to_account_history(6)
+    # logger.add_account_to_account_history(1)
+    # logger.add_account_to_account_history(2)
+    # logger.add_account_to_account_history(3)
+    # logger.add_account_to_account_history(4)
+    # logger.add_account_to_account_history(5)
+    # logger.add_account_to_account_history(5)
+    # logger.add_account_to_account_history(5)
+    # logger.add_account_to_account_history(5)
+    next_i =logger.get_next_account(7)
+    print(next_i)
