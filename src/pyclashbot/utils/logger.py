@@ -286,8 +286,6 @@ class Logger:
 
         return next_account
 
-
-
     def increment_season_shop_buys_attempts(self):
         self.season_shop_buys_attempts += 1
 
@@ -480,11 +478,6 @@ class Logger:
     def add_restart_after_failure(self) -> None:
         """Add request to log"""
         self.restarts_after_failure += 1
-
-    @_updates_log
-    def change_current_account(self, account_id):
-        self.current_account = account_id
-
 
 
     def add_randomize_deck_attempt(self):
