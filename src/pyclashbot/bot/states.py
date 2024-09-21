@@ -46,14 +46,16 @@ def get_render_mode(job_list):
 
 
 class StateHistory:
-    def __init__(self):
+    def __init__(self, logger):
         self.time_history_string_list = []
+        self.logger = logger
 
         # This increment time is hard-coded to be as
         # low as possible while not spamming slow states
 
         self.state2time_increment = {
-            "account_switch": 0.8,  #'state':increment in hours,
+            # "account_switch": 0.8,  #'state':increment in hours,
+            "account_switch": 0.00001,  #'state':increment in hours,
             "open_chests": 1,  #'state':increment in hours,
             "level_up_chests": 0.25,  #'state':increment in hours,
             "upgrade": 0.5,  #'state':increment in hours,
@@ -69,34 +71,37 @@ class StateHistory:
             "war": 0.25,  #'state':increment in hours,
         }
 
-    # def make_state2time_increment(self):
-    #     state2time_increment = {
-    #         "account_switch": 0.8,  #'state':increment in hours,
-    #         "open_chests": 1,  #'state':increment in hours,
-    #         "level_up_chests": 0.25,  #'state':increment in hours,
-    #         "upgrade": 0.5,  #'state':increment in hours,
-    #         "trophy_rewards": 0.25,  #'state':increment in hours,
-    #         "request": 1,  #'state':increment in hours,
-    #         "donate": 1,  #'state':increment in hours,
-    #         "shop_buy": 2,  #'state':increment in hours,
-    #         "bannerbox": 1,  #'state':increment in hours,
-    #         "daily_rewards": 0.25,  #'state':increment in hours,
-    #         "battlepass_rewards": 0.25,  #'state':increment in hours,
-    #         "card_mastery": 0.25,  #'state':increment in hours,
-    #         "season_shop": 2,  #'state':increment in hours,
-    #         "war": 0.25,  #'state':increment in hours,
-    #     }
+    def print(self):
+        print("State history:")
+        for i, line in enumerate(self.time_history_string_list):
+            print("\t", i, line)
+        print("\n")
 
     def add_state(self, state):
-        time_history_string = f"{state} {time.time()}"
+        time_history_string = (
+            f"{state} {time.time()} {int(self.logger.current_account)}"
+        )
         self.time_history_string_list.append(time_history_string)
+        self.print()
 
     def get_time_of_last_state(self, state: str) -> int:
         most_recent_time = -1
         for line in self.time_history_string_list:
+            # filter by state
             if state in line:
+                # split line
                 try:
-                    time = float(line.split(" ")[1])
+                    # split by account index
+                    state, time, this_account_index = line.split(" ")
+                    time = float(time)
+                    this_account_index = int(this_account_index)
+                    # account_switch state ignores account index filter
+                    if state != "account_switch" and int(this_account_index) != int(
+                        self.logger.current_account
+                    ):
+                        continue
+
+                    # handling negative time for whatever reason
                     if time > most_recent_time:
                         most_recent_time = time
                 except Exception as e:
@@ -151,12 +156,6 @@ class StateHistory:
             return True
 
         return False
-
-    def print(self):
-        print("\nState History:")
-        for i, string in enumerate(self.time_history_string_list):
-            print(i, string)
-        print("\n")
 
 
 def state_tree(
@@ -263,13 +262,13 @@ def state_tree(
             logger.log("Account switching isn't ready. Skipping this state")
             return next_state
 
-        #see how many accounts there are in the toggle
+        # see how many accounts there are in the toggle
         account_total = job_list["account_switch_count"]
 
-        #see what account we should use right now
+        # see what account we should use right now
         next_account_index = logger.get_next_account(account_total)
 
-        #switch to that account
+        # switch to that account
         if (
             switch_accounts(
                 vm_index,
@@ -278,14 +277,18 @@ def state_tree(
             )
             is False
         ):
-            logger.change_status(f'Failed to switch to account #{next_account_index}. Restarting...')
+            logger.change_status(
+                f"Failed to switch to account #{next_account_index}. Restarting..."
+            )
             return "restart"
 
-        #add this account to logger's account history object
+        # set current account
+        logger.current_account = int(next_account_index)
+
+        # add this account to logger's account history object
         logger.add_account_to_account_history(next_account_index)
 
         return next_state
-
 
     if state == "open_chests":  # --> level_up_chest
         next_state = "level_up_chest"
@@ -337,13 +340,17 @@ def state_tree(
             logger.log("deck randomization isn't toggled. skipping this state")
             return next_state
 
-        #make sure there's a relevent job toggled, else just skip deck randomization
-        if (not job_list["trophy_road_1v1_battle_user_toggle"]
-        and not job_list["goblin_queens_journey_1v1_battle_user_toggle"]
-        and not job_list["path_of_legends_1v1_battle_user_toggle"]
-        and not job_list["upgrade_user_toggle"]
-        and not job_list["2v2_battle_user_toggle"]):
-            print('No fight jobs, or card jobs are even toggled, so skipping random deck state.')
+        # make sure there's a relevent job toggled, else just skip deck randomization
+        if (
+            not job_list["trophy_road_1v1_battle_user_toggle"]
+            and not job_list["goblin_queens_journey_1v1_battle_user_toggle"]
+            and not job_list["path_of_legends_1v1_battle_user_toggle"]
+            and not job_list["upgrade_user_toggle"]
+            and not job_list["2v2_battle_user_toggle"]
+        ):
+            print(
+                "No fight jobs, or card jobs are even toggled, so skipping random deck state."
+            )
             return next_state
 
         return randomize_deck_state(vm_index, logger, next_state)
@@ -369,7 +376,7 @@ def state_tree(
 
         # if job isnt selected, just return the next state
         if not job_list["trophy_road_rewards_user_toggle"]:
-            logger.change_status(
+            logger.log(
                 "Trophy rewards collection is not toggled. Skipping this state",
             )
             return next_state
@@ -380,7 +387,7 @@ def state_tree(
             return next_state
 
         # run the state
-        logger.change_status("Trophy rewards collection is ready!")
+        logger.log("Trophy rewards collection is ready!")
         logger.add_trophy_reward_collect_attempt()
         return collect_trophy_road_rewards_state(vm_index, logger, next_state)
 
@@ -482,7 +489,7 @@ def state_tree(
 
         # if job not toggled go next state
         if not job_list["battlepass_collect_user_toggle"]:
-            logger.change_status(
+            logger.log(
                 "Battlepass collect is not toggled. Skipping this state",
             )
             return next_state
@@ -515,7 +522,7 @@ def state_tree(
 
         # if job isnt toggled, return next state
         if not job_list["season_shop_buys_user_toggle"]:
-            logger.change_status("Season shop buys is not toggled. Skipping this state")
+            logger.log("Season shop buys is not toggled. Skipping this state")
             return next_state
 
         # if job not ready, go next state
@@ -659,7 +666,6 @@ def state_tree_tester(vm_index):
         "daily_rewards_user_toggle": False,
         "battlepass_collect_user_toggle": False,
         "level_up_chest_user_toggle": False,
-
         "trophy_road_rewards_user_toggle": False,
         "season_shop_buys_user_toggle": False,
         # keep these off
@@ -668,18 +674,18 @@ def state_tree_tester(vm_index):
         "random_plays_user_toggle": False,
         "memu_attach_mode_toggle": False,
         # account switching input info
-        "account_switching_toggle":True,
-        "account_switch_count":2,
-
+        "account_switching_toggle": True,
+        "account_switch_count": 2,
     }
-    state_history = StateHistory()
+    state_history = StateHistory(logger)
 
     while 1:
         state = state_tree(
             vm_index,
             logger,
             state,
-            job_list,state_history,
+            job_list,
+            state_history,
         )
         if state == "restart":
             print("Restart state")
