@@ -20,10 +20,13 @@ class WorkerThread(PausableThread):
             render_mode = "directx"
 
         try:
-            # logger = Logger()
+            #init start state
             state = "start"
-            state_history = StateHistory()
 
+            #init state manager object
+            state_history = StateHistory(self.logger)
+
+            #init the vm
             vm_index = get_vm(self.logger, render_mode=render_mode)
 
             # loop until shutdown flag is set
@@ -36,7 +39,6 @@ class WorkerThread(PausableThread):
                     jobs,
                     state_history
                 )
-
                 while self.pause_flag.is_set():
                     time.sleep(0.1)  # sleep for 100ms until pause flag is unset
 
