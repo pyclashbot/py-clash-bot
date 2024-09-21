@@ -174,12 +174,13 @@ def collect_1_battlepass_reward(vm_index, logger):
         click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
         time.sleep(3)
 
-        # click deadspace until back to battlepass page
+        # click deadspace until back to battlepass page + a little extra ;)
         logger.log("Skipping thru this battlepass reward")
         while not check_if_on_battlepass_page(vm_index):
-            if random.randint(1, 5):
-                logger.log("Skipping thru this battlepass reward")
+            logger.log("Skipping thru this battlepass reward")
             click(vm_index, 404, 33)
+        click(vm_index, 404, 33,clicks = 5,interval = 0.5)
+
 
         logger.log("Collected 1 battlepass reward")
         logger.increment_battlepass_collects()
