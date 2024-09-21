@@ -10,14 +10,9 @@ from pyclashbot.memu.client import click, custom_swipe
 from pyclashbot.utils.logger import Logger
 
 SSID_COORDS = [
-    (48, 305),  # 1st account, index 0
-    (48, 387),  # 2nd account, index 1
-    (48, 471),  # 3rd account, index 2
-    (48, 553),  # 4th account, index 3
-    (48, 631),  # 5th account, index 4
-    (48, 631),  # 6th account, index 5
-    (48, 631),  # 7th account, index 6
-    (48, 631),  # 8th account, index 7
+    (48, 376),  # 1st account, index 0
+    (48, 472),  # 2nd account, index 1
+    (48, 567),  # 3rd account, index 2
 ]
 
 
@@ -36,10 +31,6 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
     logger.change_status("Clicking switch SSID button")
     click(vm_index, 221, 368)
     time.sleep(4)
-
-    # wait for switch ssid page
-    # wait_for_switch_ssid_page(vm_index, logger)
-    # time.sleep(10)
 
     # Perform the scrolling
     if account_index_to_switch_to in [5, 6, 7]:
