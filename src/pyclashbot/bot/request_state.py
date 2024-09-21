@@ -164,7 +164,8 @@ def count_scrolls_in_request_page(vm_index) -> int:
             return 5
 
     # close request screen with deadspace click
-    click(vm_index, 15, 300, clicks=3, interval=1)
+    click(vm_index, 15, 300, clicks=3)
+    time.sleep(0.1)
 
     # reopen request page
     click(vm_index=vm_index, x_coord=77, y_coord=536)
