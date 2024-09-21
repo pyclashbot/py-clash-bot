@@ -266,9 +266,9 @@ class Logger:
 
         def print_account_history_dict(index2count):
             print(f'\nAccount history dict:')
-            print('#{:^6} : {}'.format('Acct #', 'count'))
+            print('{:^6} : {}'.format('Acct #', 'count'))
             for index, count in index2count.items():
-                print('#{:^6} : {}'.format(index, count))
+                print('{:^6} : {}'.format(index, count))
             print('\n')
 
         #make a dict that represents index2count for each index in range(total_count)
