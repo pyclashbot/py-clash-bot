@@ -22,7 +22,6 @@ from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_sta
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.season_shop_offers import collect_season_shop_offers_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
-from pyclashbot.bot.upgrade_all_cards import upgrade_all_cards_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war_state import war_state
 from pyclashbot.memu.client import click
@@ -54,7 +53,8 @@ class StateHistory:
         # low as possible while not spamming slow states
 
         self.state2time_increment = {
-            "account_switch": 0.8,  #'state':increment in hours,
+            "account_switch": 0.00555555,  #'state':increment in hours,
+            # "account_switch": 0.8,  #'state':increment in hours,
             "open_chests": 1,  #'state':increment in hours,
             "level_up_chests": 0.25,  #'state':increment in hours,
             "upgrade": 0.5,  #'state':increment in hours,
@@ -186,8 +186,6 @@ def state_tree(
         if job_list["memu_attach_mode_toggle"]:
             start_memu_dock_mode()
 
-        logger.set_total_accounts(len(job_list["random_account_switch_list"]))
-
         next_state = "account_switch"
 
         restart_emulator(logger, get_render_mode(job_list))
@@ -239,11 +237,6 @@ def state_tree(
                 vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1]
             )
 
-            # logger.log("Not on clash main")
-            # logger.log("Pixels are none: ")
-            # for p in clash_main_check:
-            #     logger.log(p)
-
         if check_if_on_clash_main_menu(vm_index) is not True:
             logger.log("Clash main wait timed out! These are the pixels it saw:")
             # for p in clash_main_check:
@@ -271,34 +264,29 @@ def state_tree(
             logger.log("Account switching isn't ready. Skipping this state")
             return next_state
 
-        account_total = job_list["account_switching_slider"]
-        logger.log(f"Doing switch #{job_list['next_account']} of {account_total}")
-        accout_index = job_list["next_account"]
+        #see how many accounts there are in the toggle
+        account_total = job_list["account_switch_count"]
+
+        #see what account we should use right now
+        next_account_index = logger.get_next_account(account_total)
+
+        #switch to that account
         if (
             switch_accounts(
                 vm_index,
                 logger,
-                job_list["random_account_switch_list"][accout_index],
+                next_account_index,
             )
             is False
         ):
+            logger.change_status(f'Failed to switch to account #{next_account_index}. Restarting...')
             return "restart"
 
-        # increment next account iteration
-        job_list["next_account"] += 1
-        if job_list["next_account"] >= job_list["account_switching_slider"]:
-            job_list["next_account"] = 0
-
-        logger.log(
-            f"Next account is {job_list['next_account']} / {job_list['account_switching_slider']}",
-        )
-
-        # update current account # to GUI
-        logger.change_current_account(
-            job_list["random_account_switch_list"][accout_index],
-        )
+        #add this account to logger's account history object
+        logger.add_account_to_account_history(next_account_index)
 
         return next_state
+
 
     if state == "open_chests":  # --> level_up_chest
         next_state = "level_up_chest"
@@ -653,53 +641,37 @@ def state_tree_tester(vm_index):
     state = "account_switch"
     job_list = {
         # job toggles
-        "open_battlepass_user_toggle": True,
-        "open_chests_user_toggle": True,
-        "request_user_toggle": True,
-        "donate_toggle": True,
-        "free_donate_toggle": True,
-        "card_mastery_user_toggle": True,
+        "open_battlepass_user_toggle": False,
+        "open_chests_user_toggle": False,
+        "request_user_toggle": False,
+        "donate_toggle": False,
+        "free_donate_toggle": False,
+        "card_mastery_user_toggle": False,
         "free_offer_user_toggle": True,
         "gold_offer_user_toggle": True,
-        "trophy_road_1v1_battle_user_toggle": True,
-        "path_of_legends_1v1_battle_user_toggle": True,
-        "goblin_queens_journey_1v1_battle_user_toggle": True,
-        "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": True,
-        "war_user_toggle": True,
-        "random_decks_user_toggle": True,
-        "open_bannerbox_user_toggle": True,
+        "trophy_road_1v1_battle_user_toggle": False,
+        "path_of_legends_1v1_battle_user_toggle": False,
+        "goblin_queens_journey_1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": False,
+        "upgrade_user_toggle": False,
+        "war_user_toggle": False,
+        "random_decks_user_toggle": False,
+        "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
-        "battlepass_collect_user_toggle": True,
-        "level_up_chest_user_toggle": True,
-        "upgrade_all_cards_user_toggle": True,
-        "trophy_road_rewards_user_toggle": True,
-        "season_shop_buys_user_toggle": True,
+        "battlepass_collect_user_toggle": False,
+        "level_up_chest_user_toggle": False,
+
+        "trophy_road_rewards_user_toggle": False,
+        "season_shop_buys_user_toggle": False,
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "random_plays_user_toggle": False,
         "memu_attach_mode_toggle": False,
-        # job increments
-        "card_upgrade_increment_user_input": 1,
-        "shop_buy_increment_user_input": 1,
-        "request_increment_user_input": 1,
-        "donate_increment_user_input": 1,
-        "daily_reward_increment_user_input": 1,
-        "card_mastery_collect_increment_user_input": 1,
-        "open_chests_increment_user_input": 1,
-        "deck_randomization_increment_user_input": 1,
-        "war_attack_increment_user_input": 1,
-        "battlepass_collect_increment_user_input": 1,
-        "level_up_chest_increment_user_input": 1,
-        "trophy_road_reward_increment_user_input": 1,
-        "season_shop_buys_increment_user_input": 1,
         # account switching input info
-        "account_switching_toggle": False,
-        "account_switching_increment_user_input": 1,
-        "account_switching_slider": 1,
-        "next_account": 0,
-        "random_account_switch_list": [1, 0],
+        "account_switching_toggle":True,
+        "account_switch_count":2,
+
     }
     state_history = StateHistory()
 
