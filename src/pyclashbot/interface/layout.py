@@ -82,7 +82,7 @@ memu_settings_frame = sg.Frame(
 controls_layout = [
         [
             sg.Frame(layout = [[jobs_frame]],title = '',expand_y=True,border_width=0,pad=0),
-            sg.Frame(layout = [[memu_settings_frame],[account_switching_switching_frame]],title = '',border_width=0,pad=0,expand_y=True),
+            sg.Frame(layout = [[memu_settings_frame],[account_switching_switching_frame]],title = '',border_width=0,pad=0,expand_x=True,expand_y=True),
     ]
 
 ]
