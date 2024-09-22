@@ -163,11 +163,12 @@ bot_stats_values = [
         stat_box("restarts_after_failure"),
     ],
     [
-        stat_box("time_since_start", size=(7, 1)),
-    ],
-    [
         stat_box("account_switches", size=(7, 1)),
     ],
+    [
+        stat_box("time_since_start", size=(7, 1)),
+    ],
+
 ]
 
 bot_stats = [
