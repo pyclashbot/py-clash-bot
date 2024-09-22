@@ -34,7 +34,6 @@ collection_title_texts = [
         "Card Masteries",
         "Bannerbox Buys",
         "Cards Upgraded",
-        "Shop Buys:",
         "Battlepass Collects",
         "Level Up Chests",
         "War Chests",
@@ -49,7 +48,7 @@ collection_stats_values: list[list[Text]] = [
         stat_box("requests"),
     ],
     [
-        stat_box("shop_buys"),
+        stat_box("shop_offer_collections"),
     ],
     [
         stat_box("donates"),
@@ -69,9 +68,7 @@ collection_stats_values: list[list[Text]] = [
     [
         stat_box("upgrades"),
     ],
-    [
-        stat_box("shop_offer_collections"),
-    ],
+
     [
         stat_box("battlepass_collects"),
     ],
