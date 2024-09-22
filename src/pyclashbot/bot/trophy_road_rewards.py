@@ -35,6 +35,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
             )
             # Return "restart" if still in Path of Legends after clicking.
             return "restart"
+
     rewards_collected_result = 0
     # Checks if Trophy Road rewards are available and attempts to collect them.
     while check_for_trophy_road_rewards(vm_index):
@@ -42,6 +43,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
         trophy_road_state, rewards_collected = collect_trophy_road_rewards(
             vm_index, logger,
         )
+
         if trophy_road_state is not True:
             logger.change_status("Failed to collect Trophy Road rewards.")
             return "restart"
@@ -126,6 +128,7 @@ def collect_trophy_road_rewards(vm_index, logger):
         bool: True if rewards collection was successful or no rewards were available, False if an error occurred.
 
     """
+    print('running collect_trophy_road_rewards()')
     rewards_collected = 0
     # Click to potentially open the Trophy Road rewards menu.
     click(vm_index, 210, 250)
@@ -133,11 +136,11 @@ def collect_trophy_road_rewards(vm_index, logger):
 
     # Check if successfully entered the Trophy Road rewards menu.
     if check_if_on_trophy_road_rewards_menu(vm_index):
-        logger.change_status("Successfully entered Trophy Road rewards menu.")
+        logger.change_status("Entered Trophy Road rewards menu...")
         time.sleep(2)
 
         # Loop until no more collect buttons are found or limit is reached
-        while find_collect_button(vm_index) != None:
+        while find_collect_button(vm_index) is not None:
             collecting_attempts = 0
             collect_side = find_collect_button(vm_index)
             if collect_side == "left":
@@ -210,6 +213,7 @@ def find_collect_button(vm_index):
 
     # Check the left position for expected colors.
     left_pixel_color = iar[left_position[1]][left_position[0]]
+    # print('left_pixel_color',left_pixel_color)
     if any(
         pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors
     ):
@@ -218,6 +222,7 @@ def find_collect_button(vm_index):
 
     # Check the right position for expected colors.
     right_pixel_color = iar[right_position[1]][right_position[0]]
+    print('right_pixel_color',right_pixel_color)
     if any(
         pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors
     ):
@@ -312,4 +317,4 @@ def check_if_on_trophy_road_rewards_menu(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    print(find_collect_button(1))
