@@ -843,6 +843,7 @@ global elapsed_time
 
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
+    #this needs comments 
     create_default_bridge_iar(vm_index)
     last_three_cards = collections.deque(maxlen=3)
     ingame_time = time.time()
