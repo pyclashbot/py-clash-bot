@@ -6,6 +6,7 @@ from os import path
 import PySimpleGUI as sg
 from PySimpleGUI import Window
 
+from pyclashbot.bot import account_switching
 from pyclashbot.interface.controls import job_increment_controls
 from pyclashbot.interface.joblist import jobs_checklist
 from pyclashbot.interface.stats import (
@@ -18,21 +19,15 @@ from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
 
-
-controls_layout = [
-    [
-        # sg.Frame(layout=job_increment_controls, title="Job Increment Controls", expand_x=True, expand_y=True),
-        sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
-    ],
-    [
-        sg.Frame(
+jobs_frame = sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=False, expand_y=True,border_width=None,pad=0)
+account_switching_switching_frame = sg.Frame(
             layout=[
-                [
-                    sg.Checkbox(
+                [sg.Checkbox(
                         "Enabled",
                         key="account_switching_toggle",
                         default=False,
-                    ),
+                    ),],[
+
                     sg.Slider(
                         range=(1, 3),
                         orientation="h",
@@ -40,31 +35,13 @@ controls_layout = [
                         size=(10, 20),
                     ),
                 ],
-                [
-                    sg.Text("Current Account #"),
-                    sg.Text(
-                        "-",
-                        key="current_account",
-                        relief=sg.RELIEF_SUNKEN,
-                        text_color="blue",
-                        size=(5, 1),
-                    ),
-                ],
-                [
-                    sg.Text("Account Order"),
-                    sg.Text(
-                        "-",
-                        key="account_order",
-                        relief=sg.RELIEF_SUNKEN,
-                        text_color="blue",
-                        size=(10, 1),
-                    ),
-                ],
+
             ],
             title="Account Switching",
             expand_x=True,
-        ),
-        sg.Frame(
+            pad=0
+        )
+memu_settings_frame = sg.Frame(
             layout=[
                 [
                     sg.Checkbox(
@@ -73,30 +50,42 @@ controls_layout = [
                         default=False,
                     ),
                 ],
+
+
                 [
-                    sg.Text("Render Mode"),
+
                     sg.Radio(
                         enable_events=True,
                         text="OpenGL",
                         group_id="render_mode_radio",
                         default=True,
                         key="opengl_toggle",
+                        pad=1,
                     ),
-                    sg.Radio(
+
+                ],[sg.Radio(
                         enable_events=True,
                         text="DirectX",
                         group_id="render_mode_radio",
                         key="directx_toggle",
-                    ),
-                ],
+                        pad=1,
+                    ),],
             ],
             title="Memu Settings",
             expand_y=True,
             expand_x=True,
-        ),
-    ],
-]
+            pad=0
+        )
 
+
+
+controls_layout = [
+        [
+            sg.Frame(layout = [[jobs_frame]],title = '',expand_y=True,border_width=0,pad=0),
+            sg.Frame(layout = [[memu_settings_frame],[account_switching_switching_frame]],title = '',border_width=0,pad=0,expand_y=True),
+    ]
+
+]
 
 stats_tab_layout = [
     [
@@ -106,20 +95,23 @@ stats_tab_layout = [
                     sg.Frame(
                         layout=battle_stats,
                         title="Battle Stats",
+                        expand_y=False,
                         expand_x=True,
-                        expand_y=True,
+                        pad=0
                     ),
                 ],
                 [
                     sg.Frame(
                         layout=bot_stats,
                         title="Bot Stats",
-                        expand_x=True,
+                        expand_x=False,
+                        expand_y=True,
+                        pad=0
                     ),
                 ],
             ],
-            expand_x=True,
             expand_y=True,
+            pad=0,
         ),
         sg.Column(
             [
@@ -127,14 +119,14 @@ stats_tab_layout = [
                     sg.Frame(
                         layout=collection_stats,
                         title="Collection Stats",
-                        expand_x=True,
                         expand_y=True,
+                        pad=0
                     ),
                 ],
             ],
-            expand_x=True,
             justification="right",
             expand_y=True,
+            pad=0
         ),
     ],
 ]
@@ -161,7 +153,6 @@ time_status_bar_layout = [
 
 main_layout = [
     [
-        # layout:List[List[Tab]]
         sg.pin(
             sg.Column(
                 [
@@ -170,7 +161,8 @@ main_layout = [
                             layout=[
                                 [sg.Tab("Controls", controls_layout)],
                                 [sg.Tab("Stats", stats_tab_layout)],
-                            ],
+                            ],border_width=0,pad=0
+
                         ),
                     ],
                 ],
@@ -181,25 +173,22 @@ main_layout = [
     [
         sg.Button(
             "Start",
-            expand_x=True,
             button_color="Lime Green",
             border_width=3,
-            # size=(23, 1),
+            size = (10,1),
         ),
         sg.Button(
             "Stop",
             disabled=True,
             button_color="Red",
-            expand_x=True,
             border_width=2,
-            # size=(23, 1),
+            size = (10,1),
         ),
         sg.Button(
             "Collapse",
             key="-Collapse-Button-",
-            expand_x=True,
             border_width=2,
-            # size=(23, 1),
+            size = (10,1),
         ),
     ],
     [time_status_bar_layout],
