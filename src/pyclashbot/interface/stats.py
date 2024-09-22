@@ -8,7 +8,7 @@ from pyclashbot.interface.theme import THEME
 sg.theme(THEME)
 
 
-def stat_box(stat_name: str, size=(4, 1)) -> sg.Text:
+def stat_box(stat_name: str, size=(5, 1)) -> sg.Text:
     """Returns a pysimplegui text box object for stats layout"""
     return sg.Text(
         "0",
