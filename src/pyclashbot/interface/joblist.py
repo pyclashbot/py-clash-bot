@@ -49,21 +49,21 @@ def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbo
 battle_tab = (
     [
         job_check_box(
-            "Trophy road 1v1 battles",
+            "Trophy road battles",
             "trophy_road_1v1_user_toggle",
             default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Goblin Queen's Journey battles",
+            "Goblin Queen battles",
             "goblin_queens_journey_1v1_battle_user_toggle",
             default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Path of Legends 1v1 battles",
+            "Path of Legends battles",
             "path_of_legends_1v1_user_toggle",
             default_value=False,
         ),
@@ -82,12 +82,12 @@ battle_tab = (
     ],
     [
         job_check_box(
-            "Disable win/loss tracking", "disable_win_track_toggle", default_value=False,
+            "Skip win/loss check", "disable_win_track_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Skip fight when full chests",
+            "Skip fight if full chests",
             "skip_fight_if_full_chests_user_toggle",
             default_value=False,
         ),
@@ -101,17 +101,17 @@ rewards_tab = [
     ],
     [
         job_check_box(
-            "Battlepass rewards", "open_battlepass_user_toggle", default_value=False,
+            "Battlepass", "open_battlepass_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Card mastery rewards", "card_mastery_user_toggle", default_value=False,
+            "Card Masteries", "card_mastery_user_toggle", default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Daily Challenge Rewards", "daily_rewards_user_toggle", default_value=False,
+            "Collect Dailies", "daily_rewards_user_toggle", default_value=False,
         ),
     ],
     [
@@ -121,7 +121,7 @@ rewards_tab = [
     ],
     [
         job_check_box(
-            "Open Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False,
+            "Buy Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False,
         ),
     ],
     [
@@ -153,7 +153,7 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Buy shop offers for GOLD",
+            "Buy shop offers",
             "gold_offer_user_toggle",
             default_value=False,
         ),
@@ -179,10 +179,10 @@ jobs_checklist = [
         # layout:List[List[Tab]]
         sg.TabGroup(
             layout=[
-                [sg.Tab("Battle Jobs", battle_tab)],
-                [sg.Tab("Collection Jobs", rewards_tab)],
-                [sg.Tab("Cards Jobs", card_collection_tab)],
-            ],
+                [sg.Tab("Battle", battle_tab)],
+                [sg.Tab("Collection", rewards_tab)],
+                [sg.Tab("Cards", card_collection_tab)],
+            ],border_width=0, tab_border_width=0
         ),
     ],
 ]

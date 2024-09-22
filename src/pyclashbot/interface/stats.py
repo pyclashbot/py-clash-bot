@@ -16,52 +16,33 @@ def stat_box(stat_name: str, size=(4, 1)) -> sg.Text:
         relief=sg.RELIEF_SUNKEN,
         text_color="blue",
         size=size,
+        pad=0
     )
+
+def make_stat_titles(titles:list[str])->list[list[sg.Text]]:
+    list = [[sg.Text(title,pad=0)] for title in titles]
+    return list
 
 
 # collection stats
-
-collection_stats_titles: list[list[Text]] = [
-    [
-        sg.Text("Requests: "),
-    ],
-    [
-        sg.Text("Shop Buys: "),
-    ],
-    [
-        sg.Text("Donates: "),
-    ],
-    [
-        sg.Text("Chests Unlocked: "),
-    ],
-    [
-        sg.Text("Daily Rewards: "),
-    ],
-    [
-        sg.Text("Card Mastery Rewards: "),
-    ],
-    [
-        sg.Text("Bannerbox Collects: "),
-    ],
-    [
-        sg.Text("Cards Upgraded: "),
-    ],
-    [
-        sg.Text("Shop Offers Collected:"),
-    ],
-    [
-        sg.Text("Battlepass Reward Collects"),
-    ],
-    [
-        sg.Text("Level Up Reward Collects"),
-    ],
-    [
-        sg.Text("War Chest Collects"),
-    ],
-    [
-        sg.Text("Season Shop Buys"),
-    ],
+collection_title_texts = [
+        "Requests",
+        "Shop Buys",
+        "Donates",
+        "Chests Unlocked",
+        "Daily Rewards",
+        "Card Masteries",
+        "Bannerbox Buys",
+        "Cards Upgraded",
+        "Shop Buys:",
+        "Battlepass Collects",
+        "Level Up Chests",
+        "War Chests",
+        "Season Shop Buys",
 ]
+
+
+collection_stats_titles: list[list[Text]] = make_stat_titles(collection_title_texts)
 
 collection_stats_values: list[list[Text]] = [
     [
@@ -114,39 +95,21 @@ collection_stats = [
 
 
 # fight stats
-
-battle_stats_titles: list[list[sg.Text]] = [
-    [
-        sg.Text("Wins: "),
-    ],
-    [
-        sg.Text("Losses: "),
-    ],
-    [
-        sg.Text("Win Rate: "),
-    ],
-    [
-        sg.Text("Cards Played: "),
-    ],
-    [
-        sg.Text("Path of Legends Battles: "),
-    ],
-    [
-        sg.Text("Trophy Road Battles: "),
-    ],
-    [
-        sg.Text("Goblin Queen Fights: "),
-    ],
-    [
-        sg.Text("2v2 Fights: "),
-    ],
-    [
-        sg.Text("War Fights: "),
-    ],
-    [
-        sg.Text("Random Decks: "),
-    ],
+titles = [
+    'Wins',
+    'Losses',
+    'Win Rate',
+    'Cards Played',
+    ' Legends Battles',
+    'Trophy Battles',
+    'Goblin Fights',
+    '2v2 Fights',
+    'War Fights',
+    'Random Decks',
 ]
+
+battle_stats_titles: list[list[sg.Text]] =make_stat_titles(titles)
+
 
 battle_stats_values = [
     [
@@ -181,25 +144,22 @@ battle_stats_values = [
 
 battle_stats = [
     [
-        sg.Column(battle_stats_titles, element_justification="right"),
-        sg.Column(battle_stats_values, element_justification="left"),
+        sg.Column(battle_stats_titles, element_justification="right",pad=0),
+        sg.Column(battle_stats_values, element_justification="left",pad=0),
+
     ],
 ]
 
 
 # bot stats
 
-bot_stats_titles: list[list[sg.Text]] = [
-    [
-        sg.Text("Bot Failures"),
-    ],
-    [
-        sg.Text("Runtime"),
-    ],
-    [
-        sg.Text("Account Switches"),
-    ],
+bot_stat_title_texts = [
+    "Bot Failures",
+    "Acct Swaps",
+    "Runtime",
 ]
+
+bot_stats_titles: list[list[sg.Text]] = make_stat_titles(bot_stat_title_texts)
 
 bot_stats_values = [
     [
