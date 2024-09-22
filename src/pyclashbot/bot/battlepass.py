@@ -171,7 +171,7 @@ def collect_1_battlepass_reward(vm_index, logger):
 
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
-        click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
+        click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1],clicks = 3,interval = 0.5)
         time.sleep(3)
 
         # click deadspace until back to battlepass page + a little extra ;)
