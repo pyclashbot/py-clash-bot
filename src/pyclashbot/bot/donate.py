@@ -73,7 +73,6 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         next_state: The next state to transition to.
 
     """
-    logger.add_donate_attempt()
 
     donate_start_time = time.time()
     global only_free
@@ -90,7 +89,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         return "restart"
 
     # if logger says we're not in a clan, check if we are in a clan
-    if logger.in_a_clan is False:
+    if logger.is_in_clan() is False:
         logger.change_status("Checking if in a clan before donating")
         in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
         if in_a_clan_return == "restart":
@@ -102,11 +101,11 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         if not in_a_clan_return:
             return next_state
     else:
-        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+        print(f"Logger's in_a_clan value is: {logger.is_in_clan()} so skipping check")
 
     # if in a clan, update logger's in_a_clan value
     logger.update_in_a_clan_value(True)
-    print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
+    print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # run donate cards main
     if donate_cards_main(vm_index, logger) is False:
