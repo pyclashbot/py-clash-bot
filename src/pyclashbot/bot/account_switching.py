@@ -23,18 +23,18 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
         return False
 
     # click options burger
-    logger.change_status("Opening clash main options menu")
+    logger.log("Opening clash main options menu")
     click(vm_index, 386, 66)
     time.sleep(3)
 
     # click switch SSID button
-    logger.change_status("Clicking switch SSID button")
+    logger.log("Clicking switch SSID button")
     click(vm_index, 221, 368)
     time.sleep(4)
 
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
-    logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
+    logger.log(f"Clicking account index #{account_index_to_switch_to}")
     click(vm_index, account_coord[0], account_coord[1], clicks=3, interval=0.33)
     logger.change_status(f"Selected account #{account_index_to_switch_to}")
     time.sleep(6)
