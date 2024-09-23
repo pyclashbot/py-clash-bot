@@ -654,7 +654,7 @@ def state_tree_tester(vm_index):
         "card_mastery_user_toggle": True,
         "free_offer_user_toggle": True,
         "gold_offer_user_toggle": True,
-        "trophy_road_1v1_battle_user_toggle": True,
+        "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": False,
         "goblin_queens_journey_1v1_battle_user_toggle": False,
         "2v2_battle_user_toggle": True,
