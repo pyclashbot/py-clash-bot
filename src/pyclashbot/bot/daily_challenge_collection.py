@@ -4,6 +4,7 @@ import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.utils.logger import Logger
 from pyclashbot.memu.client import click, screenshot
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
@@ -41,8 +42,7 @@ def check_if_rewards_collected(vm_index) -> bool:
     # If all pixels match, the checkmark is present
     return True
 
-
-def collect_challenge_rewards(vm_index, logger, rewards) -> bool:
+def collect_challenge_rewards(vm_index, logger:Logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
