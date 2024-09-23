@@ -7,7 +7,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
+from pyclashbot.memu.client import click, custom_swipe, screenshot, scroll_down, scroll_up
 from pyclashbot.utils.logger import Logger
 
 _2V2_START_WAIT_TIMEOUT = 180  # s
@@ -362,19 +362,10 @@ def open_war_chest_obstruction(vm_index, logger):
 
 
 def check_for_war_chest_obstruction(vm_index):
-    """Checks if there is a war chest obstruction on the way to getting to the clan page.
-
-    Args:
-    ----
-        vm_index (int): The index of the virtual machine.
-
-    Returns:
-    -------
-        bool: True if there is a war chest obstruction, False otherwise.
-
-    """
+    #dont use check_line_for_color in the future. its slow
     if not check_line_for_color(vm_index, 213, 409, 218, 423, (252, 195, 63)):
         return False
+
     if not check_line_for_color(vm_index, 156, 416, 164, 414, (255, 255, 255)):
         return False
 
@@ -393,8 +384,7 @@ def collect_boot_reward(vm_index):
     click(vm_index, 5, 200, clicks=20, interval=0.5)
 
 
-def check_for_boot_reward(vm_index):
-    iar = screenshot(vm_index)
+def check_for_boot_reward(iar):
     pixels = [
         iar[350][150],
         iar[377][174],
@@ -420,64 +410,62 @@ def check_for_boot_reward(vm_index):
 
     return True
 
-
 def get_to_clan_tab_from_clash_main(
     vm_index: int,
     logger: Logger,
-) -> Literal["restart", "good"]:
-    """Navigates from the Clash Main page to the Clan Tab page.
+) :
 
-    Args:
-    ----
-        vm_index (int): The index of the virtual machine.
-        logger (Logger): The logger object.
-
-    Returns:
-    -------
-        Literal["restart", "good"]: "restart" if there is an error, "good" otherwise.
-
-    """
-    start_time = time.time()
-    while 1:
-        # timeout check
-        time_taken = time.time() - start_time
-        if time_taken > CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT:
-            logger.change_status(
-                "Error 89572985 took too long to get to clan tab from clash main",
+    #just try it raw real quick in case it works first try
+    click(
+                vm_index,
+                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
             )
-            return "restart"
+    time.sleep(2)
+    if check_if_on_clan_chat_page(screenshot(vm_index)):
+        return True
+
+    start_time = time.time()
+    while time.time() - start_time < CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT:
+        iar = screenshot(vm_index)
 
         # if boot exists, collect boot
-        print("checking for boot...")
-        if check_for_boot_reward(vm_index):
+        if check_for_boot_reward(iar):
             collect_boot_reward(vm_index)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # check for a war chest obstructing the nav
-        print("checking for war check obstruction...")
-        if check_for_war_chest_obstruction(vm_index):
+        elif check_for_war_chest_obstruction(vm_index):
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
+
         # if on the clan tab chat page, return
-        print("checking if on the clan tab...")
-        if check_if_on_clan_chat_page(vm_index):
-            break
+        elif check_if_on_clan_chat_page(iar):
+            return True
 
         # if on clash main, click the clan tab button
-        handle_clash_main_page_for_clan_page_navigation(vm_index)
+        elif check_if_on_clash_main_menu(vm_index):
+            click(
+                vm_index,
+                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
+            )
 
         # if on final results page, click OK
-        handle_final_results_page(vm_index, logger)
+        elif check_for_final_results_page(vm_index):
+            logger.log("On final_results_page so clicking OK button")
+            click(vm_index, 211, 524)
 
         # handle daily defenses rank page
         handle_war_popup_pages(vm_index, logger)
 
-        scroll_up(vm_index)
-        scroll_down(vm_index)
-
+        # scroll_up(vm_index)
+        # scroll_down(vm_index)
+        custom_swipe(vm_index,206,313,204,417)
+        custom_swipe(vm_index,204,417,206,313)
         click(
             vm_index,
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
@@ -487,11 +475,12 @@ def get_to_clan_tab_from_clash_main(
 
     # if here, then done
     logger.log("Made it to the clan page from clash main")
-    return "good"
+    return True
+
 
 
 def handle_war_popup_pages(vm_index, logger):
-    timeout = 4
+    timeout = 2
     start_time = time.time()
     while time.time() - start_time < timeout:
         if check_for_battle_day_results_page(vm_index):
@@ -508,7 +497,6 @@ def handle_war_popup_pages(vm_index, logger):
         ):
             print("Found daily_defenses page")
             click(vm_index, 150, 260)
-            time.sleep(2)
             logger.change_status("Handled daily defenses rank page")
             return True
 
@@ -517,7 +505,6 @@ def handle_war_popup_pages(vm_index, logger):
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
-            time.sleep(1)
             return True
 
     return False
@@ -645,43 +632,6 @@ def check_for_daily_defenses_rank_page(vm_index):
     return True
 
 
-def handle_clash_main_page_for_clan_page_navigation(vm_index) -> None:
-    """Handles navigation from the Clash Main page to the Clan page.
-
-    Args:
-    ----
-        vm_index (int): The index of the virtual machine.
-        logger (Logger): The logger object.
-
-    Returns:
-    -------
-        None
-
-    """
-    if check_if_on_clash_main_menu(vm_index):
-        click(
-            vm_index,
-            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
-            CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
-        )
-
-
-def handle_final_results_page(vm_index, logger) -> None:
-    """Handles the final results page.
-
-    Args:
-    ----
-        vm_index (int): The index of the virtual machine.
-        logger (Logger): The logger object.
-
-    Returns:
-    -------
-        None
-
-    """
-    if check_for_final_results_page(vm_index):
-        click(vm_index, 211, 524)
-        logger.log("On final_results_page so clicking OK button")
 
 
 def check_for_final_results_page(vm_index) -> bool:
@@ -709,7 +659,7 @@ def check_for_final_results_page(vm_index) -> bool:
     return True
 
 
-def check_if_on_clan_chat_page(vm_index) -> bool:
+def check_if_on_clan_chat_page(iar) -> bool:
     """Checks if the bot is currently on the clan chat page by comparing specific pixel colors.
 
     Args:
@@ -721,7 +671,6 @@ def check_if_on_clan_chat_page(vm_index) -> bool:
         bool: True if the bot is on the clan chat page, False otherwise.
 
     """
-    iar = screenshot(vm_index)
     # Define the pixel positions and their expected colors
     pixels = [
         (iar[15][9], (141, 84, 69)),  # X: 9 Y: 15
@@ -1770,4 +1719,8 @@ def wait_for_clash_main_burger_button_options_menu(
 
 if __name__ == "__main__":
     print("\n\n\n\n\n\n")
-    while 1:print(check_for_megaknight_evolution_popup(1))
+    c=get_to_clan_tab_from_clash_main(
+    1,
+    Logger(),
+)
+    print(c)
