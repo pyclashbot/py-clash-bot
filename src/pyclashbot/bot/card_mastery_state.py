@@ -82,6 +82,11 @@ def collect_first_mastery_reward(vm_index):
     y_positions = [316, 403, 488]
     for y in y_positions:
         click(vm_index, 200, y)
+        time.sleep(1)
+        if check_for_inventory_full_popup(vm_index):
+            print('Inventory full popup detected!\nClicking it')
+            click(vm_index,260,420)
+            time.sleep(1)
 
     # click deadspace
     ds = (14, 278)
@@ -124,6 +129,40 @@ def card_mastery_rewards_exist(vm_index):
 
     return True
 
+def check_for_inventory_full_popup(vm_index):
+    iar = screenshot(vm_index)
+    pixels = [
+        iar[410][220],
+        iar[420][225],
+        iar[416][225],
+        iar[418][230],
+        iar[420][240],
+        iar[430][250],
+        iar[435][260],
+        iar[427][270],
+        iar[429][280],
+        iar[435][290],
+    ]
+    # for p in pixels:print(p)
+    colors = [
+[255 ,187 ,105],
+[255 ,187 ,105],
+[255 ,187 ,105],
+[244 ,233 ,220],
+[60 ,52 ,43],
+[255 ,175  ,78],
+[255 ,175  ,78],
+[255 ,255 ,255],
+[241 ,165  ,74],
+[255 ,175  ,78],
+    ]
+    for i, c in enumerate(colors):
+        if not pixel_is_equal(c, pixels[i], tol = 15):
+            return False
+    return True
+
 
 if __name__ == "__main__":
-    collect_first_mastery_reward(0)
+    collect_first_mastery_reward(1)
+    # print('\n\n\n')
+    # print(check_for_inventory_full_popup(1))
