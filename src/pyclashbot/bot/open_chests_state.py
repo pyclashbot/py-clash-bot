@@ -39,7 +39,6 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     """
     open_chests_start_time = time.time()
 
-    logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
 
     # handle being on trophy road meu

@@ -265,7 +265,6 @@ def detect_and_upgrade(vm_index, logger, y_positions):
 
 def upgrade_all_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Upgrade cards state")
-    logger.add_card_upgrade_attempt()
 
     # If not on clash main, return restart
     clash_main_check = check_if_on_clash_main_menu(vm_index)

@@ -34,7 +34,6 @@ def buy_shop_offers_state(
     print(f"gold_buy_toggle: {gold_buy_toggle}")
     print(f"free_offers_toggle: {free_offers_toggle}")
 
-    logger.add_shop_buy_attempt()
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -170,7 +169,7 @@ def search_for_gold_purchases(vm_index):
 
 
 def buy_offers_from_this_shop_page(
-    vm_index, logger, gold_buy_toggle, free_offers_toggle,
+    vm_index, logger:Logger, gold_buy_toggle, free_offers_toggle,
 ):
     coord = None
 
