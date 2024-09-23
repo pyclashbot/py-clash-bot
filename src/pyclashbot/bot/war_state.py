@@ -100,7 +100,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="Starting a war battle")
 
     logger.log("Getting to clan tab")
-    if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
+    if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
         logger.log("Error 86868243 Took too long to get to clan tab from clash main")
         return "restart"
 
