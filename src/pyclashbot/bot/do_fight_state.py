@@ -307,7 +307,7 @@ def start_1v1_type_fight(vm_index, mode):
         set_fight_mode(vm_index, mode)
 
     # click start button
-    click(vm_index, 175, 403)
+    click(vm_index, 117,376)
     return True
 
 
