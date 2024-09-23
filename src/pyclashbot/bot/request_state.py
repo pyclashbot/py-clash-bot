@@ -79,7 +79,6 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
 
     """
     logger.change_status(status="Doing request state!")
-    logger.add_request_attempt()
 
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
@@ -93,7 +92,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         return "restart"
 
     # if logger says we're not in a clan, check if we are in a clan
-    if logger.in_a_clan is False:
+    if logger.is_in_clan() is False:
         logger.change_status("Checking if in a clan before requesting")
         in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
         if in_a_clan_return == "restart":
@@ -105,19 +104,17 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         if not in_a_clan_return:
             return next_state
     else:
-        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
+        print(f"Logger's in_a_clan value is: {logger.is_in_clan()} so skipping check")
 
     # if in a clan, update logger's in_a_clan value
     logger.update_in_a_clan_value(True)
-    print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
+    print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # get to clan page
     logger.change_status("Getting to clan tab to request a card")
     if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
         logger.change_status(status="ERROR 74842744443 Not on clan tab")
         return "restart"
-
-    logger.update_time_of_last_request(time.time())
 
     # check if request exists
     if check_if_can_request_wrapper(vm_index):
