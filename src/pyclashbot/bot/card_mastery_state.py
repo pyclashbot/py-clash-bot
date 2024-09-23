@@ -55,7 +55,6 @@ def collect_card_mastery_rewards(vm_index, logger: Logger) -> bool:
             logger.add_card_mastery_reward_collection()
             time.sleep(2)
 
-    logger.add_card_mastery_reward_collection_attempts()
     # get to clash main
     logger.change_status("Returning to clash main menu")
     click(vm_index, 243, 600)

@@ -82,8 +82,6 @@ def check_for_level_up_chest(vm_index):
 def collect_level_up_chest_state(vm_index, logger, next_state):
     logger.change_status("Entered collect_level_up_chest_state()")
 
-    # increment attempts
-    logger.add_level_up_chest_attempt()
 
     print("Checking if on clash for this state")
     if not check_if_on_clash_main_menu(vm_index):

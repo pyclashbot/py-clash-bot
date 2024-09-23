@@ -143,8 +143,6 @@ def buy_season_shop_offers(vm_index, logger: Logger):
 
 
 def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: str):
-    # increment attempts
-    logger.increment_season_shop_buys_attempts()
 
     # if not on main, return 'restart'
     if not check_if_on_clash_main_menu(vm_index):
