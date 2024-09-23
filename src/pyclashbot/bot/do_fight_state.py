@@ -298,10 +298,12 @@ def start_1v1_type_fight(vm_index, mode):
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
+        print('Not on clash main for start_1v1_type_fight()')
         return False
 
     # verify we're on goblin queen mode
     if get_current_fight_mode(vm_index) != mode:
+        print(f'Current {get_current_fight_mode(vm_index)} != {mode}, setting fight mode')
         set_fight_mode(vm_index, mode)
 
     # click start button
@@ -309,7 +311,7 @@ def start_1v1_type_fight(vm_index, mode):
     return True
 
 
-def start_fight(vm_index, logger, mode):
+def start_fight(vm_index, logger, mode) -> Boolean:
     # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen','2v2']
     def do_job_incrementing(logger, mode):
         if mode == "trophy_road":
@@ -588,7 +590,7 @@ def check_if_previous_game_was_win(
         return "restart"
 
     # get to clash main options menu
-    if get_to_activity_log(vm_index, logger) == "restart":
+    if get_to_activity_log(vm_index, logger,printmode=False) == "restart":
         logger.change_status(
             status="Error 8967203948 get_to_activity_log() in check_if_previous_game_was_win()",
         )
@@ -843,7 +845,7 @@ global elapsed_time
 
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
-    #this needs comments 
+    #this needs comments
     create_default_bridge_iar(vm_index)
     last_three_cards = collections.deque(maxlen=3)
     ingame_time = time.time()
