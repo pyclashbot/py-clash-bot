@@ -32,18 +32,6 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
     click(vm_index, 221, 368)
     time.sleep(4)
 
-    # Perform the scrolling
-    if account_index_to_switch_to in [5, 6, 7]:
-        logger.change_status(
-            f"Scrolling down to reach account #{account_index_to_switch_to}",
-        )
-        if account_index_to_switch_to == 5:  # 6th account
-            custom_swipe(vm_index, 215, 400, 215, 350, 2, 1)
-        elif account_index_to_switch_to == 6:  # 7th account
-            custom_swipe(vm_index, 215, 400, 215, 350, 4, 1)
-        elif account_index_to_switch_to == 7:  # 8th account
-            custom_swipe(vm_index, 215, 400, 215, 350, 6, 1)
-
     # click the account index in question
     account_coord = SSID_COORDS[account_index_to_switch_to]
     logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
