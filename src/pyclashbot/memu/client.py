@@ -62,8 +62,8 @@ def scroll_up_fast(vm_index):
     send_swipe(vm_index, 215, 100, 215, 500)
 
 
-def custom_swipe(vm_index, start_x, start_y, end_x, end_y, repeat, delay):
-    for _ in range(repeat):
+def custom_swipe(vm_index, start_x, start_y, end_x, end_y, count=1, delay=0):
+    for _ in range(count):
         send_swipe(vm_index, start_x, start_y, end_x, end_y)
         time.sleep(delay)
 
@@ -92,10 +92,10 @@ def scroll_down(vm_index):
 
 def scroll_down_in_request_page(vm_index):
     """Method for scrolling down faster when interacting with a scrollable menu"""
-    #vertical swipe
+    # vertical swipe
     send_swipe(vm_index, 43, 350, 43, 140)
 
-    #horizontal swipe to stop the scroll
+    # horizontal swipe to stop the scroll
     send_swipe(vm_index, 100, 385, 330, 385)
 
 
@@ -126,8 +126,13 @@ def scroll_up_in_shop_page(vm_index):
     # click deadspace to stop the scroll
     click(vm_index, 10, 200)
 
+
 def send_swipe(
-    vm_index: int, x_coord1: int, y_coord1: int, x_coord2: int, y_coord2: int,
+    vm_index: int,
+    x_coord1: int,
+    y_coord1: int,
+    x_coord2: int,
+    y_coord2: int,
 ):
     """Method for sending a swipe command to the given vm
 
