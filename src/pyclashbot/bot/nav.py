@@ -1347,12 +1347,9 @@ def handle_clash_main_tab_notifications(vm_index,logger: Logger,) -> bool:
     print("Getting to events tab...")
     while not check_for_events_page(vm_index):
         print("Still not on events page...")
-
         click(vm_index, 408, 600)
-
         handle_war_popup_pages(vm_index, logger)
 
-        time.sleep(1)
 
     print("On events page")
 
