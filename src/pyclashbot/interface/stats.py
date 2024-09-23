@@ -38,6 +38,7 @@ collection_title_texts = [
         "Level Up Chests",
         "War Chests",
         "Season Shop Buys",
+        'Trophy Road Rewards',
 ]
 
 
@@ -80,6 +81,9 @@ collection_stats_values: list[list[Text]] = [
     ],
     [
         stat_box("season_shop_buys"),
+    ],
+    [
+        stat_box("trophy_road_reward_collections"),
     ],
 ]
 
