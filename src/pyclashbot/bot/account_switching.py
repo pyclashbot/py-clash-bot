@@ -49,21 +49,18 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
     logger.change_status(f"Clicking account index #{account_index_to_switch_to}")
     click(vm_index, account_coord[0], account_coord[1], clicks=3, interval=0.33)
     logger.change_status(f"Selected account #{account_index_to_switch_to}")
-
     time.sleep(6)
 
+    #wait for main page
     logger.change_status("Waiting for clash main on new account...")
     if wait_for_clash_main_menu(vm_index, logger) is False:
         return False
     time.sleep(4)
-
     if check_for_trophy_reward_menu(vm_index):
         handle_trophy_reward_menu(vm_index, logger, printmode=False)
         time.sleep(2)
 
     logger.change_status(f"Switched to account #{account_index_to_switch_to}")
-    # Reset logger's in_a_clan value
-    logger.update_in_a_clan_value(False)
     logger.increment_account_switches()
     return True
 
