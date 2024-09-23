@@ -209,7 +209,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
                     return False
                 time.sleep(0.5)
 
-            logger.change_status("Scrolling up to search for more donate requests")
+            logger.change_status("Scrolling up...")
             scroll_up(vm_index)
             time.sleep(1)
 
