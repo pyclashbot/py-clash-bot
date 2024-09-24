@@ -13,12 +13,29 @@ from pyclashbot.memu.client import click, screenshot
 from pyclashbot.detection.image_rec import pixels_match_colors
 
 
-def spend_magic_items_state(vm_index: int, logger: Logger) -> bool:
-    logger.change_status("Spending magic item currencies!")
-
+def spend_magic_items_state(vm_index:int,logger:Logger,next_state:str)->str:
     # if not on clash main, return False
     if not check_if_on_clash_main_menu(vm_index):
-        return False
+        return 'restart'
+
+    if spend_magic_items(vm_index, logger) is False:
+        return 'restart'
+
+    # return to clash main
+    print("Returning to clash main after spending magic items")
+    click(vm_index, 243, 600)
+    time.sleep(3)
+
+    # wait for main
+    if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
+        logger.change_status("Failed to wait for clash main after upgrading cards")
+        return 'restart'
+
+    return next_state
+
+
+def spend_magic_items(vm_index: int, logger: Logger) -> bool:
+    logger.change_status("Spending magic item currencies!")
 
     # get to magic items page
     logger.change_status("Getting to magic items page...")
@@ -41,16 +58,6 @@ def spend_magic_items_state(vm_index: int, logger: Logger) -> bool:
         logger.change_status(f'No more magic item type: {reward_index2name[reward_index]} to spend')
     logger.change_status('Done spending magic item currencies')
 
-    # return to clash main
-    print("Returning to clash main after spending magic items")
-    click(vm_index, 243, 600)
-    time.sleep(3)
-
-    # wait for main
-    if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
-        logger.change_status("Failed to wait for clash main after upgrading cards")
-        return False
-
     return True
 
 
@@ -70,12 +77,6 @@ def exit_spend_reward_popup(vm_index) -> bool:
 
 def spend_rewards(vm_index, logger,reward_index) -> bool:
     logger.change_status("Trying to spend the first reward...")
-
-    #click the reward
-    print("Clicking use currency button")
-    if reward_index not in [0,1,2,3]:
-        print('Invalid reward index. Must be 0, 1, or 2')
-        return False
 
     reward_index2coord = {0:(100,300),1:(200,300),2:(300,300),3:(100,400),}
     click(vm_index, *reward_index2coord[reward_index])
@@ -148,4 +149,4 @@ def check_for_use_button(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    spend_magic_items_state(1,Logger())
+    spend_magic_items_state(1,Logger(),'next_state')
