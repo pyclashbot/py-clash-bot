@@ -100,6 +100,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
+        'magic_items_user_toggle':values['magic_items_user_toggle'],
         # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
         "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
         # account switching input info
