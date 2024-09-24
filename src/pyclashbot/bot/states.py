@@ -1,6 +1,7 @@
 """time module for timing functions and controling pacing"""
 
 import time
+import random
 
 from pyclashbot.bot.account_switching import switch_accounts
 from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
@@ -22,6 +23,7 @@ from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_sta
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.season_shop_offers import collect_season_shop_offers_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
+from pyclashbot.bot.magic_items import spend_magic_items_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war_state import war_state
 from pyclashbot.memu.client import click
@@ -55,7 +57,7 @@ class StateHistory:
 
         self.state2time_increment = {
             # "account_switch": 0.8,  #'state':increment in hours,
-            "account_switch": 0.00001,  #'state':increment in hours,
+            "account_switch": 0.01,  #'state':increment in hours,
             "open_chests": 1,  #'state':increment in hours,
             "level_up_chests": 0,  #'state':increment in hours,
             "upgrade": 0,  #'state':increment in hours,
@@ -69,7 +71,42 @@ class StateHistory:
             "card_mastery": 0,  #'state':increment in hours,
             "season_shop": 2,  #'state':increment in hours,
             "war": 0.25,  #'state':increment in hours,
+            'magic_items': 1,
         }
+        self.randomize_state2time_increment()
+
+    def randomize_state2time_increment(self):
+        percent_diff = 40
+        for state,time_increment in self.state2time_increment.items():
+            adjustment_factor = (random.randint(100-percent_diff,100+percent_diff) / 100)
+            new_value = time_increment * adjustment_factor
+            self.state2time_increment[state] = new_value
+
+    def print_time_increments(self):
+        def hours2readable(hours):
+            def format_digit(digit):
+                digit = str(digit)
+                while len(digit) < 2:
+                    digit = '0'+str(digit)
+
+                return str(digit)
+
+            remainder = hours * 60 * 60
+
+            hours = int(remainder // 3600)
+            remainder = remainder % 3600
+
+            minutes = int(remainder // 60)
+            remainder = remainder % 60
+
+            seconds = int(remainder)
+
+            return f'{format_digit(hours)}:{format_digit(minutes)}:{format_digit(seconds)}'
+
+
+        for state,time_increment in self.state2time_increment.items():
+            print('{:>20} : {}'.format(state,hours2readable(time_increment)))
+
 
     def print(self):
         print("State history:")
@@ -516,8 +553,11 @@ def state_tree(
         # return output of this state
         return card_mastery_state(vm_index, logger, next_state)
 
-    if state == "season_shop":  # --> start_fight
-        next_state = "start_fight"
+    if state == "season_shop":  # --> magic_items
+        next_state = "magic_items"
+
+
+
 
         # if job isnt toggled, return next state
         if not job_list["season_shop_buys_user_toggle"]:
@@ -529,7 +569,26 @@ def state_tree(
             logger.log(f"{state} isn't ready. Skipping this state...")
             return next_state
 
+
+
+
+
         return collect_season_shop_offers_state(vm_index, logger, next_state)
+
+    if state == 'magic_items':# --> start_fight
+        next_state = "start_fight"
+
+        # if job isnt toggled, return next state
+        if not job_list["magic_items_user_toggle"]:
+            logger.log("magic items spend is not toggled. Skipping this state")
+            return next_state
+
+        # if job not ready, go next state
+        if state_history.state_is_ready(state) is False:
+            logger.log(f"{state} isn't ready. Skipping this state...")
+            return next_state
+
+        return spend_magic_items_state(vm_index, logger, next_state)
 
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
@@ -646,27 +705,28 @@ def state_tree_tester(vm_index):
     state = "account_switch"
     job_list = {
         # job toggles
-        "open_battlepass_user_toggle": True,
-        "open_chests_user_toggle": True,
-        "request_user_toggle": True,
-        "donate_toggle": True,
-        "free_donate_toggle": True,
-        "card_mastery_user_toggle": True,
-        "free_offer_user_toggle": True,
-        "gold_offer_user_toggle": True,
+        "open_battlepass_user_toggle": False,
+        "open_chests_user_toggle": False,
+        "request_user_toggle": False,
+        "donate_toggle": False,
+        "free_donate_toggle": False,
+        "card_mastery_user_toggle": False,
+        "free_offer_user_toggle": False,
+        "gold_offer_user_toggle": False,
         "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": False,
         "goblin_queens_journey_1v1_battle_user_toggle": False,
-        "2v2_battle_user_toggle": True,
-        "upgrade_user_toggle": True,
-        "war_user_toggle": True,
-        "random_decks_user_toggle": True,
-        "open_bannerbox_user_toggle": True,
+        "2v2_battle_user_toggle": False,
+        "upgrade_user_toggle": False,
+        "war_user_toggle": False,
+        "random_decks_user_toggle": False,
+        "open_bannerbox_user_toggle": False,
         "daily_rewards_user_toggle": False,
-        "battlepass_collect_user_toggle": True,
-        "level_up_chest_user_toggle": True,
-        "trophy_road_rewards_user_toggle": True,
-        "season_shop_buys_user_toggle": True,
+        "battlepass_collect_user_toggle": False,
+        "level_up_chest_user_toggle": False,
+        "trophy_road_rewards_user_toggle": False,
+        "season_shop_buys_user_toggle": False,
+        'magic_items_user_toggle':True,
         # keep these off
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
@@ -693,3 +753,5 @@ def state_tree_tester(vm_index):
 
 if __name__ == "__main__":
     state_tree_tester(1)
+
+
