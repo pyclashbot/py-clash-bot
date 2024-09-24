@@ -6,8 +6,6 @@ from os import path
 import PySimpleGUI as sg
 from PySimpleGUI import Window
 
-from pyclashbot.bot import account_switching
-from pyclashbot.interface.controls import job_increment_controls
 from pyclashbot.interface.joblist import jobs_checklist
 from pyclashbot.interface.stats import (
     battle_stats,
@@ -19,72 +17,84 @@ from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
 
-jobs_frame = sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=False, expand_y=True,border_width=None,pad=0)
+jobs_frame = sg.Frame(
+    layout=jobs_checklist,
+    title="Jobs",
+    expand_x=False,
+    expand_y=True,
+    border_width=None,
+    pad=0,
+)
 account_switching_switching_frame = sg.Frame(
-            layout=[
-                [sg.Checkbox(
-                        "Enabled",
-                        key="account_switching_toggle",
-                        default=False,
-                    ),],[
-
-                    sg.Slider(
-                        range=(1, 3),
-                        orientation="h",
-                        key="account_switching_slider",
-                        size=(10, 20),
-                    ),
-                ],
-
-            ],
-            title="Account Switching",
-            expand_x=True,
-            pad=0
-        )
+    layout=[
+        [
+            sg.Checkbox(
+                "Enabled",
+                key="account_switching_toggle",
+                default=False,
+            ),
+        ],
+        [
+            sg.Slider(
+                range=(1, 3),
+                orientation="h",
+                key="account_switching_slider",
+                size=(10, 20),
+            ),
+        ],
+    ],
+    title="Account Switching",
+    expand_x=True,
+    pad=0,
+)
 memu_settings_frame = sg.Frame(
-            layout=[
-                [
-                    sg.Checkbox(
-                        "Dock MEmu",
-                        key="memu_attach_mode_toggle",
-                        default=False,
-                    ),
-                ],
-
-
-                [
-
-                    sg.Radio(
-                        enable_events=True,
-                        text="OpenGL",
-                        group_id="render_mode_radio",
-                        default=True,
-                        key="opengl_toggle",
-                        pad=1,
-                    ),
-
-                ],[sg.Radio(
-                        enable_events=True,
-                        text="DirectX",
-                        group_id="render_mode_radio",
-                        key="directx_toggle",
-                        pad=1,
-                    ),],
-            ],
-            title="Memu Settings",
-            expand_y=True,
-            expand_x=True,
-            pad=0
-        )
-
+    layout=[
+        [
+            sg.Checkbox(
+                "Dock MEmu",
+                key="memu_attach_mode_toggle",
+                default=False,
+            ),
+        ],
+        [
+            sg.Radio(
+                enable_events=True,
+                text="OpenGL",
+                group_id="render_mode_radio",
+                default=True,
+                key="opengl_toggle",
+                pad=1,
+            ),
+        ],
+        [
+            sg.Radio(
+                enable_events=True,
+                text="DirectX",
+                group_id="render_mode_radio",
+                key="directx_toggle",
+                pad=1,
+            ),
+        ],
+    ],
+    title="Memu Settings",
+    expand_y=True,
+    expand_x=True,
+    pad=0,
+)
 
 
 controls_layout = [
-        [
-            sg.Frame(layout = [[jobs_frame]],title = '',expand_y=True,border_width=0,pad=0),
-            sg.Frame(layout = [[memu_settings_frame],[account_switching_switching_frame]],title = '',border_width=0,pad=0,expand_x=True,expand_y=True),
+    [
+        sg.Frame(layout=[[jobs_frame]], title="", expand_y=True, border_width=0, pad=0),
+        sg.Frame(
+            layout=[[memu_settings_frame], [account_switching_switching_frame]],
+            title="",
+            border_width=0,
+            pad=0,
+            expand_x=True,
+            expand_y=True,
+        ),
     ]
-
 ]
 
 stats_tab_layout = [
@@ -97,7 +107,7 @@ stats_tab_layout = [
                         title="Battle Stats",
                         expand_y=False,
                         expand_x=True,
-                        pad=0
+                        pad=0,
                     ),
                 ],
                 [
@@ -106,7 +116,7 @@ stats_tab_layout = [
                         title="Bot Stats",
                         expand_x=False,
                         expand_y=True,
-                        pad=0
+                        pad=0,
                     ),
                 ],
             ],
@@ -120,13 +130,13 @@ stats_tab_layout = [
                         layout=collection_stats,
                         title="Collection Stats",
                         expand_y=True,
-                        pad=0
+                        pad=0,
                     ),
                 ],
             ],
             justification="right",
             expand_y=True,
-            pad=0
+            pad=0,
         ),
     ],
 ]
@@ -161,8 +171,9 @@ main_layout = [
                             layout=[
                                 [sg.Tab("Controls", controls_layout)],
                                 [sg.Tab("Stats", stats_tab_layout)],
-                            ],border_width=0,pad=0
-
+                            ],
+                            border_width=0,
+                            pad=0,
                         ),
                     ],
                 ],
@@ -175,20 +186,20 @@ main_layout = [
             "Start",
             button_color="Lime Green",
             border_width=3,
-            size = (10,1),
+            size=(10, 1),
         ),
         sg.Button(
             "Stop",
             disabled=True,
             button_color="Red",
             border_width=2,
-            size = (10,1),
+            size=(10, 1),
         ),
         sg.Button(
             "Collapse",
             key="-Collapse-Button-",
             border_width=2,
-            size = (10,1),
+            size=(10, 1),
         ),
     ],
     [time_status_bar_layout],
