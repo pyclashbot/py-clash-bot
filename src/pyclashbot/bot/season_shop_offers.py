@@ -6,6 +6,7 @@ import numpy
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_challenges_tab_from_main,
+    wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.memu.client import click, screenshot, scroll
@@ -142,8 +143,15 @@ def buy_season_shop_offers(vm_index, logger: Logger):
     return True
 
 
-def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: str):
+def get_to_clash_main_from_event_page(vm_index, logger: Logger) -> bool:
+    cr_main_coord = (175, 600)
+    click(vm_index, *cr_main_coord)
+    time.sleep(3)
 
+    return wait_for_clash_main_menu(vm_index, logger)
+
+
+def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: str):
     # if not on main, return 'restart'
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status("Not on clash main for collect_season_shop_offers_state()")
@@ -157,6 +165,7 @@ def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: 
         logger.change_status(
             f"Cant collect season shop offers. Returning next state as : {next_state}",
         )
+        get_to_clash_main_from_event_page(vm_index, logger)
         return next_state
 
     if not buy_season_shop_offers(vm_index, logger):
