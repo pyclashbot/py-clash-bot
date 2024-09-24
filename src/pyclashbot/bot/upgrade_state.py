@@ -82,12 +82,12 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         )
         return "restart"
 
-    #do card upgrade
+    # do card upgrade
     if update_cards(vm_index, logger) is False:
         logger.change_status("Failed to update cards")
         return "restart"
 
-    #get back to main when its done
+    # get back to main when its done
     logger.change_status(status="Done upgrading cards")
     click(vm_index, 211, 607)
     time.sleep(1)
@@ -250,7 +250,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
         None
 
     """
-    print('\n')
+    print("\n")
     upgraded_a_card = False
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
@@ -350,11 +350,21 @@ def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
 
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
-        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17),
+        vm_index,
+        x_1=338,
+        y_1=215,
+        x_2=361,
+        y_2=221,
+        color=(153, 20, 17),
     ):
         return False
     if not check_line_for_color(
-        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255),
+        vm_index,
+        x_1=124,
+        y_1=201,
+        x_2=135,
+        y_2=212,
+        color=(255, 255, 255),
     ):
         return False
 
@@ -392,4 +402,4 @@ def check_for_missing_gold_popup(vm_index):
 
 
 if __name__ == "__main__":
-    upgrade_cards_state(1, Logger(None,False), 'next_state')
+    upgrade_cards_state(1, Logger(None, False), "next_state")
