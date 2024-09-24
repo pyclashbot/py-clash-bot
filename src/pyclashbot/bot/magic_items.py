@@ -37,6 +37,7 @@ def spend_magic_items_state(vm_index: int, logger: Logger) -> bool:
         logger.change_status(f'Spending magic item type: {reward_index2name[reward_index]}...')
         while spend_rewards(vm_index, logger,reward_index) is True:
             logger.change_status('Successfully spent magic items. Trying again...')
+            logger.increment_magic_item_buys()
         logger.change_status(f'No more magic item type: {reward_index2name[reward_index]} to spend')
     logger.change_status('Done spending magic item currencies')
 

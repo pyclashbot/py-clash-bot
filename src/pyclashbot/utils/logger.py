@@ -129,6 +129,7 @@ class Logger:
         self.level_up_chest_collects = 0
         self.trophy_road_reward_collections = 0
         self.season_shop_buys = 0
+        self.magic_item_buys = 0
 
         # account stuff
         self.current_account = -1
@@ -182,6 +183,7 @@ class Logger:
                 "daily_rewards": self.daily_rewards,
                 "season_shop_buys": self.season_shop_buys,
                 "trophy_road_reward_collections": self.trophy_road_reward_collections,
+                'magic_item_buys':self.magic_item_buys,
                 # card stats
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
@@ -276,6 +278,10 @@ class Logger:
 
     def increment_season_shop_buys(self):
         self.season_shop_buys += 1
+
+    def increment_magic_item_buys(self):
+        self.magic_item_buys +=1
+
 
     def increment_queens_journey_fights(self):
         self.queens_journey_fights += 1
