@@ -183,7 +183,7 @@ class Logger:
                 "daily_rewards": self.daily_rewards,
                 "season_shop_buys": self.season_shop_buys,
                 "trophy_road_reward_collections": self.trophy_road_reward_collections,
-                'magic_item_buys':self.magic_item_buys,
+                "magic_item_buys": self.magic_item_buys,
                 # card stats
                 "upgrades": self.cards_upgraded,
                 "requests": self.requests,
@@ -243,8 +243,6 @@ class Logger:
             lowest_index = None
 
             for index, val in search_dict.items():
-                if val == 0:
-                    return int(index)
                 if (lowest_val is None) or (val < lowest_val):
                     lowest_val = val
                     lowest_index = index
@@ -252,7 +250,14 @@ class Logger:
             if lowest_index is None:
                 return 0
 
-            return int(lowest_index)
+            # get a list of all the keys that have that value
+            lowest_keys = []
+            for key, value in search_dict.items():
+                if int(value) == int(search_dict[lowest_index]):
+                    lowest_keys.append(key)
+            random_lowest_key = random.choice(lowest_keys)
+
+            return int(random_lowest_key)
 
         def print_account_history_dict(index2count):
             print(f"\nAccount history dict:")
@@ -280,8 +285,7 @@ class Logger:
         self.season_shop_buys += 1
 
     def increment_magic_item_buys(self):
-        self.magic_item_buys +=1
-
+        self.magic_item_buys += 1
 
     def increment_queens_journey_fights(self):
         self.queens_journey_fights += 1
@@ -294,10 +298,6 @@ class Logger:
 
     def increment_trophy_road_reward_collects(self):
         self.trophy_road_reward_collections += 1
-
-
-
-
 
     def pick_lowest_fight_type_count(self, mode2toggle):
         _2v2_fights = self._2v2_fights
@@ -327,7 +327,6 @@ class Logger:
         lowest_fight_type = min(mode2count, key=mode2count.get)
         return lowest_fight_type
 
-
     def is_in_clan(self):
         if self.current_account in self.account2clan:
             return self.account2clan[self.current_account]
@@ -336,10 +335,7 @@ class Logger:
     def update_in_a_clan_value(self, in_a_clan: bool):
         self.account2clan[self.current_account] = in_a_clan
 
-
-
-
-    #frontend stats
+    # frontend stats
 
     @_updates_gui
     def calc_win_rate(self):
