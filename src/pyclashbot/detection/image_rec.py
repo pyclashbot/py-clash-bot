@@ -349,3 +349,10 @@ def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
 
     coordinates.append((x_1, y_1))
     return coordinates
+
+
+def pixels_match_colors(pixels,colors,tol=10) -> bool:
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=tol):
+            return False
+    return True
