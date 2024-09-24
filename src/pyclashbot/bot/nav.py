@@ -3,11 +3,16 @@ import time
 from typing import Literal
 
 from pyclashbot.detection.image_rec import (
-    check_line_for_color,pixels_match_colors,
+    check_line_for_color,
+    pixels_match_colors,
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, custom_swipe, screenshot, scroll_down, scroll_up
+from pyclashbot.memu.client import (
+    click,
+    custom_swipe,
+    screenshot,
+)
 from pyclashbot.utils.logger import Logger
 
 _2V2_START_WAIT_TIMEOUT = 180  # s
@@ -131,7 +136,7 @@ def check_for_in_battle_with_delay(vm_index):
     return False
 
 
-def check_if_in_battle(vm_index)  -> Literal['2v2'] | Literal['1v1'] | Literal['None']:
+def check_if_in_battle(vm_index) -> Literal["2v2"] | Literal["1v1"] | Literal["None"]:
     """Checks if the virtual machine is in a 1v1 or 2v2 battle.
 
     Args:
@@ -362,7 +367,7 @@ def open_war_chest_obstruction(vm_index, logger):
 
 
 def check_for_war_chest_obstruction(vm_index):
-    #dont use check_line_for_color in the future. its slow
+    # dont use check_line_for_color in the future. its slow
     if not check_line_for_color(vm_index, 213, 409, 218, 423, (252, 195, 63)):
         return False
 
@@ -410,17 +415,18 @@ def check_for_boot_reward(iar):
 
     return True
 
+
 def get_to_clan_tab_from_clash_main(
     vm_index: int,
     logger: Logger,
-) :
+):
 
-    #just try it raw real quick in case it works first try
+    # just try it raw real quick in case it works first try
     click(
-                vm_index,
-                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
-                CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
-            )
+        vm_index,
+        CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
+        CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
+    )
     time.sleep(2)
     if check_if_on_clan_chat_page(screenshot(vm_index)):
         return True
@@ -440,7 +446,6 @@ def get_to_clan_tab_from_clash_main(
             open_war_chest_obstruction(vm_index, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
-
 
         # if on the clan tab chat page, return
         elif check_if_on_clan_chat_page(iar):
@@ -464,8 +469,8 @@ def get_to_clan_tab_from_clash_main(
 
         # scroll_up(vm_index)
         # scroll_down(vm_index)
-        custom_swipe(vm_index,206,313,204,417)
-        custom_swipe(vm_index,204,417,206,313)
+        custom_swipe(vm_index, 206, 313, 204, 417)
+        custom_swipe(vm_index, 204, 417, 206, 313)
         click(
             vm_index,
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
@@ -476,7 +481,6 @@ def get_to_clan_tab_from_clash_main(
     # if here, then done
     logger.log("Made it to the clan page from clash main")
     return True
-
 
 
 def handle_war_popup_pages(vm_index, logger):
@@ -630,8 +634,6 @@ def check_for_daily_defenses_rank_page(vm_index):
         if not pixel_is_equal(p, colors[i], tol=15):
             return False
     return True
-
-
 
 
 def check_for_final_results_page(vm_index) -> bool:
@@ -869,7 +871,6 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-
 def check_for_megaknight_evolution_popup(vm_index):
     iar = screenshot(vm_index)
     pixels = [
@@ -885,21 +886,22 @@ def check_for_megaknight_evolution_popup(vm_index):
         iar[615][250],
     ]
     colors = [
-       [255 ,186,  53],
-[148 ,133, 114],
-[255, 175,  78],
-[255,178,  79],
-[255 ,175,  78],
-[255, 187, 104],
-[101 , 76,  46],
-[255 ,255, 255],
-[255 ,176,  77],
-[255 ,141,  19],
+        [255, 186, 53],
+        [148, 133, 114],
+        [255, 175, 78],
+        [255, 178, 79],
+        [255, 175, 78],
+        [255, 187, 104],
+        [101, 76, 46],
+        [255, 255, 255],
+        [255, 176, 77],
+        [255, 141, 19],
     ]
     for i, c in enumerate(colors):
         if not pixel_is_equal(c, pixels[i], tol=25):
             return False
     return True
+
 
 def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
@@ -919,10 +921,10 @@ def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> 
             time.sleep(2)
             continue
 
-        #handle getting stuck on megaknight evolution popup
+        # handle getting stuck on megaknight evolution popup
         if check_for_megaknight_evolution_popup(vm_index):
             print("Handling megaknight evolution popup")
-            click(vm_index, 206,601)
+            click(vm_index, 206, 601)
             time.sleep(2)
             continue
 
@@ -1248,7 +1250,10 @@ def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "goo
     return "good"
 
 
-def handle_clash_main_tab_notifications(vm_index,logger: Logger,) -> bool:
+def handle_clash_main_tab_notifications(
+    vm_index,
+    logger: Logger,
+) -> bool:
     """Clicks on the card, shop, and challenges tabs in the Clash Main menu to handle notifications.
 
     Args:
@@ -1298,7 +1303,6 @@ def handle_clash_main_tab_notifications(vm_index,logger: Logger,) -> bool:
         print("Still not on events page...")
         click(vm_index, 408, 600)
         handle_war_popup_pages(vm_index, logger)
-
 
     print("On events page")
 
@@ -1721,42 +1725,41 @@ def check_if_on_collection_page(vm_index) -> bool:
     iar = screenshot(vm_index)
 
     queens_mode_colors = [
-            [ 41, 104, 169],
-            [ 42 ,104, 168],
-            [255, 255, 255],
-            [183, 197, 214],
-            [ 39 ,101, 164],
-            [ 42 ,105, 170],
-            [ 43, 106, 171],
-            [ 43, 104, 168],
-            [ 28 , 77, 132],
-            [ 22 , 58, 102],
-        ]
+        [41, 104, 169],
+        [42, 104, 168],
+        [255, 255, 255],
+        [183, 197, 214],
+        [39, 101, 164],
+        [42, 105, 170],
+        [43, 106, 171],
+        [43, 104, 168],
+        [28, 77, 132],
+        [22, 58, 102],
+    ]
     trophy_mode_colors = [
-        [211 ,159,  45],
-        [203 ,134,  41],
-        [255 ,255, 255],
-        [217 ,202, 181],
-        [199 ,132,  40],
-        [207 ,141,  47],
-        [205 ,139,  44],
-        [201, 135,  42],
-        [149 , 98,  29],
-        [178, 104,  14],
-
+        [211, 159, 45],
+        [203, 134, 41],
+        [255, 255, 255],
+        [217, 202, 181],
+        [199, 132, 40],
+        [207, 141, 47],
+        [205, 139, 44],
+        [201, 135, 42],
+        [149, 98, 29],
+        [178, 104, 14],
     ]
 
     legends2_mode_colors = [
-        [251 ,215, 231],
+        [251, 215, 231],
         [248, 211, 227],
-        [255 ,255, 255],
+        [255, 255, 255],
         [235, 218, 226],
         [247, 210, 226],
-        [254 ,218, 234],
-        [254 ,218, 234],
+        [254, 218, 234],
+        [254, 218, 234],
         [254, 217, 233],
         [208, 159, 182],
-        [207 ,159, 179],
+        [207, 159, 179],
     ]
 
     pixels = [
@@ -1772,40 +1775,35 @@ def check_if_on_collection_page(vm_index) -> bool:
         iar[78][335],
     ]
 
-
-    if (pixels_match_colors(pixels,queens_mode_colors) or
-    pixels_match_colors(pixels,trophy_mode_colors) or
-    pixels_match_colors(pixels,legends2_mode_colors)):
+    if (
+        pixels_match_colors(pixels, queens_mode_colors)
+        or pixels_match_colors(pixels, trophy_mode_colors)
+        or pixels_match_colors(pixels, legends2_mode_colors)
+    ):
         return True
 
     return False
 
 
-
-
-
-
 def get_to_collections_page(vm_index) -> bool:
-    #starts on clash main
+    # starts on clash main
     if not check_if_on_clash_main_menu(vm_index):
-        print('Not on clash main for get_to_magic_items_page()!')
+        print("Not on clash main for get_to_magic_items_page()!")
         return False
 
-    #click card page
-    card_page_coords = [100,600]
-    click(vm_index,card_page_coords[0], card_page_coords[1])
+    # click card page
+    card_page_coords = [100, 600]
+    click(vm_index, card_page_coords[0], card_page_coords[1])
     time.sleep(1)
 
+    cycle_card_page_coord = [135, 590]
 
-
-    cycle_card_page_coord = [135,590]
-
-    timeout = 30#s
+    timeout = 30  # s
     start_time = time.time()
     while not check_if_on_collection_page(vm_index):
-        #timeout check
+        # timeout check
         if time.time() - start_time > timeout:
-            print('Timed out waiting for collection page')
+            print("Timed out waiting for collection page")
             return False
 
         click(vm_index, cycle_card_page_coord[0], cycle_card_page_coord[1])
