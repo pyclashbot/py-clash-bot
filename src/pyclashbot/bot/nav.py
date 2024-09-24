@@ -3,7 +3,7 @@ import time
 from typing import Literal
 
 from pyclashbot.detection.image_rec import (
-    check_line_for_color,
+    check_line_for_color,pixels_match_colors,
     pixel_is_equal,
     region_is_color,
 )
@@ -1717,10 +1717,104 @@ def wait_for_clash_main_burger_button_options_menu(
     return "good"
 
 
+def check_if_on_collection_page(vm_index) -> bool:
+    iar = screenshot(vm_index)
+
+    queens_mode_colors = [
+            [ 41, 104, 169],
+            [ 42 ,104, 168],
+            [255, 255, 255],
+            [183, 197, 214],
+            [ 39 ,101, 164],
+            [ 42 ,105, 170],
+            [ 43, 106, 171],
+            [ 43, 104, 168],
+            [ 28 , 77, 132],
+            [ 22 , 58, 102],
+        ]
+    trophy_mode_colors = [
+        [211 ,159,  45],
+        [203 ,134,  41],
+        [255 ,255, 255],
+        [217 ,202, 181],
+        [199 ,132,  40],
+        [207 ,141,  47],
+        [205 ,139,  44],
+        [201, 135,  42],
+        [149 , 98,  29],
+        [178, 104,  14],
+
+    ]
+
+    legends2_mode_colors = [
+        [251 ,215, 231],
+        [248, 211, 227],
+        [255 ,255, 255],
+        [235, 218, 226],
+        [247, 210, 226],
+        [254 ,218, 234],
+        [254 ,218, 234],
+        [254, 217, 233],
+        [208, 159, 182],
+        [207 ,159, 179],
+    ]
+
+    pixels = [
+        iar[53][220],
+        iar[60][230],
+        iar[70][240],
+        iar[65][260],
+        iar[60][280],
+        iar[55][290],
+        iar[57][300],
+        iar[59][310],
+        iar[62][320],
+        iar[78][335],
+    ]
+
+
+    if (pixels_match_colors(pixels,queens_mode_colors) or
+    pixels_match_colors(pixels,trophy_mode_colors) or
+    pixels_match_colors(pixels,legends2_mode_colors)):
+        return True
+
+    return False
+
+
+
+
+
+
+def get_to_collections_page(vm_index) -> bool:
+    #starts on clash main
+    if not check_if_on_clash_main_menu(vm_index):
+        print('Not on clash main for get_to_magic_items_page()!')
+        return False
+
+    #click card page
+    card_page_coords = [100,600]
+    click(vm_index,card_page_coords[0], card_page_coords[1])
+    time.sleep(1)
+
+
+
+    cycle_card_page_coord = [135,590]
+
+    timeout = 30#s
+    start_time = time.time()
+    while not check_if_on_collection_page(vm_index):
+        #timeout check
+        if time.time() - start_time > timeout:
+            print('Timed out waiting for collection page')
+            return False
+
+        click(vm_index, cycle_card_page_coord[0], cycle_card_page_coord[1])
+        time.sleep(1)
+
+    return True
+
+
 if __name__ == "__main__":
     print("\n\n\n\n\n\n")
-    c=get_to_clan_tab_from_clash_main(
-    1,
-    Logger(),
-)
-    print(c)
+    while 1:
+        print(check_if_on_collection_page(1))
