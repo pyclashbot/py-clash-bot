@@ -32,11 +32,12 @@ def spend_magic_items_state(vm_index: int, logger: Logger) -> bool:
     time.sleep(1)
 
     #spend currency until it doesnt work anymore
-    for reward_index in [0,1,2]:
-        logger.change_status(f'Spending magic item type: {reward_index}...')
+    reward_index2name = {0:'common',1:'rare',2:'epic',3:'legendary',}
+    for reward_index in [0,1,2,3]:
+        logger.change_status(f'Spending magic item type: {reward_index2name[reward_index]}...')
         while spend_rewards(vm_index, logger,reward_index) is True:
             logger.change_status('Successfully spent magic items. Trying again...')
-        logger.change_status(f'No more magic item type: {reward_index} to spend')
+        logger.change_status(f'No more magic item type: {reward_index2name[reward_index]} to spend')
     logger.change_status('Done spending magic item currencies')
 
     # return to clash main
@@ -71,11 +72,11 @@ def spend_rewards(vm_index, logger,reward_index) -> bool:
 
     #click the reward
     print("Clicking use currency button")
-    if reward_index not in [0,1,2]:
+    if reward_index not in [0,1,2,3]:
         print('Invalid reward index. Must be 0, 1, or 2')
         return False
 
-    reward_index2coord = {0:(100,300),1:(200,300),2:(300,300),}
+    reward_index2coord = {0:(100,300),1:(200,300),2:(300,300),3:(100,400),}
     click(vm_index, *reward_index2coord[reward_index])
     time.sleep(1)
 
