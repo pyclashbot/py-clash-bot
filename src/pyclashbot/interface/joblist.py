@@ -131,6 +131,13 @@ rewards_tab = [
             default_value=False,
         ),
     ],
+    [
+        job_check_box(
+            "Spend Magic Items",
+            "magic_items_user_toggle",
+            default_value=False,
+        ),
+    ],
 ]
 
 
