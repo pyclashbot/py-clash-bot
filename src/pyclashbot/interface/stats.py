@@ -39,6 +39,7 @@ collection_title_texts = [
         "War Chests",
         "Season Shop Buys",
         'Trophy Road Rewards',
+        'Magic Item Buys'
 ]
 
 
@@ -84,6 +85,9 @@ collection_stats_values: list[list[Text]] = [
     ],
     [
         stat_box("trophy_road_reward_collections"),
+    ],
+    [
+        stat_box("magic_item_buys"),
     ],
 ]
 
