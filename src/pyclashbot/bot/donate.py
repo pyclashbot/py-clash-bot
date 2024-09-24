@@ -390,7 +390,4 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    while 1:
-        print(find_donate_buttons(12))
-
-    # print(find_donate_button(screenshot(12)))
+    donate_cards_main(1, Logger())
