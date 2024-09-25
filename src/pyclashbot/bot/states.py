@@ -119,7 +119,6 @@ class StateHistory:
             f"{state} {time.time()} {int(self.logger.current_account)}"
         )
         self.time_history_string_list.append(time_history_string)
-        self.print()
 
     def get_time_of_last_state(self, state: str) -> int:
         most_recent_time = -1
@@ -738,6 +737,10 @@ def state_tree_tester(vm_index):
     }
     state_history = StateHistory(logger)
 
+    def clip_that_mat_laptop_pc():
+        import pyautogui
+        pyautogui.click(856,943,duration=0.2)
+
     while 1:
         state = state_tree(
             vm_index,
@@ -748,10 +751,14 @@ def state_tree_tester(vm_index):
         )
         if state == "restart":
             print("Restart state")
-            input("Enter to continue...")
+            # input("Enter to continue...")
+            clip_that_mat_laptop_pc()
 
 
 if __name__ == "__main__":
     state_tree_tester(1)
+
+
+
 
 
