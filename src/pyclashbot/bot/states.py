@@ -71,14 +71,16 @@ class StateHistory:
             "card_mastery": 0,  #'state':increment in hours,
             "season_shop": 2,  #'state':increment in hours,
             "war": 0.25,  #'state':increment in hours,
-            'magic_items': 1,
+            "magic_items": 1,
         }
         self.randomize_state2time_increment()
 
     def randomize_state2time_increment(self):
         percent_diff = 40
-        for state,time_increment in self.state2time_increment.items():
-            adjustment_factor = (random.randint(100-percent_diff,100+percent_diff) / 100)
+        for state, time_increment in self.state2time_increment.items():
+            adjustment_factor = (
+                random.randint(100 - percent_diff, 100 + percent_diff) / 100
+            )
             new_value = time_increment * adjustment_factor
             self.state2time_increment[state] = new_value
 
@@ -87,7 +89,7 @@ class StateHistory:
             def format_digit(digit):
                 digit = str(digit)
                 while len(digit) < 2:
-                    digit = '0'+str(digit)
+                    digit = "0" + str(digit)
 
                 return str(digit)
 
@@ -101,12 +103,12 @@ class StateHistory:
 
             seconds = int(remainder)
 
-            return f'{format_digit(hours)}:{format_digit(minutes)}:{format_digit(seconds)}'
+            return (
+                f"{format_digit(hours)}:{format_digit(minutes)}:{format_digit(seconds)}"
+            )
 
-
-        for state,time_increment in self.state2time_increment.items():
-            print('{:>20} : {}'.format(state,hours2readable(time_increment)))
-
+        for state, time_increment in self.state2time_increment.items():
+            print("{:>20} : {}".format(state, hours2readable(time_increment)))
 
     def print(self):
         print("State history:")
@@ -555,9 +557,6 @@ def state_tree(
     if state == "season_shop":  # --> magic_items
         next_state = "magic_items"
 
-
-
-
         # if job isnt toggled, return next state
         if not job_list["season_shop_buys_user_toggle"]:
             logger.log("Season shop buys is not toggled. Skipping this state")
@@ -568,13 +567,9 @@ def state_tree(
             logger.log(f"{state} isn't ready. Skipping this state...")
             return next_state
 
-
-
-
-
         return collect_season_shop_offers_state(vm_index, logger, next_state)
 
-    if state == 'magic_items':# --> start_fight
+    if state == "magic_items":  # --> start_fight
         next_state = "start_fight"
 
         # if job isnt toggled, return next state
@@ -724,9 +719,9 @@ def state_tree_tester(vm_index):
         "level_up_chest_user_toggle": False,
         "trophy_road_rewards_user_toggle": False,
         "season_shop_buys_user_toggle": False,
-        'magic_items_user_toggle':False,
+        "magic_items_user_toggle": False,
         # keep these off
-        "daily_rewards_user_toggle": False, #its just been broken via memu for months (freezes my game when i open the daily rewards)
+        "daily_rewards_user_toggle": False,  # its just been broken via memu for months (freezes my game when i open the daily rewards)
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "random_plays_user_toggle": False,
@@ -739,7 +734,8 @@ def state_tree_tester(vm_index):
 
     def clip_that_mat_laptop_pc():
         import pyautogui
-        pyautogui.click(856,943,duration=0.2)
+
+        pyautogui.click(856, 943, duration=0.2)
 
     while 1:
         state = state_tree(
@@ -757,7 +753,3 @@ def state_tree_tester(vm_index):
 
 if __name__ == "__main__":
     state_tree_tester(1)
-
-
-
-
