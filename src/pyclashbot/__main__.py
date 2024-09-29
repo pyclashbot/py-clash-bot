@@ -23,10 +23,7 @@ initalize_pylogging()
 
 
 TODO = """
--make request faster
--speed up shop buy
--write a get_to_war_page() function for war state to speed it up
--store in_a_clan per account
+-fix donate image rec (its slow and stupid)
 """
 
 
