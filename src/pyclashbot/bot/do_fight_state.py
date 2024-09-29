@@ -4,7 +4,7 @@ import collections
 import random
 import time
 from typing import Literal
-from xmlrpc.client import Boolean
+import numpy
 
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
@@ -78,11 +78,26 @@ EMOTES_COORDS_IN_2V2 = [
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
+ELIXIR_COORDS = [
+    [613, 149],
+    [613, 165],
+    [613, 188],
+    [613, 212],
+    [613, 240],
+    [613, 262],
+    [613, 287],
+    [613, 314],
+    [613, 339],
+    [613, 364],
+]
+ELIXIR_COLOR = [240, 137, 244]
+
+
 def do_2v2_fight_state(
     vm_index,
     logger: Logger,
     next_state,
-    random_fight_mode: Boolean,
+    random_fight_mode: bool,
     called_from_launching=False,
 ):
     """Method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
@@ -265,6 +280,48 @@ def get_current_fight_mode(vm_index):
     return diff2mode[min_diff]
 
 
+def check_for_change_fight_mode_page(vm_index):
+    iar = numpy.array(screenshot(vm_index))
+    pixels = [
+        iar[132][184],
+        iar[135][190],
+        iar[140][195],
+        iar[142][200],
+        iar[144][225],
+        iar[146][233],
+        iar[148][237],
+        iar[177][129],
+        iar[193][149],
+        iar[188][169],
+        iar[184][189],
+        iar[180][209],
+        iar[187][269],
+        iar[197][290],
+    ]
+    # for p in pixels:print(p)
+    colors = [
+        [255, 204, 85],
+        [245, 196, 83],
+        [246, 179, 69],
+        [204, 120, 44],
+        [247, 141, 27],
+        [250, 138, 29],
+        [253, 138, 33],
+        [250, 110, 0],
+        [255, 254, 254],
+        [255, 255, 255],
+        [255, 255, 255],
+        [247, 228, 213],
+        [193, 159, 135],
+        [219, 83, 0],
+    ]
+    for i, c in enumerate(colors):
+        if not pixel_is_equal(pixels[i], c, tol=10):
+            return False
+
+    return True
+
+
 def set_fight_mode(vm_index, fight_mode):
     # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen']
 
@@ -288,32 +345,48 @@ def set_fight_mode(vm_index, fight_mode):
 
     # click the type of fight
     click(vm_index, coord[0], coord[1])
-    time.sleep(4)
+    time.sleep(3)
+
+    # if the fight mode change page is still open, the
+    # change was unsuccessful, and we must close the page
+    close_fight_mode_change_page_coord = (200, 140)
+    if check_for_change_fight_mode_page(vm_index):
+        print(
+            f"Failed to change to fight mode: {fight_mode}. This is likely because the fight mode is not unlocked yet."
+        )
+        click(vm_index, *close_fight_mode_change_page_coord)
+        time.sleep(1)
+        return False
 
     return True
 
 
-def start_1v1_type_fight(vm_index, mode):
+def start_1v1_type_fight(vm_index: int, logger: Logger, mode: str) -> bool:
     # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen']
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
-        print('Not on clash main for start_1v1_type_fight()')
+        print("Not on clash main for start_1v1_type_fight()")
         return False
 
     # verify we're on goblin queen mode
     if get_current_fight_mode(vm_index) != mode:
-        print(f'Current {get_current_fight_mode(vm_index)} != {mode}, setting fight mode')
-        set_fight_mode(vm_index, mode)
+        print(
+            f"Current {get_current_fight_mode(vm_index)} != {mode}, setting fight mode"
+        )
+        if set_fight_mode(vm_index, mode) is False:
+            print("This mode isn't available yet. Doing a regular 1v1 instead...")
+            logger.increment_path_of_legends_fights()
+            logger.increment_trophy_road_fights()
 
     # click start button
-    click(vm_index, 117,376)
+    click(vm_index, 117, 376)
     return True
 
 
-def start_fight(vm_index, logger, mode) -> Boolean:
+def start_fight(vm_index, logger, mode) -> bool:
     # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen','2v2']
-    def do_job_incrementing(logger, mode):
+    def increment_fight_mode_count(logger, mode):
         if mode == "trophy_road":
             logger.increment_trophy_road_fights()
         elif mode == "path_of_legends":
@@ -324,13 +397,16 @@ def start_fight(vm_index, logger, mode) -> Boolean:
             logger.increment_2v2_fights()
 
     logger.change_status(f"Starting a {mode} fight")
-    do_job_incrementing(logger, mode)
+    increment_fight_mode_count(logger, mode)
     if mode == "2v2":
+        print(f"{mode} is of 2v2 type")
         return start_2v2_fight(vm_index, logger)
-    return start_1v1_type_fight(vm_index, mode)
+
+    print(f"{mode} is of 1v1 type")
+    return start_1v1_type_fight(vm_index, logger, mode)
 
 
-def start_2v2_fight(vm_index, logger: Logger) -> Boolean:
+def start_2v2_fight(vm_index, logger: Logger) -> bool:
     """Method to handle starting a 2v2 fight"""
     logger.change_status(status="Start fight state")
     logger.change_status(status="Starting 2v2 mode")
@@ -480,8 +556,12 @@ def mag_dump(vm_index, logger):
 
 
 def wait_for_elixer(
-    vm_index, logger, random_elixer_wait, WAIT_THRESHOLD=5000, PLAY_THRESHOLD=10000,
-) -> Literal["restart", "no battle"] | Boolean:
+    vm_index,
+    logger,
+    random_elixer_wait,
+    WAIT_THRESHOLD=5000,
+    PLAY_THRESHOLD=10000,
+) -> Literal["restart", "no battle"] | bool:
     """Method to wait for 4 elixer during a battle"""
     start_time = time.time()
 
@@ -516,19 +596,6 @@ def wait_for_elixer(
     return True
 
 
-elixer_coords = [
-    [613, 149],
-    [613, 165],
-    [613, 188],
-    [613, 212],
-    [613, 240],
-    [613, 262],
-    [613, 287],
-    [613, 314],
-    [613, 339],
-    [613, 364],
-]
-elixer_color = [240, 137, 244]
 
 
 def count_elixer(vm_index, elixer_count) -> bool:
@@ -536,8 +603,8 @@ def count_elixer(vm_index, elixer_count) -> bool:
     iar = screenshot(vm_index)
 
     if pixel_is_equal(
-        iar[elixer_coords[elixer_count - 1][0], elixer_coords[elixer_count - 1][1]],
-        elixer_color,
+        iar[ELIXIR_COORDS[elixer_count - 1][0], ELIXIR_COORDS[elixer_count - 1][1]],
+        ELIXIR_COLOR,
         tol=65,
     ):
         return True
@@ -545,7 +612,10 @@ def count_elixer(vm_index, elixer_count) -> bool:
 
 
 def end_fight_state(
-    vm_index, logger: Logger, next_state, disable_win_tracker_toggle=True,
+    vm_index,
+    logger: Logger,
+    next_state,
+    disable_win_tracker_toggle=True,
 ):
     """Method to handle the time after a fight and before the next state"""
     # count the crown score on this end-battle screen
@@ -579,7 +649,8 @@ def end_fight_state(
 
 
 def check_if_previous_game_was_win(
-    vm_index, logger: Logger,
+    vm_index,
+    logger: Logger,
 ) -> bool | Literal["restart"]:
     """Method to handle the checking if the previous game was a win or loss"""
     logger.change_status(status="Checking if last game was a win/loss")
@@ -590,7 +661,7 @@ def check_if_previous_game_was_win(
         return "restart"
 
     # get to clash main options menu
-    if get_to_activity_log(vm_index, logger,printmode=False) == "restart":
+    if get_to_activity_log(vm_index, logger, printmode=False) == "restart":
         logger.change_status(
             status="Error 8967203948 get_to_activity_log() in check_if_previous_game_was_win()",
         )
@@ -619,13 +690,28 @@ def check_pixels_for_win_in_battle_log(vm_index) -> bool:
     log to determing if the previous game was a win
     """
     line1 = check_line_for_color(
-        vm_index, x_1=47, y_1=135, x_2=109, y_2=154, color=(255, 51, 102),
+        vm_index,
+        x_1=47,
+        y_1=135,
+        x_2=109,
+        y_2=154,
+        color=(255, 51, 102),
     )
     line2 = check_line_for_color(
-        vm_index, x_1=46, y_1=152, x_2=115, y_2=137, color=(255, 51, 102),
+        vm_index,
+        x_1=46,
+        y_1=152,
+        x_2=115,
+        y_2=137,
+        color=(255, 51, 102),
     )
     line3 = check_line_for_color(
-        vm_index, x_1=47, y_1=144, x_2=110, y_2=147, color=(255, 51, 102),
+        vm_index,
+        x_1=47,
+        y_1=144,
+        x_2=110,
+        y_2=147,
+        color=(255, 51, 102),
     )
 
     if line1 and line2 and line3:
@@ -782,7 +868,7 @@ def select_card_index(card_indices, last_three_cards):
     return random.choice(preferred_cards) if preferred_cards else None
 
 
-def play_a_card(vm_index, logger) -> Boolean:
+def play_a_card(vm_index, logger) -> bool:
     print("\n")
 
     # check which cards are available
@@ -845,7 +931,7 @@ global elapsed_time
 
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
-    #this needs comments
+    # this needs comments
     create_default_bridge_iar(vm_index)
     last_three_cards = collections.deque(maxlen=3)
     ingame_time = time.time()
@@ -1048,4 +1134,4 @@ def fight_image_save_debug(vm_index, fights=2):
 
 
 if __name__ == "__main__":
-    fight_image_save_debug(12, fights=2)
+    pass
