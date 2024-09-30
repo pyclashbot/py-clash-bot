@@ -145,7 +145,7 @@ def do_1v1_fight_state(
     print(f"Fight mode is {fight_mode_choosed}")
 
     # Wait for battle start
-    if wait_for_1v1_battle_start(vm_index, logger) == "restart":
+    if wait_for_1v1_battle_start(vm_index, logger) is False:
         logger.change_status(
             "Error waiting for 1v1 battle to start in do_1v1_fight_state()",
         )
@@ -155,12 +155,12 @@ def do_1v1_fight_state(
     logger.change_status("Starting fight loop")
 
     # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _1v1_fight_loop(vm_index, logger) == "restart":
+    if not random_fight_mode and _1v1_fight_loop(vm_index, logger) is False:
         logger.log("Failure in fight loop")
         return "restart"
 
     # Run random fight loop if random mode toggled
-    if random_fight_mode and _1v1_random_fight_loop(vm_index, logger) == "restart":
+    if random_fight_mode and _1v1_random_fight_loop(vm_index, logger) is False:
         logger.log("Failure in fight loop")
         return "restart"
 
@@ -989,7 +989,7 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
     return "good"
 
 
-def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
+def _1v1_fight_loop(vm_index, logger: Logger)  -> bool:
     """Method for handling dynamicly timed 1v1 fight"""
     create_default_bridge_iar(vm_index)
     last_three_cards = collections.deque(maxlen=3)
@@ -1025,7 +1025,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
 
         if wait_output == "restart":
             logger.change_status("Failure while waiting for elixer")
-            return "restart"
+            return False
 
         if wait_output == "no battle":
             logger.change_status("Not in a 1v1 battle anymore!")
@@ -1049,7 +1049,7 @@ def _1v1_fight_loop(vm_index, logger: Logger) -> Literal["restart", "good"]:
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
-    return "good"
+    return True
 
 
 def _2v2_random_fight_loop(vm_index, logger: Logger):
@@ -1078,24 +1078,29 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
     return "good"
 
 
-def _1v1_random_fight_loop(vm_index, logger):
+def _1v1_random_fight_loop(vm_index, logger) -> bool:
     """Method for handling dynamicly timed 1v1 fight"""
     logger.change_status(status="Starting 1v1 battle with random plays")
+    fight_timeout = 5*60#5 minutes
+    start_time = time.time()
 
-    mag_dump(vm_index, logger)
-    for _ in range(random.randint(1, 3)):
-        logger.add_card_played()
+
 
     # while in battle:
     while check_if_in_battle(vm_index):
-        time.sleep(8)
+        if time.time() - start_time > fight_timeout:
+            logger.change_status("1v1_random_fight_loop() timed out. Breaking")
+            return False
 
         mag_dump(vm_index, logger)
         for _ in range(random.randint(1, 3)):
             logger.add_card_played()
 
+        time.sleep(8)
+
+
     logger.change_status("Finished with 1v1 battle with random plays...")
-    return "good"
+    return True
 
 
 def fight_image_save_debug(vm_index, fights=2):
