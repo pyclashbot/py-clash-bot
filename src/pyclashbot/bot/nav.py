@@ -33,7 +33,7 @@ CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 SHOP_PAGE_BUTTON: tuple[Literal[33], Literal[603]] = (33, 603)
 
 
-def get_to_shop_page_from_clash_main(vm_index, logger):
+def get_to_shop_page_from_clash_main(vm_index, logger) -> bool:
     click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
     if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
         logger.change_status(
@@ -43,7 +43,7 @@ def get_to_shop_page_from_clash_main(vm_index, logger):
     return True
 
 
-def wait_for_2v2_battle_start(vm_index, logger: Logger) -> Literal["restart", "good"]:
+def wait_for_2v2_battle_start(vm_index, logger: Logger)  -> bool:
     """Waits for the 2v2 battle to start.
 
     Args:
@@ -79,7 +79,7 @@ def wait_for_1v1_battle_start(
     vm_index,
     logger: Logger,
     printmode=False,
-) -> Literal["restart", "good"]:
+)  -> bool:
     """Waits for the 1v1 battle to start.
 
     Args:
@@ -90,8 +90,7 @@ def wait_for_1v1_battle_start(
 
     Returns:
     -------
-        Literal["restart", "good"]: "restart" if the function
-        needs to be restarted, "good" otherwise.
+        bool - success status
 
     """
     start_time: float = time.time()
@@ -105,7 +104,7 @@ def wait_for_1v1_battle_start(
             logger.change_status(
                 status="Error 8734572456 Waiting too long for 1v1 battle to start",
             )
-            return "restart"
+            return False
         print("Waiting for 1v1 start")
         click(vm_index=vm_index, x_coord=200, y_coord=200)
 
@@ -113,10 +112,10 @@ def wait_for_1v1_battle_start(
         logger.change_status(status="Done waiting for 1v1 battle to start")
     else:
         logger.log(message="Done waiting for 1v1 battle to star")
-    return "good"
+    return True
 
 
-def check_for_in_battle_with_delay(vm_index):
+def check_for_in_battle_with_delay(vm_index) -> bool:
     """Checks if the virtual machine is in a 2v2 battle with a delay.
 
     Args:
