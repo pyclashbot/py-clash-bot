@@ -19,7 +19,7 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.12.0,<3.13"
 opencv-python = "^4.9.0"
-numpy = "^1.26.4"
+numpy = "^2.1.1"
 pysimplegui = "^4.0.0"
 pymemuc = "^0.6.0"
 psutil = "^6.0.0"
