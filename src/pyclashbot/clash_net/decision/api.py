@@ -1,62 +1,47 @@
 """Functions to interact with the ClashNet API."""
 
-from __future__ import annotations
-
+import asyncio
 import json
-from typing import IO, TYPE_CHECKING, Callable, Literal
 
-import requests
+import cv2
+import numpy as np
+import websockets
+from clashnetlib.implements.fight_decision_maker import FightDecision
 
-if TYPE_CHECKING:
-    from requests.models import Response
+CLASHNET_API_URL = "ws://localhost:5001"
 
-API_URL = "https://clashnet.pyclashbot.app/api/v1/decision"
-
-RequestMethod = Literal["GET", "POST"]
-
-
-REQUEST_METHODS: dict[RequestMethod, Callable[..., requests.Response]] = {
-    "GET": requests.get,
-    "POST": requests.post,
-}
-
-
-Endpoint = Literal["/fight"]
-
-
-def make_request(
-    endpoint: Endpoint,
-    method: RequestMethod,
-    token: str,
-    payload: str | None = None,
-    files: dict[str, IO[bytes]] | None = None,
-) -> Response:
-    """Make a request to the ClashNet API.
+async def get_api_decision_async(image: np.ndarray) -> FightDecision:
+    """Send an image to the ClashNet API and returns the fight decision.
 
     Args:
-    ----
-        endpoint (Endpoint): The endpoint to make the request to.
-        method (RequestMethod): The HTTP method to use.
-        token (str): The API token to use.
-        payload (str, optional): The payload to send. Defaults to None.
-        files (dict[str, IO[bytes]], optional): The files to send. Defaults to None.
+        image (np.ndarray): The image to be sent to the API.
 
     Returns:
-    -------
-        Response: The response from the API.
+        FightDecision: The decision returned by the API.
 
     """
-    headers = {"Authorization": f"Bearer {token}"}
+    async with websockets.connect(CLASHNET_API_URL) as websocket:
+        _, im_arr = cv2.imencode(".png", image)
+        image_data = im_arr.tobytes()
 
-    kwargs = {
-        "url": f"{API_URL}/{endpoint}",
-        "headers": headers,
-    }
+        await websocket.send(image_data)
 
-    if payload is not None:
-        kwargs["json"] = json.dumps(payload)
+        response = await websocket.recv()
 
-    if files is not None:
-        kwargs["files"] = files
+        response_json = json.loads(response)
 
-    return REQUEST_METHODS[method](**kwargs)
+        return FightDecision(response_json)
+
+
+
+def get_api_decision(image: np.ndarray) -> FightDecision:
+    """Send an image to the ClashNet API and returns the fight decision.
+
+    Args:
+        image (np.ndarray): The image to be sent to the API.
+
+    Returns:
+        FightDecision: The decision returned by the API.
+
+    """
+    return asyncio.run(get_api_decision_async(image))
