@@ -104,7 +104,7 @@ select = ["ALL"]
 
 
 [tool.ruff]
-line-length = 88
+line-length = 120
 
 
 [tool.isort]
