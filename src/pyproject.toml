@@ -44,7 +44,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.7.0"
-vulture = "^2.11"
+vulture = "^2.13"
 isort = "^5.13.0"
 poethepoet = "^0.28.0"
 notebook = "^7.2.2"
