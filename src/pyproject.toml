@@ -35,7 +35,7 @@ optional = true
 
 [tool.poetry.group.build.dependencies]
 cx-freeze = "^7.2.2"
-poethepoet = "^0.28.0"
+poethepoet = "^0.29.0"
 
 
 [tool.poetry.group.dev]
@@ -46,7 +46,7 @@ optional = true
 pre-commit = "^3.7.0"
 vulture = "^2.13"
 isort = "^5.13.0"
-poethepoet = "^0.28.0"
+poethepoet = "^0.29.0"
 notebook = "^7.2.2"
 ipykernel = "^6.29.2"
 matplotlib = "^3.8.3"
