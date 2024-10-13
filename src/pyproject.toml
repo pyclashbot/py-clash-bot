@@ -26,7 +26,7 @@ psutil = "^6.0.0"
 requests = "^2.31.0"
 pygetwindow = "^0.0.9"
 pyautogui = "^0.9.54"
-pygame = "^2.5.2"
+pygame = "^2.6.1"
 
 
 [tool.poetry.group.build]
