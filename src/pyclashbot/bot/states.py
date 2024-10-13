@@ -41,7 +41,7 @@ CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
 def get_render_mode(job_list):
-    render_mode = "open_gl"
+    render_mode = "opengl"
     if job_list["directx_toggle"]:
         render_mode = "directx"
     return render_mode
