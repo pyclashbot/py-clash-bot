@@ -16,7 +16,7 @@ MEMU_CONFIGURATION: dict[ConfigKeys, str | int | float] = {
     "win_scaling_percent2": 100,  # 100% scaling
     "is_customed_resolution": 1,
     "resolution_width": 419,
-    "graphics_render_mode": 0,  # opengl
+    "graphics_render_mode": "1",  # use DirectX to avoid black screenshot issue
     "resolution_height": 633,
     "vbox_dpi": 160,
     "cpucap": 50,
@@ -42,32 +42,15 @@ def set_vm_language(vm_index: int):
         time.sleep(0.33)
 
 
-def configure_vm(vm_index, render_mode):
-    # render_mode = either 'opengl' or 'directx'
-    print('Configuring vm with render mode:', render_mode)
-
-    # render mode type safety
-    try:
-        render_mode = str(render_mode).lower()
-        if render_mode not in ["opengl", "directx"]:
-            print('Render mode must be either "opengl" or "directx"\nRecieved:', render_mode)
-            raise ValueError
-    except:
-        return False
-
-    # set render mode according to the param
-    MEMU_CONFIGURATION["graphics_render_mode"] = 1  # directx
-    if render_mode == "opengl":
-        MEMU_CONFIGURATION["graphics_render_mode"] = 0  # opengl
-
-    # do config for each key
-    print('Setting each config key...')
+def configure_vm(vm_index):
+    """Configure the virtual machine with the given index."""
     logging.info("Configuring VM %s...", vm_index)
+
     for key, value in MEMU_CONFIGURATION.items():
         pmc.set_configuration_vm(key, str(value), vm_index=vm_index)
 
-    # set language
-    print('Setting vm language...')
+    set_vm_language(vm_index=vm_index)
+    set_vm_language(vm_index=vm_index)
     set_vm_language(vm_index=vm_index)
     logging.info("Configured VM %s", vm_index)
 

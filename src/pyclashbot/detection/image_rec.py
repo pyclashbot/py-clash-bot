@@ -81,7 +81,7 @@ def find_and_click_button_by_image(vm_index, folder_name) -> bool:
         screenshot(vm_index),
         folder_name,
         names,
-        tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
+        tolerance=0.65,  # Adjust the tolerance as needed to improve accuracy
     )
 
     # Get the first location of the detected reference
@@ -349,10 +349,3 @@ def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
 
     coordinates.append((x_1, y_1))
     return coordinates
-
-
-def pixels_match_colors(pixels,colors,tol=10) -> bool:
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=tol):
-            return False
-    return True

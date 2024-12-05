@@ -16,6 +16,7 @@ CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
 def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
     # increment job count
+    logger.add_randomize_deck_attempt()
 
     # if not on clash main, return 'restart'
     if check_if_on_clash_main_menu(vm_index) is False:
@@ -136,9 +137,8 @@ def check_for_randomize_deck_icon(vm_index):
     return True
 
 
-def randomize_deck(vm_index: int, logger: Logger,randomizations = 3) -> bool:
+def randomize_deck(vm_index: int, logger: Logger) -> bool:
     start_time = time.time()
-
 
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
@@ -149,19 +149,18 @@ def randomize_deck(vm_index: int, logger: Logger,randomizations = 3) -> bool:
     logger.change_status("Randomizing deck 2...")
     click(vm_index, 145, 107)
 
-    for _ in range(randomizations):
-        # click on deck options
-        print("Click deck options")
-        click_deck_options(vm_index)
-        time.sleep(0.1)
+    # click on deck options
+    print("Click deck options")
+    click_deck_options(vm_index)
+    time.sleep(0.1)
 
-        # click random deck button
-        click(vm_index, 130, 187)
-        time.sleep(0.1)
+    # click random deck button
+    click(vm_index, 130, 187)
+    time.sleep(0.1)
 
-        # click OK
-        click(vm_index, 280, 390)
-        time.sleep(0.1)
+    # click OK
+    click(vm_index, 280, 390)
+    time.sleep(0.1)
 
     # increment logger's deck randomization sta
     logger.add_card_randomization()
@@ -213,11 +212,11 @@ def check_for_filled_deck(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
 
 
 if __name__ == "__main__":
-    randomize_deck(1, Logger())
+    randomize_deck(12, Logger())
