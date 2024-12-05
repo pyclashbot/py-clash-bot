@@ -15,7 +15,7 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import (
     click,
-    screenshot,scroll_up_in_shop_page,
+    screenshot,
     scroll_down_slowly_in_shop_page,
 )
 from pyclashbot.utils.logger import Logger
@@ -34,6 +34,7 @@ def buy_shop_offers_state(
     print(f"gold_buy_toggle: {gold_buy_toggle}")
     print(f"free_offers_toggle: {free_offers_toggle}")
 
+    logger.add_shop_buy_attempt()
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -76,11 +77,10 @@ def buy_shop_offers_main(
         logger.change_status("Failed to get to shop page to buy offers")
         return False
 
-    #scroll all the way to the top
-    scroll_up_in_shop_page(vm_index)
-
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
+
     purchase_total = 0
+
     start_time = time.time()
     done_buying = False
     logger.change_status("Starting to buy offers")
@@ -169,7 +169,7 @@ def search_for_gold_purchases(vm_index):
 
 
 def buy_offers_from_this_shop_page(
-    vm_index, logger:Logger, gold_buy_toggle, free_offers_toggle,
+    vm_index, logger, gold_buy_toggle, free_offers_toggle,
 ):
     coord = None
 
@@ -216,15 +216,15 @@ def check_if_on_shop_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
 
 
 def shop_buy_tester():
-    vm_index = 1
-    logger = Logger(None, False)
+    vm_index = 12
+    logger = Logger(None, None)
     gold_buy_toggle = True
     free_offers_toggle = True
 

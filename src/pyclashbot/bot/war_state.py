@@ -67,6 +67,7 @@ def find_war_battle_icon(vm_index):
 
 def war_state(vm_index: int, logger: Logger, next_state: str):
     """Method to handle the war state of the bot"""
+    logger.add_war_attempt()
 
     logger.change_status(status="War state")
 
@@ -100,7 +101,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="Starting a war battle")
 
     logger.log("Getting to clan tab")
-    if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
+    if get_to_clan_tab_from_clash_main(vm_index, logger) == "restart":
         logger.log("Error 86868243 Took too long to get to clan tab from clash main")
         return "restart"
 
@@ -254,7 +255,7 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
         # click a random play coord
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
         click(vm_index, random_play_coord[0], random_play_coord[1])
-        time.sleep(5)
+        time.sleep(9)
 
     logger.change_status(status="Done with this war fight")
     return "good"
@@ -388,7 +389,7 @@ def check_for_locked_clan_war_screen(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True

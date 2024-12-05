@@ -27,7 +27,6 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 def find_claim_button(vm_index):
     """Finds the location of the claim button for the free gift in the clan page.
@@ -73,6 +72,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         next_state: The next state to transition to.
 
     """
+    logger.add_donate_attempt()
 
     donate_start_time = time.time()
     global only_free
@@ -89,7 +89,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         return "restart"
 
     # if logger says we're not in a clan, check if we are in a clan
-    if logger.is_in_clan() is False:
+    if logger.in_a_clan is False:
         logger.change_status("Checking if in a clan before donating")
         in_a_clan_return = donate_state_check_if_in_a_clan(vm_index, logger)
         if in_a_clan_return == "restart":
@@ -101,11 +101,11 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
         if not in_a_clan_return:
             return next_state
     else:
-        print(f"Logger's in_a_clan value is: {logger.is_in_clan()} so skipping check")
+        print(f"Logger's in_a_clan value is: {logger.in_a_clan} so skipping check")
 
     # if in a clan, update logger's in_a_clan value
     logger.update_in_a_clan_value(True)
-    print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
+    print(f"Set Logger's in_a_clan value to: {logger.in_a_clan}!")
 
     # run donate cards main
     if donate_cards_main(vm_index, logger) is False:
@@ -171,7 +171,7 @@ def donate_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    click(vm_index, 15, 450)
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",
@@ -209,7 +209,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
                     return False
                 time.sleep(0.5)
 
-            logger.change_status("Scrolling up...")
+            logger.change_status("Scrolling up to search for more donate requests")
             scroll_up(vm_index)
             time.sleep(1)
 
@@ -338,7 +338,9 @@ def find_donate_button_for_free(image, vm_index, region):
         free_coord = get_first_location(locations)
 
         if free_coord is None:
+            # print("it's not free")
             return None
+        # print("it is!")
         return [coord[1], coord[0]]
     return None
 
@@ -390,4 +392,7 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    donate_cards_main(1, Logger())
+    while 1:
+        print(find_donate_buttons(12))
+
+    # print(find_donate_button(screenshot(12)))

@@ -19,7 +19,7 @@ from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
 QUEUE_CHEST_BUTTON_COORD = (314, 357)
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+CLASH_MAIN_DEADSPACE_COORD = (20, 450)
 CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT = 40  # s
 
 
@@ -39,25 +39,24 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     """
     open_chests_start_time = time.time()
 
+    logger.add_chest_unlock_attempt()
     logger.change_status(status="Opening chests state")
 
     # handle being on trophy road meu
-    print('Checking for trophy reward menu...')
     if check_for_trophy_reward_menu(vm_index):
-        print('Found trophy reward menu\nHandling it')
         handle_trophy_reward_menu(vm_index, logger)
         time.sleep(3)
-    else:
-        print('No trophy reward menu found')
 
     # if not on clash_main, print the pixels that the box sees, then restart
-    print('Checking if on clash main before doing chest opening')
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.log("Not on clashmain for the start of open_chests_state()")
+        # logger.log("These are the pixels the bot saw after failing to find clash main:")
+        # for pixel in clash_main_check:
+        #     logger.log(f"    {pixel}")
+
         return "restart"
 
-    #clear main tab notifications
     logger.change_status(
         status="Handling obstructing notifications before opening chests",
     )

@@ -13,7 +13,8 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
-from pyclashbot.memu.memu_closer import close_everything_memu
+from pyclashbot.memu.launcher import reset_clashbot_emulator
+from pyclashbot.memu.memu_closer import close_memuc_processes
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
@@ -22,14 +23,8 @@ from pyclashbot.utils.thread import StoppableThread
 initalize_pylogging()
 
 
-TODO = """
--fix donate image rec (its slow and stupid)
-"""
-
-
 def read_window(
-    window: sg.Window,
-    timeout: int = 10,
+    window: sg.Window, timeout: int = 10,
 ) -> tuple[str, dict[str, str | int]]:
     """Method for reading the attributes of the window
     args:
@@ -74,6 +69,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "donate_toggle": values["donate_toggle"],
         "free_donate_toggle": values["free_donate_toggle"],
         "card_mastery_user_toggle": values["card_mastery_user_toggle"],
+        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
@@ -97,16 +93,46 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
-        'magic_items_user_toggle':values['magic_items_user_toggle'],
-        # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
+        "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
         "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
+        # job increments
+        "trophy_road_reward_increment_user_input": values[
+            "trophy_road_reward_increment_user_input"
+        ],
+        "season_shop_buys_increment_user_input": values[
+            "season_shop_buys_increment_user_input"
+        ],
+        "card_upgrade_increment_user_input": values[
+            "card_upgrade_increment_user_input"
+        ],
+        "shop_buy_increment_user_input": values["shop_buy_increment_user_input"],
+        "request_increment_user_input": values["request_increment_user_input"],
+        "donate_increment_user_input": values["donate_increment_user_input"],
+        "daily_reward_increment_user_input": values[
+            "daily_reward_increment_user_input"
+        ],
+        "card_mastery_collect_increment_user_input": values[
+            "card_mastery_collect_increment_user_input"
+        ],
+        "open_chests_increment_user_input": values["open_chests_increment_user_input"],
+        "deck_randomization_increment_user_input": values[
+            "deck_randomization_increment_user_input"
+        ],
+        "war_attack_increment_user_input": values["war_attack_increment_user_input"],
+        "battlepass_collect_increment_user_input": values[
+            "battlepass_collect_increment_user_input"
+        ],
+        "level_up_chest_increment_user_input": values[
+            "level_up_chest_increment_user_input"
+        ],
         # account switching input info
+        "account_switching_increment_user_input": values[
+            "account_switching_increment_user_input"
+        ],
         "account_switching_toggle": values["account_switching_toggle"],
-        "account_switch_count": int(values["account_switching_slider"]),
-        # memu settings
-        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
-        "opengl_toggle": values["opengl_toggle"],
-        "directx_toggle": values["directx_toggle"],
+        "account_switching_slider": int(values["account_switching_slider"]),
+        "next_account": 0,
+        "random_account_switch_list": random_account_switch_list,
     }
 
     return jobs_dictionary
@@ -212,13 +238,8 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
     if settings is not None:
         for key in user_config_keys:
             if key in settings:
-                if key in list(window.key_dict.keys()):
-                    window[key].update(settings[key])  # type: ignore
-                else:
-                    print(
-                        f"This key {key} appears in saved settings, but not the active window."
-                    )
-        window.refresh()
+                window[key].update(settings[key])  # type: ignore
+        window.refresh()  # refresh the window to update the layout
 
 
 def show_invalid_job_increment_input_popup(key) -> None:
@@ -288,6 +309,8 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         logger.log("No jobs are selected!")
         return None
 
+    # updaet logger's update_account_order_var
+    logger.update_account_order_var(job_dictionary["random_account_switch_list"])
 
     logger.log("Start Button Event")
     logger.change_status(status="Starting the bot!")
@@ -296,12 +319,10 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     logger.log_job_dictionary(job_dictionary)
 
     for key in disable_keys:
-        if key in list(window.key_dict.keys()):
-            window[key].update(disabled=True)
+        window[key].update(disabled=True)
 
     # close existing memuc processes
-    print("Closing everything memu related...")
-    close_everything_memu()
+    close_memuc_processes()
 
     # setup the main thread and start it
     print("Starting main thread")
@@ -363,9 +384,7 @@ def exit_button_event(thread) -> None:
 
 
 def handle_thread_finished(
-    window: sg.Window,
-    thread: WorkerThread | None,
-    logger: Logger,
+    window: sg.Window, thread: WorkerThread | None, logger: Logger,
 ):
     """Method for handling when the worker thread is finished"""
     # enable the start button and configuration after the thread is stopped
@@ -436,6 +455,10 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
                 url = logger.upload_log()
                 if url is not None:
                     webbrowser.open(url)
+
+        # refresh emulator button
+        elif event == "refresh_emualtor_key":
+            reset_clashbot_emulator(logger)
 
         # on Help button event, open the help gui
         elif event == "discord":

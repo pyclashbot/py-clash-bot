@@ -59,7 +59,7 @@ def check_for_battlepass_reward_icon(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -83,7 +83,7 @@ def check_if_on_battlepass_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -135,8 +135,7 @@ def collect_1_battlepass_reward(vm_index, logger):
     start_time = time.time()
     while time.time() - start_time < timeout:
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
-            vm_index,
-            delay=3,
+            vm_index, delay=3,
         )
 
         if claim_rewards_coord is None:
@@ -155,32 +154,20 @@ def collect_1_battlepass_reward(vm_index, logger):
 
         # find the claim rewards button again
         claim_rewards_coord = find_claim_battlepass_rewards_button_with_delay(
-            vm_index,
-            delay=3,
+            vm_index, delay=3,
         )
-
-        if claim_rewards_coord is None:
-            logger.change_status(
-                """This part needs attention. This logic was written forever ago
-                and I cant tell if claim_rewards_coord is supposed to be None at
-                this point, because it CAN be. Should it return False here? Or
-                should it continue and try again? Can't tell. Returning False for
-                safety."""
-            )
-            return False
 
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
-        click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1],clicks = 3,interval = 0.5)
+        click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1])
         time.sleep(3)
 
-        # click deadspace until back to battlepass page + a little extra ;)
+        # click deadspace until back to battlepass page
         logger.log("Skipping thru this battlepass reward")
         while not check_if_on_battlepass_page(vm_index):
-            logger.log("Skipping thru this battlepass reward")
+            if random.randint(1, 5):
+                logger.log("Skipping thru this battlepass reward")
             click(vm_index, 404, 33)
-        click(vm_index, 404, 33,clicks = 5,interval = 0.5)
-
 
         logger.log("Collected 1 battlepass reward")
         logger.increment_battlepass_collects()

@@ -10,7 +10,6 @@ from pyclashbot.utils.logger import Logger
 BANNERBOX_ICON_ON_CLASH_MAIN_PAGE = (350, 195)
 FIRST_100_TICKETS_PURCHASE_BUTTON = (303, 576)
 SECOND_100_TICKETS_PURCHASE_BUTTON = (209, 466)
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
 def check_if_bannerbox_icon_have_a_star(vm_index):
@@ -26,7 +25,7 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -121,11 +120,10 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
             return False
 
         # click deadspace
-        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1], clicks=5, interval=0.33)
+        click(vm_index, 10, 450, clicks=5, interval=0.33)
 
     # return true if everything went well
     return True
-
 
 
 def check_for_collected_all_bannerbox_rewards_icon(vm_index):
@@ -173,7 +171,7 @@ def check_if_bannerbox_icon_exists_on_clashmain(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
+        # print(p)
         if not pixel_is_equal(p, colors[i], tol=35):
             return True
 
