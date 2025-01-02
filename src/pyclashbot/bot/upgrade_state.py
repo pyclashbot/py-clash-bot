@@ -6,7 +6,6 @@ import numpy
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
-    check_if_on_card_page,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
@@ -66,12 +65,18 @@ CLOSE_CARD_PAGE_COORD = (355, 238)
 
 def upgrade_cards_state(vm_index, logger: Logger, next_state):
     logger.change_status(status="Upgrade cards state")
+    logger.add_card_upgrade_attempt()
 
     # if not on clash main, return restart
     print("Making sure on clash main before upgrading cards")
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.change_status("Not on clash main at the start of upgrade_cards_state()")
+        # logger.log(
+        #     "These are the pixels the bot saw after failing to find clash main:")
+        # for pixel in clash_main_check:
+        #     logger.log(f"   {pixel}")
+
         return "restart"
 
     # get to card page
@@ -82,12 +87,25 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
         )
         return "restart"
 
-    # do card upgrade
-    if update_cards(vm_index, logger) is False:
-        logger.change_status("Failed to update cards")
-        return "restart"
+    # click a bottom card so it scrolls down the little bit (dogshit clash UI)
+    print("Clicking bottom card to scroll")
+    click(vm_index, 163, 403)
 
-    # get back to main when its done
+    # deadspace click to unclick that card but keep the random scroll
+    print("Deadspace click")
+    click(vm_index, 14, 286)
+
+    # upgrade each card
+    for card_index in range(8):
+        card_index = 8 - card_index - 1
+
+        while check_if_card_is_upgradable(vm_index, logger, card_index):
+            if not upgrade_card(vm_index, logger, card_index):
+                print("Upgrade card failed, so were done with this card.")
+                break
+            print("Upgraded a card")
+
+    time.sleep(2)
     logger.change_status(status="Done upgrading cards")
     click(vm_index, 211, 607)
     time.sleep(1)
@@ -104,91 +122,6 @@ def upgrade_cards_state(vm_index, logger: Logger, next_state):
 
     logger.update_time_of_last_card_upgrade(time.time())
     return next_state
-
-
-def get_upgradable_cards(vm_index):
-    def classify_color(color):
-        # is white?
-        if color[0] > 200 and color[1] > 200 and color[2] > 200:
-            return "white"
-
-        # if [ 75 250  33]
-        if color[0] < 100 and color[2] < 100 and color[1] > 200:
-            return "green"
-
-        return "else"
-
-    def get_region_pixels(region):
-        pixels = []
-        l, t, w, h = region
-
-        for i, x in enumerate(range(w)):
-            for j, y in enumerate(range(h)):
-
-                if i % 2 == 0 or j % 2 == 0:
-                    continue
-                pixels.append(image[t + y][l + x])
-
-        return pixels
-
-    regions = [
-        [46, 256, 64, 11],
-        [133, 256, 64, 11],
-        [220, 256, 64, 11],
-        [307, 256, 64, 11],
-        [46, 395, 64, 11],
-        [133, 395, 64, 11],
-        [220, 395, 64, 11],
-        [307, 395, 64, 11],
-    ]
-
-    image = screenshot(vm_index)
-
-    good_indicies = []
-
-    for i, region in enumerate(regions):
-
-        pixels = get_region_pixels(region)
-
-        colors = [classify_color(pixel) for pixel in pixels]
-
-        color2count = {}
-        for color in colors:
-            if color not in color2count:
-                color2count[color] = 0
-            color2count[color] += 1
-
-        if "green" in color2count and color2count["green"] > 20:
-            good_indicies.append(i)
-
-    return good_indicies
-
-
-def update_cards(vm_index, logger: Logger) -> bool:
-    # starts and ends on card page
-
-    # if not on card page, return false
-    if not check_if_on_card_page(vm_index):
-        logger.log("Not on card page to start update_cards(). Returning false")
-        return False
-
-    # click a random card
-    click(vm_index, 73, 201)
-    time.sleep(0.3)
-
-    # click deadspace
-    click(vm_index, 14, 300)
-    time.sleep(0.3)
-
-    upgradable_indicies = get_upgradable_cards(vm_index)
-
-    for index in upgradable_indicies:
-        if upgrade_card(vm_index, logger, index) is True:
-            logger.log("Upgraded a card!")
-        else:
-            logger.log("Can't upgraded this card yet")
-
-    return True
 
 
 def check_for_second_upgrade_button_condition_1(vm_index) -> bool:
@@ -235,7 +168,7 @@ def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
     return True
 
 
-def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
+def upgrade_card(vm_index, logger: Logger, card_index):
     """Upgrades a card if it is upgradable.
 
     Args:
@@ -250,19 +183,18 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
         None
 
     """
-    print("\n")
     upgraded_a_card = False
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
     # click the card
-    click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
-    time.sleep(1)
+    # click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
+    # time.sleep(2)
 
     # click the upgrade button
     logger.change_status(status="Clicking the upgrade button for this card")
     coord = UPGRADE_BUTTON_COORDS[card_index]
     click(vm_index, coord[0], coord[1])
-    time.sleep(1)
+    time.sleep(2)
 
     # click second upgrade button
     logger.change_status(status="Clicking the second upgrade button")
@@ -319,7 +251,7 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
     logger.change_status(
         status="Clicking deadspace after attemping upgrading this card",
     )
-    for _ in range(6):
+    for _ in range(4):
         click(vm_index, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
         time.sleep(1)
 
@@ -350,21 +282,11 @@ def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
 
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
-        vm_index,
-        x_1=338,
-        y_1=215,
-        x_2=361,
-        y_2=221,
-        color=(153, 20, 17),
+        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17),
     ):
         return False
     if not check_line_for_color(
-        vm_index,
-        x_1=124,
-        y_1=201,
-        x_2=135,
-        y_2=212,
-        color=(255, 255, 255),
+        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255),
     ):
         return False
 
@@ -377,29 +299,30 @@ def check_for_missing_gold_popup(vm_index):
     return True
 
 
-# def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
-#     logger.change_status(status=f"Checking if {card_index} is upgradable")
+def check_if_card_is_upgradable(vm_index, logger: Logger, card_index):
+    logger.change_status(status=f"Checking if {card_index} is upgradable")
 
-#     # click the selected card
-#     card_coord = CARD_COORDS[card_index]
-#     print(f"Clicking the #{card_index} card")
-#     click(vm_index, card_coord[0], card_coord[1])
-#     time.sleep(0.66)
+    # click the selected card
+    card_coord = CARD_COORDS[card_index]
+    print(f"Clicking the #{card_index} card")
+    click(vm_index, card_coord[0], card_coord[1])
+    time.sleep(0.66)
 
-#     # see if green uprgade button exists in card context menu
-#     card_is_upgradable = False
-#     upgrade_coord = UPGRADE_PIXEL_COORDS[card_index]
-#     if check_if_pixel_indicates_upgradable_card(
-#         numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]],
-#     ):
-#         card_is_upgradable = True
+    # see if green uprgade button exists in card context menu
+    card_is_upgradable = False
+    upgrade_coord = UPGRADE_PIXEL_COORDS[card_index]
+    if check_if_pixel_indicates_upgradable_card(
+        numpy.asarray(screenshot(vm_index))[upgrade_coord[1]][upgrade_coord[0]],
+    ):
+        card_is_upgradable = True
 
-#     # deadspace click
-#     # click(vm_index, 14, 286)
+    # deadspace click
+    # click(vm_index, 14, 286)
 
-#     print(f"Card #{card_index} is upgradable: {card_is_upgradable}")
-#     return card_is_upgradable
+    print(f"Card #{card_index} is upgradable: {card_is_upgradable}")
+    return card_is_upgradable
 
 
 if __name__ == "__main__":
-    upgrade_cards_state(1, Logger(None, False), "next_state")
+    # print(check_which_cards_are_upgradable(12))
+    click(12, 209, 466)

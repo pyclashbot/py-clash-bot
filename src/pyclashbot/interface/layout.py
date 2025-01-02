@@ -6,6 +6,7 @@ from os import path
 import PySimpleGUI as sg
 from PySimpleGUI import Window
 
+from pyclashbot.interface.controls import controls
 from pyclashbot.interface.joblist import jobs_checklist
 from pyclashbot.interface.stats import (
     battle_stats,
@@ -17,85 +18,69 @@ from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
 
-jobs_frame = sg.Frame(
-    layout=jobs_checklist,
-    title="Jobs",
-    expand_x=False,
-    expand_y=True,
-    border_width=None,
-    pad=0,
-)
-account_switching_switching_frame = sg.Frame(
-    layout=[
-        [
-            sg.Checkbox(
-                "Enabled",
-                key="account_switching_toggle",
-                default=False,
-            ),
-        ],
-        [
-            sg.Slider(
-                range=(1, 3),
-                orientation="h",
-                key="account_switching_slider",
-                size=(10, 20),
-            ),
-        ],
-    ],
-    title="Account Switching",
-    expand_x=True,
-    pad=0,
-)
-memu_settings_frame = sg.Frame(
-    layout=[
-        [
-            sg.Checkbox(
-                "Dock MEmu",
-                key="memu_attach_mode_toggle",
-                default=False,
-            ),
-        ],
-        [
-            sg.Radio(
-                enable_events=True,
-                text="OpenGL",
-                group_id="render_mode_radio",
-                default=True,
-                key="opengl_toggle",
-                pad=1,
-            ),
-        ],
-        [
-            sg.Radio(
-                enable_events=True,
-                text="DirectX",
-                group_id="render_mode_radio",
-                key="directx_toggle",
-                pad=1,
-            ),
-        ],
-    ],
-    title="Memu Settings",
-    expand_y=True,
-    expand_x=True,
-    pad=0,
-)
-
 
 controls_layout = [
     [
-        sg.Frame(layout=[[jobs_frame]], title="", expand_y=True, border_width=0, pad=0),
+        sg.Frame(layout=controls, title="Controls", expand_x=True, expand_y=True),
+        sg.Frame(layout=jobs_checklist, title="Jobs", expand_x=True, expand_y=True),
+    ],
+    [
         sg.Frame(
-            layout=[[memu_settings_frame], [account_switching_switching_frame]],
-            title="",
-            border_width=0,
-            pad=0,
+            layout=[
+                [
+                    sg.Checkbox(
+                        "Enabled",
+                        key="account_switching_toggle",
+                        default=False,
+                    ),
+                    sg.Slider(
+                        range=(1, 8),
+                        orientation="h",
+                        key="account_switching_slider",
+                        size=(10, 20),
+                    ),
+                ],
+                [
+                    sg.Text("Current Account #"),
+                    sg.Text(
+                        "-",
+                        key="current_account",
+                        relief=sg.RELIEF_SUNKEN,
+                        text_color="blue",
+                        size=(5, 1),
+                    ),
+                ],
+                [
+                    sg.Text("Account Order"),
+                    sg.Text(
+                        "-",
+                        key="account_order",
+                        relief=sg.RELIEF_SUNKEN,
+                        text_color="blue",
+                        size=(10, 1),
+                    ),
+                ],
+            ],
+            title="Account Switching",
             expand_x=True,
-            expand_y=True,
         ),
-    ]
+        sg.Frame(
+            layout=[
+                [
+                    sg.Checkbox(
+                        "Enabled",
+                        key="memu_attach_mode_toggle",
+                        default=False,
+                    ),
+                ],
+            ],
+            title="Memu Docking",
+            expand_y=True,
+            expand_x=True,
+        ),
+    ],
 ]
+
 
 stats_tab_layout = [
     [
@@ -105,23 +90,20 @@ stats_tab_layout = [
                     sg.Frame(
                         layout=battle_stats,
                         title="Battle Stats",
-                        expand_y=False,
                         expand_x=True,
-                        pad=0,
+                        expand_y=True,
                     ),
                 ],
                 [
                     sg.Frame(
                         layout=bot_stats,
                         title="Bot Stats",
-                        expand_x=False,
-                        expand_y=True,
-                        pad=0,
+                        expand_x=True,
                     ),
                 ],
             ],
+            expand_x=True,
             expand_y=True,
-            pad=0,
         ),
         sg.Column(
             [
@@ -129,14 +111,14 @@ stats_tab_layout = [
                     sg.Frame(
                         layout=collection_stats,
                         title="Collection Stats",
+                        expand_x=True,
                         expand_y=True,
-                        pad=0,
                     ),
                 ],
             ],
+            expand_x=True,
             justification="right",
             expand_y=True,
-            pad=0,
         ),
     ],
 ]
@@ -163,6 +145,7 @@ time_status_bar_layout = [
 
 main_layout = [
     [
+        # layout:List[List[Tab]]
         sg.pin(
             sg.Column(
                 [
@@ -172,8 +155,6 @@ main_layout = [
                                 [sg.Tab("Controls", controls_layout)],
                                 [sg.Tab("Stats", stats_tab_layout)],
                             ],
-                            border_width=0,
-                            pad=0,
                         ),
                     ],
                 ],
@@ -184,22 +165,25 @@ main_layout = [
     [
         sg.Button(
             "Start",
+            expand_x=True,
             button_color="Lime Green",
             border_width=3,
-            size=(10, 1),
+            # size=(23, 1),
         ),
         sg.Button(
             "Stop",
             disabled=True,
             button_color="Red",
+            expand_x=True,
             border_width=2,
-            size=(10, 1),
+            # size=(23, 1),
         ),
         sg.Button(
             "Collapse",
             key="-Collapse-Button-",
+            expand_x=True,
             border_width=2,
-            size=(10, 1),
+            # size=(23, 1),
         ),
     ],
     [time_status_bar_layout],
@@ -215,6 +199,7 @@ user_config_keys = [
     "donate_toggle",
     "free_donate_toggle",
     "card_mastery_user_toggle",
+    "memu_attach_mode_toggle",
     "disable_win_track_toggle",
     "free_offer_user_toggle",
     "gold_offer_user_toggle",
@@ -232,15 +217,25 @@ user_config_keys = [
     "trophy_road_rewards_user_toggle",
     "upgrade_all_cards_user_toggle",
     "season_shop_buys_user_toggle",
-    'magic_items_user_toggle',
-
+    # job increment controls keys
+    "request_increment_user_input",
+    "donate_increment_user_input",
+    "daily_reward_increment_user_input",
+    "shop_buy_increment_user_input",
+    "card_upgrade_increment_user_input",
+    "card_mastery_collect_increment_user_input",
+    "open_chests_increment_user_input",
+    "deck_randomization_increment_user_input",
+    "war_attack_increment_user_input",
+    "battlepass_collect_increment_user_input",
+    "account_switching_increment_user_input",
+    "level_up_chest_increment_user_input",
+    "level_up_chest_user_toggle",
+    "trophy_road_reward_increment_user_input",
+    "season_shop_buys_increment_user_input",
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",
-    # MEmu settings
-    "memu_attach_mode_toggle",
-    "opengl_toggle",
-    "directx_toggle",
 ]
 
 # list of button and checkbox keys to disable when the bot is running
@@ -253,22 +248,5 @@ def create_window() -> Window:
     if not path.isfile(path=icon_path):
         icon_path = path.join("..\\..\\..\\assets\\", icon_path)
     return sg.Window(
-        title=f"py-clash-bot | {__version__}",
-        layout=main_layout,
-        icon=icon_path,
+        title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path,
     )
-
-
-def test_window():
-    """Method for testing the window layout"""
-    window = create_window()
-    while True:
-        event, values = window.read()
-        print(event)
-        if event == sg.WIN_CLOSED:
-            break
-    window.close()
-
-
-if __name__ == "__main__":
-    test_window()
