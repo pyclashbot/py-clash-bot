@@ -516,8 +516,6 @@ files = [
     {file = "cx_Freeze-7.2.5-cp310-cp310-win32.whl", hash = "sha256:bab38d4ea9d79c1c31d8e2d93f47560dd32bf84251d907f0333178c25ae5dff3"},
     {file = "cx_Freeze-7.2.5-cp310-cp310-win_amd64.whl", hash = "sha256:2ad91b52cf41e4b097967861b0b1d6698ddd4f3933ae06707477331467510825"},
     {file = "cx_Freeze-7.2.5-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:0f69c499b37baed9ca6fe9bb89eed73514d721ae55fe262a3b337bf9322f794c"},
-    {file = "cx_Freeze-7.2.5-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f313b12e1daf5408986906fd5040505b1be75b86a66bea8af3e164c4d3b6a0ba"},
-    {file = "cx_Freeze-7.2.5-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:152c13fe9896d246a68fc32987e60afef46e6c8b2386f13265a8c87d54953575"},
     {file = "cx_Freeze-7.2.5-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:694887e5439ecbb9d21b96ebb89ee8f4f9ad21e0fb6ee86a60d0f823b1358182"},
     {file = "cx_Freeze-7.2.5-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:8e972d72e43142490d3389e843c24af50ddf031150fdf26be8a70e26c7317244"},
     {file = "cx_Freeze-7.2.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3290c6c155fc33c81fa557bae5d648441066fb55a9ff41558b3ea2b085ba3e5b"},
@@ -527,8 +525,6 @@ files = [
     {file = "cx_Freeze-7.2.5-cp311-cp311-win32.whl", hash = "sha256:4419722a93a1cf2fef45c1096ea5e1ca402bfc59c0adcb326776561881292cb1"},
     {file = "cx_Freeze-7.2.5-cp311-cp311-win_amd64.whl", hash = "sha256:975a25e9cfda1c4c956bc20e8f712416c9b24a8dbe89f56c3f1c20c6e1c77006"},
     {file = "cx_Freeze-7.2.5-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:52fcd644ac4e8938b4984a1f9af10f29bec9ddc47390f608d1cfd608d0fa3d38"},
-    {file = "cx_Freeze-7.2.5-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:de019dd0d537eac05d6bd40452d6e5b83abe3b141d9ae2c757eb68b82760093f"},
-    {file = "cx_Freeze-7.2.5-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:3fb4b5bb07773fed714e59fc994a40cdc585d9e86bf01a87053906aacbe02aea"},
     {file = "cx_Freeze-7.2.5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5d0b660d888b18562aa06181f957ae5fcea62767df09b8fbe4613f079343d3fd"},
     {file = "cx_Freeze-7.2.5-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:99116e7cb03d1c648c6351e7e0b9c2ed24be614118a4c52f00f8e34afa61d634"},
     {file = "cx_Freeze-7.2.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c3b731c9b6c217d1b22d24a71692f481c26ea6ce14dc6d5f7b18cbd89e0f942e"},
@@ -2097,13 +2093,13 @@ type = ["mypy (>=1.8)"]
 
 [[package]]
 name = "poethepoet"
-version = "0.30.0"
+version = "0.32.1"
 description = "A task runner that works well with poetry."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "poethepoet-0.30.0-py3-none-any.whl", hash = "sha256:bf875741407a98da9e96f2f2d0b2c4c34f56d89939a7f53a4b6b3a64b546ec4e"},
-    {file = "poethepoet-0.30.0.tar.gz", hash = "sha256:9f7ccda2d6525616ce989ca8ef973739fd668f50bef0b9d3631421d504d9ae4a"},
+    {file = "poethepoet-0.32.1-py3-none-any.whl", hash = "sha256:d1e0a52a2f677870fac17dfb26bfe4910242756ac821443ef31f90ad26227c2d"},
+    {file = "poethepoet-0.32.1.tar.gz", hash = "sha256:471e1a025812dcd3d2997e30989681be5ab0a49232ee5fba94859629671c9584"},
 ]
 
 [package.dependencies]
@@ -2111,7 +2107,7 @@ pastel = ">=0.2.1,<0.3.0"
 pyyaml = ">=6.0.2,<7.0.0"
 
 [package.extras]
-poetry-plugin = ["poetry (>=1.0,<2.0)"]
+poetry-plugin = ["poetry (>=1.0,<3.0)"]
 
 [[package]]
 name = "pre-commit"
@@ -3242,4 +3238,4 @@ test = ["websockets"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12.0,<3.13"
-content-hash = "6c774b8f05a2f85e1644952425f22575acb4f0bb1b7208764c724652186eec8c"
+content-hash = "0587c13b1d2da00da9b154a6b7d0f05d8f289cff82b29a11dbc35f3821ac05ed"
