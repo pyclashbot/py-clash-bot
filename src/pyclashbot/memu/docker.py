@@ -100,15 +100,15 @@ def check_position():
 def docker_main():
     while 1:
         try:
-            if not check_sizing():
-                print("[docker] resize...")
-                resize_memu()
-                continue
+            # if not check_sizing():
+            #     print("[docker] resize...")
+            #     resize_memu()
+            #     continue
             if not check_position():
                 print("[docker] Dock...")
                 dock_memu()
                 continue
-            time.sleep(0.33)
+            time.sleep(1)
         except:
             pass
 
