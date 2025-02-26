@@ -26,16 +26,16 @@ class InvalidImageError(Exception):
 image_b64_pattern = re.compile(r"already connected to 127\.0\.0\.1:[\d]*\n\n")
 
 
-class ScreenShotter:
+class MemuScreenCapture:
     """Class for getting screenshots.
     Stores adbblitz connections in a dict to avoid reconnecting for each screenshot.
 
     Example:
     -------
         vm_index = 0
-        screen_shotter = ScreenShotter()
-        screenshot = screen_shotter[vm_index]
-        del screen_shotter # Cleanup
+        memu_screen_capture = MemuScreenCapture()
+        screenshot = memu_screen_capture[vm_index]
+        del memu_screen_capture # Cleanup
 
     """
 
@@ -94,11 +94,11 @@ class ScreenShotter:
                 time.sleep(0.1)
 
 
-screen_shotter = ScreenShotter()
+memu_screen_capture = MemuScreenCapture()
 
 
 @atexit.register
 def cleanup():
     """Cleanup function to be called at exit"""
-    global screen_shotter  # pylint: disable=global-statement
-    del screen_shotter
+    global memu_screen_capture  # pylint: disable=global-statement
+    del memu_screen_capture

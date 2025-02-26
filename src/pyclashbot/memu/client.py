@@ -5,7 +5,7 @@ import time
 from numpy import ndarray
 
 from pyclashbot.memu.pmc import pmc
-from pyclashbot.memu.screenshot import screen_shotter
+from pyclashbot.memu.screenshot import memu_screen_capture
 
 
 def save_screenshot(vm_index):
@@ -30,7 +30,7 @@ def screenshot(vm_index: int) -> ndarray:
         numpy.ndarray: Screenshot of the given region
 
     """
-    return screen_shotter[vm_index]
+    return memu_screen_capture[vm_index]
 
 
 def click(vm_index, x_coord, y_coord, clicks=1, interval=0.1):
@@ -151,14 +151,6 @@ def send_swipe(
     )
 
 
-# TODO
-# def send_paste_key(vm_index):
-#     pmc.send_adb_command_vm(
-#         vm_index=vm_index,
-#         command=f"shell input keyevent 279",
-#     )
-
-
 def send_click(vm_index, x_coord, y_coord):
     """Method for sending a click command to the given vm
 
@@ -228,6 +220,27 @@ def send_newline_char(vm_index):
     )
 
 
+def test_screenshot(vm_index):
+    img = screenshot(vm_index)
+    width,height = img.shape[1], img.shape[0]
+    print(f"Screenshot size: {width}x{height}")
+    black = [255,255,255]
+    sample_pixels = []
+    for x in range(0,width-1,100):
+        for y in range(0,height-1,100):
+            pixel = img[y][x]
+            sample_pixels.append(pixel)
+
+    is_black_count = sum([
+        1 for pixel in sample_pixels if all(pixel == black)
+    ])
+    is_black_ratio = is_black_count / len(sample_pixels)
+    print(f"Black pixel ratio: {is_black_ratio:.2%}")
+    if is_black_ratio > 0.5:
+        print("Screenshot is mostly black, something went wrong.")
+
+
+
+
 if __name__ == "__main__":
-    for i in range(4):
-        scroll_up_in_shop_page(1)
+    test_screenshot(1)
