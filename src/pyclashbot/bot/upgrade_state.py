@@ -11,6 +11,7 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
+    pixel_is_equal,
     region_is_color,
 )
 from pyclashbot.memu.client import click, screenshot
@@ -172,7 +173,7 @@ def update_cards(vm_index, logger: Logger) -> bool:
         logger.log("Not on card page to start update_cards(). Returning false")
         return False
 
-    # click a random card
+    # click a topleft card to open edit deck mode
     click(vm_index, 73, 201)
     time.sleep(0.3)
 
@@ -234,6 +235,45 @@ def check_for_confirm_upgrade_button_condition_1(vm_index) -> bool:
 
     return True
 
+def card_is_open(vm_index,index):
+    """
+    clicking a card opens a menu
+    this method checks that menu is open for each coordiante the menu
+    can appear in, according to the card index that is being opened
+    """
+    #specify coords of pixels that indicate an open menu
+    card_index_to_coord = {
+        0:(43,326),
+        1:(131,326),
+        2:(218,326),
+        3:(302,326),
+        4:(41,461),
+        5:(131,461),
+        6:(218,461),
+        7:(302,461),
+    }
+
+    #get an image
+    image = screenshot(vm_index)
+
+    #get the pixels for each card
+    card_index_to_pixel = {}
+    for card_index,coord in card_index_to_coord.items():
+        pixel = image[coord[1]][coord[0]]
+        card_index_to_pixel[card_index] = pixel
+
+
+    #get the colors of each card's pixel
+    card_index_to_is_red = {}
+    red = [75,  75 ,252]#bgr red
+    for card_index,pixel in card_index_to_pixel.items():
+        is_red = pixel_is_equal(pixel, red,tol=45)
+        card_index_to_is_red[card_index] = is_red
+
+
+    return card_index_to_is_red[index]
+
+
 
 def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
     """Upgrades a card if it is upgradable.
@@ -255,8 +295,10 @@ def upgrade_card(vm_index, logger: Logger, card_index) -> bool:
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
     # click the card
-    click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
-    time.sleep(1)
+    while not card_is_open(vm_index,card_index):
+        print(f'Opening this card options: {card_index}')
+        click(vm_index, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
+        time.sleep(1)
 
     # click the upgrade button
     logger.change_status(status="Clicking the upgrade button for this card")
@@ -402,4 +444,12 @@ def check_for_missing_gold_popup(vm_index):
 
 
 if __name__ == "__main__":
-    upgrade_cards_state(1, Logger(None, False), "next_state")
+    card_index = 5
+    logger=Logger(None,None)
+    print(update_cards(1, logger))
+    upgrade_card(1, logger, card_index)
+
+    # while 1:
+    #     print(card_is_open(1,-1))
+    #     time.sleep(2)
+    #     print('\n\n\n\n\n')
