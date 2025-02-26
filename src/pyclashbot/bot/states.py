@@ -699,8 +699,10 @@ def state_tree_tester(vm_index):
     state = "account_switch"
     job_list = {
         # job toggles
+
+
         "open_battlepass_user_toggle": False,
-        "open_chests_user_toggle": False,
+        "open_chests_user_toggle": True,
         "request_user_toggle": False,
         "donate_toggle": False,
         "free_donate_toggle": False,
@@ -720,6 +722,7 @@ def state_tree_tester(vm_index):
         "trophy_road_rewards_user_toggle": False,
         "season_shop_buys_user_toggle": False,
         "magic_items_user_toggle": False,
+        #tested Feb 2025
         # keep these off
         "daily_rewards_user_toggle": False,  # its just been broken via memu for months (freezes my game when i open the daily rewards)
         "disable_win_track_toggle": False,
