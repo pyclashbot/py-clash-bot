@@ -251,27 +251,23 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
 
     pix_list = []
     for x_coord in range(80, 96):
-        pixel = iar[445][x_coord]
+        pixel = iar[350][x_coord]
         pix_list.append(pixel)
 
-    for y_coord in range(437, 453):
+    for y_coord in range(345, 360):
         pixel = iar[y_coord][88]
         pix_list.append(pixel)
 
-    # for every pixel in the pix_list: format to be of format [r,g,b]
-    for index, pix in enumerate(pix_list):
-        pix_list[index] = [pix[0], pix[1], pix[2]]
 
-    for pix in pix_list:
-        total = int(pix[0]) + int(pix[1]) + int(pix[2])
 
-        if total < 130:
-            return True
+    #if all the pixels are grey the its not in a clan
+    grey = [51,51,51]
+    grey_count = sum([1 if pixel_is_equal(grey,pixel,tol=1)  else 0 for pixel in pix_list ])
+    grey_ratio = grey_count / len(pix_list)
+    if grey_ratio > 0.75:
+        return False
 
-        if total > 170:
-            return True
-
-    return False
+    return True
 
 
 def click_random_requestable_card(vm_index) -> bool:
