@@ -986,7 +986,6 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
     """
     iar = screenshot(vm_index)
 
-    # get raw pixels from image array
     pixels = [
         iar[14][209],  # white
         iar[14][324],  # white
@@ -1007,6 +1006,41 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
         [139, 106, 72],
         [139, 106, 72],
     ]
+
+
+
+    # pixels = [
+    #     #blue strip on the rightmost part of screen
+    #     iar[92][414],
+    #     iar[120][414],
+    #     iar[140][414],
+    #     iar[160][414],
+    #     iar[260][414],
+    #     iar[280][414],
+    #     iar[350][414],
+    #     iar[370][414],
+    #     iar[389][414],
+
+    #     #green plus button for more gold
+    #     iar[9][203],
+    #     iar[20][202],
+    #     iar[9][216],
+    #     iar[20][216],
+    #     iar[14][210],
+
+    #     #green plus button for more gems
+    #     iar[9][319],
+    #     iar[21][318],
+    #     iar[20][332],
+    #     iar[9][331],
+    #     iar[14][322],
+    #     iar[11][325],
+    #     iar[14][329],
+    #     iar[17][325],
+    # ]
+
+    # colors = []
+    # for p in pixels:print(p)
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
@@ -1814,4 +1848,4 @@ def get_to_collections_page(vm_index) -> bool:
 if __name__ == "__main__":
     print("\n\n\n\n\n\n")
     while 1:
-        print(check_if_on_collection_page(1))
+        print(check_if_on_clash_main_menu(1))
