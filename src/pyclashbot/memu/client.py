@@ -221,9 +221,22 @@ def send_newline_char(vm_index):
 
 
 def test_screenshot(vm_index):
+    """
+    Just tests for whether or not the image is of valid size, and isnt all black
+    returns:bool: True if the image is valid, False otherwise
+    """
+
+    #grab image
     img = screenshot(vm_index)
+
+    #check size
     width,height = img.shape[1], img.shape[0]
-    print(f"Screenshot size: {width}x{height}")
+    expected_w,expected_h= 419,633
+    if width != expected_w or height != expected_h:
+        print(f"Screenshot size is not as expected. Expected: {expected_w}x{expected_h}, got: {width}x{height}")
+        return False
+
+    #sample random pixels
     black = [255,255,255]
     sample_pixels = []
     for x in range(0,width-1,100):
@@ -231,15 +244,17 @@ def test_screenshot(vm_index):
             pixel = img[y][x]
             sample_pixels.append(pixel)
 
+    #count black pixels, false if too many
     is_black_count = sum([
         1 for pixel in sample_pixels if all(pixel == black)
     ])
     is_black_ratio = is_black_count / len(sample_pixels)
-    print(f"Black pixel ratio: {is_black_ratio:.2%}")
     if is_black_ratio > 0.5:
-        print("Screenshot is mostly black, something went wrong.")
+        print(f"Screenshot is mostly black (ratio of {is_black_ratio}), something went wrong.")
+        return False
 
-
+    #image must be valid
+    return True
 
 
 if __name__ == "__main__":
