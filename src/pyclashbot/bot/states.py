@@ -239,8 +239,9 @@ def state_tree(
         # close app
         logger.log("Running close_clash_royale_app()")
         close_clash_royale_app(logger, vm_index)
-        logger.log("Manual sleep of 10 sec after closing app")
-        time.sleep(10)
+        sleep_after_close = 4
+        logger.log(f"Manual sleep of {sleep_after_close} sec after closing app")
+        time.sleep(sleep_after_close)
 
         logger.log("Incrementing restart counter in logger")
         logger.add_restart_after_failure()
@@ -381,7 +382,6 @@ def state_tree(
         # make sure there's a relevent job toggled, else just skip deck randomization
         if (
             not job_list["trophy_road_1v1_battle_user_toggle"]
-            and not job_list["goblin_queens_journey_1v1_battle_user_toggle"]
             and not job_list["path_of_legends_1v1_battle_user_toggle"]
             and not job_list["upgrade_user_toggle"]
             and not job_list["2v2_battle_user_toggle"]
@@ -597,7 +597,6 @@ def state_tree(
             "2v2": job_list["2v2_battle_user_toggle"],
             "trophy_road": job_list["trophy_road_1v1_battle_user_toggle"],
             "path_of_legends": job_list["path_of_legends_1v1_battle_user_toggle"],
-            "queens_journey": job_list["goblin_queens_journey_1v1_battle_user_toggle"],
         }
 
         for mode, toggle in mode2toggle.items():
@@ -699,29 +698,27 @@ def state_tree_tester(vm_index):
     state = "account_switch"
     job_list = {
         # job toggles
-        "open_battlepass_user_toggle": True,
-        "donate_toggle": True,
-        "free_donate_toggle": True,
         "card_mastery_user_toggle": True,
-        "free_offer_user_toggle": True,
-        "gold_offer_user_toggle": True,
-        "war_user_toggle": True,
-        "open_bannerbox_user_toggle": True,
         "battlepass_collect_user_toggle": True,
-        "level_up_chest_user_toggle": True,
-        "season_shop_buys_user_toggle": True,
-        "magic_items_user_toggle": True,
+        "level_up_chest_user_toggle": False,
         "trophy_road_rewards_user_toggle": False,
         #tested Feb 2025
+        "season_shop_buys_user_toggle": False,
+        "open_bannerbox_user_toggle": False,
+        "free_offer_user_toggle": False,
+        "gold_offer_user_toggle": False,
+        "donate_toggle": False,
+        "war_user_toggle": False,
+        "free_donate_toggle": False,
+        "magic_items_user_toggle": False,
         "random_decks_user_toggle": False,
         "request_user_toggle": False,
         "upgrade_user_toggle": False,
         "open_chests_user_toggle": False,
         #fight toggles
-        "trophy_road_1v1_battle_user_toggle": True,
-        "path_of_legends_1v1_battle_user_toggle": True,
-        "goblin_queens_journey_1v1_battle_user_toggle": True,
-        "2v2_battle_user_toggle": True,
+        "trophy_road_1v1_battle_user_toggle": False,
+        "path_of_legends_1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": False,
         # keep these off
         "daily_rewards_user_toggle": False,  # its just been broken via memu for months (freezes my game when i open the daily rewards)
         "disable_win_track_toggle": False,
@@ -754,4 +751,4 @@ def state_tree_tester(vm_index):
 
 
 if __name__ == "__main__":
-    state_tree_tester(1)
+    state_tree_tester(0)
