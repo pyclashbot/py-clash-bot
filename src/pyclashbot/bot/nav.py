@@ -1757,18 +1757,7 @@ def wait_for_clash_main_burger_button_options_menu(
 def check_if_on_collection_page(vm_index) -> bool:
     iar = screenshot(vm_index)
 
-    queens_mode_colors = [
-        [41, 104, 169],
-        [42, 104, 168],
-        [255, 255, 255],
-        [183, 197, 214],
-        [39, 101, 164],
-        [42, 105, 170],
-        [43, 106, 171],
-        [43, 104, 168],
-        [28, 77, 132],
-        [22, 58, 102],
-    ]
+
     trophy_mode_colors = [
         [211, 159, 45],
         [203, 134, 41],
@@ -1809,8 +1798,7 @@ def check_if_on_collection_page(vm_index) -> bool:
     ]
 
     if (
-        pixels_match_colors(pixels, queens_mode_colors)
-        or pixels_match_colors(pixels, trophy_mode_colors)
+         pixels_match_colors(pixels, trophy_mode_colors)
         or pixels_match_colors(pixels, legends2_mode_colors)
     ):
         return True
