@@ -29,6 +29,7 @@ from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
+
 def find_claim_button(vm_index):
     """Finds the location of the claim button for the free gift in the clan page.
 
@@ -59,10 +60,6 @@ def find_claim_button(vm_index):
     return None
 
 
-global only_free
-only_free = False
-
-
 def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle: bool):
     """This function represents the state of donating cards in Clash of Clans.
 
@@ -75,8 +72,6 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
     """
 
     donate_start_time = time.time()
-    global only_free
-    only_free = free_donate_toggle
 
     # if not on main: return
     clash_main_check = check_if_on_clash_main_menu(vm_index)
@@ -108,7 +103,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
     print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # run donate cards main
-    if donate_cards_main(vm_index, logger) is False:
+    if donate_cards_main(vm_index, logger,only_free_donates=free_donate_toggle) is False:
         logger.log("Failure donating cards. Returning false")
         return "restart"
 
@@ -149,7 +144,8 @@ def donate_state_check_pixels_for_clan_flag(vm_index) -> bool:
 
 
 def donate_state_check_if_in_a_clan(
-    vm_index, logger: Logger,
+    vm_index,
+    logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, return
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -181,7 +177,7 @@ def donate_state_check_if_in_a_clan(
     return in_a_clan
 
 
-def donate_cards_main(vm_index, logger: Logger) -> bool:
+def donate_cards_main(vm_index, logger: Logger,only_free_donates:bool) -> bool:
     # get to clan chat page
     logger.change_status("Getting to clan tab to donate cards")
     if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
@@ -202,7 +198,7 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
                 logger.log("Claim button found. Claiming free gift from clan mate.")
                 click(vm_index, *claim_button_coord)
                 time.sleep(3)
-            while find_and_click_donates(vm_index, logger) is True:
+            while find_and_click_donates(vm_index, logger,only_free_donates) is True:
                 logger.change_status("Found a donate button")
                 loops += 1
                 if loops > 50:
@@ -239,9 +235,9 @@ def donate_cards_main(vm_index, logger: Logger) -> bool:
     return True
 
 
-def find_and_click_donates(vm_index, logger):
+def find_and_click_donates(vm_index, logger, only_free_donates):
     logger.change_status("Searching for donate buttons...")
-    coords = find_donate_buttons(vm_index)
+    coords = find_donate_buttons(vm_index, only_free_donates)
 
     found_donates = False
     start_time = time.time()
@@ -269,11 +265,14 @@ def find_and_click_donates(vm_index, logger):
     return found_donates
 
 
-def find_donate_buttons(vm_index):
+def find_donate_buttons(vm_index, only_free_donates):
     start_time = time.time()
     coords = []
 
-    for _ in range(10):
+    look_time = 3#s
+
+    look_start_time = time.time()
+    while time.time() - look_start_time < look_time:
         try:
             left = 238
             right = 375
@@ -288,15 +287,17 @@ def find_donate_buttons(vm_index):
 
             image = crop_image(image, region)
 
-            global only_free
-            if only_free:
-                coord = find_donate_button_for_free(image, vm_index, region)
-            else:
-                coord = find_donate_button(image)
+            #grab coord within ROI
+            coord = (
+                find_donate_button_for_free(image, vm_index, region)
+                if only_free_donates
+                else find_donate_button(image)
+            )
 
             if coord is None:
                 continue
 
+            #convert ROI coord to usable coord
             coord = [coord[0] + region[0], coord[1] + region[1]]
 
             # adjust coord to make it more central to the icon
@@ -306,9 +307,14 @@ def find_donate_buttons(vm_index):
         except:
             pass
 
+    #remove dupes from coords list
+    coords = condense_coordinates(coords, distance_threshold=15)
+
+    #time taken printout
     time_taken = str(time.time() - start_time)[:5]
     print(f"Finished find_donate_buttons() in {time_taken}s")
-    return condense_coordinates(coords, distance_threshold=15)
+
+    return coords
 
 
 def find_donate_button_for_free(image, vm_index, region):
