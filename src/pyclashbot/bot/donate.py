@@ -268,15 +268,34 @@ def find_and_click_donates(vm_index, logger, only_free_donates):
     return found_donates
 
 
+def region_contains_donate_button(image,region):
+    # print(f'checking if region: {region} has green')
+    l,t,w,h = region
+    y_range = (t,t + h)
+    x_coord = 343
+    green_color = [73,228,58]
+    for i in range(y_range[0],y_range[1]):
+        pixel = image[i,x_coord]
+        # print(f'Region: {region} saw pixel: {pixel}')
+        if pixel_is_equal(pixel,green_color,tol=5):
+            # print(f'Region has green')
+            return True
+
+    # print(f'Region: {region} does not have green')
+    return False
+
+
 def find_donate_buttons(vm_index, only_free_donates):
     start_time = time.time()
     coords = []
 
-    look_time = 3  # s
+    look_time = 1  # s
+    looks = 0
 
     look_start_time = time.time()
     base_image = screenshot(vm_index)
     while time.time() - look_start_time < look_time:
+        looks+=1
         try:
             #calculate a random roi this search try, grab image
             left = 238
@@ -285,8 +304,12 @@ def find_donate_buttons(vm_index, only_free_donates):
             bottom = 475
             t = random.randint(top, bottom)
             width = right - left
-            region = [left, t, width, 100]
+            region = [left, t, width, 100] # [x,y,w,h]
             roi_image = crop_image(base_image, region)
+
+            #pixel check to see if region even has green
+            if region_contains_donate_button(base_image,region) is False:
+                continue
 
             #find one donate button in the roi image
             coord = find_donate_button(roi_image)
@@ -317,7 +340,8 @@ def find_donate_buttons(vm_index, only_free_donates):
 
     # time taken printout
     time_taken = str(time.time() - start_time)[:5]
-    print(f"Finished find_donate_buttons() in {time_taken}s")
+    # print(f"Finished find_donate_buttons() in {time_taken}s")
+    # print(f"Found {len(coords)} donate buttons in {looks} looks")
 
     return coords
 
