@@ -135,7 +135,6 @@ battle_stats_values = [
     [
         stat_box("trophy_road_1v1_fights"),
     ],
-    [stat_box("queens_journey_fights")],
     [
         stat_box("2v2_fights"),
     ],

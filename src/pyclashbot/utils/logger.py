@@ -108,7 +108,6 @@ class Logger:
         self._1v1_fights = 0
         self._2v2_fights = 0
         self.trophy_road_1v1_fights = 0
-        self.queens_journey_fights = 0
         self.path_of_legends_1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
@@ -166,7 +165,6 @@ class Logger:
                 "wins": self.wins,
                 "losses": self.losses,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
-                "queens_journey_fights": self.queens_journey_fights,
                 "path_of_legends_1v1_fights": self.path_of_legends_1v1_fights,
                 "2v2_fights": self._2v2_fights,
                 "war_fights": self.war_fights,
@@ -287,8 +285,7 @@ class Logger:
     def increment_magic_item_buys(self):
         self.magic_item_buys += 1
 
-    def increment_queens_journey_fights(self):
-        self.queens_journey_fights += 1
+
 
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1
@@ -302,7 +299,6 @@ class Logger:
     def pick_lowest_fight_type_count(self, mode2toggle):
         _2v2_fights = self._2v2_fights
         trophy_road_1v1_fights = self.trophy_road_1v1_fights
-        queens_journey_fights = self.queens_journey_fights
         path_of_legends_1v1_fights = self.path_of_legends_1v1_fights
 
         mode2count = {}
@@ -311,8 +307,6 @@ class Logger:
             mode2count["2v2"] = _2v2_fights
         if mode2toggle["trophy_road"]:
             mode2count["trophy_road"] = trophy_road_1v1_fights
-        if mode2toggle["queens_journey"]:
-            mode2count["queens_journey"] = queens_journey_fights
         if mode2toggle["path_of_legends"]:
             mode2count["path_of_legends"] = path_of_legends_1v1_fights
 
