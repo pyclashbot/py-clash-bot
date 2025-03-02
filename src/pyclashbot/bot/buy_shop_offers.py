@@ -15,8 +15,8 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import (
     click,
-    screenshot,scroll_up_in_shop_page,
-    scroll_down_slowly_in_shop_page,
+    screenshot,scroll_all_the_way_in_shop_page,
+    scroll_slowly_in_shop_page,
 )
 from pyclashbot.utils.logger import Logger
 
@@ -42,6 +42,7 @@ def buy_shop_offers_state(
         )
         return "restart"
 
+    #run the main buying function
     if (
         buy_shop_offers_main(
             vm_index,
@@ -77,7 +78,7 @@ def buy_shop_offers_main(
         return False
 
     #scroll all the way to the top
-    scroll_up_in_shop_page(vm_index)
+    scroll_all_the_way_in_shop_page(vm_index,direction='down')
 
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
     purchase_total = 0
@@ -91,7 +92,7 @@ def buy_shop_offers_main(
         # scroll a little
         logger.change_status("Searching for offers to buy")
         print("Time taken in shop: ", str(time.time() - start_time)[:5])
-        scroll_down_slowly_in_shop_page(vm_index)
+        scroll_slowly_in_shop_page(vm_index,direction='up')
         time.sleep(1)
 
         if gold_buy_toggle or free_offers_toggle:
@@ -104,7 +105,6 @@ def buy_shop_offers_main(
             ):
                 purchase_total += 1
                 logger.change_status("Bought an offer from the shop!")
-                time.sleep(2)
                 start_time = time.time()
 
                 # if only free offers are toggled, AND purchase total is 1, then it's done
@@ -192,7 +192,6 @@ def buy_offers_from_this_shop_page(
     click(vm_index, 200, 433)
     click(vm_index, 204, 394)
     logger.add_shop_offer_collection()
-    time.sleep(2)
 
     # click deadspace to close this offer
     while not check_if_on_shop_page(vm_index):
@@ -239,4 +238,9 @@ def shop_buy_tester():
 
 
 if __name__ == "__main__":
-    shop_buy_tester()
+    buy_shop_offers_main(
+    0,
+    Logger(None,None),
+    True,
+    True,
+)
