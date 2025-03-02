@@ -103,7 +103,10 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
     print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # run donate cards main
-    if donate_cards_main(vm_index, logger,only_free_donates=free_donate_toggle) is False:
+    if (
+        donate_cards_main(vm_index, logger, only_free_donates=free_donate_toggle)
+        is False
+    ):
         logger.log("Failure donating cards. Returning false")
         return "restart"
 
@@ -177,7 +180,7 @@ def donate_state_check_if_in_a_clan(
     return in_a_clan
 
 
-def donate_cards_main(vm_index, logger: Logger,only_free_donates:bool) -> bool:
+def donate_cards_main(vm_index, logger: Logger, only_free_donates: bool) -> bool:
     # get to clan chat page
     logger.change_status("Getting to clan tab to donate cards")
     if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
@@ -198,7 +201,7 @@ def donate_cards_main(vm_index, logger: Logger,only_free_donates:bool) -> bool:
                 logger.log("Claim button found. Claiming free gift from clan mate.")
                 click(vm_index, *claim_button_coord)
                 time.sleep(3)
-            while find_and_click_donates(vm_index, logger,only_free_donates) is True:
+            while find_and_click_donates(vm_index, logger, only_free_donates) is True:
                 logger.change_status("Found a donate button")
                 loops += 1
                 if loops > 50:
@@ -269,35 +272,37 @@ def find_donate_buttons(vm_index, only_free_donates):
     start_time = time.time()
     coords = []
 
-    look_time = 3#s
+    look_time = 3  # s
 
     look_start_time = time.time()
+    base_image = screenshot(vm_index)
     while time.time() - look_start_time < look_time:
         try:
+            #calculate a random roi this search try, grab image
             left = 238
             right = 375
             top = 80
             bottom = 475
-
-            image = screenshot(vm_index)
-
             t = random.randint(top, bottom)
             width = right - left
             region = [left, t, width, 100]
+            roi_image = crop_image(base_image, region)
 
-            image = crop_image(image, region)
-
-            #grab coord within ROI
-            coord = (
-                find_donate_button_for_free(image, vm_index, region)
-                if only_free_donates
-                else find_donate_button(image)
-            )
-
+            #find one donate button in the roi image
+            coord = find_donate_button(roi_image)
             if coord is None:
                 continue
 
-            #convert ROI coord to usable coord
+            #if only_free_donates is enabled, assure free_button_exists
+            if (
+                only_free_donates
+                and coord is not None
+                and not free_button_exists(vm_index, coord, region)
+            ):
+                #if not free_button_exists retry
+                continue
+
+            # convert ROI coord to usable coord
             coord = [coord[0] + region[0], coord[1] + region[1]]
 
             # adjust coord to make it more central to the icon
@@ -307,46 +312,38 @@ def find_donate_buttons(vm_index, only_free_donates):
         except:
             pass
 
-    #remove dupes from coords list
+    # remove dupes from coords list
     coords = condense_coordinates(coords, distance_threshold=15)
 
-    #time taken printout
+    # time taken printout
     time_taken = str(time.time() - start_time)[:5]
     print(f"Finished find_donate_buttons() in {time_taken}s")
 
     return coords
 
 
-def find_donate_button_for_free(image, vm_index, region):
+def free_button_exists(vm_index, coord, region):
     """Method to find the donate icon for FREE in a cropped image"""
-    coord = find_donate_button(image)  # [y,x]
-    # print(f"x: {coord[1] + region[0]}, y: {coord[0] + region[1]}")
-    if coord != None:
-        # print("found donate button, checking if it's free")
-        x = coord[1] + region[0]
-        y = coord[0] + region[1]
-        # print(f"left: {x-200} right: {x-80} top:{y-30}, bottom: {y+30}")
-        free_region = [x - 200, y - 30, 120, 60]
-        free_image = screenshot(vm_index)
-        free_image = crop_image(free_image, free_region)
+    # grab ROI image
+    x = coord[1] + region[0]
+    y = coord[0] + region[1]
+    roi_region = [x - 200, y - 30, 120, 60]
+    roi_image = screenshot(vm_index)
+    roi_image = crop_image(roi_image, roi_region)
 
-        folder = "free_donate_icon"
+    # find first occurence of free image in ROI image
+    folder = "free_donate_icon"
+    names = make_reference_image_list(get_file_count(folder))
+    locations: list[list[int] | None] = find_references(
+        roi_image,
+        folder,
+        names,
+        tolerance=0.80,
+    )
+    free_coord = get_first_location(locations)
 
-        names = make_reference_image_list(get_file_count(folder))
-
-        locations: list[list[int] | None] = find_references(
-            free_image,
-            folder,
-            names,
-            tolerance=0.88,
-        )
-
-        free_coord = get_first_location(locations)
-
-        if free_coord is None:
-            return None
-        return [coord[1], coord[0]]
-    return None
+    # return first coord else None
+    return [coord[1], coord[0]] if free_coord is not None else None
 
 
 def find_donate_button(image):
@@ -359,7 +356,7 @@ def find_donate_button(image):
         image,
         folder,
         names,
-        tolerance=0.88,
+        tolerance=0.80,
     )
 
     coord = get_first_location(locations)
@@ -396,4 +393,7 @@ def check_for_positive_donate_button_coords(vm_index, coord):
 
 
 if __name__ == "__main__":
-    donate_cards_main(1, Logger())
+    coords = find_donate_buttons(0, False)
+    print("\n")
+    for i, coord in enumerate(coords):
+        print(i, coord)
