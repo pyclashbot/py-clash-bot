@@ -323,9 +323,9 @@ def pixel_is_equal(
         bool: are pixels equal
 
     """
-    diff_r = abs(pix1[0] - pix2[0])
-    diff_g = abs(pix1[1] - pix2[1])
-    diff_b = abs(pix1[2] - pix2[2])
+    diff_r = abs(int(pix1[0]) - int(pix2[0]))
+    diff_g = abs(int(pix1[1]) - int(pix2[1]))
+    diff_b = abs(int(pix1[2]) - int(pix2[2]))
     return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
 
