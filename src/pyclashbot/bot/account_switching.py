@@ -54,23 +54,7 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
 
 
 if __name__ == "__main__":
-    vm_index = 12
+    vm_index = 0
     logger = Logger()
 
-    my_list = [
-        "matthew",
-        "PY-CLASHBOT#1",
-        "PY-CLASHBOT#3",
-        "PY-CLASHBOT#4",
-        "PY-CLASHBOT#7",
-        "PY-CLASHBOT#10",
-        "PY-CLASHBOT#11",
-        "PY-CLASHBOT#12",
-    ]
-
-    for i, name in enumerate(my_list):
-        print(f"Switching to name: {name} at index: {i}")
-        switch_accounts(vm_index, logger, i)
-        input(f"Is this {name}?")
-
-    # switch_accounts(vm_index, logger, 4)
+    switch_accounts(vm_index, logger, 1)
