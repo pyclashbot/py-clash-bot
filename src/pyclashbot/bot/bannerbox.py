@@ -52,14 +52,7 @@ def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: s
 
 
 def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
-    logger.change_status("Checking bannerbox rewards availability")
-
-    # Check if the bannerbox icon is yellow (i.e., if there are enough tickets)
-    if not check_if_bannerbox_icon_have_a_star(vm_index):
-        logger.change_status("Not enough tickets for bannerbox rewards.")
-        return True  # There are no tickets, but this is not an error
-
-    logger.change_status("Opening bannerbox rewards...")
+    logger.change_status("Trying to open bannerbox rewards...")
 
     # Open bannerbox button on clash main
     click(
@@ -98,7 +91,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         logger.change_status("Bannerbox not available.")
 
         # click deadspace a bunch, then return
-        click(vm_index, 10, 450, clicks=10, interval=0.33)
+        click(vm_index, 1, 500, clicks=10, interval=0.33)
         return True
 
     logger.change_status("Bannerbox is available! Buying it...")
