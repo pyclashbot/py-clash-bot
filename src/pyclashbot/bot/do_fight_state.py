@@ -236,7 +236,7 @@ def check_if_on_path_of_legends_mode(vm_index):
 
 
 def get_current_fight_mode(vm_index):
-    # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen']
+    # fight_modes = ['trophy_road', 'path_of_legends']
     iar = screenshot(vm_index)
 
     pixels = [
@@ -265,7 +265,6 @@ def get_current_fight_mode(vm_index):
     mode2avgColor = {
         "trophy_road": [95.1, 52.7, 8.5],
         "path_of_legends": [90.5, 25.8, 52.7],
-        "goblin_queen": [15.1, 68.7, 11.9],
     }
 
     diff2mode = {}
@@ -323,7 +322,7 @@ def check_for_change_fight_mode_page(vm_index):
 
 
 def set_fight_mode(vm_index, fight_mode):
-    # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen']
+    # fight_modes = ['trophy_road', 'path_of_legends']
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -336,8 +335,6 @@ def set_fight_mode(vm_index, fight_mode):
     mode2coord = {
         "trophy_road": (194, 288),
         "path_of_legends": (192, 535),
-        "goblin_queen": (199, 403),
-        "queens_journey": (199, 403),
     }
     print(f"Mode is : {fight_mode}")
     coord = mode2coord[fight_mode]
@@ -362,14 +359,14 @@ def set_fight_mode(vm_index, fight_mode):
 
 
 def start_1v1_type_fight(vm_index: int, logger: Logger, mode: str) -> bool:
-    # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen']
+    # fight_modes = ['trophy_road', 'path_of_legends']
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         print("Not on clash main for start_1v1_type_fight()")
         return False
 
-    # verify we're on goblin queen mode
+    # verify we're on the right mode
     if get_current_fight_mode(vm_index) != mode:
         print(
             f"Current {get_current_fight_mode(vm_index)} != {mode}, setting fight mode"
@@ -385,14 +382,12 @@ def start_1v1_type_fight(vm_index: int, logger: Logger, mode: str) -> bool:
 
 
 def start_fight(vm_index, logger, mode) -> bool:
-    # fight_modes = ['trophy_road', 'path_of_legends', 'goblin_queen','2v2']
+    # fight_modes = ['trophy_road', 'path_of_legends', '2v2']
     def increment_fight_mode_count(logger, mode):
         if mode == "trophy_road":
             logger.increment_trophy_road_fights()
         elif mode == "path_of_legends":
             logger.increment_path_of_legends_fights()
-        elif mode == "queens_journey":
-            logger.increment_queens_journey_fights()
         elif mode == "2v2":
             logger.increment_2v2_fights()
 
@@ -520,7 +515,7 @@ def click_quickmatch_button(vm_index) -> None:
     click(vm_index, QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
 
 
-def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
+def emote_in_2v2(vm_index, logger: Logger):
     """Method to do an emote in a 2v2 match"""
     logger.change_status("Hitting an emote")
 
@@ -531,7 +526,6 @@ def emote_in_2v2(vm_index, logger: Logger) -> Literal["good"]:
     emote_coord = random.choice(EMOTES_COORDS_IN_2V2)
     click(vm_index, emote_coord[0], emote_coord[1])
 
-    return "good"
 
 
 def mag_dump(vm_index, logger):
@@ -1064,7 +1058,7 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 
         mag_dump(vm_index, logger)
 
-        # emote sometimes to do daily challenge (jk its to be funny and annoy ur teammate)
+        # emote sometimes to do daily challenge
         if time.time() - start_time > 30 and random.randint(0, 10) == 1:
             emote_in_2v2(vm_index, logger)
 

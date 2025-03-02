@@ -54,13 +54,7 @@ battle_tab = (
             default_value=False,
         ),
     ],
-    [
-        job_check_box(
-            "Goblin Queen battles",
-            "goblin_queens_journey_1v1_battle_user_toggle",
-            default_value=False,
-        ),
-    ],
+
     [
         job_check_box(
             "Path of Legends battles",
