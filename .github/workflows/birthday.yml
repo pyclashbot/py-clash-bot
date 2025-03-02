@@ -1,0 +1,23 @@
+name: Happy Birthday!
+
+on:
+  schedule:
+    - cron: "0 16 8 5 *" # May 8th, 12:00 PM ET
+
+jobs:
+  send-discord-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calculate Age and Send Discord Message
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.ANNOUNCEMENTS_DISCORD_WEBHOOK }}
+        run: |
+          START_YEAR=2022
+          CURRENT_YEAR=$(date -u +"%Y")
+          AGE=$((CURRENT_YEAR - START_YEAR))
+          MESSAGE="🎉 Happy Birthday to py-clash-bot, it is now ${AGE} years old! 🥳🎂"
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\": \"$MESSAGE\"}" \
+               $DISCORD_WEBHOOK
