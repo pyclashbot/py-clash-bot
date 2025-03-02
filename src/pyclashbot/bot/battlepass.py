@@ -13,6 +13,8 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import click, screenshot, scroll_up_a_little
 
+from pyclashbot.utils.logger import Logger
+
 
 def collect_battlepass_state(vm_index, logger, next_state):
     if not check_if_on_clash_main_menu(vm_index=vm_index):
@@ -34,16 +36,6 @@ def collect_battlepass_state(vm_index, logger, next_state):
         return "restart"
 
     return next_state
-
-
-def check_for_battlepass_reward_icon_with_delay(vm_index, delay=5):
-    start_time = time.time()
-    while time.time() - start_time < delay:
-        if check_for_battlepass_reward_icon(vm_index):
-            return True
-        time.sleep(1)
-
-    return False
 
 
 def check_for_battlepass_reward_icon(vm_index):
@@ -93,20 +85,12 @@ def check_if_on_battlepass_page(vm_index):
 def collect_battlepass(vm_index, logger) -> bool:
     logger.change_status("Collecting battlepass rewards...")
 
-    # if not on main to begin, return False
-    if check_if_on_clash_main_menu(vm_index) is not True:
-        logger.change_status(
-            "Not on clash main to being battlepass collection. returning False",
-        )
-        return False
-    print("On clash main for battlepass collection")
-
-    if not check_for_battlepass_reward_icon_with_delay(vm_index):
+    if not check_for_battlepass_reward_icon(vm_index):
         logger.change_status("No battlepass rewards to collect")
         return True
 
     # while rewards exist:
-    while check_for_battlepass_reward_icon_with_delay(vm_index) is True:
+    while check_for_battlepass_reward_icon(vm_index) is True:
         if collect_1_battlepass_reward(vm_index, logger) is True:
             logger.change_status("Successfully collected a battlepass reward")
         else:
@@ -171,7 +155,13 @@ def collect_1_battlepass_reward(vm_index, logger):
 
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
-        click(vm_index, claim_rewards_coord[0], claim_rewards_coord[1],clicks = 3,interval = 0.5)
+        click(
+            vm_index,
+            claim_rewards_coord[0],
+            claim_rewards_coord[1],
+            clicks=3,
+            interval=0.5,
+        )
         time.sleep(3)
 
         # click deadspace until back to battlepass page + a little extra ;)
@@ -179,8 +169,7 @@ def collect_1_battlepass_reward(vm_index, logger):
         while not check_if_on_battlepass_page(vm_index):
             logger.log("Skipping thru this battlepass reward")
             click(vm_index, 404, 33)
-        click(vm_index, 404, 33,clicks = 5,interval = 0.5)
-
+        click(vm_index, 404, 33, clicks=5, interval=0.5)
 
         logger.log("Collected 1 battlepass reward")
         logger.increment_battlepass_collects()
@@ -227,4 +216,10 @@ def find_claim_battlepass_rewards_button(vm_index):
 
 
 if __name__ == "__main__":
-    pass
+    vm_index = 0
+    logger = Logger(None, None)
+
+    # print(collect_battlepass_state(vm_index, logger, "next_state"))
+
+
+    print(check_for_battlepass_reward_icon(vm_index))
