@@ -15,7 +15,7 @@ jobs:
           START_YEAR=2022
           CURRENT_YEAR=$(date -u +"%Y")
           AGE=$((CURRENT_YEAR - START_YEAR))
-          MESSAGE="🎉 Happy Birthday to py-clash-bot, it is now ${AGE} years old! 🥳🎂"
+          MESSAGE="🎉✨ Today is my birthday! I’m officially ${AGE} years old! 🎂🥳 Thank you for being part of my journey! 💖🎈"
 
           curl -H "Content-Type: application/json" \
                -X POST \
