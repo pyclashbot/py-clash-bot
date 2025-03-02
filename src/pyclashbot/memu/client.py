@@ -106,25 +106,33 @@ def scroll_down_fast_on_left_side_of_screen(vm_index):
     send_swipe(vm_index, 66, 400, 66, 300)
 
 
-def scroll_down_slowly_in_shop_page(vm_index):
+def scroll_slowly_in_shop_page(vm_index,direction):
     """Method for scrolling down even faster when interacting with a
     scrollable menu using the left side of the screen
     """
-    send_swipe(vm_index, 66, 400, 66, 200)
+    if direction == 'down':
+        send_swipe(vm_index, 66, 400, 66, 200)
+    else:
+        send_swipe(vm_index, 66, 200, 66, 400)
 
     # click deadspace to stop the scroll
     click(vm_index, 10, 200)
 
 
-def scroll_up_in_shop_page(vm_index):
+def scroll_all_the_way_in_shop_page(vm_index,direction):
     """Method for scrolling down even faster when interacting with a
     scrollable menu using the left side of the screen
     """
-    for _ in range(4):
-        send_swipe(vm_index, 66, 60, 66, 600)
+    for _ in range(13):
+        if direction == 'up' :
+            print(f'scrolling all the way up in shop page')
+            send_swipe(vm_index, 66, 60, 66, 400)
+        else:
+            print(f'scrolling all the way down in shop page')
+            send_swipe(vm_index, 66, 400, 66, 60)
 
     # click deadspace to stop the scroll
-    click(vm_index, 10, 200)
+
 
 
 def send_swipe(
@@ -258,4 +266,5 @@ def test_screenshot(vm_index):
 
 
 if __name__ == "__main__":
-    test_screenshot(1)
+    scroll_all_the_way_in_shop_page(0,'up')
+    scroll_all_the_way_in_shop_page(0,'down')
