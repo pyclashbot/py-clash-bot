@@ -254,9 +254,9 @@ def get_current_fight_mode(vm_index):
     # get the average of pixels
     avg_color = [0, 0, 0]
     for p in pixels:
-        avg_color[0] += p[0]
-        avg_color[1] += p[1]
-        avg_color[2] += p[2]
+        avg_color[0] += int(p[0])
+        avg_color[1] += int(p[1])
+        avg_color[2] += int(p[2])
 
     avg_color[0] = avg_color[0] / len(pixels)
     avg_color[1] = avg_color[1] / len(pixels)
@@ -333,12 +333,11 @@ def set_fight_mode(vm_index, fight_mode):
     time.sleep(2)
 
     mode2coord = {
-        "trophy_road": (194, 288),
-        "path_of_legends": (192, 535),
+        "trophy_road": (200,400),
+        "path_of_legends": (200,550),
     }
-    print(f"Mode is : {fight_mode}")
     coord = mode2coord[fight_mode]
-    print(f"Coord is : {coord}")
+    print(f'This mode {fight_mode} has coord at {coord}')
 
     # click the type of fight
     click(vm_index, coord[0], coord[1])
@@ -377,7 +376,7 @@ def start_1v1_type_fight(vm_index: int, logger: Logger, mode: str) -> bool:
             logger.increment_trophy_road_fights()
 
     # click start button
-    click(vm_index, 117, 376)
+    click(vm_index, 200,400)
     return True
 
 
@@ -1133,4 +1132,5 @@ def fight_image_save_debug(vm_index, fights=2):
 
 
 if __name__ == "__main__":
-    pass
+    # fight_modes = ['trophy_road', 'path_of_legends']
+    start_1v1_type_fight(0, Logger(None,None), 'trophy_road')
