@@ -9,7 +9,7 @@ import time
 from os.path import join
 
 import psutil
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from pyclashbot.bot.nav import check_if_in_battle_at_start, check_if_on_clash_main_menu
 from pyclashbot.memu.client import click, screenshot

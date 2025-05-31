@@ -6,8 +6,8 @@ import random
 import sys
 import webbrowser
 
-import PySimpleGUI as sg
-from PySimpleGUI import Window
+import FreeSimpleGUI as sg
+from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
