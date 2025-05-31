@@ -1,6 +1,6 @@
 import sys
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from pyclashbot.interface.theme import THEME
 

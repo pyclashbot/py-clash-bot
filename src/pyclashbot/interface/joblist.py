@@ -1,6 +1,6 @@
-"""pysimplegui layout for the joblist window."""
+"""FreeSimpleGUI layout for the joblist window."""
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from pyclashbot.interface.theme import THEME
 
@@ -8,7 +8,7 @@ sg.theme(THEME)
 
 
 def no_jobs_popup() -> None:
-    """Pysimplegui to popup when no jobs are selected."""
+    """FreeSimpleGUI to popup when no jobs are selected."""
     # Define the layout of the GUI
     layout = [
         [

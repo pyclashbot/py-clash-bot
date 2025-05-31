@@ -1,10 +1,10 @@
-"""This module defines the layout of the PyClashBot interface using PySimpleGUI.
+"""This module defines the layout of the PyClashBot interface using FreeSimpleGUI.
 """
 
 from os import path
 
-import PySimpleGUI as sg
-from PySimpleGUI import Window
+import FreeSimpleGUI as sg
+from FreeSimpleGUI import Window
 
 from pyclashbot.interface.joblist import jobs_checklist
 from pyclashbot.interface.stats import (
