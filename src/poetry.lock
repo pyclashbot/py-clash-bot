@@ -2667,16 +2667,16 @@ files = [
 ]
 
 [[package]]
-name = "pysimplegui"
-version = "5.0.0.16"
-description = "PySimpleGUI is now located on a private PyPI server.  Please add to your pip command: -i https://PySimpleGUI.net/install"
+name = "freesimplegui"
+version = "5.2.0.post1"
+description = "The free-forever Python GUI framework."
 optional = false
-python-versions = ">=3.6"
+python-versions = "*"
 groups = ["main"]
 markers = "platform_machine == \"aarch64\" or platform_machine == \"armv7l\" or platform_machine == \"i686\" or platform_machine == \"ppc64le\" or platform_machine == \"s390x\" or platform_machine == \"x86_64\" or sys_platform != \"linux\" or platform_machine != \"aarch64\" and platform_machine != \"armv7l\" and platform_machine != \"i686\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and platform_machine != \"x86_64\""
 files = [
-    {file = "pysimplegui-5.0.0.16-py3-none-any.whl", hash = "sha256:90850f182899da92fc2900624c463fecc616a38446e5de68282d79ded0646ec6"},
-    {file = "pysimplegui-5.0.0.16.tar.gz", hash = "sha256:912e86985839ef554a3b63368877dfeb8ea708aff11abd60cedd1ed8398bf3a3"},
+    {file = "freesimplegui-5.2.0.post1-py3-none-any.whl", hash = "sha256:3d61eb519324503232f86b2f1bd7f5c6813ce225f6e189d0fd737ddb036af4d5"},
+    {file = "freesimplegui-5.2.0.post1.tar.gz", hash = "sha256:e58a0e6758e9a9e87152256911f94fcc3998356d1309973a9f4d9df2dc55f98a"},
 ]
 
 [[package]]
@@ -3514,4 +3514,4 @@ test = ["websockets"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12.0,<3.13"
-content-hash = "64a291f293d8abdecd07ef11e43b5690b7ede0487aff23660d740b2ab9ce0327"
+content-hash = "a7649c1974929462fa7d2fd3ee16bcf36ffcad843d48a165cd66eb507c7f4dc6"
