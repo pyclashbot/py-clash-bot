@@ -31,8 +31,7 @@ def make_reference_image_list(size):
     # Method to make a reference array of a given size
     reference_image_list = []
 
-    for index in range(size):
-        index += 1
+    for index in range(1,size+1):
         image_name: str = f"{index}.png"
         reference_image_list.append(image_name)
 
