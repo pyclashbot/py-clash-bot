@@ -238,9 +238,4 @@ def shop_buy_tester():
 
 
 if __name__ == "__main__":
-    buy_shop_offers_main(
-    0,
-    Logger(None,None),
-    True,
-    True,
-)
+    pass

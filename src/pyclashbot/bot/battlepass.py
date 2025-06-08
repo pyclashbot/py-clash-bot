@@ -216,10 +216,4 @@ def find_claim_battlepass_rewards_button(vm_index):
 
 
 if __name__ == "__main__":
-    vm_index = 0
-    logger = Logger(None, None)
-
-    # print(collect_battlepass_state(vm_index, logger, "next_state"))
-
-
-    print(check_for_battlepass_reward_icon(vm_index))
+    pass
