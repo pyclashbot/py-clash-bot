@@ -892,6 +892,19 @@ files = [
 ]
 
 [[package]]
+name = "freesimplegui"
+version = "5.2.0.post1"
+description = "The free-forever Python GUI framework."
+optional = false
+python-versions = "*"
+groups = ["main"]
+markers = "platform_machine == \"aarch64\" or platform_machine == \"armv7l\" or platform_machine == \"i686\" or platform_machine == \"ppc64le\" or platform_machine == \"s390x\" or platform_machine == \"x86_64\" or sys_platform != \"linux\" or platform_machine != \"aarch64\" and platform_machine != \"armv7l\" and platform_machine != \"i686\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and platform_machine != \"x86_64\""
+files = [
+    {file = "freesimplegui-5.2.0.post1-py3-none-any.whl", hash = "sha256:3d61eb519324503232f86b2f1bd7f5c6813ce225f6e189d0fd737ddb036af4d5"},
+    {file = "freesimplegui-5.2.0.post1.tar.gz", hash = "sha256:e58a0e6758e9a9e87152256911f94fcc3998356d1309973a9f4d9df2dc55f98a"},
+]
+
+[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -2667,19 +2680,6 @@ files = [
 ]
 
 [[package]]
-name = "freesimplegui"
-version = "5.2.0.post1"
-description = "The free-forever Python GUI framework."
-optional = false
-python-versions = "*"
-groups = ["main"]
-markers = "platform_machine == \"aarch64\" or platform_machine == \"armv7l\" or platform_machine == \"i686\" or platform_machine == \"ppc64le\" or platform_machine == \"s390x\" or platform_machine == \"x86_64\" or sys_platform != \"linux\" or platform_machine != \"aarch64\" and platform_machine != \"armv7l\" and platform_machine != \"i686\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and platform_machine != \"x86_64\""
-files = [
-    {file = "freesimplegui-5.2.0.post1-py3-none-any.whl", hash = "sha256:3d61eb519324503232f86b2f1bd7f5c6813ce225f6e189d0fd737ddb036af4d5"},
-    {file = "freesimplegui-5.2.0.post1.tar.gz", hash = "sha256:e58a0e6758e9a9e87152256911f94fcc3998356d1309973a9f4d9df2dc55f98a"},
-]
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
@@ -3398,15 +3398,15 @@ dev = ["flake8", "flake8-annotations", "flake8-bandit", "flake8-bugbear", "flake
 
 [[package]]
 name = "urllib3"
-version = "2.2.2"
+version = "2.5.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main", "dev"]
 markers = "platform_machine == \"aarch64\" or platform_machine == \"armv7l\" or platform_machine == \"i686\" or platform_machine == \"ppc64le\" or platform_machine == \"s390x\" or platform_machine == \"x86_64\" or sys_platform != \"linux\" or platform_machine != \"aarch64\" and platform_machine != \"armv7l\" and platform_machine != \"i686\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and platform_machine != \"x86_64\""
 files = [
-    {file = "urllib3-2.2.2-py3-none-any.whl", hash = "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472"},
-    {file = "urllib3-2.2.2.tar.gz", hash = "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"},
+    {file = "urllib3-2.5.0-py3-none-any.whl", hash = "sha256:e6b01673c0fa6a13e374b50871808eb3bf7046c4b125b216f6bf1cc604cff0dc"},
+    {file = "urllib3-2.5.0.tar.gz", hash = "sha256:3fc47733c7e419d4bc3f6b3dc2b4f890bb743906a30d56ba4a5bfa4bbff92760"},
 ]
 
 [package.extras]
