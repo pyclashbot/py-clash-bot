@@ -43,7 +43,7 @@ def check_if_rewards_collected(vm_index) -> bool:
 
     # If all pixels match, the checkmark is present
     return True
-    
+
 def collect_challenge_rewards(vm_index, logger: Logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
     if not check_if_on_clash_main_menu(vm_index):
@@ -75,11 +75,11 @@ def collect_challenge_rewards(vm_index, logger: Logger, rewards) -> bool:
             # Close reward confirmation pop-ups
             if i < 2:  # For first two rewards
                 click(vm_index, 10, 450, clicks=10, interval=1)
-                # Reopen the rewards menu only if necessary	
+                # Reopen the rewards menu only if necessary
                 if i < len(rewards) - 1 and rewards[i + 1]:
                     click(vm_index, 41, 206)
                     time.sleep(2)
-            else:  # For the "lucky drop" reward	
+            else:  # For the "lucky drop" reward
                 click(vm_index, 15, 450, clicks=15, interval=0.33)
                 time.sleep(2)
 
@@ -163,8 +163,8 @@ def collect_all_daily_rewards(vm_index, logger) -> bool:
     if not any(rewards):
         logger.change_status("No daily rewards available to collect")
         return True
-        
-        
+
+
     rewardspage = check_rewards_menu_pixels(vm_index)
 
     if not any(rewardspage):
@@ -195,10 +195,10 @@ def check_which_rewards_are_available(vm_index, logger):
 
     # check which rewards are available
     rewards = check_rewards_menu_pixels(vm_index)
-    
 
-    
-    
+
+
+
     time.sleep(2)
 
 
