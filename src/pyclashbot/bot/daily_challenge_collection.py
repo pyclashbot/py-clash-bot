@@ -7,7 +7,9 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.logger import Logger
 from pyclashbot.memu.client import click, screenshot
 
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+CLASH_MAIN_DEADSPACE_COORD = (240, 600)
+CLASH_MAIN_DEADSPACE_COLOR = [255, 175, 78]
+
 
 
 def collect_daily_rewards_state(vm_index, logger, next_state):
@@ -41,8 +43,8 @@ def check_if_rewards_collected(vm_index) -> bool:
 
     # If all pixels match, the checkmark is present
     return True
-
-def collect_challenge_rewards(vm_index, logger:Logger, rewards) -> bool:
+    
+def collect_challenge_rewards(vm_index, logger: Logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
@@ -56,7 +58,7 @@ def collect_challenge_rewards(vm_index, logger:Logger, rewards) -> bool:
 
     # Collect rewards
     # Click positions to collect the rewards
-    reward_positions = [(114, 235), (210, 235), (308, 235)]
+    reward_positions = [(209, 310), (209, 427), (209, 540)]
     reward_messages = [
         "Collected 1st daily challenge reward",
         "Collected 2nd daily challenge reward",
@@ -71,14 +73,31 @@ def collect_challenge_rewards(vm_index, logger:Logger, rewards) -> bool:
             time.sleep(1)
 
             # Close reward confirmation pop-ups
-            if i < 2:  # For the first two rewards
-                click(vm_index, 10, 450, clicks=5, interval=1)
-                # Reopen the rewards menu only if necessary
+            if i < 2:  # For first two rewards
+                click(vm_index, 10, 450, clicks=10, interval=1)
+                # Reopen the rewards menu only if necessary	
                 if i < len(rewards) - 1 and rewards[i + 1]:
                     click(vm_index, 41, 206)
                     time.sleep(2)
-            else:  # For the "lucky drop" reward
+            else:  # For the "lucky drop" reward	
                 click(vm_index, 15, 450, clicks=15, interval=0.33)
+                time.sleep(2)
+
+    # Return to main menu by clicking close button
+    iar = numpy.asarray(screenshot(vm_index))
+    x, y = CLASH_MAIN_DEADSPACE_COORD
+    expected_color = CLASH_MAIN_DEADSPACE_COLOR
+    actual_color = iar[y][x]
+
+    if pixel_is_equal(actual_color, expected_color, tol=35):
+        logger.change_status("Closing reward menu")
+        click(vm_index, x, y, clicks=1)
+        time.sleep(2)
+    else:
+        logger.change_status(
+            f"close button color mismatch at ({x},{y}) "
+        )
+        return False
 
     if not check_if_on_clash_main_menu(vm_index):
         logger.change_status(
@@ -87,6 +106,7 @@ def collect_challenge_rewards(vm_index, logger:Logger, rewards) -> bool:
         return False
 
     return True
+
 
 
 def check_if_daily_rewards_button_exists(vm_index) -> bool:
@@ -143,6 +163,13 @@ def collect_all_daily_rewards(vm_index, logger) -> bool:
     if not any(rewards):
         logger.change_status("No daily rewards available to collect")
         return True
+        
+        
+    rewardspage = check_rewards_menu_pixels(vm_index)
+
+    if not any(rewardspage):
+        logger.change_status("No daily rewards found")
+        return True
 
     if not collect_challenge_rewards(vm_index, logger, rewards):
         logger.change_status("Failed to collect challenge rewards")
@@ -168,10 +195,30 @@ def check_which_rewards_are_available(vm_index, logger):
 
     # check which rewards are available
     rewards = check_rewards_menu_pixels(vm_index)
+    
 
-    # click deadspace a bunch
-    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1], clicks=3, interval=0.33)
+    
+    
     time.sleep(2)
+
+
+    # Return to main menu by clicking close button
+    iar = numpy.asarray(screenshot(vm_index))
+    x, y = CLASH_MAIN_DEADSPACE_COORD
+    expected_color = CLASH_MAIN_DEADSPACE_COLOR
+    actual_color = iar[y][x]
+
+    if pixel_is_equal(actual_color, expected_color, tol=35):
+        logger.change_status("Closing reward menu")
+        click(vm_index, x, y, clicks=1)
+        time.sleep(2)
+    else:
+        logger.change_status(
+            f"close buttton color mismatch at ({x},{y}) "
+        )
+        return False
+
+
 
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
@@ -189,19 +236,28 @@ def check_which_rewards_are_available(vm_index, logger):
     return rewards
 
 
+
+
+
 def check_rewards_menu_pixels(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
-    pixels = [
-        iar[180][88],  # Position for button 1
-        iar[180][186],  # Position for button 2
-        iar[180][280],  # Position for button 3 (lucky drop)
+
+    pixel_coords = [
+        (200, 323),
+        (200, 465),
+        (200, 544),
     ]
 
-    expected_color = [65, 209, 49]
+    expected_color = [44, 188, 255]
+    rewards_available = []
 
-    rewards_available = [
-        pixel_is_equal(pixel, expected_color, tol=35) for pixel in pixels
-    ]
+
+    for i, (x, y) in enumerate(pixel_coords):
+        actual_color = iar[y][x]
+        match = pixel_is_equal(actual_color, expected_color, tol=35)
+        rewards_available.append(match)
+
+
     return rewards_available
 
 
