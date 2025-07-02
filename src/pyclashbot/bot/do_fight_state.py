@@ -376,7 +376,7 @@ def start_1v1_type_fight(vm_index: int, logger: Logger, mode: str) -> bool:
             logger.increment_trophy_road_fights()
 
     # click start button
-    click(vm_index, 200,500)
+    click(vm_index, 203, 487)
     return True
 
 
