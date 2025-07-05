@@ -25,7 +25,7 @@ from pyclashbot.google_play_emulator.gpe import (
 )
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+CLASH_MAIN_DEADSPACE_COORD = (21,418)
 
 
 def find_request_button( logger: Logger):
