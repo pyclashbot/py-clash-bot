@@ -7,7 +7,7 @@ import numpy
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
-    get_to_profile_page,
+    get_to_profile_page,check_if_in_a_clan,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
@@ -21,7 +21,7 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.google_play_emulator.gpe import (
     click,
-    screenshot,
+    screenshot,scroll
 )
 from pyclashbot.utils.logger import Logger
 
@@ -92,7 +92,7 @@ def request_state( logger: Logger, next_state: str) -> str:
     # if logger says we're not in a clan, check if we are in a clan
     if logger.is_in_clan() is False:
         logger.change_status("Checking if in a clan before requesting")
-        in_a_clan_return = request_state_check_if_in_a_clan( logger)
+        in_a_clan_return = check_if_in_a_clan(logger)
         if in_a_clan_return == "restart":
             logger.change_status(
                 status="Error 05708425 Failure with check_if_in_a_clan",
@@ -131,14 +131,17 @@ def request_state( logger: Logger, next_state: str) -> str:
     return next_state
 
 
+
 def do_random_scrolling_in_request_page( logger, scrolls) -> None:
     logger.change_status(status="Doing random scrolling in request page")
     # scroll up to top
     for _ in range(3):
-        scroll_up_on_left_side_of_screen()
+        # scroll_up_on_left_side_of_screen()
+        scroll(44,214,44,473)
 
     for _ in range(scrolls):
-        scroll_down_in_request_page()
+        # scroll_down_in_request_page()
+        scroll(44,314,44,214)
         time.sleep(1)
     logger.change_status(status="Done with random scrolling in request page")
 
@@ -146,7 +149,8 @@ def do_random_scrolling_in_request_page( logger, scrolls) -> None:
 def count_scrolls_in_request_page() -> int:
     # scroll up to top
     for _ in range(3):
-        scroll_up_on_left_side_of_screen()
+        scroll(44,214, 44,473)
+        time.sleep(0.3)
 
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
@@ -154,7 +158,7 @@ def count_scrolls_in_request_page() -> int:
     start_time = time.time()
     while check_if_can_scroll_in_request_page():
         print(f"One scroll down. Count is {scrolls}")
-        scroll_down_in_request_page()
+        scroll(44,314,44,214) #this should match the scroll in do_random_scrolling_in_request_page()
         scrolls += 1
         time.sleep(2)
 
@@ -208,63 +212,6 @@ def check_if_can_scroll_in_request_page() -> bool:
         if not pixel_is_equal(c, pixels[i], tol=10):
             return True
     return False
-
-
-def request_state_check_if_in_a_clan(
-    logger: Logger,
-) -> bool | Literal["restart"]:
-    # if not on clash main, reutnr
-    if check_if_on_clash_main_menu() is not True:
-        logger.change_status(status="ERROR 385462623 Not on clash main menu")
-        return "restart"
-
-    # get to profile page
-    if get_to_profile_page( logger) == "restart":
-        logger.change_status(
-            status="Error 9076092860923485 Failure with get_to_profile_page",
-        )
-        return "restart"
-
-    # check pixels for in a clan
-    in_a_clan = request_state_check_pixels_for_clan_flag()
-
-    # print clan status
-    if not in_a_clan:
-        logger.change_status("Not in a clan, so can't request!")
-
-    # click deadspace to leave
-    click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-    if wait_for_clash_main_menu( logger) is False:
-        logger.change_status(
-            status="Error 87258301758939 Failure with wait_for_clash_main_menu",
-        )
-        return "restart"
-
-    return in_a_clan
-
-
-def request_state_check_pixels_for_clan_flag() -> bool:
-    iar = numpy.asarray(screenshot())  # type: ignore
-
-    pix_list = []
-    for x_coord in range(80, 96):
-        pixel = iar[350][x_coord]
-        pix_list.append(pixel)
-
-    for y_coord in range(345, 360):
-        pixel = iar[y_coord][88]
-        pix_list.append(pixel)
-
-
-
-    #if all the pixels are grey the its not in a clan
-    grey = [51,51,51]
-    grey_count = sum([1 if pixel_is_equal(grey,pixel,tol=1)  else 0 for pixel in pix_list ])
-    grey_ratio = grey_count / len(pix_list)
-    if grey_ratio > 0.75:
-        return False
-
-    return True
 
 
 def click_random_requestable_card() -> bool:
@@ -517,4 +464,5 @@ def check_if_can_request_3():
 
 
 if __name__ == "__main__":
-    pass
+    # do_request(Logger())
+    print(count_scrolls_in_request_page())

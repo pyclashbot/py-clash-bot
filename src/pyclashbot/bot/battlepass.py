@@ -16,14 +16,14 @@ from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
-def collect_battlepass_state( logger, next_state):
+def collect_battlepass_state(logger, next_state):
     if not check_if_on_clash_main_menu():
         logger.change_status(
             "Not on clash main before collecting battlepass, returning restart",
         )
         return "restart"
 
-    if collect_battlepass( logger) is False:
+    if collect_battlepass(logger) is False:
         logger.change_status(
             "Failed somewhere in collect_battlepass(), returning restart",
         )
@@ -39,23 +39,27 @@ def collect_battlepass_state( logger, next_state):
 
 
 def check_for_battlepass_reward_icon():
-    iar = numpy.asarray(screenshot())
+    iar = screenshot()
 
-    pixels = [
-        iar[125][286],
-        iar[126][387],
+    coords = [
+        [346, 113],
+        [346, 118],
+        [358, 116],
+        [349, 122],
+        [350, 117],
+        [357, 117],
+        [352, 115],
+        [354, 119],
+        [348, 121],
     ]
-    colors = [
-        [0, 180, 248],
-        [0, 178, 247],
-    ]
+    red_color = [57, 9, 236]
 
-    for i, p in enumerate(pixels):
+    for coord in coords:
+        pixel = iar[coord[1]][coord[0]]
+        if pixel_is_equal(red_color, pixel, tol=20):
+            return True
 
-        if not pixel_is_equal(colors[i], p, tol=10):
-            return False
-
-    return True
+    return False
 
 
 def check_if_on_battlepass_page():
@@ -82,7 +86,7 @@ def check_if_on_battlepass_page():
     return True
 
 
-def collect_battlepass( logger) -> bool:
+def collect_battlepass(logger) -> bool:
     logger.change_status("Collecting battlepass rewards...")
 
     if not check_for_battlepass_reward_icon():
@@ -91,7 +95,7 @@ def collect_battlepass( logger) -> bool:
 
     # while rewards exist:
     while check_for_battlepass_reward_icon() is True:
-        if collect_1_battlepass_reward( logger) is True:
+        if collect_1_battlepass_reward(logger) is True:
             logger.change_status("Successfully collected a battlepass reward")
         else:
             logger.change_status("Failed to collect a battlepass reward")
@@ -107,11 +111,11 @@ def collect_battlepass( logger) -> bool:
     return True
 
 
-def collect_1_battlepass_reward( logger):
+def collect_1_battlepass_reward(logger):
     logger.change_status("Collecting a battlepass reward")
 
     # open battlepass
-    click( 341, 123)
+    click(341, 123)
     time.sleep(5)
 
     # if there isnt a claim rewards button, click more rewards button
@@ -126,7 +130,7 @@ def collect_1_battlepass_reward( logger):
             logger.change_status(
                 "No claim rewards button, clicking more rewards button",
             )
-            click( 70, 120)
+            click(70, 120)
             time.sleep(3)
             continue
 
@@ -165,14 +169,14 @@ def collect_1_battlepass_reward( logger):
         logger.log("Skipping thru this battlepass reward")
         while not check_if_on_battlepass_page():
             logger.log("Skipping thru this battlepass reward")
-            click( 404, 33)
-        click( 404, 33, clicks=5, interval=0.5)
+            click(404, 33)
+        click(404, 33, clicks=5, interval=0.5)
 
         logger.log("Collected 1 battlepass reward")
         logger.increment_battlepass_collects()
 
         # click the OK button to return to clash main
-        click( 206, 594)
+        click(206, 594)
         time.sleep(3)
 
         return True
@@ -180,7 +184,7 @@ def collect_1_battlepass_reward( logger):
     return False
 
 
-def find_claim_battlepass_rewards_button_with_delay( delay):
+def find_claim_battlepass_rewards_button_with_delay(delay):
     start_time = time.time()
     while time.time() - start_time < delay:
         coord = find_claim_battlepass_rewards_button()

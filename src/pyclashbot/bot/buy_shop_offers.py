@@ -1,6 +1,7 @@
 import time
 
 import numpy
+from pyautogui import scroll
 
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
@@ -14,7 +15,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
 )
 
-from pyclashbot.google_play_emulator.gpe import click,screenshot
+from pyclashbot.google_play_emulator.gpe import click,screenshot,scroll
 from pyclashbot.utils.logger import Logger
 
 SHOP_BUY_TIMEOUT = 35
@@ -58,6 +59,17 @@ def buy_shop_offers_state(
         return "restart"
 
     return next_state
+
+def scroll_all_the_way_in_shop_page(direction):
+    start_coord = (5,100) if direction == 'up' else (5,500)
+    end_coord = (5,500) if direction == 'up' else (5,100)
+    for i in range(20):
+        scroll(*start_coord, *end_coord)
+
+def scroll_slowly_in_shop_page(direction):
+    start_coord = (5,100) if direction == 'up' else (5,500)
+    end_coord = (5,500) if direction == 'up' else (5,100)
+    scroll(*start_coord, *end_coord, duration_ms=1000)
 
 
 def buy_shop_offers_main(
@@ -228,4 +240,13 @@ def shop_buy_tester():
 
 
 if __name__ == "__main__":
-    pass
+    scroll_slowly_in_shop_page('down')
+    time.sleep(3)
+    scroll_slowly_in_shop_page('down')
+    time.sleep(3)
+    scroll_slowly_in_shop_page('down')
+    time.sleep(3)
+    scroll_slowly_in_shop_page('up')
+    time.sleep(3)
+    scroll_slowly_in_shop_page('up')
+    time.sleep(3)

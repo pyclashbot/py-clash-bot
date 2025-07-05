@@ -25,7 +25,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.google_play_emulator.gpe import click, screenshot
+from pyclashbot.google_play_emulator.gpe import click, screenshot,scroll
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS = [
@@ -415,9 +415,9 @@ def find_and_click_war_battle_icon( logger) -> Literal["restart", "good","locked
 
                 # More likely to scroll up than down
                 if action_decision <= 7:  # 70% chance to scroll up
-                    scroll_up()
+                    scroll(215, 300, 215, 400)
                 else:  # 30% chance to scroll down
-                    scroll_down()
+                    scroll(215, 400, 215, 300)
 
                 time.sleep(2)  # Wait a bit before trying again
                 continue
@@ -427,7 +427,7 @@ def find_and_click_war_battle_icon( logger) -> Literal["restart", "good","locked
         click( CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
         time.sleep(2)
         if random.randint(0, 1) == 1:
-            scroll_up()
+            scroll(215, 300, 215, 400)
         time.sleep(2)
 
     logger.change_status(
