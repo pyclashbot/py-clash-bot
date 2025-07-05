@@ -297,13 +297,11 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
             window[key].update(disabled=True)
 
     # close existing memuc processes
-    print("Closing everything memu related...")
-    close_everything_memu()
+    print(f'TODO: add logic to clear google play processes before starting')
 
     # setup the main thread and start it
     print("Starting main thread")
     thread_args = job_dictionary
-    # args: tuple[list[str], int] = (jobs, acc_count)
     thread = WorkerThread(logger, thread_args)
     thread.start()
 

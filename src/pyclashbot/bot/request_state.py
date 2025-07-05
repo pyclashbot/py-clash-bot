@@ -30,12 +30,12 @@ from pyclashbot.utils.logger import Logger
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
-def find_request_button(vm_index, logger: Logger):
+def find_request_button(, logger: Logger):
     """Finds the location of the request button on the screen.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to search for the request button.
+         (int): The index of the virtual machine to search for the request button.
 
     Returns:
     -------
@@ -47,7 +47,7 @@ def find_request_button(vm_index, logger: Logger):
     names = make_reference_image_list(size)
 
     locations = find_references(
-        screenshot(vm_index),
+        screenshot(),
         folder_name,
         names,
         0.7,
@@ -63,13 +63,13 @@ def find_request_button(vm_index, logger: Logger):
     return [coord[1], coord[0]]
 
 
-def request_state(vm_index, logger: Logger, next_state: str) -> str:
+def request_state(, logger: Logger, next_state: str) -> str:
     """The request state of the bot. This state is responsible for checking if the bot is in a clan,
     checking if a request can be made, and making a request if possible.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to run the bot on.
+         (int): The index of the virtual machine to run the bot on.
         logger (Logger): The logger object to log messages to.
         next_state (str): The next state to transition to after this state is complete.
 
@@ -81,7 +81,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.change_status(status="Doing request state!")
 
     # if not on main: return
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    clash_main_check = check_if_on_clash_main_menu()
     if clash_main_check is not True:
         logger.change_status("Not on clash main for the start of request_state()")
         # logger.log(
@@ -94,7 +94,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     # if logger says we're not in a clan, check if we are in a clan
     if logger.is_in_clan() is False:
         logger.change_status("Checking if in a clan before requesting")
-        in_a_clan_return = request_state_check_if_in_a_clan(vm_index, logger)
+        in_a_clan_return = request_state_check_if_in_a_clan(, logger)
         if in_a_clan_return == "restart":
             logger.change_status(
                 status="Error 05708425 Failure with check_if_in_a_clan",
@@ -112,51 +112,51 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
 
     # get to clan page
     logger.change_status("Getting to clan tab to request a card")
-    if get_to_clan_tab_from_clash_main(vm_index, logger) is False:
+    if get_to_clan_tab_from_clash_main(, logger) is False:
         logger.change_status(status="ERROR 74842744443 Not on clan tab")
         return "restart"
 
     # check if request exists
-    if check_if_can_request_wrapper(vm_index):
+    if check_if_can_request_wrapper():
         # do request
-        if not do_request(vm_index, logger):
+        if not do_request(, logger):
             return "restart"
     else:
         logger.change_status(status="Can't request right now.")
 
     # click clash main icon
-    click(vm_index, 178, 593)
+    click(, 178, 593)
 
     # return to clash main
-    wait_for_clash_main_menu(vm_index, logger, deadspace_click=False)
+    wait_for_clash_main_menu(, logger, deadspace_click=False)
 
     return next_state
 
 
-def do_random_scrolling_in_request_page(vm_index, logger, scrolls) -> None:
+def do_random_scrolling_in_request_page(, logger, scrolls) -> None:
     logger.change_status(status="Doing random scrolling in request page")
     # scroll up to top
     for _ in range(3):
-        scroll_up_on_left_side_of_screen(vm_index)
+        scroll_up_on_left_side_of_screen()
 
     for _ in range(scrolls):
-        scroll_down_in_request_page(vm_index)
+        scroll_down_in_request_page()
         time.sleep(1)
     logger.change_status(status="Done with random scrolling in request page")
 
 
-def count_scrolls_in_request_page(vm_index) -> int:
+def count_scrolls_in_request_page() -> int:
     # scroll up to top
     for _ in range(3):
-        scroll_up_on_left_side_of_screen(vm_index)
+        scroll_up_on_left_side_of_screen()
 
     # scroll down, counting each scroll, until can't scroll anymore
     scrolls = 0
     timeout = 60  # s
     start_time = time.time()
-    while check_if_can_scroll_in_request_page(vm_index):
+    while check_if_can_scroll_in_request_page():
         print(f"One scroll down. Count is {scrolls}")
-        scroll_down_in_request_page(vm_index)
+        scroll_down_in_request_page()
         scrolls += 1
         time.sleep(2)
 
@@ -165,18 +165,18 @@ def count_scrolls_in_request_page(vm_index) -> int:
             return 5
 
     # close request screen with deadspace click
-    click(vm_index, 15, 300, clicks=3)
+    click(, 15, 300, clicks=3)
     time.sleep(0.1)
 
     # reopen request page
-    click(vm_index=vm_index, x_coord=77, y_coord=536)
+    click(=, x_coord=77, y_coord=536)
     time.sleep(0.1)
 
     return scrolls
 
 
-def check_if_can_scroll_in_request_page(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))
+def check_if_can_scroll_in_request_page() -> bool:
+    iar = numpy.asarray(screenshot())
     pixels = [
         iar[533][58],
         iar[533][63],
@@ -213,31 +213,31 @@ def check_if_can_scroll_in_request_page(vm_index) -> bool:
 
 
 def request_state_check_if_in_a_clan(
-    vm_index,
+    ,
     logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu() is not True:
         logger.change_status(status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
     # get to profile page
-    if get_to_profile_page(vm_index, logger) == "restart":
+    if get_to_profile_page(, logger) == "restart":
         logger.change_status(
             status="Error 9076092860923485 Failure with get_to_profile_page",
         )
         return "restart"
 
     # check pixels for in a clan
-    in_a_clan = request_state_check_pixels_for_clan_flag(vm_index)
+    in_a_clan = request_state_check_pixels_for_clan_flag()
 
     # print clan status
     if not in_a_clan:
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-    if wait_for_clash_main_menu(vm_index, logger) is False:
+    click(, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    if wait_for_clash_main_menu(, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",
         )
@@ -246,8 +246,8 @@ def request_state_check_if_in_a_clan(
     return in_a_clan
 
 
-def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))  # type: ignore
+def request_state_check_pixels_for_clan_flag() -> bool:
+    iar = numpy.asarray(screenshot())  # type: ignore
 
     pix_list = []
     for x_coord in range(80, 96):
@@ -270,7 +270,7 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
     return True
 
 
-def click_random_requestable_card(vm_index) -> bool:
+def click_random_requestable_card() -> bool:
     def make_coord_list(x_range,y_range):
         coords = []
         for x in range(x_range[0],x_range[1]):
@@ -298,35 +298,35 @@ def click_random_requestable_card(vm_index) -> bool:
         return True
 
     #check pixels in the request card grid region
-    iar = screenshot(vm_index)
+    iar = screenshot()
     for coord in make_coord_list((69,356),(213,557)):
         pixel = iar[coord[1]][coord[0]]
         #if the pixel indicates requestable, click it, return True
         if is_valid_pixel(pixel):
-            click(vm_index,coord[0],coord[1])
+            click(,coord[0],coord[1])
             return True
 
     #fail return
     return False
 
-def do_request(vm_index, logger: Logger) -> bool:
+def do_request(, logger: Logger) -> bool:
     logger.change_status(status="Initiating request process")
 
     # Click the request button
     logger.change_status(status="Clicking the request button")
-    click(vm_index=vm_index, x_coord=77, y_coord=536)
+    click(=, x_coord=77, y_coord=536)
     time.sleep(3)
 
     # Determine the maximum number of scrolls in the request page
     logger.change_status(status="Determining maximum scrolls in the request page")
-    max_scrolls: int = count_scrolls_in_request_page(vm_index=vm_index)
+    max_scrolls: int = count_scrolls_in_request_page(=)
     logger.log(f"Maximum scrolls found in the request page: {max_scrolls}")
     random_scroll_amount: int = random.randint(a=0, b=max_scrolls)
     logger.log(f"Scrolling {random_scroll_amount} times in the request page")
 
     # Perform random scrolling in the request page
     do_random_scrolling_in_request_page(
-        vm_index=vm_index,
+        =,
         logger=logger,
         scrolls=random_scroll_amount,
     )
@@ -354,7 +354,7 @@ def do_request(vm_index, logger: Logger) -> bool:
 
         click_try_limit = 10
         click_tries = 0
-        while click_random_requestable_card(vm_index) is False:
+        while click_random_requestable_card() is False:
             print('Failed to click an upgradable card.')
             click_tries += 1
             if click_tries>click_try_limit:
@@ -365,12 +365,12 @@ def do_request(vm_index, logger: Logger) -> bool:
         time.sleep(3)
 
         # Attempt to find the request button
-        coord = find_request_button(vm_index, logger)
+        coord = find_request_button(, logger)
         attempt_count += 1
 
     # Click the found request button
     logger.change_status(status="Clicking the request button")
-    click(vm_index, coord[0], coord[1])
+    click(, coord[0], coord[1])
 
     # Update request statistics
     prev_requests = logger.get_requests()
@@ -382,29 +382,29 @@ def do_request(vm_index, logger: Logger) -> bool:
     return True
 
 
-def check_if_can_request_wrapper(vm_index) -> bool:
-    if check_for_epic_sunday_icon_with_delay(vm_index, 3):
+def check_if_can_request_wrapper() -> bool:
+    if check_for_epic_sunday_icon_with_delay(, 3):
         print("Detected epic sunday icon")
         return True
 
-    if check_for_trade_cards_icon(vm_index):
+    if check_for_trade_cards_icon():
         print("Detected trade cards icon")
         return False
 
-    if check_if_can_request_3(vm_index):
+    if check_if_can_request_3():
         return True
 
-    if check_if_can_request(vm_index):
+    if check_if_can_request():
         return True
 
-    if check_if_can_request_2(vm_index):
+    if check_if_can_request_2():
         return True
 
     return False
 
 
-def check_if_can_request(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))
+def check_if_can_request() -> bool:
+    iar = numpy.asarray(screenshot())
 
     region_is_white = True
     for x_index in range(48, 55):
@@ -431,17 +431,17 @@ def check_if_can_request(vm_index) -> bool:
     return False
 
 
-def check_for_epic_sunday_icon_with_delay(vm_index, delay):
+def check_for_epic_sunday_icon_with_delay(, delay):
     start_time = time.time()
     while time.time() - start_time < delay:
-        if check_for_epic_sunday_icon(vm_index):
+        if check_for_epic_sunday_icon():
             return True
         time.sleep(1)
     return False
 
 
-def check_for_epic_sunday_icon(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+def check_for_epic_sunday_icon():
+    iar = numpy.asarray(screenshot())
     pixels = [
         iar[507][43],
         iar[508][120],
@@ -458,24 +458,24 @@ def check_for_epic_sunday_icon(vm_index):
     return True
 
 
-def check_if_can_request_2(vm_index) -> bool:
-    if not check_line_for_color(vm_index, 300, 522, 300, 544, (76, 176, 255)):
+def check_if_can_request_2() -> bool:
+    if not check_line_for_color(, 300, 522, 300, 544, (76, 176, 255)):
         return False
-    if not check_line_for_color(vm_index, 362, 522, 362, 544, (76, 174, 255)):
+    if not check_line_for_color(, 362, 522, 362, 544, (76, 174, 255)):
         return False
-    if not check_line_for_color(vm_index, 106, 537, 106, 545, (255, 188, 42)):
+    if not check_line_for_color(, 106, 537, 106, 545, (255, 188, 42)):
         return False
-    if not check_line_for_color(vm_index, 107, 537, 119, 545, (255, 188, 42)):
+    if not check_line_for_color(, 107, 537, 119, 545, (255, 188, 42)):
         return False
-    if not check_line_for_color(vm_index, 46, 529, 57, 539, (178, 79, 244)):
+    if not check_line_for_color(, 46, 529, 57, 539, (178, 79, 244)):
         return False
-    if not check_line_for_color(vm_index, 50, 540, 54, 527, (176, 79, 244)):
+    if not check_line_for_color(, 50, 540, 54, 527, (176, 79, 244)):
         return False
     return True
 
 
-def check_for_trade_cards_icon(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))
+def check_for_trade_cards_icon() -> bool:
+    iar = numpy.asarray(screenshot())
     pixels = [
         iar[518][38],
         iar[520][42],
@@ -511,10 +511,10 @@ def check_for_trade_cards_icon(vm_index) -> bool:
     return True
 
 
-def check_if_can_request_3(vm_index):
-    if not region_is_color(vm_index, [48, 529, 8, 7], (216, 229, 255)):
+def check_if_can_request_3():
+    if not region_is_color(, [48, 529, 8, 7], (216, 229, 255)):
         return False
-    if not region_is_color(vm_index, [106, 538, 12, 7], (255, 188, 42)):
+    if not region_is_color(, [106, 538, 12, 7], (255, 188, 42)):
         return False
 
     return True

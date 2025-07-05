@@ -13,46 +13,46 @@ from pyclashbot.memu.client import click, screenshot
 from pyclashbot.detection.image_rec import pixels_match_colors
 
 
-def spend_magic_items_state(vm_index:int,logger:Logger,next_state:str)->str:
+def spend_magic_items_state(:int,logger:Logger,next_state:str)->str:
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu():
         return 'restart'
 
-    if spend_magic_items(vm_index, logger) is False:
+    if spend_magic_items(, logger) is False:
         return 'restart'
 
     # return to clash main
     print("Returning to clash main after spending magic items")
-    click(vm_index, 243, 600)
+    click(, 243, 600)
     time.sleep(3)
 
     # wait for main
-    if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
+    if wait_for_clash_main_menu(, logger, deadspace_click=False) is False:
         logger.change_status("Failed to wait for clash main after upgrading cards")
         return 'restart'
 
     return next_state
 
 
-def spend_magic_items(vm_index: int, logger: Logger) -> bool:
+def spend_magic_items(: int, logger: Logger) -> bool:
     logger.change_status("Spending magic item currencies!")
 
     # get to magic items page
     logger.change_status("Getting to magic items page...")
-    if get_to_collections_page(vm_index) is False:
+    if get_to_collections_page() is False:
         logger.change_status("Failed to get to magic items page")
 
     # select magic items tab
     magic_items_tab_coords = (180, 110)
     logger.log("Clicking magic items tab")
-    click(vm_index, *magic_items_tab_coords)
+    click(, *magic_items_tab_coords)
     time.sleep(1)
 
     #spend currency until it doesnt work anymore
     reward_index2name = {0:'common',1:'rare',2:'epic',3:'legendary',}
     for reward_index in [0,1,2,3]:
         logger.change_status(f'Spending magic item type: {reward_index2name[reward_index]}...')
-        while spend_rewards(vm_index, logger,reward_index) is True:
+        while spend_rewards(, logger,reward_index) is True:
             logger.change_status('Successfully spent magic items. Trying again...')
             logger.increment_magic_item_buys()
         logger.change_status(f'No more magic item type: {reward_index2name[reward_index]} to spend')
@@ -61,59 +61,59 @@ def spend_magic_items(vm_index: int, logger: Logger) -> bool:
     return True
 
 
-def exit_spend_reward_popup(vm_index) -> bool:
+def exit_spend_reward_popup() -> bool:
     deadspace = (395, 350)
     start_time = time.time()
     timeout = 30  # s
-    while not check_if_on_collection_page(vm_index):
+    while not check_if_on_collection_page():
         if time.time() - start_time > timeout:
 
             return False
 
-        click(vm_index, *deadspace)
+        click(, *deadspace)
         time.sleep(1)
 
     return True
 
-def spend_rewards(vm_index, logger,reward_index) -> bool:
+def spend_rewards(, logger,reward_index) -> bool:
     logger.change_status("Trying to spend the first reward...")
 
     reward_index2coord = {0:(100,300),1:(200,300),2:(300,300),3:(100,400),}
-    click(vm_index, *reward_index2coord[reward_index])
+    click(, *reward_index2coord[reward_index])
     time.sleep(1)
 
     # if the use button doesn't pop up, that mean's we're out of rewards to spend
-    if not check_for_use_button(vm_index):
+    if not check_for_use_button():
         logger.change_status("No more rewards to spend")
-        exit_spend_reward_popup(vm_index)
+        exit_spend_reward_popup()
         return False
 
     # click the use button
     print("Clicking use currency button")
     use_button_coord = (206, 438)
-    click(vm_index, *use_button_coord)
+    click(, *use_button_coord)
     time.sleep(1)
 
     # click the first card to use it on
     print("Using it on the first card")
     first_card_coord = (80, 200)
-    click(vm_index, *first_card_coord)
+    click(, *first_card_coord)
     time.sleep(1)
 
     # spend the currency
     print("Clicking confirm spend {amount} currency")
     spend_currency_coord = (200, 430)
-    click(vm_index, *spend_currency_coord)
+    click(, *spend_currency_coord)
 
     # click deadspace
     print("Clicking deadspace until we get back to the collection page")
-    exit_spend_reward_popup(vm_index)
+    exit_spend_reward_popup()
 
     return True
 
 
-def check_for_use_button(vm_index) -> bool:
-    iar = screenshot(vm_index)
+def check_for_use_button() -> bool:
+    iar = screenshot()
     pixels = [
         iar[428][188],
         iar[447][198],

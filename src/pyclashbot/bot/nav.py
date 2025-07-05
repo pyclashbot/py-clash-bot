@@ -33,9 +33,9 @@ CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 SHOP_PAGE_BUTTON: tuple[Literal[33], Literal[603]] = (33, 603)
 
 
-def get_to_shop_page_from_clash_main(vm_index, logger) -> bool:
-    click(vm_index, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
-    if wait_for_clash_main_shop_page(vm_index, logger) == "restart":
+def get_to_shop_page_from_clash_main(, logger) -> bool:
+    click(, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
+    if wait_for_clash_main_shop_page(, logger) == "restart":
         logger.change_status(
             status="Error 085708235 Failure waiting for clash main shop page ",
         )
@@ -43,12 +43,12 @@ def get_to_shop_page_from_clash_main(vm_index, logger) -> bool:
     return True
 
 
-def wait_for_2v2_battle_start(vm_index, logger: Logger)  -> bool:
+def wait_for_2v2_battle_start(, logger: Logger)  -> bool:
     """Waits for the 2v2 battle to start.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
         printmode (bool, optional): Whether to print the status. Defaults to False.
 
@@ -66,17 +66,17 @@ def wait_for_2v2_battle_start(vm_index, logger: Logger)  -> bool:
             status=f"Waiting for 2v2 battle to start for {time_taken}s",
         )
 
-        if check_if_in_battle(vm_index) == "2v2":
+        if check_if_in_battle() == "2v2":
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        click(vm_index=vm_index, x_coord=20, y_coord=200)
+        click(=, x_coord=20, y_coord=200)
 
     return False
 
 
 def wait_for_1v1_battle_start(
-    vm_index,
+    ,
     logger: Logger,
     printmode=False,
 )  -> bool:
@@ -84,7 +84,7 @@ def wait_for_1v1_battle_start(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
         printmode (bool, optional): Whether to print the status. Defaults to False.
 
@@ -98,7 +98,7 @@ def wait_for_1v1_battle_start(
         logger.change_status(status="Waiting for 1v1 battle to start")
     else:
         logger.log(message="Waiting for 1v1 battle to start")
-    while check_if_in_battle(vm_index) != "1v1":
+    while check_if_in_battle() != "1v1":
         time_taken: float = time.time() - start_time
         if time_taken > 60:
             logger.change_status(
@@ -106,7 +106,7 @@ def wait_for_1v1_battle_start(
             )
             return False
         print("Waiting for 1v1 start")
-        click(vm_index=vm_index, x_coord=200, y_coord=200)
+        click(=, x_coord=200, y_coord=200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")
@@ -115,12 +115,12 @@ def wait_for_1v1_battle_start(
     return True
 
 
-def check_for_in_battle_with_delay(vm_index) -> bool:
+def check_for_in_battle_with_delay() -> bool:
     """Checks if the virtual machine is in a 2v2 battle with a delay.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -130,24 +130,24 @@ def check_for_in_battle_with_delay(vm_index) -> bool:
     timeout = 3  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_if_in_battle(vm_index) != "None":
+        if check_if_in_battle() != "None":
             return True
     return False
 
 
-def check_if_in_battle(vm_index) -> Literal["2v2"] | Literal["1v1"] | Literal["None"]:
+def check_if_in_battle() -> Literal["2v2"] | Literal["1v1"] | Literal["None"]:
     """Checks if the virtual machine is in a 1v1 or 2v2 battle.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
         str: '2v2' if the battle is in 2v2, '1v1' if the battle is in 1v1, 'None' otherwise.
 
     """
-    iar = screenshot(vm_index)
+    iar = screenshot()
 
     # Pixels to check for any type of battle
     pixels = [
@@ -178,13 +178,13 @@ def check_if_in_battle(vm_index) -> Literal["2v2"] | Literal["1v1"] | Literal["N
     return "None"
 
 
-def check_if_in_battle_at_start(vm_index, logger):
+def check_if_in_battle_at_start(, logger):
     """Checks if the game is currently in a battle at startup and handles it accordingly.
     Also checks if the game is on the end-of-battle screen and returns to the main menu.
 
     Args:
     ----
-        vm_index (int): Index of the virtual machine.
+         (int): Index of the virtual machine.
         logger (Logger): Logger instance for logging messages.
 
     """
@@ -195,11 +195,11 @@ def check_if_in_battle_at_start(vm_index, logger):
         get_to_main_after_fight,
     )
 
-    battle_status = check_if_in_battle(vm_index)
+    battle_status = check_if_in_battle()
     if battle_status == "1v1":
         logger.log("Detected in battle status: 1v1. Engaging in battle.")
         fight_result = do_1v1_fight_state(
-            vm_index,
+            ,
             logger,
             "next_state",
             False,
@@ -208,12 +208,12 @@ def check_if_in_battle_at_start(vm_index, logger):
         )
     elif battle_status == "2v2":
         logger.log("Detected in battle status: 2v2. Engaging in battle.")
-        fight_result = do_2v2_fight_state(vm_index, logger, "next_state", False, True)
+        fight_result = do_2v2_fight_state(, logger, "next_state", False, True)
     else:
         # If not currently in a battle, check if it's the end-of-battle screen
-        if check_end_of_battle_screen(vm_index):
+        if check_end_of_battle_screen():
             logger.log("Detected end of battle screen.")
-            if not get_to_main_after_fight(vm_index, logger):
+            if not get_to_main_after_fight(, logger):
                 logger.log("Failed to return to Clash Main Menu after fight.")
                 return "restart"
             logger.log("Successfully returned to Clash Main Menu after fight.")
@@ -222,7 +222,7 @@ def check_if_in_battle_at_start(vm_index, logger):
 
     # Attempt to return to the main menu after the battle, if a fight was detected
     if fight_result not in ["restart", None]:
-        if not get_to_main_after_fight(vm_index, logger):
+        if not get_to_main_after_fight(, logger):
             logger.log("Failed to return to Clash Main Menu after fight.")
             return "restart"
         logger.log("Successfully returned to Clash Main Menu after fight.")
@@ -231,19 +231,19 @@ def check_if_in_battle_at_start(vm_index, logger):
     return "restart"  # Default case if fight_result is 'restart' or None
 
 
-def check_end_of_battle_screen(vm_index):
+def check_end_of_battle_screen():
     """Checks if the current screen is the end-of-battle screen for either 1v1 or 2v2 battles.
 
     Args:
     ----
-        vm_index (int): Index of the virtual machine.
+         (int): Index of the virtual machine.
 
     Returns:
     -------
         bool: True if on the end-of-battle screen, False otherwise.
 
     """
-    iar = screenshot(vm_index)
+    iar = screenshot()
 
     # Pixels to check for 1v1 battle end screen
     pixels_1v1 = [
@@ -296,7 +296,7 @@ def check_end_of_battle_screen(vm_index):
 
 
 def get_to_clash_main_from_clan_page(
-    vm_index,
+    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
@@ -304,7 +304,7 @@ def get_to_clash_main_from_clan_page(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
         printmode (bool, optional): Whether to print the status. Defaults to False.
 
@@ -325,7 +325,7 @@ def get_to_clash_main_from_clan_page(
     else:
         logger.log(message="Clicking clash main icon")
     click(
-        vm_index,
+        ,
         CLASH_MAIN_COORD_FROM_CLAN_PAGE[0],
         CLASH_MAIN_COORD_FROM_CLAN_PAGE[1],
     )
@@ -335,27 +335,27 @@ def get_to_clash_main_from_clan_page(
         logger.change_status(status="Waiting for clash main")
     else:
         logger.log("Waiting for clash main")
-    if wait_for_clash_main_menu(vm_index, logger) is False:
+    if wait_for_clash_main_menu(, logger) is False:
         logger.change_status(status="Error 3253, failure waiting for clash main")
         return "restart"
     return "good"
 
 
-def open_war_chest_obstruction(vm_index, logger):
+def open_war_chest_obstruction(, logger):
     """Opens a war chest obstruction if found on the way to getting to the clan page.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
 
     """
     logger.log("Found a war chest on the way to getting to the clan page.")
     logger.log("Opening this chest real quick")
-    click(vm_index, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
+    click(, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
     time.sleep(2)
     click(
-        vm_index,
+        ,
         OPENING_WAR_CHEST_DEADZONE_COORD[0],
         OPENING_WAR_CHEST_DEADZONE_COORD[1],
         clicks=15,
@@ -365,27 +365,27 @@ def open_war_chest_obstruction(vm_index, logger):
     logger.log("Done opening this war chest")
 
 
-def check_for_war_chest_obstruction(vm_index):
+def check_for_war_chest_obstruction():
     # dont use check_line_for_color in the future. its slow
-    if not check_line_for_color(vm_index, 213, 409, 218, 423, (252, 195, 63)):
+    if not check_line_for_color(, 213, 409, 218, 423, (252, 195, 63)):
         return False
 
-    if not check_line_for_color(vm_index, 156, 416, 164, 414, (255, 255, 255)):
+    if not check_line_for_color(, 156, 416, 164, 414, (255, 255, 255)):
         return False
 
-    if not region_is_color(vm_index, [147, 410, 10, 17], (255, 188, 44)):
+    if not region_is_color(, [147, 410, 10, 17], (255, 188, 44)):
         return False
     return True
 
 
-def collect_boot_reward(vm_index):
+def collect_boot_reward():
     # click boot reward location
     print("Opening boot reward")
-    click(vm_index, 197, 370)
+    click(, 197, 370)
 
     # click deadspace a bunch
     print("Clicking deadspace to collect boot rewards")
-    click(vm_index, 5, 200, clicks=20, interval=0.5)
+    click(, 5, 200, clicks=20, interval=0.5)
 
 
 def check_for_boot_reward(iar):
@@ -416,33 +416,33 @@ def check_for_boot_reward(iar):
 
 
 def get_to_clan_tab_from_clash_main(
-    vm_index: int,
+    : int,
     logger: Logger,
 ):
 
     # just try it raw real quick in case it works first try
     click(
-        vm_index,
+        ,
         CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
         CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
     )
     time.sleep(2)
-    if check_if_on_clan_chat_page(screenshot(vm_index)):
+    if check_if_on_clan_chat_page(screenshot()):
         return True
 
     start_time = time.time()
     while time.time() - start_time < CLAN_PAGE_FROM_MAIN_NAV_TIMEOUT:
-        iar = screenshot(vm_index)
+        iar = screenshot()
 
         # if boot exists, collect boot
         if check_for_boot_reward(iar):
-            collect_boot_reward(vm_index)
+            collect_boot_reward()
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
         # check for a war chest obstructing the nav
-        elif check_for_war_chest_obstruction(vm_index):
-            open_war_chest_obstruction(vm_index, logger)
+        elif check_for_war_chest_obstruction():
+            open_war_chest_obstruction(, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
@@ -451,27 +451,27 @@ def get_to_clan_tab_from_clash_main(
             return True
 
         # if on clash main, click the clan tab button
-        elif check_if_on_clash_main_menu(vm_index):
+        elif check_if_on_clash_main_menu():
             click(
-                vm_index,
+                ,
                 CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
                 CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
             )
 
         # if on final results page, click OK
-        elif check_for_final_results_page(vm_index):
+        elif check_for_final_results_page():
             logger.log("On final_results_page so clicking OK button")
-            click(vm_index, 211, 524)
+            click(, 211, 524)
 
         # handle daily defenses rank page
-        handle_war_popup_pages(vm_index, logger)
+        handle_war_popup_pages(, logger)
 
-        # scroll_up(vm_index)
-        # scroll_down(vm_index)
-        custom_swipe(vm_index, 206, 313, 204, 417)
-        custom_swipe(vm_index, 204, 417, 206, 313)
+        # scroll_up()
+        # scroll_down()
+        custom_swipe(, 206, 313, 204, 417)
+        custom_swipe(, 204, 417, 206, 313)
         click(
-            vm_index,
+            ,
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
         )
@@ -482,30 +482,30 @@ def get_to_clan_tab_from_clash_main(
     return True
 
 
-def handle_war_popup_pages(vm_index, logger):
+def handle_war_popup_pages(, logger):
     timeout = 2
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_for_battle_day_results_page(vm_index):
+        if check_for_battle_day_results_page():
             print("Found battle_day_results page")
-            click(vm_index, 233, 196)
+            click(, 233, 196)
             time.sleep(1)
             return True
 
         if (
-            check_for_daily_defenses_rank_page(vm_index)
-            or check_for_daily_defenses_rank_page_2(vm_index)
-            or check_for_daily_defenses_rank_page_3(vm_index)
-            or check_for_daily_defenses_rank_page_4(vm_index)
+            check_for_daily_defenses_rank_page()
+            or check_for_daily_defenses_rank_page_2()
+            or check_for_daily_defenses_rank_page_3()
+            or check_for_daily_defenses_rank_page_4()
         ):
             print("Found daily_defenses page")
-            click(vm_index, 150, 260)
+            click(, 150, 260)
             logger.change_status("Handled daily defenses rank page")
             return True
 
-        if check_for_war_chest_obstruction(vm_index):
+        if check_for_war_chest_obstruction():
             print("Found war chest obstruction")
-            open_war_chest_obstruction(vm_index, logger)
+            open_war_chest_obstruction(, logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
             return True
@@ -513,8 +513,8 @@ def handle_war_popup_pages(vm_index, logger):
     return False
 
 
-def check_for_battle_day_results_page(vm_index):
-    iar = screenshot(vm_index)
+def check_for_battle_day_results_page():
+    iar = screenshot()
     pixels = [
         iar[189][48],
         iar[193][125],
@@ -537,8 +537,8 @@ def check_for_battle_day_results_page(vm_index):
     return True
 
 
-def check_for_daily_defenses_rank_page_3(vm_index):
-    iar = screenshot(vm_index)
+def check_for_daily_defenses_rank_page_3():
+    iar = screenshot()
     pixels = [
         iar[202][102],
         iar[203][139],
@@ -564,8 +564,8 @@ def check_for_daily_defenses_rank_page_3(vm_index):
     return True
 
 
-def check_for_daily_defenses_rank_page_4(vm_index):
-    iar = screenshot(vm_index)
+def check_for_daily_defenses_rank_page_4():
+    iar = screenshot()
     pixels = [
         iar[201][101],
         iar[201][109],
@@ -585,8 +585,8 @@ def check_for_daily_defenses_rank_page_4(vm_index):
     return True
 
 
-def check_for_daily_defenses_rank_page_2(vm_index):
-    iar = screenshot(vm_index)
+def check_for_daily_defenses_rank_page_2():
+    iar = screenshot()
     pixels = [
         iar[259][160],
         iar[273][144],
@@ -612,8 +612,8 @@ def check_for_daily_defenses_rank_page_2(vm_index):
     return True
 
 
-def check_for_daily_defenses_rank_page(vm_index):
-    iar = screenshot(vm_index)
+def check_for_daily_defenses_rank_page():
+    iar = screenshot()
     pixels = [
         iar[523][81],
         iar[548][167],
@@ -635,26 +635,26 @@ def check_for_daily_defenses_rank_page(vm_index):
     return True
 
 
-def check_for_final_results_page(vm_index) -> bool:
+def check_for_final_results_page() -> bool:
     """Checks if the final results page is displayed on the screen.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
         bool: True if the final results page is displayed, False otherwise.
 
     """
-    if not region_is_color(vm_index, [170, 527, 20, 18], (181, 96, 253)):
+    if not region_is_color(, [170, 527, 20, 18], (181, 96, 253)):
         return False
-    if not region_is_color(vm_index, [227, 514, 18, 6], (192, 120, 252)):
+    if not region_is_color(, [227, 514, 18, 6], (192, 120, 252)):
         return False
 
-    if not check_line_for_color(vm_index, 201, 518, 209, 528, (255, 255, 255)):
+    if not check_line_for_color(, 201, 518, 209, 528, (255, 255, 255)):
         return False
-    if not check_line_for_color(vm_index, 213, 517, 215, 527, (255, 255, 255)):
+    if not check_line_for_color(, 213, 517, 215, 527, (255, 255, 255)):
         return False
 
     return True
@@ -665,7 +665,7 @@ def check_if_on_clan_chat_page(iar) -> bool:
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -692,12 +692,12 @@ def check_if_on_clan_chat_page(iar) -> bool:
     return True  # If all pixels match their expected colors, return True
 
 
-def check_if_on_profile_page(vm_index) -> bool:
+def check_if_on_profile_page() -> bool:
     """Checks if the bot is on the profile page.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -705,7 +705,7 @@ def check_if_on_profile_page(vm_index) -> bool:
 
     """
     if not check_line_for_color(
-        vm_index,
+        ,
         x_1=329,
         y_1=188,
         x_2=339,
@@ -714,7 +714,7 @@ def check_if_on_profile_page(vm_index) -> bool:
     ):
         return False
     if not check_line_for_color(
-        vm_index,
+        ,
         x_1=169,
         y_1=50,
         x_2=189,
@@ -723,7 +723,7 @@ def check_if_on_profile_page(vm_index) -> bool:
     ):
         return False
     if not check_line_for_color(
-        vm_index,
+        ,
         x_1=369,
         y_1=63,
         x_2=351,
@@ -735,7 +735,7 @@ def check_if_on_profile_page(vm_index) -> bool:
 
 
 def wait_for_profile_page(
-    vm_index: int,
+    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -743,7 +743,7 @@ def wait_for_profile_page(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
         printmode (bool, optional): Whether to print status messages. Defaults to False.
 
@@ -758,7 +758,7 @@ def wait_for_profile_page(
         logger.log("Waiting for profile page")
     start_time = time.time()
 
-    while not check_if_on_profile_page(vm_index):
+    while not check_if_on_profile_page():
         time_taken = time.time() - start_time
         if time_taken > 20:
             logger.change_status(
@@ -773,12 +773,12 @@ def wait_for_profile_page(
     return "good"
 
 
-def get_to_profile_page(vm_index: int, logger: Logger) -> Literal["restart", "good"]:
+def get_to_profile_page(: int, logger: Logger) -> Literal["restart", "good"]:
     """Navigates to the profile page.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
 
     Returns:
@@ -787,17 +787,17 @@ def get_to_profile_page(vm_index: int, logger: Logger) -> Literal["restart", "go
 
     """
     # if not on clash main, return
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu() is not True:
         logger.change_status(
             status="ERROR 732457256 Not on clash main menu, returning to start state",
         )
         return "restart"
 
     # click profile button
-    click(vm_index, PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
+    click(, PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
 
     # wait for profile page
-    if wait_for_profile_page(vm_index, logger, printmode=False) == "restart":
+    if wait_for_profile_page(, logger, printmode=False) == "restart":
         logger.change_status(
             status="Error 0573085 Waited too long for clash profile page",
         )
@@ -805,8 +805,8 @@ def get_to_profile_page(vm_index: int, logger: Logger) -> Literal["restart", "go
     return "good"
 
 
-def check_for_trophy_reward_menu(vm_index) -> bool:
-    iar = screenshot(vm_index)
+def check_for_trophy_reward_menu() -> bool:
+    iar = screenshot()
 
     pixels = [
         iar[592][172],
@@ -839,7 +839,7 @@ def check_for_trophy_reward_menu(vm_index) -> bool:
 
 
 def handle_trophy_reward_menu(
-    vm_index,
+    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["good"]:
@@ -847,7 +847,7 @@ def handle_trophy_reward_menu(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
         printmode (bool, optional): Whether to print status messages. Defaults to False.
 
@@ -861,7 +861,7 @@ def handle_trophy_reward_menu(
     else:
         logger.log("Handling trophy reward menu")
     click(
-        vm_index,
+        ,
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
     )
@@ -870,8 +870,8 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def check_for_megaknight_evolution_popup(vm_index):
-    iar = screenshot(vm_index)
+def check_for_megaknight_evolution_popup():
+    iar = screenshot()
     pixels = [
         iar[585][170],
         iar[596][208],
@@ -902,50 +902,50 @@ def check_for_megaknight_evolution_popup(vm_index):
     return True
 
 
-def wait_for_clash_main_menu(vm_index, logger: Logger, deadspace_click=True) -> bool:
+def wait_for_clash_main_menu(, logger: Logger, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
     """
     start_time: float = time.time()
-    while check_if_on_clash_main_menu(vm_index) is not True:
+    while check_if_on_clash_main_menu() is not True:
         # timeout check
         if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
             logger.change_status("Timed out waiting for clash main")
             break
 
         # handle geting stuck on trophy road screen
-        if check_for_trophy_reward_menu(vm_index):
+        if check_for_trophy_reward_menu():
             print("Handling trophy reward menu")
-            handle_trophy_reward_menu(vm_index, logger)
+            handle_trophy_reward_menu(, logger)
             time.sleep(2)
             continue
 
         # handle getting stuck on megaknight evolution popup
-        if check_for_megaknight_evolution_popup(vm_index):
+        if check_for_megaknight_evolution_popup():
             print("Handling megaknight evolution popup")
-            click(vm_index, 206, 601)
+            click(, 206, 601)
             time.sleep(2)
             continue
 
         # click deadspace
         if deadspace_click and random.randint(0, 1) == 0:
             click(
-                vm_index,
+                ,
                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
             )
         time.sleep(1)
 
     time.sleep(1)
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu() is not True:
         print("Failed to get to clash main! Saw these pixels before restarting:")
         return False
 
     return True
 
 
-def check_if_on_path_of_legends_clash_main(vm_index):
-    iar = screenshot(vm_index)
+def check_if_on_path_of_legends_clash_main():
+    iar = screenshot()
 
     # get raw pixels from image array
     pixels = [
@@ -980,11 +980,11 @@ def check_if_on_path_of_legends_clash_main(vm_index):
     return True
 
 
-def check_if_on_clash_main_menu(vm_index) -> bool:
+def check_if_on_clash_main_menu() -> bool:
     """Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
     """
-    iar = screenshot(vm_index)
+    iar = screenshot()
 
     pixels = [
         iar[14][209],  # white
@@ -1052,7 +1052,7 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
 
 
 def get_to_card_page_from_clash_main(
-    vm_index: int,
+    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -1062,7 +1062,7 @@ def get_to_card_page_from_clash_main(
 
     Args:
     ----
-    - vm_index (int): The index of the virtual machine to perform the action on.
+    -  (int): The index of the virtual machine to perform the action on.
     - logger (Logger): The logger object to log the action.
     - printmode (bool, optional): If True, changes the logger status instead of logging.
 
@@ -1081,20 +1081,20 @@ def get_to_card_page_from_clash_main(
 
     # click card page icon
     click(
-        vm_index,
+        ,
         CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
     )
     time.sleep(2.5)
 
     # while not on the card page, cycle the card page
-    while not check_if_on_card_page(vm_index):
+    while not check_if_on_card_page():
         time_taken = time.time() - start_time
         if time_taken > 60:
             return "restart"
 
         click(
-            vm_index,
+            ,
             CARD_PAGE_ICON_FROM_CARD_PAGE[0],
             CARD_PAGE_ICON_FROM_CARD_PAGE[1],
         )
@@ -1107,8 +1107,8 @@ def get_to_card_page_from_clash_main(
     return "good"
 
 
-def check_if_on_underleveled_card_page(vm_index):
-    iar = screenshot(vm_index)
+def check_if_on_underleveled_card_page():
+    iar = screenshot()
     pixels = [
         iar[445][50],
         iar[101][57],
@@ -1129,7 +1129,7 @@ def check_if_on_underleveled_card_page(vm_index):
     return True
 
 
-def check_if_on_card_page(vm_index) -> bool:
+def check_if_on_card_page() -> bool:
     def check_if_on_card_page2(iar):
         pixels = [
             iar[441][58],
@@ -1215,7 +1215,7 @@ def check_if_on_card_page(vm_index) -> bool:
 
         return True
 
-    iar = screenshot(vm_index)
+    iar = screenshot()
     if check_if_on_card_page2(iar):
         return True
     if check_if_on_goblin_mode_card_page(iar):
@@ -1256,12 +1256,12 @@ def check_if_on_card_page(vm_index) -> bool:
     return True
 
 
-def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "good"]:
+def get_to_challenges_tab_from_main(, logger) -> Literal["restart", "good"]:
     """Clicks on the challenges tab in the Clash Main menu to navigate to the challenges tab.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to perform the clicks on.
+         (int): The index of the virtual machine to perform the clicks on.
         logger (Logger): The logger object to log messages to.
 
     Returns:
@@ -1271,11 +1271,11 @@ def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "goo
 
     """
     click(
-        vm_index,
+        ,
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1],
     )
-    if wait_for_clash_main_challenges_tab(vm_index, logger) == "restart":
+    if wait_for_clash_main_challenges_tab(, logger) == "restart":
         logger.change_status(
             status="Error 892572938 waited for challenges tab too long, restarting vm",
         )
@@ -1284,14 +1284,14 @@ def get_to_challenges_tab_from_main(vm_index, logger) -> Literal["restart", "goo
 
 
 def handle_clash_main_tab_notifications(
-    vm_index,
+    ,
     logger: Logger,
 ) -> bool:
     """Clicks on the card, shop, and challenges tabs in the Clash Main menu to handle notifications.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to perform the clicks on.
+         (int): The index of the virtual machine to perform the clicks on.
         logger (Logger): The logger object to log messages to.
 
     Returns:
@@ -1303,7 +1303,7 @@ def handle_clash_main_tab_notifications(
     start_time: float = time.time()
 
     # wait for clash main to appear
-    if wait_for_clash_main_menu(vm_index, logger) is False:
+    if wait_for_clash_main_menu(, logger) is False:
         logger.change_status(
             status="Error 246246 Waited too long for clash main menu, restarting vm",
         )
@@ -1311,51 +1311,51 @@ def handle_clash_main_tab_notifications(
 
     # click card tab from main
     print("Clicked card tab")
-    click(vm_index, 103, 598)
+    click(, 103, 598)
     time.sleep(1)
 
     # click shop tab from card tab
     print("Clicked shop tab")
-    click(vm_index, 9, 594, clicks=3, interval=0.33)
+    click(, 9, 594, clicks=3, interval=0.33)
     time.sleep(1)
 
     # click clan tab from shop tab
     print("Clicked clan tab")
-    click(vm_index, 315, 594)
+    click(, 315, 594)
     time.sleep(3)
 
-    if check_for_war_chest_obstruction(vm_index):
-        open_war_chest_obstruction(vm_index, logger)
+    if check_for_war_chest_obstruction():
+        open_war_chest_obstruction(, logger)
         logger.add_war_chest_collect()
         print(f"Incremented war chest collects to {logger.war_chest_collects}")
         time.sleep(3)
 
     # click events tab from clan tab
     print("Getting to events tab...")
-    while not check_for_events_page(vm_index):
+    while not check_for_events_page():
         print("Still not on events page...")
-        click(vm_index, 408, 600)
-        handle_war_popup_pages(vm_index, logger)
+        click(, 408, 600)
+        handle_war_popup_pages(, logger)
 
     print("On events page")
 
     # spam click shop page at the leftmost location, wait a little bit
     print("Clicked shop page")
-    click(vm_index, 9, 594, clicks=3, interval=0.33)
+    click(, 9, 594, clicks=3, interval=0.33)
     time.sleep(2)
 
     # click clash main from shop page
     print("Clicked clash main")
-    click(vm_index, 240, 600)
+    click(, 240, 600)
     time.sleep(2)
 
     # handle possibility of trophy road obstructing clash main
-    if check_for_trophy_reward_menu(vm_index):
-        handle_trophy_reward_menu(vm_index, logger)
+    if check_for_trophy_reward_menu():
+        handle_trophy_reward_menu(, logger)
         time.sleep(2)
 
     # wait for clash main to appear
-    if wait_for_clash_main_menu(vm_index, logger) is False:
+    if wait_for_clash_main_menu(, logger) is False:
         logger.change_status(
             status="Error 47 Waited too long for clash main menu, restarting vm",
         )
@@ -1368,8 +1368,8 @@ def handle_clash_main_tab_notifications(
     return True
 
 
-def check_for_events_page(vm_index):
-    iar = screenshot(vm_index)
+def check_for_events_page():
+    iar = screenshot()
 
     pixels = [
         iar[578][415],
@@ -1406,7 +1406,7 @@ def check_for_events_page(vm_index):
 
 
 def wait_for_clash_main_challenges_tab(
-    vm_index,
+    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
@@ -1414,7 +1414,7 @@ def wait_for_clash_main_challenges_tab(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to check the menu on.
+         (int): The index of the virtual machine to check the menu on.
         logger (Logger): The logger object to log messages to.
         printmode (bool, optional): Whether to print status messages to the logger. Defaults to
         False.
@@ -1431,7 +1431,7 @@ def wait_for_clash_main_challenges_tab(
         logger.change_status(status="Waiting for clash main challenges tab")
     else:
         logger.log("Waiting for clash main challenges tab")
-    while not check_if_on_clash_main_challenges_tab(vm_index):
+    while not check_if_on_clash_main_challenges_tab():
         if time.time() - start_time > 10:
             logger.change_status(
                 status="Error 8884613 Waited too long for clash main challenges tab",
@@ -1445,47 +1445,47 @@ def wait_for_clash_main_challenges_tab(
     return "good"
 
 
-def check_if_on_clash_main_challenges_tab(vm_index) -> bool:
+def check_if_on_clash_main_challenges_tab() -> bool:
     """Checks if the Clash Main menu is on the challenges tab.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to check the menu on.
+         (int): The index of the virtual machine to check the menu on.
 
     Returns:
     -------
         bool: True if the menu is on the challenges tab, False otherwise.
 
     """
-    if not region_is_color(vm_index, [380, 580, 30, 45], (76, 111, 145)):
+    if not region_is_color(, [380, 580, 30, 45], (76, 111, 145)):
         return False
-    if not region_is_color(vm_index, [290, 610, 25, 15], (80, 118, 153)):
+    if not region_is_color(, [290, 610, 25, 15], (80, 118, 153)):
         return False
 
     return True
 
 
-def check_if_on_clash_main_shop_page(vm_index) -> bool:
+def check_if_on_clash_main_shop_page() -> bool:
     """Check if the bot is currently on the main shop page in the Clash of Clans game.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to use for image recognition.
+         (int): The index of the virtual machine to use for image recognition.
 
     Returns:
     -------
         bool: True if the bot is on the main shop page, False otherwise.
 
     """
-    if not region_is_color(vm_index, region=[9, 580, 30, 45], color=(76, 112, 146)):
+    if not region_is_color(, region=[9, 580, 30, 45], color=(76, 112, 146)):
         return False
 
-    if not region_is_color(vm_index, region=[90, 580, 18, 40], color=(75, 111, 146)):
+    if not region_is_color(, region=[90, 580, 18, 40], color=(75, 111, 146)):
         return False
 
     lines = [
         check_line_for_color(
-            vm_index,
+            ,
             x_1=393,
             y_1=7,
             x_2=414,
@@ -1493,7 +1493,7 @@ def check_if_on_clash_main_shop_page(vm_index) -> bool:
             color=(44, 144, 21),
         ),
         check_line_for_color(
-            vm_index,
+            ,
             x_1=48,
             y_1=593,
             x_2=83,
@@ -1506,14 +1506,14 @@ def check_if_on_clash_main_shop_page(vm_index) -> bool:
 
 
 def wait_for_clash_main_shop_page(
-    vm_index,
+    ,
     logger: Logger,
 ) -> Literal["restart", "good"]:
     """Wait for the bot to navigate to the main shop page in the Clash of Clans game.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to use for image recognition.
+         (int): The index of the virtual machine to use for image recognition.
         logger (Logger): The logger object to use for logging messages.
         printmode (bool, optional): Whether to print status
         messages to the console. Defaults to False.
@@ -1524,7 +1524,7 @@ def wait_for_clash_main_shop_page(
 
     """
     start_time = time.time()
-    while not check_if_on_clash_main_shop_page(vm_index):
+    while not check_if_on_clash_main_shop_page():
         time_taken = time.time() - start_time
         if time_taken > 20:
             logger.change_status(
@@ -1536,7 +1536,7 @@ def wait_for_clash_main_shop_page(
 
 
 def get_to_activity_log(
-    vm_index: int,
+    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -1544,7 +1544,7 @@ def get_to_activity_log(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine to use.
+         (int): The index of the virtual machine to use.
         logger (Logger): The logger object to use for logging.
         printmode (bool, optional): Whether to print status messages. Defaults to False.
 
@@ -1560,7 +1560,7 @@ def get_to_activity_log(
         logger.log("Getting to activity log")
 
     # if not on main return restart
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu() is not True:
         logger.change_status(
             status="Eror 08752389 Not on clash main menu, restarting vm",
         )
@@ -1572,11 +1572,11 @@ def get_to_activity_log(
     else:
         logger.log("Opening clash main options menu")
     click(
-        vm_index,
+        ,
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
     )
-    if wait_for_clash_main_burger_button_options_menu(vm_index, logger) == "restart":
+    if wait_for_clash_main_burger_button_options_menu(, logger) == "restart":
         logger.change_status(
             status="Error 99993 Waited too long for calsh main options menu, restarting vm",
         )
@@ -1587,8 +1587,8 @@ def get_to_activity_log(
         logger.change_status(status="Clicking activity log button")
     else:
         logger.log("Clicking activity log button")
-    click(vm_index, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
-    if wait_for_battle_log_page(vm_index, logger, printmode) == "restart":
+    click(, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
+    if wait_for_battle_log_page(, logger, printmode) == "restart":
         logger.change_status(
             status="Error 923593 Waited too long for battle log page, restarting vm",
         )
@@ -1598,7 +1598,7 @@ def get_to_activity_log(
 
 
 def wait_for_battle_log_page(
-    vm_index,
+    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
@@ -1606,7 +1606,7 @@ def wait_for_battle_log_page(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object.
         printmode (bool, optional): Whether to print status messages. Defaults to False.
 
@@ -1621,7 +1621,7 @@ def wait_for_battle_log_page(
         logger.change_status(status="Waiting for battle log page to appear")
     else:
         logger.log("Waiting for battle log page to appear")
-    while not check_if_on_battle_log_page(vm_index):
+    while not check_if_on_battle_log_page():
         time_taken = time.time() - start_time
         if time_taken > 20:
             logger.change_status(
@@ -1637,8 +1637,8 @@ def wait_for_battle_log_page(
     return "good"
 
 
-def check_if_on_battle_log_page(vm_index) -> bool:
-    iar = screenshot(vm_index)
+def check_if_on_battle_log_page() -> bool:
+    iar = screenshot()
 
     pixels = [
         iar[72][160],
@@ -1671,12 +1671,12 @@ def check_if_on_battle_log_page(vm_index) -> bool:
     return True
 
 
-def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
+def check_if_on_clash_main_burger_button_options_menu() -> bool:
     """Checks if the virtual machine is on the clash main burger button options menu.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -1684,7 +1684,7 @@ def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
         button options menu, False otherwise.
 
     """
-    iar = screenshot(vm_index)
+    iar = screenshot()
     pixels = [
         iar[42][256],
         iar[41][275],
@@ -1714,7 +1714,7 @@ def check_if_on_clash_main_burger_button_options_menu(vm_index) -> bool:
 
 
 def wait_for_clash_main_burger_button_options_menu(
-    vm_index: int,
+    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -1722,7 +1722,7 @@ def wait_for_clash_main_burger_button_options_menu(
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         logger (Logger): The logger object to use for logging.
         printmode (bool, optional): Whether to print status messages. Defaults to False.
 
@@ -1738,7 +1738,7 @@ def wait_for_clash_main_burger_button_options_menu(
         logger.change_status(status="Waiting for clash main options menu to appear")
     else:
         logger.log("Waiting for clash main options menu to appear")
-    while not check_if_on_clash_main_burger_button_options_menu(vm_index):
+    while not check_if_on_clash_main_burger_button_options_menu():
         time_taken = time.time() - start_time
         if time_taken > 20:
             logger.change_status(
@@ -1754,8 +1754,8 @@ def wait_for_clash_main_burger_button_options_menu(
     return "good"
 
 
-def check_if_on_collection_page(vm_index) -> bool:
-    iar = screenshot(vm_index)
+def check_if_on_collection_page() -> bool:
+    iar = screenshot()
 
 
     trophy_mode_colors = [
@@ -1806,28 +1806,28 @@ def check_if_on_collection_page(vm_index) -> bool:
     return False
 
 
-def get_to_collections_page(vm_index) -> bool:
+def get_to_collections_page() -> bool:
     # starts on clash main
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu():
         print("Not on clash main for get_to_magic_items_page()!")
         return False
 
     # click card page
     card_page_coords = [100, 600]
-    click(vm_index, card_page_coords[0], card_page_coords[1])
+    click(, card_page_coords[0], card_page_coords[1])
     time.sleep(1)
 
     cycle_card_page_coord = [135, 590]
 
     timeout = 30  # s
     start_time = time.time()
-    while not check_if_on_collection_page(vm_index):
+    while not check_if_on_collection_page():
         # timeout check
         if time.time() - start_time > timeout:
             print("Timed out waiting for collection page")
             return False
 
-        click(vm_index, cycle_card_page_coord[0], cycle_card_page_coord[1])
+        click(, cycle_card_page_coord[0], cycle_card_page_coord[1])
         time.sleep(1)
 
     return True
