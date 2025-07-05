@@ -11,9 +11,10 @@ from pyclashbot.google_play_emulator.gpe import click
 from pyclashbot.utils.logger import Logger
 
 SSID_COORDS = [
-    (48, 376),  # 1st account, index 0
-    (48, 472),  # 2nd account, index 1
-    (48, 567),  # 3rd account, index 2
+    (306, 306),  # 1st account, index 0
+    (306, 364),  # 2nd account, index 1
+    (48, 567),  # this is guarenteed broken.
+    #someone with 3 accounts should fix this
 ]
 
 
@@ -55,4 +56,5 @@ def switch_accounts(logger: Logger, account_index_to_switch_to):
 
 
 if __name__ == "__main__":
-    pass
+    switch_accounts(Logger(), 0)
+    # switch_accounts(Logger(), 1)
