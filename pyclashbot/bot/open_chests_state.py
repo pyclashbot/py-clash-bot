@@ -14,7 +14,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
@@ -23,7 +23,7 @@ CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT = 40  # s
 
 
-def open_chests_state(: int, logger: Logger, next_state: str) -> str:
+def open_chests_state( logger: Logger, next_state: str) -> str:
     """This function opens all available chests in the Clash of Clans game.
 
     Args:
@@ -45,7 +45,7 @@ def open_chests_state(: int, logger: Logger, next_state: str) -> str:
     print('Checking for trophy reward menu...')
     if check_for_trophy_reward_menu():
         print('Found trophy reward menu\nHandling it')
-        handle_trophy_reward_menu(, logger)
+        handle_trophy_reward_menu( logger)
         time.sleep(3)
     else:
         print('No trophy reward menu found')
@@ -61,7 +61,7 @@ def open_chests_state(: int, logger: Logger, next_state: str) -> str:
     logger.change_status(
         status="Handling obstructing notifications before opening chests",
     )
-    if handle_clash_main_tab_notifications(, logger) is False:
+    if handle_clash_main_tab_notifications( logger) is False:
         logger.change_status(
             status="Error 07531083150 Failure with handle_clash_main_tab_notifications",
         )
@@ -82,7 +82,7 @@ def open_chests_state(: int, logger: Logger, next_state: str) -> str:
         start_time = time.time()
         if status == "available":
             logger.log(f"Chest #{chest_index} is available")
-            if open_chest(, logger, chest_index) == "restart":
+            if open_chest( logger, chest_index) == "restart":
                 logger.change_status("Error 9988572 Failure with open_chest")
                 return "restart"
         logger.log(
@@ -133,7 +133,7 @@ def get_chest_statuses():
     return statuses
 
 
-def open_chest(, logger: Logger, chest_index) -> Literal["restart", "good"]:
+def open_chest( logger: Logger, chest_index) -> Literal["restart", "good"]:
     """Opens a chest at the specified index and performs necessary actions based on its status.
 
     Args:
@@ -160,27 +160,27 @@ def open_chest(, logger: Logger, chest_index) -> Literal["restart", "good"]:
 
     # click the chest
     coord = chest_coords[chest_index]
-    click(, coord[0], coord[1])
+    click( coord[0], coord[1])
     time.sleep(3)
 
     # if its unlockable, unlock it
     if check_if_chest_is_unlockable():
         logger.add_chest_unlocked()
         logger.change_status("This chest is unlockable!")
-        click(, UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
+        click( UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 
     if check_if_can_queue_chest():
         logger.add_chest_unlocked()
         logger.change_status("This chest is queueable!")
-        click(, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
+        click( QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
     while check_if_on_clash_main_menu() is not True:
         print("Clicking deadspace to skip chest rewards bc not on clash main")
-        click(, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+        click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
         # if clicked deadspace too much, restart
         if (
@@ -189,7 +189,7 @@ def open_chest(, logger: Logger, chest_index) -> Literal["restart", "good"]:
         ):
             break
 
-    click(, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     chests_opened = logger.get_chests_opened()
     logger.log(f"Opened {chests_opened - prev_chests_opened} chests")
     return "good"
@@ -207,15 +207,14 @@ def check_if_can_queue_chest():
         bool: True if a chest can be queued, False otherwise.
 
     """
-    if not check_line_for_color(, 293, 345, 301, 354, (255, 255, 255)):
+    if not check_line_for_color( 293, 345, 301, 354, (255, 255, 255)):
         return False
-    if not check_line_for_color(, 338, 345, 329, 357, (255, 255, 255)):
+    if not check_line_for_color( 338, 345, 329, 357, (255, 255, 255)):
         return False
-    if not check_line_for_color(, 336, 369, 329, 358, (255, 255, 255)):
+    if not check_line_for_color( 336, 369, 329, 358, (255, 255, 255)):
         return False
 
     if not region_is_color(
-        ,
         [
             280,
             360,
@@ -225,7 +224,7 @@ def check_if_can_queue_chest():
         (255, 188, 41),
     ):
         return False
-    if not region_is_color(, [342, 354, 12, 16], (255, 188, 43)):
+    if not region_is_color( [342, 354, 12, 16], (255, 188, 43)):
         return False
     return True
 
@@ -242,11 +241,9 @@ def check_if_chest_is_unlockable():
         bool: True if the chest is unlockable, False otherwise.
 
     """
-    line1 = check_line_for_color(
-        , x_1=163, y_1=392, x_2=186, y_2=423, color=(255, 190, 43),
+    line1 = check_line_for_color( x_1=163, y_1=392, x_2=186, y_2=423, color=(255, 190, 43),
     )
-    line2 = check_line_for_color(
-        , x_1=254, y_1=408, x_2=231, y_2=426, color=(255, 190, 43),
+    line2 = check_line_for_color( x_1=254, y_1=408, x_2=231, y_2=426, color=(255, 190, 43),
     )
     if line1 and line2:
         return True
@@ -254,4 +251,4 @@ def check_if_chest_is_unlockable():
 
 
 if __name__ == "__main__":
-    print(open_chests_state(12, Logger(), "next_state"))
+    pass

@@ -3,7 +3,7 @@ import time
 from pyclashbot.bot.states import StateHistory, state_tree
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
-from pyclashbot.bot.google_play_emulator import gpe
+from pyclashbot.google_play_emulator import gpe
 
 
 class WorkerThread(PausableThread):
@@ -14,10 +14,6 @@ class WorkerThread(PausableThread):
 
     def run(self) -> None:
         jobs = self.args
-
-
-        gpe.connect()
-        print(f'Workerthread connected to google play emulator: {gpe.is_connected()}')
 
         try:
             state = "start"
