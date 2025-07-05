@@ -464,5 +464,4 @@ def check_if_can_request_3():
 
 
 if __name__ == "__main__":
-    # do_request(Logger())
-    print(count_scrolls_in_request_page())
+    pass
