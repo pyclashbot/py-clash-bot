@@ -217,8 +217,8 @@ def state_tree(
 
         gpe.restart_emulator()
         gpe.start_clash_royale()
-        print("Manual wait of 10s for cr to boot...")
-        time.sleep(10)
+        print("Manual wait of 30s for cr to boot...")
+        time.sleep(30)
 
         logger.log(
             f"Emulator boot sequence took {str(time.time() - start_time)[:5]} seconds",
