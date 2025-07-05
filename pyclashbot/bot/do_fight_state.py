@@ -1117,5 +1117,4 @@ def fight_image_save_debug( fights=2):
 
 
 if __name__ == "__main__":
-    # fight_modes = ['trophy_road', 'path_of_legends']
-    start_1v1_type_fight(0, Logger(None,None), 'trophy_road')
+    pass

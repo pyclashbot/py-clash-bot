@@ -217,7 +217,7 @@ def state_tree(
 
         gpe.restart_emulator()
         gpe.start_clash_royale()
-        print('Manual wait of 10s for cr to boot...')
+        print("Manual wait of 10s for cr to boot...")
         time.sleep(10)
 
         logger.log(
@@ -262,15 +262,13 @@ def state_tree(
                 return state_tree(logger, "restart", job_list, state_history)
 
             # click deadspace
-            click(
-                CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1]
-            )
+            click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
         if check_if_on_clash_main_menu() is not True:
             logger.log("Clash main wait timed out! These are the pixels it saw:")
             # for p in clash_main_check:
             #     logger.log(p)
-            return state_tree( logger, "restart", job_list, state_history)
+            return state_tree(logger, "restart", job_list, state_history)
 
         logger.log('Detected clash main at the end of "restart" state.')
         logger.log(
@@ -336,7 +334,7 @@ def state_tree(
 
         # run this state
         logger.log('Open chests is toggled and ready. Running "open_chests_state()"')
-        return open_chests_state( logger, next_state)
+        return open_chests_state(logger, next_state)
 
     if state == "level_up_chest":  # --> randomize_deck
         # keys for this state:
@@ -360,7 +358,7 @@ def state_tree(
         logger.log(
             'Level up chests is toggled and ready. Running "collect_level_up_chest_state()"',
         )
-        return collect_level_up_chest_state( logger, next_state)
+        return collect_level_up_chest_state(logger, next_state)
 
     if state == "randomize_deck":  # --> upgrade
         next_state = "upgrade"
@@ -386,6 +384,8 @@ def state_tree(
         deck_number = job_list.get("deck_number_selection", 2)
         return randomize_deck_state( logger, next_state, deck_number)
 
+
+
     if state == "upgrade":  # --> trophy_rewards
         next_state = "trophy_rewards"
 
@@ -400,7 +400,7 @@ def state_tree(
             return next_state
 
         # return output of this state
-        return upgrade_cards_state( logger, next_state)
+        return upgrade_cards_state(logger, next_state)
 
     if state == "trophy_rewards":  # --> request
         next_state = "request"
@@ -419,7 +419,7 @@ def state_tree(
 
         # run the state
         logger.log("Trophy rewards collection is ready!")
-        return collect_trophy_road_rewards_state( logger, next_state)
+        return collect_trophy_road_rewards_state(logger, next_state)
 
     if state == "request":  # --> donate
         next_state = "donate"
@@ -435,7 +435,7 @@ def state_tree(
             return next_state
 
         # return output of this state
-        return request_state( logger, next_state)
+        return request_state(logger, next_state)
 
     if state == "donate":  # --> shop_buy
         next_state = "shop_buy"
@@ -494,7 +494,7 @@ def state_tree(
             logger.log(f"{state} isn't ready. Skipping this state...")
             return next_state
 
-        return collect_bannerbox_rewards_state( logger, next_state)
+        return collect_bannerbox_rewards_state(logger, next_state)
 
     if state == "daily_rewards":  # --> battlepass_rewards
         next_state = "battlepass_rewards"
@@ -510,7 +510,7 @@ def state_tree(
             return next_state
 
         # run this job, return its output
-        return collect_daily_rewards_state( logger, next_state)
+        return collect_daily_rewards_state(logger, next_state)
 
     if state == "battlepass_rewards":  # --> card_mastery
         next_state = "card_mastery"
@@ -527,7 +527,7 @@ def state_tree(
             logger.log(f"{state} isn't ready. Skipping this state...")
             return next_state
 
-        return collect_battlepass_state( logger, next_state)
+        return collect_battlepass_state(logger, next_state)
 
     if state == "card_mastery":  # --> season_shop
         next_state = "season_shop"
@@ -543,7 +543,7 @@ def state_tree(
             return next_state
 
         # return output of this state
-        return card_mastery_state( logger, next_state)
+        return card_mastery_state(logger, next_state)
 
     if state == "season_shop":  # --> magic_items
         next_state = "magic_items"
@@ -558,7 +558,7 @@ def state_tree(
             logger.log(f"{state} isn't ready. Skipping this state...")
             return next_state
 
-        return collect_season_shop_offers_state( logger, next_state)
+        return collect_season_shop_offers_state(logger, next_state)
 
     if state == "magic_items":  # --> start_fight
         next_state = "start_fight"
@@ -573,7 +573,7 @@ def state_tree(
             logger.log(f"{state} isn't ready. Skipping this state...")
             return next_state
 
-        return spend_magic_items_state( logger, next_state)
+        return spend_magic_items_state(logger, next_state)
 
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
@@ -601,7 +601,7 @@ def state_tree(
         mode = logger.pick_lowest_fight_type_count(mode2toggle)
         print(f"Lowest mode is: {mode}")
 
-        if start_fight( logger, mode) is False:
+        if start_fight(logger, mode) is False:
             logger.change_status("Failed while starting fight")
             return "restart"
 
@@ -675,7 +675,7 @@ def state_tree(
             return next_state
 
         # return output of this state
-        return war_state( logger, next_state)
+        return war_state(logger, next_state)
 
     logger.error("Failure in state tree")
     return "fail"
@@ -686,25 +686,24 @@ def state_tree_tester():
     state = "account_switch"
     job_list = {
         # job toggles
-        "card_mastery_user_toggle": True,
-        "battlepass_collect_user_toggle": True,
-        "level_up_chest_user_toggle": False,
-        "trophy_road_rewards_user_toggle": False,
-        #tested Feb 2025
-        "season_shop_buys_user_toggle": False,
-        "open_bannerbox_user_toggle": False,
+        # tested July 2025
+        "level_up_chest_user_toggle": False,  # cant test rn
+        "trophy_road_rewards_user_toggle": False,  # cant test rn
+        "war_user_toggle": False,
+        "magic_items_user_toggle": False,
+        "card_mastery_user_toggle": False,  # cant test rn
+        "season_shop_buys_user_toggle": False,  # challenges tab is closed rn
+        "battlepass_collect_user_toggle": False,  # broken asf
+        "free_donate_toggle": False,
+        "donate_toggle": False,  # trash but sint exactly broken
+        "request_user_toggle": False,
+        "random_decks_user_toggle": False,
+        "open_chests_user_toggle": False,  # these dont even exist anymore?
+        "open_bannerbox_user_toggle": False,  # is this even a thing anymore?
+        "upgrade_user_toggle": False,
         "free_offer_user_toggle": False,
         "gold_offer_user_toggle": False,
-        "donate_toggle": False,
-        "war_user_toggle": False,
-        "free_donate_toggle": False,
-        "magic_items_user_toggle": False,
-        "random_decks_user_toggle": False,
-        "deck_number_selection": 2,
-        "request_user_toggle": False,
-        "upgrade_user_toggle": False,
-        "open_chests_user_toggle": False,
-        #fight toggles
+        # fight toggles
         "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": False,
         "2v2_battle_user_toggle": False,
@@ -730,4 +729,4 @@ def state_tree_tester():
 
 
 if __name__ == "__main__":
-    pass
+    state_tree_tester()
