@@ -11,7 +11,7 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.google_play_emulator.gpe import (
     click,
-    custom_swipe,
+    scroll,
     screenshot,
 )
 from pyclashbot.utils.logger import Logger
@@ -461,8 +461,8 @@ def get_to_clan_tab_from_clash_main(
 
         # scroll_up()
         # scroll_down()
-        custom_swipe(206, 313, 204, 417)
-        custom_swipe(204, 417, 206, 313)
+        scroll(206, 313, 204, 417)
+        scroll(204, 417, 206, 313)
         click(
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
@@ -971,7 +971,6 @@ def check_if_on_clash_main_menu() -> bool:
     """
     iar = screenshot()
 
-
     pixels = [
         iar[14][209],  # white
         iar[14][324],  # white
@@ -993,8 +992,8 @@ def check_if_on_clash_main_menu() -> bool:
         [139, 106, 72],
     ]
 
-    for pixel, color in zip(pixels, colors):
-        print(pixel, color)
+    # for pixel, color in zip(pixels, colors):
+    #     print(pixel, color)
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
@@ -1033,6 +1032,7 @@ def get_to_card_page_from_clash_main(
         logger.log("Getting to card page from clash main")
 
     # click card page icon
+    print("Clicking card page icon from clash main...")
     click(
         CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
@@ -1041,6 +1041,7 @@ def get_to_card_page_from_clash_main(
 
     # while not on the card page, cycle the card page
     while not check_if_on_card_page():
+        print("Not on the card page, so clicking card page icon again")
         time_taken = time.time() - start_time
         if time_taken > 60:
             return "restart"
@@ -1081,37 +1082,46 @@ def check_if_on_underleveled_card_page():
 
 
 def check_if_on_card_page() -> bool:
+
     coords = [
-        [95, 593],
-        [94, 615],
-        [187, 621],
-        [175, 602],
-        [185, 588],
-        [80, 587],
-        [82, 618],
-        [79, 602],
-        [200, 602],
-        [403, 18],
-        [405, 18],
-        [402, 15],
-        [300, 18],
-        [300, 18],
+        [89, 618],
+        [104, 613],
+        [169, 606],
+        [180, 618],
+        [191, 620],
+        [200, 610],
+        [200, 594],
+        [193, 587],
+        [181, 587],
+        [174, 593],
+        [92, 60],
+        [100, 72],
+        [170, 62],
+        [171, 70],
+        [183, 70],
+        [192, 70],
+        [195, 58],
+        [184, 60],
     ]
     colors = [
-        [142, 110, 74],
-        [154, 119, 81],
-        [158, 119, 82],
-        [148, 110, 77],
-        [143, 105, 74],
-        [140, 107, 73],
-        [154, 121, 82],
-        [255, 220, 125],
-        [255, 221, 126],
-        [ 27, 208,71],
-        [ 27, 207,70],
-        [ 22, 183,56],
-        [ 55, 190,229],
-        [ 55, 190,229],
+        [135, 106, 72],
+        [134, 103, 70],
+        [132, 98, 69],
+        [137, 104, 72],
+        [138, 104, 72],
+        [134, 99, 70],
+        [127, 94, 66],
+        [126, 91, 65],
+        [125, 92, 65],
+        [126, 94, 66],
+        [178, 118, 35],
+        [161, 98, 18],
+        [174, 115, 33],
+        [166, 105, 25],
+        [168, 105, 25],
+        [166, 104, 25],
+        [178, 120, 38],
+        [179, 118, 36],
     ]
 
     image = screenshot()
@@ -1119,7 +1129,7 @@ def check_if_on_card_page() -> bool:
     for coord, color in zip(coords, colors):
         x, y = coord
         pixel_color = image[y][x]
-        if not pixel_is_equal(pixel_color, color, tol=25):
+        if not pixel_is_equal(pixel_color, color, tol=45):
             return False
 
     return True
@@ -1158,7 +1168,7 @@ def handle_clash_main_tab_notifications(
 
     Args:
     ----
-         (int): The index of the virtual machine to perform the clicks on.
+        (int): The index of the virtual machine to perform the clicks on.
         logger (Logger): The logger object to log messages to.
 
     Returns:
@@ -1183,7 +1193,7 @@ def handle_clash_main_tab_notifications(
 
     # click shop tab from card tab
     print("Clicked shop tab")
-    click(9, 594, clicks=3, interval=0.33)
+    click(9, 594, clicks=3, interval=1)
     time.sleep(1)
 
     # click clan tab from shop tab
@@ -1191,42 +1201,25 @@ def handle_clash_main_tab_notifications(
     click(315, 594)
     time.sleep(3)
 
+    # handle war chest popups
     if check_for_war_chest_obstruction():
         open_war_chest_obstruction(logger)
         logger.add_war_chest_collect()
         print(f"Incremented war chest collects to {logger.war_chest_collects}")
         time.sleep(3)
 
-    # click events tab from clan tab
-    print("Getting to events tab...")
-    while not check_for_events_page():
-        print("Still not on events page...")
-        click(408, 600)
+    # try to get to clash main until it works
+    print("Getting to main page...")
+    while not check_if_on_clash_main_menu():
+        print("Still not on main page...")
+        click(173, 596)
         handle_war_popup_pages(logger)
-
-    print("On events page")
-
-    # spam click shop page at the leftmost location, wait a little bit
-    print("Clicked shop page")
-    click(9, 594, clicks=3, interval=0.33)
-    time.sleep(2)
-
-    # click clash main from shop page
-    print("Clicked clash main")
-    click(240, 600)
-    time.sleep(2)
+    print("Made it to clash main!")
 
     # handle possibility of trophy road obstructing clash main
     if check_for_trophy_reward_menu():
         handle_trophy_reward_menu(logger)
         time.sleep(2)
-
-    # wait for clash main to appear
-    if wait_for_clash_main_menu(logger) is False:
-        logger.change_status(
-            status="Error 47 Waited too long for clash main menu, restarting vm",
-        )
-        return False
 
     logger.change_status(
         status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s",
@@ -1690,8 +1683,57 @@ def get_to_collections_page() -> bool:
     return True
 
 
-if __name__ == "__main__":
-    from pyclashbot.google_play_emulator.gpe import connect
+def check_pixel_for_in_clan() -> bool:
+    iar = screenshot()  # type: ignore
+    coords = [
+        [84,351],
+        [87,355],
+        [90,355],
+        [90,349],
+        [88,351],
+        [88,353],
+        [85,355],
+        [82,350],
+        [84,350],
+        [86,353],
+        [90,355],
+        [93,355],
+        [93,351],
+        [90,348],
+        [86,351],
+        [85,353],
+        [87,356],
+        [89,359],
+        [92,358],
+        [92,353],
+    ]
+    color = [51, 51,51]
 
-    connect()
-    print(check_if_on_clash_main_menu())
+    for coord in coords:
+        pixel = iar[coord[1]][coord[0]]
+        if not pixel_is_equal(pixel, color, tol=25):
+            return True
+
+    return False
+
+
+
+def check_if_in_a_clan(logger):
+    # if not on main return false
+    if not check_if_on_clash_main_menu():
+        print("Not on clash main for check_if_in_a_clan()!")
+        return False
+
+    # open profile page
+    get_to_profile_page(logger)
+
+    in_a_clan = check_pixel_for_in_clan()
+
+    deadspace = [9,476]
+    click(*deadspace)
+
+    return in_a_clan
+
+
+if __name__ == "__main__":
+    print(check_if_in_a_clan(Logger()))

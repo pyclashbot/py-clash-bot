@@ -11,9 +11,8 @@ from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
-    get_to_profile_page,
     handle_trophy_reward_menu,
-    wait_for_clash_main_menu,
+    check_if_in_a_clan
 )
 from pyclashbot.detection.image_rec import (
     condense_coordinates,
@@ -24,7 +23,7 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.google_play_emulator.gpe import click, screenshot
+from pyclashbot.google_play_emulator.gpe import click, screenshot,scroll
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
@@ -86,7 +85,7 @@ def donate_cards_state( logger: Logger, next_state, free_donate_toggle: bool):
     # if logger says we're not in a clan, check if we are in a clan
     if logger.is_in_clan() is False:
         logger.change_status("Checking if in a clan before donating")
-        in_a_clan_return = donate_state_check_if_in_a_clan( logger)
+        in_a_clan_return = check_if_in_a_clan(logger)
         if in_a_clan_return == "restart":
             logger.change_status(
                 status="Error 05708425 Failure with check_if_in_a_clan",
@@ -118,67 +117,6 @@ def donate_cards_state( logger: Logger, next_state, free_donate_toggle: bool):
     return next_state
 
 
-def donate_state_check_pixels_for_clan_flag() -> bool:
-    iar = numpy.asarray(screenshot())  # type: ignore
-
-    pix_list = []
-    for x_coord in range(80, 96):
-        pixel = iar[445][x_coord]
-        pix_list.append(pixel)
-
-    for y_coord in range(437, 453):
-        pixel = iar[y_coord][88]
-        pix_list.append(pixel)
-
-    # for every pixel in the pix_list: format to be of format [r,g,b]
-    for index, pix in enumerate(pix_list):
-        pix_list[index] = [pix[0], pix[1], pix[2]]
-
-    for pix in pix_list:
-        total = int(pix[0]) + int(pix[1]) + int(pix[2])
-
-        if total < 130:
-            return True
-
-        if total > 170:
-            return True
-
-    return False
-
-
-def donate_state_check_if_in_a_clan(
-    logger: Logger,
-) -> bool | Literal["restart"]:
-    # if not on clash main, return
-    if check_if_on_clash_main_menu() is not True:
-        logger.change_status(status="ERROR 385462623 Not on clash main menu")
-        return "restart"
-
-    # get to profile page
-    if get_to_profile_page( logger) == "restart":
-        logger.change_status(
-            status="Error 9076092860923485 Failure with get_to_profile_page",
-        )
-        return "restart"
-
-    # check pixels for in a clan
-    in_a_clan = donate_state_check_pixels_for_clan_flag()
-
-    # print clan status
-    if not in_a_clan:
-        logger.change_status("Not in a clan, so can't request!")
-
-    # click deadspace to leave
-    click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-    if wait_for_clash_main_menu( logger) is False:
-        logger.change_status(
-            status="Error 87258301758939 Failure with wait_for_clash_main_menu",
-        )
-        return "restart"
-
-    return in_a_clan
-
-
 def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
     # get to clan chat page
     logger.change_status("Getting to clan tab to donate cards")
@@ -208,7 +146,7 @@ def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
                 time.sleep(0.5)
 
             logger.change_status("Scrolling up...")
-            scroll_up()
+            scroll(20,291,20,398)
             time.sleep(1)
 
         # click the more requests button that may exist
