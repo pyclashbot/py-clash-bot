@@ -63,12 +63,12 @@ def get_first_location(
     )
 
 
-def find_and_click_button_by_image(vm_index, folder_name) -> bool:
+def find_and_click_button_by_image(, folder_name) -> bool:
     """Finds and clicks on a button based on image recognition.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
         folder_name (str): The name of the folder containing reference images for the button.
 
     """
@@ -77,7 +77,7 @@ def find_and_click_button_by_image(vm_index, folder_name) -> bool:
 
     # Find references in the screenshot
     locations = find_references(
-        screenshot(vm_index),
+        screenshot(),
         folder_name,
         names,
         tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
@@ -89,7 +89,7 @@ def find_and_click_button_by_image(vm_index, folder_name) -> bool:
     if coord is None:
         return False
     # Click on the detected button location
-    click(vm_index, coord[1], coord[0])
+    click(, coord[1], coord[0])
     time.sleep(2)
     return True
 
@@ -211,10 +211,10 @@ def compare_images(
 
 
 def line_is_color(  # pylint: disable=too-many-arguments
-    vm_index, x_1, y_1, x_2, y_2, color,
+    , x_1, y_1, x_2, y_2, color,
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(screenshot())
 
     for coordinate in coordinates:
         pixel = iar[coordinate[1]][coordinate[0]]
@@ -226,10 +226,10 @@ def line_is_color(  # pylint: disable=too-many-arguments
 
 
 def check_line_for_color(  # pylint: disable=too-many-arguments
-    vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int],
+    , x_1, y_1, x_2, y_2, color: tuple[int, int, int],
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(screenshot())
 
     for coordinate in coordinates:
         pixel = iar[coordinate[1]][coordinate[0]]
@@ -240,10 +240,10 @@ def check_line_for_color(  # pylint: disable=too-many-arguments
     return False
 
 
-def check_region_for_color(vm_index, region, color):
+def check_region_for_color(, region, color):
     left, top, width, height = region
 
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(screenshot())
 
     for x_index in range(left, left + width):
         for y_index in range(top, top + height):
@@ -255,10 +255,10 @@ def check_region_for_color(vm_index, region, color):
     return False
 
 
-def region_is_color(vm_index, region, color):
+def region_is_color(, region, color):
     left, top, width, height = region
 
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(screenshot())
 
     for x_index in range(left, left + width, 2):
         for y_index in range(top, top + height, 2):
