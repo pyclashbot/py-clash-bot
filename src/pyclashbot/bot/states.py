@@ -32,7 +32,7 @@ from pyclashbot.utils.logger import Logger
 
 mode_used_in_1v1 = None
 
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+CLASH_MAIN_DEADSPACE_COORD = (35,742)
 
 
 def get_render_mode(job_list):

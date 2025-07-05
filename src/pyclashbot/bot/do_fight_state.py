@@ -71,7 +71,7 @@ EMOTES_COORDS_IN_2V2 = [
     (243, 469),
     (308, 470),
 ]
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+CLASH_MAIN_DEADSPACE_COORD = (21,418)
 
 
 ELIXIR_COORDS = [
@@ -363,7 +363,6 @@ def start_1v1_type_fight( logger: Logger, mode: str) -> bool:
         )
         if set_fight_mode( mode) is False:
             print("This mode isn't available yet. Doing a regular 1v1 instead...")
-            logger.increment_path_of_legends_fights()
             logger.increment_trophy_road_fights()
 
     # click start button FIXED
@@ -376,10 +375,6 @@ def start_fight( logger, mode) -> bool:
     def increment_fight_mode_count(logger, mode):
         if mode == "trophy_road":
             logger.increment_trophy_road_fights()
-        elif mode == "path_of_legends":
-            logger.increment_path_of_legends_fights()
-        elif mode == "2v2":
-            logger.increment_2v2_fights()
 
     logger.change_status(f"Starting a {mode} fight")
     increment_fight_mode_count(logger, mode)

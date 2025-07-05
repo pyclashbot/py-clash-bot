@@ -7,7 +7,7 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+CLASH_MAIN_DEADSPACE_COORD = (21,418)
 
 def collect_level_up_chest( logger: Logger) -> bool:
     logger.change_status("Checking level up chest")
