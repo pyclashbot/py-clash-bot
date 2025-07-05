@@ -252,15 +252,12 @@ def get_current_fight_mode(vm_index):
     ]
 
     # get the average of pixels
-    avg_color = [0, 0, 0]
-    for p in pixels:
-        avg_color[0] += int(p[0])
-        avg_color[1] += int(p[1])
-        avg_color[2] += int(p[2])
+    if pixels:
+        r, g, b = list(map(sum, zip(*pixels)))[:3]
+        avg_color = [r / len(pixels), g / len(pixels), b / len(pixels)]
+    else:
+        avg_color = [0, 0, 0]
 
-    avg_color[0] = avg_color[0] / len(pixels)
-    avg_color[1] = avg_color[1] / len(pixels)
-    avg_color[2] = avg_color[2] / len(pixels)
 
     mode2avgColor = {
         "trophy_road": [95.1, 52.7, 8.5],
