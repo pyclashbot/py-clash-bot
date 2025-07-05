@@ -98,9 +98,7 @@ class Logger:
         self.friendly_crowns = 0
         self.enemy_crowns = 0
         self._1v1_fights = 0
-        self._2v2_fights = 0
         self.trophy_road_1v1_fights = 0
-        self.path_of_legends_1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
         self.card_randomizations = 0
@@ -157,8 +155,6 @@ class Logger:
                 "wins": self.wins,
                 "losses": self.losses,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
-                "path_of_legends_1v1_fights": self.path_of_legends_1v1_fights,
-                "2v2_fights": self._2v2_fights,
                 "war_fights": self.war_fights,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
@@ -280,25 +276,16 @@ class Logger:
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1
 
-    def increment_path_of_legends_fights(self):
-        self.path_of_legends_1v1_fights += 1
-
     def increment_trophy_road_reward_collects(self):
         self.trophy_road_reward_collections += 1
 
     def pick_lowest_fight_type_count(self, mode2toggle):
-        _2v2_fights = self._2v2_fights
         trophy_road_1v1_fights = self.trophy_road_1v1_fights
-        path_of_legends_1v1_fights = self.path_of_legends_1v1_fights
 
         mode2count = {}
 
-        if mode2toggle["2v2"]:
-            mode2count["2v2"] = _2v2_fights
         if mode2toggle["trophy_road"]:
             mode2count["trophy_road"] = trophy_road_1v1_fights
-        if mode2toggle["path_of_legends"]:
-            mode2count["path_of_legends"] = path_of_legends_1v1_fights
 
         print("{:^15} : {:^15}".format("mode", "count"))
         for mode, count in mode2count.items():
@@ -423,11 +410,6 @@ class Logger:
         self.account_switches += 1
 
     @_updates_gui
-    def increment_2v2_fights(self) -> None:
-        """Add fight to log"""
-        self._2v2_fights += 1
-
-    @_updates_gui
     def add_request(self) -> None:
         """Add request to log"""
         self.requests += 1
@@ -471,10 +453,6 @@ class Logger:
     def get_1v1_fights(self) -> int:
         """Returns logger's 1v1_fights stat"""
         return self._1v1_fights
-
-    def get_2v2_fights(self) -> int:
-        """Returns logger's 2v2_fights stat"""
-        return self._2v2_fights
 
     def get_cards_played(self) -> int:
         """Returns logger's cards_played stat"""

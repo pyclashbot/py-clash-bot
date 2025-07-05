@@ -104,10 +104,7 @@ titles = [
     'Losses',
     'Win Rate',
     'Cards Played',
-    ' Legends Battles',
     'Trophy Battles',
-    'Goblin Fights',
-    '2v2 Fights',
     'War Fights',
     'Random Decks',
 ]
@@ -129,13 +126,7 @@ battle_stats_values = [
         stat_box("cards_played"),
     ],
     [
-        stat_box("path_of_legends_1v1_fights"),
-    ],
-    [
         stat_box("trophy_road_1v1_fights"),
-    ],
-    [
-        stat_box("2v2_fights"),
     ],
     [
         stat_box("war_fights"),
