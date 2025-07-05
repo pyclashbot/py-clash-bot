@@ -68,8 +68,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     print("random_account_switch_list: ", random_account_switch_list)
 
     jobs_dictionary: dict[str, str | int] = {
-        # job toggles
-        "open_chests_user_toggle": values["open_chests_user_toggle"],
+        "open_chests_user_toggle": False,
         "request_user_toggle": values["request_user_toggle"],
         "donate_toggle": values["donate_toggle"],
         "free_donate_toggle": values["free_donate_toggle"],
@@ -77,28 +76,21 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
-        "path_of_legends_1v1_battle_user_toggle": values[
-            "path_of_legends_1v1_user_toggle"
-        ],
-        "2v2_battle_user_toggle": values["2v2_user_toggle"],
+        "path_of_legends_1v1_battle_user_toggle": False,
+        "2v2_battle_user_toggle": False,
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
-        "deck_number_selection": values["deck_number_selection"],
-        "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
-        "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
+        "open_bannerbox_user_toggle": False,
+        "daily_rewards_user_toggle": False,
         "random_plays_user_toggle": values["random_plays_user_toggle"],
-        "skip_fight_if_full_chests_user_toggle": values[
-            "skip_fight_if_full_chests_user_toggle"
-        ],
+        "skip_fight_if_full_chests_user_toggle": False,
         "battlepass_collect_user_toggle": values["open_battlepass_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
         "magic_items_user_toggle": values["magic_items_user_toggle"],
-        # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
         "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
-        # account switching input info
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switch_count": int(values["account_switching_slider"]),
     }
