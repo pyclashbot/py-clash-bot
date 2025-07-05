@@ -4,8 +4,8 @@ from collections import Counter
 
 import numpy
 
-from pyclashbot.memu.client import click, screenshot
 
+from pyclashbot.google_play_emulator.gpe import click,screenshot
 # play coord data
 PLAY_COORDS = {
     # done
@@ -4209,7 +4209,7 @@ def get_corner_pixels(x_range, y_range, iar):
     return make_pixel_dict_from_color_list(colors)
 
 
-def get_all_pixel_data(, chosen_card_index):
+def get_all_pixel_data( chosen_card_index):
     topleft = toplefts[chosen_card_index]
 
     corners = [
@@ -4259,7 +4259,7 @@ global battle_iar
 play_side = "left"
 
 
-def check_which_cards_are_available(, check_champion=False, check_side=False):
+def check_which_cards_are_available( check_champion=False, check_side=False):
     global battle_iar
     battle_iar = screenshot()
     card_exists_list = []
@@ -4269,7 +4269,7 @@ def check_which_cards_are_available(, check_champion=False, check_side=False):
             battle_iar[462][324], battle_iar[453][334], battle_iar[462][336],
         )
     ):
-        click(, 330, 460)
+        click( 330, 460)
 
     if check_side:
         global play_side
@@ -4303,8 +4303,8 @@ def check_for_champion_ability(a, b, c):
     return False
 
 
-def identify_hand_cards(, card_index):
-    color_chosen_card = get_all_pixel_data(, card_index)
+def identify_hand_cards( card_index):
+    color_chosen_card = get_all_pixel_data( card_index)
     return find_closest_card(color_chosen_card)
 
 
@@ -4317,10 +4317,10 @@ def get_card_group(card_id) -> str:
     return CARD_TO_GROUP.get(card_id, "No group")
 
 
-def get_play_coords_for_card(, logger, card_index):
+def get_play_coords_for_card( logger, card_index):
     # get the ID of this card(ram_rider, zap, etc)
     id_cards_start_time = time.time()
-    identity = identify_hand_cards(, card_index)
+    identity = identify_hand_cards( card_index)
     time_taken = str(time.time() - id_cards_start_time)[:3]
     logger.change_status(f"Identified card as {identity} ({time_taken}s)")
 
@@ -4329,6 +4329,9 @@ def get_play_coords_for_card(, logger, card_index):
 
     # get the play coords of this grouping
     coords = calculate_play_coords(group, play_side)
+
+    if coords is None:
+        return identity, None
 
     return identity, coords
 
@@ -4391,9 +4394,4 @@ def switch_side():
 
 
 if __name__ == "__main__":
-    all_data = get_all_pixel_data(12, 0)
-    for data in all_data:
-        id = find_closest_card(data)
-        if id == "UNKNOWN":
-            print(data)
-        print(id)
+    pass

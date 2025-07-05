@@ -1,5 +1,6 @@
 import random
 import time
+from turtle import color
 from typing import Literal
 
 from pyclashbot.detection.image_rec import (
@@ -8,7 +9,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import (
+from pyclashbot.google_play_emulator.gpe import (
     click,
     custom_swipe,
     screenshot,
@@ -33,9 +34,9 @@ CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 SHOP_PAGE_BUTTON: tuple[Literal[33], Literal[603]] = (33, 603)
 
 
-def get_to_shop_page_from_clash_main(, logger) -> bool:
-    click(, SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
-    if wait_for_clash_main_shop_page(, logger) == "restart":
+def get_to_shop_page_from_clash_main(logger) -> bool:
+    click(SHOP_PAGE_BUTTON[0], SHOP_PAGE_BUTTON[1])
+    if wait_for_clash_main_shop_page(logger) == "restart":
         logger.change_status(
             status="Error 085708235 Failure waiting for clash main shop page ",
         )
@@ -43,7 +44,7 @@ def get_to_shop_page_from_clash_main(, logger) -> bool:
     return True
 
 
-def wait_for_2v2_battle_start(, logger: Logger)  -> bool:
+def wait_for_2v2_battle_start(logger: Logger) -> bool:
     """Waits for the 2v2 battle to start.
 
     Args:
@@ -70,16 +71,15 @@ def wait_for_2v2_battle_start(, logger: Logger)  -> bool:
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        click(=, x_coord=20, y_coord=200)
+        click(20, 200)
 
     return False
 
 
 def wait_for_1v1_battle_start(
-    ,
     logger: Logger,
     printmode=False,
-)  -> bool:
+) -> bool:
     """Waits for the 1v1 battle to start.
 
     Args:
@@ -106,7 +106,7 @@ def wait_for_1v1_battle_start(
             )
             return False
         print("Waiting for 1v1 start")
-        click(=, x_coord=200, y_coord=200)
+        click(200, 200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")
@@ -178,7 +178,7 @@ def check_if_in_battle() -> Literal["2v2"] | Literal["1v1"] | Literal["None"]:
     return "None"
 
 
-def check_if_in_battle_at_start(, logger):
+def check_if_in_battle_at_start(logger):
     """Checks if the game is currently in a battle at startup and handles it accordingly.
     Also checks if the game is on the end-of-battle screen and returns to the main menu.
 
@@ -199,7 +199,6 @@ def check_if_in_battle_at_start(, logger):
     if battle_status == "1v1":
         logger.log("Detected in battle status: 1v1. Engaging in battle.")
         fight_result = do_1v1_fight_state(
-            ,
             logger,
             "next_state",
             False,
@@ -208,12 +207,12 @@ def check_if_in_battle_at_start(, logger):
         )
     elif battle_status == "2v2":
         logger.log("Detected in battle status: 2v2. Engaging in battle.")
-        fight_result = do_2v2_fight_state(, logger, "next_state", False, True)
+        fight_result = do_2v2_fight_state(logger, "next_state", False, True)
     else:
         # If not currently in a battle, check if it's the end-of-battle screen
         if check_end_of_battle_screen():
             logger.log("Detected end of battle screen.")
-            if not get_to_main_after_fight(, logger):
+            if not get_to_main_after_fight(logger):
                 logger.log("Failed to return to Clash Main Menu after fight.")
                 return "restart"
             logger.log("Successfully returned to Clash Main Menu after fight.")
@@ -222,7 +221,7 @@ def check_if_in_battle_at_start(, logger):
 
     # Attempt to return to the main menu after the battle, if a fight was detected
     if fight_result not in ["restart", None]:
-        if not get_to_main_after_fight(, logger):
+        if not get_to_main_after_fight(logger):
             logger.log("Failed to return to Clash Main Menu after fight.")
             return "restart"
         logger.log("Successfully returned to Clash Main Menu after fight.")
@@ -296,7 +295,6 @@ def check_end_of_battle_screen():
 
 
 def get_to_clash_main_from_clan_page(
-    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
@@ -325,7 +323,6 @@ def get_to_clash_main_from_clan_page(
     else:
         logger.log(message="Clicking clash main icon")
     click(
-        ,
         CLASH_MAIN_COORD_FROM_CLAN_PAGE[0],
         CLASH_MAIN_COORD_FROM_CLAN_PAGE[1],
     )
@@ -335,13 +332,13 @@ def get_to_clash_main_from_clan_page(
         logger.change_status(status="Waiting for clash main")
     else:
         logger.log("Waiting for clash main")
-    if wait_for_clash_main_menu(, logger) is False:
+    if wait_for_clash_main_menu(logger) is False:
         logger.change_status(status="Error 3253, failure waiting for clash main")
         return "restart"
     return "good"
 
 
-def open_war_chest_obstruction(, logger):
+def open_war_chest_obstruction(logger):
     """Opens a war chest obstruction if found on the way to getting to the clan page.
 
     Args:
@@ -352,10 +349,9 @@ def open_war_chest_obstruction(, logger):
     """
     logger.log("Found a war chest on the way to getting to the clan page.")
     logger.log("Opening this chest real quick")
-    click(, OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
+    click(OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
     time.sleep(2)
     click(
-        ,
         OPENING_WAR_CHEST_DEADZONE_COORD[0],
         OPENING_WAR_CHEST_DEADZONE_COORD[1],
         clicks=15,
@@ -367,13 +363,13 @@ def open_war_chest_obstruction(, logger):
 
 def check_for_war_chest_obstruction():
     # dont use check_line_for_color in the future. its slow
-    if not check_line_for_color(, 213, 409, 218, 423, (252, 195, 63)):
+    if not check_line_for_color(213, 409, 218, 423, (252, 195, 63)):
         return False
 
-    if not check_line_for_color(, 156, 416, 164, 414, (255, 255, 255)):
+    if not check_line_for_color(156, 416, 164, 414, (255, 255, 255)):
         return False
 
-    if not region_is_color(, [147, 410, 10, 17], (255, 188, 44)):
+    if not region_is_color([147, 410, 10, 17], (255, 188, 44)):
         return False
     return True
 
@@ -381,11 +377,11 @@ def check_for_war_chest_obstruction():
 def collect_boot_reward():
     # click boot reward location
     print("Opening boot reward")
-    click(, 197, 370)
+    click(197, 370)
 
     # click deadspace a bunch
     print("Clicking deadspace to collect boot rewards")
-    click(, 5, 200, clicks=20, interval=0.5)
+    click(5, 200, clicks=20, interval=0.5)
 
 
 def check_for_boot_reward(iar):
@@ -416,13 +412,11 @@ def check_for_boot_reward(iar):
 
 
 def get_to_clan_tab_from_clash_main(
-    : int,
     logger: Logger,
 ):
 
     # just try it raw real quick in case it works first try
     click(
-        ,
         CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
         CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
     )
@@ -442,7 +436,7 @@ def get_to_clan_tab_from_clash_main(
 
         # check for a war chest obstructing the nav
         elif check_for_war_chest_obstruction():
-            open_war_chest_obstruction(, logger)
+            open_war_chest_obstruction(logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
 
@@ -453,7 +447,6 @@ def get_to_clan_tab_from_clash_main(
         # if on clash main, click the clan tab button
         elif check_if_on_clash_main_menu():
             click(
-                ,
                 CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
                 CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
             )
@@ -461,17 +454,16 @@ def get_to_clan_tab_from_clash_main(
         # if on final results page, click OK
         elif check_for_final_results_page():
             logger.log("On final_results_page so clicking OK button")
-            click(, 211, 524)
+            click(211, 524)
 
         # handle daily defenses rank page
-        handle_war_popup_pages(, logger)
+        handle_war_popup_pages(logger)
 
         # scroll_up()
         # scroll_down()
-        custom_swipe(, 206, 313, 204, 417)
-        custom_swipe(, 204, 417, 206, 313)
+        custom_swipe(206, 313, 204, 417)
+        custom_swipe(204, 417, 206, 313)
         click(
-            ,
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
         )
@@ -482,13 +474,13 @@ def get_to_clan_tab_from_clash_main(
     return True
 
 
-def handle_war_popup_pages(, logger):
+def handle_war_popup_pages(logger):
     timeout = 2
     start_time = time.time()
     while time.time() - start_time < timeout:
         if check_for_battle_day_results_page():
             print("Found battle_day_results page")
-            click(, 233, 196)
+            click(233, 196)
             time.sleep(1)
             return True
 
@@ -499,13 +491,13 @@ def handle_war_popup_pages(, logger):
             or check_for_daily_defenses_rank_page_4()
         ):
             print("Found daily_defenses page")
-            click(, 150, 260)
+            click(150, 260)
             logger.change_status("Handled daily defenses rank page")
             return True
 
         if check_for_war_chest_obstruction():
             print("Found war chest obstruction")
-            open_war_chest_obstruction(, logger)
+            open_war_chest_obstruction(logger)
             logger.add_war_chest_collect()
             print(f"Incremented war chest collects to {logger.war_chest_collects}")
             return True
@@ -647,14 +639,14 @@ def check_for_final_results_page() -> bool:
         bool: True if the final results page is displayed, False otherwise.
 
     """
-    if not region_is_color(, [170, 527, 20, 18], (181, 96, 253)):
+    if not region_is_color([170, 527, 20, 18], (181, 96, 253)):
         return False
-    if not region_is_color(, [227, 514, 18, 6], (192, 120, 252)):
+    if not region_is_color([227, 514, 18, 6], (192, 120, 252)):
         return False
 
-    if not check_line_for_color(, 201, 518, 209, 528, (255, 255, 255)):
+    if not check_line_for_color(201, 518, 209, 528, (255, 255, 255)):
         return False
-    if not check_line_for_color(, 213, 517, 215, 527, (255, 255, 255)):
+    if not check_line_for_color(213, 517, 215, 527, (255, 255, 255)):
         return False
 
     return True
@@ -705,7 +697,6 @@ def check_if_on_profile_page() -> bool:
 
     """
     if not check_line_for_color(
-        ,
         x_1=329,
         y_1=188,
         x_2=339,
@@ -714,7 +705,6 @@ def check_if_on_profile_page() -> bool:
     ):
         return False
     if not check_line_for_color(
-        ,
         x_1=169,
         y_1=50,
         x_2=189,
@@ -723,7 +713,6 @@ def check_if_on_profile_page() -> bool:
     ):
         return False
     if not check_line_for_color(
-        ,
         x_1=369,
         y_1=63,
         x_2=351,
@@ -735,7 +724,6 @@ def check_if_on_profile_page() -> bool:
 
 
 def wait_for_profile_page(
-    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -773,7 +761,7 @@ def wait_for_profile_page(
     return "good"
 
 
-def get_to_profile_page(: int, logger: Logger) -> Literal["restart", "good"]:
+def get_to_profile_page(logger: Logger) -> Literal["restart", "good"]:
     """Navigates to the profile page.
 
     Args:
@@ -794,10 +782,10 @@ def get_to_profile_page(: int, logger: Logger) -> Literal["restart", "good"]:
         return "restart"
 
     # click profile button
-    click(, PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
+    click(PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
 
     # wait for profile page
-    if wait_for_profile_page(, logger, printmode=False) == "restart":
+    if wait_for_profile_page(logger, printmode=False) == "restart":
         logger.change_status(
             status="Error 0573085 Waited too long for clash profile page",
         )
@@ -839,7 +827,6 @@ def check_for_trophy_reward_menu() -> bool:
 
 
 def handle_trophy_reward_menu(
-    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["good"]:
@@ -861,7 +848,6 @@ def handle_trophy_reward_menu(
     else:
         logger.log("Handling trophy reward menu")
     click(
-        ,
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
     )
@@ -902,7 +888,7 @@ def check_for_megaknight_evolution_popup():
     return True
 
 
-def wait_for_clash_main_menu(, logger: Logger, deadspace_click=True) -> bool:
+def wait_for_clash_main_menu(logger: Logger, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
     """
@@ -916,21 +902,20 @@ def wait_for_clash_main_menu(, logger: Logger, deadspace_click=True) -> bool:
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu():
             print("Handling trophy reward menu")
-            handle_trophy_reward_menu(, logger)
+            handle_trophy_reward_menu(logger)
             time.sleep(2)
             continue
 
         # handle getting stuck on megaknight evolution popup
         if check_for_megaknight_evolution_popup():
             print("Handling megaknight evolution popup")
-            click(, 206, 601)
+            click(206, 601)
             time.sleep(2)
             continue
 
         # click deadspace
         if deadspace_click and random.randint(0, 1) == 0:
             click(
-                ,
                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
             )
@@ -986,6 +971,7 @@ def check_if_on_clash_main_menu() -> bool:
     """
     iar = screenshot()
 
+
     pixels = [
         iar[14][209],  # white
         iar[14][324],  # white
@@ -1007,40 +993,8 @@ def check_if_on_clash_main_menu() -> bool:
         [139, 106, 72],
     ]
 
-
-
-    # pixels = [
-    #     #blue strip on the rightmost part of screen
-    #     iar[92][414],
-    #     iar[120][414],
-    #     iar[140][414],
-    #     iar[160][414],
-    #     iar[260][414],
-    #     iar[280][414],
-    #     iar[350][414],
-    #     iar[370][414],
-    #     iar[389][414],
-
-    #     #green plus button for more gold
-    #     iar[9][203],
-    #     iar[20][202],
-    #     iar[9][216],
-    #     iar[20][216],
-    #     iar[14][210],
-
-    #     #green plus button for more gems
-    #     iar[9][319],
-    #     iar[21][318],
-    #     iar[20][332],
-    #     iar[9][331],
-    #     iar[14][322],
-    #     iar[11][325],
-    #     iar[14][329],
-    #     iar[17][325],
-    # ]
-
-    # colors = []
-    # for p in pixels:print(p)
+    for pixel, color in zip(pixels, colors):
+        print(pixel, color)
 
     # if any pixel doesnt match the sentinel, then we're not on clash main
     for i, pixel in enumerate(pixels):
@@ -1052,7 +1006,6 @@ def check_if_on_clash_main_menu() -> bool:
 
 
 def get_to_card_page_from_clash_main(
-    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -1081,7 +1034,6 @@ def get_to_card_page_from_clash_main(
 
     # click card page icon
     click(
-        ,
         CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
     )
@@ -1094,7 +1046,6 @@ def get_to_card_page_from_clash_main(
             return "restart"
 
         click(
-            ,
             CARD_PAGE_ICON_FROM_CARD_PAGE[0],
             CARD_PAGE_ICON_FROM_CARD_PAGE[1],
         )
@@ -1130,133 +1081,51 @@ def check_if_on_underleveled_card_page():
 
 
 def check_if_on_card_page() -> bool:
-    def check_if_on_card_page2(iar):
-        pixels = [
-            iar[441][58],
-            iar[191][18],
-            iar[211][390],
-            iar[435][325],
-            iar[102][59],
-            iar[109][56],
-            iar[116][55],
-        ]
-        colors = [
-            [232, 0, 248],
-            [105, 43, 1],
-            [105, 44, 1],
-            [249, 186, 100],
-            [255, 255, 255],
-            [255, 255, 255],
-            [255, 255, 255],
-        ]
-        for i, p in enumerate(pixels):
-            if not pixel_is_equal(colors[i], p, tol=15):
-                return False
-
-        return True
-
-    def check_if_on_path_of_legends_mode_card_page(iar):
-        pixels = [
-            iar[108][175],
-            iar[112][189],
-            iar[103][254],
-            iar[109][295],
-            iar[446][54],
-            iar[446][64],
-            iar[444][49],
-            iar[14][210],
-            iar[14][325],
-        ]
-        colors = [
-            [186, 105, 143],
-            [254, 254, 254],
-            [229, 188, 206],
-            [213, 175, 191],
-            [224, 1, 237],
-            [229, 0, 244],
-            [187, 7, 191],
-            [255, 255, 255],
-            [255, 255, 255],
-        ]
-
-        for i, p in enumerate(pixels):
-            if not pixel_is_equal(colors[i], p, tol=15):
-                return False
-
-        return True
-
-    def check_if_on_goblin_mode_card_page(iar):
-        pixels = [
-            iar[108][175],
-            iar[112][189],
-            iar[103][254],
-            iar[109][295],
-            iar[446][54],
-            iar[446][64],
-            iar[444][49],
-            iar[14][210],
-            iar[14][325],
-        ]
-        colors = [
-            [255, 255, 255],
-            [255, 255, 255],
-            [255, 255, 255],
-            [255, 255, 255],
-            [223, 1, 237],
-            [228, 0, 243],
-            [186, 8, 190],
-            [255, 255, 255],
-            [255, 255, 255],
-        ]
-
-        for i, p in enumerate(pixels):
-            if not pixel_is_equal(colors[i], p, tol=15):
-                return False
-
-        return True
-
-    iar = screenshot()
-    if check_if_on_card_page2(iar):
-        return True
-    if check_if_on_goblin_mode_card_page(iar):
-        return True
-    if check_if_on_path_of_legends_mode_card_page(iar):
-        return True
-
-    pixels = [
-        iar[433][58],
-        iar[101][55],
-        iar[108][48],
-        iar[116][59],
-        iar[58][82],
-        iar[64][179],
-        iar[62][108],
-        iar[67][146],
-        iar[77][185],
-        iar[77][84],
+    coords = [
+        [95, 593],
+        [94, 615],
+        [187, 621],
+        [175, 602],
+        [185, 588],
+        [80, 587],
+        [82, 618],
+        [79, 602],
+        [200, 602],
+        [403, 18],
+        [405, 18],
+        [402, 15],
+        [300, 18],
+        [300, 18],
     ]
-
     colors = [
-        [222, 0, 235],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [203, 137, 44],
-        [195, 126, 34],
-        [255, 255, 255],
-        [255, 255, 255],
-        [177, 103, 15],
-        [178, 104, 15],
+        [142, 110, 74],
+        [154, 119, 81],
+        [158, 119, 82],
+        [148, 110, 77],
+        [143, 105, 74],
+        [140, 107, 73],
+        [154, 121, 82],
+        [255, 220, 125],
+        [255, 221, 126],
+        [ 27, 208,71],
+        [ 27, 207,70],
+        [ 22, 183,56],
+        [ 55, 190,229],
+        [ 55, 190,229],
     ]
 
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(colors[i], p, tol=15):
+    image = screenshot()
+
+    for coord, color in zip(coords, colors):
+        x, y = coord
+        pixel_color = image[y][x]
+        if not pixel_is_equal(pixel_color, color, tol=25):
             return False
 
     return True
 
 
-def get_to_challenges_tab_from_main(, logger) -> Literal["restart", "good"]:
+def get_to_challenges_tab_from_main(logger) -> Literal["restart", "good"]:
     """Clicks on the challenges tab in the Clash Main menu to navigate to the challenges tab.
 
     Args:
@@ -1271,11 +1140,10 @@ def get_to_challenges_tab_from_main(, logger) -> Literal["restart", "good"]:
 
     """
     click(
-        ,
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1],
     )
-    if wait_for_clash_main_challenges_tab(, logger) == "restart":
+    if wait_for_clash_main_challenges_tab(logger) == "restart":
         logger.change_status(
             status="Error 892572938 waited for challenges tab too long, restarting vm",
         )
@@ -1284,7 +1152,6 @@ def get_to_challenges_tab_from_main(, logger) -> Literal["restart", "good"]:
 
 
 def handle_clash_main_tab_notifications(
-    ,
     logger: Logger,
 ) -> bool:
     """Clicks on the card, shop, and challenges tabs in the Clash Main menu to handle notifications.
@@ -1303,7 +1170,7 @@ def handle_clash_main_tab_notifications(
     start_time: float = time.time()
 
     # wait for clash main to appear
-    if wait_for_clash_main_menu(, logger) is False:
+    if wait_for_clash_main_menu(logger) is False:
         logger.change_status(
             status="Error 246246 Waited too long for clash main menu, restarting vm",
         )
@@ -1311,21 +1178,21 @@ def handle_clash_main_tab_notifications(
 
     # click card tab from main
     print("Clicked card tab")
-    click(, 103, 598)
+    click(103, 598)
     time.sleep(1)
 
     # click shop tab from card tab
     print("Clicked shop tab")
-    click(, 9, 594, clicks=3, interval=0.33)
+    click(9, 594, clicks=3, interval=0.33)
     time.sleep(1)
 
     # click clan tab from shop tab
     print("Clicked clan tab")
-    click(, 315, 594)
+    click(315, 594)
     time.sleep(3)
 
     if check_for_war_chest_obstruction():
-        open_war_chest_obstruction(, logger)
+        open_war_chest_obstruction(logger)
         logger.add_war_chest_collect()
         print(f"Incremented war chest collects to {logger.war_chest_collects}")
         time.sleep(3)
@@ -1334,28 +1201,28 @@ def handle_clash_main_tab_notifications(
     print("Getting to events tab...")
     while not check_for_events_page():
         print("Still not on events page...")
-        click(, 408, 600)
-        handle_war_popup_pages(, logger)
+        click(408, 600)
+        handle_war_popup_pages(logger)
 
     print("On events page")
 
     # spam click shop page at the leftmost location, wait a little bit
     print("Clicked shop page")
-    click(, 9, 594, clicks=3, interval=0.33)
+    click(9, 594, clicks=3, interval=0.33)
     time.sleep(2)
 
     # click clash main from shop page
     print("Clicked clash main")
-    click(, 240, 600)
+    click(240, 600)
     time.sleep(2)
 
     # handle possibility of trophy road obstructing clash main
     if check_for_trophy_reward_menu():
-        handle_trophy_reward_menu(, logger)
+        handle_trophy_reward_menu(logger)
         time.sleep(2)
 
     # wait for clash main to appear
-    if wait_for_clash_main_menu(, logger) is False:
+    if wait_for_clash_main_menu(logger) is False:
         logger.change_status(
             status="Error 47 Waited too long for clash main menu, restarting vm",
         )
@@ -1406,7 +1273,6 @@ def check_for_events_page():
 
 
 def wait_for_clash_main_challenges_tab(
-    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
@@ -1457,9 +1323,9 @@ def check_if_on_clash_main_challenges_tab() -> bool:
         bool: True if the menu is on the challenges tab, False otherwise.
 
     """
-    if not region_is_color(, [380, 580, 30, 45], (76, 111, 145)):
+    if not region_is_color([380, 580, 30, 45], (76, 111, 145)):
         return False
-    if not region_is_color(, [290, 610, 25, 15], (80, 118, 153)):
+    if not region_is_color([290, 610, 25, 15], (80, 118, 153)):
         return False
 
     return True
@@ -1477,15 +1343,14 @@ def check_if_on_clash_main_shop_page() -> bool:
         bool: True if the bot is on the main shop page, False otherwise.
 
     """
-    if not region_is_color(, region=[9, 580, 30, 45], color=(76, 112, 146)):
+    if not region_is_color(region=[9, 580, 30, 45], color=(76, 112, 146)):
         return False
 
-    if not region_is_color(, region=[90, 580, 18, 40], color=(75, 111, 146)):
+    if not region_is_color(region=[90, 580, 18, 40], color=(75, 111, 146)):
         return False
 
     lines = [
         check_line_for_color(
-            ,
             x_1=393,
             y_1=7,
             x_2=414,
@@ -1493,7 +1358,6 @@ def check_if_on_clash_main_shop_page() -> bool:
             color=(44, 144, 21),
         ),
         check_line_for_color(
-            ,
             x_1=48,
             y_1=593,
             x_2=83,
@@ -1506,7 +1370,6 @@ def check_if_on_clash_main_shop_page() -> bool:
 
 
 def wait_for_clash_main_shop_page(
-    ,
     logger: Logger,
 ) -> Literal["restart", "good"]:
     """Wait for the bot to navigate to the main shop page in the Clash of Clans game.
@@ -1536,7 +1399,6 @@ def wait_for_clash_main_shop_page(
 
 
 def get_to_activity_log(
-    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -1572,11 +1434,10 @@ def get_to_activity_log(
     else:
         logger.log("Opening clash main options menu")
     click(
-        ,
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
     )
-    if wait_for_clash_main_burger_button_options_menu(, logger) == "restart":
+    if wait_for_clash_main_burger_button_options_menu(logger) == "restart":
         logger.change_status(
             status="Error 99993 Waited too long for calsh main options menu, restarting vm",
         )
@@ -1587,8 +1448,8 @@ def get_to_activity_log(
         logger.change_status(status="Clicking activity log button")
     else:
         logger.log("Clicking activity log button")
-    click(, BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
-    if wait_for_battle_log_page(, logger, printmode) == "restart":
+    click(BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
+    if wait_for_battle_log_page(logger, printmode) == "restart":
         logger.change_status(
             status="Error 923593 Waited too long for battle log page, restarting vm",
         )
@@ -1598,7 +1459,6 @@ def get_to_activity_log(
 
 
 def wait_for_battle_log_page(
-    ,
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
@@ -1714,7 +1574,6 @@ def check_if_on_clash_main_burger_button_options_menu() -> bool:
 
 
 def wait_for_clash_main_burger_button_options_menu(
-    : int,
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
@@ -1757,7 +1616,6 @@ def wait_for_clash_main_burger_button_options_menu(
 def check_if_on_collection_page() -> bool:
     iar = screenshot()
 
-
     trophy_mode_colors = [
         [211, 159, 45],
         [203, 134, 41],
@@ -1797,9 +1655,8 @@ def check_if_on_collection_page() -> bool:
         iar[78][335],
     ]
 
-    if (
-         pixels_match_colors(pixels, trophy_mode_colors)
-        or pixels_match_colors(pixels, legends2_mode_colors)
+    if pixels_match_colors(pixels, trophy_mode_colors) or pixels_match_colors(
+        pixels, legends2_mode_colors
     ):
         return True
 
@@ -1814,7 +1671,7 @@ def get_to_collections_page() -> bool:
 
     # click card page
     card_page_coords = [100, 600]
-    click(, card_page_coords[0], card_page_coords[1])
+    click(card_page_coords[0], card_page_coords[1])
     time.sleep(1)
 
     cycle_card_page_coord = [135, 590]
@@ -1827,13 +1684,14 @@ def get_to_collections_page() -> bool:
             print("Timed out waiting for collection page")
             return False
 
-        click(, cycle_card_page_coord[0], cycle_card_page_coord[1])
+        click(cycle_card_page_coord[0], cycle_card_page_coord[1])
         time.sleep(1)
 
     return True
 
 
 if __name__ == "__main__":
-    print("\n\n\n\n\n\n")
-    while 1:
-        print(check_if_on_clash_main_menu(1))
+    from pyclashbot.google_play_emulator.gpe import connect
+
+    connect()
+    print(check_if_on_clash_main_menu())

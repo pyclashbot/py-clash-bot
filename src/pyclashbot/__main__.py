@@ -13,11 +13,12 @@ from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
-from pyclashbot.memu.memu_closer import close_everything_memu
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
+
+from pyclashbot.google_play_emulator.gpe import close_emulator
 
 initalize_pylogging()
 
@@ -76,7 +77,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
-
         "path_of_legends_1v1_battle_user_toggle": values[
             "path_of_legends_1v1_user_toggle"
         ],
@@ -94,16 +94,12 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
-        'magic_items_user_toggle':values['magic_items_user_toggle'],
+        "magic_items_user_toggle": values["magic_items_user_toggle"],
         # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
         "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
         # account switching input info
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switch_count": int(values["account_switching_slider"]),
-        # memu settings
-        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
-        "opengl_toggle": values["opengl_toggle"],
-        "directx_toggle": values["directx_toggle"],
     }
 
     return jobs_dictionary
@@ -285,7 +281,6 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         logger.log("No jobs are selected!")
         return None
 
-
     logger.log("Start Button Event")
     logger.change_status(status="Starting the bot!")
     save_current_settings(values)
@@ -296,8 +291,7 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         if key in list(window.key_dict.keys()):
             window[key].update(disabled=True)
 
-    # close existing memuc processes
-    print(f'TODO: add logic to clear google play processes before starting')
+    close_emulator()
 
     # setup the main thread and start it
     print("Starting main thread")

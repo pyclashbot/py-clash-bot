@@ -24,7 +24,7 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
@@ -60,7 +60,7 @@ def find_claim_button():
     return None
 
 
-def donate_cards_state(, logger: Logger, next_state, free_donate_toggle: bool):
+def donate_cards_state( logger: Logger, next_state, free_donate_toggle: bool):
     """This function represents the state of donating cards in Clash of Clans.
 
     Args:
@@ -86,7 +86,7 @@ def donate_cards_state(, logger: Logger, next_state, free_donate_toggle: bool):
     # if logger says we're not in a clan, check if we are in a clan
     if logger.is_in_clan() is False:
         logger.change_status("Checking if in a clan before donating")
-        in_a_clan_return = donate_state_check_if_in_a_clan(, logger)
+        in_a_clan_return = donate_state_check_if_in_a_clan( logger)
         if in_a_clan_return == "restart":
             logger.change_status(
                 status="Error 05708425 Failure with check_if_in_a_clan",
@@ -104,7 +104,7 @@ def donate_cards_state(, logger: Logger, next_state, free_donate_toggle: bool):
 
     # run donate cards main
     if (
-        donate_cards_main(, logger, only_free_donates=free_donate_toggle)
+        donate_cards_main( logger, only_free_donates=free_donate_toggle)
         is False
     ):
         logger.log("Failure donating cards. Returning false")
@@ -147,7 +147,6 @@ def donate_state_check_pixels_for_clan_flag() -> bool:
 
 
 def donate_state_check_if_in_a_clan(
-    ,
     logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, return
@@ -156,7 +155,7 @@ def donate_state_check_if_in_a_clan(
         return "restart"
 
     # get to profile page
-    if get_to_profile_page(, logger) == "restart":
+    if get_to_profile_page( logger) == "restart":
         logger.change_status(
             status="Error 9076092860923485 Failure with get_to_profile_page",
         )
@@ -170,8 +169,8 @@ def donate_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-    if wait_for_clash_main_menu(, logger) is False:
+    click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    if wait_for_clash_main_menu( logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",
         )
@@ -180,14 +179,14 @@ def donate_state_check_if_in_a_clan(
     return in_a_clan
 
 
-def donate_cards_main(, logger: Logger, only_free_donates: bool) -> bool:
+def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
     # get to clan chat page
     logger.change_status("Getting to clan tab to donate cards")
-    if get_to_clan_tab_from_clash_main(, logger) is False:
+    if get_to_clan_tab_from_clash_main( logger) is False:
         return False
 
     # click jump to bottom button
-    click(, 385, 488)
+    click( 385, 488)
     time.sleep(2)
 
     logger.change_status("Starting donate sequence")
@@ -199,9 +198,9 @@ def donate_cards_main(, logger: Logger, only_free_donates: bool) -> bool:
             claim_button_coord = find_claim_button()
             if claim_button_coord:
                 logger.log("Claim button found. Claiming free gift from clan mate.")
-                click(, *claim_button_coord)
+                click( *claim_button_coord)
                 time.sleep(3)
-            while find_and_click_donates(, logger, only_free_donates) is True:
+            while find_and_click_donates( logger, only_free_donates) is True:
                 logger.change_status("Found a donate button")
                 loops += 1
                 if loops > 50:
@@ -213,21 +212,21 @@ def donate_cards_main(, logger: Logger, only_free_donates: bool) -> bool:
             time.sleep(1)
 
         # click the more requests button that may exist
-        click(, 48, 132)
+        click( 48, 132)
         time.sleep(1)
 
         # click deadspace
-        click(, 10, 233)
+        click( 10, 233)
         time.sleep(0.33)
 
     # get to clash main
     logger.change_status("Returning to clash main after donating")
-    click(, 175, 600, clicks=1)
+    click( 175, 600, clicks=1)
     time.sleep(5)
 
     # handle geting stuck on trophy road screen
     if check_for_trophy_reward_menu():
-        handle_trophy_reward_menu(, logger)
+        handle_trophy_reward_menu( logger)
         time.sleep(2)
 
     if check_if_on_clash_main_menu() is not True:
@@ -238,9 +237,9 @@ def donate_cards_main(, logger: Logger, only_free_donates: bool) -> bool:
     return True
 
 
-def find_and_click_donates(, logger, only_free_donates):
+def find_and_click_donates( logger, only_free_donates):
     logger.change_status("Searching for donate buttons...")
-    coords = find_donate_buttons(, only_free_donates)
+    coords = find_donate_buttons( only_free_donates)
 
     found_donates = False
     start_time = time.time()
@@ -252,14 +251,14 @@ def find_and_click_donates(, logger, only_free_donates):
             continue
 
         # if coord is in range, click it until its grey
-        while check_for_positive_donate_button_coords(, coord):
+        while check_for_positive_donate_button_coords( coord):
             # timeout check
             if time.time() - start_time > timeout:
                 logger.change_status("Timed out while donating... Restarting")
                 return "restart"
 
             # do clicking, increment counter, toggle found_donates
-            click(, coord[0], coord[1])
+            click( coord[0], coord[1])
             logger.change_status("Donated a card!")
             found_donates = True
             logger.add_donate()
@@ -285,7 +284,7 @@ def region_contains_donate_button(image,region):
     return False
 
 
-def find_donate_buttons(, only_free_donates):
+def find_donate_buttons( only_free_donates):
     start_time = time.time()
     coords = []
 
@@ -320,7 +319,7 @@ def find_donate_buttons(, only_free_donates):
             if (
                 only_free_donates
                 and coord is not None
-                and not free_button_exists(, coord, region)
+                and not free_button_exists( coord, region)
             ):
                 #if not free_button_exists retry
                 continue
@@ -346,7 +345,7 @@ def find_donate_buttons(, only_free_donates):
     return coords
 
 
-def free_button_exists(, coord, region):
+def free_button_exists( coord, region):
     """Method to find the donate icon for FREE in a cropped image"""
     # grab ROI image
     x = coord[1] + region[0]
@@ -391,7 +390,7 @@ def find_donate_button(image):
     return [coord[1], coord[0]]
 
 
-def check_for_positive_donate_button_coords(, coord):
+def check_for_positive_donate_button_coords( coord):
     # if pixel is too high, always return False
 
     iar = screenshot()
@@ -417,7 +416,4 @@ def check_for_positive_donate_button_coords(, coord):
 
 
 if __name__ == "__main__":
-    coords = find_donate_buttons(0, False)
-    print("\n")
-    for i, coord in enumerate(coords):
-        print(i, coord)
+    pass

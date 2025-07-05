@@ -9,7 +9,7 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 from pyclashbot.detection.image_rec import (
@@ -20,9 +20,9 @@ from pyclashbot.detection.image_rec import (
 )
 
 
-def collect_trophy_road_rewards_state(: int, logger: Logger, next_state: str):
+def collect_trophy_road_rewards_state( logger: Logger, next_state: str):
     # Verify if already in the clash main menu.
-    if not wait_for_clash_main_menu(, logger):
+    if not wait_for_clash_main_menu( logger):
         logger.change_status("Not in clash main menu")
         return "restart"
 
@@ -32,7 +32,7 @@ def collect_trophy_road_rewards_state(: int, logger: Logger, next_state: str):
             "Detected Path of Legends, attempting to navigate back to Trophy Road...",
         )
         # Click on the specified coordinates to attempt to switch views.
-        click(, 277, 400)
+        click( 277, 400)
         time.sleep(2)  # Wait for the UI to possibly update.
 
         # Re-check if successfully navigated back to Trophy Road.
@@ -47,7 +47,6 @@ def collect_trophy_road_rewards_state(: int, logger: Logger, next_state: str):
     while check_for_trophy_road_rewards():
         logger.change_status("Trophy Road rewards detected. Attempting to collect...")
         trophy_road_state = collect_trophy_road_rewards(
-            ,
             logger,
         )
 
@@ -60,7 +59,7 @@ def collect_trophy_road_rewards_state(: int, logger: Logger, next_state: str):
                 "Detected Path of Legends, attempting to navigate back to Trophy Road...",
             )
             # Click on the specified coordinates to attempt to switch views.
-            click(, 277, 400)
+            click( 277, 400)
             time.sleep(2)  # Wait for the UI to possibly update.
 
             # Re-check if successfully navigated back to Trophy Road.
@@ -114,7 +113,7 @@ def check_for_trophy_road_rewards():
     return False
 
 
-def collect_trophy_road_rewards(: int, logger: Logger):
+def collect_trophy_road_rewards( logger: Logger):
     """Attempts to collect Trophy Road rewards by navigating to the Trophy Road rewards menu
     and claiming available rewards.
 
@@ -147,7 +146,7 @@ def collect_trophy_road_rewards(: int, logger: Logger):
 
             if check_if_on_clash_main_menu():
                 return True
-            click(, deadspace_coord[0], deadspace_coord[1])
+            click( deadspace_coord[0], deadspace_coord[1])
             time.sleep(1)
         return False
 
@@ -158,11 +157,11 @@ def collect_trophy_road_rewards(: int, logger: Logger):
         #if we got a button
         if coord is not None:
             #collect it
-            click(,coord[0],coord[1])
+            click(coord[0],coord[1])
             #handle strikes appearing
             time.sleep(1)
             if strikes_detected():
-                click(, 210, 580)
+                click( 210, 580)
                 time.sleep(1)
 
             #back to main for next loop
@@ -186,20 +185,20 @@ def collect_trophy_road_rewards(: int, logger: Logger):
 
         #if left
         if lrn == "left":
-            click(, 170, 337)
+            click( 170, 337)
             #handle strikes appearing
             time.sleep(1)
             if strikes_detected():
-                click(, 210, 580)
+                click( 210, 580)
                 time.sleep(1)
 
         #else right
         else:
-            click(, 307, 337)
+            click( 307, 337)
             #handle strikes appearing
             time.sleep(1)
             if strikes_detected():
-                click(, 210, 580)
+                click( 210, 580)
                 time.sleep(1)
 
         #back to main
@@ -214,7 +213,7 @@ def collect_trophy_road_rewards(: int, logger: Logger):
         logger.change_status('Attempting to collect another reward!')
 
         # Open the Trophy Road rewards menu.
-        click(, 210, 250)
+        click( 210, 250)
         time.sleep(2)  # Wait for the menu to potentially open.
         if not check_if_on_trophy_road_rewards_menu():
             logger.change_status("Failed to enter trophy road menu. Returning False")
@@ -364,7 +363,7 @@ def check_if_on_trophy_road_rewards_menu() -> bool:
     return True
 
 
-def find_trophy_road_reward_claim_button(, delay=2):
+def find_trophy_road_reward_claim_button( delay=2):
     def to_wrap():
         image = screenshot()
 
@@ -395,6 +394,4 @@ def find_trophy_road_reward_claim_button(, delay=2):
 
 
 if __name__ == "__main__":
-    print("\n" * 50)
-
-    c = find_trophy_road_reward_claim_button(1, 2)
+    pass
