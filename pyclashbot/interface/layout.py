@@ -1,5 +1,4 @@
-"""This module defines the layout of the PyClashBot interface using FreeSimpleGUI.
-"""
+"""This module defines the layout of the PyClashBot interface using FreeSimpleGUI."""
 
 from os import path
 
@@ -80,7 +79,7 @@ controls_layout = [
     [
         sg.Frame(layout=[[jobs_frame]], title="", expand_y=True, border_width=0, pad=0),
         sg.Frame(
-            layout=[[memu_settings_frame], [account_switching_switching_frame]],
+            layout=[[account_switching_switching_frame]],
             title="",
             border_width=0,
             pad=0,
@@ -224,8 +223,7 @@ user_config_keys = [
     "trophy_road_rewards_user_toggle",
     "upgrade_all_cards_user_toggle",
     "season_shop_buys_user_toggle",
-    'magic_items_user_toggle',
-
+    "magic_items_user_toggle",
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",

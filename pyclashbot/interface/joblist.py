@@ -54,17 +54,6 @@ battle_tab = (
             default_value=False,
         ),
     ],
-
-    [
-        job_check_box(
-            "Path of Legends battles",
-            "path_of_legends_1v1_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box("2v2 battles", "2v2_user_toggle", default_value=True),
-    ],
     [
         job_check_box("War battles", "war_user_toggle", default_value=False),
     ],
@@ -85,13 +74,8 @@ battle_tab = (
     ],
     [
         job_check_box(
-            "Skip win/loss check", "disable_win_track_toggle", default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Skip fight if full chests",
-            "skip_fight_if_full_chests_user_toggle",
+            "Skip win/loss check",
+            "disable_win_track_toggle",
             default_value=False,
         ),
     ],
@@ -100,31 +84,24 @@ battle_tab = (
 
 rewards_tab = [
     [
-        job_check_box("Open chests", "open_chests_user_toggle", default_value=True),
-    ],
-    [
         job_check_box(
-            "Battlepass", "open_battlepass_user_toggle", default_value=False,
+            "Battlepass",
+            "open_battlepass_user_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Card Masteries", "card_mastery_user_toggle", default_value=False,
+            "Card Masteries",
+            "card_mastery_user_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Collect Dailies", "daily_rewards_user_toggle", default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Level Up Rewards", "level_up_chest_user_toggle", default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Buy Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False,
+            "Level Up Rewards",
+            "level_up_chest_user_toggle",
+            default_value=False,
         ),
     ],
     [
@@ -153,12 +130,16 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Donate cards for FREE ", "free_donate_toggle", default_value=False,
+            "Donate cards for FREE ",
+            "free_donate_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Buy FREE shop offers", "free_offer_user_toggle", default_value=True,
+            "Buy FREE shop offers",
+            "free_offer_user_toggle",
+            default_value=True,
         ),
     ],
     [
@@ -171,14 +152,11 @@ card_collection_tab = [
     [
         job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=False),
     ],
-    # [
-    #     job_check_box(
-    #         "Upgrade ALL Cards", "upgrade_all_cards_user_toggle", default_value=False,
-    #     ),
-    # ],
     [
         job_check_box(
-            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=False,
+            "Season Shop Offers",
+            "season_shop_buys_user_toggle",
+            default_value=False,
         ),
     ],
 ]
@@ -192,7 +170,9 @@ jobs_checklist = [
                 [sg.Tab("Battle", battle_tab)],
                 [sg.Tab("Collection", rewards_tab)],
                 [sg.Tab("Cards", card_collection_tab)],
-            ],border_width=0, tab_border_width=0
+            ],
+            border_width=0,
+            tab_border_width=0,
         ),
     ],
 ]
