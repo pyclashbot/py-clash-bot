@@ -5,6 +5,7 @@ from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 from pyclashbot.google_play_emulator import gpe
 
+from pyclashbot.google_play_emulator.docker import start_dock_thread
 
 class WorkerThread(PausableThread):
     def __init__(self, logger: Logger, args, kwargs=None) -> None:
@@ -17,6 +18,10 @@ class WorkerThread(PausableThread):
 
         try:
             state = "start"
+
+            start_dock_thread()
+
+
 
             state_history = StateHistory(self.logger)
 
