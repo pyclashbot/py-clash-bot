@@ -87,7 +87,7 @@ class GPEPathManager:
 
     def __init__(self):
         # self.default_path = r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Play Games Developer Emulator\Google Play Games Developer Emulator.lnk"
-        self.default_path = r"RR:\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Play Games Developer Emulator\Google Play Games Developer Emulator.lnk"
+        self.default_path = r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Play Games Developer Emulator\Google Play Games Developer Emulator.lnk"
         self.json_path = r"gpe_info.json"
 
     def get_emulator_path(self):
