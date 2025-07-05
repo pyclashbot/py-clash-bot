@@ -14,12 +14,12 @@ from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 
-def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: str):
+def path_of_legends_rewards_toggle(: int, logger: Logger, next_state: str):
     """Attempts to collect Path of Legends rewards if available.
 
     Args:
     ----
-        vm_index (int): Index of the virtual machine.
+         (int): Index of the virtual machine.
         logger (Logger): Logger instance for logging.
         next_state (str): The next state to transition to after attempting to collect rewards.
 
@@ -29,32 +29,32 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
 
     """
     # Check if already in the Clash main menu.
-    if not wait_for_clash_main_menu(vm_index, logger):
+    if not wait_for_clash_main_menu(, logger):
         logger.change_status("Not in Clash main menu")
         return "restart"
 
     # Detect if both 1v1 modes are available, implying Path of Legends is accessible.
-    if check_both_1v1_modes_available(vm_index):
+    if check_both_1v1_modes_available():
         logger.change_status("Detected both 1v1 modes.")
 
         # Attempt to navigate to Path of Legends if not already there.
-        if check_if_on_path_of_legends_clash_main(vm_index) != True:
+        if check_if_on_path_of_legends_clash_main() != True:
             logger.change_status("Not in Path of Legends, attempting to switch...")
-            click(vm_index, 277, 400)
+            click(, 277, 400)
             time.sleep(2)  # Wait for UI to update.
 
-            if check_if_on_path_of_legends_clash_main(vm_index) != True:
+            if check_if_on_path_of_legends_clash_main() != True:
                 logger.change_status("Failed to navigate to Path of Legends")
                 return "restart"
 
         rewards_collected_result = 0
         # Collect rewards as long as Path of Legends rewards are detected.
-        if check_for_path_of_legends_rewards(vm_index):
+        if check_for_path_of_legends_rewards():
             logger.change_status(
                 "Path of Legends rewards detected. Attempting to collect...",
             )
             path_of_legends_state, rewards_collected = collect_path_of_legends_rewards(
-                vm_index, logger,
+                , logger,
             )
             if not path_of_legends_state:
                 logger.change_status("Failed to collect Path of Legends rewards.")
@@ -75,14 +75,14 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
     return next_state
 
 
-def check_for_path_of_legends_rewards(vm_index):
+def check_for_path_of_legends_rewards():
     """Checks if Path of Legends rewards are available by looking for specific pixel colors.
     If the expected colors are found, it indicates
     that there are unclaimed rewards.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -90,7 +90,7 @@ def check_for_path_of_legends_rewards(vm_index):
 
     """
     # Take a screenshot and convert to a numpy array for pixel access.
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot())
 
     # Coordinates and expected colors for the Path of Legends rewards indicator.
     # Multiple colors are checked to accommodate different visual states.
@@ -115,13 +115,13 @@ def check_for_path_of_legends_rewards(vm_index):
     return False
 
 
-def collect_path_of_legends_rewards(vm_index, logger):
+def collect_path_of_legends_rewards(, logger):
     """Tries to collect Path of Legends rewards by opening the Path of Legends rewards menu
     and claiming available rewards. It handles both scenarios: being an Ultimate Champion and not.
 
     Args:
     ----
-        vm_index (int): Index of the virtual machine.
+         (int): Index of the virtual machine.
         logger (Logger): Logger object for status updates.
 
     Returns:
@@ -131,29 +131,29 @@ def collect_path_of_legends_rewards(vm_index, logger):
     """
     rewards_collected = 0
     # Attempt to open the Path of Legends rewards menu.
-    click(vm_index, 210, 250)
+    click(, 210, 250)
     time.sleep(2)  # Wait a bit for the menu to open.
 
-    if check_if_on_path_of_legends_rewards_menu(vm_index):
+    if check_if_on_path_of_legends_rewards_menu():
         logger.change_status("Successfully entered the Path of Legends rewards menu.")
         time.sleep(1.5)
 
         def claim_rewards_sequence():
             nonlocal rewards_collected
-            button = find_claim_rewards_buttons(vm_index)
+            button = find_claim_rewards_buttons()
             print(f"{button}")
             while button:
                 logger.change_status("Claiming reward...")
                 # Click on the found "Claim Rewards" button.
-                click(vm_index, *button)
+                click(, *button)
                 time.sleep(1)  # Allow time for reward claim animation.
                 collecting_attempts = 0
                 while (
-                    not check_if_on_path_of_legends_rewards_menu(vm_index)
+                    not check_if_on_path_of_legends_rewards_menu()
                     and collecting_attempts < 30
                 ):
                     # Click on deadspace to ensure staying in the menu.
-                    click(vm_index, 20, 395)
+                    click(, 20, 395)
                     time.sleep(0.5)
                     collecting_attempts += 1
                     if collecting_attempts >= 30:
@@ -165,33 +165,33 @@ def collect_path_of_legends_rewards(vm_index, logger):
                 rewards_collected += 1
                 time.sleep(1.5)
                 # Re-check for more buttons after each claim.
-                button = find_claim_rewards_buttons(vm_index)
+                button = find_claim_rewards_buttons()
             return True
 
         if not claim_rewards_sequence():
             return False, rewards_collected
-        if check_if_ultimate_champion(vm_index):
+        if check_if_ultimate_champion():
             logger.change_status(
                 "Identified as Ultimate Champion; bypassing crown search.",
             )
-            while not check_last_door(vm_index):
+            while not check_last_door():
                 logger.change_status("Scrolling to look for more rewards...")
-                scroll_up(vm_index)
+                scroll_up()
                 time.sleep(2)
                 if not claim_rewards_sequence():
                     return False, rewards_collected
         else:
-            while not (check_current_step(vm_index) or check_last_door(vm_index)):
-                scroll_up(vm_index)
+            while not (check_current_step() or check_last_door()):
+                scroll_up()
                 time.sleep(2)
                 if not claim_rewards_sequence():
                     return False, rewards_collected
 
         logger.change_status("Reached the end of rewards.")
-        click(vm_index, 210, 606)  # Click to go back to the main menu.
+        click(, 210, 606)  # Click to go back to the main menu.
         time.sleep(2)
 
-        if wait_for_clash_main_menu(vm_index, logger):
+        if wait_for_clash_main_menu(, logger):
             logger.change_status(
                 "Successfully returned to Clash main menu after collecting rewards.",
             )
@@ -202,21 +202,21 @@ def collect_path_of_legends_rewards(vm_index, logger):
     return False, rewards_collected
 
 
-def check_last_door(vm_index):
+def check_last_door():
     """Checks for the last door in Path of Legends by looking for a specific group of pixels,
     indicating the door's position. This method checks for a fixed pattern of colors that
     may shift vertically but stay grouped together.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
         bool: True if the door's pixel group is detected, False otherwise.
 
     """
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot())
     screen_height = iar.shape[0]  # Height of the screen
 
     # Define a baseline Y coordinate and the relative positions and colors
@@ -261,20 +261,20 @@ def check_last_door(vm_index):
     return False  # Return False if the door's pixel group wasn't found anywhere
 
 
-def find_claim_rewards_buttons(vm_index):
+def find_claim_rewards_buttons():
     """Searches for the lowest "Claim Rewards" button in Path of Legends by scanning the entire screen
     for a specific pattern of colors. This approach allows for vertical variations in the button's position.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
         tuple[int, int] | None: The coordinates of the lowest "Claim Rewards" button found, or None if not found.
 
     """
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot())
     screen_height = iar.shape[0]  # Height of the screen
 
     # Define the relative positions and colors for the "Claim Rewards" button pattern
@@ -311,20 +311,20 @@ def find_claim_rewards_buttons(vm_index):
     return None  # Return None if no button was found
 
 
-def check_current_step(vm_index):
+def check_current_step():
     """Checks for the presence of specific crown colors in Path of Legends, indicating the current step.
     This function scans from top to bottom of the screen to accommodate vertical variations in crown position.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
         bool: True if the sequence of crown colors is detected, False otherwise.
 
     """
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot())
     screen_height = iar.shape[0]  # Height of the screen
 
     # Define the X coordinates and expected colors for the crown sequence
@@ -354,13 +354,13 @@ def check_current_step(vm_index):
     return True
 
 
-def check_if_ultimate_champion(vm_index):
+def check_if_ultimate_champion():
     """Checks if the user has reached the Ultimate Champion tier in Path of Legends
     by examining specific pixel colors on the screen.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -368,7 +368,7 @@ def check_if_ultimate_champion(vm_index):
 
     """
     # Capture the current screen of the VM as a numpy array.
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot())
 
     # Define the pixel positions and their expected colors.
     pixels_positions_and_colors = [
@@ -390,12 +390,12 @@ def check_if_ultimate_champion(vm_index):
     return True
 
 
-def check_if_on_path_of_legends_rewards_menu(vm_index):
+def check_if_on_path_of_legends_rewards_menu():
     """Checks if the current screen is the Path of Legends rewards menu based on specific pixel colors.
 
     Args:
     ----
-        vm_index (int): The index of the virtual machine.
+         (int): The index of the virtual machine.
 
     Returns:
     -------
@@ -403,7 +403,7 @@ def check_if_on_path_of_legends_rewards_menu(vm_index):
 
     """
     # Capture the current screen of the VM as a numpy array.
-    iar = numpy.asarray(screenshot(vm_index))
+    iar = numpy.asarray(screenshot())
 
     # Define the pixel positions and their expected colors.
     pixels_positions_and_colors = [
