@@ -9,7 +9,8 @@ from pyclashbot.google_play_emulator.gpe_path_manager import GPEPathManager
 
 gpe_path_manager = GPEPathManager()
 CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
-EMULATOR_PATH =gpe_path_manager.get_emulator_path()
+EMULATOR_PATH = gpe_path_manager.get_emulator_path()
+EXPECTED_SCREEN_DIMS = (419, 633)
 
 
 def adb(command):
@@ -110,7 +111,7 @@ def set_screen_size(width, height):
 
 
 def resize_emualtor(width=None, height=None):
-    default = (419, 633)
+    default = EXPECTED_SCREEN_DIMS
     if None in [width, height]:
         width, height = default
     print(f"Resizing emulator to {width}x{height}...")
@@ -168,10 +169,10 @@ def restart_emulator():
         print("Done connecting to emulator")
 
     # configure emulator
-    expected_dims = (633, 419)
-    resize_emualtor()
-    while not valid_screen_size(expected_dims):
+    for i in range(3):
         resize_emualtor()
+        time.sleep(1)
+
     print("Done resizing emulator")
 
     print(f"Fully restarted emulator in {time.time() - start_time:.2f} seconds")
@@ -212,6 +213,8 @@ def test_screenshot():
 
 
 def valid_screen_size(expected_dims: tuple):
+    # reverse expected_dims just because that's how cv2 works
+    expected_dims = (expected_dims[1], expected_dims[0])
     image = screenshot()
     dims = image.shape[:2]
     print(f"Image of size {dims} received, expected {expected_dims}")
@@ -222,5 +225,6 @@ def valid_screen_size(expected_dims: tuple):
 
 
 if __name__ == "__main__":
-    test_screenshot()
+    # test_screenshot()
     # start_clash_royale()
+    print(valid_screen_size((633, 419)))
