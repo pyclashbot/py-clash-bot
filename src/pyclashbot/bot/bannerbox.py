@@ -4,7 +4,7 @@ import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 BANNERBOX_ICON_ON_CLASH_MAIN_PAGE = (350, 195)
@@ -33,7 +33,7 @@ def check_if_bannerbox_icon_have_a_star():
     return True
 
 
-def collect_bannerbox_rewards_state(: int, logger: Logger, next_state: str):
+def collect_bannerbox_rewards_state( logger: Logger, next_state: str):
     # if not in clash main, return false
     if check_if_on_clash_main_menu() is not True:
         logger.change_status("Not in clash main menu")
@@ -46,17 +46,16 @@ def collect_bannerbox_rewards_state(: int, logger: Logger, next_state: str):
         )
         return next_state
 
-    if collect_bannerbox_rewards(, logger):
+    if collect_bannerbox_rewards( logger):
         return next_state
     return "restart"
 
 
-def collect_bannerbox_rewards(, logger: Logger) -> bool:
+def collect_bannerbox_rewards( logger: Logger) -> bool:
     logger.change_status("Trying to open bannerbox rewards...")
 
     # Open bannerbox button on clash main
     click(
-        ,
         BANNERBOX_ICON_ON_CLASH_MAIN_PAGE[0],
         BANNERBOX_ICON_ON_CLASH_MAIN_PAGE[1],
     )
@@ -67,7 +66,7 @@ def collect_bannerbox_rewards(, logger: Logger) -> bool:
         logger.change_status("Already collected all bannerbox rewards this season.")
 
         # click deadspace to get back to main
-        click(, 5, 450, clicks=4, interval=1)
+        click( 5, 450, clicks=4, interval=1)
 
         # if not back on main, return False
         if check_if_on_clash_main_menu() is not True:
@@ -80,7 +79,6 @@ def collect_bannerbox_rewards(, logger: Logger) -> bool:
 
     # click the '100 tickets' purchase button
     click(
-        ,
         FIRST_100_TICKETS_PURCHASE_BUTTON[0],
         FIRST_100_TICKETS_PURCHASE_BUTTON[1],
     )
@@ -91,14 +89,13 @@ def collect_bannerbox_rewards(, logger: Logger) -> bool:
         logger.change_status("Bannerbox not available.")
 
         # click deadspace a bunch, then return
-        click(, 1, 500, clicks=10, interval=0.33)
+        click( 1, 500, clicks=10, interval=0.33)
         return True
 
     logger.change_status("Bannerbox is available! Buying it...")
 
     # click the second '100 tickets' purchase button
     click(
-        ,
         SECOND_100_TICKETS_PURCHASE_BUTTON[0],
         SECOND_100_TICKETS_PURCHASE_BUTTON[1],
     )
@@ -114,7 +111,7 @@ def collect_bannerbox_rewards(, logger: Logger) -> bool:
             return False
 
         # click deadspace
-        click(, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1], clicks=5, interval=0.33)
+        click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1], clicks=5, interval=0.33)
 
     # return true if everything went well
     return True

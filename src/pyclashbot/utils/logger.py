@@ -10,8 +10,6 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import basename, exists, expandvars, getmtime, join
 
-from pyclashbot.memu.configure import EMULATOR_NAME, get_vm_configuration
-from pyclashbot.memu.pmc import get_
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.pastebin import upload_pastebin
 from pyclashbot.utils.versioning import __version__
@@ -66,12 +64,6 @@ def initalize_pylogging() -> None:
         pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
     )
 
-     = get_(EMULATOR_NAME)
-
-    logging.info(
-        "VM Configuration: \n%s",
-        pprint.pformat(get_vm_configuration(), indent=4),
-    )
     compress_logs()
 
 
@@ -284,8 +276,6 @@ class Logger:
 
     def increment_magic_item_buys(self):
         self.magic_item_buys += 1
-
-
 
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1

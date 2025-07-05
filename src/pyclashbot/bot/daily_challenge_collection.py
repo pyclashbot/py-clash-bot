@@ -5,20 +5,21 @@ import numpy
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.logger import Logger
-from pyclashbot.memu.client import click, screenshot
+
+from pyclashbot.google_play_emulator.gpe import click,screenshot
 
 CLASH_MAIN_DEADSPACE_COORD = (240, 600)
 CLASH_MAIN_DEADSPACE_COLOR = [255, 175, 78]
 
 
 
-def collect_daily_rewards_state(, logger, next_state):
+def collect_daily_rewards_state( logger, next_state):
     # First check if all rewards have already been collected
     if check_if_rewards_collected():
         logger.change_status("All daily rewards have been collected")
         return next_state
 
-    if not collect_all_daily_rewards(, logger):
+    if not collect_all_daily_rewards( logger):
         logger.change_status("Failed to collect daily rewards")
         return "restart"
 
@@ -44,7 +45,7 @@ def check_if_rewards_collected() -> bool:
     # If all pixels match, the checkmark is present
     return True
 
-def collect_challenge_rewards(, logger: Logger, rewards) -> bool:
+def collect_challenge_rewards( logger: Logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
     if not check_if_on_clash_main_menu():
         logger.change_status(
@@ -53,7 +54,7 @@ def collect_challenge_rewards(, logger: Logger, rewards) -> bool:
         return False
 
     # Open the daily rewards menu
-    click(, 41, 206)
+    click( 41, 206)
     time.sleep(2)
 
     # Collect rewards
@@ -67,20 +68,20 @@ def collect_challenge_rewards(, logger: Logger, rewards) -> bool:
 
     for i, (x, y) in enumerate(reward_positions):
         if rewards[i]:
-            click(, x, y)
+            click( x, y)
             logger.change_status(reward_messages[i])
             logger.add_daily_reward()
             time.sleep(1)
 
             # Close reward confirmation pop-ups
             if i < 2:  # For first two rewards
-                click(, 10, 450, clicks=10, interval=1)
+                click( 10, 450, clicks=10, interval=1)
                 # Reopen the rewards menu only if necessary
                 if i < len(rewards) - 1 and rewards[i + 1]:
-                    click(, 41, 206)
+                    click( 41, 206)
                     time.sleep(2)
             else:  # For the "lucky drop" reward
-                click(, 15, 450, clicks=15, interval=0.33)
+                click( 15, 450, clicks=15, interval=0.33)
                 time.sleep(2)
 
     # Return to main menu by clicking close button
@@ -91,7 +92,7 @@ def collect_challenge_rewards(, logger: Logger, rewards) -> bool:
 
     if pixel_is_equal(actual_color, expected_color, tol=35):
         logger.change_status("Closing reward menu")
-        click(, x, y, clicks=1)
+        click( x, y, clicks=1)
         time.sleep(2)
     else:
         logger.change_status(
@@ -142,7 +143,7 @@ def check_if_daily_rewards_button_exists() -> bool:
     return False
 
 
-def collect_all_daily_rewards(, logger) -> bool:
+def collect_all_daily_rewards( logger) -> bool:
     if not check_if_on_clash_main_menu():
         logger.change_status(
             "Not on clash main at start of collect_daily_rewards(). Returning False",
@@ -155,7 +156,7 @@ def collect_all_daily_rewards(, logger) -> bool:
         )
         return True
 
-    rewards = check_which_rewards_are_available(, logger)
+    rewards = check_which_rewards_are_available( logger)
     if rewards is False:
         logger.change_status("Error checking which rewards are available")
         return False
@@ -171,14 +172,14 @@ def collect_all_daily_rewards(, logger) -> bool:
         logger.change_status("No daily rewards found")
         return True
 
-    if not collect_challenge_rewards(, logger, rewards):
+    if not collect_challenge_rewards( logger, rewards):
         logger.change_status("Failed to collect challenge rewards")
         return False
 
     return True
 
 
-def check_which_rewards_are_available(, logger):
+def check_which_rewards_are_available( logger):
     logger.change_status("Checking which daily rewards are available")
 
     # if not on clash main, return False
@@ -190,7 +191,7 @@ def check_which_rewards_are_available(, logger):
             )
 
     # open daily rewards menu
-    click(, 41, 206)
+    click( 41, 206)
     time.sleep(2)
 
     # check which rewards are available
@@ -210,7 +211,7 @@ def check_which_rewards_are_available(, logger):
 
     if pixel_is_equal(actual_color, expected_color, tol=35):
         logger.change_status("Closing reward menu")
-        click(, x, y, clicks=1)
+        click( x, y, clicks=1)
         time.sleep(2)
     else:
         logger.change_status(
@@ -262,6 +263,6 @@ def check_rewards_menu_pixels():
 
 
 if __name__ == "__main__":
-    bs = check_rewards_menu_pixels(12)
+    bs = check_rewards_menu_pixels()
     for b in bs:
         print(b)

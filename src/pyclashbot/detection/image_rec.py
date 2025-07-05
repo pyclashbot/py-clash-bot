@@ -6,7 +6,7 @@ from os.path import abspath, dirname, join
 import cv2
 import numpy as np
 
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.google_play_emulator.gpe import  screenshot
 from pyclashbot.utils.image_handler import open_from_path
 
 
@@ -62,36 +62,6 @@ def get_first_location(
         None,
     )
 
-
-def find_and_click_button_by_image(, folder_name) -> bool:
-    """Finds and clicks on a button based on image recognition.
-
-    Args:
-    ----
-         (int): The index of the virtual machine.
-        folder_name (str): The name of the folder containing reference images for the button.
-
-    """
-    # Create a list of reference image names from the folder
-    names = make_reference_image_list(get_file_count(folder_name))
-
-    # Find references in the screenshot
-    locations = find_references(
-        screenshot(),
-        folder_name,
-        names,
-        tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
-    )
-
-    # Get the first location of the detected reference
-    coord = get_first_location(locations)
-
-    if coord is None:
-        return False
-    # Click on the detected button location
-    click(, coord[1], coord[0])
-    time.sleep(2)
-    return True
 
 
 def crop_image(image: np.ndarray, region: list) -> np.ndarray:
@@ -211,7 +181,7 @@ def compare_images(
 
 
 def line_is_color(  # pylint: disable=too-many-arguments
-    , x_1, y_1, x_2, y_2, color,
+     x_1, y_1, x_2, y_2, color,
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot())
@@ -225,8 +195,7 @@ def line_is_color(  # pylint: disable=too-many-arguments
     return True
 
 
-def check_line_for_color(  # pylint: disable=too-many-arguments
-    , x_1, y_1, x_2, y_2, color: tuple[int, int, int],
+def check_line_for_color( x_1, y_1, x_2, y_2, color: tuple[int, int, int],
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot())
@@ -240,7 +209,7 @@ def check_line_for_color(  # pylint: disable=too-many-arguments
     return False
 
 
-def check_region_for_color(, region, color):
+def check_region_for_color( region, color):
     left, top, width, height = region
 
     iar = np.asarray(screenshot())
@@ -255,7 +224,7 @@ def check_region_for_color(, region, color):
     return False
 
 
-def region_is_color(, region, color):
+def region_is_color(region, color):
     left, top, width, height = region
 
     iar = np.asarray(screenshot())

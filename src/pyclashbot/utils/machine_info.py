@@ -9,16 +9,12 @@ import subprocess
 
 import psutil
 
-from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.subprocess import run
 
 user32 = ctypes.windll.user32
 
 
 memu_config = configparser.ConfigParser()
-memu_config.read(
-    join(pmc._get_memu_top_level(), "config.ini"),  # pylint: disable=protected-access
-)
 
 
 def check_hyper_v_enabled() -> bool:

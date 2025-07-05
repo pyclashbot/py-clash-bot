@@ -14,7 +14,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS: list[Any] = [
@@ -65,7 +65,7 @@ DEADSPACE_COORD = (10, 323)
 CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
-def upgrade_cards_state(, logger: Logger, next_state):
+def upgrade_cards_state( logger: Logger, next_state):
     logger.change_status(status="Upgrade cards state")
 
     # if not on clash main, return restart
@@ -77,29 +77,29 @@ def upgrade_cards_state(, logger: Logger, next_state):
 
     # get to card page
     logger.change_status(status="Getting to card page")
-    if get_to_card_page_from_clash_main(, logger) == "restart":
+    if get_to_card_page_from_clash_main( logger) == "restart":
         logger.change_status(
             status="Error 0751389 Failure getting to card page from clash main in Upgrade State",
         )
         return "restart"
 
     # do card upgrade
-    if update_cards(, logger) is False:
+    if update_cards( logger) is False:
         logger.change_status("Failed to update cards")
         return "restart"
 
     # get back to main when its done
     logger.change_status(status="Done upgrading cards")
-    click(, 211, 607)
+    click( 211, 607)
     time.sleep(1)
 
     # return to clash main
     print("Returning to clash main after upgrading")
-    click(, 243, 600)
+    click( 243, 600)
     time.sleep(3)
 
     # wait for main
-    if wait_for_clash_main_menu(, logger, deadspace_click=False) is False:
+    if wait_for_clash_main_menu( logger, deadspace_click=False) is False:
         logger.change_status("Failed to wait for clash main after upgrading cards")
         return "restart"
 
@@ -165,7 +165,7 @@ def get_upgradable_cards():
     return good_indicies
 
 
-def update_cards(, logger: Logger) -> bool:
+def update_cards( logger: Logger) -> bool:
     # starts and ends on card page
 
     # if not on card page, return false
@@ -174,17 +174,17 @@ def update_cards(, logger: Logger) -> bool:
         return False
 
     # click a topleft card to open edit deck mode
-    click(, 73, 201)
+    click( 73, 201)
     time.sleep(0.3)
 
     # click deadspace
-    click(, 14, 300)
+    click( 14, 300)
     time.sleep(0.3)
 
     upgradable_indicies = get_upgradable_cards()
 
     for index in upgradable_indicies:
-        if upgrade_card(, logger, index) is True:
+        if upgrade_card( logger, index) is True:
             logger.log("Upgraded a card!")
         else:
             logger.log("Can't upgraded this card yet")
@@ -204,11 +204,11 @@ def check_for_second_upgrade_button_condition_1() -> bool:
         bool: True if the condition is met, False otherwise.
 
     """
-    if not check_line_for_color(, 201, 473, 203, 503, (56, 228, 72)):
+    if not check_line_for_color( 201, 473, 203, 503, (56, 228, 72)):
         return False
-    if not check_line_for_color(, 275, 477, 276, 501, (56, 228, 72)):
+    if not check_line_for_color( 275, 477, 276, 501, (56, 228, 72)):
         return False
-    if not check_line_for_color(, 348, 153, 361, 153, (229, 36, 36)):
+    if not check_line_for_color( 348, 153, 361, 153, (229, 36, 36)):
         return False
 
     return True
@@ -226,16 +226,16 @@ def check_for_confirm_upgrade_button_condition_1() -> bool:
         bool: True if the condition is met, False otherwise.
 
     """
-    if not check_line_for_color(, 201, 401, 201, 432, (56, 228, 72)):
+    if not check_line_for_color( 201, 401, 201, 432, (56, 228, 72)):
         return False
-    if not check_line_for_color(, 277, 399, 277, 431, (56, 228, 72)):
+    if not check_line_for_color( 277, 399, 277, 431, (56, 228, 72)):
         return False
-    if not check_line_for_color(, 347, 153, 361, 154, (111, 22, 29)):
+    if not check_line_for_color( 347, 153, 361, 154, (111, 22, 29)):
         return False
 
     return True
 
-def card_is_open(,index):
+def card_is_open(index):
     """
     clicking a card opens a menu
     this method checks that menu is open for each coordiante the menu
@@ -275,7 +275,7 @@ def card_is_open(,index):
 
 
 
-def upgrade_card(, logger: Logger, card_index) -> bool:
+def upgrade_card( logger: Logger, card_index) -> bool:
     """Upgrades a card if it is upgradable.
 
     Args:
@@ -295,28 +295,26 @@ def upgrade_card(, logger: Logger, card_index) -> bool:
     logger.change_status(status=f"Upgrading card index: {card_index}")
 
     # click the card
-    while not card_is_open(,card_index):
+    while not card_is_open(card_index):
         print(f'Opening this card options: {card_index}')
-        click(, CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
+        click( CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
         time.sleep(1)
 
     # click the upgrade button
     logger.change_status(status="Clicking the upgrade button for this card")
     coord = UPGRADE_BUTTON_COORDS[card_index]
-    click(, coord[0], coord[1])
+    click( coord[0], coord[1])
     time.sleep(1)
 
     # click second upgrade button
     logger.change_status(status="Clicking the second upgrade button")
     if check_for_second_upgrade_button_condition_1():
         click(
-            ,
             SECOND_UPGRADE_BUTTON_COORDS_CONDITION_1[0],
             SECOND_UPGRADE_BUTTON_COORDS_CONDITION_1[1],
         )
     else:
         click(
-            ,
             SECOND_UPGRADE_BUTTON_COORDS[0],
             SECOND_UPGRADE_BUTTON_COORDS[1],
         )
@@ -336,20 +334,18 @@ def upgrade_card(, logger: Logger, card_index) -> bool:
         logger.change_status(status="Clicking the confirm upgrade button")
         if check_for_confirm_upgrade_button_condition_1():
             click(
-                ,
                 CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1[0],
                 CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1[1],
             )
         else:
             click(
-                ,
                 CONFIRM_UPGRADE_BUTTON_COORDS[0],
                 CONFIRM_UPGRADE_BUTTON_COORDS[1],
             )
         time.sleep(2)
 
         # close card page
-        click(, CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
+        click( CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
         time.sleep(2)
 
         logger.change_status("Upgraded this card")
@@ -362,7 +358,7 @@ def upgrade_card(, logger: Logger, card_index) -> bool:
         status="Clicking deadspace after attemping upgrading this card",
     )
     for _ in range(6):
-        click(, DEADSPACE_COORD[0], DEADSPACE_COORD[1])
+        click( DEADSPACE_COORD[0], DEADSPACE_COORD[1])
         time.sleep(1)
 
     return upgraded_a_card
@@ -392,7 +388,6 @@ def check_if_pixel_indicates_upgradable_card(pixel) -> bool:
 
 def check_for_missing_gold_popup():
     if not check_line_for_color(
-        ,
         x_1=338,
         y_1=215,
         x_2=361,
@@ -401,7 +396,6 @@ def check_for_missing_gold_popup():
     ):
         return False
     if not check_line_for_color(
-        ,
         x_1=124,
         y_1=201,
         x_2=135,
@@ -410,22 +404,22 @@ def check_for_missing_gold_popup():
     ):
         return False
 
-    if not check_line_for_color(, 224, 368, 236, 416, (56, 228, 72)):
+    if not check_line_for_color( 224, 368, 236, 416, (56, 228, 72)):
         return False
 
-    if not region_is_color(, [70, 330, 60, 70], (227, 238, 243)):
+    if not region_is_color( [70, 330, 60, 70], (227, 238, 243)):
         return False
 
     return True
 
 
-# def check_if_card_is_upgradable(, logger: Logger, card_index):
+# def check_if_card_is_upgradable( logger: Logger, card_index):
 #     logger.change_status(status=f"Checking if {card_index} is upgradable")
 
 #     # click the selected card
 #     card_coord = CARD_COORDS[card_index]
 #     print(f"Clicking the #{card_index} card")
-#     click(, card_coord[0], card_coord[1])
+#     click( card_coord[0], card_coord[1])
 #     time.sleep(0.66)
 
 #     # see if green uprgade button exists in card context menu
@@ -437,19 +431,11 @@ def check_for_missing_gold_popup():
 #         card_is_upgradable = True
 
 #     # deadspace click
-#     # click(, 14, 286)
+#     # click( 14, 286)
 
 #     print(f"Card #{card_index} is upgradable: {card_is_upgradable}")
 #     return card_is_upgradable
 
 
 if __name__ == "__main__":
-    card_index = 5
-    logger=Logger(None,None)
-    print(update_cards(1, logger))
-    upgrade_card(1, logger, card_index)
-
-    # while 1:
-    #     print(card_is_open(1,-1))
-    #     time.sleep(2)
-    #     print('\n\n\n\n\n')
+    pass
