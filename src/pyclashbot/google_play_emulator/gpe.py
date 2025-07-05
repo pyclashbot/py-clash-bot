@@ -225,6 +225,4 @@ def valid_screen_size(expected_dims: tuple):
 
 
 if __name__ == "__main__":
-    # test_screenshot()
-    # start_clash_royale()
-    print(valid_screen_size((633, 419)))
+    pass
