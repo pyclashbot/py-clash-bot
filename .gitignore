@@ -2,3 +2,4 @@ cert
 node_modules
 build
 dist
+gpe_info.json

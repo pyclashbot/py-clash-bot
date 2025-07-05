@@ -5,9 +5,11 @@ import subprocess
 import numpy as np
 import cv2
 
+from pyclashbot.google_play_emulator.gpe_path_manager import GPEPathManager
 
+gpe_path_manager = GPEPathManager()
 CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
-EMULATOR_PATH = r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Play Games Developer Emulator\Google Play Games Developer Emulator.lnk"
+EMULATOR_PATH =gpe_path_manager.get_emulator_path()
 
 
 def adb(command):
@@ -167,6 +169,7 @@ def restart_emulator():
 
     # configure emulator
     expected_dims = (633, 419)
+    resize_emualtor()
     while not valid_screen_size(expected_dims):
         resize_emualtor()
     print("Done resizing emulator")
