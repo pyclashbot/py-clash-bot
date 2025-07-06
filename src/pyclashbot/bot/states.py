@@ -230,18 +230,7 @@ def state_tree(
 
         logger.log("Entered the restart state after a failure in another state...")
 
-        # close app
-        logger.log("Running close_clash_royale_app()")
-        gpe.close_clash_royale_app()
-        sleep_after_close = 4
-        logger.log(f"Manual sleep of {sleep_after_close} sec after closing app")
-        time.sleep(sleep_after_close)
-
-        logger.log("Incrementing restart counter in logger")
-        logger.add_restart_after_failure()
-
-        # start app
-        logger.log("Starting clash app again")
+        gpe.restart_emulator()
         gpe.start_clash_royale()
 
         # wait for clash main to appear
