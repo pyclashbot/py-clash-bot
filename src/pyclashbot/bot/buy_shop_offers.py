@@ -69,7 +69,11 @@ def scroll_all_the_way_in_shop_page(direction):
 def scroll_slowly_in_shop_page(direction):
     start_coord = (5,100) if direction == 'up' else (5,500)
     end_coord = (5,500) if direction == 'up' else (5,100)
+
     scroll(*start_coord, *end_coord, duration_ms=1000)
+
+    #sideways scroll
+    scroll(100,100,200,100, duration_ms=10)
 
 
 def buy_shop_offers_main(
