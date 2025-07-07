@@ -215,7 +215,7 @@ def state_tree(
     elif state == "start":  # --> account_switch
         next_state = "account_switch"
 
-        gpe.restart_emulator()
+        gpe.restart_emulator(logger)
         gpe.start_clash_royale()
         print("Manual wait of 30s for cr to boot...")
         time.sleep(30)
@@ -230,7 +230,7 @@ def state_tree(
 
         logger.log("Entered the restart state after a failure in another state...")
 
-        gpe.restart_emulator()
+        gpe.restart_emulator(logger)
         gpe.start_clash_royale()
 
         # wait for clash main to appear
