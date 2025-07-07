@@ -24,7 +24,6 @@ def adb(command):
         f"adb {command}", shell=True, capture_output=True, text=True
     )
 
-
     return result
 
 
@@ -54,7 +53,7 @@ def invalid__gpe_ratio_popup():
         event, _ = window.read()
         print(f"Event: {event}")
         if event in (sg.WIN_CLOSED, "Continue"):
-            print('closing invalid gpe ratio popup')
+            print("closing invalid gpe ratio popup")
             break
 
     window.close()
@@ -63,14 +62,17 @@ def invalid__gpe_ratio_popup():
 def missing_adb_installation_popup():
     layout = [
         [sg.Text("Warning!")],
-        [sg.Text("ADB is not installed, or not set in your PATH environment\nvariable.")],
         [
-            sg.Image(
-                filename=r"src\pyclashbot\google_play_emulator\assets\adb_logo.png"
+            sg.Text(
+                "ADB is not installed, or not set in your PATH environment\nvariable."
             )
         ],
-        [sg.Button("Intructions"),sg.Button('Install Link') ,sg.Button("Continue"),],
-
+        [sg.Image(filename=r"src\pyclashbot\google_play_emulator\assets\adb_logo.png")],
+        [
+            sg.Button("Intructions"),
+            sg.Button("Install Link"),
+            sg.Button("Continue"),
+        ],
     ]
 
     window = sg.Window("Invalid ADB Installation", layout, modal=True)
@@ -82,7 +84,9 @@ def missing_adb_installation_popup():
         elif event == "Intructions":
             webbrowser.open(ADB_INSTRUCTIONS_LINK)
         elif event == "Install Link":
-            webbrowser.open("https://developer.android.com/studio/releases/platform-tools")
+            webbrowser.open(
+                "https://developer.android.com/studio/releases/platform-tools"
+            )
 
     window.close()
 
@@ -125,7 +129,7 @@ def test_abd():
     std_out = result.stdout.strip()
     error = result.stderr.strip()
     if "'adb' is not recognized as an internal or external command" in error:
-        print(f'Looks like adb isnt installed')
+        print(f"Looks like adb isnt installed")
         missing_adb_installation_popup()
 
 
@@ -227,25 +231,29 @@ def start_emulator():
     time.sleep(5)
 
 
-def restart_emulator():
+def restart_emulator(logger=None):
     start_time = time.time()
 
     # close emulator
-    print("Restarting emulator...")
+    if logger is None:print("Restarting emulator...")
+    else: logger.log("Restarting emulator...")
     while is_emulator_running():
-        print("Closing emulator...")
+        if logger is None:print("Closing emulator...")
+        else:logger.log("Closing emulator...")
         close_emulator()
 
     # boot emulator
-    print("Starting emulator...")
+    if logger is None:print("Starting emulator...")
     start_emulator()
     while not is_emulator_running():
-        print("Waiting for emulator to start...")
+        if logger is None:print("Waiting for emulator to start...")
+        else:logger.log("Waiting for emulator to start...")
         time.sleep(0.3)
 
     # wait for window to appear
-    while  find_window(GOOGLE_PLAY_PROCESS_NAME) is None:
-        print("Waiting for emulator window to appear...")
+    while find_window(GOOGLE_PLAY_PROCESS_NAME) is None:
+        if logger is None:print("Waiting for emulator window to appear...")
+        else:logger.log("Waiting for emulator window to appear...")
         time.sleep(0.3)
 
     # reconect to adb
@@ -257,20 +265,29 @@ def restart_emulator():
         resize_emualtor()
         time.sleep(1)
 
-    #validate emulator
+    # validate emulator
     validate_display_ratio()
 
-    #validate image size
+    # validate image size
     if not valid_screen_size(EXPECTED_SCREEN_DIMS):
-        print(
+        if logger is None:print(
+            f"[!] Warning! Emulator screen size is not {EXPECTED_SCREEN_DIMS}. "
+            "Please check the emulator settings."
+        )
+        else:logger.log(
             f"[!] Warning! Emulator screen size is not {EXPECTED_SCREEN_DIMS}. "
             "Please check the emulator settings."
         )
 
-
+    if logger is None:print(f"testing adb...")
+    else:logger.log(f"testing adb...")
     test_abd()
+    if logger is None:print(f"tested adb")
+    else:logger.log(f"tested adb")
 
-    print(f"Fully restarted emulator in {time.time() - start_time:.2f} seconds")
+
+    if logger is None:print(f"Fully restarted emulator in {time.time() - start_time:.2f} seconds")
+    else:logger.log(f"Fully restarted emulator in {time.time() - start_time:.2f} seconds")
 
 
 def is_emulator_running():
@@ -309,7 +326,7 @@ def test_screenshot():
 
 def valid_screen_size(expected_dims: tuple):
     # reverse expected_dims just because that's how cv2 works
-    print('Validating screen size...')
+    print("Validating screen size...")
     expected_dims = (expected_dims[1], expected_dims[0])
     image = screenshot()
     dims = image.shape[:2]
