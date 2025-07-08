@@ -70,6 +70,15 @@ battle_tab = (
     ],
     [
         job_check_box("Random decks", "random_decks_user_toggle", default_value=False),
+        sg.Text("Deck #:", size=(5, 1)),
+        sg.Combo(
+            values=[1, 2, 3, 4, 5],
+            default_value=2,
+            key="deck_number_selection",
+            size=(5, 1),
+            readonly=True,
+            enable_events=True
+        ),
     ],
     [
         job_check_box("Random plays", "random_plays_user_toggle", default_value=False),

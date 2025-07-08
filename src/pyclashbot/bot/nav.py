@@ -1057,8 +1057,8 @@ def get_to_card_page_from_clash_main(
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
     """Clicks on the card page icon from the clash main screen and waits until the card page is loaded.
-    If the card page is not loaded within 60 seconds, returns "restart".
-    If the card page is loaded within 60 seconds, returns "good".
+    If the card page is not loaded within 3 seconds, returns "restart".
+    If the card page is loaded within 3 seconds, returns "good".
 
     Args:
     ----
@@ -1069,7 +1069,7 @@ def get_to_card_page_from_clash_main(
     Returns:
     -------
     - Literal["restart", "good"]: Returns "restart" if the card page is not loaded
-    within 60 seconds, "good" otherwise.
+    within 3 seconds, "good" otherwise.
 
     """
     start_time = time.time()
@@ -1090,7 +1090,7 @@ def get_to_card_page_from_clash_main(
     # while not on the card page, cycle the card page
     while not check_if_on_card_page(vm_index):
         time_taken = time.time() - start_time
-        if time_taken > 60:
+        if time_taken > 3:
             return "restart"
 
         click(

@@ -391,7 +391,9 @@ def state_tree(
             )
             return next_state
 
-        return randomize_deck_state(vm_index, logger, next_state)
+        # Get the selected deck number from job_list, default to 2 if not found
+        deck_number = job_list.get("deck_number_selection", 2)
+        return randomize_deck_state(vm_index, logger, next_state, deck_number)
 
     if state == "upgrade":  # --> trophy_rewards
         next_state = "trophy_rewards"
@@ -712,6 +714,7 @@ def state_tree_tester(vm_index):
         "free_donate_toggle": False,
         "magic_items_user_toggle": False,
         "random_decks_user_toggle": False,
+        "deck_number_selection": 2,
         "request_user_toggle": False,
         "upgrade_user_toggle": False,
         "open_chests_user_toggle": False,

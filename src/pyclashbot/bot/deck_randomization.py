@@ -14,7 +14,7 @@ from pyclashbot.utils.logger import Logger
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
 
-def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
+def randomize_deck_state(vm_index: int, logger: Logger, next_state: str, deck_number: int = 2):
     # increment job count
 
     # if not on clash main, return 'restart'
@@ -24,8 +24,8 @@ def randomize_deck_state(vm_index: int, logger: Logger, next_state: str):
         )
         return "restart"
 
-    logger.change_status("Randomizing deck #2")
-    if randomize_deck(vm_index, logger) is False:
+    logger.change_status(f"Randomizing deck #{deck_number}")
+    if randomize_deck(vm_index, logger, deck_number) is False:
         logger.change_status("Failed somewhere in randomize_deck(). Returning restart!")
         return "restart"
 
@@ -59,10 +59,6 @@ def check_for_underleveled_deck_options_location(vm_index):
             return False
 
     return True
-
-
-def click_deck_options(vm_index):
-    click(vm_index, 53, 110)
 
 
 def click_delete_deck_button(vm_index):
@@ -136,34 +132,48 @@ def check_for_randomize_deck_icon(vm_index):
     return True
 
 
-def randomize_deck(vm_index: int, logger: Logger,randomizations = 3) -> bool:
+def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:
     start_time = time.time()
 
+    differenceBetweenEachDeckX = 50
 
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
         logger.change_status("Failed to get to card page from main. Returning False")
         return False
 
-    # click on deck 2
-    logger.change_status("Randomizing deck 2...")
-    click(vm_index, 145, 107)
+    # click on DECKS FIRST
 
-    for _ in range(randomizations):
-        # click on deck options
-        print("Click deck options")
-        click_deck_options(vm_index)
-        time.sleep(0.1)
+    click(vm_index, 125, 60)
+    time.sleep(0.1)
 
-        # click random deck button
-        click(vm_index, 130, 187)
-        time.sleep(0.1)
+    # click on the specified deck number
+    logger.change_status(f"Randomizing deck {deckNo}...")
+    
+    # Calculate deck position based on deck number (1-5)
+    # Base position for deck 1, then add offset for each deck
 
-        # click OK
-        click(vm_index, 280, 390)
-        time.sleep(0.1)
+    deck_x = 95 + differenceBetweenEachDeckX * (deckNo - 1)
+        
+    # Click on the selected deck
+    click(vm_index, deck_x, 107)
+    time.sleep(0.1)
 
-    # increment logger's deck randomization sta
+    click(vm_index, 53, 106)
+    time.sleep(0.1)
+
+    click(vm_index, 125, 188)
+    time.sleep(0.1)
+
+    # # click random deck button
+    # click(vm_index, 130, 187)
+    # time.sleep(0.1)
+
+    # click OK
+    click(vm_index, 280, 390)
+    time.sleep(0.1)
+
+    # increment logger's deck randomization stats
     logger.add_card_randomization()
 
     # get to clash main
@@ -179,7 +189,7 @@ def randomize_deck(vm_index: int, logger: Logger,randomizations = 3) -> bool:
         return False
 
     logger.change_status(
-        "Randomized deck 2 in " + str(time.time() - start_time)[:5] + "s",
+        f"Randomized deck {deckNo} in " + str(time.time() - start_time)[:5] + "s",
     )
     return True
 
@@ -220,4 +230,4 @@ def check_for_filled_deck(vm_index):
 
 
 if __name__ == "__main__":
-    randomize_deck(1, Logger())
+    randomize_deck(0, Logger())
