@@ -84,6 +84,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
+        "deck_number_selection": values["deck_number_selection"],
         "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
         "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
