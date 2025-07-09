@@ -32,7 +32,7 @@ build_exe_options = {
     "excludes": ["test", "setuptools"],
     "include_files": [
         ROOT_DIR / "assets" / "pixel-pycb.ico",
-        ROOT_DIR / "pyclashbot" / "detection" / "reference_images" / "**" / "*.png",
+        ROOT_DIR / "pyclashbot" / "detection" / "reference_images",
         ROOT_DIR / "pyclashbot" / "__version__",
     ],
     "include_msvcr": True,
