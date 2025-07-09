@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://pyclashbot.app"
+homepage = "https://pyclashbot.app"
 
 [dependency-groups]
 build = [
@@ -31,21 +31,6 @@ dev = [
     "isort>=5.13.0,<6",
     "ruff>=0.7.4,<0.8",
 ]
-
-[tool.hatch.build.targets.sdist]
-include = [
-    "README.md",
-    "pyclashbot/detection/reference_images/**/*.png",
-    "pyclashbot/__version__",
-]
-
-[tool.hatch.build.targets.wheel]
-include = [
-    "README.md",
-    "pyclashbot/detection/reference_images/**/*.png",
-    "pyclashbot/__version__",
-]
-
 
 [tool.ruff.lint]
 select = [
