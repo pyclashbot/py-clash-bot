@@ -6,7 +6,7 @@ authors = [
     { name = "Matthew Miglio", email = "matthew@pyclashbot.app" },
     { name = "Martin Miglio", email = "code@martinmiglio.dev" },
 ]
-requires-python = ">=3.12.0,<3.14"
+requires-python = ">=3.12.0,<3.13"
 readme = "README.md"
 dependencies = [
     "opencv-python>=4.9.0,<5",
