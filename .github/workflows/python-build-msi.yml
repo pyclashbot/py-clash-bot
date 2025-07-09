@@ -20,7 +20,7 @@ jobs:
           enable-cache: true
       - name: Build package
         run: |
-          uv run scripts/setup_msi.py bdist_msi --target-version ${{github.ref_name}}
+          uv run --group build scripts/setup_msi.py bdist_msi --target-version ${{github.ref_name}}
       - name: Publish Release
         uses: softprops/action-gh-release@v2
         id: release
@@ -31,7 +31,7 @@ jobs:
             ./dist/py-clash-bot*.msi
       - name: Trigger Discord Webhook
         run: |
-          uv run scripts/trigger_discord_webhook.py \
+          uv run --group build scripts/trigger_discord_webhook.py \
             --version "${{ github.ref_name }}" \
             --url "${{ steps.release.outputs.url }}" \
             --webhook-code "${{ secrets.DISCORD_WEBHOOK_CODE }}" \

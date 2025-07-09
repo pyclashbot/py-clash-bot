@@ -19,7 +19,7 @@ jobs:
           enable-cache: true
       - name: Build package
         run: |
-          uv run scripts/setup_msi.py bdist_msi --target-version v0.0.0
+          uv run --group build scripts/setup_msi.py bdist_msi --target-version v0.0.0
       - name: Upload MSI Artifact
         uses: actions/upload-artifact@v4
         with:
