@@ -27,7 +27,6 @@ from pyclashbot.bot.magic_items import spend_magic_items_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war_state import war_state
 from pyclashbot.memu.client import click
-from pyclashbot.memu.docker import start_memu_dock_mode
 from pyclashbot.memu.launcher import (
     close_clash_royale_app,
     restart_emulator,
@@ -219,9 +218,6 @@ def state_tree(
             time.sleep(1)
 
     elif state == "start":  # --> account_switch
-        if job_list["memu_attach_mode_toggle"]:
-            start_memu_dock_mode()
-
         next_state = "account_switch"
 
         restart_emulator(logger, get_render_mode(job_list))
@@ -734,10 +730,6 @@ def state_tree_tester(vm_index):
     }
     state_history = StateHistory(logger)
 
-    def clip_that_mat_laptop_pc():
-        import pyautogui
-
-        pyautogui.click(856, 943, duration=0.2)
 
     while 1:
         state = state_tree(
@@ -747,10 +739,6 @@ def state_tree_tester(vm_index):
             job_list,
             state_history,
         )
-        if state == "restart":
-            print("Restart state")
-            # input("Enter to continue...")
-            clip_that_mat_laptop_pc()
 
 
 if __name__ == "__main__":
