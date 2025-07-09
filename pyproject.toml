@@ -29,16 +29,8 @@ dev = [
     "pre-commit>=4.0.1,<5",
     "vulture~=2.13",
     "isort>=5.13.0,<6",
-    "poethepoet>=0.36.0,<0.37",
-    "notebook>=7.4.4,<8",
-    "ipykernel>=6.29.2,<7",
-    "matplotlib>=3.8.3,<4",
-    "decorator>=5.1.1,<6",
     "ruff>=0.7.4,<0.8",
 ]
-
-[tool.uv]
-default-groups = ["build", "dev"]
 
 [tool.hatch.build.targets.sdist]
 include = [
