@@ -7,7 +7,7 @@ authors = [
     { name = "Martin Miglio", email = "code@martinmiglio.dev" },
 ]
 requires-python = ">=3.12.0,<3.14"
-readme = "../README.md"
+readme = "README.md"
 dependencies = [
     "opencv-python>=4.9.0,<5",
     "numpy>=2.2.1,<3",
@@ -20,7 +20,11 @@ dependencies = [
 Homepage = "https://pyclashbot.app"
 
 [dependency-groups]
-build = ["cx-freeze>=8.3.0,<9"]
+build = [
+    "cx-freeze>=8.3.0,<9",
+    "packaging>=24.2",
+    "requests>=2.32.4",
+]
 dev = [
     "pre-commit>=4.0.1,<5",
     "vulture~=2.13",
@@ -38,14 +42,14 @@ default-groups = ["build", "dev"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "../README.md",
+    "README.md",
     "pyclashbot/detection/reference_images/**/*.png",
     "pyclashbot/__version__",
 ]
 
 [tool.hatch.build.targets.wheel]
 include = [
-    "../README.md",
+    "README.md",
     "pyclashbot/detection/reference_images/**/*.png",
     "pyclashbot/__version__",
 ]

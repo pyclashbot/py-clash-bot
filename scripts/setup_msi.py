@@ -21,8 +21,10 @@ try:
 except (ValueError, IndexError):
     VERSION = "v0.0.0"
 
-# write version to file
-with Path(ROOT_DIR / "pyclashbot" / "__version__").open("w", encoding="utf-8") as f:
+version_file = ROOT_DIR / "pyclashbot" / "__version__"
+if not version_file.exists():
+    version_file.touch()
+with version_file.open("w", encoding="utf-8") as f:
     f.write(VERSION)
 
 
