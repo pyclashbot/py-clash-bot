@@ -50,13 +50,6 @@ account_switching_switching_frame = sg.Frame(
 memu_settings_frame = sg.Frame(
     layout=[
         [
-            sg.Checkbox(
-                "Dock MEmu",
-                key="memu_attach_mode_toggle",
-                default=False,
-            ),
-        ],
-        [
             sg.Radio(
                 enable_events=True,
                 text="OpenGL",
@@ -237,7 +230,6 @@ user_config_keys = [
     "account_switching_toggle",
     "account_switching_slider",
     # MEmu settings
-    "memu_attach_mode_toggle",
     "opengl_toggle",
     "directx_toggle",
 ]

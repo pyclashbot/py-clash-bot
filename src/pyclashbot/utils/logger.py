@@ -13,7 +13,6 @@ from os.path import basename, exists, expandvars, getmtime, join
 from pyclashbot.memu.configure import EMULATOR_NAME, get_vm_configuration
 from pyclashbot.memu.pmc import get_vm_index
 from pyclashbot.utils.machine_info import MACHINE_INFO
-from pyclashbot.utils.pastebin import upload_pastebin
 from pyclashbot.utils.versioning import __version__
 
 MODULE_NAME = "py-clash-bot"
@@ -542,14 +541,6 @@ class Logger:
         self.log("-------------------------------")
         self.log("-------------------------------")
         self.log("-------------------------------\n\n")
-
-    def upload_log(self) -> str | None:
-        """Method to upload log to pastebin"""
-        with open(log_name, encoding="utf-8") as log_file:
-            return upload_pastebin(
-                f"py-clash-bot log ({basename(log_name)})",
-                log_file.read(),
-            )
 
 
 if __name__ == "__main__":
