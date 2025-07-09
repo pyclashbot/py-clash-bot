@@ -1,15 +1,18 @@
 import sys
+from pathlib import Path
 
 from cx_Freeze import Executable, setup
+
+ROOT_DIR = Path(__file__).parent.parent
 
 PROJECT_NAME = "py-clash-bot"
 AUTHOR = "Matthew Miglio, Martin Miglio"
 DESCRIPTION = "Automated Clash Royale"
 KEYWORDS = "clash of clans bot"
 COPYRIGHT = "2023 Matthew Miglio"
-ENTRY_POINT = "pyclashbot\\__main__.py"
-ICON_PATH = "..\\assets\\pixel-pycb.ico"
-GUI = True
+ENTRY_POINT = ROOT_DIR / "pyclashbot" / "__main__.py"
+ICON_PATH = ROOT_DIR / "assets" / "pixel-pycb.ico"
+GUI = False
 UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
 
 
@@ -18,11 +21,15 @@ try:
 except (ValueError, IndexError):
     VERSION = "v0.0.0"
 
+# write version to file
+with Path(ROOT_DIR / "pyclashbot" / "__version__").open("w", encoding="utf-8") as f:
+    f.write(VERSION)
+
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
     "include_files": [
-        "..\\assets\\pixel-pycb.ico",
+        ROOT_DIR / "assets" / "pixel-pycb.ico",
     ],
     "include_msvcr": True,
 }

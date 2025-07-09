@@ -20,10 +20,7 @@ dependencies = [
 Homepage = "https://pyclashbot.app"
 
 [dependency-groups]
-build = [
-    "cx-freeze>=8.3.0,<9",
-    "poethepoet>=0.36.0,<0.37",
-]
+build = ["cx-freeze>=8.3.0,<9"]
 dev = [
     "pre-commit>=4.0.1,<5",
     "vulture~=2.13",
@@ -37,10 +34,7 @@ dev = [
 ]
 
 [tool.uv]
-default-groups = [
-    "build",
-    "dev",
-]
+default-groups = ["build", "dev"]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -56,46 +50,47 @@ include = [
     "pyclashbot/__version__",
 ]
 
-[tool.poe.tasks.build-dist]
-shell = """
-$Env:version | Out-File -FilePath "pyclashbot/__version__" -Encoding utf8
-poetry run python setup_msi.py bdist_msi --target-version $Env:version
-"""
-interpreter = "powershell"
-
-[[tool.poe.tasks.build-dist.args]]
-name = "version"
-default = "v0.0.0"
-options = ["-v", "--version"]
-
-[tool.poe.tasks.tag]
-shell = """
-git push origin master
-git tag -a $Env:tagname -m "Release $Env:tagname"
-git push origin $Env:tagname
-"""
-interpreter = "powershell"
-
-[[tool.poe.tasks.tag.args]]
-name = "tagname"
-default = "v0.0.0"
-positional = true
-required = true
-
-[tool.poe.tasks.vulture]
-shell = """
-poetry run vulture pyclashbot --min-confidence 60
-"""
-interpreter = "powershell"
-
-[tool.poe.tasks.lint]
-shell = """
-poetry run ruff check
-"""
-interpreter = "powershell"
 
 [tool.ruff.lint]
-select = ["ALL"]
+select = [
+    "C4",
+    "E",
+    "F",
+    "W",
+    "C90",
+    "I",
+    "INP",
+    "ISC",
+    "PGH",
+    "PL",
+    "UP",
+    "N",
+    "RUF",
+    "TC",
+]
+
+ignore = [
+    "PLR0913", # too-many-arguments
+    "PLR0914", # too-many-locals
+    "PLR0912", # too-many-branches
+    "PLR0915", # too-many-statements
+    "PLR0904", # too-many-public-methods
+    "PLR0911", # too-many-return-statements
+    "PLR0916", # too-many-boolean-expressions
+    "PLR1702", # too-many-nested-blocks
+    "PLR1704", # redefined-builtin
+    "PLR0402", # uses-dict-iter-method
+    "PLR0206", # property-with-parameters
+    "PLW0603", # global-statement
+    "PLR2004", # magic value used
+    "PLR6301", # broad-except
+    "PLR6201", # no-member
+    "RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar` 
+    "TC002",   # Move third-party import `temporalio.client.Client` into a type-checking block
+    "E402",    # Module level import not at top of file
+    "C901",    # mccabe complexity
+    "E501",
+]
 
 [tool.ruff]
 line-length = 120

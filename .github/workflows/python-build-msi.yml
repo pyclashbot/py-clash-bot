@@ -14,27 +14,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
-      - name: Install Poetry
-        run: |
-          pipx install "poetry>=1.7.0"
-          pipx install poethepoet
-      - name: Set up Python
-        id: pysetup
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-          cache: "poetry"
-      - name: Install package and dependencies
-        run: |
-          cd src
-          poetry env use '${{ steps.pysetup.outputs.python-path }}'
-          poetry install --with build --without dev
+          enable-cache: true
+
       - name: Build package
         run: |
           cd src
           poe build-dist -v ${{github.ref_name}}
-        env:
-          pb_api_key: ${{ secrets.pb_api_key }}
       - name: Publish Release
         uses: softprops/action-gh-release@v2
         id: release
