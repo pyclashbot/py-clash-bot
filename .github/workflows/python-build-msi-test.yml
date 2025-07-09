@@ -28,6 +28,5 @@ jobs:
       - name: Upload MSI Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: py-clash-bot-msi
           path: ./dist/py-clash-bot*.msi
           retention-days: 30
