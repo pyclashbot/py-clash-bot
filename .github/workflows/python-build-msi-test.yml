@@ -20,6 +20,12 @@ jobs:
       - name: Build package
         run: |
           uv run --group build scripts/setup_msi.py bdist_msi --target-version v0.0.0
+      - name: List files
+        run: |
+          ls -la pyclashbot
+          ls -la pyclashbot/dist
+          ls -la dist
+          ls -la
       - name: Upload MSI Artifact
         uses: actions/upload-artifact@v4
         with:
