@@ -23,7 +23,6 @@ jobs:
       - name: List files
         run: |
           ls pyclashbot
-          ls pyclashbot/dist
           ls dist
           ls
       - name: Upload MSI Artifact
