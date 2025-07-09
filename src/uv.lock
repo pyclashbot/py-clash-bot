@@ -1297,7 +1297,6 @@ dependencies = [
 [package.dev-dependencies]
 build = [
     { name = "cx-freeze" },
-    { name = "poethepoet" },
 ]
 dev = [
     { name = "decorator" },
@@ -1321,10 +1320,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-build = [
-    { name = "cx-freeze", specifier = ">=8.3.0,<9" },
-    { name = "poethepoet", specifier = ">=0.36.0,<0.37" },
-]
+build = [{ name = "cx-freeze", specifier = ">=8.3.0,<9" }]
 dev = [
     { name = "decorator", specifier = ">=5.1.1,<6" },
     { name = "ipykernel", specifier = ">=6.29.2,<7" },
