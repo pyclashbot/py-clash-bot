@@ -28,7 +28,7 @@ jobs:
           prerelease: ${{startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')}}
           generate_release_notes: true
           files: |
-            ./dist/py-clash-bot*.msi
+            ./dist/pyclashbot*.msi
       - name: Trigger Discord Webhook
         run: |
           uv run --group build scripts/trigger_discord_webhook.py \

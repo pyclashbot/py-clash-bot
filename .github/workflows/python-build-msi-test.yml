@@ -20,13 +20,8 @@ jobs:
       - name: Build package
         run: |
           uv run --group build scripts/setup_msi.py bdist_msi --target-version v0.0.0
-      - name: List files
-        run: |
-          ls pyclashbot
-          ls dist
-          ls
       - name: Upload MSI Artifact
         uses: actions/upload-artifact@v4
         with:
-          path: ./dist/py-clash-bot*.msi
+          path: ./dist/pyclashbot*.msi
           retention-days: 30
