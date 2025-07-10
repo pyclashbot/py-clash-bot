@@ -723,7 +723,6 @@ def state_tree_tester(vm_index):
         "disable_win_track_toggle": False,
         "skip_fight_if_full_chests_user_toggle": False,
         "random_plays_user_toggle": False,
-        "memu_attach_mode_toggle": False,
         # account switching input info
         "account_switching_toggle": False,
         "account_switch_count": 3,

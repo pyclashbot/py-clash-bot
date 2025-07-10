@@ -102,7 +102,6 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "account_switching_toggle": values["account_switching_toggle"],
         "account_switch_count": int(values["account_switching_slider"]),
         # memu settings
-        "memu_attach_mode_toggle": values["memu_attach_mode_toggle"],
         "opengl_toggle": values["opengl_toggle"],
         "directx_toggle": values["directx_toggle"],
     }
