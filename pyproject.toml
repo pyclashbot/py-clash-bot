@@ -21,12 +21,7 @@ homepage = "https://pyclashbot.app"
 
 [dependency-groups]
 build = ["cx-freeze>=8.3.0,<9", "packaging>=24.2", "requests>=2.32.4"]
-dev = [
-    "pre-commit>=4.0.1,<5",
-    "vulture~=2.13",
-    "isort>=5.13.0,<6",
-    "ruff>=0.7.4,<0.8",
-]
+dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.8"]
 
 [tool.ruff.lint]
 select = [
