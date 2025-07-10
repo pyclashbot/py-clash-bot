@@ -12,7 +12,7 @@ KEYWORDS = "clash of clans bot"
 COPYRIGHT = "2023 Matthew Miglio"
 ENTRY_POINT = ROOT_DIR / "pyclashbot" / "__main__.py"
 ICON_PATH = ROOT_DIR / "assets" / "pixel-pycb.ico"
-GUI = False
+GUI = True
 UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
 
 
