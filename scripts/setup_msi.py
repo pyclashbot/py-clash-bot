@@ -4,6 +4,7 @@ from pathlib import Path
 from cx_Freeze import Executable, setup
 
 ROOT_DIR = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT_DIR))
 
 PROJECT_NAME = "py-clash-bot"
 AUTHOR = "Matthew Miglio, Martin Miglio"
@@ -30,6 +31,7 @@ with version_file.open("w", encoding="utf-8") as f:
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
+    "packages": ["pyclashbot"],
     "include_files": [
         ROOT_DIR / "assets" / "pixel-pycb.ico",
         ROOT_DIR / "pyclashbot" / "detection" / "reference_images",
