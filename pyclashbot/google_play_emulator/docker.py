@@ -1,6 +1,7 @@
-import pygetwindow as gw
-import time
 import threading
+import time
+
+import pygetwindow as gw
 
 GOOGLE_PLAY_PROCESS_NAME = "Google Play Games on PC Emulator"  # window title keyword
 GUI_PROCESS_NAME = "py-clash-bot |"  # your app's window title
@@ -73,4 +74,3 @@ def start_dock_thread():
     t = threading.Thread(target=dock_loop, daemon=True)
     t.start()
     return t
-

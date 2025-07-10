@@ -1,7 +1,8 @@
 import json
 import os
-import FreeSimpleGUI as sg
 import webbrowser
+
+import FreeSimpleGUI as sg
 
 
 def read_json_file(file_path: str) -> dict:
@@ -12,7 +13,7 @@ def read_json_file(file_path: str) -> dict:
     if not os.path.exists(file_path):
         return {}
 
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         return json.load(file)
 
 
@@ -21,7 +22,11 @@ def set_path_popup():
     Displays a popup with a folder browser to set the Google Play Emulator path.
     """
     layout = [
-        [sg.Text("Please select the Google Play Emulator installation file (Google Play Games Developer Emulator.lnk):")],
+        [
+            sg.Text(
+                "Please select the Google Play Emulator installation file (Google Play Games Developer Emulator.lnk):"
+            )
+        ],
         [
             sg.InputText(key="gpe_path_input", enable_events=True),
             sg.FileBrowse("Browse"),
@@ -43,9 +48,7 @@ def set_path_popup():
                 sg.popup("Path set successfully!")
                 break
             else:
-                sg.popup_error(
-                    "Invalid file selected. Please choose a valid directory."
-                )
+                sg.popup_error("Invalid file selected. Please choose a valid directory.")
 
     window.close()
 
@@ -98,8 +101,7 @@ class GPEPathManager:
 
     def check_for_default_locations(self):
         default_base_paths = [
-            char
-            + r":\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Play Games Developer Emulator"
+            char + r":\ProgramData\Microsoft\Windows\Start Menu\Programs\Google Play Games Developer Emulator"
             for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         ]
 
@@ -107,7 +109,6 @@ class GPEPathManager:
             if os.path.exists(default_based_path):
                 for root, dirs, files in os.walk(default_based_path):
                     for file in files:
-
                         if "google" in file.lower() and ".lnk" in file.lower():
                             full_path = os.path.join(root, file)
                             print(f"Found GPE shortcut at: {full_path}")
@@ -120,10 +121,7 @@ class GPEPathManager:
             content = read_json_file(self.json_path)
             if "emulator_path" in content:
                 path = content["emulator_path"]
-                if (
-                    os.path.exists(path)
-                    and (".exe" in path or ".lnk" in path)
-                ):
+                if os.path.exists(path) and (".exe" in path or ".lnk" in path):
                     print(f'GPEPathManager found a valid saved path: "{path}"')
                     return path
 
@@ -132,7 +130,7 @@ class GPEPathManager:
             print(f'GPEPathManager found a valid default path: "{default_path}"')
             return default_path
 
-        print(f"GPEPathManager did not find a valid path.")
+        print("GPEPathManager did not find a valid path.")
         if show_invalid_gpe_path_popup() is False:
             print('User clicked "Continue Anyway" without setting a path.')
             return None
