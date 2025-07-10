@@ -1,41 +1,165 @@
 # Contributing to py-clash-bot
 
-Welcome to the py-clash-bot project! We appreciate your interest in contributing. Here are some guidelines to help you get started:
+Welcome to the py-clash-bot project! We appreciate your interest in contributing. This document provides guidelines and instructions for contributing to the project.
 
-## Setting up a Development Environment
+## Table of Contents
 
-To set up a development environment for py-clash-bot, you will need to have the following tools installed:
+- [Prerequisites](#prerequisites)
+- [Setting up Development Environment](#setting-up-development-environment)
+- [Development Workflow](#development-workflow)
+- [Testing](#testing)
+- [Submitting Changes](#submitting-changes)
+- [Code Style](#code-style)
+- [Additional Guidelines](#additional-guidelines)
 
-- [Python 3.12](https://www.python.org/)
-- [Poetry](https://python-poetry.org/)
+## Prerequisites
 
-Once you have these tools installed, follow these steps to set up the project:
+Before contributing, ensure you have the following tools installed:
 
-1. Clone the py-clash-bot repository
-   `git clone https://github.com/pyclashbot/py-clash-bot.git; cd py-clash-bot`
-2. Navigate to the `src` directory
-   `cd src`
-3. Use Poetry to create a virtual environment and install dependencies
-   `poetry install --with build,dev`
-4. Run or build the project:
-   - Run: `poetry run python pyclashbot/__main__.py`
-   - Build a Windows installer: `poetry run python setup_msi.py bdist_msi`
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) - Fast Python package installer and resolver
+- [Make](https://www.gnu.org/software/make/) (or equivalent like `nmake` on Windows) - For running project commands
+- [Git](https://git-scm.com/) - Version control
 
-## Testing Changes
+## Setting up Development Environment
 
-Before submitting a pull request, make sure to test your changes thoroughly. This could include writing unit tests or manually testing the project to ensure it is functioning as expected.
+1. **Clone the repository**
 
-## Submitting Pull Requests
+   ```bash
+   git clone https://github.com/pyclashbot/py-clash-bot.git
+   cd py-clash-bot
+   ```
 
-To submit a pull request, follow these steps:
+2. **Install dependencies**
 
-1. Create a new branch for your changes: `git checkout -b my-branch`
-2. Install Pre-Commit hooks: `poetry run pre-commit install`
-3. Make your changes and commit them to the branch: `git commit -am "My changes"`
-4. Push the branch to GitHub: `git push origin my-branch`
-5. Navigate to the py-clash-bot repository on GitHub and create a new pull request.
+   ```bash
+   make setup
+   ```
+
+3. **Run development script**
+
+   ```bash
+   make dev
+   ```
+
+## Development Workflow
+
+### Running the Application
+
+- **Development mode**: `make dev`
+- **Build Windows installer**: `make build-msi`
+
+### Available Make Commands
+
+- `make setup` - Install project dependencies
+- `make dev` - Run the application in development mode
+- `make lint` - Run all pre-commit checks on all files
+- `make build-msi` - Build Windows MSI installer
+
+## Testing Your Changes
+
+Before submitting changes, ensure your code works correctly:
+
+1. **Run the application** and verify it starts without errors
+2. **Test your specific changes** thoroughly
+3. **Check for any linting issues** (the project uses ruff for code formatting)
+
+## Submitting Changes
+
+### 1. Create a Feature Branch
+
+```bash
+git checkout -b feature/your-feature-name
+```
+
+### 2. Set up Pre-commit Hooks
+
+```bash
+uvx pre-commit install
+```
+
+### 3. Make Your Changes
+
+- Write clear, well-documented code
+- Follow the existing code style
+- Add tests if applicable
+- Update documentation as needed
+
+### 4. Commit Your Changes
+
+```bash
+git add .
+git commit -m "feat: add your feature description"
+```
+
+Use conventional commit messages:
+
+- `feat:` for new features
+- `fix:` for bug fixes
+- `docs:` for documentation changes
+- `style:` for formatting changes
+- `refactor:` for code refactoring
+- `test:` for adding tests
+
+### 5. Push and Create Pull Request
+
+```bash
+git push origin feature/your-feature-name
+```
+
+Then create a pull request on GitHub with:
+
+- Clear description of changes
+- Any relevant screenshots or examples
+- Reference to related issues (if applicable)
+
+## Code Style
+
+The project uses several tools to maintain code quality:
+
+- **ruff** - Code linting and formatting
+- **isort** - Import sorting
+- **pre-commit** - Automated code quality checks
+
+### Running Code Quality Checks
+
+```bash
+# Run all pre-commit checks on all files
+make lint
+```
 
 ## Additional Guidelines
 
-- Make sure to write thorough and accurate documentation for your changes
-- Be respectful and considerate of others when communicating
+### Communication
+
+- Be respectful and constructive in discussions
+- Ask questions if something is unclear
+- Provide context when reporting issues
+
+### Documentation
+
+- Update documentation for any API changes
+- Add comments to complex code sections
+- Include examples for new features
+
+### Testing
+
+- Test your changes thoroughly
+- Consider edge cases and error conditions
+- Verify the application still works as expected
+
+### Performance
+
+- Consider the impact of your changes on performance
+- Profile code if making significant changes
+- Follow existing patterns for optimization
+
+## Getting Help
+
+If you need help or have questions:
+
+1. Check existing issues and pull requests
+2. Search the documentation
+3. Create a new issue with clear details
+4. Join our community discussions
+
+Thank you for contributing to py-clash-bot! 🚀

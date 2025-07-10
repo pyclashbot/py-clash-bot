@@ -1,24 +1,32 @@
+fail_fast: true
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+default_language_version:
+    python: python3.12
+
 repos:
-  - repo: https://github.com/ambv/black
-    rev: 23.3.0
+  - repo: meta
     hooks:
-      - id: black
-        language_version: python3.10
+      - id: check-hooks-apply
+      - id: check-useless-excludes
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
-      - id: check-yaml
       - id: end-of-file-fixer
+        types: [python]
       - id: trailing-whitespace
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+        types: [python]
+      - id: check-ast
+        types: [python]
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.24.1
     hooks:
-      - id: isort
-        name: isort (python)
-  - repo: https://github.com/python-poetry/poetry
-    rev: "1.5.1"
+      - id: validate-pyproject
+        files: pyproject.toml
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.8
     hooks:
-      - id: poetry-check
-        args: ["-C", "./src"]
-      - id: poetry-lock
-        args: ["-C", "./src"]
+      - id: ruff-format
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]

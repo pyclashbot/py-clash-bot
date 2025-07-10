@@ -14,27 +14,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
-      - name: Install Poetry
-        run: |
-          pipx install "poetry>=1.7.0"
-          pipx install poethepoet
-      - name: Set up Python
-        id: pysetup
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
-          cache: "poetry"
-      - name: Install package and dependencies
-        run: |
-          cd src
-          poetry env use '${{ steps.pysetup.outputs.python-path }}'
-          poetry install --with build --without dev
+          enable-cache: true
       - name: Build package
         run: |
-          cd src
-          poe build-dist -v ${{github.ref_name}}
-        env:
-          pb_api_key: ${{ secrets.pb_api_key }}
+          uv run --group build scripts/setup_msi.py bdist_msi --target-version ${{github.ref_name}}
       - name: Publish Release
         uses: softprops/action-gh-release@v2
         id: release
@@ -42,22 +28,12 @@ jobs:
           prerelease: ${{startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')}}
           generate_release_notes: true
           files: |
-            ./src/dist/py-clash-bot*.msi
+            ./dist/pyclashbot*.msi
       - name: Trigger Discord Webhook
         run: |
-          if ($${{startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')}}) {
-            $json = @{
-                title = "New Pre-release! ${{github.ref_name}}"
-                description = "Click to view changes and download"
-                url = "${{ steps.release.outputs.url }}"
-            } | ConvertTo-Json
-            Invoke-RestMethod -Method Post -Uri "https://www.pyclashbot.app/api/webhook/release/prerelease?code=${{ secrets.DISCORD_WEBHOOK_CODE }}" -ContentType 'application/json' -Body $json
-          } else {
-            $json = @{
-                title = "New Release! ${{github.ref_name}}"
-                description = "Click to view changes and download"
-                url = "${{ steps.release.outputs.url }}"
-            } | ConvertTo-Json
-            Invoke-RestMethod -Method Post -Uri "https://www.pyclashbot.app/api/webhook/release?code=${{ secrets.DISCORD_WEBHOOK_CODE }}" -ContentType 'application/json' -Body $json
-          }
-        shell: powershell
+          uv run --group build scripts/trigger_discord_webhook.py \
+            --version "${{ github.ref_name }}" \
+            --url "${{ steps.release.outputs.url }}" \
+            --webhook-code "${{ secrets.DISCORD_WEBHOOK_CODE }}" \
+            ${{ startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc') && '--prerelease' || '' }}
+        shell: bash
