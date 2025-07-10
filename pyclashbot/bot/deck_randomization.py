@@ -3,16 +3,15 @@
 import time
 from typing import Literal
 
+import numpy
+
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.google_play_emulator.gpe import click
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
-import numpy
-from pyclashbot.google_play_emulator.gpe import screenshot
-
 
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
@@ -67,10 +66,10 @@ def check_for_underleveled_deck_options_location():
 def click_delete_deck_button():
     if check_for_underleveled_delete_deck_button_location():
         print("Detected underleveled delete deck button location. Clicking...")
-        click( 297, 276)
+        click(297, 276)
 
     else:
-        click( 291, 305)
+        click(291, 305)
 
 
 def check_for_underleveled_delete_deck_button_location():
@@ -135,19 +134,19 @@ def check_for_randomize_deck_icon():
     return True
 
 
-def randomize_deck(logger: Logger, deckNo: int = 2) -> bool:
+def randomize_deck(logger: Logger, deckNo: int = 2) -> bool:  # noqa: N803
     start_time = time.time()
 
-    differenceBetweenEachDeckX = 50
+    differenceBetweenEachDeckX = 50  # noqa: N806
 
     # get to card page
-    if get_to_card_page_from_clash_main( logger) is False:
+    if get_to_card_page_from_clash_main(logger) is False:
         logger.change_status("Failed to get to card page from main. Returning False")
         return False
 
     # click on DECKS FIRST
 
-    click( 125, 60)
+    click(125, 60)
     time.sleep(0.1)
 
     # click on the specified deck number
@@ -159,13 +158,13 @@ def randomize_deck(logger: Logger, deckNo: int = 2) -> bool:
     deck_x = 95 + differenceBetweenEachDeckX * (deckNo - 1)
 
     # Click on the selected deck
-    click( deck_x, 107)
+    click(deck_x, 107)
     time.sleep(0.1)
 
-    click( 53, 106)
+    click(53, 106)
     time.sleep(0.1)
 
-    click( 125, 188)
+    click(125, 188)
     time.sleep(0.1)
 
     # # click random deck button
@@ -173,7 +172,7 @@ def randomize_deck(logger: Logger, deckNo: int = 2) -> bool:
     # time.sleep(0.1)
 
     # click OK
-    click( 280, 390)
+    click(280, 390)
     time.sleep(0.1)
 
     # increment logger's deck randomization stats
@@ -181,7 +180,7 @@ def randomize_deck(logger: Logger, deckNo: int = 2) -> bool:
 
     # get to clash main
     logger.change_status("Returning to clash main")
-    click( 248, 603)
+    click(248, 603)
     time.sleep(1)
 
     # if not on clash main, return false
@@ -195,7 +194,6 @@ def randomize_deck(logger: Logger, deckNo: int = 2) -> bool:
         f"Randomized deck {deckNo} in " + str(time.time() - start_time)[:5] + "s",
     )
     return True
-
 
 
 def wait_for_filled_deck():
@@ -222,7 +220,6 @@ def check_for_filled_deck():
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True

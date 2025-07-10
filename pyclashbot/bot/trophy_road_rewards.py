@@ -1,4 +1,3 @@
-import random
 import time
 
 import numpy
@@ -8,21 +7,20 @@ from pyclashbot.bot.nav import (
     check_if_on_path_of_legends_clash_main,
     wait_for_clash_main_menu,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.detection.image_rec import (
+    find_references,
+    get_file_count,
+    get_first_location,
+    make_reference_image_list,
+    pixel_is_equal,
+)
 from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
-from pyclashbot.detection.image_rec import (
-    find_references,
-    get_first_location,
-    make_reference_image_list,
-    get_file_count,
-)
 
-
-def collect_trophy_road_rewards_state( logger: Logger, next_state: str):
+def collect_trophy_road_rewards_state(logger: Logger, next_state: str):
     # Verify if already in the clash main menu.
-    if not wait_for_clash_main_menu( logger):
+    if not wait_for_clash_main_menu(logger):
         logger.change_status("Not in clash main menu")
         return "restart"
 
@@ -32,7 +30,7 @@ def collect_trophy_road_rewards_state( logger: Logger, next_state: str):
             "Detected Path of Legends, attempting to navigate back to Trophy Road...",
         )
         # Click on the specified coordinates to attempt to switch views.
-        click( 277, 400)
+        click(277, 400)
         time.sleep(2)  # Wait for the UI to possibly update.
 
         # Re-check if successfully navigated back to Trophy Road.
@@ -59,7 +57,7 @@ def collect_trophy_road_rewards_state( logger: Logger, next_state: str):
                 "Detected Path of Legends, attempting to navigate back to Trophy Road...",
             )
             # Click on the specified coordinates to attempt to switch views.
-            click( 277, 400)
+            click(277, 400)
             time.sleep(2)  # Wait for the UI to possibly update.
 
             # Re-check if successfully navigated back to Trophy Road.
@@ -113,7 +111,7 @@ def check_for_trophy_road_rewards():
     return False
 
 
-def collect_trophy_road_rewards( logger: Logger):
+def collect_trophy_road_rewards(logger: Logger):
     """Attempts to collect Trophy Road rewards by navigating to the Trophy Road rewards menu
     and claiming available rewards.
 
@@ -129,111 +127,92 @@ def collect_trophy_road_rewards( logger: Logger):
     """
     # if not on main return False
     if not check_if_on_clash_main_menu():
-        logger.change_status(
-            "Not on main to start collect_trophy_road_rewards()! Returning False"
-        )
+        logger.change_status("Not on main to start collect_trophy_road_rewards()! Returning False")
         return False
 
-
-
-    deadspace_coord = [19,502]
+    deadspace_coord = [19, 502]
 
     def get_to_main_after_claim():
-        timeout = 30#s
+        timeout = 30  # s
         start_time = time.time()
         while time.time() - start_time < timeout:
-
-
             if check_if_on_clash_main_menu():
                 return True
-            click( deadspace_coord[0], deadspace_coord[1])
+            click(deadspace_coord[0], deadspace_coord[1])
             time.sleep(1)
         return False
 
     def specific_coord_click_claim_button():
-        #search for the button
+        # search for the button
         coord = find_trophy_road_reward_claim_button()
 
-        #if we got a button
+        # if we got a button
         if coord is not None:
-            #collect it
-            click(coord[0],coord[1])
-            #handle strikes appearing
+            # collect it
+            click(coord[0], coord[1])
+            # handle strikes appearing
             time.sleep(1)
             if strikes_detected():
-                click( 210, 580)
+                click(210, 580)
                 time.sleep(1)
 
-            #back to main for next loop
+            # back to main for next loop
             if get_to_main_after_claim() is False:
                 return False
 
             return True
 
-        #if we didnt get a button
+        # if we didnt get a button
         return False
 
-
-
     def pixel_coord_click_claim_button():
-        #search for the button
-        lrn = find_collect_button() #left,right,none
+        # search for the button
+        lrn = find_collect_button()  # left,right,none
 
-        #if we didnt get a button
+        # if we didnt get a button
         if lrn is None:
             return False
 
-        #if left
+        # if left
         if lrn == "left":
-            click( 170, 337)
-            #handle strikes appearing
+            click(170, 337)
+            # handle strikes appearing
             time.sleep(1)
             if strikes_detected():
-                click( 210, 580)
+                click(210, 580)
                 time.sleep(1)
 
-        #else right
+        # else right
         else:
-            click( 307, 337)
-            #handle strikes appearing
+            click(307, 337)
+            # handle strikes appearing
             time.sleep(1)
             if strikes_detected():
-                click( 210, 580)
+                click(210, 580)
                 time.sleep(1)
 
-        #back to main
+        # back to main
         if get_to_main_after_claim() is False:
             return False
 
-        #good collect loop
+        # good collect loop
         return True
 
     # collect until there are no more rewards
     while 1:
-        logger.change_status('Attempting to collect another reward!')
+        logger.change_status("Attempting to collect another reward!")
 
         # Open the Trophy Road rewards menu.
-        click( 210, 250)
+        click(210, 250)
         time.sleep(2)  # Wait for the menu to potentially open.
         if not check_if_on_trophy_road_rewards_menu():
             logger.change_status("Failed to enter trophy road menu. Returning False")
             return False
 
-
-
-
         if specific_coord_click_claim_button() or pixel_coord_click_claim_button():
             continue
 
         break
-
-
-
-
-
-
-
-
 
 
 def find_collect_button():
@@ -261,18 +240,14 @@ def find_collect_button():
     # Check the left position for expected colors.
     left_pixel_color = iar[left_position[1]][left_position[0]]
     # print('left_pixel_color',left_pixel_color)
-    if any(
-        pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors
-    ):
+    if any(pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors):
         # Return "left" if a matching color is found at the left position.
         return "left"
 
     # Check the right position for expected colors.
     right_pixel_color = iar[right_position[1]][right_position[0]]
     print("right_pixel_color", right_pixel_color)
-    if any(
-        pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors
-    ):
+    if any(pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors):
         # Return "right" if a matching color is found at the right position.
         return "right"
 
@@ -363,7 +338,7 @@ def check_if_on_trophy_road_rewards_menu() -> bool:
     return True
 
 
-def find_trophy_road_reward_claim_button( delay=2):
+def find_trophy_road_reward_claim_button(delay=2):
     def to_wrap():
         image = screenshot()
 

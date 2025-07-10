@@ -1,4 +1,3 @@
-import random
 import time
 
 import numpy
@@ -12,8 +11,6 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
 )
 from pyclashbot.google_play_emulator.gpe import click, screenshot
-
-from pyclashbot.utils.logger import Logger
 
 
 def collect_battlepass_state(logger, next_state):
@@ -79,7 +76,6 @@ def check_if_on_battlepass_page():
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -137,7 +133,7 @@ def collect_1_battlepass_reward(logger):
         # if collect coord is too high, scroll a little and continue
         if claim_rewards_coord[1] < 160:
             logger.change_status("Claim rewards button too high, scrolling a little")
-            scroll_up_a_little()
+            scroll_up_a_little()  # noqa: F821
             time.sleep(3)
 
         # find the claim rewards button again

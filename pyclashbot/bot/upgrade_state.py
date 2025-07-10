@@ -1,12 +1,10 @@
 import time
 from typing import Any
 
-import numpy
-
 from pyclashbot.bot.nav import (
+    check_if_on_card_page,
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
-    check_if_on_card_page,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
@@ -121,11 +119,10 @@ def get_upgradable_cards():
 
     def get_region_pixels(region):
         pixels = []
-        l, t, w, h = region
+        l, t, w, h = region  # noqa: E741
 
         for i, x in enumerate(range(w)):
             for j, y in enumerate(range(h)):
-
                 if i % 2 == 0 or j % 2 == 0:
                     continue
                 pixels.append(image[t + y][l + x])
@@ -148,7 +145,6 @@ def get_upgradable_cards():
     good_indicies = []
 
     for i, region in enumerate(regions):
-
         pixels = get_region_pixels(region)
 
         colors = [classify_color(pixel) for pixel in pixels]
@@ -437,4 +433,3 @@ def check_for_missing_gold_popup():
 
 if __name__ == "__main__":
     upgrade_card(Logger(), 5)
-

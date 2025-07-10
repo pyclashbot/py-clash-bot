@@ -7,9 +7,10 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_DEADSPACE_COORD = (21,418)
+CLASH_MAIN_DEADSPACE_COORD = (21, 418)
 
-def collect_level_up_chest( logger: Logger) -> bool:
+
+def collect_level_up_chest(logger: Logger) -> bool:
     logger.change_status("Checking level up chest")
 
     if check_if_on_clash_main_menu() is not True:
@@ -24,12 +25,12 @@ def collect_level_up_chest( logger: Logger) -> bool:
 
     # click level up chest
     print("Clicking level up chest icon")
-    click( 17, 16)
+    click(17, 16)
     time.sleep(2)
 
     # click the level up chest
     logger.change_status("Collecting this level up chest")
-    click( 115, 125)
+    click(115, 125)
     time.sleep(2)
 
     # increment level up chest increments
@@ -45,7 +46,7 @@ def collect_level_up_chest( logger: Logger) -> bool:
             return False
 
         print("Clicking deadspace to skip thru rewards")
-        click( CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+        click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 
     return True
@@ -70,18 +71,15 @@ def check_for_level_up_chest():
 
     # for p in pixels:
 
-
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(p, colors[i], tol=15):
             return True
 
     return False
 
 
-def collect_level_up_chest_state( logger, next_state):
+def collect_level_up_chest_state(logger, next_state):
     logger.change_status("Entered collect_level_up_chest_state()")
-
 
     print("Checking if on clash for this state")
     if not check_if_on_clash_main_menu():
@@ -95,7 +93,7 @@ def collect_level_up_chest_state( logger, next_state):
 
     # collect the chest
     logger.change_status("Collecting a level up chest")
-    if not collect_level_up_chest( logger):
+    if not collect_level_up_chest(logger):
         logger.change_status("Failure while collecting level up chest. Restarting...")
         return "restart"
 
@@ -114,4 +112,4 @@ def collect_level_up_chest_state( logger, next_state):
 
 
 if __name__ == "__main__":
-   pass
+    pass

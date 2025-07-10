@@ -1,5 +1,4 @@
-"""A module to cache and load program data to and from the disk
-"""
+"""A module to cache and load program data to and from the disk"""
 
 import json
 import pickle

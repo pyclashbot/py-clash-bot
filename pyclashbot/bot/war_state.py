@@ -25,7 +25,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.google_play_emulator.gpe import click, screenshot,scroll
+from pyclashbot.google_play_emulator.gpe import click, screenshot, scroll
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS = [
@@ -65,7 +65,7 @@ def find_war_battle_icon():
     return [coord[1], coord[0]]
 
 
-def war_state( logger: Logger, next_state: str):
+def war_state(logger: Logger, next_state: str):
     """Method to handle the war state of the bot"""
 
     logger.change_status(status="War state")
@@ -83,7 +83,7 @@ def war_state( logger: Logger, next_state: str):
 
     # check if in a clan
     logger.change_status(status="Making sure in a clan before war battle")
-    in_a_clan_check = war_state_check_if_in_a_clan( logger)
+    in_a_clan_check = war_state_check_if_in_a_clan(logger)
 
     if in_a_clan_check == "restart":
         logger.change_status(
@@ -100,13 +100,13 @@ def war_state( logger: Logger, next_state: str):
     logger.change_status(status="Starting a war battle")
 
     logger.log("Getting to clan tab")
-    if get_to_clan_tab_from_clash_main( logger) is False:
+    if get_to_clan_tab_from_clash_main(logger) is False:
         logger.log("Error 86868243 Took too long to get to clan tab from clash main")
         return "restart"
 
     # find and click battle icon
     logger.log("Finding a battle icon")
-    find_battle_return = find_and_click_war_battle_icon( logger)
+    find_battle_return = find_and_click_war_battle_icon(logger)
 
     # handle failure to find battle icon
     if find_battle_return == "restart":
@@ -115,12 +115,12 @@ def war_state( logger: Logger, next_state: str):
 
     # handle locked war battle
     if find_battle_return == "locked":
-        click( 175, 600)
+        click(175, 600)
 
         time.sleep(3)
 
         if check_for_trophy_reward_menu():
-            handle_trophy_reward_menu( logger)
+            handle_trophy_reward_menu(logger)
             time.sleep(3)
 
         if check_if_on_clash_main_menu() is not True:
@@ -133,7 +133,7 @@ def war_state( logger: Logger, next_state: str):
 
     # make deck if needed
 
-    handle_make_deck( logger)
+    handle_make_deck(logger)
     time.sleep(3)
 
     if not check_if_deck_is_ready_for_this_battle():
@@ -148,9 +148,9 @@ def war_state( logger: Logger, next_state: str):
         time.sleep(0.3)
 
         logger.change_status(status="Getting back to clash main")
-        get_to_clash_main_from_clan_page( logger)
+        get_to_clash_main_from_clan_page(logger)
 
-        if wait_for_clash_main_menu( logger) is False:
+        if wait_for_clash_main_menu(logger) is False:
             logger.change_status(
                 status="Erorr 7784278 failed to get to clash main after exhausting war battle decks",
             )
@@ -160,30 +160,30 @@ def war_state( logger: Logger, next_state: str):
 
     # start battle
     logger.change_status(status="Starting a war battle")
-    click( START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
+    click(START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
     logger.add_war_fight()
 
     # wait for battle start
-    if wait_for_war_battle_start( logger) == "restart":
+    if wait_for_war_battle_start(logger) == "restart":
         logger.log("Error 858258 WAited too long for war battle to begin.")
         return "restart"
 
     # do fight
-    if do_war_battle( logger) == "restart":
+    if do_war_battle(logger) == "restart":
         logger.change_status(status="Error 58734 Failed doing war battle")
         return "restart"
     logger.change_status(status=f"Done with war battle. Waiting {POST_WAR_FIGHT_WAIT}s")
     time.sleep(POST_WAR_FIGHT_WAIT)
 
     # when battle end, leave battle
-    click( LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
+    click(LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
 
-    if wait_for_war_page( logger) == "restart":
+    if wait_for_war_page(logger) == "restart":
         logger.change_status(status="Error 5135 Waited too long for war page")
         return "restart"
 
-    if get_to_clash_main_from_clan_page( logger) == "restart":
+    if get_to_clash_main_from_clan_page(logger) == "restart":
         logger.change_status(
             status="Error 116135 Failed return to clash main after war battle",
         )
@@ -193,14 +193,14 @@ def war_state( logger: Logger, next_state: str):
 
 
 def handle_edit_deck_page():
-    click( 216, 45)
+    click(216, 45)
 
 
 def handle_pre_war_battle_page():
-    click( 349, 154)
+    click(349, 154)
 
 
-def wait_for_war_page( logger) -> str:
+def wait_for_war_page(logger) -> str:
     """Method to wait for the war page to load after leaving a war battle.
 
     Args:
@@ -224,14 +224,14 @@ def wait_for_war_page( logger) -> str:
             return "restart"
 
         # Click on the Clan menu button
-        click( 279, 625)
+        click(279, 625)
         time.sleep(2)  # Wait for a second after clicking
 
     logger.log("Done waiting for war page")
     return "good"
 
 
-def do_war_battle( logger) -> Literal["restart", "good"]:
+def do_war_battle(logger) -> Literal["restart", "good"]:
     """Method to do the fighting in a war battle.
     Pretty much throws the match but it doesnt matter
     """
@@ -247,19 +247,19 @@ def do_war_battle( logger) -> Literal["restart", "good"]:
         logger.change_status(status="Doing a random war play")
 
         random_card_coord = random.choice(CARD_COORDS)
-        click( random_card_coord[0], random_card_coord[1])
+        click(random_card_coord[0], random_card_coord[1])
         time.sleep(0.33)
 
         # click a random play coord
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
-        click( random_play_coord[0], random_play_coord[1])
+        click(random_play_coord[0], random_play_coord[1])
         time.sleep(5)
 
     logger.change_status(status="Done with this war fight")
     return "good"
 
 
-def wait_for_war_battle_start( logger) -> Literal["restart", "good"]:
+def wait_for_war_battle_start(logger) -> Literal["restart", "good"]:
     """Method to wait until the war battle begins, with a timeout"""
     logger.change_status(status="Waiting for war battle start")
 
@@ -309,10 +309,15 @@ def check_if_in_war_battle() -> bool:
     while time.time() - start_time < timeout:
         if check_if_in_war_battle2():
             print("Using patch job for check_if_in_war_battle()")
-            click( 200, 550)
+            click(200, 550)
             return False
 
-        if not line_is_color( x_1=51, y_1=515, x_2=68, y_2=520, color=(255, 255, 255),
+        if not line_is_color(
+            x_1=51,
+            y_1=515,
+            x_2=68,
+            y_2=520,
+            color=(255, 255, 255),
         ):
             continue
 
@@ -325,17 +330,17 @@ def check_if_deck_is_ready_for_this_battle() -> bool:
     """Method to scan pixels in the image of
     this war battle page to see if the deck is good to go
     """
-    if not region_is_color( [230, 398, 17, 6], (255, 200, 79)):
+    if not region_is_color([230, 398, 17, 6], (255, 200, 79)):
         return False
-    if not region_is_color( [240, 427, 30, 5], (255, 188, 43)):
+    if not region_is_color([240, 427, 30, 5], (255, 188, 43)):
         return False
 
-    if not check_line_for_color( 340, 161, 354, 162, (229, 36, 36)):
+    if not check_line_for_color(340, 161, 354, 162, (229, 36, 36)):
         return False
     return True
 
 
-def handle_make_deck( logger: Logger) -> Literal["good deck", "made deck"]:
+def handle_make_deck(logger: Logger) -> Literal["good deck", "made deck"]:
     """Method to make a fresh war deck
     if this account doesn't have one made yet
     """
@@ -348,12 +353,12 @@ def handle_make_deck( logger: Logger) -> Literal["good deck", "made deck"]:
     logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
     print("clicking edit deck button")
-    click( EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
+    click(EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # click random deck button
     print("clicking random deck button")
-    click( RANDOM_DECK_BUTTON_COORD[0], RANDOM_DECK_BUTTON_COORD[1])
+    click(RANDOM_DECK_BUTTON_COORD[0], RANDOM_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # close deck editor
@@ -385,20 +390,19 @@ def check_for_locked_clan_war_screen():
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True
 
 
-def find_and_click_war_battle_icon( logger) -> Literal["restart", "good","locked"]:
+def find_and_click_war_battle_icon(logger) -> Literal["restart", "good", "locked"]:
     """Cycles through clan pages while searching for a war battle icon to click.
     If the icon is not immediately found, it attempts to refresh the view by clicking on deadspace
     and performing random scrolls.
     """
     start_time = time.time()
     # Coordinates to click outside of interactive areas
-    DEADSPACE_COORD = (3, 475)
+    DEADSPACE_COORD = (3, 475)  # noqa: N806
 
     while time.time() - start_time < FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
         if check_for_locked_clan_war_screen():
@@ -409,7 +413,7 @@ def find_and_click_war_battle_icon( logger) -> Literal["restart", "good","locked
         if check_if_on_war_page():
             coord = find_war_battle_icon()
             if coord is None:
-                click( *DEADSPACE_COORD)  # Click deadspace
+                click(*DEADSPACE_COORD)  # Click deadspace
                 # Adjust the range for probability
                 action_decision = random.randint(1, 10)
 
@@ -421,10 +425,10 @@ def find_and_click_war_battle_icon( logger) -> Literal["restart", "good","locked
 
                 time.sleep(2)  # Wait a bit before trying again
                 continue
-            click( coord[0], coord[1])  # Click the found icon
+            click(coord[0], coord[1])  # Click the found icon
             return "good"
         # If not on the war page, perform actions to navigate there
-        click( CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
+        click(CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
         time.sleep(2)
         if random.randint(0, 1) == 1:
             scroll(215, 300, 215, 400)
@@ -471,10 +475,10 @@ def check_if_on_war_page():
     return True
 
 
-def war_state_check_if_in_a_clan( logger: Logger):
+def war_state_check_if_in_a_clan(logger: Logger):
     """Method to handle the process of cehcking if the user in in a clan"""
     # get to profile page
-    if get_to_profile_page( logger) == "restart":
+    if get_to_profile_page(logger) == "restart":
         logger.change_status(
             status="Error 90723563485 Failure with get_to_profile_page",
         )
@@ -484,8 +488,8 @@ def war_state_check_if_in_a_clan( logger: Logger):
     in_a_clan = war_state_check_pixels_for_clan_flag()
 
     # click deadspace to leave
-    click( 15, 300)
-    if wait_for_clash_main_menu( logger) is False:
+    click(15, 300)
+    if wait_for_clash_main_menu(logger) is False:
         logger.change_status(
             status="Error 872356739 Failure with wait_for_clash_main_menu",
         )

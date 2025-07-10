@@ -4,7 +4,7 @@ import time
 from typing import Any
 
 
-class ThreadKilled(Exception):
+class ThreadKilled(Exception):  # noqa: N818
     def __init__(self) -> None:
         super().__init__("Thread killed")
 
@@ -34,7 +34,8 @@ class StoppableThread(threading.Thread):
         self.shutdown_flag.set()
         if kill:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(
-                self.native_id, ctypes.py_object(ThreadKilled),
+                self.native_id,
+                ctypes.py_object(ThreadKilled),
             )
 
 

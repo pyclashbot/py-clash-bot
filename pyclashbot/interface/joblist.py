@@ -26,7 +26,7 @@ def no_jobs_popup() -> None:
 
     # Event loop to process events and get user input
     while True:
-        event, *_ = window.read()  # type: ignore
+        event, *_ = window.read()  # type: ignore  # noqa: PGH003
 
         # Exit the program if the "Exit" button is clicked or window is closed
         if event in (sg.WINDOW_CLOSED, "Exit"):
@@ -66,7 +66,7 @@ battle_tab = (
             key="deck_number_selection",
             size=(5, 1),
             readonly=True,
-            enable_events=True
+            enable_events=True,
         ),
     ],
     [

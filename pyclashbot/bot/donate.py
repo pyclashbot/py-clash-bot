@@ -1,18 +1,14 @@
-"""This module contains functions related to donating cards in Clash of Clans.
-"""
+"""This module contains functions related to donating cards in Clash of Clans."""
 
 import random
 import time
-from typing import Literal
-
-import numpy
 
 from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
+    check_if_in_a_clan,
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
     handle_trophy_reward_menu,
-    check_if_in_a_clan
 )
 from pyclashbot.detection.image_rec import (
     condense_coordinates,
@@ -23,10 +19,10 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.google_play_emulator.gpe import click, screenshot,scroll
+from pyclashbot.google_play_emulator.gpe import click, screenshot, scroll
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_DEADSPACE_COORD = (21,418)
+CLASH_MAIN_DEADSPACE_COORD = (21, 418)
 
 
 def find_claim_button():
@@ -59,7 +55,7 @@ def find_claim_button():
     return None
 
 
-def donate_cards_state( logger: Logger, next_state, free_donate_toggle: bool):
+def donate_cards_state(logger: Logger, next_state, free_donate_toggle: bool):
     """This function represents the state of donating cards in Clash of Clans.
 
     Args:
@@ -102,10 +98,7 @@ def donate_cards_state( logger: Logger, next_state, free_donate_toggle: bool):
     print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # run donate cards main
-    if (
-        donate_cards_main( logger, only_free_donates=free_donate_toggle)
-        is False
-    ):
+    if donate_cards_main(logger, only_free_donates=free_donate_toggle) is False:
         logger.log("Failure donating cards. Returning false")
         return "restart"
 
@@ -117,14 +110,14 @@ def donate_cards_state( logger: Logger, next_state, free_donate_toggle: bool):
     return next_state
 
 
-def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
+def donate_cards_main(logger: Logger, only_free_donates: bool) -> bool:
     # get to clan chat page
     logger.change_status("Getting to clan tab to donate cards")
-    if get_to_clan_tab_from_clash_main( logger) is False:
+    if get_to_clan_tab_from_clash_main(logger) is False:
         return False
 
     # click jump to bottom button
-    click( 385, 488)
+    click(385, 488)
     time.sleep(2)
 
     logger.change_status("Starting donate sequence")
@@ -136,9 +129,9 @@ def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
             claim_button_coord = find_claim_button()
             if claim_button_coord:
                 logger.log("Claim button found. Claiming free gift from clan mate.")
-                click( *claim_button_coord)
+                click(*claim_button_coord)
                 time.sleep(3)
-            while find_and_click_donates( logger, only_free_donates) is True:
+            while find_and_click_donates(logger, only_free_donates) is True:
                 logger.change_status("Found a donate button")
                 loops += 1
                 if loops > 50:
@@ -146,25 +139,25 @@ def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
                 time.sleep(0.5)
 
             logger.change_status("Scrolling up...")
-            scroll(20,291,20,398)
+            scroll(20, 291, 20, 398)
             time.sleep(1)
 
         # click the more requests button that may exist
-        click( 48, 132)
+        click(48, 132)
         time.sleep(1)
 
         # click deadspace
-        click( 10, 233)
+        click(10, 233)
         time.sleep(0.33)
 
     # get to clash main
     logger.change_status("Returning to clash main after donating")
-    click( 175, 600, clicks=1)
+    click(175, 600, clicks=1)
     time.sleep(5)
 
     # handle geting stuck on trophy road screen
     if check_for_trophy_reward_menu():
-        handle_trophy_reward_menu( logger)
+        handle_trophy_reward_menu(logger)
         time.sleep(2)
 
     if check_if_on_clash_main_menu() is not True:
@@ -175,9 +168,9 @@ def donate_cards_main( logger: Logger, only_free_donates: bool) -> bool:
     return True
 
 
-def find_and_click_donates( logger, only_free_donates):
+def find_and_click_donates(logger, only_free_donates):
     logger.change_status("Searching for donate buttons...")
-    coords = find_donate_buttons( only_free_donates)
+    coords = find_donate_buttons(only_free_donates)
 
     found_donates = False
     start_time = time.time()
@@ -189,14 +182,14 @@ def find_and_click_donates( logger, only_free_donates):
             continue
 
         # if coord is in range, click it until its grey
-        while check_for_positive_donate_button_coords( coord):
+        while check_for_positive_donate_button_coords(coord):
             # timeout check
             if time.time() - start_time > timeout:
                 logger.change_status("Timed out while donating... Restarting")
                 return "restart"
 
             # do clicking, increment counter, toggle found_donates
-            click( coord[0], coord[1])
+            click(coord[0], coord[1])
             logger.change_status("Donated a card!")
             found_donates = True
             logger.add_donate()
@@ -205,16 +198,16 @@ def find_and_click_donates( logger, only_free_donates):
     return found_donates
 
 
-def region_contains_donate_button(image,region):
+def region_contains_donate_button(image, region):
     # print(f'checking if region: {region} has green')
-    l,t,w,h = region
-    y_range = (t,t + h)
+    l, t, w, h = region  # noqa: E741
+    y_range = (t, t + h)
     x_coord = 343
-    green_color = [73,228,58]
-    for i in range(y_range[0],y_range[1]):
-        pixel = image[i,x_coord]
+    green_color = [73, 228, 58]
+    for i in range(y_range[0], y_range[1]):
+        pixel = image[i, x_coord]
         # print(f'Region: {region} saw pixel: {pixel}')
-        if pixel_is_equal(pixel,green_color,tol=5):
+        if pixel_is_equal(pixel, green_color, tol=5):
             # print(f'Region has green')
             return True
 
@@ -222,7 +215,7 @@ def region_contains_donate_button(image,region):
     return False
 
 
-def find_donate_buttons( only_free_donates):
+def find_donate_buttons(only_free_donates):
     start_time = time.time()
     coords = []
 
@@ -232,34 +225,30 @@ def find_donate_buttons( only_free_donates):
     look_start_time = time.time()
     base_image = screenshot()
     while time.time() - look_start_time < look_time:
-        looks+=1
+        looks += 1
         try:
-            #calculate a random roi this search try, grab image
+            # calculate a random roi this search try, grab image
             left = 238
             right = 375
             top = 80
             bottom = 475
             t = random.randint(top, bottom)
             width = right - left
-            region = [left, t, width, 100] # [x,y,w,h]
+            region = [left, t, width, 100]  # [x,y,w,h]
             roi_image = crop_image(base_image, region)
 
-            #pixel check to see if region even has green
-            if region_contains_donate_button(base_image,region) is False:
+            # pixel check to see if region even has green
+            if region_contains_donate_button(base_image, region) is False:
                 continue
 
-            #find one donate button in the roi image
+            # find one donate button in the roi image
             coord = find_donate_button(roi_image)
             if coord is None:
                 continue
 
-            #if only_free_donates is enabled, assure free_button_exists
-            if (
-                only_free_donates
-                and coord is not None
-                and not free_button_exists( coord, region)
-            ):
-                #if not free_button_exists retry
+            # if only_free_donates is enabled, assure free_button_exists
+            if only_free_donates and coord is not None and not free_button_exists(coord, region):
+                # if not free_button_exists retry
                 continue
 
             # convert ROI coord to usable coord
@@ -269,21 +258,21 @@ def find_donate_buttons( only_free_donates):
             coord = [coord[0] + 37, coord[1] + 3]
 
             coords.append(coord)
-        except:
+        except:  # noqa: E722
             pass
 
     # remove dupes from coords list
     coords = condense_coordinates(coords, distance_threshold=15)
 
     # time taken printout
-    time_taken = str(time.time() - start_time)[:5]
+    str(time.time() - start_time)[:5]
     # print(f"Finished find_donate_buttons() in {time_taken}s")
     # print(f"Found {len(coords)} donate buttons in {looks} looks")
 
     return coords
 
 
-def free_button_exists( coord, region):
+def free_button_exists(coord, region):
     """Method to find the donate icon for FREE in a cropped image"""
     # grab ROI image
     x = coord[1] + region[0]
@@ -328,7 +317,7 @@ def find_donate_button(image):
     return [coord[1], coord[0]]
 
 
-def check_for_positive_donate_button_coords( coord):
+def check_for_positive_donate_button_coords(coord):
     # if pixel is too high, always return False
 
     iar = screenshot()

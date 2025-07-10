@@ -233,7 +233,7 @@ user_config_keys = [
 ]
 
 # list of button and checkbox keys to disable when the bot is running
-disable_keys = user_config_keys + ["Start"]
+disable_keys = [*user_config_keys, "Start"]
 
 
 def create_window() -> Window:

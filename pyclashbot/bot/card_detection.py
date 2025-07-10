@@ -4,8 +4,8 @@ from collections import Counter
 
 import numpy
 
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 
-from pyclashbot.google_play_emulator.gpe import click,screenshot
 # play coord data
 PLAY_COORDS = {
     # done
@@ -2323,7 +2323,7 @@ card_color_data = {
             "Maroon": 119,
         },
     ],
-    "graveyard": [
+    "graveyard": [  # noqa: F601
         {
             "Red": 0,
             "Orange": 0,
@@ -4140,9 +4140,7 @@ COLORS_KEYS = list(COLORS.keys())
 
 # Pre-compute numpy arrays for each card's corner data
 for card_name, card_data in card_color_data.items():
-    card_color_data[card_name] = [
-        numpy.array(list(corner.values())) for corner in card_data
-    ]
+    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
 
 
 def calculate_offset(card_name, card_data, collected_data_array):
@@ -4162,8 +4160,10 @@ def find_closest_card(collected_data):
     )
 
     for card_name, card_data in card_color_data.items():
-        card_name, total_offset = calculate_offset(
-            card_name, card_data, collected_data_array,
+        card_name, total_offset = calculate_offset(  # noqa: PLW2901
+            card_name,
+            card_data,
+            collected_data_array,
         )
         if total_offset < best_offset:
             best_offset = total_offset
@@ -4209,7 +4209,7 @@ def get_corner_pixels(x_range, y_range, iar):
     return make_pixel_dict_from_color_list(colors)
 
 
-def get_all_pixel_data( chosen_card_index):
+def get_all_pixel_data(chosen_card_index):
     topleft = toplefts[chosen_card_index]
 
     corners = [
@@ -4253,23 +4253,25 @@ card_coords = [
     for topleft in card_toplefts
 ]
 
-global play_side
-global battle_iar
+global play_side  # noqa: PLW0604
+global battle_iar  # noqa: PLW0604
 
 play_side = "left"
 
 
-def check_which_cards_are_available( check_champion=False, check_side=False):
+def check_which_cards_are_available(check_champion=False, check_side=False):
     global battle_iar
     battle_iar = screenshot()
     card_exists_list = []
 
     if check_champion and (
         check_for_champion_ability(
-            battle_iar[462][324], battle_iar[453][334], battle_iar[462][336],
+            battle_iar[462][324],
+            battle_iar[453][334],
+            battle_iar[462][336],
         )
     ):
-        click( 330, 460)
+        click(330, 460)
 
     if check_side:
         global play_side
@@ -4303,8 +4305,8 @@ def check_for_champion_ability(a, b, c):
     return False
 
 
-def identify_hand_cards( card_index):
-    color_chosen_card = get_all_pixel_data( card_index)
+def identify_hand_cards(card_index):
+    color_chosen_card = get_all_pixel_data(card_index)
     return find_closest_card(color_chosen_card)
 
 
@@ -4317,10 +4319,10 @@ def get_card_group(card_id) -> str:
     return CARD_TO_GROUP.get(card_id, "No group")
 
 
-def get_play_coords_for_card( logger, card_index):
+def get_play_coords_for_card(logger, card_index):
     # get the ID of this card(ram_rider, zap, etc)
     id_cards_start_time = time.time()
-    identity = identify_hand_cards( card_index)
+    identity = identify_hand_cards(card_index)
     time_taken = str(time.time() - id_cards_start_time)[:3]
     logger.change_status(f"Identified card as {identity} ({time_taken}s)")
 
@@ -4378,11 +4380,7 @@ bridge_pixel = [[100, 200], [275, 200]]
 def switch_side():
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
-        all_coords = [
-            (y, x)
-            for x in range(bridge[0], bridge[0] + 40)
-            for y in range(bridge[1], bridge[1] + 175)
-        ]
+        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
         pixel_coords = numpy.array(all_coords)
         iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]

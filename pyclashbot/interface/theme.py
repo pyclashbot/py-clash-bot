@@ -1,4 +1,3 @@
-
 import FreeSimpleGUI as sg
 
 # THEME = "SystemDefaultForReal"

@@ -50,7 +50,7 @@ def check_if_can_collect_season_shop_offers() -> bool:
 def click_random_season_shop_offer():
     x = random.randint(66, 354)
     y = random.randint(230, 512)
-    click( x, y)
+    click(x, y)
 
 
 def check_for_purchase_confirmation_page() -> bool:
@@ -78,23 +78,23 @@ def check_for_purchase_confirmation_page() -> bool:
 
 
 def click_buy_season_shop_offer():
-    click( 207, 425)
+    click(207, 425)
 
 
 def season_shop_deadspace_click():
-    click( 195, 91)
+    click(195, 91)
 
 
 def close_season_shop_page():
     for _ in range(5):
-        click( 361, 41)
+        click(361, 41)
 
 
-def buy_season_shop_offers( logger: Logger):
+def buy_season_shop_offers(logger: Logger):
     logger.change_status("Collecting season shop offers!")
 
     # open shop
-    click( 328, 187)
+    click(328, 187)
     time.sleep(2)
 
     # while we have currency, keep buying
@@ -131,7 +131,7 @@ def buy_season_shop_offers( logger: Logger):
     close_season_shop_page()
 
     # get back to clash main
-    click( 182, 608)
+    click(182, 608)
     time.sleep(3)
 
     # if not on main by the end, return 'restart'
@@ -143,21 +143,21 @@ def buy_season_shop_offers( logger: Logger):
     return True
 
 
-def get_to_clash_main_from_event_page( logger: Logger) -> bool:
+def get_to_clash_main_from_event_page(logger: Logger) -> bool:
     cr_main_coord = (175, 600)
-    click( *cr_main_coord)
+    click(*cr_main_coord)
     time.sleep(3)
 
-    return wait_for_clash_main_menu( logger)
+    return wait_for_clash_main_menu(logger)
 
 
-def collect_season_shop_offers_state( logger: Logger, next_state: str):
+def collect_season_shop_offers_state(logger: Logger, next_state: str):
     # if not on main, return 'restart'
     if not check_if_on_clash_main_menu():
         logger.change_status("Not on clash main for collect_season_shop_offers_state()")
 
     # get to events tab
-    get_to_challenges_tab_from_main( logger)
+    get_to_challenges_tab_from_main(logger)
     time.sleep(3)
 
     # if cant collect rewards, return next_state
@@ -165,10 +165,10 @@ def collect_season_shop_offers_state( logger: Logger, next_state: str):
         logger.change_status(
             f"Cant collect season shop offers. Returning next state as : {next_state}",
         )
-        get_to_clash_main_from_event_page( logger)
+        get_to_clash_main_from_event_page(logger)
         return next_state
 
-    if not buy_season_shop_offers( logger):
+    if not buy_season_shop_offers(logger):
         return "restart"
 
     return next_state
@@ -176,4 +176,4 @@ def collect_season_shop_offers_state( logger: Logger, next_state: str):
 
 if __name__ == "__main__":
     # scroll(12, 200, 240, 200, 400)
-    scroll(12, 200, 400, 200, 240)
+    scroll(12, 200, 400, 200, 240)  # noqa: F821

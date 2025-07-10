@@ -9,13 +9,11 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-
-from pyclashbot.google_play_emulator.gpe import click,screenshot
-
+from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
-def card_mastery_state( logger, next_state):
+def card_mastery_state(logger, next_state):
     logger.change_status("Going to collect card mastery rewards")
 
     if check_if_on_clash_main_menu() is not True:
@@ -24,7 +22,7 @@ def card_mastery_state( logger, next_state):
         )
         return "restart"
 
-    if collect_card_mastery_rewards( logger) is False:
+    if collect_card_mastery_rewards(logger) is False:
         logger.change_status(
             'Failed somewhere in collect_card_mastery_rewards(), returning "restart"',
         )
@@ -33,10 +31,10 @@ def card_mastery_state( logger, next_state):
     return next_state
 
 
-def collect_card_mastery_rewards( logger: Logger) -> bool:
+def collect_card_mastery_rewards(logger: Logger) -> bool:
     # get to card page
     logger.change_status("Collecting card mastery rewards...")
-    if get_to_card_page_from_clash_main( logger) == "restart":
+    if get_to_card_page_from_clash_main(logger) == "restart":
         logger.change_status(
             "Failed to get to card page to collect mastery rewards! Returning false",
         )
@@ -59,10 +57,10 @@ def collect_card_mastery_rewards( logger: Logger) -> bool:
 
     # get to clash main
     logger.change_status("Returning to clash main menu")
-    click( 243, 600)
+    click(243, 600)
 
     # wait for main to appear
-    if wait_for_clash_main_menu( logger) is False:
+    if wait_for_clash_main_menu(logger) is False:
         logger.change_status(
             "Failed to get back to clash main menu from card page! Returning false",
         )
@@ -73,21 +71,21 @@ def collect_card_mastery_rewards( logger: Logger) -> bool:
 
 def collect_first_mastery_reward():
     # click the card mastery reward icon
-    click( 362, 444)
+    click(362, 444)
     time.sleep(0.5)
 
     # click first card
-    click( 99, 166)
+    click(99, 166)
     time.sleep(0.5)
 
     # click rewards at specific Y positions
     y_positions = [316, 403, 488]
     for y in y_positions:
-        click( 200, y)
+        click(200, y)
         time.sleep(1)
         if check_for_inventory_full_popup():
-            print('Inventory full popup detected!\nClicking it')
-            click(260,420)
+            print("Inventory full popup detected!\nClicking it")
+            click(260, 420)
             time.sleep(1)
 
     # click deadspace
@@ -95,7 +93,7 @@ def collect_first_mastery_reward():
     ds_click_timeout = 60  # s
     ds_start_time = time.time()
     while not check_if_on_card_page():
-        click( *ds)
+        click(*ds)
 
         if time.time() - ds_start_time > ds_click_timeout:
             print("Clicked deadspace after collecting card mastery reward for too long")
@@ -131,6 +129,7 @@ def card_mastery_rewards_exist():
 
     return True
 
+
 def check_for_inventory_full_popup():
     iar = screenshot()
     pixels = [
@@ -147,19 +146,19 @@ def check_for_inventory_full_popup():
     ]
     # for p in pixels:print(p)
     colors = [
-[255 ,187 ,105],
-[255 ,187 ,105],
-[255 ,187 ,105],
-[244 ,233 ,220],
-[60 ,52 ,43],
-[255 ,175  ,78],
-[255 ,175  ,78],
-[255 ,255 ,255],
-[241 ,165  ,74],
-[255 ,175  ,78],
+        [255, 187, 105],
+        [255, 187, 105],
+        [255, 187, 105],
+        [244, 233, 220],
+        [60, 52, 43],
+        [255, 175, 78],
+        [255, 175, 78],
+        [255, 255, 255],
+        [241, 165, 74],
+        [255, 175, 78],
     ]
     for i, c in enumerate(colors):
-        if not pixel_is_equal(c, pixels[i], tol = 15):
+        if not pixel_is_equal(c, pixels[i], tol=15):
             return False
     return True
 

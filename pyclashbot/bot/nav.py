@@ -1,18 +1,17 @@
 import random
 import time
-from turtle import color
 from typing import Literal
 
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    pixels_match_colors,
     pixel_is_equal,
+    pixels_match_colors,
     region_is_color,
 )
 from pyclashbot.google_play_emulator.gpe import (
     click,
-    scroll,
     screenshot,
+    scroll,
 )
 from pyclashbot.utils.logger import Logger
 
@@ -164,10 +163,7 @@ def check_if_in_battle() -> Literal["2v2"] | Literal["1v1"] | Literal["None"]:
     ]
 
     # Check if all the pixels match for an ongoing battle
-    if all(
-        pixel_is_equal(pixels[index], colors[index], tol=55)
-        for index in range(len(pixels))
-    ):
+    if all(pixel_is_equal(pixels[index], colors[index], tol=55) for index in range(len(pixels))):
         # Specific check for 2v2 battle
         combat_2v2_pixel = iar[506][135]
         combat_2v2_color = [169, 29, 172]
@@ -280,16 +276,10 @@ def check_end_of_battle_screen():
     ]
 
     # Check for 1v1 end screen
-    is_1v1_end = all(
-        pixel_is_equal(iar[y][x], expected_color, tol=30)
-        for (x, y), expected_color in pixels_1v1
-    )
+    is_1v1_end = all(pixel_is_equal(iar[y][x], expected_color, tol=30) for (x, y), expected_color in pixels_1v1)
 
     # Check for 2v2 end screen
-    is_2v2_end = all(
-        pixel_is_equal(iar[y][x], expected_color, tol=30)
-        for (x, y), expected_color in pixels_2v2
-    )
+    is_2v2_end = all(pixel_is_equal(iar[y][x], expected_color, tol=30) for (x, y), expected_color in pixels_2v2)
 
     return is_1v1_end or is_2v2_end
 
@@ -414,7 +404,6 @@ def check_for_boot_reward(iar):
 def get_to_clan_tab_from_clash_main(
     logger: Logger,
 ):
-
     # just try it raw real quick in case it works first try
     click(
         CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
@@ -1082,7 +1071,6 @@ def check_if_on_underleveled_card_page():
 
 
 def check_if_on_card_page() -> bool:
-
     coords = [
         [89, 618],
         [104, 613],
@@ -1648,9 +1636,7 @@ def check_if_on_collection_page() -> bool:
         iar[78][335],
     ]
 
-    if pixels_match_colors(pixels, trophy_mode_colors) or pixels_match_colors(
-        pixels, legends2_mode_colors
-    ):
+    if pixels_match_colors(pixels, trophy_mode_colors) or pixels_match_colors(pixels, legends2_mode_colors):
         return True
 
     return False
@@ -1684,30 +1670,30 @@ def get_to_collections_page() -> bool:
 
 
 def check_pixel_for_in_clan() -> bool:
-    iar = screenshot()  # type: ignore
+    iar = screenshot()  # type: ignore  # noqa: PGH003
     coords = [
-        [84,351],
-        [87,355],
-        [90,355],
-        [90,349],
-        [88,351],
-        [88,353],
-        [85,355],
-        [82,350],
-        [84,350],
-        [86,353],
-        [90,355],
-        [93,355],
-        [93,351],
-        [90,348],
-        [86,351],
-        [85,353],
-        [87,356],
-        [89,359],
-        [92,358],
-        [92,353],
+        [84, 351],
+        [87, 355],
+        [90, 355],
+        [90, 349],
+        [88, 351],
+        [88, 353],
+        [85, 355],
+        [82, 350],
+        [84, 350],
+        [86, 353],
+        [90, 355],
+        [93, 355],
+        [93, 351],
+        [90, 348],
+        [86, 351],
+        [85, 353],
+        [87, 356],
+        [89, 359],
+        [92, 358],
+        [92, 353],
     ]
-    color = [51, 51,51]
+    color = [51, 51, 51]
 
     for coord in coords:
         pixel = iar[coord[1]][coord[0]]
@@ -1715,7 +1701,6 @@ def check_pixel_for_in_clan() -> bool:
             return True
 
     return False
-
 
 
 def check_if_in_a_clan(logger):
@@ -1729,7 +1714,7 @@ def check_if_in_a_clan(logger):
 
     in_a_clan = check_pixel_for_in_clan()
 
-    deadspace = [9,476]
+    deadspace = [9, 476]
     click(*deadspace)
 
     return in_a_clan

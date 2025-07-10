@@ -4,7 +4,6 @@ import configparser
 import ctypes
 import logging
 import platform
-from os.path import join
 import subprocess
 
 import psutil

@@ -1,13 +1,12 @@
 import random
 import time
-from typing import Literal
 
 import numpy
 
 from pyclashbot.bot.nav import (
+    check_if_in_a_clan,
     check_if_on_clash_main_menu,
     get_to_clan_tab_from_clash_main,
-    get_to_profile_page,check_if_in_a_clan,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
@@ -19,16 +18,13 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.google_play_emulator.gpe import (
-    click,
-    screenshot,scroll
-)
+from pyclashbot.google_play_emulator.gpe import click, screenshot, scroll
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_DEADSPACE_COORD = (21,418)
+CLASH_MAIN_DEADSPACE_COORD = (21, 418)
 
 
-def find_request_button( logger: Logger):
+def find_request_button(logger: Logger):
     """Finds the location of the request button on the screen.
 
     Args:
@@ -61,7 +57,7 @@ def find_request_button( logger: Logger):
     return [coord[1], coord[0]]
 
 
-def request_state( logger: Logger, next_state: str) -> str:
+def request_state(logger: Logger, next_state: str) -> str:
     """The request state of the bot. This state is responsible for checking if the bot is in a clan,
     checking if a request can be made, and making a request if possible.
 
@@ -110,38 +106,37 @@ def request_state( logger: Logger, next_state: str) -> str:
 
     # get to clan page
     logger.change_status("Getting to clan tab to request a card")
-    if get_to_clan_tab_from_clash_main( logger) is False:
+    if get_to_clan_tab_from_clash_main(logger) is False:
         logger.change_status(status="ERROR 74842744443 Not on clan tab")
         return "restart"
 
     # check if request exists
     if check_if_can_request_wrapper():
         # do request
-        if not do_request( logger):
+        if not do_request(logger):
             return "restart"
     else:
         logger.change_status(status="Can't request right now.")
 
     # click clash main icon
-    click( 178, 593)
+    click(178, 593)
 
     # return to clash main
-    wait_for_clash_main_menu( logger, deadspace_click=False)
+    wait_for_clash_main_menu(logger, deadspace_click=False)
 
     return next_state
 
 
-
-def do_random_scrolling_in_request_page( logger, scrolls) -> None:
+def do_random_scrolling_in_request_page(logger, scrolls) -> None:
     logger.change_status(status="Doing random scrolling in request page")
     # scroll up to top
     for _ in range(3):
         # scroll_up_on_left_side_of_screen()
-        scroll(44,214,44,473)
+        scroll(44, 214, 44, 473)
 
     for _ in range(scrolls):
         # scroll_down_in_request_page()
-        scroll(44,314,44,214)
+        scroll(44, 314, 44, 214)
         time.sleep(1)
     logger.change_status(status="Done with random scrolling in request page")
 
@@ -149,7 +144,7 @@ def do_random_scrolling_in_request_page( logger, scrolls) -> None:
 def count_scrolls_in_request_page() -> int:
     # scroll up to top
     for _ in range(3):
-        scroll(44,214, 44,473)
+        scroll(44, 214, 44, 473)
         time.sleep(0.3)
 
     # scroll down, counting each scroll, until can't scroll anymore
@@ -158,7 +153,7 @@ def count_scrolls_in_request_page() -> int:
     start_time = time.time()
     while check_if_can_scroll_in_request_page():
         print(f"One scroll down. Count is {scrolls}")
-        scroll(44,314,44,214) #this should match the scroll in do_random_scrolling_in_request_page()
+        scroll(44, 314, 44, 214)  # this should match the scroll in do_random_scrolling_in_request_page()
         scrolls += 1
         time.sleep(2)
 
@@ -167,11 +162,11 @@ def count_scrolls_in_request_page() -> int:
             return 5
 
     # close request screen with deadspace click
-    click( 15, 300, clicks=3)
+    click(15, 300, clicks=3)
     time.sleep(0.1)
 
     # reopen request page
-    click( 77, 536)
+    click(77, 536)
     time.sleep(0.1)
 
     return scrolls
@@ -215,11 +210,11 @@ def check_if_can_scroll_in_request_page() -> bool:
 
 
 def click_random_requestable_card() -> bool:
-    def make_coord_list(x_range,y_range):
+    def make_coord_list(x_range, y_range):
         coords = []
-        for x in range(x_range[0],x_range[1]):
-            for y in range(y_range[0],y_range[1]):
-                c = [x,y]
+        for x in range(x_range[0], x_range[1]):
+            for y in range(y_range[0], y_range[1]):
+                c = [x, y]
                 coords.append(c)
 
         random.shuffle(coords)
@@ -227,7 +222,7 @@ def click_random_requestable_card() -> bool:
 
     def is_valid_pixel(pixel):
         def is_greyscale_pixel(pixel):
-            #if all the values are wihtin 5 of eachother, it's greyscale
+            # if all the values are wihtin 5 of eachother, it's greyscale
             if abs(pixel[0] - pixel[1]) < 5 and abs(pixel[1] - pixel[2]) < 5:
                 return True
 
@@ -236,29 +231,30 @@ def click_random_requestable_card() -> bool:
         if is_greyscale_pixel(pixel):
             return False
 
-        if pixel_is_equal(pixel,[222,235,241],tol=20):
+        if pixel_is_equal(pixel, [222, 235, 241], tol=20):
             return False
 
         return True
 
-    #check pixels in the request card grid region
+    # check pixels in the request card grid region
     iar = screenshot()
-    for coord in make_coord_list((69,356),(213,557)):
+    for coord in make_coord_list((69, 356), (213, 557)):
         pixel = iar[coord[1]][coord[0]]
-        #if the pixel indicates requestable, click it, return True
+        # if the pixel indicates requestable, click it, return True
         if is_valid_pixel(pixel):
-            click(coord[0],coord[1])
+            click(coord[0], coord[1])
             return True
 
-    #fail return
+    # fail return
     return False
 
-def do_request( logger: Logger) -> bool:
+
+def do_request(logger: Logger) -> bool:
     logger.change_status(status="Initiating request process")
 
     # Click the request button
     logger.change_status(status="Clicking the request button")
-    click( 77, 536)
+    click(77, 536)
     time.sleep(3)
 
     # Determine the maximum number of scrolls in the request page
@@ -283,10 +279,7 @@ def do_request( logger: Logger) -> bool:
     coord = None
     while coord is None:
         # Timeout check to avoid infinite loop
-        if (
-            time.time() - random_click_start_time > random_click_timeout
-            or attempt_count > 6
-        ):
+        if time.time() - random_click_start_time > random_click_timeout or attempt_count > 6:
             logger.change_status(
                 "Timeout or too many attempts while trying to click a random card for request",
             )
@@ -298,22 +291,21 @@ def do_request( logger: Logger) -> bool:
         click_try_limit = 10
         click_tries = 0
         while click_random_requestable_card() is False:
-            print('Failed to click an upgradable card.')
+            print("Failed to click an upgradable card.")
             click_tries += 1
-            if click_tries>click_try_limit:
-                logger.change_status('Failed to click an upgradable card. too many times')
+            if click_tries > click_try_limit:
+                logger.change_status("Failed to click an upgradable card. too many times")
                 return False
-
 
         time.sleep(3)
 
         # Attempt to find the request button
-        coord = find_request_button( logger)
+        coord = find_request_button(logger)
         attempt_count += 1
 
     # Click the found request button
     logger.change_status(status="Clicking the request button")
-    click( coord[0], coord[1])
+    click(coord[0], coord[1])
 
     # Update request statistics
     prev_requests = logger.get_requests()
@@ -326,7 +318,7 @@ def do_request( logger: Logger) -> bool:
 
 
 def check_if_can_request_wrapper() -> bool:
-    if check_for_epic_sunday_icon_with_delay( 3):
+    if check_for_epic_sunday_icon_with_delay(3):
         print("Detected epic sunday icon")
         return True
 
@@ -374,7 +366,7 @@ def check_if_can_request() -> bool:
     return False
 
 
-def check_for_epic_sunday_icon_with_delay( delay):
+def check_for_epic_sunday_icon_with_delay(delay):
     start_time = time.time()
     while time.time() - start_time < delay:
         if check_for_epic_sunday_icon():
@@ -395,24 +387,23 @@ def check_for_epic_sunday_icon():
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
 
 
 def check_if_can_request_2() -> bool:
-    if not check_line_for_color( 300, 522, 300, 544, (76, 176, 255)):
+    if not check_line_for_color(300, 522, 300, 544, (76, 176, 255)):
         return False
-    if not check_line_for_color( 362, 522, 362, 544, (76, 174, 255)):
+    if not check_line_for_color(362, 522, 362, 544, (76, 174, 255)):
         return False
-    if not check_line_for_color( 106, 537, 106, 545, (255, 188, 42)):
+    if not check_line_for_color(106, 537, 106, 545, (255, 188, 42)):
         return False
-    if not check_line_for_color( 107, 537, 119, 545, (255, 188, 42)):
+    if not check_line_for_color(107, 537, 119, 545, (255, 188, 42)):
         return False
-    if not check_line_for_color( 46, 529, 57, 539, (178, 79, 244)):
+    if not check_line_for_color(46, 529, 57, 539, (178, 79, 244)):
         return False
-    if not check_line_for_color( 50, 540, 54, 527, (176, 79, 244)):
+    if not check_line_for_color(50, 540, 54, 527, (176, 79, 244)):
         return False
     return True
 
@@ -455,9 +446,9 @@ def check_for_trade_cards_icon() -> bool:
 
 
 def check_if_can_request_3():
-    if not region_is_color( [48, 529, 8, 7], (216, 229, 255)):
+    if not region_is_color([48, 529, 8, 7], (216, 229, 255)):
         return False
-    if not region_is_color( [106, 538, 12, 7], (255, 188, 42)):
+    if not region_is_color([106, 538, 12, 7], (255, 188, 42)):
         return False
 
     return True

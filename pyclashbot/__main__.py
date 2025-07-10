@@ -10,6 +10,7 @@ import FreeSimpleGUI as sg
 from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.google_play_emulator.gpe import close_emulator
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.joblist import no_jobs_popup
 from pyclashbot.interface.layout import create_window
@@ -17,8 +18,6 @@ from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
-
-from pyclashbot.google_play_emulator.gpe import close_emulator
 
 initalize_pylogging()
 
@@ -199,11 +198,9 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
         for key in user_config_keys:
             if key in settings:
                 if key in list(window.key_dict.keys()):
-                    window[key].update(settings[key])  # type: ignore
+                    window[key].update(settings[key])  # type: ignore  # noqa: PGH003
                 else:
-                    print(
-                        f"This key {key} appears in saved settings, but not the active window."
-                    )
+                    print(f"This key {key} appears in saved settings, but not the active window.")
         window.refresh()
 
 
@@ -320,12 +317,12 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
     returns:
         None
     """
-    window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore
+    window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore  # noqa: PGH003
     # update the statistics in the gui
     stats = logger.get_stats()
     if stats is not None:
         for stat, val in stats.items():
-            window[stat].update(val)  # type: ignore
+            window[stat].update(val)  # type: ignore  # noqa: PGH003
 
 
 def exit_button_event(thread) -> None:

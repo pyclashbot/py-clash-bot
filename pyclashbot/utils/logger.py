@@ -8,7 +8,7 @@ import time
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
-from os.path import basename, exists, expandvars, getmtime, join
+from os.path import exists, expandvars, getmtime, join
 
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.versioning import __version__
@@ -245,14 +245,14 @@ class Logger:
             return int(random_lowest_key)
 
         def print_account_history_dict(index2count):
-            print(f"\nAccount history dict:")
+            print("\nAccount history dict:")
             print("{:^6} : {}".format("Acct #", "count"))
             for index, count in index2count.items():
-                print("{:^6} : {}".format(index, count))
+                print(f"{index:^6} : {count}")
             print("\n")
 
         # make a dict that represents index2count for each index in range(total_count)
-        index2count = {i: 0 for i in range(total_count)}
+        index2count = dict.fromkeys(range(total_count), 0)
 
         # populate the dict with the counts of each index in account_index_history
         for i in self.account_index_history:
@@ -496,14 +496,14 @@ class Logger:
         self.log("User Toggle Keys and Values:")
         for key, value in user_toggle_keys_and_values:
             while len(key) < 45:
-                key += " "
+                key += " "  # noqa: PLW2901
             self.log(f"     -{key}:           {value}")
 
         self.log("-------------------------------")
         self.log("Increment User Input Keys and Values:")
         for key, value in increment_user_input_keys_and_values:
             while len(key) < 45:
-                key += " "
+                key += " "  # noqa: PLW2901
             self.log(f"     -{key}:              [{value}]")
 
         self.log("-------------------------------")

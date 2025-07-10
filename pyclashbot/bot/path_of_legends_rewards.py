@@ -14,7 +14,7 @@ from pyclashbot.google_play_emulator.gpe import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
-def path_of_legends_rewards_toggle( logger: Logger, next_state: str):
+def path_of_legends_rewards_toggle(logger: Logger, next_state: str):
     """Attempts to collect Path of Legends rewards if available.
 
     Args:
@@ -29,7 +29,7 @@ def path_of_legends_rewards_toggle( logger: Logger, next_state: str):
 
     """
     # Check if already in the Clash main menu.
-    if not wait_for_clash_main_menu( logger):
+    if not wait_for_clash_main_menu(logger):
         logger.change_status("Not in Clash main menu")
         return "restart"
 
@@ -38,12 +38,12 @@ def path_of_legends_rewards_toggle( logger: Logger, next_state: str):
         logger.change_status("Detected both 1v1 modes.")
 
         # Attempt to navigate to Path of Legends if not already there.
-        if check_if_on_path_of_legends_clash_main() != True:
+        if not check_if_on_path_of_legends_clash_main():
             logger.change_status("Not in Path of Legends, attempting to switch...")
-            click( 277, 400)
+            click(277, 400)
             time.sleep(2)  # Wait for UI to update.
 
-            if check_if_on_path_of_legends_clash_main() != True:
+            if not check_if_on_path_of_legends_clash_main():
                 logger.change_status("Failed to navigate to Path of Legends")
                 return "restart"
 
@@ -53,7 +53,8 @@ def path_of_legends_rewards_toggle( logger: Logger, next_state: str):
             logger.change_status(
                 "Path of Legends rewards detected. Attempting to collect...",
             )
-            path_of_legends_state, rewards_collected = collect_path_of_legends_rewards( logger,
+            path_of_legends_state, rewards_collected = collect_path_of_legends_rewards(
+                logger,
             )
             if not path_of_legends_state:
                 logger.change_status("Failed to collect Path of Legends rewards.")
@@ -114,7 +115,7 @@ def check_for_path_of_legends_rewards():
     return False
 
 
-def collect_path_of_legends_rewards( logger):
+def collect_path_of_legends_rewards(logger):
     """Tries to collect Path of Legends rewards by opening the Path of Legends rewards menu
     and claiming available rewards. It handles both scenarios: being an Ultimate Champion and not.
 
@@ -130,7 +131,7 @@ def collect_path_of_legends_rewards( logger):
     """
     rewards_collected = 0
     # Attempt to open the Path of Legends rewards menu.
-    click( 210, 250)
+    click(210, 250)
     time.sleep(2)  # Wait a bit for the menu to open.
 
     if check_if_on_path_of_legends_rewards_menu():
@@ -144,15 +145,12 @@ def collect_path_of_legends_rewards( logger):
             while button:
                 logger.change_status("Claiming reward...")
                 # Click on the found "Claim Rewards" button.
-                click( *button)
+                click(*button)
                 time.sleep(1)  # Allow time for reward claim animation.
                 collecting_attempts = 0
-                while (
-                    not check_if_on_path_of_legends_rewards_menu()
-                    and collecting_attempts < 30
-                ):
+                while not check_if_on_path_of_legends_rewards_menu() and collecting_attempts < 30:
                     # Click on deadspace to ensure staying in the menu.
-                    click( 20, 395)
+                    click(20, 395)
                     time.sleep(0.5)
                     collecting_attempts += 1
                     if collecting_attempts >= 30:
@@ -175,22 +173,22 @@ def collect_path_of_legends_rewards( logger):
             )
             while not check_last_door():
                 logger.change_status("Scrolling to look for more rewards...")
-                scroll_up()
+                scroll_up()  # noqa: F821
                 time.sleep(2)
                 if not claim_rewards_sequence():
                     return False, rewards_collected
         else:
             while not (check_current_step() or check_last_door()):
-                scroll_up()
+                scroll_up()  # noqa: F821
                 time.sleep(2)
                 if not claim_rewards_sequence():
                     return False, rewards_collected
 
         logger.change_status("Reached the end of rewards.")
-        click( 210, 606)  # Click to go back to the main menu.
+        click(210, 606)  # Click to go back to the main menu.
         time.sleep(2)
 
-        if wait_for_clash_main_menu( logger):
+        if wait_for_clash_main_menu(logger):
             logger.change_status(
                 "Successfully returned to Clash main menu after collecting rewards.",
             )

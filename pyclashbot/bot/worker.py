@@ -1,11 +1,10 @@
 import time
 
 from pyclashbot.bot.states import StateHistory, state_tree
+from pyclashbot.google_play_emulator.docker import start_dock_thread
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
-from pyclashbot.google_play_emulator import gpe
 
-from pyclashbot.google_play_emulator.docker import start_dock_thread
 
 class WorkerThread(PausableThread):
     def __init__(self, logger: Logger, args, kwargs=None) -> None:
@@ -21,15 +20,11 @@ class WorkerThread(PausableThread):
 
             start_dock_thread()
 
-
-
             state_history = StateHistory(self.logger)
 
             while not self.shutdown_flag.is_set():
                 # code to run
-                state: str | tuple[None, None] = state_tree(
-                    self.logger, state, jobs, state_history
-                )
+                state: str | tuple[None, None] = state_tree(self.logger, state, jobs, state_history)
                 while self.pause_flag.is_set():
                     time.sleep(0.1)
 

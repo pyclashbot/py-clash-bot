@@ -14,8 +14,7 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-
-from pyclashbot.google_play_emulator.gpe import click,screenshot,scroll
+from pyclashbot.google_play_emulator.gpe import click, screenshot, scroll  # noqa: F811
 from pyclashbot.utils.logger import Logger
 
 SHOP_BUY_TIMEOUT = 35
@@ -31,7 +30,6 @@ def buy_shop_offers_state(
     print(f"gold_buy_toggle: {gold_buy_toggle}")
     print(f"free_offers_toggle: {free_offers_toggle}")
 
-
     # if not on clash main, return False
     if check_if_on_clash_main_menu() is not True:
         logger.change_status(
@@ -39,7 +37,7 @@ def buy_shop_offers_state(
         )
         return "restart"
 
-    #run the main buying function
+    # run the main buying function
     if (
         buy_shop_offers_main(
             logger,
@@ -60,20 +58,22 @@ def buy_shop_offers_state(
 
     return next_state
 
+
 def scroll_all_the_way_in_shop_page(direction):
-    start_coord = (5,100) if direction == 'up' else (5,500)
-    end_coord = (5,500) if direction == 'up' else (5,100)
+    start_coord = (5, 100) if direction == "up" else (5, 500)
+    end_coord = (5, 500) if direction == "up" else (5, 100)
     for i in range(20):
         scroll(*start_coord, *end_coord)
 
+
 def scroll_slowly_in_shop_page(direction):
-    start_coord = (5,100) if direction == 'up' else (5,500)
-    end_coord = (5,500) if direction == 'up' else (5,100)
+    start_coord = (5, 100) if direction == "up" else (5, 500)
+    end_coord = (5, 500) if direction == "up" else (5, 100)
 
     scroll(*start_coord, *end_coord, duration_ms=1000)
 
-    #sideways scroll
-    scroll(100,100,200,100, duration_ms=10)
+    # sideways scroll
+    scroll(100, 100, 200, 100, duration_ms=10)
 
 
 def buy_shop_offers_main(
@@ -83,12 +83,12 @@ def buy_shop_offers_main(
 ) -> bool:
     # get to shop page
     logger.change_status("Getting to shop page to buy offers")
-    if get_to_shop_page_from_clash_main( logger) is False:
+    if get_to_shop_page_from_clash_main(logger) is False:
         logger.change_status("Failed to get to shop page to buy offers")
         return False
 
-    #scroll all the way to the top
-    scroll_all_the_way_in_shop_page(direction='down')
+    # scroll all the way to the top
+    scroll_all_the_way_in_shop_page(direction="down")
 
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
     purchase_total = 0
@@ -102,12 +102,15 @@ def buy_shop_offers_main(
         # scroll a little
         logger.change_status("Searching for offers to buy")
         print("Time taken in shop: ", str(time.time() - start_time)[:5])
-        scroll_slowly_in_shop_page(direction='up')
+        scroll_slowly_in_shop_page(direction="up")
         time.sleep(1)
 
         if gold_buy_toggle or free_offers_toggle:
             while (
-                buy_offers_from_this_shop_page( logger, gold_buy_toggle, free_offers_toggle,
+                buy_offers_from_this_shop_page(
+                    logger,
+                    gold_buy_toggle,
+                    free_offers_toggle,
                 )
                 is True
                 and done_buying is False
@@ -137,7 +140,7 @@ def buy_shop_offers_main(
     logger.change_status("Done buying offers. Returning to clash main")
 
     # get to clash main from shop page
-    click( 245, 596)
+    click(245, 596)
     time.sleep(4)
 
     return True
@@ -177,7 +180,10 @@ def search_for_gold_purchases():
     return [coord[1], coord[0]]
 
 
-def buy_offers_from_this_shop_page( logger:Logger, gold_buy_toggle, free_offers_toggle,
+def buy_offers_from_this_shop_page(
+    logger: Logger,
+    gold_buy_toggle,
+    free_offers_toggle,
 ):
     coord = None
 
@@ -193,17 +199,17 @@ def buy_offers_from_this_shop_page( logger:Logger, gold_buy_toggle, free_offers_
         return False
 
     # click the location of the 'cards for gold' icon
-    click( coord[0], coord[1])
+    click(coord[0], coord[1])
     time.sleep(2)
 
     # click the second 'buy' button
-    click( 200, 433)
-    click( 204, 394)
+    click(200, 433)
+    click(204, 394)
     logger.add_shop_offer_collection()
 
     # click deadspace to close this offer
     while not check_if_on_shop_page():
-        click( 15, 200)
+        click(15, 200)
 
     return True
 
@@ -223,7 +229,6 @@ def check_if_on_shop_page():
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True
@@ -244,13 +249,13 @@ def shop_buy_tester():
 
 
 if __name__ == "__main__":
-    scroll_slowly_in_shop_page('down')
+    scroll_slowly_in_shop_page("down")
     time.sleep(3)
-    scroll_slowly_in_shop_page('down')
+    scroll_slowly_in_shop_page("down")
     time.sleep(3)
-    scroll_slowly_in_shop_page('down')
+    scroll_slowly_in_shop_page("down")
     time.sleep(3)
-    scroll_slowly_in_shop_page('up')
+    scroll_slowly_in_shop_page("up")
     time.sleep(3)
-    scroll_slowly_in_shop_page('up')
+    scroll_slowly_in_shop_page("up")
     time.sleep(3)
