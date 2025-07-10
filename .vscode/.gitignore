@@ -1,3 +1,4 @@
 *
 !.gitignore
 !extensions.json
+!settings.json

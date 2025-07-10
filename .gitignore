@@ -2,3 +2,6 @@ cert
 node_modules
 build
 dist
+__version__
+__pycache__
+gpe_info.json
