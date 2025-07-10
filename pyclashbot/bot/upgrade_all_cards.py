@@ -416,11 +416,21 @@ def upgrade_card(vm_index, logger: Logger, card_index):
 
 def check_for_missing_gold_popup(vm_index):
     if not check_line_for_color(
-        vm_index, x_1=338, y_1=215, x_2=361, y_2=221, color=(153, 20, 17),
+        vm_index,
+        x_1=338,
+        y_1=215,
+        x_2=361,
+        y_2=221,
+        color=(153, 20, 17),
     ):
         return False
     if not check_line_for_color(
-        vm_index, x_1=124, y_1=201, x_2=135, y_2=212, color=(255, 255, 255),
+        vm_index,
+        x_1=124,
+        y_1=201,
+        x_2=135,
+        y_2=212,
+        color=(255, 255, 255),
     ):
         return False
 

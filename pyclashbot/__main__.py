@@ -6,7 +6,7 @@ import random
 import sys
 import webbrowser
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
@@ -76,10 +76,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "free_offer_user_toggle": values["free_offer_user_toggle"],
         "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
-
-        "path_of_legends_1v1_battle_user_toggle": values[
-            "path_of_legends_1v1_user_toggle"
-        ],
+        "path_of_legends_1v1_battle_user_toggle": values["path_of_legends_1v1_user_toggle"],
         "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "war_user_toggle": values["war_user_toggle"],
@@ -88,14 +85,12 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
         "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
-        "skip_fight_if_full_chests_user_toggle": values[
-            "skip_fight_if_full_chests_user_toggle"
-        ],
+        "skip_fight_if_full_chests_user_toggle": values["skip_fight_if_full_chests_user_toggle"],
         "battlepass_collect_user_toggle": values["open_battlepass_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
         "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
-        'magic_items_user_toggle':values['magic_items_user_toggle'],
+        "magic_items_user_toggle": values["magic_items_user_toggle"],
         # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
         "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
         # account switching input info
@@ -210,11 +205,9 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
         for key in user_config_keys:
             if key in settings:
                 if key in list(window.key_dict.keys()):
-                    window[key].update(settings[key])  # type: ignore
+                    window[key].update(settings[key])  # type: ignore  # noqa: PGH003
                 else:
-                    print(
-                        f"This key {key} appears in saved settings, but not the active window."
-                    )
+                    print(f"This key {key} appears in saved settings, but not the active window.")
         window.refresh()
 
 
@@ -285,7 +278,6 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         logger.log("No jobs are selected!")
         return None
 
-
     logger.log("Start Button Event")
     logger.change_status(status="Starting the bot!")
     save_current_settings(values)
@@ -335,12 +327,12 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
     returns:
         None
     """
-    window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore
+    window["time_since_start"].update(logger.calc_time_since_start())  # type: ignore  # noqa: PGH003
     # update the statistics in the gui
     stats = logger.get_stats()
     if stats is not None:
         for stat, val in stats.items():
-            window[stat].update(val)  # type: ignore
+            window[stat].update(val)  # type: ignore  # noqa: PGH003
 
 
 def exit_button_event(thread) -> None:

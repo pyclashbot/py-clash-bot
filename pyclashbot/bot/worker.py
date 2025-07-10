@@ -20,25 +20,19 @@ class WorkerThread(PausableThread):
             render_mode = "directx"
 
         try:
-            #init start state
+            # init start state
             state = "start"
 
-            #init state manager object
+            # init state manager object
             state_history = StateHistory(self.logger)
 
-            #init the vm
+            # init the vm
             vm_index = get_vm(self.logger, render_mode=render_mode)
 
             # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
                 # code to run
-                state: str | tuple[None, None] = state_tree(
-                    vm_index,
-                    self.logger,
-                    state,
-                    jobs,
-                    state_history
-                )
+                state: str | tuple[None, None] = state_tree(vm_index, self.logger, state, jobs, state_history)
                 while self.pause_flag.is_set():
                     time.sleep(0.1)  # sleep for 100ms until pause flag is unset
 

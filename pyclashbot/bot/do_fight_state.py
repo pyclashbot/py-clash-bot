@@ -4,6 +4,7 @@ import collections
 import random
 import time
 from typing import Literal
+
 import numpy
 
 from pyclashbot.bot.card_detection import (
@@ -262,7 +263,7 @@ def get_current_fight_mode(vm_index):
     avg_color[1] = avg_color[1] / len(pixels)
     avg_color[2] = avg_color[2] / len(pixels)
 
-    mode2avgColor = {
+    mode2avgColor = {  # noqa: N806
         "trophy_road": [95.1, 52.7, 8.5],
         "path_of_legends": [90.5, 25.8, 52.7],
     }
@@ -333,11 +334,11 @@ def set_fight_mode(vm_index, fight_mode):
     time.sleep(2)
 
     mode2coord = {
-        "trophy_road": (200,400),
-        "path_of_legends": (200,550),
+        "trophy_road": (200, 400),
+        "path_of_legends": (200, 550),
     }
     coord = mode2coord[fight_mode]
-    print(f'This mode {fight_mode} has coord at {coord}')
+    print(f"This mode {fight_mode} has coord at {coord}")
 
     # click the type of fight
     click(vm_index, coord[0], coord[1])
@@ -367,9 +368,7 @@ def start_1v1_type_fight(vm_index: int, logger: Logger, mode: str) -> bool:
 
     # verify we're on the right mode
     if get_current_fight_mode(vm_index) != mode:
-        print(
-            f"Current {get_current_fight_mode(vm_index)} != {mode}, setting fight mode"
-        )
+        print(f"Current {get_current_fight_mode(vm_index)} != {mode}, setting fight mode")
         if set_fight_mode(vm_index, mode) is False:
             print("This mode isn't available yet. Doing a regular 1v1 instead...")
             logger.increment_path_of_legends_fights()
@@ -460,7 +459,6 @@ def check_for_locked_events_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True
@@ -526,7 +524,6 @@ def emote_in_2v2(vm_index, logger: Logger):
     click(vm_index, emote_coord[0], emote_coord[1])
 
 
-
 def mag_dump(vm_index, logger):
     card_coords = [
         (137, 559),
@@ -552,8 +549,8 @@ def wait_for_elixer(
     vm_index,
     logger,
     random_elixer_wait,
-    WAIT_THRESHOLD=5000,
-    PLAY_THRESHOLD=10000,
+    WAIT_THRESHOLD=5000,  # noqa: N803
+    PLAY_THRESHOLD=10000,  # noqa: N803
 ) -> Literal["restart", "no battle"] | bool:
     """Method to wait for 4 elixer during a battle"""
     start_time = time.time()
@@ -587,8 +584,6 @@ def wait_for_elixer(
     )
 
     return True
-
-
 
 
 def count_elixer(vm_index, elixer_count) -> bool:
@@ -844,15 +839,11 @@ def select_card_index(card_indices, last_three_cards):
 
     # Second preference: Cards not among the last two added to the queue
     if not preferred_cards and len(last_three_cards) == 3:
-        preferred_cards = [
-            index for index in card_indices if index not in list(last_three_cards)[-2:]
-        ]
+        preferred_cards = [index for index in card_indices if index not in list(last_three_cards)[-2:]]
 
     # Third preference: Any card except the most recently added one
     if not preferred_cards:
-        preferred_cards = [
-            index for index in card_indices if index != last_three_cards[-1]
-        ]
+        preferred_cards = [index for index in card_indices if index != last_three_cards[-1]]
 
     # Fallback: If all else fails, consider all cards
     if not preferred_cards:
@@ -903,9 +894,7 @@ def play_a_card(vm_index, logger) -> bool:
 
     # click the play coord
     click(vm_index, play_coord[0], play_coord[1])
-    click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[
-        :3
-    ]
+    click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[:3]
 
     logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
     logger.add_card_played()
@@ -920,13 +909,13 @@ percentage_first_5 = [0, 0, 0, 0, 0.3, 0.3, 0.4]
 percentage_single = [0.05, 0.05, 0.1, 0.15, 0.15, 0.3, 0.2]
 percentage_double = [0.05, 0.05, 0.1, 0.15, 0.25, 0.3, 0.1]
 percentage_triple = [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0]
-global elapsed_time
+global elapsed_time  # noqa: PLW0604
 
 
 def _2v2_fight_loop(vm_index: int, logger: Logger):
     # this needs comments
     create_default_bridge_iar(vm_index)
-    last_three_cards = collections.deque(maxlen=3)
+    collections.deque(maxlen=3)
     ingame_time = time.time()
     prev_cards_played = logger.get_cards_played()
     while check_for_in_battle_with_delay(vm_index):
@@ -934,20 +923,20 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
         elapsed_time = time.time() - ingame_time
         if elapsed_time < 7:  # Less than 5 seconds
             percentage = percentage_first_5
-            WAIT_THRESHOLD = 6000
-            PLAY_THRESHOLD = 10000
+            WAIT_THRESHOLD = 6000  # noqa: N806
+            PLAY_THRESHOLD = 10000  # noqa: N806
         elif elapsed_time < 90:  # Less than 2 minutes
             percentage = percentage_single
-            WAIT_THRESHOLD = 6000
-            PLAY_THRESHOLD = 10000
+            WAIT_THRESHOLD = 6000  # noqa: N806
+            PLAY_THRESHOLD = 10000  # noqa: N806
         elif elapsed_time < 200:  # Less than 4 minutes
             percentage = percentage_double
-            WAIT_THRESHOLD = 7000
-            PLAY_THRESHOLD = 11000
+            WAIT_THRESHOLD = 7000  # noqa: N806
+            PLAY_THRESHOLD = 11000  # noqa: N806
         else:  # 4 minutes or more
             percentage = percentage_triple
-            WAIT_THRESHOLD = 8000
-            PLAY_THRESHOLD = 12000
+            WAIT_THRESHOLD = 8000  # noqa: N806
+            PLAY_THRESHOLD = 12000  # noqa: N806
 
         wait_output = wait_for_elixer(
             vm_index,
@@ -982,10 +971,10 @@ def _2v2_fight_loop(vm_index: int, logger: Logger):
     return "good"
 
 
-def _1v1_fight_loop(vm_index, logger: Logger)  -> bool:
+def _1v1_fight_loop(vm_index, logger: Logger) -> bool:
     """Method for handling dynamicly timed 1v1 fight"""
     create_default_bridge_iar(vm_index)
-    last_three_cards = collections.deque(maxlen=3)
+    collections.deque(maxlen=3)
     ingame_time = time.time()
     prev_cards_played = logger.get_cards_played()
     while check_for_in_battle_with_delay(vm_index):
@@ -993,20 +982,20 @@ def _1v1_fight_loop(vm_index, logger: Logger)  -> bool:
         elapsed_time = time.time() - ingame_time
         if elapsed_time < 7:  # Less than 5 seconds
             percentage = percentage_first_5
-            WAIT_THRESHOLD = 6000
-            PLAY_THRESHOLD = 9000
+            WAIT_THRESHOLD = 6000  # noqa: N806
+            PLAY_THRESHOLD = 9000  # noqa: N806
         elif elapsed_time < 90:  # Less than 2 minutes
             percentage = percentage_single
-            WAIT_THRESHOLD = 6000
-            PLAY_THRESHOLD = 9000
+            WAIT_THRESHOLD = 6000  # noqa: N806
+            PLAY_THRESHOLD = 9000  # noqa: N806
         elif elapsed_time < 200:  # Less than 4 minutes
             percentage = percentage_double
-            WAIT_THRESHOLD = 7000
-            PLAY_THRESHOLD = 10000
+            WAIT_THRESHOLD = 7000  # noqa: N806
+            PLAY_THRESHOLD = 10000  # noqa: N806
         else:  # 4 minutes or more
             percentage = percentage_triple
-            WAIT_THRESHOLD = 8000
-            PLAY_THRESHOLD = 11000
+            WAIT_THRESHOLD = 8000  # noqa: N806
+            PLAY_THRESHOLD = 11000  # noqa: N806
 
         wait_output = wait_for_elixer(
             vm_index,
@@ -1074,10 +1063,8 @@ def _2v2_random_fight_loop(vm_index, logger: Logger):
 def _1v1_random_fight_loop(vm_index, logger) -> bool:
     """Method for handling dynamicly timed 1v1 fight"""
     logger.change_status(status="Starting 1v1 battle with random plays")
-    fight_timeout = 5*60#5 minutes
+    fight_timeout = 5 * 60  # 5 minutes
     start_time = time.time()
-
-
 
     # while in battle:
     while check_if_in_battle(vm_index):
@@ -1090,7 +1077,6 @@ def _1v1_random_fight_loop(vm_index, logger) -> bool:
             logger.add_card_played()
 
         time.sleep(8)
-
 
     logger.change_status("Finished with 1v1 battle with random plays...")
     return True
@@ -1133,4 +1119,4 @@ def fight_image_save_debug(vm_index, fights=2):
 
 if __name__ == "__main__":
     # fight_modes = ['trophy_road', 'path_of_legends']
-    start_1v1_type_fight(0, Logger(None,None), 'trophy_road')
+    start_1v1_type_fight(0, Logger(None, None), "trophy_road")

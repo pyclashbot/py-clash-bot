@@ -38,12 +38,12 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
         logger.change_status("Detected both 1v1 modes.")
 
         # Attempt to navigate to Path of Legends if not already there.
-        if check_if_on_path_of_legends_clash_main(vm_index) != True:
+        if not check_if_on_path_of_legends_clash_main(vm_index):
             logger.change_status("Not in Path of Legends, attempting to switch...")
             click(vm_index, 277, 400)
             time.sleep(2)  # Wait for UI to update.
 
-            if check_if_on_path_of_legends_clash_main(vm_index) != True:
+            if not check_if_on_path_of_legends_clash_main(vm_index):
                 logger.change_status("Failed to navigate to Path of Legends")
                 return "restart"
 
@@ -54,7 +54,8 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
                 "Path of Legends rewards detected. Attempting to collect...",
             )
             path_of_legends_state, rewards_collected = collect_path_of_legends_rewards(
-                vm_index, logger,
+                vm_index,
+                logger,
             )
             if not path_of_legends_state:
                 logger.change_status("Failed to collect Path of Legends rewards.")
@@ -148,10 +149,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
                 click(vm_index, *button)
                 time.sleep(1)  # Allow time for reward claim animation.
                 collecting_attempts = 0
-                while (
-                    not check_if_on_path_of_legends_rewards_menu(vm_index)
-                    and collecting_attempts < 30
-                ):
+                while not check_if_on_path_of_legends_rewards_menu(vm_index) and collecting_attempts < 30:
                     # Click on deadspace to ensure staying in the menu.
                     click(vm_index, 20, 395)
                     time.sleep(0.5)

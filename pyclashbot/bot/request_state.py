@@ -247,7 +247,7 @@ def request_state_check_if_in_a_clan(
 
 
 def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))  # type: ignore
+    iar = numpy.asarray(screenshot(vm_index))  # type: ignore  # noqa: PGH003
 
     pix_list = []
     for x_coord in range(80, 96):
@@ -258,11 +258,9 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
         pixel = iar[y_coord][88]
         pix_list.append(pixel)
 
-
-
-    #if all the pixels are grey the its not in a clan
-    grey = [51,51,51]
-    grey_count = sum([1 if pixel_is_equal(grey,pixel,tol=1)  else 0 for pixel in pix_list ])
+    # if all the pixels are grey the its not in a clan
+    grey = [51, 51, 51]
+    grey_count = sum([1 if pixel_is_equal(grey, pixel, tol=1) else 0 for pixel in pix_list])
     grey_ratio = grey_count / len(pix_list)
     if grey_ratio > 0.75:
         return False
@@ -271,11 +269,11 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
 
 
 def click_random_requestable_card(vm_index) -> bool:
-    def make_coord_list(x_range,y_range):
+    def make_coord_list(x_range, y_range):
         coords = []
-        for x in range(x_range[0],x_range[1]):
-            for y in range(y_range[0],y_range[1]):
-                c = [x,y]
+        for x in range(x_range[0], x_range[1]):
+            for y in range(y_range[0], y_range[1]):
+                c = [x, y]
                 coords.append(c)
 
         random.shuffle(coords)
@@ -283,7 +281,7 @@ def click_random_requestable_card(vm_index) -> bool:
 
     def is_valid_pixel(pixel):
         def is_greyscale_pixel(pixel):
-            #if all the values are wihtin 5 of eachother, it's greyscale
+            # if all the values are wihtin 5 of eachother, it's greyscale
             if abs(pixel[0] - pixel[1]) < 5 and abs(pixel[1] - pixel[2]) < 5:
                 return True
 
@@ -292,22 +290,23 @@ def click_random_requestable_card(vm_index) -> bool:
         if is_greyscale_pixel(pixel):
             return False
 
-        if pixel_is_equal(pixel,[222,235,241],tol=20):
+        if pixel_is_equal(pixel, [222, 235, 241], tol=20):
             return False
 
         return True
 
-    #check pixels in the request card grid region
+    # check pixels in the request card grid region
     iar = screenshot(vm_index)
-    for coord in make_coord_list((69,356),(213,557)):
+    for coord in make_coord_list((69, 356), (213, 557)):
         pixel = iar[coord[1]][coord[0]]
-        #if the pixel indicates requestable, click it, return True
+        # if the pixel indicates requestable, click it, return True
         if is_valid_pixel(pixel):
-            click(vm_index,coord[0],coord[1])
+            click(vm_index, coord[0], coord[1])
             return True
 
-    #fail return
+    # fail return
     return False
+
 
 def do_request(vm_index, logger: Logger) -> bool:
     logger.change_status(status="Initiating request process")
@@ -340,10 +339,7 @@ def do_request(vm_index, logger: Logger) -> bool:
     coord = None
     while coord is None:
         # Timeout check to avoid infinite loop
-        if (
-            time.time() - random_click_start_time > random_click_timeout
-            or attempt_count > 6
-        ):
+        if time.time() - random_click_start_time > random_click_timeout or attempt_count > 6:
             logger.change_status(
                 "Timeout or too many attempts while trying to click a random card for request",
             )
@@ -355,12 +351,11 @@ def do_request(vm_index, logger: Logger) -> bool:
         click_try_limit = 10
         click_tries = 0
         while click_random_requestable_card(vm_index) is False:
-            print('Failed to click an upgradable card.')
+            print("Failed to click an upgradable card.")
             click_tries += 1
-            if click_tries>click_try_limit:
-                logger.change_status('Failed to click an upgradable card. too many times')
+            if click_tries > click_try_limit:
+                logger.change_status("Failed to click an upgradable card. too many times")
                 return False
-
 
         time.sleep(3)
 
@@ -452,7 +447,6 @@ def check_for_epic_sunday_icon(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True

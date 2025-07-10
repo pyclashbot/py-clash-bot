@@ -15,7 +15,8 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.memu.client import (
     click,
-    screenshot,scroll_all_the_way_in_shop_page,
+    screenshot,
+    scroll_all_the_way_in_shop_page,
     scroll_slowly_in_shop_page,
 )
 from pyclashbot.utils.logger import Logger
@@ -34,7 +35,6 @@ def buy_shop_offers_state(
     print(f"gold_buy_toggle: {gold_buy_toggle}")
     print(f"free_offers_toggle: {free_offers_toggle}")
 
-
     # if not on clash main, return False
     if check_if_on_clash_main_menu(vm_index) is not True:
         logger.change_status(
@@ -42,7 +42,7 @@ def buy_shop_offers_state(
         )
         return "restart"
 
-    #run the main buying function
+    # run the main buying function
     if (
         buy_shop_offers_main(
             vm_index,
@@ -77,8 +77,8 @@ def buy_shop_offers_main(
         logger.change_status("Failed to get to shop page to buy offers")
         return False
 
-    #scroll all the way to the top
-    scroll_all_the_way_in_shop_page(vm_index,direction='down')
+    # scroll all the way to the top
+    scroll_all_the_way_in_shop_page(vm_index, direction="down")
 
     # scroll incrementally while searching for rewards, clicking and buying any rewards found
     purchase_total = 0
@@ -92,13 +92,16 @@ def buy_shop_offers_main(
         # scroll a little
         logger.change_status("Searching for offers to buy")
         print("Time taken in shop: ", str(time.time() - start_time)[:5])
-        scroll_slowly_in_shop_page(vm_index,direction='up')
+        scroll_slowly_in_shop_page(vm_index, direction="up")
         time.sleep(1)
 
         if gold_buy_toggle or free_offers_toggle:
             while (
                 buy_offers_from_this_shop_page(
-                    vm_index, logger, gold_buy_toggle, free_offers_toggle,
+                    vm_index,
+                    logger,
+                    gold_buy_toggle,
+                    free_offers_toggle,
                 )
                 is True
                 and done_buying is False
@@ -169,7 +172,10 @@ def search_for_gold_purchases(vm_index):
 
 
 def buy_offers_from_this_shop_page(
-    vm_index, logger:Logger, gold_buy_toggle, free_offers_toggle,
+    vm_index,
+    logger: Logger,
+    gold_buy_toggle,
+    free_offers_toggle,
 ):
     coord = None
 
@@ -215,7 +221,6 @@ def check_if_on_shop_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True

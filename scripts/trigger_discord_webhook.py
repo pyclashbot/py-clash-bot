@@ -1,14 +1,15 @@
 import argparse
-import requests
 import sys
+
+import requests
 
 
 def main():
     parser = argparse.ArgumentParser(description="Trigger Discord Webhook for release notification.")
-    parser.add_argument('--prerelease', action='store_true', help='Is this a prerelease?')
-    parser.add_argument('--version', required=True, help='Release version (e.g., v1.2.3)')
-    parser.add_argument('--url', required=True, help='Release URL')
-    parser.add_argument('--webhook-code', required=True, help='Discord webhook code')
+    parser.add_argument("--prerelease", action="store_true", help="Is this a prerelease?")
+    parser.add_argument("--version", required=True, help="Release version (e.g., v1.2.3)")
+    parser.add_argument("--url", required=True, help="Release URL")
+    parser.add_argument("--webhook-code", required=True, help="Discord webhook code")
     args = parser.parse_args()
 
     if args.prerelease:
@@ -34,4 +35,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

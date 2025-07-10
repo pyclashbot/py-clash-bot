@@ -1,5 +1,4 @@
-"""This module contains functions related to donating cards in Clash of Clans.
-"""
+"""This module contains functions related to donating cards in Clash of Clans."""
 
 import random
 import time
@@ -103,10 +102,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
     print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # run donate cards main
-    if (
-        donate_cards_main(vm_index, logger, only_free_donates=free_donate_toggle)
-        is False
-    ):
+    if donate_cards_main(vm_index, logger, only_free_donates=free_donate_toggle) is False:
         logger.log("Failure donating cards. Returning false")
         return "restart"
 
@@ -119,7 +115,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
 
 
 def donate_state_check_pixels_for_clan_flag(vm_index) -> bool:
-    iar = numpy.asarray(screenshot(vm_index))  # type: ignore
+    iar = numpy.asarray(screenshot(vm_index))  # type: ignore  # noqa: PGH003
 
     pix_list = []
     for x_coord in range(80, 96):
@@ -268,16 +264,16 @@ def find_and_click_donates(vm_index, logger, only_free_donates):
     return found_donates
 
 
-def region_contains_donate_button(image,region):
+def region_contains_donate_button(image, region):
     # print(f'checking if region: {region} has green')
-    l,t,w,h = region
-    y_range = (t,t + h)
+    l, t, w, h = region  # noqa: E741
+    y_range = (t, t + h)
     x_coord = 343
-    green_color = [73,228,58]
-    for i in range(y_range[0],y_range[1]):
-        pixel = image[i,x_coord]
+    green_color = [73, 228, 58]
+    for i in range(y_range[0], y_range[1]):
+        pixel = image[i, x_coord]
         # print(f'Region: {region} saw pixel: {pixel}')
-        if pixel_is_equal(pixel,green_color,tol=5):
+        if pixel_is_equal(pixel, green_color, tol=5):
             # print(f'Region has green')
             return True
 
@@ -295,34 +291,30 @@ def find_donate_buttons(vm_index, only_free_donates):
     look_start_time = time.time()
     base_image = screenshot(vm_index)
     while time.time() - look_start_time < look_time:
-        looks+=1
+        looks += 1
         try:
-            #calculate a random roi this search try, grab image
+            # calculate a random roi this search try, grab image
             left = 238
             right = 375
             top = 80
             bottom = 475
             t = random.randint(top, bottom)
             width = right - left
-            region = [left, t, width, 100] # [x,y,w,h]
+            region = [left, t, width, 100]  # [x,y,w,h]
             roi_image = crop_image(base_image, region)
 
-            #pixel check to see if region even has green
-            if region_contains_donate_button(base_image,region) is False:
+            # pixel check to see if region even has green
+            if region_contains_donate_button(base_image, region) is False:
                 continue
 
-            #find one donate button in the roi image
+            # find one donate button in the roi image
             coord = find_donate_button(roi_image)
             if coord is None:
                 continue
 
-            #if only_free_donates is enabled, assure free_button_exists
-            if (
-                only_free_donates
-                and coord is not None
-                and not free_button_exists(vm_index, coord, region)
-            ):
-                #if not free_button_exists retry
+            # if only_free_donates is enabled, assure free_button_exists
+            if only_free_donates and coord is not None and not free_button_exists(vm_index, coord, region):
+                # if not free_button_exists retry
                 continue
 
             # convert ROI coord to usable coord
@@ -332,14 +324,14 @@ def find_donate_buttons(vm_index, only_free_donates):
             coord = [coord[0] + 37, coord[1] + 3]
 
             coords.append(coord)
-        except:
+        except:  # noqa: E722
             pass
 
     # remove dupes from coords list
     coords = condense_coordinates(coords, distance_threshold=15)
 
     # time taken printout
-    time_taken = str(time.time() - start_time)[:5]
+    str(time.time() - start_time)[:5]
     # print(f"Finished find_donate_buttons() in {time_taken}s")
     # print(f"Found {len(coords)} donate buttons in {looks} looks")
 

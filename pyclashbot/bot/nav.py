@@ -4,8 +4,8 @@ from typing import Literal
 
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    pixels_match_colors,
     pixel_is_equal,
+    pixels_match_colors,
     region_is_color,
 )
 from pyclashbot.memu.client import (
@@ -43,7 +43,7 @@ def get_to_shop_page_from_clash_main(vm_index, logger) -> bool:
     return True
 
 
-def wait_for_2v2_battle_start(vm_index, logger: Logger)  -> bool:
+def wait_for_2v2_battle_start(vm_index, logger: Logger) -> bool:
     """Waits for the 2v2 battle to start.
 
     Args:
@@ -79,7 +79,7 @@ def wait_for_1v1_battle_start(
     vm_index,
     logger: Logger,
     printmode=False,
-)  -> bool:
+) -> bool:
     """Waits for the 1v1 battle to start.
 
     Args:
@@ -164,10 +164,7 @@ def check_if_in_battle(vm_index) -> Literal["2v2"] | Literal["1v1"] | Literal["N
     ]
 
     # Check if all the pixels match for an ongoing battle
-    if all(
-        pixel_is_equal(pixels[index], colors[index], tol=55)
-        for index in range(len(pixels))
-    ):
+    if all(pixel_is_equal(pixels[index], colors[index], tol=55) for index in range(len(pixels))):
         # Specific check for 2v2 battle
         combat_2v2_pixel = iar[506][135]
         combat_2v2_color = [169, 29, 172]
@@ -281,16 +278,10 @@ def check_end_of_battle_screen(vm_index):
     ]
 
     # Check for 1v1 end screen
-    is_1v1_end = all(
-        pixel_is_equal(iar[y][x], expected_color, tol=30)
-        for (x, y), expected_color in pixels_1v1
-    )
+    is_1v1_end = all(pixel_is_equal(iar[y][x], expected_color, tol=30) for (x, y), expected_color in pixels_1v1)
 
     # Check for 2v2 end screen
-    is_2v2_end = all(
-        pixel_is_equal(iar[y][x], expected_color, tol=30)
-        for (x, y), expected_color in pixels_2v2
-    )
+    is_2v2_end = all(pixel_is_equal(iar[y][x], expected_color, tol=30) for (x, y), expected_color in pixels_2v2)
 
     return is_1v1_end or is_2v2_end
 
@@ -419,7 +410,6 @@ def get_to_clan_tab_from_clash_main(
     vm_index: int,
     logger: Logger,
 ):
-
     # just try it raw real quick in case it works first try
     click(
         vm_index,
@@ -1006,8 +996,6 @@ def check_if_on_clash_main_menu(vm_index) -> bool:
         [139, 106, 72],
         [139, 106, 72],
     ]
-
-
 
     # pixels = [
     #     #blue strip on the rightmost part of screen
@@ -1757,7 +1745,6 @@ def wait_for_clash_main_burger_button_options_menu(
 def check_if_on_collection_page(vm_index) -> bool:
     iar = screenshot(vm_index)
 
-
     trophy_mode_colors = [
         [211, 159, 45],
         [203, 134, 41],
@@ -1797,10 +1784,7 @@ def check_if_on_collection_page(vm_index) -> bool:
         iar[78][335],
     ]
 
-    if (
-         pixels_match_colors(pixels, trophy_mode_colors)
-        or pixels_match_colors(pixels, legends2_mode_colors)
-    ):
+    if pixels_match_colors(pixels, trophy_mode_colors) or pixels_match_colors(pixels, legends2_mode_colors):
         return True
 
     return False

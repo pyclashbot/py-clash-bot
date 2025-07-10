@@ -1,6 +1,6 @@
 """FreeSimpleGUI layout for stats tab"""
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 
 from pyclashbot.interface.theme import THEME
 
@@ -9,36 +9,30 @@ sg.theme(THEME)
 
 def stat_box(stat_name: str, size=(5, 1)) -> sg.Text:
     """Returns a FreeSimpleGUI text box object for stats layout"""
-    return sg.Text(
-        "0",
-        key=stat_name,
-        relief=sg.RELIEF_SUNKEN,
-        text_color="blue",
-        size=size,
-        pad=0
-    )
+    return sg.Text("0", key=stat_name, relief=sg.RELIEF_SUNKEN, text_color="blue", size=size, pad=0)
 
-def make_stat_titles(titles:list[str])->list[list[sg.Text]]:
-    list = [[sg.Text(title,pad=0)] for title in titles]
+
+def make_stat_titles(titles: list[str]) -> list[list[sg.Text]]:
+    list = [[sg.Text(title, pad=0)] for title in titles]
     return list
 
 
 # collection stats
 collection_title_texts = [
-        "Requests",
-        "Shop Buys",
-        "Donates",
-        "Chests Unlocked",
-        "Daily Rewards",
-        "Card Masteries",
-        "Bannerbox Buys",
-        "Cards Upgraded",
-        "Battlepass Collects",
-        "Level Up Chests",
-        "War Chests",
-        "Season Shop Buys",
-        'Trophy Road Rewards',
-        'Magic Item Buys'
+    "Requests",
+    "Shop Buys",
+    "Donates",
+    "Chests Unlocked",
+    "Daily Rewards",
+    "Card Masteries",
+    "Bannerbox Buys",
+    "Cards Upgraded",
+    "Battlepass Collects",
+    "Level Up Chests",
+    "War Chests",
+    "Season Shop Buys",
+    "Trophy Road Rewards",
+    "Magic Item Buys",
 ]
 
 
@@ -69,7 +63,6 @@ collection_stats_values: list[list[sg.Text]] = [
     [
         stat_box("upgrades"),
     ],
-
     [
         stat_box("battlepass_collects"),
     ],
@@ -100,19 +93,19 @@ collection_stats = [
 
 # fight stats
 titles = [
-    'Wins',
-    'Losses',
-    'Win Rate',
-    'Cards Played',
-    ' Legends Battles',
-    'Trophy Battles',
-    'Goblin Fights',
-    '2v2 Fights',
-    'War Fights',
-    'Random Decks',
+    "Wins",
+    "Losses",
+    "Win Rate",
+    "Cards Played",
+    " Legends Battles",
+    "Trophy Battles",
+    "Goblin Fights",
+    "2v2 Fights",
+    "War Fights",
+    "Random Decks",
 ]
 
-battle_stats_titles: list[list[sg.Text]] =make_stat_titles(titles)
+battle_stats_titles: list[list[sg.Text]] = make_stat_titles(titles)
 
 
 battle_stats_values = [
@@ -147,9 +140,8 @@ battle_stats_values = [
 
 battle_stats = [
     [
-        sg.Column(battle_stats_titles, element_justification="right",pad=0),
-        sg.Column(battle_stats_values, element_justification="left",pad=0),
-
+        sg.Column(battle_stats_titles, element_justification="right", pad=0),
+        sg.Column(battle_stats_values, element_justification="left", pad=0),
     ],
 ]
 
@@ -174,7 +166,6 @@ bot_stats_values = [
     [
         stat_box("time_since_start", size=(7, 1)),
     ],
-
 ]
 
 bot_stats = [

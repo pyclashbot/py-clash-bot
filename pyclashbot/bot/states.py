@@ -1,7 +1,7 @@
 """time module for timing functions and controling pacing"""
 
-import time
 import random
+import time
 
 from pyclashbot.bot.account_switching import switch_accounts
 from pyclashbot.bot.bannerbox import collect_bannerbox_rewards_state
@@ -18,12 +18,12 @@ from pyclashbot.bot.do_fight_state import (
 )
 from pyclashbot.bot.donate import donate_cards_state
 from pyclashbot.bot.level_up_chest import collect_level_up_chest_state
+from pyclashbot.bot.magic_items import spend_magic_items_state
 from pyclashbot.bot.nav import check_if_in_battle_at_start, check_if_on_clash_main_menu
 from pyclashbot.bot.open_chests_state import get_chest_statuses, open_chests_state
 from pyclashbot.bot.request_state import request_state
 from pyclashbot.bot.season_shop_offers import collect_season_shop_offers_state
 from pyclashbot.bot.trophy_road_rewards import collect_trophy_road_rewards_state
-from pyclashbot.bot.magic_items import spend_magic_items_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war_state import war_state
 from pyclashbot.memu.client import click
@@ -77,9 +77,7 @@ class StateHistory:
     def randomize_state2time_increment(self):
         percent_diff = 40
         for state, time_increment in self.state2time_increment.items():
-            adjustment_factor = (
-                random.randint(100 - percent_diff, 100 + percent_diff) / 100
-            )
+            adjustment_factor = random.randint(100 - percent_diff, 100 + percent_diff) / 100
             new_value = time_increment * adjustment_factor
             self.state2time_increment[state] = new_value
 
@@ -102,12 +100,10 @@ class StateHistory:
 
             seconds = int(remainder)
 
-            return (
-                f"{format_digit(hours)}:{format_digit(minutes)}:{format_digit(seconds)}"
-            )
+            return f"{format_digit(hours)}:{format_digit(minutes)}:{format_digit(seconds)}"
 
         for state, time_increment in self.state2time_increment.items():
-            print("{:>20} : {}".format(state, hours2readable(time_increment)))
+            print(f"{state:>20} : {hours2readable(time_increment)}")
 
     def print(self):
         print("State history:")
@@ -116,9 +112,7 @@ class StateHistory:
         print("\n")
 
     def add_state(self, state):
-        time_history_string = (
-            f"{state} {time.time()} {int(self.logger.current_account)}"
-        )
+        time_history_string = f"{state} {time.time()} {int(self.logger.current_account)}"
         self.time_history_string_list.append(time_history_string)
 
     def get_time_of_last_state(self, state: str) -> int:
@@ -133,18 +127,13 @@ class StateHistory:
                     time = float(time)
                     this_account_index = int(this_account_index)
                     # account_switch state ignores account index filter
-                    if state != "account_switch" and int(this_account_index) != int(
-                        self.logger.current_account
-                    ):
+                    if state != "account_switch" and int(this_account_index) != int(self.logger.current_account):
                         continue
 
                     # handling negative time for whatever reason
-                    if time > most_recent_time:
-                        most_recent_time = time
+                    most_recent_time = max(most_recent_time, time)
                 except Exception as e:
-                    print(
-                        f"Got an expcetion in StateHistory.get_time_of_last_state()\n{e}"
-                    )
+                    print(f"Got an expcetion in StateHistory.get_time_of_last_state()\n{e}")
                     pass
 
         return int(most_recent_time)
@@ -153,9 +142,7 @@ class StateHistory:
         def to_wrap():
             # if the state isnt in the state time increment dictionary, return True
             if state not in self.state2time_increment:
-                print(
-                    f"The time increment for {state} isn't specified, so defaulting to True (ready)"
-                )
+                print(f"The time increment for {state} isn't specified, so defaulting to True (ready)")
                 return True
 
             # get the time of the last state
@@ -174,9 +161,7 @@ class StateHistory:
 
             # time since last state
             time_since_last_state = time.time() - last_time
-            print(
-                f"It's been {str(time_since_last_state)[:5]}s since this state has been ran"
-            )
+            print(f"It's been {str(time_since_last_state)[:5]}s since this state has been ran")
 
             # if the time since the last state is greater than the time increment, return True
             if time_since_last_state > time_increment:
@@ -203,7 +188,7 @@ def state_tree(
     state_history: StateHistory,
 ) -> str:
     """Method to handle and loop between the various states of the bot"""
-    global mode_used_in_1v1
+    global mode_used_in_1v1  # noqa: PLW0602
     start_time = time.time()
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
@@ -266,9 +251,7 @@ def state_tree(
                 return state_tree(vm_index, logger, "restart", job_list, state_history)
 
             # click deadspace
-            click(
-                vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1]
-            )
+            click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
         if check_if_on_clash_main_menu(vm_index) is not True:
             logger.log("Clash main wait timed out! These are the pixels it saw:")
@@ -312,9 +295,7 @@ def state_tree(
             )
             is False
         ):
-            logger.change_status(
-                f"Failed to switch to account #{next_account_index}. Restarting..."
-            )
+            logger.change_status(f"Failed to switch to account #{next_account_index}. Restarting...")
             return "restart"
 
         # set current account
@@ -382,9 +363,7 @@ def state_tree(
             and not job_list["upgrade_user_toggle"]
             and not job_list["2v2_battle_user_toggle"]
         ):
-            print(
-                "No fight jobs, or card jobs are even toggled, so skipping random deck state."
-            )
+            print("No fight jobs, or card jobs are even toggled, so skipping random deck state.")
             return next_state
 
         # Get the selected deck number from job_list, default to 2 if not found
@@ -467,10 +446,7 @@ def state_tree(
         next_state = "bannerbox"
 
         # if job not selected, return next state
-        if (
-            not job_list["free_offer_user_toggle"]
-            and not job_list["gold_offer_user_toggle"]
-        ):
+        if not job_list["free_offer_user_toggle"] and not job_list["gold_offer_user_toggle"]:
             logger.log("Free neither free, not gold offer buys toggled")
             return next_state
 
@@ -585,9 +561,7 @@ def state_tree(
     if state == "start_fight":  # --> 1v1_fight, war
         next_state = "war"
 
-        if job_list["skip_fight_if_full_chests_user_toggle"] and (
-            get_chest_statuses(vm_index).count("available") == 4
-        ):
+        if job_list["skip_fight_if_full_chests_user_toggle"] and (get_chest_statuses(vm_index).count("available") == 4):
             logger.change_status("All chests are available. Skipping fight states")
             return next_state
 
@@ -662,7 +636,7 @@ def state_tree(
         next_state = "war"
 
         logger.log(
-            f"This state: {state} took {str(time.time()- start_time)[:5]} seconds",
+            f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
         )
         return end_fight_state(
             vm_index,
@@ -700,7 +674,7 @@ def state_tree_tester(vm_index):
         "battlepass_collect_user_toggle": True,
         "level_up_chest_user_toggle": False,
         "trophy_road_rewards_user_toggle": False,
-        #tested Feb 2025
+        # tested Feb 2025
         "season_shop_buys_user_toggle": False,
         "open_bannerbox_user_toggle": False,
         "free_offer_user_toggle": False,
@@ -714,7 +688,7 @@ def state_tree_tester(vm_index):
         "request_user_toggle": False,
         "upgrade_user_toggle": False,
         "open_chests_user_toggle": False,
-        #fight toggles
+        # fight toggles
         "trophy_road_1v1_battle_user_toggle": False,
         "path_of_legends_1v1_battle_user_toggle": False,
         "2v2_battle_user_toggle": False,
@@ -728,7 +702,6 @@ def state_tree_tester(vm_index):
         "account_switch_count": 3,
     }
     state_history = StateHistory(logger)
-
 
     while 1:
         state = state_tree(

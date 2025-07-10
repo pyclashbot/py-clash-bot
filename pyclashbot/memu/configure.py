@@ -1,9 +1,9 @@
-"""A module for configuring Memu VMs."""
+"""A module for configuring Memu VMs."""  # noqa: INP001
 
 import logging
 import time
 
-from pymemuc import ConfigKeys, PyMemucError, PyMemucException
+from pymemuc import ConfigKeys, PyMemucError
 
 from pyclashbot.memu.pmc import pmc
 
@@ -44,7 +44,7 @@ def set_vm_language(vm_index: int):
 
 def configure_vm(vm_index, render_mode):
     # render_mode = either 'opengl' or 'directx'
-    print('Configuring vm with render mode:', render_mode)
+    print("Configuring vm with render mode:", render_mode)
 
     # render mode type safety
     try:
@@ -52,7 +52,7 @@ def configure_vm(vm_index, render_mode):
         if render_mode not in ["opengl", "directx"]:
             print('Render mode must be either "opengl" or "directx"\nRecieved:', render_mode)
             raise ValueError
-    except:
+    except:  # noqa: E722
         return False
 
     # set render mode according to the param
@@ -61,13 +61,13 @@ def configure_vm(vm_index, render_mode):
         MEMU_CONFIGURATION["graphics_render_mode"] = 0  # opengl
 
     # do config for each key
-    print('Setting each config key...')
+    print("Setting each config key...")
     logging.info("Configuring VM %s...", vm_index)
     for key, value in MEMU_CONFIGURATION.items():
         pmc.set_configuration_vm(key, str(value), vm_index=vm_index)
 
     # set language
-    print('Setting vm language...')
+    print("Setting vm language...")
     set_vm_language(vm_index=vm_index)
     logging.info("Configured VM %s", vm_index)
 

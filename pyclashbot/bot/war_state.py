@@ -314,7 +314,12 @@ def check_if_in_war_battle(vm_index) -> bool:
             return False
 
         if not line_is_color(
-            vm_index, x_1=51, y_1=515, x_2=68, y_2=520, color=(255, 255, 255),
+            vm_index,
+            x_1=51,
+            y_1=515,
+            x_2=68,
+            y_2=520,
+            color=(255, 255, 255),
         ):
             continue
 
@@ -388,7 +393,6 @@ def check_for_locked_clan_war_screen(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(p, colors[i], tol=10):
             return False
     return True
@@ -401,7 +405,7 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
     """
     start_time = time.time()
     # Coordinates to click outside of interactive areas
-    DEADSPACE_COORD = (3, 475)
+    DEADSPACE_COORD = (3, 475)  # noqa: N806
 
     while time.time() - start_time < FIND_AND_CLICK_WAR_BATTLE_ICON_TIMEOUT:
         if check_for_locked_clan_war_screen(vm_index):

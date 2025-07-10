@@ -26,7 +26,6 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -120,7 +119,6 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     return True
 
 
-
 def check_for_collected_all_bannerbox_rewards_icon(vm_index):
     iar = numpy.asarray(screenshot(vm_index))
 
@@ -166,7 +164,6 @@ def check_if_bannerbox_icon_exists_on_clashmain(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(p, colors[i], tol=35):
             return True
 

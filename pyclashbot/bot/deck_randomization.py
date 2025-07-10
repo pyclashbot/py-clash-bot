@@ -132,10 +132,10 @@ def check_for_randomize_deck_icon(vm_index):
     return True
 
 
-def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:
+def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:  # noqa: N803
     start_time = time.time()
 
-    differenceBetweenEachDeckX = 50
+    differenceBetweenEachDeckX = 50  # noqa: N806
 
     # get to card page
     if get_to_card_page_from_clash_main(vm_index, logger) is False:
@@ -149,12 +149,12 @@ def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:
 
     # click on the specified deck number
     logger.change_status(f"Randomizing deck {deckNo}...")
-    
+
     # Calculate deck position based on deck number (1-5)
     # Base position for deck 1, then add offset for each deck
 
     deck_x = 95 + differenceBetweenEachDeckX * (deckNo - 1)
-        
+
     # Click on the selected deck
     click(vm_index, deck_x, 107)
     time.sleep(0.1)
@@ -223,7 +223,6 @@ def check_for_filled_deck(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
     return True

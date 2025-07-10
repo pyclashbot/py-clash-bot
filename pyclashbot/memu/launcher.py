@@ -1,22 +1,22 @@
 """This module contains functions for launching and controlling MEmu virtual machines,
 as well as starting and stopping the Clash Royale app within them.
-"""
+"""  # noqa: INP001
 
 import contextlib
 import subprocess
 import sys
 import time
 from os.path import join
+from typing import TYPE_CHECKING
 
+import FreeSimpleGUI as sg  # noqa: N813
 import psutil
-import FreeSimpleGUI as sg
 
 from pyclashbot.bot.nav import check_if_in_battle_at_start, check_if_on_clash_main_menu
 from pyclashbot.memu.client import click, screenshot
 from pyclashbot.memu.configure import EMULATOR_NAME, configure_vm
 from pyclashbot.memu.pmc import get_vm_index, pmc
 from pyclashbot.utils.logger import Logger
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pymemuc import VMInfo
@@ -159,7 +159,7 @@ def get_vm(logger: Logger, render_mode) -> int:
 
     # if we didnt find a vm, make a new one
     if vm_index == -1:
-        logger.change_status('Failed to find an existing VM. Creating a new one...')
+        logger.change_status("Failed to find an existing VM. Creating a new one...")
         print("Creating a new vm...")
         vm_index = create_vm()
         print("Renaming this new vm to", EMULATOR_NAME)

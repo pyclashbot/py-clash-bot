@@ -9,6 +9,7 @@ from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
+
 def collect_level_up_chest(vm_index, logger: Logger) -> bool:
     logger.change_status("Checking level up chest")
 
@@ -70,9 +71,7 @@ def check_for_level_up_chest(vm_index):
 
     # for p in pixels:
 
-
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(p, colors[i], tol=15):
             return True
 
@@ -81,7 +80,6 @@ def check_for_level_up_chest(vm_index):
 
 def collect_level_up_chest_state(vm_index, logger, next_state):
     logger.change_status("Entered collect_level_up_chest_state()")
-
 
     print("Checking if on clash for this state")
     if not check_if_on_clash_main_menu(vm_index):

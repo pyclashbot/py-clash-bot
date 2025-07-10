@@ -42,22 +42,22 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
     logger.change_status(status="Opening chests state")
 
     # handle being on trophy road meu
-    print('Checking for trophy reward menu...')
+    print("Checking for trophy reward menu...")
     if check_for_trophy_reward_menu(vm_index):
-        print('Found trophy reward menu\nHandling it')
+        print("Found trophy reward menu\nHandling it")
         handle_trophy_reward_menu(vm_index, logger)
         time.sleep(3)
     else:
-        print('No trophy reward menu found')
+        print("No trophy reward menu found")
 
     # if not on clash_main, print the pixels that the box sees, then restart
-    print('Checking if on clash main before doing chest opening')
+    print("Checking if on clash main before doing chest opening")
     clash_main_check = check_if_on_clash_main_menu(vm_index)
     if clash_main_check is not True:
         logger.log("Not on clashmain for the start of open_chests_state()")
         return "restart"
 
-    #clear main tab notifications
+    # clear main tab notifications
     logger.change_status(
         status="Handling obstructing notifications before opening chests",
     )
@@ -183,10 +183,7 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
         click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
         # if clicked deadspace too much, restart
-        if (
-            time.time() - deadspace_clicking_start_time
-            > CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT
-        ):
+        if time.time() - deadspace_clicking_start_time > CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT:
             break
 
     click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
@@ -243,10 +240,20 @@ def check_if_chest_is_unlockable(vm_index):
 
     """
     line1 = check_line_for_color(
-        vm_index, x_1=163, y_1=392, x_2=186, y_2=423, color=(255, 190, 43),
+        vm_index,
+        x_1=163,
+        y_1=392,
+        x_2=186,
+        y_2=423,
+        color=(255, 190, 43),
     )
     line2 = check_line_for_color(
-        vm_index, x_1=254, y_1=408, x_2=231, y_2=426, color=(255, 190, 43),
+        vm_index,
+        x_1=254,
+        y_1=408,
+        x_2=231,
+        y_2=426,
+        color=(255, 190, 43),
     )
     if line1 and line2:
         return True

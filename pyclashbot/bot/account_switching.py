@@ -6,7 +6,7 @@ from pyclashbot.bot.nav import (
     handle_trophy_reward_menu,
     wait_for_clash_main_menu,
 )
-from pyclashbot.memu.client import click, custom_swipe
+from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 
 SSID_COORDS = [
@@ -39,7 +39,7 @@ def switch_accounts(vm_index: int, logger: Logger, account_index_to_switch_to):
     logger.change_status(f"Selected account #{account_index_to_switch_to}")
     time.sleep(6)
 
-    #wait for main page
+    # wait for main page
     logger.change_status("Waiting for clash main on new account...")
     if wait_for_clash_main_menu(vm_index, logger) is False:
         return False

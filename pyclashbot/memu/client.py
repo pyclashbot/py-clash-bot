@@ -1,4 +1,4 @@
-"""Module for interacting with the memu client"""
+"""Module for interacting with the memu client"""  # noqa: INP001
 
 import time
 
@@ -106,11 +106,11 @@ def scroll_down_fast_on_left_side_of_screen(vm_index):
     send_swipe(vm_index, 66, 400, 66, 300)
 
 
-def scroll_slowly_in_shop_page(vm_index,direction):
+def scroll_slowly_in_shop_page(vm_index, direction):
     """Method for scrolling down even faster when interacting with a
     scrollable menu using the left side of the screen
     """
-    if direction == 'down':
+    if direction == "down":
         send_swipe(vm_index, 66, 400, 66, 200)
     else:
         send_swipe(vm_index, 66, 200, 66, 400)
@@ -119,20 +119,19 @@ def scroll_slowly_in_shop_page(vm_index,direction):
     click(vm_index, 10, 200)
 
 
-def scroll_all_the_way_in_shop_page(vm_index,direction):
+def scroll_all_the_way_in_shop_page(vm_index, direction):
     """Method for scrolling down even faster when interacting with a
     scrollable menu using the left side of the screen
     """
     for _ in range(13):
-        if direction == 'up' :
-            print(f'scrolling all the way up in shop page')
+        if direction == "up":
+            print("scrolling all the way up in shop page")
             send_swipe(vm_index, 66, 60, 66, 400)
         else:
-            print(f'scrolling all the way down in shop page')
+            print("scrolling all the way down in shop page")
             send_swipe(vm_index, 66, 400, 66, 60)
 
     # click deadspace to stop the scroll
-
 
 
 def send_swipe(
@@ -234,37 +233,35 @@ def test_screenshot(vm_index):
     returns:bool: True if the image is valid, False otherwise
     """
 
-    #grab image
+    # grab image
     img = screenshot(vm_index)
 
-    #check size
-    width,height = img.shape[1], img.shape[0]
-    expected_w,expected_h= 419,633
+    # check size
+    width, height = img.shape[1], img.shape[0]
+    expected_w, expected_h = 419, 633
     if width != expected_w or height != expected_h:
         print(f"Screenshot size is not as expected. Expected: {expected_w}x{expected_h}, got: {width}x{height}")
         return False
 
-    #sample random pixels
-    black = [255,255,255]
+    # sample random pixels
+    black = [255, 255, 255]
     sample_pixels = []
-    for x in range(0,width-1,100):
-        for y in range(0,height-1,100):
+    for x in range(0, width - 1, 100):
+        for y in range(0, height - 1, 100):
             pixel = img[y][x]
             sample_pixels.append(pixel)
 
-    #count black pixels, false if too many
-    is_black_count = sum([
-        1 for pixel in sample_pixels if all(pixel == black)
-    ])
+    # count black pixels, false if too many
+    is_black_count = sum([1 for pixel in sample_pixels if all(pixel == black)])
     is_black_ratio = is_black_count / len(sample_pixels)
     if is_black_ratio > 0.5:
         print(f"Screenshot is mostly black (ratio of {is_black_ratio}), something went wrong.")
         return False
 
-    #image must be valid
+    # image must be valid
     return True
 
 
 if __name__ == "__main__":
-    scroll_all_the_way_in_shop_page(0,'up')
-    scroll_all_the_way_in_shop_page(0,'down')
+    scroll_all_the_way_in_shop_page(0, "up")
+    scroll_all_the_way_in_shop_page(0, "down")

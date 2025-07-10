@@ -1,9 +1,8 @@
-"""This module defines the layout of the PyClashBot interface using FreeSimpleGUI.
-"""
+"""This module defines the layout of the PyClashBot interface using FreeSimpleGUI."""
 
 from os import path
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
 
 from pyclashbot.interface.joblist import jobs_checklist
@@ -224,8 +223,7 @@ user_config_keys = [
     "trophy_road_rewards_user_toggle",
     "upgrade_all_cards_user_toggle",
     "season_shop_buys_user_toggle",
-    'magic_items_user_toggle',
-
+    "magic_items_user_toggle",
     # account switching stuff
     "account_switching_toggle",
     "account_switching_slider",
@@ -235,7 +233,7 @@ user_config_keys = [
 ]
 
 # list of button and checkbox keys to disable when the bot is running
-disable_keys = user_config_keys + ["Start"]
+disable_keys = [*user_config_keys, "Start"]
 
 
 def create_window() -> Window:

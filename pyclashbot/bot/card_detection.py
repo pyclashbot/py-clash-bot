@@ -2323,7 +2323,7 @@ card_color_data = {
             "Maroon": 119,
         },
     ],
-    "graveyard": [
+    "graveyard": [  # noqa: F601
         {
             "Red": 0,
             "Orange": 0,
@@ -4140,9 +4140,7 @@ COLORS_KEYS = list(COLORS.keys())
 
 # Pre-compute numpy arrays for each card's corner data
 for card_name, card_data in card_color_data.items():
-    card_color_data[card_name] = [
-        numpy.array(list(corner.values())) for corner in card_data
-    ]
+    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
 
 
 def calculate_offset(card_name, card_data, collected_data_array):
@@ -4162,8 +4160,10 @@ def find_closest_card(collected_data):
     )
 
     for card_name, card_data in card_color_data.items():
-        card_name, total_offset = calculate_offset(
-            card_name, card_data, collected_data_array,
+        card_name, total_offset = calculate_offset(  # noqa: PLW2901
+            card_name,
+            card_data,
+            collected_data_array,
         )
         if total_offset < best_offset:
             best_offset = total_offset
@@ -4253,8 +4253,8 @@ card_coords = [
     for topleft in card_toplefts
 ]
 
-global play_side
-global battle_iar
+global play_side  # noqa: PLW0604
+global battle_iar  # noqa: PLW0604
 
 play_side = "left"
 
@@ -4266,7 +4266,9 @@ def check_which_cards_are_available(vm_index, check_champion=False, check_side=F
 
     if check_champion and (
         check_for_champion_ability(
-            battle_iar[462][324], battle_iar[453][334], battle_iar[462][336],
+            battle_iar[462][324],
+            battle_iar[453][334],
+            battle_iar[462][336],
         )
     ):
         click(vm_index, 330, 460)
@@ -4375,11 +4377,7 @@ bridge_pixel = [[100, 200], [275, 200]]
 def switch_side():
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
-        all_coords = [
-            (y, x)
-            for x in range(bridge[0], bridge[0] + 40)
-            for y in range(bridge[1], bridge[1] + 175)
-        ]
+        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
         pixel_coords = numpy.array(all_coords)
         iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]

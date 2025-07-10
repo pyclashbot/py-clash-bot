@@ -1,4 +1,4 @@
-"""This module provides a PyMemuc singleton instance."""
+"""This module provides a PyMemuc singleton instance."""  # noqa: INP001
 
 import logging
 import sys

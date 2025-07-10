@@ -1,6 +1,5 @@
 from os import name
 from subprocess import PIPE, Popen, TimeoutExpired
-from typing import Tuple
 
 # check if running on windows
 WIN32 = name == "nt"
@@ -17,9 +16,7 @@ if WIN32:
     )
 
     ST_INFO = STARTUPINFO()  # pyright: ignore [reportConstantRedefinition]
-    ST_INFO.dwFlags |= (
-        STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | REALTIME_PRIORITY_CLASS
-    )
+    ST_INFO.dwFlags |= STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | REALTIME_PRIORITY_CLASS
     ST_INFO.wShowWindow = SW_HIDE
     CR_FLAGS = CREATE_NO_WINDOW
     subprocess_flags = {
@@ -42,7 +39,7 @@ def _terminate_process(  # pyright: ignore [reportUnusedFunction]
 
 def run(
     args: list[str],
-) -> Tuple[int, str]:
+) -> tuple[int, str]:
     with Popen(
         args,
         shell=False,

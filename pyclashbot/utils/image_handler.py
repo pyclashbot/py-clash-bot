@@ -7,7 +7,7 @@ import numpy as np
 class InvalidImageError(Exception):
     """Exception raised when an image is invalid"""
 
-    def __init__(self, message: str, path: str = None):
+    def __init__(self, message: str, path: str | None = None):
         self.path = path
         self.message = message
         super().__init__(self.message)

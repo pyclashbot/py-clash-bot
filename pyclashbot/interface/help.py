@@ -1,4 +1,4 @@
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 
 from pyclashbot.interface.theme import THEME
 

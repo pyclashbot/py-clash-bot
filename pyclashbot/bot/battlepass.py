@@ -1,4 +1,3 @@
-import random
 import time
 
 import numpy
@@ -12,8 +11,6 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
 )
 from pyclashbot.memu.client import click, screenshot, scroll_up_a_little
-
-from pyclashbot.utils.logger import Logger
 
 
 def collect_battlepass_state(vm_index, logger, next_state):
@@ -51,7 +48,6 @@ def check_for_battlepass_reward_icon(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 
@@ -75,7 +71,6 @@ def check_if_on_battlepass_page(vm_index):
     ]
 
     for i, p in enumerate(pixels):
-
         if not pixel_is_equal(colors[i], p, tol=10):
             return False
 

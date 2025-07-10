@@ -1,5 +1,4 @@
-
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 
 # THEME = "SystemDefaultForReal"
 # THEME ='Material1'

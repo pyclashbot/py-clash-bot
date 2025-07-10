@@ -1,6 +1,6 @@
 """FreeSimpleGUI layout for the joblist window."""
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 
 from pyclashbot.interface.theme import THEME
 
@@ -26,7 +26,7 @@ def no_jobs_popup() -> None:
 
     # Event loop to process events and get user input
     while True:
-        event, *_ = window.read()  # type: ignore
+        event, *_ = window.read()  # type: ignore  # noqa: PGH003
 
         # Exit the program if the "Exit" button is clicked or window is closed
         if event in (sg.WINDOW_CLOSED, "Exit"):
@@ -54,7 +54,6 @@ battle_tab = (
             default_value=False,
         ),
     ],
-
     [
         job_check_box(
             "Path of Legends battles",
@@ -77,7 +76,7 @@ battle_tab = (
             key="deck_number_selection",
             size=(5, 1),
             readonly=True,
-            enable_events=True
+            enable_events=True,
         ),
     ],
     [
@@ -85,7 +84,9 @@ battle_tab = (
     ],
     [
         job_check_box(
-            "Skip win/loss check", "disable_win_track_toggle", default_value=False,
+            "Skip win/loss check",
+            "disable_win_track_toggle",
+            default_value=False,
         ),
     ],
     [
@@ -104,27 +105,37 @@ rewards_tab = [
     ],
     [
         job_check_box(
-            "Battlepass", "open_battlepass_user_toggle", default_value=False,
+            "Battlepass",
+            "open_battlepass_user_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Card Masteries", "card_mastery_user_toggle", default_value=False,
+            "Card Masteries",
+            "card_mastery_user_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Collect Dailies", "daily_rewards_user_toggle", default_value=False,
+            "Collect Dailies",
+            "daily_rewards_user_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Level Up Rewards", "level_up_chest_user_toggle", default_value=False,
+            "Level Up Rewards",
+            "level_up_chest_user_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Buy Bannerbox Chests", "open_bannerbox_user_toggle", default_value=False,
+            "Buy Bannerbox Chests",
+            "open_bannerbox_user_toggle",
+            default_value=False,
         ),
     ],
     [
@@ -153,12 +164,16 @@ card_collection_tab = [
     ],
     [
         job_check_box(
-            "Donate cards for FREE ", "free_donate_toggle", default_value=False,
+            "Donate cards for FREE ",
+            "free_donate_toggle",
+            default_value=False,
         ),
     ],
     [
         job_check_box(
-            "Buy FREE shop offers", "free_offer_user_toggle", default_value=True,
+            "Buy FREE shop offers",
+            "free_offer_user_toggle",
+            default_value=True,
         ),
     ],
     [
@@ -178,7 +193,9 @@ card_collection_tab = [
     # ],
     [
         job_check_box(
-            "Season Shop Offers", "season_shop_buys_user_toggle", default_value=False,
+            "Season Shop Offers",
+            "season_shop_buys_user_toggle",
+            default_value=False,
         ),
     ],
 ]
@@ -192,7 +209,9 @@ jobs_checklist = [
                 [sg.Tab("Battle", battle_tab)],
                 [sg.Tab("Collection", rewards_tab)],
                 [sg.Tab("Cards", card_collection_tab)],
-            ],border_width=0, tab_border_width=0
+            ],
+            border_width=0,
+            tab_border_width=0,
         ),
     ],
 ]

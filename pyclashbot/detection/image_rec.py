@@ -31,7 +31,7 @@ def make_reference_image_list(size):
     # Method to make a reference array of a given size
     reference_image_list = []
 
-    for index in range(1,size+1):
+    for index in range(1, size + 1):
         image_name: str = f"{index}.png"
         reference_image_list.append(image_name)
 
@@ -39,7 +39,8 @@ def make_reference_image_list(size):
 
 
 def get_first_location(
-    locations: list[list[int] | None], flip=False,
+    locations: list[list[int] | None],
+    flip=False,
 ) -> list[int] | None:
     """Get the first location from a list of locations
 
@@ -54,11 +55,7 @@ def get_first_location(
 
     """
     return next(
-        (
-            [location[1], location[0]] if flip else location
-            for location in locations
-            if location is not None
-        ),
+        ([location[1], location[0]] if flip else location for location in locations if location is not None),
         None,
     )
 
@@ -159,7 +156,8 @@ def find_references(
     reference_images = [open_from_path(join(reference_folder, name)) for name in names]
 
     with ThreadPoolExecutor(
-        max_workers=len(reference_images), thread_name_prefix="EmulatorThread",
+        max_workers=len(reference_images),
+        thread_name_prefix="EmulatorThread",
     ) as executor:
         futures: list[Future[list[int] | None]] = [
             executor.submit(
@@ -188,21 +186,21 @@ def compare_images(
     """
     # pylint: disable=no-member
     # Convert image colors
-    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore
-    template_gray = cv2.cvtColor(  # type: ignore
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore  # noqa: PGH003
+    template_gray = cv2.cvtColor(  # type: ignore  # noqa: PGH003
         template,
-        cv2.COLOR_RGB2GRAY,  # type: ignore
+        cv2.COLOR_RGB2GRAY,  # type: ignore  # noqa: PGH003
     )
 
     # Perform match operations.
-    res = cv2.matchTemplate(  # type: ignore
+    res = cv2.matchTemplate(  # type: ignore  # noqa: PGH003
         img_gray,
         template_gray,
-        cv2.TM_CCOEFF_NORMED,  # type: ignore
+        cv2.TM_CCOEFF_NORMED,  # type: ignore  # noqa: PGH003
     )
 
     # Store the coordinates of matched area in a np array
-    loc = np.where(res >= threshold)  # type: ignore
+    loc = np.where(res >= threshold)  # type: ignore  # noqa: PGH003
 
     return None if len(loc[0]) != 1 else [int(loc[0][0]), int(loc[1][0])]
 
@@ -211,7 +209,12 @@ def compare_images(
 
 
 def line_is_color(  # pylint: disable=too-many-arguments
-    vm_index, x_1, y_1, x_2, y_2, color,
+    vm_index,
+    x_1,
+    y_1,
+    x_2,
+    y_2,
+    color,
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
@@ -226,7 +229,12 @@ def line_is_color(  # pylint: disable=too-many-arguments
 
 
 def check_line_for_color(  # pylint: disable=too-many-arguments
-    vm_index, x_1, y_1, x_2, y_2, color: tuple[int, int, int],
+    vm_index,
+    x_1,
+    y_1,
+    x_2,
+    y_2,
+    color: tuple[int, int, int],
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(screenshot(vm_index))
@@ -295,8 +303,7 @@ def condense_coordinates(coords, distance_threshold=5):
     for coord in coords:
         x, y = coord
         if not any(
-            np.abs(existing_coord[0] - x) < distance_threshold
-            and np.abs(existing_coord[1] - y) < distance_threshold
+            np.abs(existing_coord[0] - x) < distance_threshold and np.abs(existing_coord[1] - y) < distance_threshold
             for existing_coord in condensed_coords
         ):
             condensed_coords.append(coord)
@@ -350,7 +357,7 @@ def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
     return coordinates
 
 
-def pixels_match_colors(pixels,colors,tol=10) -> bool:
+def pixels_match_colors(pixels, colors, tol=10) -> bool:
     for i, p in enumerate(pixels):
         if not pixel_is_equal(p, colors[i], tol=tol):
             return False

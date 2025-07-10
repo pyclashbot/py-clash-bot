@@ -2,24 +2,24 @@
 
 import time
 
-
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
-    get_to_collections_page,wait_for_clash_main_menu,
     check_if_on_collection_page,
+    get_to_collections_page,
+    wait_for_clash_main_menu,
 )
-from pyclashbot.utils.logger import Logger
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.detection.image_rec import pixels_match_colors
+from pyclashbot.memu.client import click, screenshot
+from pyclashbot.utils.logger import Logger
 
 
-def spend_magic_items_state(vm_index:int,logger:Logger,next_state:str)->str:
+def spend_magic_items_state(vm_index: int, logger: Logger, next_state: str) -> str:
     # if not on clash main, return False
     if not check_if_on_clash_main_menu(vm_index):
-        return 'restart'
+        return "restart"
 
     if spend_magic_items(vm_index, logger) is False:
-        return 'restart'
+        return "restart"
 
     # return to clash main
     print("Returning to clash main after spending magic items")
@@ -29,7 +29,7 @@ def spend_magic_items_state(vm_index:int,logger:Logger,next_state:str)->str:
     # wait for main
     if wait_for_clash_main_menu(vm_index, logger, deadspace_click=False) is False:
         logger.change_status("Failed to wait for clash main after upgrading cards")
-        return 'restart'
+        return "restart"
 
     return next_state
 
@@ -48,15 +48,20 @@ def spend_magic_items(vm_index: int, logger: Logger) -> bool:
     click(vm_index, *magic_items_tab_coords)
     time.sleep(1)
 
-    #spend currency until it doesnt work anymore
-    reward_index2name = {0:'common',1:'rare',2:'epic',3:'legendary',}
-    for reward_index in [0,1,2,3]:
-        logger.change_status(f'Spending magic item type: {reward_index2name[reward_index]}...')
-        while spend_rewards(vm_index, logger,reward_index) is True:
-            logger.change_status('Successfully spent magic items. Trying again...')
+    # spend currency until it doesnt work anymore
+    reward_index2name = {
+        0: "common",
+        1: "rare",
+        2: "epic",
+        3: "legendary",
+    }
+    for reward_index in [0, 1, 2, 3]:
+        logger.change_status(f"Spending magic item type: {reward_index2name[reward_index]}...")
+        while spend_rewards(vm_index, logger, reward_index) is True:
+            logger.change_status("Successfully spent magic items. Trying again...")
             logger.increment_magic_item_buys()
-        logger.change_status(f'No more magic item type: {reward_index2name[reward_index]} to spend')
-    logger.change_status('Done spending magic item currencies')
+        logger.change_status(f"No more magic item type: {reward_index2name[reward_index]} to spend")
+    logger.change_status("Done spending magic item currencies")
 
     return True
 
@@ -67,7 +72,6 @@ def exit_spend_reward_popup(vm_index) -> bool:
     timeout = 30  # s
     while not check_if_on_collection_page(vm_index):
         if time.time() - start_time > timeout:
-
             return False
 
         click(vm_index, *deadspace)
@@ -75,10 +79,16 @@ def exit_spend_reward_popup(vm_index) -> bool:
 
     return True
 
-def spend_rewards(vm_index, logger,reward_index) -> bool:
+
+def spend_rewards(vm_index, logger, reward_index) -> bool:
     logger.change_status("Trying to spend the first reward...")
 
-    reward_index2coord = {0:(100,300),1:(200,300),2:(300,300),3:(100,400),}
+    reward_index2coord = {
+        0: (100, 300),
+        1: (200, 300),
+        2: (300, 300),
+        3: (100, 400),
+    }
     click(vm_index, *reward_index2coord[reward_index])
     time.sleep(1)
 
@@ -149,4 +159,4 @@ def check_for_use_button(vm_index) -> bool:
 
 
 if __name__ == "__main__":
-    spend_magic_items_state(1,Logger(),'next_state')
+    spend_magic_items_state(1, Logger(), "next_state")

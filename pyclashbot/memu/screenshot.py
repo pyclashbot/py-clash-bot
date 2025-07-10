@@ -1,5 +1,4 @@
-"""A module for getting screenshots from Memu VMs.
-"""
+"""A module for getting screenshots from Memu VMs."""  # noqa: INP001
 
 import atexit
 import base64
