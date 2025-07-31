@@ -165,8 +165,7 @@ def do_1v1_fight_state(
         logger.add_1v1_fight()
         if fight_mode_choosed == "trophy_road":
             logger.increment_trophy_road_fights()
-        elif fight_mode_choosed == "path_of_legends":
-            logger.increment_path_of_legends_fights()
+
     time.sleep(10)
     return True
 
@@ -368,7 +367,6 @@ def start_1v1_type_fight(emulator, logger: Logger, mode: str) -> bool:
         )
         if set_fight_mode(emulator, mode) is False:
             print("This mode isn't available yet. Doing a regular 1v1 instead...")
-            logger.increment_path_of_legends_fights()
             logger.increment_trophy_road_fights()
 
     # click start button FIXED
@@ -377,13 +375,12 @@ def start_1v1_type_fight(emulator, logger: Logger, mode: str) -> bool:
 
 
 def start_fight(emulator, logger, mode) -> bool:
-    print('within start_fight')
+    print("within start_fight")
 
     # fight_modes = ['trophy_road', 'path_of_legends', '2v2']
     def increment_fight_mode_count(logger, mode):
         if mode == "trophy_road":
             logger.increment_trophy_road_fights()
-       
 
     logger.change_status(f"Starting a {mode} fight")
     increment_fight_mode_count(logger, mode)
