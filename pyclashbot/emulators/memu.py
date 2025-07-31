@@ -121,17 +121,9 @@ class MemuEmulatorController(BaseEmulatorController):
             "seconds",
         )
 
-    
     def __del__(self):
-        """
-        Destructor for MemuEmulatorController.
-        Closes all MEmu processes.
-        """
-        print("Closing all MEmu processes...")
-        self._close_everything_memu()
-        self.stop()
-        print("Closed all MEmu processes.")
-    
+        print("Need to clear residual memu processes here")
+
     def _initalize_valid_vm(self):
         # no timeout here bc if this fails, then something fatal is wrong
         print("Initalizing memu vm...")
