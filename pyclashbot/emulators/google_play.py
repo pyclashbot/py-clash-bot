@@ -7,6 +7,7 @@ import subprocess
 import time
 import cv2
 import pygetwindow as gw
+import xml.etree.ElementTree as ET  # for parsing config file
 
 
 from pyclashbot.emulators.base import BaseEmulatorController
@@ -23,18 +24,149 @@ def adb(command):
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
-    def __init__(self):
-        self.path = self._find_install_location()
-        if not self.path:
+    def __init__(self, render_settings: dict = {}):
+        # clear existing stuff
+        self.stop()
+        while self._is_emulator_running():
+            self.stop()
+
+        # search for base installation folder
+        self.base_folder = self._find_install_location()
+        if not self.base_folder:
             raise FileNotFoundError("Google Play Games Developer Emulator not found.")
 
+        # locate the executable
+        self.emulator_executable_path = os.path.join(
+            self.base_folder, "Bootstrapper.exe"
+        )
+
+        # locate the config file
+        # C:\Program Files\Google\Play Games Developer Emulator\current\service\Service.exe.config
+        self.service_config_path = os.path.join(
+            self.base_folder, "current", "service", "Service.exe.config"
+        )
+
+        # verify all those paths exist
+        for path in [
+            self.base_folder,
+            self.emulator_executable_path,
+            self.service_config_path,
+        ]:
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"Required file or directory not found: {path}")
+
+        # configure the emulator via file
+        current_settings = self._get_settings_configuration()
+        for k, v in current_settings.items():
+            print("current setting:", k, v)
+        self._configure_settings(render_settings)
+
+        final_settings = self._get_settings_configuration()
+        for k, v in final_settings.items():
+            print("final setting:", k, v)
+
+        # emulator config
         self.google_play_emulator_process_name = "Google Play Games on PC Emulator"
         self.expected_dims = (419, 633)
 
+        # boot the emulator
         self.restart()
 
+    def _get_settings_configuration(self):
+        """
+        Parses and returns the current EmulatorGpuGuestAngle settings as a dictionary.
+
+        Returns:
+            dict: e.g. {
+                "angle": "true",
+                "vulkan": "false",
+                "gles": "false",
+                "backend": "gfxstream",
+                ...
+            }
+        """
+        # Load and parse XML
+        tree = ET.parse(self.service_config_path)
+        root = tree.getroot()
+
+        # Find EmulatorGpuGuestAngle setting
+        xpath = ".//setting[@name='EmulatorGpuGuestAngle']/value"
+        setting_node = root.find(xpath)
+
+        if setting_node is None or not setting_node.text:
+            raise ValueError("Could not find EmulatorGpuGuestAngle setting in XML.")
+
+        # Parse the comma-separated key=value string into a dictionary
+        config_dict = {}
+        for pair in setting_node.text.strip().split(","):
+            if "=" in pair:
+                k, v = pair.strip().split("=")
+                config_dict[k.strip()] = v.strip()
+
+        return config_dict
+
+    def _configure_settings(self, settings: dict):
+        """
+        Updates EmulatorGpuGuestAngle settings in the XML config using a user-provided dictionary.
+        Only keys present in the dictionary will be modified.
+
+        Parameters:
+            settings (dict): e.g. {
+                "angle": True,
+                "vulkan": False,
+                "gles": True,
+                "backend": "gfxstream",
+                ...
+            }
+        """
+        while self._is_emulator_running():
+            print("Clearing residual emulator process before overwriting settings...")
+            self.stop()
+
+        valid_keys = {"angle", "vulkan", "gles", "surfaceless", "egl", "backend", "wsi"}
+
+        # Filter to valid keys only
+        updates = {
+            k: v for k, v in settings.items() if k in valid_keys and v is not None
+        }
+
+        if not updates:
+            print("[!] No valid settings provided for update.")
+            return
+
+        # Load and parse XML
+        tree = ET.parse(self.service_config_path)
+        root = tree.getroot()
+
+        # Find EmulatorGpuGuestAngle setting
+        xpath = ".//setting[@name='EmulatorGpuGuestAngle']/value"
+        setting_node = root.find(xpath)
+
+        if setting_node is None or not setting_node.text:
+            raise ValueError("Could not find EmulatorGpuGuestAngle setting in XML.")
+
+        # Parse existing settings
+        config_dict = {}
+        for pair in setting_node.text.strip().split(","):
+            if "=" in pair:
+                k, v = pair.strip().split("=")
+                config_dict[k.strip()] = v.strip()
+
+        # Apply updates
+        for k, v in updates.items():
+            config_dict[k] = str(v).lower()
+
+        # Serialize and save
+        new_value = ",".join(f"{k}={v}" for k, v in config_dict.items())
+        setting_node.text = new_value
+        tree.write(self.service_config_path, encoding="utf-8", xml_declaration=True)
+
+        print(f"[✓] Updated EmulatorGpuGuestAngle settings:\n{new_value}")
+
     def __del__(self):
-        self.stop()
+        print("Cleaning up google emulator controller object...")
+        print("Cant call self here so idk what to do.")
+        print("Someone 10x try to clear google play processes here")
 
     def _connect(self):
         print("Connecting...")
@@ -61,6 +193,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         :return: The normalized installation path
         :raises FileNotFoundError: If the emulator is not found
         """
+        # C:\Program Files\Google\Play Games Developer Emulator\Bootstrapper.exe
         registry_keys = [
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GooglePlayGamesDeveloperEmulator",
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GooglePlayGames",
@@ -70,9 +203,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             with suppress(FileNotFoundError):
                 with OpenKey(ConnectRegistry(None, HKEY_LOCAL_MACHINE), key) as reg_key:
                     install_path = QueryValueEx(reg_key, "InstallLocation")[0]
-                    path = os.path.join(normpath(install_path), "Bootstrapper.exe")
-                    if os.path.exists(path):
-                        return path
+                    folder_path = normpath(install_path)
+                    if os.path.exists(folder_path) and os.path.isdir(folder_path):
+                        return folder_path
 
         raise FileNotFoundError("Google Play Games Emulator not found in registry.")
 
@@ -149,9 +282,10 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         # boot emulator
         print("Starting emulator...")
-        self.start()
         while not self._is_emulator_running():
-            print("Waiting for emulator to start...")
+            self.start()
+            print("Waiting for google play emulator to start...")
+            self.start()
             time.sleep(0.3)
 
         # wait for window to appear
@@ -194,7 +328,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         clash_main_wait_timeout = 240  # s
         time.sleep(12)
         while 1:
-            self.start_app(clash_royale_name)
+            # self.start_app(clash_royale_name)
             # if timed out, retry restarting
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 print(
@@ -217,22 +351,32 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         """
         Starts the emulator using the Windows shell to open the shortcut.
         """
-        os.startfile(self.path)
+        os.startfile(self.emulator_executable_path)
         time.sleep(5)
 
     def stop(self):
         """
-        Closes the Google Play Games Developer Emulator by killing the 'crosvm.exe' process.
+        Closes the Google Play Games Developer Emulator by force-killing related processes.
+        Includes: crosvm.exe, Service.exe, client.exe, and others.
         """
-        result = subprocess.run(
-            'taskkill /f /im "crosvm.exe"', shell=True, capture_output=True, text=True
-        )
+        process_names = [
+            "crosvm.exe",
+            "Service.exe",
+            "client.exe",
+            "gpu_check.exe",
+            "adbproxy.exe",
+            "adb.exe",
+        ]
 
-        if result.returncode == 0:
-            print("Emulator closed successfully.")
-        else:
-            # print(f"Failed to close emulator:\n{result.stderr.strip()}")
-            pass
+        for proc in process_names:
+            result = subprocess.run(
+                f'taskkill /f /im "{proc}"', shell=True, capture_output=True, text=True
+            )
+
+            if result.returncode == 0:
+                print(f"[✓] {proc} terminated.")
+            elif "not found" not in result.stderr.lower():
+                print(f"[!] Failed to terminate {proc}:\n{result.stderr.strip()}")
 
     def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
         for i in range(clicks):
@@ -287,10 +431,31 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
 
 if __name__ == "__main__":
-    google_play_emulator = GooglePlayEmulatorController()
-    time.sleep(3)
-    clicks=100
-    x_range = (100,300)
-    y_range = (100,500)
+    matt_old_settings = {
+        "angle": True,
+        "backend": "gfxstream",
+        "egl": True,
+        "gles": False,
+        "glx": False,
+        "surfaceless": False,
+        "vulkan": True,
+        "wsi": "vk",
+    }
 
+    matt_boof_settings = {
+        "angle": False,
+        "backend": "gfxstream",
+        "egl": True,
+        "gles": False,
+        "glx": True,
+        "surfaceless": True,
+        "vulkan": True,
+        "wsi": "vk",
+    }
 
+    empty_settings = {}
+
+    google_play_emulator = GooglePlayEmulatorController(render_settings=empty_settings)
+    while 1:
+        print("Running google play emulator")
+        time.sleep(10)
