@@ -1021,17 +1021,11 @@ def check_if_on_card_page(emulator) -> bool:
         [178, 104, 15],
     ]
 
-    fail_occurred = False
-    print('\n')
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
-            fail_occurred=True
-            print('{} : {} : {}'.format(colors[i], p, 'NOT equal'))
-        else:
-            print('{} : {} : {}'.format(colors[i], p, 'equal'))
+            return False
 
-
-    return not fail_occurred
+    return True
 
 
 def get_to_challenges_tab_from_main(emulator, logger) -> Literal["restart", "good"]:
