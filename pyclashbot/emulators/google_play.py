@@ -27,7 +27,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         self.path = self._find_install_location()
         if not self.path:
             raise FileNotFoundError("Google Play Games Developer Emulator not found.")
-        
+
         self.google_play_emulator_process_name = "Google Play Games on PC Emulator"
         self.expected_dims = (419, 633)
 
@@ -35,8 +35,6 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
     def __del__(self):
         self.stop()
-
-
 
     def _connect(self):
         print("Connecting...")
@@ -178,15 +176,15 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             )
             return False
 
-        #make sure adb is installated and working
+        # make sure adb is installated and working
         print(f"testing adb...")
         if self._test_adb() is False:
             print(
                 "[!] Fatal error: adb is not working. Please check your adb installation."
             )
             return False
-        
-        #boot clash
+
+        # boot clash
         clash_royale_name = "com.supercell.clashroyale"
         self.start_app(clash_royale_name)
 
@@ -215,8 +213,6 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         print("Emulator restarted and configured successfully.")
         return True
 
-
-
     def start(self):
         """
         Starts the emulator using the Windows shell to open the shortcut.
@@ -238,7 +234,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             # print(f"Failed to close emulator:\n{result.stderr.strip()}")
             pass
 
-    def click(self, x_coord: int, y_coord: int, clicks: int=0, interval: float=0.0):
+    def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
         for i in range(clicks):
             adb(f"shell input tap {x_coord} {y_coord}")
             if clicks == 1:
@@ -291,4 +287,10 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
 
 if __name__ == "__main__":
-    controller = GooglePlayEmulatorController()
+    google_play_emulator = GooglePlayEmulatorController()
+    time.sleep(3)
+    clicks=100
+    x_range = (100,300)
+    y_range = (100,500)
+
+
