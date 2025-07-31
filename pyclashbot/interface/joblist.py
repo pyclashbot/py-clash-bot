@@ -46,65 +46,90 @@ def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbo
     )
 
 
-battle_tab = (
-    [
-        job_check_box(
-            "Trophy road battles",
-            "trophy_road_1v1_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box("Random decks", "random_decks_user_toggle", default_value=False),
-        sg.Text("Deck #:", size=(5, 1)),
-        sg.Combo(
-            values=[1, 2, 3, 4, 5],
-            default_value=2,
-            key="deck_number_selection",
-            size=(5, 1),
-            readonly=True,
-            enable_events=True,
-        ),
-    ],
-    [
-        job_check_box("Random plays", "random_plays_user_toggle", default_value=False),
-    ],
-    [
-        job_check_box(
-            "Skip win/loss check",
-            "disable_win_track_toggle",
-            default_value=False,
-        ),
-    ],
-)
-
-
-rewards_tab = [
-    [
-        job_check_box(
-            "Card Masteries",
-            "card_mastery_user_toggle",
-            default_value=False,
-        ),
-    ],
-]
-
-
-card_collection_tab = [
-    [
-        job_check_box("Upgrade Cards", "card_upgrade_user_toggle", default_value=False),
-    ],
-]
-
-
 jobs_checklist = [
     [
         # layout:List[List[Tab]]
         sg.TabGroup(
             layout=[
-                [sg.Tab("Battle", battle_tab)],
-                [sg.Tab("Collection", rewards_tab)],
-                [sg.Tab("Cards", card_collection_tab)],
+                [
+                    sg.Tab(
+                        "Battle",
+                        (
+                            [
+                                job_check_box(
+                                    "Trophy road battles",
+                                    "trophy_road_1v1_user_toggle",
+                                    default_value=False,
+                                ),
+                            ],
+                            [
+                                job_check_box(
+                                    "Random decks",
+                                    "random_decks_user_toggle",
+                                    default_value=False,
+                                ),
+                                sg.Text("Deck #:", size=(5, 1)),
+                                sg.Combo(
+                                    values=[1, 2, 3, 4, 5],
+                                    default_value=2,
+                                    key="deck_number_selection",
+                                    size=(5, 1),
+                                    readonly=True,
+                                    enable_events=True,
+                                ),
+                            ],
+                            [
+                                job_check_box(
+                                    "Random plays",
+                                    "random_plays_user_toggle",
+                                    default_value=False,
+                                ),
+                            ],
+                            [
+                                job_check_box(
+                                    "Skip win/loss check",
+                                    "disable_win_track_toggle",
+                                    default_value=False,
+                                ),
+                            ],
+                        ),
+                    )
+                ],
+                [
+                    sg.Tab(
+                        "Collection",
+                        [
+                            [
+                                job_check_box(
+                                    "Card Masteries",
+                                    "card_mastery_user_toggle",
+                                    default_value=False,
+                                ),
+                            ],
+                        ],
+                    )
+                ],
+                [
+                    sg.Tab(
+                        "Cards",
+                        [
+                            [
+                                job_check_box(
+                                    "Upgrade Cards",
+                                    "card_upgrade_user_toggle",
+                                    default_value=False,
+                                ),
+                            ],
+                            [
+                                job_check_box(
+                                    "Season Shop Offers",
+                                    "season_shop_buys_user_toggle",
+                                    default_value=False,
+                                ),
+                            ],
+                        ],
+                    )
+                ],
             ],
             border_width=0,
             tab_border_width=0,
