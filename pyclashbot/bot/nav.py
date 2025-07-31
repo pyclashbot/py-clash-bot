@@ -175,57 +175,6 @@ def check_if_in_battle(emulator) -> Literal["2v2"] | Literal["1v1"] | Literal["N
     return "None"
 
 
-def check_if_in_battle_at_start(emulator, logger):
-    """Checks if the game is currently in a battle at startup and handles it accordingly.
-    Also checks if the game is on the end-of-battle screen and returns to the main menu.
-
-    Args:
-    ----
-        emulator (int): Index of the virtual machine.
-        logger (Logger): Logger instance for logging messages.
-
-    """
-    # Local imports to avoid circular imports
-    from pyclashbot.bot.do_fight_state import (
-        do_1v1_fight_state,
-        do_2v2_fight_state,
-        get_to_main_after_fight,
-    )
-
-    battle_status = check_if_in_battle(emulator)
-    if battle_status == "1v1":
-        logger.log("Detected in battle status: 1v1. Engaging in battle.")
-        fight_result = do_1v1_fight_state(
-            emulator,
-            logger,
-            "next_state",
-            False,
-            "none",
-            True,
-        )
-    elif battle_status == "2v2":
-        logger.log("Detected in battle status: 2v2. Engaging in battle.")
-        fight_result = do_2v2_fight_state(emulator, logger, "next_state", False, True)
-    else:
-        # If not currently in a battle, check if it's the end-of-battle screen
-        if check_end_of_battle_screen(emulator):
-            logger.log("Detected end of battle screen.")
-            if not get_to_main_after_fight(emulator, logger):
-                logger.log("Failed to return to Clash Main Menu after fight.")
-                return "restart"
-            logger.log("Successfully returned to Clash Main Menu after fight.")
-            return "good"  # Indicate successful handling after the end of the battle
-        return "no"  # Indicate no battle detected or no end-of-battle screen
-
-    # Attempt to return to the main menu after the battle, if a fight was detected
-    if fight_result not in ["restart", None]:
-        if not get_to_main_after_fight(emulator, logger):
-            logger.log("Failed to return to Clash Main Menu after fight.")
-            return "restart"
-        logger.log("Successfully returned to Clash Main Menu after fight.")
-        return "good"  # Indicate successful return to main menu after fight
-
-    return "restart"  # Default case if fight_result is 'restart' or None
 
 
 def check_end_of_battle_screen(emulator):
@@ -995,15 +944,11 @@ def check_if_on_clash_main_menu(emulator) -> bool:
 def get_to_card_page_from_clash_main(
     emulator,
     logger: Logger,
-    printmode: bool = False,
 ) -> Literal["restart", "good"]:
     
     start_time = time.time()
 
-    if printmode:
-        logger.change_status(status="Getting to card page from clash main")
-    else:
-        logger.log("Getting to card page from clash main")
+    logger.change_status(status="Getting to card page from clash main")
 
     # click card page icon
     emulator.click(
@@ -1024,10 +969,8 @@ def get_to_card_page_from_clash_main(
         )
         time.sleep(3)
 
-    if printmode:
-        logger.change_status(status="Made it to card page")
-    else:
-        logger.log("Made it to card page")
+    logger.change_status(status="Made it to card page")
+    
     return "good"
 
 
@@ -1053,104 +996,11 @@ def check_if_on_underleveled_card_page(emulator):
     return True
 
 
-def check_if_on_card_page(emulator) -> bool:
-    def check_if_on_card_page2(iar):
-        pixels = [
-            iar[441][58],
-            iar[191][18],
-            iar[211][390],
-            iar[435][325],
-            iar[102][59],
-            iar[109][56],
-            iar[116][55],
-        ]
-        colors = [
-            [232, 0, 248],
-            [105, 43, 1],
-            [105, 44, 1],
-            [249, 186, 100],
-            [255, 255, 255],
-            [255, 255, 255],
-            [255, 255, 255],
-        ]
-        for i, p in enumerate(pixels):
-            if not pixel_is_equal(colors[i], p, tol=15):
-                return False
-
-        return True
-
-    def check_if_on_path_of_legends_mode_card_page(iar):
-        pixels = [
-            iar[108][175],
-            iar[112][189],
-            iar[103][254],
-            iar[109][295],
-            iar[446][54],
-            iar[446][64],
-            iar[444][49],
-            iar[14][210],
-            iar[14][325],
-        ]
-        colors = [
-            [186, 105, 143],
-            [254, 254, 254],
-            [229, 188, 206],
-            [213, 175, 191],
-            [224, 1, 237],
-            [229, 0, 244],
-            [187, 7, 191],
-            [255, 255, 255],
-            [255, 255, 255],
-        ]
-
-        for i, p in enumerate(pixels):
-            if not pixel_is_equal(colors[i], p, tol=15):
-                return False
-
-        return True
-
-    def check_if_on_goblin_mode_card_page(iar):
-        pixels = [
-            iar[108][175],
-            iar[112][189],
-            iar[103][254],
-            iar[109][295],
-            iar[446][54],
-            iar[446][64],
-            iar[444][49],
-            iar[14][210],
-            iar[14][325],
-        ]
-        colors = [
-            [255, 255, 255],
-            [255, 255, 255],
-            [255, 255, 255],
-            [255, 255, 255],
-            [223, 1, 237],
-            [228, 0, 243],
-            [186, 8, 190],
-            [255, 255, 255],
-            [255, 255, 255],
-        ]
-
-        for i, p in enumerate(pixels):
-            if not pixel_is_equal(colors[i], p, tol=15):
-                return False
-
-        return True
-
+def check_if_on_card_page(emulator) -> bool: 
     iar = emulator.screenshot()
-    if check_if_on_card_page2(iar):
-        return True
-    if check_if_on_goblin_mode_card_page(iar):
-        return True
-    if check_if_on_path_of_legends_mode_card_page(iar):
-        return True
-
+   
     pixels = [
         iar[433][58],
-        iar[101][55],
-        iar[108][48],
         iar[116][59],
         iar[58][82],
         iar[64][179],
@@ -1163,8 +1013,6 @@ def check_if_on_card_page(emulator) -> bool:
     colors = [
         [222, 0, 235],
         [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
         [203, 137, 44],
         [195, 126, 34],
         [255, 255, 255],
@@ -1173,11 +1021,17 @@ def check_if_on_card_page(emulator) -> bool:
         [178, 104, 15],
     ]
 
+    fail_occurred = False
+    print('\n')
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=15):
-            return False
+            fail_occurred=True
+            print('{} : {} : {}'.format(colors[i], p, 'NOT equal'))
+        else:
+            print('{} : {} : {}'.format(colors[i], p, 'equal'))
 
-    return True
+
+    return not fail_occurred
 
 
 def get_to_challenges_tab_from_main(emulator, logger) -> Literal["restart", "good"]:
@@ -1680,6 +1534,22 @@ def get_to_collections_page(emulator) -> bool:
 
 
 if __name__ == "__main__":
-    print("\n\n\n\n\n\n")
-    while 1:
-        print(check_if_on_clash_main_menu(1))
+    logger = Logger()
+
+    from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+    print('Testing get_to_card_page_from_clash_main() on google play')
+    emulator = GooglePlayEmulatorController()
+    print(get_to_card_page_from_clash_main(
+        emulator,
+        logger
+    ))
+    emulator.stop()
+
+    from pyclashbot.emulators.memu import MemuEmulatorController
+    print('Testing get_to_card_page_from_clash_main() on memu')
+    emulator = MemuEmulatorController()
+    print(get_to_card_page_from_clash_main(
+        emulator,
+        logger
+    ))
+    emulator.stop()
