@@ -161,13 +161,6 @@ def get_upgradable_cards(emulator):
 
 
 def update_cards(emulator, logger: Logger) -> bool:
-    # starts and ends on card page
-
-    # if not on card page, return false
-    if not check_if_on_card_page(emulator):
-        logger.log("Not on card page to start update_cards(). Returning false")
-        return False
-
     # click a topleft card to open edit deck mode
     emulator.click(73, 201)
     time.sleep(0.3)
