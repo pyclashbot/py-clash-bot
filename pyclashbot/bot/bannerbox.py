@@ -4,7 +4,6 @@ import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 BANNERBOX_ICON_ON_CLASH_MAIN_PAGE = (350, 195)
@@ -34,7 +33,7 @@ def check_if_bannerbox_icon_have_a_star(vm_index):
 
 def collect_bannerbox_rewards_state(vm_index: int, logger: Logger, next_state: str):
     # if not in clash main, return false
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status("Not in clash main menu")
         return "restart"
 
@@ -66,10 +65,10 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         logger.change_status("Already collected all bannerbox rewards this season.")
 
         # click deadspace to get back to main
-        click(vm_index, 5, 450, clicks=4, interval=1)
+        emulator.click(5, 450, clicks=4, interval=1)
 
         # if not back on main, return False
-        if check_if_on_clash_main_menu(vm_index) is not True:
+        if check_if_on_clash_main_menu(emulator) is not True:
             logger.change_status(
                 "Failed to return to main after being maxed on bannerboxes. Restarting",
             )
@@ -90,7 +89,7 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
         logger.change_status("Bannerbox not available.")
 
         # click deadspace a bunch, then return
-        click(vm_index, 1, 500, clicks=10, interval=0.33)
+        emulator.click(1, 500, clicks=10, interval=0.33)
         return True
 
     logger.change_status("Bannerbox is available! Buying it...")
@@ -107,13 +106,18 @@ def collect_bannerbox_rewards(vm_index, logger: Logger) -> bool:
     logger.change_status("Skipping through bannerbox rewards...")
     deadspace_click_timeout = 30  # s
     deadspace_click_start_time = time.time()
-    while check_if_on_clash_main_menu(vm_index) is not True:
+    while check_if_on_clash_main_menu(emulator) is not True:
         # timeout check
         if time.time() - deadspace_click_start_time > deadspace_click_timeout:
             return False
 
         # click deadspace
-        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1], clicks=5, interval=0.33)
+        emulator.click(
+            CLASH_MAIN_DEADSPACE_COORD[0],
+            CLASH_MAIN_DEADSPACE_COORD[1],
+            clicks=5,
+            interval=0.33,
+        )
 
     # return true if everything went well
     return True
@@ -171,7 +175,7 @@ def check_if_bannerbox_icon_exists_on_clashmain(vm_index):
 
 
 def check_if_can_purchase_100_tickets_bannerbox(vm_index):
-    iar = screenshot(vm_index)
+    iar = emulator.screenshot()
 
     pixels = [
         iar[467][172],

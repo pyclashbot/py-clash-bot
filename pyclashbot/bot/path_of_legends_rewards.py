@@ -10,7 +10,6 @@ from pyclashbot.bot.nav import (
 from pyclashbot.detection.image_rec import (
     pixel_is_equal,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 
@@ -40,7 +39,7 @@ def path_of_legends_rewards_toggle(vm_index: int, logger: Logger, next_state: st
         # Attempt to navigate to Path of Legends if not already there.
         if not check_if_on_path_of_legends_clash_main(vm_index):
             logger.change_status("Not in Path of Legends, attempting to switch...")
-            click(vm_index, 277, 400)
+            emulator.click(277, 400)
             time.sleep(2)  # Wait for UI to update.
 
             if not check_if_on_path_of_legends_clash_main(vm_index):
@@ -132,7 +131,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
     """
     rewards_collected = 0
     # Attempt to open the Path of Legends rewards menu.
-    click(vm_index, 210, 250)
+    emulator.click(210, 250)
     time.sleep(2)  # Wait a bit for the menu to open.
 
     if check_if_on_path_of_legends_rewards_menu(vm_index):
@@ -146,12 +145,15 @@ def collect_path_of_legends_rewards(vm_index, logger):
             while button:
                 logger.change_status("Claiming reward...")
                 # Click on the found "Claim Rewards" button.
-                click(vm_index, *button)
+                emulator.click(*button)
                 time.sleep(1)  # Allow time for reward claim animation.
                 collecting_attempts = 0
-                while not check_if_on_path_of_legends_rewards_menu(vm_index) and collecting_attempts < 30:
+                while (
+                    not check_if_on_path_of_legends_rewards_menu(vm_index)
+                    and collecting_attempts < 30
+                ):
                     # Click on deadspace to ensure staying in the menu.
-                    click(vm_index, 20, 395)
+                    emulator.click(20, 395)
                     time.sleep(0.5)
                     collecting_attempts += 1
                     if collecting_attempts >= 30:
@@ -186,7 +188,7 @@ def collect_path_of_legends_rewards(vm_index, logger):
                     return False, rewards_collected
 
         logger.change_status("Reached the end of rewards.")
-        click(vm_index, 210, 606)  # Click to go back to the main menu.
+        emulator.click(210, 606)  # Click to go back to the main menu.
         time.sleep(2)
 
         if wait_for_clash_main_menu(vm_index, logger):

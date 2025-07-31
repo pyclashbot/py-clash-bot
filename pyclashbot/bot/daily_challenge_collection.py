@@ -4,7 +4,6 @@ import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (240, 600)
@@ -46,14 +45,14 @@ def check_if_rewards_collected(vm_index) -> bool:
 
 def collect_challenge_rewards(vm_index, logger: Logger, rewards) -> bool:
     # Ensure we are on the main menu of Clash
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status(
             "Not on clash main at start of collect_challenge_rewards(). Returning False",
         )
         return False
 
     # Open the daily rewards menu
-    click(vm_index, 41, 206)
+    emulator.click(41, 206)
     time.sleep(2)
 
     # Collect rewards
@@ -67,20 +66,20 @@ def collect_challenge_rewards(vm_index, logger: Logger, rewards) -> bool:
 
     for i, (x, y) in enumerate(reward_positions):
         if rewards[i]:
-            click(vm_index, x, y)
+            emulator.click(x, y)
             logger.change_status(reward_messages[i])
             logger.add_daily_reward()
             time.sleep(1)
 
             # Close reward confirmation pop-ups
             if i < 2:  # For first two rewards
-                click(vm_index, 10, 450, clicks=10, interval=1)
+                emulator.click(10, 450, clicks=10, interval=1)
                 # Reopen the rewards menu only if necessary
                 if i < len(rewards) - 1 and rewards[i + 1]:
-                    click(vm_index, 41, 206)
+                    emulator.click(41, 206)
                     time.sleep(2)
             else:  # For the "lucky drop" reward
-                click(vm_index, 15, 450, clicks=15, interval=0.33)
+                emulator.click(15, 450, clicks=15, interval=0.33)
                 time.sleep(2)
 
     # Return to main menu by clicking close button
@@ -91,13 +90,13 @@ def collect_challenge_rewards(vm_index, logger: Logger, rewards) -> bool:
 
     if pixel_is_equal(actual_color, expected_color, tol=35):
         logger.change_status("Closing reward menu")
-        click(vm_index, x, y, clicks=1)
+        emulator.click(x, y, clicks=1)
         time.sleep(2)
     else:
         logger.change_status(f"close button color mismatch at ({x},{y}) ")
         return False
 
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status(
             "Not on clash main after collect_challenge_rewards(). Returning False",
         )
@@ -140,7 +139,7 @@ def check_if_daily_rewards_button_exists(vm_index) -> bool:
 
 
 def collect_all_daily_rewards(vm_index, logger) -> bool:
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status(
             "Not on clash main at start of collect_daily_rewards(). Returning False",
         )
@@ -178,15 +177,15 @@ def check_which_rewards_are_available(vm_index, logger):
     logger.change_status("Checking which daily rewards are available")
 
     # if not on clash main, return False
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         time.sleep(3)
-        if check_if_on_clash_main_menu(vm_index) is not True:
+        if check_if_on_clash_main_menu(emulator) is not True:
             logger.change_status(
                 "Not on clash main before check_which_rewards_are_available() ",
             )
 
     # open daily rewards menu
-    click(vm_index, 41, 206)
+    emulator.click(41, 206)
     time.sleep(2)
 
     # check which rewards are available
@@ -202,14 +201,14 @@ def check_which_rewards_are_available(vm_index, logger):
 
     if pixel_is_equal(actual_color, expected_color, tol=35):
         logger.change_status("Closing reward menu")
-        click(vm_index, x, y, clicks=1)
+        emulator.click(x, y, clicks=1)
         time.sleep(2)
     else:
         logger.change_status(f"close buttton color mismatch at ({x},{y}) ")
         return False
 
     # if not on clash main, return False
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(
             "Not on clash main after check_which_rewards_are_available()",
         )

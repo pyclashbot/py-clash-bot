@@ -4,7 +4,6 @@ from collections import Counter
 
 import numpy
 
-from pyclashbot.memu.client import click, screenshot
 
 # play coord data
 PLAY_COORDS = {
@@ -4140,7 +4139,9 @@ COLORS_KEYS = list(COLORS.keys())
 
 # Pre-compute numpy arrays for each card's corner data
 for card_name, card_data in card_color_data.items():
-    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
+    card_color_data[card_name] = [
+        numpy.array(list(corner.values())) for corner in card_data
+    ]
 
 
 def calculate_offset(card_name, card_data, collected_data_array):
@@ -4209,7 +4210,7 @@ def get_corner_pixels(x_range, y_range, iar):
     return make_pixel_dict_from_color_list(colors)
 
 
-def get_all_pixel_data(vm_index, chosen_card_index):
+def get_all_pixel_data(emulator, chosen_card_index):
     topleft = toplefts[chosen_card_index]
 
     corners = [
@@ -4259,9 +4260,9 @@ global battle_iar  # noqa: PLW0604
 play_side = "left"
 
 
-def check_which_cards_are_available(vm_index, check_champion=False, check_side=False):
+def check_which_cards_are_available(emulator, check_champion=False, check_side=False):
     global battle_iar
-    battle_iar = screenshot(vm_index)
+    battle_iar = emulator.screenshot()
     card_exists_list = []
 
     if check_champion and (
@@ -4271,7 +4272,7 @@ def check_which_cards_are_available(vm_index, check_champion=False, check_side=F
             battle_iar[462][336],
         )
     ):
-        click(vm_index, 330, 460)
+        emulator.click(330, 460)
 
     if check_side:
         global play_side
@@ -4305,8 +4306,8 @@ def check_for_champion_ability(a, b, c):
     return False
 
 
-def identify_hand_cards(vm_index, card_index):
-    color_chosen_card = get_all_pixel_data(vm_index, card_index)
+def identify_hand_cards(emulator, card_index):
+    color_chosen_card = get_all_pixel_data(emulator, card_index)
     return find_closest_card(color_chosen_card)
 
 
@@ -4319,10 +4320,10 @@ def get_card_group(card_id) -> str:
     return CARD_TO_GROUP.get(card_id, "No group")
 
 
-def get_play_coords_for_card(vm_index, logger, card_index):
+def get_play_coords_for_card(emulator, logger, card_index):
     # get the ID of this card(ram_rider, zap, etc)
     id_cards_start_time = time.time()
-    identity = identify_hand_cards(vm_index, card_index)
+    identity = identify_hand_cards(emulator, card_index)
     time_taken = str(time.time() - id_cards_start_time)[:3]
     logger.change_status(f"Identified card as {identity} ({time_taken}s)")
 
@@ -4366,9 +4367,9 @@ def calculate_play_coords(card_grouping: str, side_preference: str):
 bridge_iar = 0
 
 
-def create_default_bridge_iar(vm_index):
+def create_default_bridge_iar(emulator):
     global bridge_iar
-    bridge_iar = screenshot(vm_index)
+    bridge_iar = emulator.screenshot()
 
 
 bridge_pixel = [[100, 200], [275, 200]]
@@ -4377,7 +4378,11 @@ bridge_pixel = [[100, 200], [275, 200]]
 def switch_side():
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
-        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
+        all_coords = [
+            (y, x)
+            for x in range(bridge[0], bridge[0] + 40)
+            for y in range(bridge[1], bridge[1] + 175)
+        ]
         pixel_coords = numpy.array(all_coords)
         iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]

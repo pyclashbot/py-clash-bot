@@ -14,7 +14,6 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 UNLOCK_CHEST_BUTTON_COORD = (207, 412)
@@ -43,16 +42,16 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
 
     # handle being on trophy road meu
     print("Checking for trophy reward menu...")
-    if check_for_trophy_reward_menu(vm_index):
+    if check_for_trophy_reward_menu(emulator):
         print("Found trophy reward menu\nHandling it")
-        handle_trophy_reward_menu(vm_index, logger)
+        handle_trophy_reward_menu(emulator, logger)
         time.sleep(3)
     else:
         print("No trophy reward menu found")
 
     # if not on clash_main, print the pixels that the box sees, then restart
     print("Checking if on clash main before doing chest opening")
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    clash_main_check = check_if_on_clash_main_menu(emulator)
     if clash_main_check is not True:
         logger.log("Not on clashmain for the start of open_chests_state()")
         return "restart"
@@ -68,7 +67,7 @@ def open_chests_state(vm_index: int, logger: Logger, next_state: str) -> str:
         return "restart"
 
     # if not on clash main return
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(
             status="Error 827358235 Not on clash main menu, returning to start state",
         )
@@ -160,33 +159,36 @@ def open_chest(vm_index, logger: Logger, chest_index) -> Literal["restart", "goo
 
     # click the chest
     coord = chest_coords[chest_index]
-    click(vm_index, coord[0], coord[1])
+    emulator.click(coord[0], coord[1])
     time.sleep(3)
 
     # if its unlockable, unlock it
     if check_if_chest_is_unlockable(vm_index):
         logger.add_chest_unlocked()
         logger.change_status("This chest is unlockable!")
-        click(vm_index, UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
+        emulator.click(UNLOCK_CHEST_BUTTON_COORD[0], UNLOCK_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 
     if check_if_can_queue_chest(vm_index):
         logger.add_chest_unlocked()
         logger.change_status("This chest is queueable!")
-        click(vm_index, QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
+        emulator.click(QUEUE_CHEST_BUTTON_COORD[0], QUEUE_CHEST_BUTTON_COORD[1])
         time.sleep(1)
 
     # click deadspace until clash main reappears
     deadspace_clicking_start_time = time.time()
-    while check_if_on_clash_main_menu(vm_index) is not True:
+    while check_if_on_clash_main_menu(emulator) is not True:
         print("Clicking deadspace to skip chest rewards bc not on clash main")
-        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+        emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
         # if clicked deadspace too much, restart
-        if time.time() - deadspace_clicking_start_time > CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT:
+        if (
+            time.time() - deadspace_clicking_start_time
+            > CHEST_OPENING_DEADSPACE_CLICK_TIMEOUT
+        ):
             break
 
-    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     chests_opened = logger.get_chests_opened()
     logger.log(f"Opened {chests_opened - prev_chests_opened} chests")
     return "good"

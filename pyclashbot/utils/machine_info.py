@@ -1,24 +1,14 @@
 """A module for gathering machine information."""
 
-import configparser
 import ctypes
 import logging
 import platform
 import subprocess
-from os.path import join
-
 import psutil
 
-from pyclashbot.memu.pmc import pmc
 from pyclashbot.utils.subprocess import run
 
 user32 = ctypes.windll.user32
-
-
-memu_config = configparser.ConfigParser()
-memu_config.read(
-    join(pmc._get_memu_top_level(), "config.ini"),  # pylint: disable=protected-access
-)
 
 
 def check_hyper_v_enabled() -> bool:
@@ -49,7 +39,6 @@ MACHINE_INFO: dict[str, str | int | float] = {
     "memory": int(psutil.virtual_memory().total),
     "cpu_count": int(psutil.cpu_count(logical=False)),
     "cpu_freq": float(psutil.cpu_freq().current),
-    "memu_version": memu_config.get("reginfo", "version", fallback="unknown"),
     "hyper-v_enabled": check_hyper_v_enabled(),
 }
 

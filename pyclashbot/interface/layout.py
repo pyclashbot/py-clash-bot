@@ -24,28 +24,7 @@ jobs_frame = sg.Frame(
     border_width=None,
     pad=0,
 )
-account_switching_switching_frame = sg.Frame(
-    layout=[
-        [
-            sg.Checkbox(
-                "Enabled",
-                key="account_switching_toggle",
-                default=False,
-            ),
-        ],
-        [
-            sg.Slider(
-                range=(1, 3),
-                orientation="h",
-                key="account_switching_slider",
-                size=(10, 20),
-            ),
-        ],
-    ],
-    title="Account Switching",
-    expand_x=True,
-    pad=0,
-)
+
 memu_settings_frame = sg.Frame(
     layout=[
         [
@@ -74,12 +53,43 @@ memu_settings_frame = sg.Frame(
     pad=0,
 )
 
+emulator_choice_frame = sg.Frame(
+    layout=[
+        [
+            sg.Radio(
+                enable_events=True,
+                text="Memu",
+                group_id="emulator_type_radio",
+                default=True,
+                key="memu_emulator_toggle",
+                pad=1,
+            ),
+        ],
+        [
+            sg.Radio(
+                enable_events=True,
+                text="Google Play",
+                group_id="emulator_type_radio",
+                key="google_play_emulator_toggle",
+                pad=1,
+            ),
+        ],
+    ],
+    title="Emulator Type",
+    expand_y=True,
+    expand_x=True,
+    pad=0,
+)
+
 
 controls_layout = [
     [
         sg.Frame(layout=[[jobs_frame]], title="", expand_y=True, border_width=0, pad=0),
         sg.Frame(
-            layout=[[memu_settings_frame], [account_switching_switching_frame]],
+            layout=[
+                [memu_settings_frame],
+                [emulator_choice_frame],
+            ],
             title="",
             border_width=0,
             pad=0,
@@ -152,7 +162,6 @@ time_status_bar_layout = [
     ),
 ]
 
-
 main_layout = [
     [
         sg.pin(
@@ -224,9 +233,6 @@ user_config_keys = [
     "upgrade_all_cards_user_toggle",
     "season_shop_buys_user_toggle",
     "magic_items_user_toggle",
-    # account switching stuff
-    "account_switching_toggle",
-    "account_switching_slider",
     # MEmu settings
     "opengl_toggle",
     "directx_toggle",
@@ -252,7 +258,11 @@ def test_window():
     """Method for testing the window layout"""
     window = create_window()
     while True:
-        event, values = window.read()
+        window_state = window.read(timeout=100)
+        if window_state is None:
+            continue
+
+        event, values = window_state
         print(event)
         if event == sg.WIN_CLOSED:
             break
