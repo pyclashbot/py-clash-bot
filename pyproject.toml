@@ -14,6 +14,7 @@ dependencies = [
     "pymemuc>=0.6.0,<0.7",
     "psutil>=6.1.0,<7",
     "freesimplegui>=5.2.0,<6",
+    "pygetwindow (>=0.0.9,<0.0.10)",
 ]
 
 [project.urls]
