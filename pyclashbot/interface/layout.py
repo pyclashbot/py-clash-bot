@@ -84,9 +84,10 @@ emulator_choice_frame = sg.Frame(
 
 controls_layout = [
     [
-        sg.Frame(layout=[[jobs_frame]], title="", expand_y=True, border_width=0, pad=0),
+        # sg.Frame(layout=[], title="", expand_y=True, border_width=0, pad=0),
         sg.Frame(
             layout=[
+                [jobs_frame],
                 [memu_settings_frame],
                 [emulator_choice_frame],
             ],
