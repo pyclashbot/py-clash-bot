@@ -376,7 +376,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             if result.returncode == 0:
                 print(f"[✓] {proc} terminated.")
             elif "not found" not in result.stderr.lower():
-                print(f"[!] Failed to terminate {proc}:\n{result.stderr.strip()}")
+                print(f"[!] Failed to terminate {proc}")
 
     def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
         for i in range(clicks):
