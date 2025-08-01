@@ -243,7 +243,9 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
 
     for key in disable_keys:
         if key in list(window.key_dict.keys()):
-            window[key].update(disabled=True)
+            target = window[key]
+            if target is not None:
+                target.update(disabled=True)
 
     # setup the main thread and start it
     print("Starting main thread")
@@ -253,7 +255,9 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     thread.start()
 
     # enable the stop button after the thread is started
-    window["Stop"].update(disabled=False)
+    stop_button = window["Stop"]
+    if stop_button is not None:
+        stop_button.update(disabled=False)
 
     return thread
 
@@ -313,9 +317,13 @@ def handle_thread_finished(
     # enable the start button and configuration after the thread is stopped
     if thread is not None and not thread.is_alive():
         for key in disable_keys:
-            window[key].update(disabled=False)
+            target = window[key]
+            if target is not None:
+                target.update(disabled=False)
         if thread.logger.errored:
-            window["Stop"].update(disabled=True)
+            stop_button = window["Stop"]
+            if stop_button is not None:
+                stop_button.update(disabled=True)
         else:
             # reset the logger
             logger = Logger(timed=False)
@@ -357,12 +365,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
 
-        elif event == "-Collapse-Button-":
-            window["-Collapse-Button-"].update(
-                text="Expand" if window["-tab-group-"].visible else "Collapse",
-            )
-            window["-tab-group-"].update(visible=not window["-tab-group-"].visible)
-
         # upon changing any user settings, save the current settings
         elif event in user_config_keys:
             save_current_settings(values)
@@ -372,12 +374,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
             webbrowser.open(
                 "https://github.com/pyclashbot/py-clash-bot/issues/new/choose",
             )
-
-        elif event == "upload-log":
-            if logger is not None:
-                url = logger.upload_log()
-                if url is not None:
-                    webbrowser.open(url)
 
         # on Help button event, open the help gui
         elif event == "discord":
