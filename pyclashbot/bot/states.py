@@ -14,7 +14,6 @@ from pyclashbot.bot.upgrade_state import upgrade_cards_state
 
 from pyclashbot.utils.logger import Logger
 
-from pyclashbot.bot.recorder import Recorder
 
 mode_used_in_1v1 = None
 
@@ -310,13 +309,8 @@ def state_tree(
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
         )
-        
-        # init recorder if needed
-        recording_enabled = job_list.get('record_fights_toggle', False)
-        if recording_enabled:
-            recorder = Recorder(emulator)
-            recorder.start()
-        
+
+        recording_flag = job_list.get("record_fights_toggle", False)
         if (
             do_1v1_fight_state(
                 emulator,
@@ -324,23 +318,24 @@ def state_tree(
                 random_fight_mode,
                 mode_used_in_1v1,
                 False,
+                recording_flag,
             )
             is False
         ):
-            if recording_enabled: recorder.stop()
             return "restart"
 
-        if recording_enabled: recorder.stop()
         return state_order.next_state(state)
 
     if state == "end_fight":
         logger.log(
             f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
         )
+        recording_flag = job_list.get("record_fights_toggle", False)
         if (
             end_fight_state(
                 emulator,
                 logger,
+                recording_flag,
                 job_list["disable_win_track_toggle"],
             )
             is False

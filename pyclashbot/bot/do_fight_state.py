@@ -7,6 +7,8 @@ from typing import Literal
 
 import numpy
 
+from  pyclashbot.bot.recorder import save_image, save_win_loss
+
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
@@ -34,8 +36,10 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
+from pyclashbot.bot.recorder import save_play
 
 from pyclashbot.utils.logger import Logger
+
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
@@ -90,55 +94,18 @@ ELIXIR_COORDS = [
 ELIXIR_COLOR = [240, 137, 244]
 
 
-def do_2v2_fight_state(
-    emulator,
-    logger: Logger,
-    next_state,
-    random_fight_mode: bool,
-    called_from_launching=False,
-):
-    """Method to handle the entirety of the 2v2 battle state (start fight, do fight, end fight)"""
-    print(f"random_fight_mode is {random_fight_mode} in do_2v2_fight_state()")
-
-    # wait for battle start
-    if wait_for_2v2_battle_start(emulator=emulator, logger=logger) is not True:
-        logger.change_status(
-            status="Error 7567336 wait_for_2v2_battle_start() in do_2v2_fight_state()",
-        )
-        return "restart"
-
-    logger.change_status(status="2v2 Battle started!")
-
-    logger.change_status(status="Starting fight loop")
-
-    # if regular fight mode, run the fight loop
-    if not random_fight_mode and _2v2_fight_loop(emulator, logger) == "restart":
-        logger.log("Error 698245 Failuring in 2v2 regular fight loop")
-        return "restart"
-
-    # if random fight mode, run the random fight loop
-    if random_fight_mode and _2v2_random_fight_loop(emulator, logger) == "restart":
-        logger.log("Error 655 Failuring in 2v2 random fight loop")
-        return "restart"
-
-    time.sleep(10)
-
-    return next_state
-
-
 def do_1v1_fight_state(
     emulator,
     logger: Logger,
     random_fight_mode,
     fight_mode_choosed,
     called_from_launching=False,
+    recording_flag: bool = False,
 ) -> bool:
     """Handle the entirety of the 1v1 battle state (start fight, do fight, end fight)."""
+
     logger.change_status("do_1v1_fight_state state")
     logger.change_status("Waiting for 1v1 battle to start")
-
-    print(f"Random fight mode is {random_fight_mode} in do_1v1_fight_state()")
-    print(f"Fight mode is {fight_mode_choosed}")
 
     # Wait for battle start
     if wait_for_1v1_battle_start(emulator, logger) is False:
@@ -147,16 +114,21 @@ def do_1v1_fight_state(
         )
         return False
 
-    logger.change_status("Battle started!")
     logger.change_status("Starting fight loop")
 
     # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _1v1_fight_loop(emulator, logger) is False:
+    if (
+        not random_fight_mode
+        and _1v1_fight_loop(emulator, logger, recording_flag) is False
+    ):
         logger.log("Failure in fight loop")
         return False
 
     # Run random fight loop if random mode toggled
-    if random_fight_mode and _1v1_random_fight_loop(emulator, logger) is False:
+    if (
+        random_fight_mode
+        and _1v1_random_fight_loop(emulator, logger) is False
+    ):
         logger.log("Failure in fight loop")
         return False
 
@@ -532,8 +504,11 @@ def mag_dump(emulator, logger):
     logger.log("Mag dumping...")
     for index in range(3):
         print(f"mag dump play {index}")
-        card_coord = random.choice(card_coords)
+        card_index = random.randint(0, 3)
+        card_coord = card_coords[card_index]
         play_coord = (random.randint(101, 440), random.randint(50, 526))
+
+        # record play here
 
         emulator.click(card_coord[0], card_coord[1])
         time.sleep(0.1)
@@ -542,17 +517,22 @@ def mag_dump(emulator, logger):
         time.sleep(0.1)
 
 
+
 def wait_for_elixer(
     emulator,
     logger,
     random_elixer_wait,
     WAIT_THRESHOLD=5000,  # noqa: N803
     PLAY_THRESHOLD=10000,  # noqa: N803
+    recording_flag: bool = False,
 ) -> Literal["restart", "no battle"] | bool:
     """Method to wait for 4 elixer during a battle"""
     start_time = time.time()
 
     while not count_elixer(emulator, random_elixer_wait):
+        if recording_flag:
+            save_image(emulator.screenshot())
+        
         wait_time = time.time() - start_time
         logger.change_status(
             f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
@@ -598,7 +578,7 @@ def count_elixer(emulator, elixer_count) -> bool:
 
 def end_fight_state(
     emulator,
-    logger: Logger,
+    logger: Logger,recording_flag,
     disable_win_tracker_toggle=True,
 ):
     """Method to handle the time after a fight and before the next state"""
@@ -623,9 +603,14 @@ def end_fight_state(
 
         if win_check_return:
             logger.add_win()
+
+            if recording_flag: 
+                save_win_loss('win')
             return True
 
         logger.add_loss()
+        if recording_flag: 
+            save_win_loss('loss')
     else:
         logger.log("Not checking win/loss because check is disabled")
 
@@ -855,7 +840,7 @@ def select_card_index(card_indices, last_three_cards):
     return random.choice(preferred_cards)
 
 
-def play_a_card(emulator, logger) -> bool:
+def play_a_card(emulator, logger, recording_flag: bool) -> bool:
     print("\n")
 
     # check which cards are available
@@ -908,6 +893,8 @@ def play_a_card(emulator, logger) -> bool:
     click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[
         :3
     ]
+    if recording_flag:
+        save_play(play_coord, card_index)
 
     logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
     logger.add_card_played()
@@ -925,7 +912,7 @@ percentage_triple = [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0]
 global elapsed_time  # noqa: PLW0604
 
 
-def _2v2_fight_loop(emulator, logger: Logger):
+def _2v2_fight_loop(emulator, logger: Logger, recording_flag: bool):
     # this needs comments
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)
@@ -969,7 +956,7 @@ def _2v2_fight_loop(emulator, logger: Logger):
 
         # print("playing a card in 2v2...")
         play_start_time = time.time()
-        if play_a_card(emulator, logger) is False:
+        if play_a_card(emulator, logger, recording_flag) is False:
             logger.change_status("Failed to play a card, retrying...")
         # play_time_taken = str(time.time() - play_start_time)[:4]
         logger.change_status(
@@ -984,13 +971,16 @@ def _2v2_fight_loop(emulator, logger: Logger):
     return "good"
 
 
-def _1v1_fight_loop(emulator, logger: Logger) -> bool:
+def _1v1_fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     """Method for handling dynamicly timed 1v1 fight"""
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)
     ingame_time = time.time()
     prev_cards_played = logger.get_cards_played()
+
     while check_for_in_battle_with_delay(emulator):
+        if recording_flag:
+            save_image(emulator.screenshot())
         global elapsed_time
         elapsed_time = time.time() - ingame_time
         if elapsed_time < 7:  # Less than 5 seconds
@@ -1016,6 +1006,7 @@ def _1v1_fight_loop(emulator, logger: Logger) -> bool:
             random.choices(elixer_count, weights=percentage, k=1)[0],
             WAIT_THRESHOLD,
             PLAY_THRESHOLD,
+            recording_flag
         )
 
         if wait_output == "restart":
@@ -1031,8 +1022,11 @@ def _1v1_fight_loop(emulator, logger: Logger) -> bool:
             break
 
         # print("playing a card in 1v1...")
+        if recording_flag:
+            save_image(emulator.screenshot())
+
         play_start_time = time.time()
-        if play_a_card(emulator, logger) is False:
+        if play_a_card(emulator, logger, recording_flag) is False:
             logger.change_status("Failed to play a card, retrying...")
         # play_time_taken = str(time.time() - play_start_time)[:4]
         logger.change_status(
@@ -1045,32 +1039,6 @@ def _1v1_fight_loop(emulator, logger: Logger) -> bool:
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
     return True
-
-
-def _2v2_random_fight_loop(emulator, logger: Logger):
-    """Method to handle a dynamicly timed 2v2 fight"""
-    start_time = time.time()
-
-    # while in battle:
-    while check_for_in_battle_with_delay(emulator):
-        this_play_start_time = time.time()
-
-        time.sleep(8)
-
-        mag_dump(emulator, logger)
-
-        # emote sometimes to do daily challenge
-        if time.time() - start_time > 30 and random.randint(0, 10) == 1:
-            emote_in_2v2(emulator, logger)
-
-        # increment plays counter
-        logger.change_status(
-            f"Made a play in 2v2 mode in {str(time.time() - this_play_start_time)[:4]}\n",
-        )
-
-    logger.change_status("Finished with this 2v2 fight")
-
-    return "good"
 
 
 def _1v1_random_fight_loop(emulator, logger) -> bool:
