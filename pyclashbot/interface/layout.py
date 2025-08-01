@@ -330,7 +330,7 @@ data_settings_frame = sg.Frame(
     title="Data Settings",
     layout=[
         [
-            sg.Checkbox("Record fights", key="record_fights_toggle", default=False),
+            sg.Checkbox("Record fights", key="record_fights_toggle", default=True),
         ],
     ],
     expand_x=True,
