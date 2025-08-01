@@ -11,7 +11,7 @@ from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
-from pyclashbot.interface.joblist import no_jobs_popup
+from pyclashbot.interface.layout import no_jobs_popup
 from pyclashbot.interface.layout import create_window
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
@@ -226,9 +226,6 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     returns:
         None
     """
-    # print window layout
-    window["Stats"].select()
-
     # make job dictionary
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
 
