@@ -83,13 +83,10 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     if values["memu_emulator_toggle"]:
         jobs_dictionary["emulator"] = "MEmu"
 
-    # compile google emulator settings into 
+    # compile google emulator settings into
     # a google_emulator_render_settings dict
-    google_emulator_render_settings = {
-    }
-    google_emulator_render_inputs2values = {
-        
-    }
+    google_emulator_render_settings = {}
+    google_emulator_render_inputs2values = {}
 
     return jobs_dictionary
 
