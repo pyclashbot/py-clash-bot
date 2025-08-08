@@ -52,6 +52,7 @@ def save_play(play_coord, card_index):
 
     with open(fp, "w") as f:
         json.dump(data, f)
+    print('Saved a fight play to', fp)
 
     return True
 
@@ -71,22 +72,26 @@ def save_win_loss(result: str):
     fp = f"{top_folder}/result_{timestamp}.txt"
     if os.path.exists(fp):
         return False
+    print('Saved a fight result to', fp)
     with open(fp, "w") as f:
         f.write(result)
 
 
 def save_image(image: np.ndarray):
+    print('Saving a fight image')
     os.makedirs(top_folder, exist_ok=True)
 
     timestamp = int(time.time())
     fp = f"{top_folder}/fight_image_{timestamp}.png"
     if os.path.exists(fp):
+        print(f'[!] Warning. Fight image file {fp} already exists.')
         return False
 
     # Convert BGR (OpenCV) to RGB (PIL)
     rgb_image = image[..., ::-1]
     pil_image = Image.fromarray(rgb_image)
     pil_image.save(fp)
+    print('Saved a fight image to', fp)
     return True
 
 

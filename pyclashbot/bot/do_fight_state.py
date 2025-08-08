@@ -7,7 +7,7 @@ from typing import Literal
 
 import numpy
 
-from  pyclashbot.bot.recorder import save_image, save_win_loss
+from pyclashbot.bot.recorder import save_image, save_win_loss
 
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
@@ -25,7 +25,6 @@ from pyclashbot.bot.nav import (
     get_to_challenges_tab_from_main,
     handle_trophy_reward_menu,
     wait_for_1v1_battle_start,
-    wait_for_2v2_battle_start,
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import (
@@ -50,12 +49,6 @@ HAND_CARDS_COORDS = [
     (341, 563),
 ]
 CLOSE_THIS_CHALLENGE_PAGE_BUTTON = (27, 22)
-# coord of the button on the challenges tab
-_2V2_BATTLE_ICON_COORD = (327, 483)
-_2V2_BATTLE_BUTTON_COORD_2 = (
-    209,
-    433,
-)  # coord of the battle button after you click the 2v2 battle icon
 
 QUICKMATCH_BUTTON_COORD = (
     274,
@@ -63,22 +56,18 @@ QUICKMATCH_BUTTON_COORD = (
 )  # coord of the quickmatch button after you click the battle button
 ELIXER_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
 
-EMOTE_BUTTON_COORD_IN_2V2 = (67, 521)
-EMOTES_COORDS_IN_2V2 = [
+EMOTE_BUTTON_COORD = (67, 521)
+EMOTE_ICON_COORDS = [
     (124, 419),
     (182, 420),
     (255, 411),
     (312, 423),
-    # (144, 545),
-    # (327, 544),
     (133, 471),
     (188, 472),
     (243, 469),
     (308, 470),
 ]
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
-
-
 ELIXIR_COORDS = [
     [613, 149],
     [613, 165],
@@ -125,10 +114,7 @@ def do_1v1_fight_state(
         return False
 
     # Run random fight loop if random mode toggled
-    if (
-        random_fight_mode
-        and _1v1_random_fight_loop(emulator, logger) is False
-    ):
+    if random_fight_mode and _1v1_random_fight_loop(emulator, logger) is False:
         logger.log("Failure in fight loop")
         return False
 
@@ -349,16 +335,13 @@ def start_1v1_type_fight(emulator, logger: Logger, mode: str) -> bool:
 def start_fight(emulator, logger, mode) -> bool:
     print("within start_fight")
 
-    # fight_modes = ['trophy_road', 'path_of_legends', '2v2']
+    # fight_modes = ['trophy_road']
     def increment_fight_mode_count(logger, mode):
         if mode == "trophy_road":
             logger.increment_trophy_road_fights()
 
     logger.change_status(f"Starting a {mode} fight")
     increment_fight_mode_count(logger, mode)
-    if mode == "2v2":
-        print(f"{mode} is of 2v2 type")
-        return start_2v2_fight(emulator, logger)
 
     print(f"{mode} is of 1v1 type")
     return start_1v1_type_fight(emulator, logger, mode)
@@ -367,47 +350,6 @@ def start_fight(emulator, logger, mode) -> bool:
 def scroll_up_on_left_side_of_screen(emulator):
     """Method for scrolling up faster when interacting with a scrollable menu"""
     emulator.scroll(66, 300, 66, 400)
-
-
-def start_2v2_fight(emulator, logger: Logger) -> bool:
-    """Method to handle starting a 2v2 fight"""
-    logger.change_status(status="Start fight state")
-    logger.change_status(status="Starting 2v2 mode")
-
-    # get to challenges tab
-    if get_to_challenges_tab_from_main(emulator, logger) == "restart":
-        return False
-
-    # check for then close popup
-    if check_for_challenge_page_on_events_tab(emulator):
-        close_this_challenge_page(emulator)
-        for _ in range(10):
-            scroll_up_on_left_side_of_screen(emulator)
-        time.sleep(1)
-
-    # scroll up
-    for _ in range(3):
-        scroll_up_on_left_side_of_screen(emulator)
-    time.sleep(1)
-
-    # if there is a locked events page, return restart
-    if check_for_locked_events_page(emulator):
-        logger.change_status("Locked events page!")
-        return False
-
-    # click 2v2 icon location
-    click_2v2_icon_button(emulator)
-    time.sleep(0.41)
-
-    # click battle button
-    click_2v2_battle_button(emulator)
-    time.sleep(0.4)
-
-    # click quickmatch button
-    click_quickmatch_button(emulator)
-    time.sleep(0.3)
-
-    return True
 
 
 def check_for_locked_events_page(emulator):
@@ -466,30 +408,15 @@ def close_this_challenge_page(emulator) -> None:
     )
 
 
-def click_2v2_icon_button(emulator) -> None:
-    """Method to click the 2v2 icon on the challenges tab"""
-    emulator.click(_2V2_BATTLE_ICON_COORD[0], _2V2_BATTLE_ICON_COORD[1])
-
-
-def click_2v2_battle_button(emulator) -> None:
-    """Method to click the 2v2 battle button on the challenges tab"""
-    emulator.click(_2V2_BATTLE_BUTTON_COORD_2[0], _2V2_BATTLE_BUTTON_COORD_2[1])
-
-
-def click_quickmatch_button(emulator) -> None:
-    """Method to click the quickmatch button on the 2v2 battle screen"""
-    emulator.click(QUICKMATCH_BUTTON_COORD[0], QUICKMATCH_BUTTON_COORD[1])
-
-
-def emote_in_2v2(emulator, logger: Logger):
-    """Method to do an emote in a 2v2 match"""
+def send_emote(emulator, logger: Logger):
+    """Method to do an emote in a fight"""
     logger.change_status("Hitting an emote")
 
     # click emote button
-    emulator.click(EMOTE_BUTTON_COORD_IN_2V2[0], EMOTE_BUTTON_COORD_IN_2V2[1])
+    emulator.click(EMOTE_BUTTON_COORD[0], EMOTE_BUTTON_COORD[1])
     time.sleep(0.33)
 
-    emote_coord = random.choice(EMOTES_COORDS_IN_2V2)
+    emote_coord = random.choice(EMOTE_ICON_COORDS)
     emulator.click(emote_coord[0], emote_coord[1])
 
 
@@ -517,7 +444,6 @@ def mag_dump(emulator, logger):
         time.sleep(0.1)
 
 
-
 def wait_for_elixer(
     emulator,
     logger,
@@ -531,8 +457,11 @@ def wait_for_elixer(
 
     while not count_elixer(emulator, random_elixer_wait):
         if recording_flag:
+            print("Recording flag is set in wait_for_elixer")
             save_image(emulator.screenshot())
-        
+        else:
+            print("Recording flag is NOT set in wait_for_elixer")
+
         wait_time = time.time() - start_time
         logger.change_status(
             f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
@@ -578,7 +507,8 @@ def count_elixer(emulator, elixer_count) -> bool:
 
 def end_fight_state(
     emulator,
-    logger: Logger,recording_flag,
+    logger: Logger,
+    recording_flag,
     disable_win_tracker_toggle=True,
 ):
     """Method to handle the time after a fight and before the next state"""
@@ -604,13 +534,13 @@ def end_fight_state(
         if win_check_return:
             logger.add_win()
 
-            if recording_flag: 
-                save_win_loss('win')
+            if recording_flag:
+                save_win_loss("win")
             return True
 
         logger.add_loss()
-        if recording_flag: 
-            save_win_loss('loss')
+        if recording_flag:
+            save_win_loss("loss")
     else:
         logger.log("Not checking win/loss because check is disabled")
 
@@ -900,7 +830,7 @@ def play_a_card(emulator, logger, recording_flag: bool) -> bool:
     logger.add_card_played()
 
     if random.randint(0, 9) == 1:
-        emote_in_2v2(emulator, logger)
+        send_emote(emulator, logger)
     return True
 
 
@@ -910,65 +840,6 @@ percentage_single = [0.05, 0.05, 0.1, 0.15, 0.15, 0.3, 0.2]
 percentage_double = [0.05, 0.05, 0.1, 0.15, 0.25, 0.3, 0.1]
 percentage_triple = [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0]
 global elapsed_time  # noqa: PLW0604
-
-
-def _2v2_fight_loop(emulator, logger: Logger, recording_flag: bool):
-    # this needs comments
-    create_default_bridge_iar(emulator)
-    collections.deque(maxlen=3)
-    ingame_time = time.time()
-    prev_cards_played = logger.get_cards_played()
-    while check_for_in_battle_with_delay(emulator):
-        global elapsed_time
-        elapsed_time = time.time() - ingame_time
-        if elapsed_time < 7:  # Less than 5 seconds
-            percentage = percentage_first_5
-            WAIT_THRESHOLD = 6000  # noqa: N806
-            PLAY_THRESHOLD = 10000  # noqa: N806
-        elif elapsed_time < 90:  # Less than 2 minutes
-            percentage = percentage_single
-            WAIT_THRESHOLD = 6000  # noqa: N806
-            PLAY_THRESHOLD = 10000  # noqa: N806
-        elif elapsed_time < 200:  # Less than 4 minutes
-            percentage = percentage_double
-            WAIT_THRESHOLD = 7000  # noqa: N806
-            PLAY_THRESHOLD = 11000  # noqa: N806
-        else:  # 4 minutes or more
-            percentage = percentage_triple
-            WAIT_THRESHOLD = 8000  # noqa: N806
-            PLAY_THRESHOLD = 12000  # noqa: N806
-
-        wait_output = wait_for_elixer(
-            emulator,
-            logger,
-            random.choices(elixer_count, weights=percentage, k=1)[0],
-            WAIT_THRESHOLD,
-            PLAY_THRESHOLD,
-        )
-
-        if wait_output == "restart":
-            logger.change_status("Failure while waiting for elixer")
-            return "restart"
-
-        if wait_output == "no battle" or not check_if_in_battle(emulator):
-            logger.change_status("Not in a 2v2 battle anymore!")
-            break
-
-        # print("playing a card in 2v2...")
-        play_start_time = time.time()
-        if play_a_card(emulator, logger, recording_flag) is False:
-            logger.change_status("Failed to play a card, retrying...")
-        # play_time_taken = str(time.time() - play_start_time)[:4]
-        logger.change_status(
-            f"Made a play in {str(time.time() - play_start_time)[:4]}s",
-        )
-
-    logger.change_status("End of the 2v2 fight!")
-    time.sleep(2.13)
-    cards_played = logger.get_cards_played()
-    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
-
-    return "good"
 
 
 def _1v1_fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
@@ -1006,7 +877,7 @@ def _1v1_fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             random.choices(elixer_count, weights=percentage, k=1)[0],
             WAIT_THRESHOLD,
             PLAY_THRESHOLD,
-            recording_flag
+            recording_flag,
         )
 
         if wait_output == "restart":

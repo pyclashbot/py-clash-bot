@@ -67,6 +67,10 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "disable_win_track_toggle": values["disable_win_track_toggle"],
     }
 
+    # recording settings
+    if values["record_fights_toggle"]:
+        jobs_dictionary["record_fights_toggle"] = values["record_fights_toggle"]
+
     # memu settings
     if values["opengl_toggle"]:
         jobs_dictionary["memu_render_mode"] = "opengl"
@@ -78,6 +82,14 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         jobs_dictionary["emulator"] = "Google Play"
     if values["memu_emulator_toggle"]:
         jobs_dictionary["emulator"] = "MEmu"
+
+    # compile google emulator settings into 
+    # a google_emulator_render_settings dict
+    google_emulator_render_settings = {
+    }
+    google_emulator_render_inputs2values = {
+        
+    }
 
     return jobs_dictionary
 

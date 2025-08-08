@@ -1,7 +1,7 @@
 import logging
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 import numpy as np
-import json  # for reading base config file
+import json
 import os
 import time
 import contextlib

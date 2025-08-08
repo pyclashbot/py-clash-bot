@@ -304,18 +304,18 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "1v1_fight":
-        random_fight_mode = job_list["random_plays_user_toggle"]
+        random_plays_flag = job_list.get("random_plays_user_toggle", False)
 
-        logger.log(
-            f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
-        )
+        print(f"About to do a 1v1 fight. Real quick, here's the job list: {job_list}")
+        for k,v in job_list.items():
+            print(f"\t{k}={v}")
 
         recording_flag = job_list.get("record_fights_toggle", False)
         if (
             do_1v1_fight_state(
                 emulator,
                 logger,
-                random_fight_mode,
+                random_plays_flag,
                 mode_used_in_1v1,
                 False,
                 recording_flag,
@@ -327,9 +327,6 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "end_fight":
-        logger.log(
-            f"This state: {state} took {str(time.time() - start_time)[:5]} seconds",
-        )
         recording_flag = job_list.get("record_fights_toggle", False)
         if (
             end_fight_state(
