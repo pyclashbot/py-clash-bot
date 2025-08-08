@@ -67,7 +67,7 @@ def wait_for_2v2_battle_start(emulator, logger: Logger) -> bool:
             logger.change_status("Detected an ongoing 2v2 battle!")
             return True
 
-        emulator.click( x_coord=20, y_coord=200)
+        emulator.click(x_coord=20, y_coord=200)
 
     return False
 
@@ -103,7 +103,7 @@ def wait_for_1v1_battle_start(
             )
             return False
         print("Waiting for 1v1 start")
-        emulator.click( x_coord=200, y_coord=200)
+        emulator.click(x_coord=200, y_coord=200)
 
     if printmode:
         logger.change_status(status="Done waiting for 1v1 battle to start")
@@ -173,8 +173,6 @@ def check_if_in_battle(emulator) -> Literal["2v2"] | Literal["1v1"] | Literal["N
             return "2v2"
         return "1v1"
     return "None"
-
-
 
 
 def check_end_of_battle_screen(emulator):
@@ -297,7 +295,7 @@ def open_war_chest_obstruction(emulator, logger):
     """
     logger.log("Found a war chest on the way to getting to the clan page.")
     logger.log("Opening this chest real quick")
-    emulator.click( OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
+    emulator.click(OPEN_WAR_CHEST_BUTTON_COORD[0], OPEN_WAR_CHEST_BUTTON_COORD[1])
     time.sleep(2)
     emulator.click(
         OPENING_WAR_CHEST_DEADZONE_COORD[0],
@@ -325,11 +323,11 @@ def check_for_war_chest_obstruction(emulator):
 def collect_boot_reward(emulator):
     # click boot reward location
     print("Opening boot reward")
-    emulator.click( 197, 370)
+    emulator.click(197, 370)
 
     # click deadspace a bunch
     print("Clicking deadspace to collect boot rewards")
-    emulator.click( 5, 200, clicks=20, interval=0.5)
+    emulator.click(5, 200, clicks=20, interval=0.5)
 
 
 def check_for_boot_reward(iar):
@@ -402,15 +400,15 @@ def get_to_clan_tab_from_clash_main(
         # if on final results page, click OK
         elif check_for_final_results_page(emulator):
             logger.log("On final_results_page so clicking OK button")
-            emulator.click( 211, 524)
+            emulator.click(211, 524)
 
         # handle daily defenses rank page
         handle_war_popup_pages(emulator, logger)
 
         # scroll_up(emulator)
         # scroll_down(emulator)
-        emulator.custom_swipe( 206, 313, 204, 417)
-        emulator.custom_swipe( 204, 417, 206, 313)
+        emulator.custom_swipe(206, 313, 204, 417)
+        emulator.custom_swipe(204, 417, 206, 313)
         emulator.click(
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[0],
             CLAN_TAB_BUTTON_COORDS_FROM_MAIN[1],
@@ -428,7 +426,7 @@ def handle_war_popup_pages(emulator, logger):
     while time.time() - start_time < timeout:
         if check_for_battle_day_results_page(emulator):
             print("Found battle_day_results page")
-            emulator.click( 233, 196)
+            emulator.click(233, 196)
             time.sleep(1)
             return True
 
@@ -439,7 +437,7 @@ def handle_war_popup_pages(emulator, logger):
             or check_for_daily_defenses_rank_page_4(emulator)
         ):
             print("Found daily_defenses page")
-            emulator.click( 150, 260)
+            emulator.click(150, 260)
             logger.change_status("Handled daily defenses rank page")
             return True
 
@@ -734,7 +732,7 @@ def get_to_profile_page(emulator, logger: Logger) -> Literal["restart", "good"]:
         return "restart"
 
     # click profile button
-    emulator.click( PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
+    emulator.click(PROFILE_PAGE_COORD[0], PROFILE_PAGE_COORD[1])
 
     # wait for profile page
     if wait_for_profile_page(emulator, logger, printmode=False) == "restart":
@@ -783,7 +781,7 @@ def handle_trophy_reward_menu(
     logger: Logger,
     printmode=False,
 ) -> Literal["good"]:
-   
+
     if printmode:
         logger.change_status(status="Handling trophy reward menu")
     else:
@@ -850,7 +848,7 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
         # handle getting stuck on megaknight evolution popup
         if check_for_megaknight_evolution_popup(emulator):
             print("Handling megaknight evolution popup")
-            emulator.click( 206, 601)
+            emulator.click(206, 601)
             time.sleep(2)
             continue
 
@@ -922,7 +920,7 @@ def check_if_on_clash_main_menu(emulator) -> bool:
     ]
 
     # sentinel color list
-    colors = [
+    colors_1 = [
         [255, 255, 255],
         [255, 255, 255],
         [51, 208, 239],
@@ -932,12 +930,31 @@ def check_if_on_clash_main_menu(emulator) -> bool:
         [139, 106, 72],
     ]
 
-    # if any pixel doesnt match the sentinel, then we're not on clash main
-    for i, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[i], tol=35):
-            return False
+    colors_2 = [
+        [255, 193, 82],
+        [255, 173, 72],
+        [255, 176, 72],
+        [255, 178, 71],
+        [255, 179, 72],
+        [84, 128, 196],
+        [142, 196, 149],
+    ]
 
-    # if all pixels are good, we're on clash main
+    print("\n")
+    for p in zip(pixels):
+        print(list(p))
+
+    match = True
+    for color, pixel in zip(colors_1, pixels):
+        if not pixel_is_equal(pixel, color, tol=25):
+            match= False
+    if match is True:return True
+
+    match = True
+    for color, pixel in zip(colors_2, pixels):
+        if not pixel_is_equal(pixel, color, tol=25):
+            match= False
+    if match is True:return True
     return True
 
 
@@ -945,7 +962,7 @@ def get_to_card_page_from_clash_main(
     emulator,
     logger: Logger,
 ) -> Literal["restart", "good"]:
-    
+
     start_time = time.time()
 
     logger.change_status(status="Getting to card page from clash main")
@@ -970,7 +987,7 @@ def get_to_card_page_from_clash_main(
         time.sleep(3)
 
     logger.change_status(status="Made it to card page")
-    
+
     return "good"
 
 
@@ -996,9 +1013,9 @@ def check_if_on_underleveled_card_page(emulator):
     return True
 
 
-def check_if_on_card_page(emulator) -> bool: 
+def check_if_on_card_page(emulator) -> bool:
     iar = emulator.screenshot()
-   
+
     pixels = [
         iar[433][58],
         iar[116][59],
@@ -1029,7 +1046,7 @@ def check_if_on_card_page(emulator) -> bool:
 
 
 def get_to_challenges_tab_from_main(emulator, logger) -> Literal["restart", "good"]:
-   
+
     emulator.click(
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
         CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1],
@@ -1046,7 +1063,7 @@ def handle_clash_main_tab_notifications(
     emulator,
     logger: Logger,
 ) -> bool:
-    
+
     start_time: float = time.time()
 
     # wait for clash main to appear
@@ -1058,17 +1075,17 @@ def handle_clash_main_tab_notifications(
 
     # click card tab from main
     print("Clicked card tab")
-    emulator.click( 103, 598)
+    emulator.click(103, 598)
     time.sleep(1)
 
     # click shop tab from card tab
     print("Clicked shop tab")
-    emulator.click( 9, 594, clicks=3, interval=0.33)
+    emulator.click(9, 594, clicks=3, interval=0.33)
     time.sleep(1)
 
     # click clan tab from shop tab
     print("Clicked clan tab")
-    emulator.click( 315, 594)
+    emulator.click(315, 594)
     time.sleep(3)
 
     if check_for_war_chest_obstruction(emulator):
@@ -1081,19 +1098,19 @@ def handle_clash_main_tab_notifications(
     print("Getting to events tab...")
     while not check_for_events_page(emulator):
         print("Still not on events page...")
-        emulator.click( 408, 600)
+        emulator.click(408, 600)
         handle_war_popup_pages(emulator, logger)
 
     print("On events page")
 
     # spam click shop page at the leftmost location, wait a little bit
     print("Clicked shop page")
-    emulator.click( 9, 594, clicks=3, interval=0.33)
+    emulator.click(9, 594, clicks=3, interval=0.33)
     time.sleep(2)
 
     # click clash main from shop page
     print("Clicked clash main")
-    emulator.click( 240, 600)
+    emulator.click(240, 600)
     time.sleep(2)
 
     # handle possibility of trophy road obstructing clash main
@@ -1157,7 +1174,7 @@ def wait_for_clash_main_challenges_tab(
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
-  
+
     start_time: float = time.time()
 
     if printmode:
@@ -1274,7 +1291,7 @@ def get_to_activity_log(
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
- 
+
     if printmode:
         logger.change_status(status="Getting to activity log")
     else:
@@ -1307,7 +1324,7 @@ def get_to_activity_log(
         logger.change_status(status="Clicking activity log button")
     else:
         logger.log("Clicking activity log button")
-    emulator.click( BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
+    emulator.click(BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
     if wait_for_battle_log_page(emulator, logger, printmode) == "restart":
         logger.change_status(
             status="Error 923593 Waited too long for battle log page, restarting vm",
@@ -1379,7 +1396,7 @@ def check_if_on_battle_log_page(emulator) -> bool:
 
 
 def check_if_on_clash_main_burger_button_options_menu(emulator) -> bool:
-   
+
     iar = emulator.screenshot()
     pixels = [
         iar[42][256],
@@ -1508,7 +1525,7 @@ def get_to_collections_page(emulator) -> bool:
 
     # click card page
     card_page_coords = [100, 600]
-    emulator.click( card_page_coords[0], card_page_coords[1])
+    emulator.click(card_page_coords[0], card_page_coords[1])
     time.sleep(1)
 
     cycle_card_page_coord = [135, 590]
@@ -1521,7 +1538,7 @@ def get_to_collections_page(emulator) -> bool:
             print("Timed out waiting for collection page")
             return False
 
-        emulator.click( cycle_card_page_coord[0], cycle_card_page_coord[1])
+        emulator.click(cycle_card_page_coord[0], cycle_card_page_coord[1])
         time.sleep(1)
 
     return True
@@ -1531,19 +1548,15 @@ if __name__ == "__main__":
     logger = Logger()
 
     from pyclashbot.emulators.google_play import GooglePlayEmulatorController
-    print('Testing get_to_card_page_from_clash_main() on google play')
+
+    print("Testing get_to_card_page_from_clash_main() on google play")
     emulator = GooglePlayEmulatorController()
-    print(get_to_card_page_from_clash_main(
-        emulator,
-        logger
-    ))
+    print(get_to_card_page_from_clash_main(emulator, logger))
     emulator.stop()
 
     from pyclashbot.emulators.memu import MemuEmulatorController
-    print('Testing get_to_card_page_from_clash_main() on memu')
+
+    print("Testing get_to_card_page_from_clash_main() on memu")
     emulator = MemuEmulatorController()
-    print(get_to_card_page_from_clash_main(
-        emulator,
-        logger
-    ))
+    print(get_to_card_page_from_clash_main(emulator, logger))
     emulator.stop()
