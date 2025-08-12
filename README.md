@@ -1,37 +1,110 @@
 # py-clash-bot
 
-[![Build windows package](https://github.com/pyclashbot/py-clash-bot/actions/workflows/python-build-msi.yml/badge.svg)](https://github.com/pyclashbot/py-clash-bot/actions/workflows/python-build-msi.yml) [![GitHub Python Tests](https://github.com/pyclashbot/py-clash-bot/actions/workflows/python-tests.yml/badge.svg?branch=master)](https://github.com/pyclashbot/py-clash-bot/actions/workflows/python-tests.yml) [![CodeFactor](https://www.codefactor.io/repository/github/pyclashbot/py-clash-bot/badge)](https://www.codefactor.io/repository/github/pyclashbot/py-clash-bot) [![Discord](https://img.shields.io/discord/1088595596962713790?label=Discord%20Server&cacheSeconds=43200)](https://discord.gg/mx4W9qRNgF)
+**py-clash-bot** is an open-source automation tool that allows you to automate your Clash Royale gameplay on Windows using an emulated Android phone. The bot uses advanced image recognition, mouse control, and Android emulation to perform a comprehensive range of tasks automatically, letting you focus on strategy while it handles the daily grind.
 
-py-clash-bot is an open-source application that allows users to automate their Clash Royale gameplay on Windows using an emulated Android phone. The bot uses a combination of image recognition, mouse control, and Android emulation to perform a variety of tasks without user intervention.
+_Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, and community discussions!_
 
-_Join the [Discord server](https://discord.gg/nqKRkyq2UU)!_
+## ✨ Features
 
-## Features
+### 🎮 **Battle Automation**
 
-- Automated level-up, clan wars, card requesting, card mastery, card upgrade, chest opening, and MORE!
-- Runs in the background without using mouse or keyboard input.
-- [This link](https://github.com/pyclashbot/py-clash-bot/blob/master/JobListDescriptions.md) has a complete list of each task with descriptions.
+- **Trophy Road 1v1 Battles** - Automatically fight in trophy road ladder matches
+- **Path of Legends 1v1 Battles** - Battle in the competitive Path of Legends mode
+- **2v2 Battles** - Team up with clan members for 2v2 matches
+- **War Battles** - Participate in clan war battles automatically
+- **Random Decks** - Randomize your deck selection before each battle
+- **Random Plays** - Play cards randomly (ideal for low-end machines)
+- **Smart Battle Management** - Skip fights when chests are full, disable win/loss tracking
 
-## Installation
+### 🎁 **Rewards & Collection**
 
-1. Download and install the latest version of [MEmu](https://www.memuplay.com/) to emulate Android.
-2. Download and run the latest Windows installer for `py-clash-bot` [here](https://github.com/pyclashbot/py-clash-bot/releases/latest).
+- **Chest Management** - Automatically unlock and open chests earned from battles
+- **Battlepass Rewards** - Collect battlepass rewards (works for non-battlepass owners too)
+- **Card Mastery Rewards** - Collect mastery rewards earned from battles
+- **Daily Challenges** - Automatically claim daily and weekly challenge rewards
+- **Level Up Rewards** - Collect level up chests and rewards
+- **Bannerbox Chests** - Open bannerbox crates for additional rewards
+- **Trophy Road Rewards** - Collect rewards from climbing the trophy ladder
+- **Season Shop** - Automatically spend currency from 2v2 battles and events
 
-## Usage
+### 🃏 **Card Management**
 
-1. Run the `py-clash-bot` shortcut on the desktop.
-2. Click the start button to create a new emulator. Wait for the emulator to load.
-3. `py-clash-bot` will detect that Clash Royale is not installed. You must manually install Clash Royale on the new emulator.
-4. Start Clash Royale and complete the tutorial (takes 30 seconds). Then sign into your account using the SuperCell ID login (or use the fresh account).
-5. Set the game language to English.
-6. Restart the bot, select the desired jobs to perform, then click the `Start` button.
-7. Enjoy the benefits of always-on farming with the py-clash-bot taking care of the heavy lifting for you.
+- **Card Requests** - Automatically request cards from your clan
+- **Card Donations** - Donate cards to clan members
+- **Free Donations** - Donate cards without spending gold
+- **Shop Management** - Buy daily free shop offers and gold offers
+- **Card Upgrades** - Upgrade your current deck after each battle
+- **Bulk Upgrades** - Upgrade all cards in your collection
 
-## Demo
+### ⚙️ **Advanced Settings**
+
+- **Account Switching** - Switch between multiple accounts using SuperCell ID
+- **MEmu Integration** - Optimized for MEmu Android emulator
+- **Render Mode Selection** - Choose between OpenGL and DirectX rendering
+- **Real-time Statistics** - Track wins, losses, chests opened, and more
+- **Performance Monitoring** - Monitor bot runtime, failures, and account switches
+
+### 📊 **Comprehensive Statistics**
+
+The bot tracks detailed statistics across three categories:
+
+- **Battle Stats**: Wins, losses, win rate, cards played, battle counts by mode
+- **Collection Stats**: Requests, donations, chests unlocked, rewards collected
+- **Bot Stats**: Runtime, failures, account switches, and performance metrics
+
+## 🚀 Installation
+
+### Prerequisites
+
+1. **Windows 10/11** operating system
+2. **MEmu Android Emulator** - Download from [MEmu Play](https://www.memuplay.com/)
+
+### Setup Steps
+
+1. **Install MEmu** - Download and install the latest version of MEmu
+2. **Download py-clash-bot** - Get the latest Windows installer from [releases](https://github.com/pyclashbot/py-clash-bot/releases/latest)
+3. **Install py-clash-bot** - Run the downloaded installer
+
+## 📖 Usage
+
+### Initial Setup
+
+1. **Launch py-clash-bot** - Use the desktop shortcut created during installation
+2. **Create Emulator** - Click "Start" to create a new MEmu emulator instance
+3. **Install Clash Royale** - Manually install Clash Royale on the new emulator
+4. **Complete Tutorial** - Finish the in-game tutorial (takes ~30 seconds)
+5. **Account Login** - Sign in with your SuperCell ID or use a fresh account
+6. **Language Setting** - Ensure the game language is set to English
+
+### Running the Bot
+
+1. **Select Jobs** - Choose which tasks you want the bot to perform
+2. **Configure Settings** - Set up account switching, render modes, and preferences
+3. **Start Bot** - Click the "Start" button to begin automation
+4. **Monitor Progress** - Watch real-time statistics and status updates
+5. **Enjoy Automation** - Let the bot handle your daily Clash Royale tasks!
+
+## 🎯 Demo
 
 <img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
 
+_Left: Bot automation in action | Right: User interface and controls_
 
-## Contribute
+## 🤝 Contributing
 
-We welcome contributions to the py-clash-bot project. If you have an idea for a new feature or have found a bug, please open an issue on the [issues tab](https://github.com/pyclashbot/py-clash-bot/issues) or check out [how to contribute directly](https://github.com/pyclashbot/py-clash-bot/blob/master/CONTRIBUTING.md).
+We welcome contributions from the community! Whether you have ideas for new features, bug reports, or want to help with development, there are many ways to get involved:
+
+- **Report Issues** - Open an issue on [GitHub Issues](https://github.com/pyclashbot/py-clash-bot/issues)
+- **Feature Requests** - Suggest new automation features or improvements
+- **Code Contributions** - Check out our [Contributing Guide](CONTRIBUTING.md)
+- **Community Support** - Help other users on our [Discord server](https://discord.gg/nqKRkyq2UU)
+
+## ⚠️ Disclaimer
+
+This tool is designed for educational and automation purposes. Please ensure you comply with Clash Royale's Terms of Service and use responsibly. The developers are not responsible for any consequences resulting from the use of this software.
+
+---
+
+**Made with ❤️ by the py-clash-bot community**
+
+_Automate your Clash Royale experience and focus on what matters most - strategy and fun!_
