@@ -144,7 +144,6 @@ def check_for_inventory_full_popup(emulator):
         iar[429][280],
         iar[435][290],
     ]
-    # for p in pixels:print(p)
     colors = [
         [255, 187, 105],
         [255, 187, 105],

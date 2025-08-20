@@ -117,8 +117,6 @@ def check_for_randomize_deck_icon(emulator):
         [255, 255, 255],
     ]
 
-    # for p in pixels:
-    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):

@@ -425,7 +425,6 @@ def record_fight_images():
             pixel = image[coord[1], coord[0]]
             pixels.append(pixel)
 
-        for p in pixels:print(p)
 
         for color, pixel in zip(colors, pixels):
             for i in range(3):

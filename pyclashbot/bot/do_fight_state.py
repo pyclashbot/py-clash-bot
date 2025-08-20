@@ -250,7 +250,6 @@ def check_for_change_fight_mode_page(emulator):
         iar[187][269],
         iar[197][290],
     ]
-    # for p in pixels:print(p)
     colors = [
         [255, 204, 85],
         [245, 196, 83],

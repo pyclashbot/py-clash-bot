@@ -500,7 +500,6 @@ def check_for_trade_cards_icon(vm_index) -> bool:
         [250, 253, 255],
         [43, 189, 253],
     ]
-    # for p in pixels:print(p)
     for i, c in enumerate(colors):
         if not pixel_is_equal(c, pixels[i], tol=10):
             return False
