@@ -56,14 +56,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
 
         # configure the emulator via file
-        current_settings = self._get_settings_configuration()
-        for k, v in current_settings.items():
-            print("current setting:", k, v)
         self._configure_settings(render_settings)
-
-        final_settings = self._get_settings_configuration()
-        for k, v in final_settings.items():
-            print("final setting:", k, v)
 
         # emulator config
         self.google_play_emulator_process_name = "Google Play Games on PC Emulator"
@@ -131,7 +124,6 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         }
 
         if not updates:
-            print("[!] No valid settings provided for update.")
             return
 
         # Load and parse XML
