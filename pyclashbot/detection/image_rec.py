@@ -332,6 +332,17 @@ def pixel_is_equal(
     return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
 
+def all_pixels_are_equal(
+    pixels_1,
+    pixels_2,
+    tol: float,
+):
+    for pixel1, pixel2 in zip(pixels_1, pixels_2):
+        if not pixel_is_equal(pixel1, pixel2, tol):
+            return False
+    return True
+
+
 def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
     coordinates = []
     delta_x = abs(x_2 - x_1)

@@ -7,6 +7,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     pixels_match_colors,
     region_is_color,
+    all_pixels_are_equal,
 )
 
 from pyclashbot.utils.logger import Logger
@@ -904,6 +905,9 @@ def check_if_on_path_of_legends_clash_main(emulator):
     return True
 
 
+import matplotlib.pyplot as plt
+
+
 def check_if_on_clash_main_menu(emulator) -> bool:
     """Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
@@ -911,51 +915,50 @@ def check_if_on_clash_main_menu(emulator) -> bool:
     image = emulator.screenshot()
     pixels = [
         image[14][209],  # white
-        image[14][324],  # white
-        image[20][298],  # yellow
-        image[19][400],  # green
-        image[14][408],  # green
-        image[585][164],  # bluegrey
-        image[586][255],  # bluegrey
+        image[14][325],  # white
+        image[19][298],  # yellow
+        image[17][399],  # green
+        image[581][261],  # green
+        image[584][166],  # bluegrey
+        image[621][166],  # bluegrey
     ]
 
-    # sentinel color list
+    # google play colors
     colors_1 = [
         [255, 255, 255],
         [255, 255, 255],
-        [51, 208, 239],
-        [28, 217, 76],
-        [40, 215, 80],
-        [139, 106, 72],
-        [139, 106, 72],
+        [53, 199, 233],
+        [25, 198, 65],
+        [138, 105, 71],
+        [139, 105, 72],
+        [155, 120, 82],
     ]
 
+    # memu colors
     colors_2 = [
-        [255, 193, 82],
-        [255, 173, 72],
-        [255, 176, 72],
-        [255, 178, 71],
-        [255, 179, 72],
-        [84, 128, 196],
-        [142, 196, 149],
+        [255, 255, 255],
+        [255, 255, 255],
+        [53, 200, 233],
+        [24, 199, 65],
+        [138, 105, 71],
+        [139, 105, 72],
+        [155, 120, 81],
     ]
 
-    print("\n")
-    for p in zip(pixels):
-        print(list(p))
+    # print(f'Seen clash main pixels:')
+    # for p in pixels:
+        # print('\t',p[0], p[1], p[2])
 
-    match = True
-    for color, pixel in zip(colors_1, pixels):
-        if not pixel_is_equal(pixel, color, tol=25):
-            match= False
-    if match is True:return True
 
-    match = True
-    for color, pixel in zip(colors_2, pixels):
-        if not pixel_is_equal(pixel, color, tol=25):
-            match= False
-    if match is True:return True
-    return True
+    for colors in [colors_1, colors_2]:
+        if all_pixels_are_equal(
+            pixels,
+            colors,
+            25,
+        ):
+            return True
+
+    return False
 
 
 def get_to_card_page_from_clash_main(
@@ -1548,15 +1551,19 @@ if __name__ == "__main__":
     logger = Logger()
 
     from pyclashbot.emulators.google_play import GooglePlayEmulatorController
-
-    print("Testing get_to_card_page_from_clash_main() on google play")
-    emulator = GooglePlayEmulatorController()
-    print(get_to_card_page_from_clash_main(emulator, logger))
-    emulator.stop()
-
     from pyclashbot.emulators.memu import MemuEmulatorController
 
-    print("Testing get_to_card_page_from_clash_main() on memu")
+    # emulator = GooglePlayEmulatorController()
     emulator = MemuEmulatorController()
-    print(get_to_card_page_from_clash_main(emulator, logger))
-    emulator.stop()
+    on_main = check_if_on_clash_main_menu(emulator)
+    print(f"on clash main?: {on_main}")
+
+    # print("Testing get_to_card_page_from_clash_main() on google play")
+    # emulator = GooglePlayEmulatorController()
+    # print(get_to_card_page_from_clash_main(emulator, logger))
+    # emulator.stop()
+
+    # print("Testing get_to_card_page_from_clash_main() on memu")
+    # emulator = MemuEmulatorController()
+    # print(get_to_card_page_from_clash_main(emulator, logger))
+    # emulator.stop()
