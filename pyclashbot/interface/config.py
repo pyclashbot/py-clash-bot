@@ -66,7 +66,7 @@ JOBS = [
     JobConfig(
         "trophy_road_1v1_user_toggle",
         "Trophy road battles",
-        default=False
+        default=True
     ),
     JobConfig(
         "random_decks_user_toggle",
