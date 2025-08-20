@@ -108,7 +108,7 @@ class Logger:
         self.cards_played = 0
         self.war_fights = 0
         self.card_randomizations = 0
-        self.winrate: str = "00.0%"
+        self.winrate: str = "0%"
 
         # job stats
         self.battlepass_collects = 0
@@ -289,17 +289,17 @@ class Logger:
         wins = self.wins
         losses = self.losses
 
+        if wins == 0 and losses == 0:
+            return "0%"
+
         if wins != 0 and losses == 0:
             return "100%"
 
         if wins == 0:
-            return "00.0%"
+            return "0%"
 
-        if losses == 0:
-            return "100%"
-
-        ratio = str(100 * (wins / (wins + losses)))[:4] + "%"
-        return ratio
+        win_percentage = round(100 * (wins / (wins + losses)))
+        return f"{win_percentage}%"
 
     @_updates_gui
     def set_current_state(self, state_to_set):

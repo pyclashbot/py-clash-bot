@@ -194,11 +194,11 @@ def create_window() -> Window:
 
 def handle_emulator_selection(window: Window, values: dict) -> None:
     """Handle emulator radio selection to switch tabs."""
-    if values.get("memu_emulator_toggle"):
-        # Switch to Memu tab
-        window["-EMULATOR_TABS-"].Widget.select(0)
-    elif values.get("google_play_emulator_toggle"):
+    if values.get("google_play_emulator_toggle"):
         # Switch to Google Play tab
+        window["-EMULATOR_TABS-"].Widget.select(0)
+    elif values.get("memu_emulator_toggle"):
+        # Switch to Memu tab
         window["-EMULATOR_TABS-"].Widget.select(1)
 
 

@@ -268,6 +268,11 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     if stop_button is not None:
         stop_button.update(disabled=False)
 
+    # focus the stats tab when start button is clicked
+    main_tabs = window["-MAIN_TABS-"]
+    if main_tabs is not None:
+        main_tabs.Widget.select(2)  # Select the stats tab (index 2)
+
     return thread
 
 

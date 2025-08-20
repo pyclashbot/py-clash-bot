@@ -9,7 +9,7 @@ class StatConfig:
     """Configuration for a stat display element."""
     key: str
     title: str
-    size: tuple[int, int] = (5, 1)
+    size: tuple[int, int] = (6, 1)
 
 
 @dataclass
@@ -58,7 +58,7 @@ COLLECTION_STATS = [
 
 BOT_STATS = [
     StatConfig("restarts_after_failure", "Bot Failures"),
-    StatConfig("time_since_start", "Runtime", size=(7, 1)),
+    StatConfig("time_since_start", "Runtime", size=(8, 1)),
 ]
 
 # Job Configuration
