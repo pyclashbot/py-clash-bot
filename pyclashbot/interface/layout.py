@@ -5,120 +5,22 @@ from os import path
 import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
 
+from pyclashbot.interface.builder import (
+    build_battle_stats,
+    build_bot_stats,
+    build_collection_stats,
+    build_data_settings,
+    build_emulator_choice,
+    build_emulator_settings_tabs,
+    build_google_play_settings,
+    build_jobs_section,
+    build_memu_settings,
+)
+from pyclashbot.interface.config import DISABLE_KEYS, USER_CONFIG_KEYS
 from pyclashbot.interface.theme import THEME
 from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
-
-
-def stat_box(stat_name: str, size=(5, 1)) -> sg.Text:
-    """Returns a FreeSimpleGUI text box object for stats layout"""
-    return sg.Text(
-        "0", key=stat_name, relief=sg.RELIEF_SUNKEN, text_color="blue", size=size, pad=0
-    )
-
-
-def make_stat_titles(titles: list[str]) -> list[list[sg.Text]]:
-    list = [[sg.Text(title, pad=0)] for title in titles]
-    return list
-
-
-# collection stats
-collection_title_texts = [
-    "Masteries",
-    "Upgrades",
-    "War Chests",
-]
-
-
-collection_stats_titles: list[list[sg.Text]] = make_stat_titles(collection_title_texts)
-
-collection_stats_values: list[list[sg.Text]] = [
-    [
-        stat_box("card_mastery_reward_collections"),
-    ],
-    [
-        stat_box("upgrades"),
-    ],
-    [
-        stat_box("war_chest_collects"),
-    ],
-]
-
-collection_stats = [
-    [
-        sg.Column(collection_stats_titles, element_justification="right"),
-        sg.Column(collection_stats_values, element_justification="left"),
-    ],
-]
-
-
-# fight stats
-titles = [
-    "Win",
-    "Loss",
-    "Win %",
-    "Moves",
-    "1v1s",
-    "Decks",
-]
-
-battle_stats_titles: list[list[sg.Text]] = make_stat_titles(titles)
-
-
-battle_stats_values = [
-    [
-        stat_box("wins"),
-    ],
-    [
-        stat_box("losses"),
-    ],
-    [
-        stat_box("winrate"),
-    ],
-    [
-        stat_box("cards_played"),
-    ],
-    [
-        stat_box("trophy_road_1v1_fights"),
-    ],
-    [
-        stat_box("card_randomizations"),
-    ],
-]
-
-battle_stats = [
-    [
-        sg.Column(battle_stats_titles, element_justification="right", pad=0),
-        sg.Column(battle_stats_values, element_justification="left", pad=0),
-    ],
-]
-
-
-# bot stats
-
-bot_stat_title_texts = [
-    "Bot Failures",
-    "Runtime",
-]
-
-bot_stats_titles: list[list[sg.Text]] = make_stat_titles(bot_stat_title_texts)
-
-bot_stats_values = [
-    [
-        stat_box("restarts_after_failure"),
-    ],
-    [
-        stat_box("time_since_start", size=(7, 1)),
-    ],
-]
-
-bot_stats = [
-    [
-        sg.Column(bot_stats_titles, element_justification="right"),
-        sg.Column(bot_stats_values, element_justification="left"),
-    ],
-]
 
 
 def no_jobs_popup() -> None:
@@ -150,262 +52,72 @@ def no_jobs_popup() -> None:
     window.close()
 
 
-def job_check_box(text: str, element_key: str, default_value=True) -> sg.Checkbox:
-    """Returns a checkbox element for the joblist window"""
-    return sg.Checkbox(
-        text,
-        default=default_value,
-        key=element_key,
-        enable_events=True,
-    )
+# Build interface components from configuration
+jobs_checklist = build_jobs_section()
+emulator_choice_frame = build_emulator_choice()
+emulator_settings_tabs = build_emulator_settings_tabs()
+data_settings_frame = build_data_settings()
 
 
-jobs_checklist = [
-    [
-        job_check_box(
-            "Trophy road battles",
-            "trophy_road_1v1_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Random decks",
-            "random_decks_user_toggle",
-            default_value=False,
-        ),
-        sg.Text("Deck #:", size=(5, 1)),
-        sg.Combo(
-            values=[1, 2, 3, 4, 5],
-            default_value=2,
-            key="deck_number_selection",
-            size=(5, 1),
-            readonly=True,
-            enable_events=True,
-        ),
-    ],
-    [
-        job_check_box(
-            "Random plays",
-            "random_plays_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Skip win/loss check",
-            "disable_win_track_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Card Masteries",
-            "card_mastery_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Upgrade Cards",
-            "card_upgrade_user_toggle",
-            default_value=False,
-        ),
-    ],
-    [
-        job_check_box(
-            "Season Shop Offers",
-            "season_shop_buys_user_toggle",
-            default_value=False,
-        ),
-    ],
-]
-
-
-memu_settings_frame = sg.Frame(
-    layout=[
-        [
-            sg.Radio(
-                enable_events=True,
-                text="OpenGL",
-                group_id="render_mode_radio",
-                default=True,
-                key="opengl_toggle",
-                pad=1,
-            ),
-        ],
-        [
-            sg.Radio(
-                enable_events=True,
-                text="DirectX",
-                group_id="render_mode_radio",
-                key="directx_toggle",
-                pad=1,
-            ),
-        ],
-    ],
-    title="Memu Settings",
-    expand_y=True,
-    expand_x=True,
-    pad=0,
-)
-
-emulator_choice_frame = sg.Frame(
-    layout=[
-        [
-            sg.Radio(
-                enable_events=True,
-                text="Memu",
-                group_id="emulator_type_radio",
-                default=True,
-                key="memu_emulator_toggle",
-                pad=1,
-            ),
-        ],
-        [
-            sg.Radio(
-                enable_events=True,
-                text="Google Play",
-                group_id="emulator_type_radio",
-                key="google_play_emulator_toggle",
-                pad=1,
-            ),
-        ],
-    ],
-    title="Emulator Type",
-    expand_y=True,
-    expand_x=True,
-    pad=0,
-)
-
-
-google_play_settings_frame = sg.Frame(
-    title="Google Play Settings",
-    layout=[
-        [
-            sg.Text("angle", size=(10, 1)),
-            sg.Combo(
-                ["true", "false"], key="gp_angle", readonly=True, default_value=""
-            ),
-        ],
-        [
-            sg.Text("vulkan", size=(10, 1)),
-            sg.Combo(
-                ["true", "false"], key="gp_vulkan", readonly=True, default_value=""
-            ),
-        ],
-        [
-            sg.Text("gles", size=(10, 1)),
-            sg.Combo(["true", "false"], key="gp_gles", readonly=True, default_value=""),
-        ],
-        [
-            sg.Text("surfaceless", size=(10, 1)),
-            sg.Combo(
-                ["true", "false"], key="gp_surfaceless", readonly=True, default_value=""
-            ),
-        ],
-        [
-            sg.Text("egl", size=(10, 1)),
-            sg.Combo(["true", "false"], key="gp_egl", readonly=True, default_value=""),
-        ],
-        [
-            sg.Text("backend", size=(10, 1)),
-            sg.Combo(
-                ["gfxstream", "angle", "swiftshader"],
-                key="gp_backend",
-                readonly=True,
-                default_value="",
-            ),
-        ],
-        [
-            sg.Text("wsi", size=(10, 1)),
-            sg.Combo(["vk", "glx"], key="gp_wsi", readonly=True, default_value=""),
-        ],
-    ],
-    expand_x=True,
-    pad=(0, 5),
-)
-
-data_settings_frame = sg.Frame(
-    title="Data Settings",
-    layout=[
-        [
-            sg.Checkbox("Record fights", key="record_fights_toggle", default=True),
-        ],
-    ],
-    expand_x=True,
-    pad=(0, 5),
-)
-
-
-controls_layout = [
+# Jobs tab layout
+jobs_tab_layout = [
     [
         sg.Frame(
-            layout=[
-                [
-                    sg.Frame(
-                        layout=jobs_checklist,
-                        title="Jobs",
-                        expand_x=False,
-                        expand_y=True,
-                        border_width=None,
-                        pad=0,
-                    )
-                ],
-                [memu_settings_frame, emulator_choice_frame],
-                [google_play_settings_frame, data_settings_frame],
-            ],
-            title="",
-            border_width=0,
-            pad=0,
+            layout=jobs_checklist,
+            title="Jobs",
             expand_x=True,
             expand_y=True,
-        ),
-    ]
+            border_width=1,
+            pad=5,
+        )
+    ],
 ]
 
+# Emulator tab layout
+emulator_tab_layout = [
+    [emulator_choice_frame],
+    [emulator_settings_tabs],
+    [data_settings_frame],
+]
+
+# Stats tab layout
 stats_tab_layout = [
     [
         sg.Column(
-            [
-                [
-                    sg.Frame(
-                        layout=battle_stats,
-                        title="Battle Stats",
-                        expand_y=False,
-                        expand_x=True,
-                        pad=0,
-                    ),
-                ],
-            ],
+            [[build_battle_stats()]],
             expand_y=True,
-            pad=0,
+            pad=5,
         ),
         sg.Column(
             [
-                [
-                    sg.Frame(
-                        layout=collection_stats,
-                        title="Collection Stats",
-                        expand_y=True,
-                        pad=0,
-                    ),
-                ],
-                [
-                    sg.Frame(
-                        layout=bot_stats,
-                        title="Bot Stats",
-                        expand_x=False,
-                        expand_y=True,
-                        pad=0,
-                    ),
-                ],
+                [build_collection_stats()],
+                [build_bot_stats()],
             ],
             justification="right",
             expand_y=True,
-            pad=0,
+            pad=5,
         ),
     ],
+]
+
+# Create main tab group
+controls_layout = [
+    [
+        sg.TabGroup(
+            [
+                [
+                    sg.Tab("Jobs", jobs_tab_layout, key="-JOBS_TAB-"),
+                    sg.Tab("Emulator", emulator_tab_layout, key="-EMULATOR_TAB-"),
+                    sg.Tab("Stats", stats_tab_layout, key="-STATS_TAB-"),
+                ]
+            ],
+            key="-MAIN_TABS-",
+            enable_events=True,
+            expand_x=True,
+            expand_y=True,
+            pad=0,
+        )
+    ]
 ]
 
 time_status_bar_layout = [
@@ -433,12 +145,7 @@ main_layout = [
             [
                 [
                     sg.Frame(
-                        layout=controls_layout, title="Controls", border_width=0, pad=0
-                    )
-                ],
-                [
-                    sg.Frame(
-                        layout=stats_tab_layout, title="Stats", border_width=0, pad=0
+                        layout=controls_layout, title="", border_width=0, pad=0
                     )
                 ],
             ],
@@ -468,39 +175,9 @@ main_layout = [
 ]
 
 
-# a list of all the keys that contain user configuration
-user_config_keys = [
-    # job list controls keys
-    "open_chests_user_toggle",
-    "open_battlepass_user_toggle",
-    "request_user_toggle",
-    "donate_toggle",
-    "free_donate_toggle",
-    "card_mastery_user_toggle",
-    "disable_win_track_toggle",
-    "free_offer_user_toggle",
-    "gold_offer_user_toggle",
-    "trophy_road_1v1_user_toggle",
-    "path_of_legends_1v1_user_toggle",
-    "2v2_user_toggle",
-    "card_upgrade_user_toggle",
-    "war_user_toggle",
-    "random_decks_user_toggle",
-    "open_bannerbox_user_toggle",
-    "daily_rewards_user_toggle",
-    "random_plays_user_toggle",
-    "skip_fight_if_full_chests_user_toggle",
-    "trophy_road_rewards_user_toggle",
-    "upgrade_all_cards_user_toggle",
-    "season_shop_buys_user_toggle",
-    "magic_items_user_toggle",
-    # MEmu settings
-    "opengl_toggle",
-    "directx_toggle",
-]
-
-# list of button and checkbox keys to disable when the bot is running
-disable_keys = [*user_config_keys, "Start"]
+# Configuration keys imported from config module
+user_config_keys = USER_CONFIG_KEYS
+disable_keys = DISABLE_KEYS
 
 
 def create_window() -> Window:
@@ -515,6 +192,16 @@ def create_window() -> Window:
     )
 
 
+def handle_emulator_selection(window: Window, values: dict) -> None:
+    """Handle emulator radio selection to switch tabs."""
+    if values.get("memu_emulator_toggle"):
+        # Switch to Memu tab
+        window["-EMULATOR_TABS-"].Widget.select(0)
+    elif values.get("google_play_emulator_toggle"):
+        # Switch to Google Play tab
+        window["-EMULATOR_TABS-"].Widget.select(1)
+
+
 def test_window():
     """Method for testing the window layout"""
     window = create_window()
@@ -525,6 +212,11 @@ def test_window():
 
         event, values = window_state
         print(event)
+        
+        # Handle emulator radio button changes
+        if event in ("memu_emulator_toggle", "google_play_emulator_toggle"):
+            handle_emulator_selection(window, values)
+            
         if event == sg.WIN_CLOSED:
             break
     window.close()
