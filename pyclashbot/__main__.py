@@ -412,7 +412,7 @@ def record_fight_images():
             [255, 255, 255],
             [255, 255, 255],
             [255, 255, 255],
-            [55, 55, 55],
+            [1, 1, 1],
             [255, 255, 255],
         ]
         pixels = []
@@ -420,11 +420,16 @@ def record_fight_images():
             pixel = image[coord[1], coord[0]]
             pixels.append(pixel)
 
+        for p in pixels:print(p)
+
         for color, pixel in zip(colors, pixels):
             for i in range(3):
                 if abs(color[i] - pixel[i]) > 10:
                     return False
         return True
+    
+
+
     
     from pyclashbot.emulators.google_play import GooglePlayEmulatorController
     from pyclashbot.bot.recorder import save_image
@@ -433,7 +438,10 @@ def record_fight_images():
 
     while 1:
         image = emulator.screenshot()
+        image_size = image.shape
+        print('image size:', image_size)
         if not is_fight_image(image):
+            print('not fight image')
             continue
         save_image(image)
 
@@ -442,4 +450,3 @@ if __name__ == "__main__":
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
 
-    # record_fight_images()
