@@ -17,7 +17,6 @@ import re
 from pymemuc import PyMemucError
 
 from pyclashbot.emulators.base import BaseEmulatorController
-from typing import Literal
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 
 
@@ -98,6 +97,15 @@ class MemuScreenCapture:
                 time.sleep(0.1)
 
 
+def verify_memu_installation():
+    try:
+        PyMemuc()
+        return True
+    except:
+        pass
+    return False
+
+
 class MemuEmulatorController(BaseEmulatorController):
     def __init__(self, render_mode: str = "opengl"):
         """
@@ -106,6 +114,7 @@ class MemuEmulatorController(BaseEmulatorController):
         """
         init_start_time = time.time()
         self.pmc = PyMemuc()
+            
         self.config = self._read_config_data()
         self.render_mode = render_mode
 

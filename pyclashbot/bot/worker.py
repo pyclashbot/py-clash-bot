@@ -3,7 +3,7 @@ import time
 from pyclashbot.bot.states import StateHistory, state_tree, StateOrder
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
-from pyclashbot.emulators.memu import MemuEmulatorController
+from pyclashbot.emulators.memu import MemuEmulatorController,verify_memu_installation
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 
 
@@ -23,9 +23,21 @@ class WorkerThread(PausableThread):
         emulator = None
         if emulator_selection == "Google Play":
             # Set up Google Play emulator
-            emulator = GooglePlayEmulatorController()
-        
+            print('Creating google play emulator')
+            try:
+                emulator = GooglePlayEmulatorController()
+                print('Successfully created google play emulator')
+            except Exception as e:
+                print(f'Failed to create Google Play emulator: {e}')
+                self.logger.change_status(f"Failed to start Google Play. Verify its installation!")
+                return
+
         elif emulator_selection == "MEmu":
+            # Verifying MEmu emulator
+            if not verify_memu_installation():
+                self.logger.change_status('Memu is not installed! Please install it to use Memu Emulator Mode')
+                return
+           
             # Set up MEmu emulator
             render_mode = jobs.get("memu_render_mode", "opengl")
             emulator = MemuEmulatorController(render_mode)
