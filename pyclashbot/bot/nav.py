@@ -905,8 +905,6 @@ def check_if_on_path_of_legends_clash_main(emulator):
     return True
 
 
-
-
 def check_if_on_clash_main_menu(emulator) -> bool:
     """Checks if the user is on the clash main menu.
     Returns True if on main menu, False if not.
@@ -944,10 +942,18 @@ def check_if_on_clash_main_menu(emulator) -> bool:
         [155, 120, 81],
     ]
 
-    # print(f'Seen clash main pixels:')
-    # for p in pixels:
-        # print('\t',p[0], p[1], p[2])
-
+    # print("{:^15} | {:^15} | {:^15}".format("Seen", "Google", "Memu"))
+    # for seen_pixel, google_play_color, memu_color in zip(pixels, colors_1, colors_2):
+    #     seen_pixel =str(seen_pixel[0])+ ' '+ str(seen_pixel[1])+ ' '+ str(seen_pixel[2])
+    #     google_play_color = (
+    #         str(google_play_color[0]) + ' ' +
+    #         str(google_play_color[1]) + ' ' +
+    #         str(google_play_color[2])
+    #     )
+    #     memu_color = str(memu_color[0]) + ' ' + str(memu_color[1]) + ' ' + str(memu_color[2])
+    #     print(
+    #         "{:^15} | {:^15} | {:^15}".format(seen_pixel, google_play_color, memu_color)
+    #     )
 
     for colors in [colors_1, colors_2]:
         if all_pixels_are_equal(
