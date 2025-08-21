@@ -905,7 +905,6 @@ def check_if_on_path_of_legends_clash_main(emulator):
     return True
 
 
-import matplotlib.pyplot as plt
 
 
 def check_if_on_clash_main_menu(emulator) -> bool:
