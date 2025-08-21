@@ -53,7 +53,7 @@ def no_jobs_popup() -> None:
 
 
 def create_jobs_tab():
-    """Create the jobs tab layout."""
+    """Create the compact jobs tab layout."""
     return [
         [
             sg.Frame(
@@ -61,15 +61,15 @@ def create_jobs_tab():
                 title="Jobs",
                 expand_x=True,
                 expand_y=True,
-                border_width=1,
-                pad=5,
+                pad=(5, 3),
+                font=('Arial', 9, 'bold')
             )
         ],
     ]
 
 
 def create_emulator_tab():
-    """Create the emulator tab layout."""
+    """Create the compact emulator tab layout."""
     return [
         [build_emulator_choice()],
         [build_emulator_settings_tabs()],
@@ -78,13 +78,13 @@ def create_emulator_tab():
 
 
 def create_stats_tab():
-    """Create the stats tab layout."""
+    """Create the compact stats tab layout."""
     return [
         [
             sg.Column(
                 [[build_battle_stats()]],
                 expand_y=True,
-                pad=5,
+                pad=(3, 3),
             ),
             sg.Column(
                 [
@@ -93,7 +93,7 @@ def create_stats_tab():
                 ],
                 justification="right",
                 expand_y=True,
-                pad=5,
+                pad=(3, 3),
             ),
         ],
     ]
@@ -122,7 +122,7 @@ def create_main_tabs():
 
 
 def create_status_bar():
-    """Create the status bar layout."""
+    """Create compact status bar."""
     return [
         sg.Column(
             [
@@ -134,6 +134,7 @@ def create_status_bar():
                         disabled=True,
                         text_color="blue",
                         expand_x=True,
+                        font=('Arial', 9),
                         tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
                     ),
                 ],
@@ -144,20 +145,20 @@ def create_status_bar():
 
 
 def create_control_buttons():
-    """Create the start/stop control buttons."""
+    """Create compact control buttons."""
     return [
         sg.Button(
             "Start",
-            button_color="Lime Green",
-            border_width=3,
+            button_color=("white", "green"),
             size=(10, 1),
+            font=('Arial', 9, 'bold')
         ),
         sg.Button(
             "Stop",
             disabled=True,
-            button_color="Red",
-            border_width=2,
+            button_color=("white", "red"),
             size=(10, 1),
+            font=('Arial', 9, 'bold')
         ),
     ]
 
@@ -192,7 +193,7 @@ disable_keys = DISABLE_KEYS
 
 
 def create_window() -> Window:
-    """Method for creating the main gui window"""
+    """Method for creating the compact main gui window"""
     icon_path = "pixel-pycb.ico"
     if not path.isfile(path=icon_path):
         icon_path = path.join("..\\..\\..\\assets\\", icon_path)
@@ -200,6 +201,7 @@ def create_window() -> Window:
         title=f"py-clash-bot | {__version__}",
         layout=main_layout,
         icon=icon_path,
+        resizable=False
     )
 
 
