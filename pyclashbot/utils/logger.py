@@ -10,8 +10,6 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import exists, expandvars, getmtime, join
 
-from pyclashbot.memu.configure import EMULATOR_NAME, get_vm_configuration
-from pyclashbot.memu.pmc import get_vm_index
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.versioning import __version__
 
@@ -65,12 +63,12 @@ def initalize_pylogging() -> None:
         pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
     )
 
-    vm_index = get_vm_index(EMULATOR_NAME)
+    # vm_index = get_vm_index(EMULATOR_NAME)
 
-    logging.info(
-        "VM Configuration: \n%s",
-        pprint.pformat(get_vm_configuration(vm_index), indent=4),
-    )
+    # logging.info(
+    #     "VM Configuration: \n%s",
+    #     pprint.pformat(get_vm_configuration(vm_index), indent=4),
+    # )
     compress_logs()
 
 
@@ -107,11 +105,10 @@ class Logger:
         self._1v1_fights = 0
         self._2v2_fights = 0
         self.trophy_road_1v1_fights = 0
-        self.path_of_legends_1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
         self.card_randomizations = 0
-        self.winrate: str = "00.0%"
+        self.winrate: str = "0%"
 
         # job stats
         self.battlepass_collects = 0
@@ -131,7 +128,6 @@ class Logger:
 
         # account stuff
         self.current_account = -1
-        self.account_switches = 0
         self.account_index_history = []
         self.account2clan = {}
 
@@ -164,33 +160,17 @@ class Logger:
                 "wins": self.wins,
                 "losses": self.losses,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
-                "path_of_legends_1v1_fights": self.path_of_legends_1v1_fights,
-                "2v2_fights": self._2v2_fights,
-                "war_fights": self.war_fights,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
                 # collection stats
                 "war_chest_collects": self.war_chest_collects,
-                "chests_unlocked": self.chests_unlocked,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
-                "shop_offer_collections": self.shop_offer_collections,
-                "battlepass_collects": self.battlepass_collects,
-                "level_up_chest_collects": self.level_up_chest_collects,
-                "bannerbox_collects": self.bannerbox_collects,
-                "daily_rewards": self.daily_rewards,
-                "season_shop_buys": self.season_shop_buys,
-                "trophy_road_reward_collections": self.trophy_road_reward_collections,
-                "magic_item_buys": self.magic_item_buys,
                 # card stats
                 "upgrades": self.cards_upgraded,
-                "requests": self.requests,
-                "donates": self.donates,
                 "cards_played": self.cards_played,
                 # bot stats
                 "restarts_after_failure": self.restarts_after_failure,
                 "current_status": self.current_status,
-                # account stuff
-                "account_switches": self.account_switches,
             }
 
     def get_stats(self):
@@ -287,36 +267,11 @@ class Logger:
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1
 
-    def increment_path_of_legends_fights(self):
-        self.path_of_legends_1v1_fights += 1
-
     def increment_trophy_road_reward_collects(self):
         self.trophy_road_reward_collections += 1
 
     def pick_lowest_fight_type_count(self, mode2toggle):
-        _2v2_fights = self._2v2_fights
-        trophy_road_1v1_fights = self.trophy_road_1v1_fights
-        path_of_legends_1v1_fights = self.path_of_legends_1v1_fights
-
-        mode2count = {}
-
-        if mode2toggle["2v2"]:
-            mode2count["2v2"] = _2v2_fights
-        if mode2toggle["trophy_road"]:
-            mode2count["trophy_road"] = trophy_road_1v1_fights
-        if mode2toggle["path_of_legends"]:
-            mode2count["path_of_legends"] = path_of_legends_1v1_fights
-
-        print("{:^15} : {:^15}".format("mode", "count"))
-        for mode, count in mode2count.items():
-            print(f"{mode:^15} : {count:^15}")
-
-        # if they're all zero, return a random one
-        if all(count == 0 for count in mode2count.values()):
-            return random.choice(list(mode2count.keys()))
-
-        lowest_fight_type = min(mode2count, key=mode2count.get)
-        return lowest_fight_type
+        return "path_of_legends"
 
     def is_in_clan(self):
         if self.current_account in self.account2clan:
@@ -334,17 +289,17 @@ class Logger:
         wins = self.wins
         losses = self.losses
 
+        if wins == 0 and losses == 0:
+            return "0%"
+
         if wins != 0 and losses == 0:
             return "100%"
 
         if wins == 0:
-            return "00.0%"
+            return "0%"
 
-        if losses == 0:
-            return "100%"
-
-        ratio = str(100 * (wins / (wins + losses)))[:4] + "%"
-        return ratio
+        win_percentage = round(100 * (wins / (wins + losses)))
+        return f"{win_percentage}%"
 
     @_updates_gui
     def set_current_state(self, state_to_set):
@@ -423,11 +378,6 @@ class Logger:
     def add_card_randomization(self):
         """Incremenet card_randomizations counter"""
         self.card_randomizations += 1
-
-    @_updates_gui
-    def increment_account_switches(self):
-        """Incremenet account_switches counter"""
-        self.account_switches += 1
 
     @_updates_gui
     def increment_2v2_fights(self) -> None:

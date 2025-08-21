@@ -14,7 +14,6 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
@@ -30,7 +29,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
             "Detected Path of Legends, attempting to navigate back to Trophy Road...",
         )
         # Click on the specified coordinates to attempt to switch views.
-        click(vm_index, 277, 400)
+        emulator.click(277, 400)
         time.sleep(2)  # Wait for the UI to possibly update.
 
         # Re-check if successfully navigated back to Trophy Road.
@@ -58,7 +57,7 @@ def collect_trophy_road_rewards_state(vm_index: int, logger: Logger, next_state:
                 "Detected Path of Legends, attempting to navigate back to Trophy Road...",
             )
             # Click on the specified coordinates to attempt to switch views.
-            click(vm_index, 277, 400)
+            emulator.click(277, 400)
             time.sleep(2)  # Wait for the UI to possibly update.
 
             # Re-check if successfully navigated back to Trophy Road.
@@ -127,8 +126,10 @@ def collect_trophy_road_rewards(vm_index: int, logger: Logger):
 
     """
     # if not on main return False
-    if not check_if_on_clash_main_menu(vm_index):
-        logger.change_status("Not on main to start collect_trophy_road_rewards()! Returning False")
+    if not check_if_on_clash_main_menu(emulator):
+        logger.change_status(
+            "Not on main to start collect_trophy_road_rewards()! Returning False"
+        )
         return False
 
     deadspace_coord = [19, 502]
@@ -137,9 +138,9 @@ def collect_trophy_road_rewards(vm_index: int, logger: Logger):
         timeout = 30  # s
         start_time = time.time()
         while time.time() - start_time < timeout:
-            if check_if_on_clash_main_menu(vm_index):
+            if check_if_on_clash_main_menu(emulator):
                 return True
-            click(vm_index, deadspace_coord[0], deadspace_coord[1])
+            emulator.click(deadspace_coord[0], deadspace_coord[1])
             time.sleep(1)
         return False
 
@@ -150,11 +151,11 @@ def collect_trophy_road_rewards(vm_index: int, logger: Logger):
         # if we got a button
         if coord is not None:
             # collect it
-            click(vm_index, coord[0], coord[1])
+            emulator.click(coord[0], coord[1])
             # handle strikes appearing
             time.sleep(1)
             if strikes_detected(vm_index):
-                click(vm_index, 210, 580)
+                emulator.click(210, 580)
                 time.sleep(1)
 
             # back to main for next loop
@@ -176,20 +177,20 @@ def collect_trophy_road_rewards(vm_index: int, logger: Logger):
 
         # if left
         if lrn == "left":
-            click(vm_index, 170, 337)
+            emulator.click(170, 337)
             # handle strikes appearing
             time.sleep(1)
             if strikes_detected(vm_index):
-                click(vm_index, 210, 580)
+                emulator.click(210, 580)
                 time.sleep(1)
 
         # else right
         else:
-            click(vm_index, 307, 337)
+            emulator.click(307, 337)
             # handle strikes appearing
             time.sleep(1)
             if strikes_detected(vm_index):
-                click(vm_index, 210, 580)
+                emulator.click(210, 580)
                 time.sleep(1)
 
         # back to main
@@ -204,13 +205,15 @@ def collect_trophy_road_rewards(vm_index: int, logger: Logger):
         logger.change_status("Attempting to collect another reward!")
 
         # Open the Trophy Road rewards menu.
-        click(vm_index, 210, 250)
+        emulator.click(210, 250)
         time.sleep(2)  # Wait for the menu to potentially open.
         if not check_if_on_trophy_road_rewards_menu(vm_index):
             logger.change_status("Failed to enter trophy road menu. Returning False")
             return False
 
-        if specific_coord_click_claim_button(vm_index) or pixel_coord_click_claim_button(vm_index):
+        if specific_coord_click_claim_button(
+            vm_index
+        ) or pixel_coord_click_claim_button(vm_index):
             continue
 
         break
@@ -241,14 +244,18 @@ def find_collect_button(vm_index):
     # Check the left position for expected colors.
     left_pixel_color = iar[left_position[1]][left_position[0]]
     # print('left_pixel_color',left_pixel_color)
-    if any(pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors):
+    if any(
+        pixel_is_equal(left_pixel_color, color, tol=35) for color in expected_colors
+    ):
         # Return "left" if a matching color is found at the left position.
         return "left"
 
     # Check the right position for expected colors.
     right_pixel_color = iar[right_position[1]][right_position[0]]
     print("right_pixel_color", right_pixel_color)
-    if any(pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors):
+    if any(
+        pixel_is_equal(right_pixel_color, color, tol=35) for color in expected_colors
+    ):
         # Return "right" if a matching color is found at the right position.
         return "right"
 

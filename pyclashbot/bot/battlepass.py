@@ -10,7 +10,6 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up_a_little
 
 
 def collect_battlepass_state(vm_index, logger, next_state):
@@ -95,7 +94,7 @@ def collect_battlepass(vm_index, logger) -> bool:
     time.sleep(10)
 
     # if not on clash main, return false
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status("Not on clash main after claiming battlepass rewards")
         return False
 
@@ -106,7 +105,7 @@ def collect_1_battlepass_reward(vm_index, logger):
     logger.change_status("Collecting a battlepass reward")
 
     # open battlepass
-    click(vm_index, 341, 123)
+    emulator.click(341, 123)
     time.sleep(5)
 
     # if there isnt a claim rewards button, click more rewards button
@@ -122,7 +121,7 @@ def collect_1_battlepass_reward(vm_index, logger):
             logger.change_status(
                 "No claim rewards button, clicking more rewards button",
             )
-            click(vm_index, 70, 120)
+            emulator.click(70, 120)
             time.sleep(3)
             continue
 
@@ -150,8 +149,7 @@ def collect_1_battlepass_reward(vm_index, logger):
 
         # claim the reward
         logger.change_status('Clicking "Claim Rewards" button')
-        click(
-            vm_index,
+        emulator.click(
             claim_rewards_coord[0],
             claim_rewards_coord[1],
             clicks=3,
@@ -163,14 +161,14 @@ def collect_1_battlepass_reward(vm_index, logger):
         logger.log("Skipping thru this battlepass reward")
         while not check_if_on_battlepass_page(vm_index):
             logger.log("Skipping thru this battlepass reward")
-            click(vm_index, 404, 33)
-        click(vm_index, 404, 33, clicks=5, interval=0.5)
+            emulator.click(404, 33)
+        emulator.click(404, 33, clicks=5, interval=0.5)
 
         logger.log("Collected 1 battlepass reward")
         logger.increment_battlepass_collects()
 
         # click the OK button to return to clash main
-        click(vm_index, 206, 594)
+        emulator.click(206, 594)
         time.sleep(3)
 
         return True

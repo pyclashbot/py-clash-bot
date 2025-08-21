@@ -16,7 +16,9 @@ if WIN32:
     )
 
     ST_INFO = STARTUPINFO()  # pyright: ignore [reportConstantRedefinition]
-    ST_INFO.dwFlags |= STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | REALTIME_PRIORITY_CLASS
+    ST_INFO.dwFlags |= (
+        STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | REALTIME_PRIORITY_CLASS
+    )
     ST_INFO.wShowWindow = SW_HIDE
     CR_FLAGS = CREATE_NO_WINDOW
     subprocess_flags = {

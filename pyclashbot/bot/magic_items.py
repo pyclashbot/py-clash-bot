@@ -9,13 +9,12 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixels_match_colors
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 
 def spend_magic_items_state(vm_index: int, logger: Logger, next_state: str) -> str:
     # if not on clash main, return False
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         return "restart"
 
     if spend_magic_items(vm_index, logger) is False:
@@ -23,7 +22,7 @@ def spend_magic_items_state(vm_index: int, logger: Logger, next_state: str) -> s
 
     # return to clash main
     print("Returning to clash main after spending magic items")
-    click(vm_index, 243, 600)
+    emulator.click(243, 600)
     time.sleep(3)
 
     # wait for main
@@ -45,7 +44,7 @@ def spend_magic_items(vm_index: int, logger: Logger) -> bool:
     # select magic items tab
     magic_items_tab_coords = (180, 110)
     logger.log("Clicking magic items tab")
-    click(vm_index, *magic_items_tab_coords)
+    emulator.click(*magic_items_tab_coords)
     time.sleep(1)
 
     # spend currency until it doesnt work anymore
@@ -56,11 +55,15 @@ def spend_magic_items(vm_index: int, logger: Logger) -> bool:
         3: "legendary",
     }
     for reward_index in [0, 1, 2, 3]:
-        logger.change_status(f"Spending magic item type: {reward_index2name[reward_index]}...")
+        logger.change_status(
+            f"Spending magic item type: {reward_index2name[reward_index]}..."
+        )
         while spend_rewards(vm_index, logger, reward_index) is True:
             logger.change_status("Successfully spent magic items. Trying again...")
             logger.increment_magic_item_buys()
-        logger.change_status(f"No more magic item type: {reward_index2name[reward_index]} to spend")
+        logger.change_status(
+            f"No more magic item type: {reward_index2name[reward_index]} to spend"
+        )
     logger.change_status("Done spending magic item currencies")
 
     return True
@@ -74,7 +77,7 @@ def exit_spend_reward_popup(vm_index) -> bool:
         if time.time() - start_time > timeout:
             return False
 
-        click(vm_index, *deadspace)
+        emulator.click(*deadspace)
         time.sleep(1)
 
     return True
@@ -89,7 +92,7 @@ def spend_rewards(vm_index, logger, reward_index) -> bool:
         2: (300, 300),
         3: (100, 400),
     }
-    click(vm_index, *reward_index2coord[reward_index])
+    emulator.click(*reward_index2coord[reward_index])
     time.sleep(1)
 
     # if the use button doesn't pop up, that mean's we're out of rewards to spend
@@ -101,19 +104,19 @@ def spend_rewards(vm_index, logger, reward_index) -> bool:
     # click the use button
     print("Clicking use currency button")
     use_button_coord = (206, 438)
-    click(vm_index, *use_button_coord)
+    emulator.click(*use_button_coord)
     time.sleep(1)
 
     # click the first card to use it on
     print("Using it on the first card")
     first_card_coord = (80, 200)
-    click(vm_index, *first_card_coord)
+    emulator.click(*first_card_coord)
     time.sleep(1)
 
     # spend the currency
     print("Clicking confirm spend {amount} currency")
     spend_currency_coord = (200, 430)
-    click(vm_index, *spend_currency_coord)
+    emulator.click(*spend_currency_coord)
 
     # click deadspace
     print("Clicking deadspace until we get back to the collection page")
@@ -123,7 +126,7 @@ def spend_rewards(vm_index, logger, reward_index) -> bool:
 
 
 def check_for_use_button(vm_index) -> bool:
-    iar = screenshot(vm_index)
+    iar = emulator.screenshot()
     pixels = [
         iar[428][188],
         iar[447][198],

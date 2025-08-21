@@ -9,7 +9,6 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot, scroll
 from pyclashbot.utils.logger import Logger
 
 
@@ -50,7 +49,7 @@ def check_if_can_collect_season_shop_offers(vm_index: int) -> bool:
 def click_random_season_shop_offer(vm_index):
     x = random.randint(66, 354)
     y = random.randint(230, 512)
-    click(vm_index, x, y)
+    emulator.click(x, y)
 
 
 def check_for_purchase_confirmation_page(vm_index) -> bool:
@@ -78,23 +77,23 @@ def check_for_purchase_confirmation_page(vm_index) -> bool:
 
 
 def click_buy_season_shop_offer(vm_index):
-    click(vm_index, 207, 425)
+    emulator.click(207, 425)
 
 
 def season_shop_deadspace_click(vm_index):
-    click(vm_index, 195, 91)
+    emulator.click(195, 91)
 
 
 def close_season_shop_page(vm_index):
     for _ in range(5):
-        click(vm_index, 361, 41)
+        emulator.click(361, 41)
 
 
 def buy_season_shop_offers(vm_index, logger: Logger):
     logger.change_status("Collecting season shop offers!")
 
     # open shop
-    click(vm_index, 328, 187)
+    emulator.click(328, 187)
     time.sleep(2)
 
     # while we have currency, keep buying
@@ -131,11 +130,11 @@ def buy_season_shop_offers(vm_index, logger: Logger):
     close_season_shop_page(vm_index)
 
     # get back to clash main
-    click(vm_index, 182, 608)
+    emulator.click(182, 608)
     time.sleep(3)
 
     # if not on main by the end, return 'restart'
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main after buying season shop offers!")
         return False
 
@@ -145,7 +144,7 @@ def buy_season_shop_offers(vm_index, logger: Logger):
 
 def get_to_clash_main_from_event_page(vm_index, logger: Logger) -> bool:
     cr_main_coord = (175, 600)
-    click(vm_index, *cr_main_coord)
+    emulator.click(*cr_main_coord)
     time.sleep(3)
 
     return wait_for_clash_main_menu(vm_index, logger)
@@ -153,7 +152,7 @@ def get_to_clash_main_from_event_page(vm_index, logger: Logger) -> bool:
 
 def collect_season_shop_offers_state(vm_index: int, logger: Logger, next_state: str):
     # if not on main, return 'restart'
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main for collect_season_shop_offers_state()")
 
     # get to events tab

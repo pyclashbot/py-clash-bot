@@ -1,9 +1,10 @@
 import time
 
-from pyclashbot.bot.states import StateHistory, state_tree
-from pyclashbot.memu.launcher import get_vm
+from pyclashbot.bot.states import StateHistory, state_tree, StateOrder
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
+from pyclashbot.emulators.memu import MemuEmulatorController,verify_memu_installation
+from pyclashbot.emulators.google_play import GooglePlayEmulatorController,verify_adb
 
 
 class WorkerThread(PausableThread):
@@ -13,28 +14,60 @@ class WorkerThread(PausableThread):
         self.in_a_clan = False
 
     def run(self) -> None:
+        print(f"Workerthread run()...")
         # parse render mode out of jobs
         jobs = self.args  # parse thread args
-        render_mode = "opengl"
-        if jobs["directx_toggle"] is True:
-            render_mode = "directx"
+        emulator_selection = jobs.get("emulator", "memu")
 
+        # set up the emulator of choice
+        emulator = None
+        if emulator_selection == "Google Play":
+            # Set up Google Play emulator
+            print('Creating google play emulator')
+
+            #verify adb is good (necessary for google play)
+            if not verify_adb():
+                self.logger.change_status('ADB is not installed or not working! Please install it to use Google Play Emulator Mode')
+                return
+
+            try:
+                emulator = GooglePlayEmulatorController()
+                print('Successfully created google play emulator')
+            except Exception as e:
+                print(f'Failed to create Google Play emulator: {e}')
+                self.logger.change_status(f"Failed to start Google Play. Verify its installation!")
+                return
+
+        elif emulator_selection == "MEmu":
+            # Verifying MEmu emulator
+            if not verify_memu_installation():
+                self.logger.change_status('Memu is not installed! Please install it to use Memu Emulator Mode')
+                return
+           
+            # Set up MEmu emulator
+            render_mode = jobs.get("memu_render_mode", "opengl")
+            emulator = MemuEmulatorController(render_mode)
+
+        # handle bad emulator selection
+        if emulator is None:
+            print(
+                f"[!] Fatal error: Emulator {emulator_selection} is not supported!\nKilling worker thread..."
+            )
+            return None
+
+        # run state tree loop with that emulator
         try:
-            # init start state
+
             state = "start"
-
-            # init state manager object
             state_history = StateHistory(self.logger)
+            state_order = StateOrder()
 
-            # init the vm
-            vm_index = get_vm(self.logger, render_mode=render_mode)
-
-            # loop until shutdown flag is set
             while not self.shutdown_flag.is_set():
-                # code to run
-                state: str | tuple[None, None] = state_tree(vm_index, self.logger, state, jobs, state_history)
+                state = state_tree(
+                    emulator, self.logger, state, jobs, state_history, state_order
+                )
                 while self.pause_flag.is_set():
-                    time.sleep(0.1)  # sleep for 100ms until pause flag is unset
+                    time.sleep(0.33)
 
         except ThreadKilled:
             # normal shutdown
@@ -42,5 +75,5 @@ class WorkerThread(PausableThread):
 
         except Exception as err:  # pylint: disable=broad-except
             # we don't want the thread to crash the interface so we catch all exceptions and log
-            # raise e
+            # raise exception to be handled by the caller
             self.logger.error(str(err))

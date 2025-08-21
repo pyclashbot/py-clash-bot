@@ -11,20 +11,14 @@ from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
-from pyclashbot.interface.joblist import no_jobs_popup
+from pyclashbot.interface.layout import no_jobs_popup
 from pyclashbot.interface.layout import create_window
-from pyclashbot.memu.memu_closer import close_everything_memu
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
 
 initalize_pylogging()
-
-
-TODO = """
--fix donate image rec (its slow and stupid)
-"""
 
 
 def read_window(
@@ -61,61 +55,40 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         A dictionary of job toggles and increments based on the values of the GUI window.
 
     """
-    random_account_switch_list = make_random_account_switching_dict(
-        int(values["account_switching_slider"]),
-    )
-    print("random_account_switch_list: ", random_account_switch_list)
 
     jobs_dictionary: dict[str, str | int] = {
         # job toggles
-        "open_chests_user_toggle": values["open_chests_user_toggle"],
-        "request_user_toggle": values["request_user_toggle"],
-        "donate_toggle": values["donate_toggle"],
-        "free_donate_toggle": values["free_donate_toggle"],
         "card_mastery_user_toggle": values["card_mastery_user_toggle"],
-        "free_offer_user_toggle": values["free_offer_user_toggle"],
-        "gold_offer_user_toggle": values["gold_offer_user_toggle"],
         "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
-        "path_of_legends_1v1_battle_user_toggle": values["path_of_legends_1v1_user_toggle"],
-        "2v2_battle_user_toggle": values["2v2_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
-        "war_user_toggle": values["war_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
         "deck_number_selection": values["deck_number_selection"],
-        "open_bannerbox_user_toggle": values["open_bannerbox_user_toggle"],
-        "daily_rewards_user_toggle": values["daily_rewards_user_toggle"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
-        "skip_fight_if_full_chests_user_toggle": values["skip_fight_if_full_chests_user_toggle"],
-        "battlepass_collect_user_toggle": values["open_battlepass_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
-        "level_up_chest_user_toggle": values["level_up_chest_user_toggle"],
-        "trophy_road_rewards_user_toggle": values["trophy_road_rewards_user_toggle"],
-        "magic_items_user_toggle": values["magic_items_user_toggle"],
-        # "upgrade_all_cards_user_toggle": values["upgrade_all_cards_user_toggle"],
-        "season_shop_buys_user_toggle": values["season_shop_buys_user_toggle"],
-        # account switching input info
-        "account_switching_toggle": values["account_switching_toggle"],
-        "account_switch_count": int(values["account_switching_slider"]),
-        # memu settings
-        "opengl_toggle": values["opengl_toggle"],
-        "directx_toggle": values["directx_toggle"],
     }
 
+    # recording settings
+    if values["record_fights_toggle"]:
+        jobs_dictionary["record_fights_toggle"] = values["record_fights_toggle"]
+
+    # memu settings
+    if values["opengl_toggle"]:
+        jobs_dictionary["memu_render_mode"] = "opengl"
+    if values["directx_toggle"]:
+        jobs_dictionary["memu_render_mode"] = "directx"
+
+    # emulator settings
+    if values["google_play_emulator_toggle"]:
+        jobs_dictionary["emulator"] = "Google Play"
+    if values["memu_emulator_toggle"]:
+        jobs_dictionary["emulator"] = "MEmu"
+
+    # compile google emulator settings into
+    # a google_emulator_render_settings dict
+    google_emulator_render_settings = {}
+    google_emulator_render_inputs2values = {}
+
     return jobs_dictionary
-
-
-def make_random_account_switching_dict(count):
-    old_list = []
-    for i in range(count):
-        old_list.append(i)
-
-    new_list = []
-    while len(new_list) < len(old_list):
-        random_choice = random.choice(old_list)
-        if random_choice not in new_list:
-            new_list.append(random_choice)
-
-    return new_list
 
 
 def check_for_invalid_job_increment_input(job_dictionary):
@@ -133,8 +106,12 @@ def check_for_invalid_job_increment_input(job_dictionary):
     """
     items = job_dictionary.items()
 
+    ignore_keys = [
+        "emulator",
+    ]
+
     for key, value in items:
-        if key == "random_account_switch_list":
+        if key in ignore_keys:
             continue
 
         # if its a bool then its a good type input
@@ -207,7 +184,9 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
                 if key in list(window.key_dict.keys()):
                     window[key].update(settings[key])  # type: ignore  # noqa: PGH003
                 else:
-                    print(f"This key {key} appears in saved settings, but not the active window.")
+                    print(
+                        f"This key {key} appears in saved settings, but not the active window."
+                    )
         window.refresh()
 
 
@@ -235,7 +214,6 @@ def show_invalid_job_increment_input_popup(key) -> None:
         "deck_randomization_increment_user_input": "Randomize Deck Increment",
         "war_attack_increment_user_input": "War Attack Increment",
         "battlepass_collect_increment_user_input": "battlepass_collect_increment_user_input",
-        "account_switching_increment_user_input": "Account Switching Increment",
     }
 
     # Get the job name corresponding to the given key.
@@ -257,20 +235,8 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     returns:
         None
     """
-    # print window layout
-    window["Stats"].select()
-
     # make job dictionary
     job_dictionary: dict[str, str | int] = make_job_dictionary(values)
-
-    if job_increment_input_check := check_for_invalid_job_increment_input(
-        job_dictionary,
-    ):
-        logger.log("Job increment inputs are invalid")
-        logger.log(f"Offensive increment input for key: [{job_increment_input_check}]")
-        show_invalid_job_increment_input_popup(job_increment_input_check)
-        logger.log("invalid job increment input")
-        return None
 
     # handle no jobs selected
     if check_for_no_jobs_in_job_dictionary(job_dictionary):
@@ -286,11 +252,9 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
 
     for key in disable_keys:
         if key in list(window.key_dict.keys()):
-            window[key].update(disabled=True)
-
-    # close existing memuc processes
-    print("Closing everything memu related...")
-    close_everything_memu()
+            target = window[key]
+            if target is not None:
+                target.update(disabled=True)
 
     # setup the main thread and start it
     print("Starting main thread")
@@ -300,7 +264,14 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     thread.start()
 
     # enable the stop button after the thread is started
-    window["Stop"].update(disabled=False)
+    stop_button = window["Stop"]
+    if stop_button is not None:
+        stop_button.update(disabled=False)
+
+    # focus the stats tab when start button is clicked
+    main_tabs = window["-MAIN_TABS-"]
+    if main_tabs is not None:
+        main_tabs.Widget.select(2)  # Select the stats tab (index 2)
 
     return thread
 
@@ -360,9 +331,13 @@ def handle_thread_finished(
     # enable the start button and configuration after the thread is stopped
     if thread is not None and not thread.is_alive():
         for key in disable_keys:
-            window[key].update(disabled=False)
+            target = window[key]
+            if target is not None:
+                target.update(disabled=False)
         if thread.logger.errored:
-            window["Stop"].update(disabled=True)
+            stop_button = window["Stop"]
+            if stop_button is not None:
+                stop_button.update(disabled=True)
         else:
             # reset the logger
             logger = Logger(timed=False)
@@ -404,12 +379,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
         elif event == "Stop" and thread is not None:
             stop_button_event(logger, window, thread)
 
-        elif event == "-Collapse-Button-":
-            window["-Collapse-Button-"].update(
-                text="Expand" if window["-tab-group-"].visible else "Collapse",
-            )
-            window["-tab-group-"].update(visible=not window["-tab-group-"].visible)
-
         # upon changing any user settings, save the current settings
         elif event in user_config_keys:
             save_current_settings(values)
@@ -419,12 +388,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
             webbrowser.open(
                 "https://github.com/pyclashbot/py-clash-bot/issues/new/choose",
             )
-
-        elif event == "upload-log":
-            if logger is not None:
-                url = logger.upload_log()
-                if url is not None:
-                    webbrowser.open(url)
 
         # on Help button event, open the help gui
         elif event == "discord":
@@ -439,6 +402,48 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
     if thread is not None:
         thread.shutdown(kill=True)
         thread.join()
+
+
+def record_fight_images():
+    def is_fight_image(image):
+        coords = [
+            [53, 517],
+            [60, 520],
+            [63, 523],
+            [70, 528],
+            [73, 530],
+        ]
+        colors = [
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [1, 1, 1],
+            [255, 255, 255],
+        ]
+        pixels = []
+        for coord in coords:
+            pixel = image[coord[1], coord[0]]
+            pixels.append(pixel)
+
+        for color, pixel in zip(colors, pixels):
+            for i in range(3):
+                if abs(color[i] - pixel[i]) > 10:
+                    return False
+        return True
+
+    from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+    from pyclashbot.bot.recorder import save_image
+
+    emulator = GooglePlayEmulatorController()
+
+    while 1:
+        image = emulator.screenshot()
+        image_size = image.shape
+        print("image size:", image_size)
+        if not is_fight_image(image):
+            print("not fight image")
+            continue
+        save_image(image)
 
 
 if __name__ == "__main__":

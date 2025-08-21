@@ -6,7 +6,6 @@ from os.path import abspath, dirname, join
 import cv2
 import numpy as np
 
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.image_handler import open_from_path
 
 
@@ -55,26 +54,22 @@ def get_first_location(
 
     """
     return next(
-        ([location[1], location[0]] if flip else location for location in locations if location is not None),
+        (
+            [location[1], location[0]] if flip else location
+            for location in locations
+            if location is not None
+        ),
         None,
     )
 
 
-def find_and_click_button_by_image(vm_index, folder_name) -> bool:
-    """Finds and clicks on a button based on image recognition.
-
-    Args:
-    ----
-        vm_index (int): The index of the virtual machine.
-        folder_name (str): The name of the folder containing reference images for the button.
-
-    """
+def find_and_click_button_by_image(emulator, folder_name) -> bool:
     # Create a list of reference image names from the folder
     names = make_reference_image_list(get_file_count(folder_name))
 
     # Find references in the screenshot
     locations = find_references(
-        screenshot(vm_index),
+        emulator.screenshot(),
         folder_name,
         names,
         tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
@@ -85,8 +80,9 @@ def find_and_click_button_by_image(vm_index, folder_name) -> bool:
 
     if coord is None:
         return False
+
     # Click on the detected button location
-    click(vm_index, coord[1], coord[0])
+    emulator.click(coord[1], coord[0])
     time.sleep(2)
     return True
 
@@ -209,7 +205,7 @@ def compare_images(
 
 
 def line_is_color(  # pylint: disable=too-many-arguments
-    vm_index,
+    emulator,
     x_1,
     y_1,
     x_2,
@@ -217,7 +213,7 @@ def line_is_color(  # pylint: disable=too-many-arguments
     color,
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(emulator.screenshot())
 
     for coordinate in coordinates:
         pixel = iar[coordinate[1]][coordinate[0]]
@@ -229,7 +225,7 @@ def line_is_color(  # pylint: disable=too-many-arguments
 
 
 def check_line_for_color(  # pylint: disable=too-many-arguments
-    vm_index,
+    emulator,
     x_1,
     y_1,
     x_2,
@@ -237,7 +233,7 @@ def check_line_for_color(  # pylint: disable=too-many-arguments
     color: tuple[int, int, int],
 ) -> bool:
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(emulator.screenshot())
 
     for coordinate in coordinates:
         pixel = iar[coordinate[1]][coordinate[0]]
@@ -248,10 +244,10 @@ def check_line_for_color(  # pylint: disable=too-many-arguments
     return False
 
 
-def check_region_for_color(vm_index, region, color):
+def check_region_for_color(emulator, region, color):
     left, top, width, height = region
 
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(emulator.screenshot())
 
     for x_index in range(left, left + width):
         for y_index in range(top, top + height):
@@ -263,10 +259,10 @@ def check_region_for_color(vm_index, region, color):
     return False
 
 
-def region_is_color(vm_index, region, color):
+def region_is_color(emulator, region, color):
     left, top, width, height = region
 
-    iar = np.asarray(screenshot(vm_index))
+    iar = np.asarray(emulator.screenshot())
 
     for x_index in range(left, left + width, 2):
         for y_index in range(top, top + height, 2):
@@ -303,7 +299,8 @@ def condense_coordinates(coords, distance_threshold=5):
     for coord in coords:
         x, y = coord
         if not any(
-            np.abs(existing_coord[0] - x) < distance_threshold and np.abs(existing_coord[1] - y) < distance_threshold
+            np.abs(existing_coord[0] - x) < distance_threshold
+            and np.abs(existing_coord[1] - y) < distance_threshold
             for existing_coord in condensed_coords
         ):
             condensed_coords.append(coord)
@@ -333,6 +330,17 @@ def pixel_is_equal(
     diff_g = abs(int(pix1[1]) - int(pix2[1]))
     diff_b = abs(int(pix1[2]) - int(pix2[2]))
     return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
+
+
+def all_pixels_are_equal(
+    pixels_1,
+    pixels_2,
+    tol: float,
+):
+    for pixel1, pixel2 in zip(pixels_1, pixels_2):
+        if not pixel_is_equal(pixel1, pixel2, tol):
+            return False
+    return True
 
 
 def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:

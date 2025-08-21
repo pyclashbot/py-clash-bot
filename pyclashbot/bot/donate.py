@@ -23,7 +23,6 @@ from pyclashbot.detection.image_rec import (
     make_reference_image_list,
     pixel_is_equal,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_up
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
@@ -73,7 +72,7 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
     donate_start_time = time.time()
 
     # if not on main: return
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    clash_main_check = check_if_on_clash_main_menu(emulator)
     if clash_main_check is not True:
         logger.change_status("Not on clash main for the start of request_state()")
         logger.log("These are the pixels the bot saw after failing to find clash main:")
@@ -102,7 +101,10 @@ def donate_cards_state(vm_index, logger: Logger, next_state, free_donate_toggle:
     print(f"Set Logger's in_a_clan value to: {logger.is_in_clan()}!")
 
     # run donate cards main
-    if donate_cards_main(vm_index, logger, only_free_donates=free_donate_toggle) is False:
+    if (
+        donate_cards_main(vm_index, logger, only_free_donates=free_donate_toggle)
+        is False
+    ):
         logger.log("Failure donating cards. Returning false")
         return "restart"
 
@@ -147,7 +149,7 @@ def donate_state_check_if_in_a_clan(
     logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, return
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
@@ -166,7 +168,7 @@ def donate_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",
@@ -183,7 +185,7 @@ def donate_cards_main(vm_index, logger: Logger, only_free_donates: bool) -> bool
         return False
 
     # click jump to bottom button
-    click(vm_index, 385, 488)
+    emulator.click(385, 488)
     time.sleep(2)
 
     logger.change_status("Starting donate sequence")
@@ -195,7 +197,7 @@ def donate_cards_main(vm_index, logger: Logger, only_free_donates: bool) -> bool
             claim_button_coord = find_claim_button(vm_index)
             if claim_button_coord:
                 logger.log("Claim button found. Claiming free gift from clan mate.")
-                click(vm_index, *claim_button_coord)
+                emulator.click(*claim_button_coord)
                 time.sleep(3)
             while find_and_click_donates(vm_index, logger, only_free_donates) is True:
                 logger.change_status("Found a donate button")
@@ -209,24 +211,24 @@ def donate_cards_main(vm_index, logger: Logger, only_free_donates: bool) -> bool
             time.sleep(1)
 
         # click the more requests button that may exist
-        click(vm_index, 48, 132)
+        emulator.click(48, 132)
         time.sleep(1)
 
         # click deadspace
-        click(vm_index, 10, 233)
+        emulator.click(10, 233)
         time.sleep(0.33)
 
     # get to clash main
     logger.change_status("Returning to clash main after donating")
-    click(vm_index, 175, 600, clicks=1)
+    emulator.click(175, 600, clicks=1)
     time.sleep(5)
 
     # handle geting stuck on trophy road screen
-    if check_for_trophy_reward_menu(vm_index):
-        handle_trophy_reward_menu(vm_index, logger)
+    if check_for_trophy_reward_menu(emulator):
+        handle_trophy_reward_menu(emulator, logger)
         time.sleep(2)
 
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.log("Failed to get to clash main after doanting! Retsrating")
         return False
     time.sleep(3)
@@ -255,7 +257,7 @@ def find_and_click_donates(vm_index, logger, only_free_donates):
                 return "restart"
 
             # do clicking, increment counter, toggle found_donates
-            click(vm_index, coord[0], coord[1])
+            emulator.click(coord[0], coord[1])
             logger.change_status("Donated a card!")
             found_donates = True
             logger.add_donate()
@@ -313,7 +315,11 @@ def find_donate_buttons(vm_index, only_free_donates):
                 continue
 
             # if only_free_donates is enabled, assure free_button_exists
-            if only_free_donates and coord is not None and not free_button_exists(vm_index, coord, region):
+            if (
+                only_free_donates
+                and coord is not None
+                and not free_button_exists(vm_index, coord, region)
+            ):
                 # if not free_button_exists retry
                 continue
 
@@ -386,7 +392,7 @@ def find_donate_button(image):
 def check_for_positive_donate_button_coords(vm_index, coord):
     # if pixel is too high, always return False
 
-    iar = screenshot(vm_index)
+    iar = emulator.screenshot()
 
     positive_color = [58, 228, 73]
 

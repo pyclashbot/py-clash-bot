@@ -8,32 +8,33 @@ from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click
 from pyclashbot.utils.logger import Logger
 
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
 
-def randomize_deck_state(vm_index: int, logger: Logger, next_state: str, deck_number: int = 2):
+def randomize_deck_state(
+    emulator, logger: Logger,  deck_number: int = 2
+):
     # increment job count
 
     # if not on clash main, return 'restart'
-    if check_if_on_clash_main_menu(vm_index) is False:
+    if check_if_on_clash_main_menu(emulator) is False:
         logger.change_status(
             "Not on clash main for randomize_deck_state(). Returning restart!",
         )
-        return "restart"
+        return False
 
     logger.change_status(f"Randomizing deck #{deck_number}")
-    if randomize_deck(vm_index, logger, deck_number) is False:
+    if randomize_deck(emulator, logger, deck_number) is False:
         logger.change_status("Failed somewhere in randomize_deck(). Returning restart!")
-        return "restart"
+        return False
 
-    return next_state
+    return True
 
 
-def check_for_underleveled_deck_options_location(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+def check_for_underleveled_deck_options_location(emulator):
+    iar = numpy.asarray(emulator.screenshot())
     pixels = [
         iar[431][346],
         iar[437][360],
@@ -51,9 +52,6 @@ def check_for_underleveled_deck_options_location(vm_index):
         [244, 174, 85],
     ]
 
-    # for p in pixels:
-    #     print(p)
-
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):
             return False
@@ -61,17 +59,17 @@ def check_for_underleveled_deck_options_location(vm_index):
     return True
 
 
-def click_delete_deck_button(vm_index):
-    if check_for_underleveled_delete_deck_button_location(vm_index):
+def click_delete_deck_button(emulator):
+    if check_for_underleveled_delete_deck_button_location(emulator):
         print("Detected underleveled delete deck button location. Clicking...")
-        click(vm_index, 297, 276)
+        emulator.click(297, 276)
 
     else:
-        click(vm_index, 291, 305)
+        emulator.click(291, 305)
 
 
-def check_for_underleveled_delete_deck_button_location(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+def check_for_underleveled_delete_deck_button_location(emulator):
+    iar = numpy.asarray(emulator.screenshot())
     pixels = [
         iar[266][257],
         iar[270][287],
@@ -91,9 +89,6 @@ def check_for_underleveled_delete_deck_button_location(vm_index):
         [69, 67, 252],
     ]
 
-    # for p in pixels:
-    #     print(p)
-
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):
             return False
@@ -101,8 +96,8 @@ def check_for_underleveled_delete_deck_button_location(vm_index):
     return True
 
 
-def check_for_randomize_deck_icon(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+def check_for_randomize_deck_icon(emulator):
+    iar = numpy.asarray(emulator.screenshot())
     pixels = [
         iar[219][260],
         iar[237][251],
@@ -122,8 +117,6 @@ def check_for_randomize_deck_icon(vm_index):
         [255, 255, 255],
     ]
 
-    # for p in pixels:
-    #     print(p)
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):
@@ -132,19 +125,17 @@ def check_for_randomize_deck_icon(vm_index):
     return True
 
 
-def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:  # noqa: N803
+def randomize_deck(emulator, logger: Logger, deckNo: int = 2) -> bool:  # noqa: N803
     start_time = time.time()
 
     differenceBetweenEachDeckX = 50  # noqa: N806
 
     # get to card page
-    if get_to_card_page_from_clash_main(vm_index, logger) is False:
+    if get_to_card_page_from_clash_main(emulator, logger) is False:
         logger.change_status("Failed to get to card page from main. Returning False")
         return False
 
-    # click on DECKS FIRST
-
-    click(vm_index, 125, 60)
+    emulator.click(125, 60)
     time.sleep(0.1)
 
     # click on the specified deck number
@@ -156,21 +147,21 @@ def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:  # n
     deck_x = 95 + differenceBetweenEachDeckX * (deckNo - 1)
 
     # Click on the selected deck
-    click(vm_index, deck_x, 107)
+    emulator.click(deck_x, 107)
     time.sleep(0.1)
 
-    click(vm_index, 53, 106)
+    emulator.click(53, 106)
     time.sleep(0.1)
 
-    click(vm_index, 125, 188)
+    emulator.click(125, 188)
     time.sleep(0.1)
 
     # # click random deck button
-    # click(vm_index, 130, 187)
+    # emulator.click( 130, 187)
     # time.sleep(0.1)
 
     # click OK
-    click(vm_index, 280, 390)
+    emulator.click(280, 390)
     time.sleep(0.1)
 
     # increment logger's deck randomization stats
@@ -178,11 +169,11 @@ def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:  # n
 
     # get to clash main
     logger.change_status("Returning to clash main")
-    click(vm_index, 248, 603)
+    emulator.click(248, 603)
     time.sleep(1)
 
     # if not on clash main, return false
-    if check_if_on_clash_main_menu(vm_index) is False:
+    if check_if_on_clash_main_menu(emulator) is False:
         logger.change_status(
             "Failed to get to clash main after randomizing deck. Returning False",
         )
@@ -196,20 +187,18 @@ def randomize_deck(vm_index: int, logger: Logger, deckNo: int = 2) -> bool:  # n
 
 import numpy
 
-from pyclashbot.memu.client import screenshot
 
-
-def wait_for_filled_deck(vm_index):
+def wait_for_filled_deck(emulator):
     timeout = 20  # s
     start_time = time.time()
     while time.time() - start_time < timeout:
-        if check_for_filled_deck(vm_index):
+        if check_for_filled_deck(emulator):
             return True
     return False
 
 
-def check_for_filled_deck(vm_index):
-    iar = numpy.asarray(screenshot(vm_index))
+def check_for_filled_deck(emulator):
+    iar = numpy.asarray(emulator.screenshot())
     pixels = [
         iar[144][168],
         iar[308][247],

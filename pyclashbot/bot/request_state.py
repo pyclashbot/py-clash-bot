@@ -19,12 +19,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import (
-    click,
-    screenshot,
-    scroll_down_in_request_page,
-    scroll_up_on_left_side_of_screen,
-)
+
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
@@ -81,7 +76,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
     logger.change_status(status="Doing request state!")
 
     # if not on main: return
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    clash_main_check = check_if_on_clash_main_menu(emulator)
     if clash_main_check is not True:
         logger.change_status("Not on clash main for the start of request_state()")
         # logger.log(
@@ -125,7 +120,7 @@ def request_state(vm_index, logger: Logger, next_state: str) -> str:
         logger.change_status(status="Can't request right now.")
 
     # click clash main icon
-    click(vm_index, 178, 593)
+    emulator.click(178, 593)
 
     # return to clash main
     wait_for_clash_main_menu(vm_index, logger, deadspace_click=False)
@@ -165,7 +160,7 @@ def count_scrolls_in_request_page(vm_index) -> int:
             return 5
 
     # close request screen with deadspace click
-    click(vm_index, 15, 300, clicks=3)
+    emulator.click(15, 300, clicks=3)
     time.sleep(0.1)
 
     # reopen request page
@@ -217,7 +212,7 @@ def request_state_check_if_in_a_clan(
     logger: Logger,
 ) -> bool | Literal["restart"]:
     # if not on clash main, reutnr
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(status="ERROR 385462623 Not on clash main menu")
         return "restart"
 
@@ -236,7 +231,7 @@ def request_state_check_if_in_a_clan(
         logger.change_status("Not in a clan, so can't request!")
 
     # click deadspace to leave
-    click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+    emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 87258301758939 Failure with wait_for_clash_main_menu",
@@ -260,7 +255,9 @@ def request_state_check_pixels_for_clan_flag(vm_index) -> bool:
 
     # if all the pixels are grey the its not in a clan
     grey = [51, 51, 51]
-    grey_count = sum([1 if pixel_is_equal(grey, pixel, tol=1) else 0 for pixel in pix_list])
+    grey_count = sum(
+        [1 if pixel_is_equal(grey, pixel, tol=1) else 0 for pixel in pix_list]
+    )
     grey_ratio = grey_count / len(pix_list)
     if grey_ratio > 0.75:
         return False
@@ -296,12 +293,12 @@ def click_random_requestable_card(vm_index) -> bool:
         return True
 
     # check pixels in the request card grid region
-    iar = screenshot(vm_index)
+    iar = emulator.screenshot()
     for coord in make_coord_list((69, 356), (213, 557)):
         pixel = iar[coord[1]][coord[0]]
         # if the pixel indicates requestable, click it, return True
         if is_valid_pixel(pixel):
-            click(vm_index, coord[0], coord[1])
+            emulator.click(coord[0], coord[1])
             return True
 
     # fail return
@@ -339,7 +336,10 @@ def do_request(vm_index, logger: Logger) -> bool:
     coord = None
     while coord is None:
         # Timeout check to avoid infinite loop
-        if time.time() - random_click_start_time > random_click_timeout or attempt_count > 6:
+        if (
+            time.time() - random_click_start_time > random_click_timeout
+            or attempt_count > 6
+        ):
             logger.change_status(
                 "Timeout or too many attempts while trying to click a random card for request",
             )
@@ -354,7 +354,9 @@ def do_request(vm_index, logger: Logger) -> bool:
             print("Failed to click an upgradable card.")
             click_tries += 1
             if click_tries > click_try_limit:
-                logger.change_status("Failed to click an upgradable card. too many times")
+                logger.change_status(
+                    "Failed to click an upgradable card. too many times"
+                )
                 return False
 
         time.sleep(3)
@@ -365,7 +367,7 @@ def do_request(vm_index, logger: Logger) -> bool:
 
     # Click the found request button
     logger.change_status(status="Clicking the request button")
-    click(vm_index, coord[0], coord[1])
+    emulator.click(coord[0], coord[1])
 
     # Update request statistics
     prev_requests = logger.get_requests()
@@ -498,7 +500,6 @@ def check_for_trade_cards_icon(vm_index) -> bool:
         [250, 253, 255],
         [43, 189, 253],
     ]
-    # for p in pixels:print(p)
     for i, c in enumerate(colors):
         if not pixel_is_equal(c, pixels[i], tol=10):
             return False

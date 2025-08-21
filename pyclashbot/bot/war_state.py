@@ -25,7 +25,6 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.memu.client import click, screenshot, scroll_down, scroll_up
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS = [
@@ -71,7 +70,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     logger.change_status(status="War state")
 
     # if not on clash main: return
-    clash_main_check = check_if_on_clash_main_menu(vm_index)
+    clash_main_check = check_if_on_clash_main_menu(emulator)
     if clash_main_check is not True:
         logger.change_status("Error 4848 Not on calshmain for start of war_state()")
         # logger.log(
@@ -115,15 +114,15 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     # handle locked war battle
     if find_battle_return == "locked":
-        click(vm_index, 175, 600)
+        emulator.click(175, 600)
 
         time.sleep(3)
 
-        if check_for_trophy_reward_menu(vm_index):
-            handle_trophy_reward_menu(vm_index, logger)
+        if check_for_trophy_reward_menu(emulator):
+            handle_trophy_reward_menu(emulator, logger)
             time.sleep(3)
 
-        if check_if_on_clash_main_menu(vm_index) is not True:
+        if check_if_on_clash_main_menu(emulator) is not True:
             logger.change_status("Failed to get to clash main after seeing locked war.")
             return "restart"
 
@@ -161,7 +160,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
     # start battle
     logger.change_status(status="Starting a war battle")
-    click(vm_index, START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
+    emulator.click(START_WAR_BATTLE_BUTTON_COORD[0], START_WAR_BATTLE_BUTTON_COORD[1])
     time.sleep(3)
     logger.add_war_fight()
 
@@ -178,7 +177,7 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
     time.sleep(POST_WAR_FIGHT_WAIT)
 
     # when battle end, leave battle
-    click(vm_index, LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
+    emulator.click(LEAVE_WAR_BATTLE_BUTTON_COORD[0], LEAVE_WAR_BATTLE_BUTTON_COORD[1])
 
     if wait_for_war_page(vm_index, logger) == "restart":
         logger.change_status(status="Error 5135 Waited too long for war page")
@@ -194,11 +193,11 @@ def war_state(vm_index: int, logger: Logger, next_state: str):
 
 
 def handle_edit_deck_page(vm_index):
-    click(vm_index, 216, 45)
+    emulator.click(216, 45)
 
 
 def handle_pre_war_battle_page(vm_index):
-    click(vm_index, 349, 154)
+    emulator.click(349, 154)
 
 
 def wait_for_war_page(vm_index, logger) -> str:
@@ -225,7 +224,7 @@ def wait_for_war_page(vm_index, logger) -> str:
             return "restart"
 
         # Click on the Clan menu button
-        click(vm_index, 279, 625)
+        emulator.click(279, 625)
         time.sleep(2)  # Wait for a second after clicking
 
     logger.log("Done waiting for war page")
@@ -248,12 +247,12 @@ def do_war_battle(vm_index, logger) -> Literal["restart", "good"]:
         logger.change_status(status="Doing a random war play")
 
         random_card_coord = random.choice(CARD_COORDS)
-        click(vm_index, random_card_coord[0], random_card_coord[1])
+        emulator.click(random_card_coord[0], random_card_coord[1])
         time.sleep(0.33)
 
         # click a random play coord
         random_play_coord = (random.randint(63, 205), random.randint(55, 455))
-        click(vm_index, random_play_coord[0], random_play_coord[1])
+        emulator.click(random_play_coord[0], random_play_coord[1])
         time.sleep(5)
 
     logger.change_status(status="Done with this war fight")
@@ -310,7 +309,7 @@ def check_if_in_war_battle(vm_index) -> bool:
     while time.time() - start_time < timeout:
         if check_if_in_war_battle2(vm_index):
             print("Using patch job for check_if_in_war_battle()")
-            click(vm_index, 200, 550)
+            emulator.click(200, 550)
             return False
 
         if not line_is_color(
@@ -355,12 +354,12 @@ def handle_make_deck(vm_index, logger: Logger) -> Literal["good deck", "made dec
     logger.change_status(status="Setting up a deck for this war match")
     # click edit deck button
     print("clicking edit deck button")
-    click(vm_index, EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
+    emulator.click(EDIT_WAR_DECK_BUTTON_COORD[0], EDIT_WAR_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # click random deck button
     print("clicking random deck button")
-    click(vm_index, RANDOM_DECK_BUTTON_COORD[0], RANDOM_DECK_BUTTON_COORD[1])
+    emulator.click(RANDOM_DECK_BUTTON_COORD[0], RANDOM_DECK_BUTTON_COORD[1])
     time.sleep(3)
 
     # close deck editor
@@ -416,7 +415,7 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
         if check_if_on_war_page(vm_index):
             coord = find_war_battle_icon(vm_index)
             if coord is None:
-                click(vm_index, *DEADSPACE_COORD)  # Click deadspace
+                emulator.click(*DEADSPACE_COORD)  # Click deadspace
                 # Adjust the range for probability
                 action_decision = random.randint(1, 10)
 
@@ -428,10 +427,10 @@ def find_and_click_war_battle_icon(vm_index, logger) -> Literal["restart", "good
 
                 time.sleep(2)  # Wait a bit before trying again
                 continue
-            click(vm_index, coord[0], coord[1])  # Click the found icon
+            emulator.click(coord[0], coord[1])  # Click the found icon
             return "good"
         # If not on the war page, perform actions to navigate there
-        click(vm_index, CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
+        emulator.click(CLAN_PAGE_ICON_COORD[0], CLAN_PAGE_ICON_COORD[1])
         time.sleep(2)
         if random.randint(0, 1) == 1:
             scroll_up(vm_index)
@@ -491,7 +490,7 @@ def war_state_check_if_in_a_clan(vm_index, logger: Logger):
     in_a_clan = war_state_check_pixels_for_clan_flag(vm_index)
 
     # click deadspace to leave
-    click(vm_index, 15, 300)
+    emulator.click(15, 300)
     if wait_for_clash_main_menu(vm_index, logger) is False:
         logger.change_status(
             status="Error 872356739 Failure with wait_for_clash_main_menu",

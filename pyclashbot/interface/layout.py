@@ -5,132 +5,119 @@ from os import path
 import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
 
-from pyclashbot.interface.joblist import jobs_checklist
-from pyclashbot.interface.stats import (
-    battle_stats,
-    bot_stats,
-    collection_stats,
+from pyclashbot.interface.builder import (
+    build_battle_stats,
+    build_bot_stats,
+    build_collection_stats,
+    build_data_settings,
+    build_emulator_choice,
+    build_emulator_settings_tabs,
+    build_google_play_settings,
+    build_jobs_section,
+    build_memu_settings,
 )
+from pyclashbot.interface.config import DISABLE_KEYS, USER_CONFIG_KEYS
 from pyclashbot.interface.theme import THEME
 from pyclashbot.utils.versioning import __version__
 
 sg.theme(THEME)
 
-jobs_frame = sg.Frame(
-    layout=jobs_checklist,
-    title="Jobs",
-    expand_x=False,
-    expand_y=True,
-    border_width=None,
-    pad=0,
-)
-account_switching_switching_frame = sg.Frame(
-    layout=[
+
+def no_jobs_popup() -> None:
+    """FreeSimpleGUI to popup when no jobs are selected."""
+    # Define the layout of the GUI
+    layout = [
         [
-            sg.Checkbox(
-                "Enabled",
-                key="account_switching_toggle",
-                default=False,
+            sg.Text(
+                "You must select at least one job!",
+                size=(25, 2),
+                justification="center",
             ),
         ],
-        [
-            sg.Slider(
-                range=(1, 3),
-                orientation="h",
-                key="account_switching_slider",
-                size=(10, 20),
-            ),
-        ],
-    ],
-    title="Account Switching",
-    expand_x=True,
-    pad=0,
-)
-memu_settings_frame = sg.Frame(
-    layout=[
-        [
-            sg.Radio(
-                enable_events=True,
-                text="OpenGL",
-                group_id="render_mode_radio",
-                default=True,
-                key="opengl_toggle",
-                pad=1,
-            ),
-        ],
-        [
-            sg.Radio(
-                enable_events=True,
-                text="DirectX",
-                group_id="render_mode_radio",
-                key="directx_toggle",
-                pad=1,
-            ),
-        ],
-    ],
-    title="Memu Settings",
-    expand_y=True,
-    expand_x=True,
-    pad=0,
-)
+        [sg.Button("Exit", size=(10, 1), pad=((150, 0), 3))],
+    ]
+
+    # Create the window
+    window = sg.Window("Critical Error!", layout)
+
+    # Event loop to process events and get user input
+    while True:
+        event, *_ = window.read()  # type: ignore  # noqa: PGH003
+
+        # Exit the program if the "Exit" button is clicked or window is closed
+        if event in (sg.WINDOW_CLOSED, "Exit"):
+            break
+
+    # Close the window
+    window.close()
 
 
-controls_layout = [
+# Build interface components from configuration
+jobs_checklist = build_jobs_section()
+emulator_choice_frame = build_emulator_choice()
+emulator_settings_tabs = build_emulator_settings_tabs()
+data_settings_frame = build_data_settings()
+
+
+# Jobs tab layout
+jobs_tab_layout = [
     [
-        sg.Frame(layout=[[jobs_frame]], title="", expand_y=True, border_width=0, pad=0),
         sg.Frame(
-            layout=[[memu_settings_frame], [account_switching_switching_frame]],
-            title="",
-            border_width=0,
-            pad=0,
+            layout=jobs_checklist,
+            title="Jobs",
             expand_x=True,
             expand_y=True,
-        ),
-    ]
+            border_width=1,
+            pad=5,
+        )
+    ],
 ]
 
+# Emulator tab layout
+emulator_tab_layout = [
+    [emulator_choice_frame],
+    [emulator_settings_tabs],
+    [data_settings_frame],
+]
+
+# Stats tab layout
 stats_tab_layout = [
     [
         sg.Column(
-            [
-                [
-                    sg.Frame(
-                        layout=battle_stats,
-                        title="Battle Stats",
-                        expand_y=False,
-                        expand_x=True,
-                        pad=0,
-                    ),
-                ],
-                [
-                    sg.Frame(
-                        layout=bot_stats,
-                        title="Bot Stats",
-                        expand_x=False,
-                        expand_y=True,
-                        pad=0,
-                    ),
-                ],
-            ],
+            [[build_battle_stats()]],
             expand_y=True,
-            pad=0,
+            pad=5,
         ),
         sg.Column(
             [
-                [
-                    sg.Frame(
-                        layout=collection_stats,
-                        title="Collection Stats",
-                        expand_y=True,
-                        pad=0,
-                    ),
-                ],
+                [build_collection_stats()],
+                [build_bot_stats()],
             ],
             justification="right",
             expand_y=True,
-            pad=0,
+            pad=5,
         ),
     ],
+]
+
+# Create main tab group
+controls_layout = [
+    [
+        sg.TabGroup(
+            [
+                [
+                    sg.Tab("Jobs", jobs_tab_layout, key="-JOBS_TAB-"),
+                    sg.Tab("Emulator", emulator_tab_layout, key="-EMULATOR_TAB-"),
+                    sg.Tab("Stats", stats_tab_layout, key="-STATS_TAB-"),
+                ]
+            ],
+            key="-MAIN_TABS-",
+            enable_events=True,
+            expand_x=True,
+            expand_y=True,
+            pad=0,
+        )
+    ]
 ]
 
 time_status_bar_layout = [
@@ -152,26 +139,21 @@ time_status_bar_layout = [
     ),
 ]
 
-
 main_layout = [
     [
-        sg.pin(
-            sg.Column(
+        sg.Column(
+            [
                 [
-                    [
-                        sg.TabGroup(
-                            layout=[
-                                [sg.Tab("Controls", controls_layout)],
-                                [sg.Tab("Stats", stats_tab_layout)],
-                            ],
-                            border_width=0,
-                            pad=0,
-                        ),
-                    ],
+                    sg.Frame(
+                        layout=controls_layout, title="", border_width=0, pad=0
+                    )
                 ],
-                key="-tab-group-",
-            ),
-        ),
+            ],
+            key="-stacked-section-",
+            expand_x=True,
+            expand_y=True,
+            pad=0,
+        )
     ],
     [
         sg.Button(
@@ -187,53 +169,15 @@ main_layout = [
             border_width=2,
             size=(10, 1),
         ),
-        sg.Button(
-            "Collapse",
-            key="-Collapse-Button-",
-            border_width=2,
-            size=(10, 1),
-        ),
+       
     ],
     [time_status_bar_layout],
 ]
 
 
-# a list of all the keys that contain user configuration
-user_config_keys = [
-    # job list controls keys
-    "open_chests_user_toggle",
-    "open_battlepass_user_toggle",
-    "request_user_toggle",
-    "donate_toggle",
-    "free_donate_toggle",
-    "card_mastery_user_toggle",
-    "disable_win_track_toggle",
-    "free_offer_user_toggle",
-    "gold_offer_user_toggle",
-    "trophy_road_1v1_user_toggle",
-    "path_of_legends_1v1_user_toggle",
-    "2v2_user_toggle",
-    "card_upgrade_user_toggle",
-    "war_user_toggle",
-    "random_decks_user_toggle",
-    "open_bannerbox_user_toggle",
-    "daily_rewards_user_toggle",
-    "random_plays_user_toggle",
-    "skip_fight_if_full_chests_user_toggle",
-    "trophy_road_rewards_user_toggle",
-    "upgrade_all_cards_user_toggle",
-    "season_shop_buys_user_toggle",
-    "magic_items_user_toggle",
-    # account switching stuff
-    "account_switching_toggle",
-    "account_switching_slider",
-    # MEmu settings
-    "opengl_toggle",
-    "directx_toggle",
-]
-
-# list of button and checkbox keys to disable when the bot is running
-disable_keys = [*user_config_keys, "Start"]
+# Configuration keys imported from config module
+user_config_keys = USER_CONFIG_KEYS
+disable_keys = DISABLE_KEYS
 
 
 def create_window() -> Window:
@@ -248,12 +192,31 @@ def create_window() -> Window:
     )
 
 
+def handle_emulator_selection(window: Window, values: dict) -> None:
+    """Handle emulator radio selection to switch tabs."""
+    if values.get("google_play_emulator_toggle"):
+        # Switch to Google Play tab
+        window["-EMULATOR_TABS-"].Widget.select(0)
+    elif values.get("memu_emulator_toggle"):
+        # Switch to Memu tab
+        window["-EMULATOR_TABS-"].Widget.select(1)
+
+
 def test_window():
     """Method for testing the window layout"""
     window = create_window()
     while True:
-        event, values = window.read()
+        window_state = window.read(timeout=100)
+        if window_state is None:
+            continue
+
+        event, values = window_state
         print(event)
+        
+        # Handle emulator radio button changes
+        if event in ("memu_emulator_toggle", "google_play_emulator_toggle"):
+            handle_emulator_selection(window, values)
+            
         if event == sg.WIN_CLOSED:
             break
     window.close()

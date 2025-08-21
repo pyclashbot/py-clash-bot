@@ -4,7 +4,6 @@ import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.memu.client import click, screenshot
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
@@ -13,7 +12,7 @@ CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 def collect_level_up_chest(vm_index, logger: Logger) -> bool:
     logger.change_status("Checking level up chest")
 
-    if check_if_on_clash_main_menu(vm_index) is not True:
+    if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(
             "Not on clash main for collect_level_up_chest(). Returning False",
         )
@@ -25,12 +24,12 @@ def collect_level_up_chest(vm_index, logger: Logger) -> bool:
 
     # click level up chest
     print("Clicking level up chest icon")
-    click(vm_index, 17, 16)
+    emulator.click(17, 16)
     time.sleep(2)
 
     # click the level up chest
     logger.change_status("Collecting this level up chest")
-    click(vm_index, 115, 125)
+    emulator.click(115, 125)
     time.sleep(2)
 
     # increment level up chest increments
@@ -39,14 +38,14 @@ def collect_level_up_chest(vm_index, logger: Logger) -> bool:
     # click deadspace until back on clash main
     timeout = 60  # s
     start_time = time.time()
-    while check_if_on_clash_main_menu(vm_index) is not True:
+    while check_if_on_clash_main_menu(emulator) is not True:
         # timeout check
         if time.time() - start_time > timeout:
             logger.change_status("Timed out waiting for level up chest to be collected")
             return False
 
         print("Clicking deadspace to skip thru rewards")
-        click(vm_index, CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
+        emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
         time.sleep(1)
 
     return True
@@ -82,7 +81,7 @@ def collect_level_up_chest_state(vm_index, logger, next_state):
     logger.change_status("Entered collect_level_up_chest_state()")
 
     print("Checking if on clash for this state")
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main for this state. Returning False")
         return "restart"
 
@@ -98,7 +97,7 @@ def collect_level_up_chest_state(vm_index, logger, next_state):
         return "restart"
 
     # if somehow not back on clash main after running this state, restart
-    if not check_if_on_clash_main_menu(vm_index):
+    if not check_if_on_clash_main_menu(emulator):
         logger.change_status(
             "Not on clash main after collect_level_up_chest_state(). Restarting...",
         )
