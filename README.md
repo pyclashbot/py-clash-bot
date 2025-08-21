@@ -57,17 +57,31 @@ The bot tracks detailed statistics across three categories:
 ### Prerequisites
 
 1. **Windows 10/11** operating system
-2. **MEmu Android Emulator** - Download from [MEmu Play](https://www.memuplay.com/)
+2. **Android Emulator** - Choose one of the following options:
+   - **MEmu Android Emulator** - Download from [MEmu Play](https://www.memuplay.com/) (Original method)
+   - **Google Play Games Emulator** - Download from [Android Developer](https://developer.android.com/games/playgames/emulator) (Cross-platform support)
 
 ### Setup Steps
+
+#### Option 1: MEmu Emulator (Original Method)
 
 1. **Install MEmu** - Download and install the latest version of MEmu
 2. **Download py-clash-bot** - Get the latest Windows installer from [releases](https://github.com/pyclashbot/py-clash-bot/releases/latest)
 3. **Install py-clash-bot** - Run the downloaded installer
 
+#### Option 2: Google Play Games Emulator (Cross-Platform)
+
+1. **Install Google Play Games Emulator** - Download and install from [here](https://developer.android.com/games/playgames/emulator)
+2. **Install ADB Package** - Download the ADB package from [here](https://developer.android.com/tools/releases/platform-tools)
+3. **Setup ADB Path** - Extract the ADB package and add it to your system PATH
+4. **Download py-clash-bot** - Get the latest Windows installer from [releases](https://github.com/pyclashbot/py-clash-bot/releases/latest)
+5. **Install py-clash-bot** - Run the downloaded installer
+
 ## 📖 Usage
 
 ### Initial Setup
+
+#### For MEmu Emulator
 
 1. **Launch py-clash-bot** - Use the desktop shortcut created during installation
 2. **Create Emulator** - Click "Start" to create a new MEmu emulator instance
@@ -75,6 +89,14 @@ The bot tracks detailed statistics across three categories:
 4. **Complete Tutorial** - Finish the in-game tutorial (takes ~30 seconds)
 5. **Account Login** - Sign in with your SuperCell ID or use a fresh account
 6. **Language Setting** - Ensure the game language is set to English
+
+#### For Google Play Games Emulator
+
+1. **Install Clash Royale** - Install and log into Clash Royale on the Google Play Games emulator
+2. **Complete Tutorial** - Finish the in-game tutorial and set the game language to English
+3. **Close Google Play** - Close all Google Play Games windows and applications
+4. **Launch py-clash-bot** - Use the desktop shortcut created during installation
+5. **Auto-Connect** - The bot will automatically boot the emulator and connect to Clash Royale
 
 ### Running the Bot
 
