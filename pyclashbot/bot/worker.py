@@ -4,7 +4,7 @@ from pyclashbot.bot.states import StateHistory, state_tree, StateOrder
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 from pyclashbot.emulators.memu import MemuEmulatorController,verify_memu_installation
-from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+from pyclashbot.emulators.google_play import GooglePlayEmulatorController,verify_adb
 
 
 class WorkerThread(PausableThread):
@@ -24,6 +24,12 @@ class WorkerThread(PausableThread):
         if emulator_selection == "Google Play":
             # Set up Google Play emulator
             print('Creating google play emulator')
+
+            #verify adb is good (necessary for google play)
+            if not verify_adb():
+                self.logger.change_status('ADB is not installed or not working! Please install it to use Google Play Emulator Mode')
+                return
+
             try:
                 emulator = GooglePlayEmulatorController()
                 print('Successfully created google play emulator')
