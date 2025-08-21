@@ -52,110 +52,100 @@ def no_jobs_popup() -> None:
     window.close()
 
 
-# Build interface components from configuration
-jobs_checklist = build_jobs_section()
-emulator_choice_frame = build_emulator_choice()
-emulator_settings_tabs = build_emulator_settings_tabs()
-data_settings_frame = build_data_settings()
-
-
-# Jobs tab layout
-jobs_tab_layout = [
-    [
-        sg.Frame(
-            layout=jobs_checklist,
-            title="Jobs",
-            expand_x=True,
-            expand_y=True,
-            border_width=1,
-            pad=5,
-        )
-    ],
-]
-
-# Emulator tab layout
-emulator_tab_layout = [
-    [emulator_choice_frame],
-    [emulator_settings_tabs],
-    [data_settings_frame],
-]
-
-# Stats tab layout
-stats_tab_layout = [
-    [
-        sg.Column(
-            [[build_battle_stats()]],
-            expand_y=True,
-            pad=5,
-        ),
-        sg.Column(
-            [
-                [build_collection_stats()],
-                [build_bot_stats()],
-            ],
-            justification="right",
-            expand_y=True,
-            pad=5,
-        ),
-    ],
-]
-
-# Create main tab group
-controls_layout = [
-    [
-        sg.TabGroup(
-            [
-                [
-                    sg.Tab("Jobs", jobs_tab_layout, key="-JOBS_TAB-"),
-                    sg.Tab("Emulator", emulator_tab_layout, key="-EMULATOR_TAB-"),
-                    sg.Tab("Stats", stats_tab_layout, key="-STATS_TAB-"),
-                ]
-            ],
-            key="-MAIN_TABS-",
-            enable_events=True,
-            expand_x=True,
-            expand_y=True,
-            pad=0,
-        )
-    ]
-]
-
-time_status_bar_layout = [
-    sg.Column(
+def create_jobs_tab():
+    """Create the jobs tab layout."""
+    return [
         [
-            [
-                sg.Input(
-                    "Idle",
-                    key="current_status",
-                    use_readonly_for_disable=True,
-                    disabled=True,
-                    text_color="blue",
-                    expand_x=True,
-                    tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
-                ),
-            ],
+            sg.Frame(
+                layout=build_jobs_section(),
+                title="Jobs",
+                expand_x=True,
+                expand_y=True,
+                border_width=1,
+                pad=5,
+            )
         ],
-        expand_x=True,
-    ),
-]
+    ]
 
-main_layout = [
-    [
+
+def create_emulator_tab():
+    """Create the emulator tab layout."""
+    return [
+        [build_emulator_choice()],
+        [build_emulator_settings_tabs()],
+        [build_data_settings()],
+    ]
+
+
+def create_stats_tab():
+    """Create the stats tab layout."""
+    return [
+        [
+            sg.Column(
+                [[build_battle_stats()]],
+                expand_y=True,
+                pad=5,
+            ),
+            sg.Column(
+                [
+                    [build_collection_stats()],
+                    [build_bot_stats()],
+                ],
+                justification="right",
+                expand_y=True,
+                pad=5,
+            ),
+        ],
+    ]
+
+
+def create_main_tabs():
+    """Create the main tab group."""
+    return [
+        [
+            sg.TabGroup(
+                [
+                    [
+                        sg.Tab("Jobs", create_jobs_tab(), key="-JOBS_TAB-"),
+                        sg.Tab("Emulator", create_emulator_tab(), key="-EMULATOR_TAB-"),
+                        sg.Tab("Stats", create_stats_tab(), key="-STATS_TAB-"),
+                    ]
+                ],
+                key="-MAIN_TABS-",
+                enable_events=True,
+                expand_x=True,
+                expand_y=True,
+                pad=0,
+            )
+        ]
+    ]
+
+
+def create_status_bar():
+    """Create the status bar layout."""
+    return [
         sg.Column(
             [
                 [
-                    sg.Frame(
-                        layout=controls_layout, title="", border_width=0, pad=0
-                    )
+                    sg.Input(
+                        "Idle",
+                        key="current_status",
+                        use_readonly_for_disable=True,
+                        disabled=True,
+                        text_color="blue",
+                        expand_x=True,
+                        tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
+                    ),
                 ],
             ],
-            key="-stacked-section-",
             expand_x=True,
-            expand_y=True,
-            pad=0,
-        )
-    ],
-    [
+        ),
+    ]
+
+
+def create_control_buttons():
+    """Create the start/stop control buttons."""
+    return [
         sg.Button(
             "Start",
             button_color="Lime Green",
@@ -169,9 +159,30 @@ main_layout = [
             border_width=2,
             size=(10, 1),
         ),
-       
+    ]
+
+
+main_layout = [
+    [
+        sg.Column(
+            [
+                [
+                    sg.Frame(
+                        layout=create_main_tabs(), 
+                        title="", 
+                        border_width=0, 
+                        pad=0
+                    )
+                ],
+            ],
+            key="-stacked-section-",
+            expand_x=True,
+            expand_y=True,
+            pad=0,
+        )
     ],
-    [time_status_bar_layout],
+    [*create_control_buttons()],
+    [*create_status_bar()],
 ]
 
 
@@ -192,35 +203,10 @@ def create_window() -> Window:
     )
 
 
-def handle_emulator_selection(window: Window, values: dict) -> None:
-    """Handle emulator radio selection to switch tabs."""
-    if values.get("google_play_emulator_toggle"):
-        # Switch to Google Play tab
-        window["-EMULATOR_TABS-"].Widget.select(0)
-    elif values.get("memu_emulator_toggle"):
-        # Switch to Memu tab
-        window["-EMULATOR_TABS-"].Widget.select(1)
-
-
-def test_window():
-    """Method for testing the window layout"""
+if __name__ == "__main__":
     window = create_window()
     while True:
-        window_state = window.read(timeout=100)
-        if window_state is None:
-            continue
-
-        event, values = window_state
-        print(event)
-        
-        # Handle emulator radio button changes
-        if event in ("memu_emulator_toggle", "google_play_emulator_toggle"):
-            handle_emulator_selection(window, values)
-            
+        event, values = window.read(timeout=100)
         if event == sg.WIN_CLOSED:
             break
     window.close()
-
-
-if __name__ == "__main__":
-    test_window()
