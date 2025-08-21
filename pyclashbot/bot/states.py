@@ -20,13 +20,6 @@ mode_used_in_1v1 = None
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
-def get_render_mode(job_list):
-    render_mode = "opengl"
-    if job_list["directx_toggle"]:
-        render_mode = "directx"
-    return render_mode
-
-
 class StateHistory:
     def __init__(self, logger):
         self.time_history_string_list = []
@@ -36,20 +29,8 @@ class StateHistory:
         # low as possible while not spamming slow states
 
         self.state2time_increment = {
-            "open_chests": 1,  #'state':increment in hours,
-            "level_up_chests": 0,  #'state':increment in hours,
-            "upgrade": 0,  #'state':increment in hours,
-            "trophy_rewards": 0.25,  #'state':increment in hours,
-            "request": 1,  #'state':increment in hours,
-            "donate": 1,  #'state':increment in hours,
-            "shop_buy": 2,  #'state':increment in hours,
-            "bannerbox": 1,  #'state':increment in hours,
-            "daily_rewards": 0,  #'state':increment in hours,
-            "battlepass_rewards": 0.25,  #'state':increment in hours,
-            "card_mastery": 0,  #'state':increment in hours,
-            "season_shop": 2,  #'state':increment in hours,
-            "war": 0.25,  #'state':increment in hours,
-            "magic_items": 1,
+            "upgrade": 0.0,
+            "card_mastery": 0.0,
         }
         self.randomize_state2time_increment()
 
@@ -118,7 +99,7 @@ class StateHistory:
                     most_recent_time = max(most_recent_time, time)
                 except Exception as e:
                     print(
-                        f"Got an expcetion in StateHistory.get_time_of_last_state()\n{e}"
+                        f"Got an exception in StateHistory.get_time_of_last_state()\n{e}"
                     )
                     pass
 
@@ -236,7 +217,7 @@ def state_tree(
             logger.log("deck randomization isn't toggled. skipping this state")
             return state_order.next_state(state)
 
-        # make sure there's a relevent job toggled, else just skip deck randomization
+        # make sure there's a relevant job toggled, else just skip deck randomization
         if (
             not job_list["trophy_road_1v1_battle_user_toggle"]
             and not job_list["path_of_legends_1v1_battle_user_toggle"]
@@ -300,14 +281,14 @@ def state_tree(
             logger.change_status("Failed while starting fight")
             return "restart"
 
-        # if neither, go to NEXT_STATE
+        # go to next state
         return state_order.next_state(state)
 
     if state == "1v1_fight":
         random_plays_flag = job_list.get("random_plays_user_toggle", False)
 
         print(f"About to do a 1v1 fight. Real quick, here's the job list: {job_list}")
-        for k,v in job_list.items():
+        for k, v in job_list.items():
             print(f"\t{k}={v}")
 
         recording_flag = job_list.get("record_fights_toggle", False)
