@@ -13,6 +13,17 @@ import xml.etree.ElementTree as ET  # for parsing config file
 from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 
+def verify_adb():
+    result = subprocess.run(
+        "adb devices", shell=True, capture_output=True, text=True
+    )
+    std_out = result.stdout.strip()
+    error = result.stderr.strip()
+    if "'adb' is not recognized as an internal or external command" in error:
+        print(f"Looks like adb isnt installed")
+        return False
+    return True
+
 
 def adb(command):
     """Runs an adb command, prints and returns its output."""
@@ -254,16 +265,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         print(f"Resizing emulator to {width}x{height}...")
         self._set_screen_size(width, height)
 
-    def _test_adb(self):
-        result = subprocess.run(
-            "adb devices", shell=True, capture_output=True, text=True
-        )
-        std_out = result.stdout.strip()
-        error = result.stderr.strip()
-        if "'adb' is not recognized as an internal or external command" in error:
-            print(f"Looks like adb isnt installed")
-            return False
-        return True
+    
 
     def restart(self):
         # close emulator
@@ -288,6 +290,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         # reconnect to adb
         while not self._is_connected():
             self._connect()
+            time.sleep(20)
+        
+        time.sleep(10)
 
         # configure emulator
         for i in range(3):
@@ -302,13 +307,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             )
             return False
 
-        # make sure adb is installated and working
-        print(f"testing adb...")
-        if self._test_adb() is False:
-            print(
-                "[!] Fatal error: adb is not working. Please check your adb installation."
-            )
-            return False
+        
 
         # boot clash
         clash_royale_name = "com.supercell.clashroyale"
@@ -320,8 +319,6 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         clash_main_wait_timeout = 240  # s
         time.sleep(12)
         while 1:
-            # self.start_app(clash_royale_name)
-            # if timed out, retry restarting
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 print(
                     "[!] Fatal error: Timeout reached while waiting for clash main menu to appear."
@@ -423,31 +420,4 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
 
 if __name__ == "__main__":
-    matt_old_settings = {
-        "angle": True,
-        "backend": "gfxstream",
-        "egl": True,
-        "gles": False,
-        "glx": False,
-        "surfaceless": False,
-        "vulkan": True,
-        "wsi": "vk",
-    }
-
-    matt_boof_settings = {
-        "angle": False,
-        "backend": "gfxstream",
-        "egl": True,
-        "gles": False,
-        "glx": True,
-        "surfaceless": True,
-        "vulkan": True,
-        "wsi": "vk",
-    }
-
-    empty_settings = {}
-
-    google_play_emulator = GooglePlayEmulatorController(render_settings=empty_settings)
-    while 1:
-        print("Running google play emulator")
-        time.sleep(10)
+    print('is adb good?',verify_adb())
