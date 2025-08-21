@@ -4339,7 +4339,7 @@ def get_play_coords_for_card(emulator, logger, card_index):
 def calculate_play_coords(card_grouping: str, side_preference: str):
     # if there is a dedicated coordinate for this card
     if card_grouping == "No group":
-        from pyclashbot.bot.do_fight_state import elapsed_time
+        from pyclashbot.bot.fight import elapsed_time
 
         if elapsed_time < 12:  # Less than 5 seconds
             if side_preference == "left":

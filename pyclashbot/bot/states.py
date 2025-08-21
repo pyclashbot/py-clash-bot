@@ -5,7 +5,7 @@ import time
 
 from pyclashbot.bot.card_mastery_state import card_mastery_state
 from pyclashbot.bot.deck_randomization import randomize_deck_state
-from pyclashbot.bot.do_fight_state import (
+from pyclashbot.bot.fight import (
     do_1v1_fight_state,
     end_fight_state,
     start_fight,
