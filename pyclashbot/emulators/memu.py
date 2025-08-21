@@ -143,6 +143,7 @@ class MemuEmulatorController(BaseEmulatorController):
             vm_index = self._get_clashbot_vm_index()
             if vm_index is not False:
                 print(f"[+] Found a valid vm: {vm_index}")
+                self.vm_index = vm_index
                 break
 
             # if none found, create a new one
@@ -166,6 +167,7 @@ class MemuEmulatorController(BaseEmulatorController):
         for vm in vms:
             title = vm["title"]
             if "pyclashbot-96" in title:
+                self.vm_index = vm["index"]
                 return vm["index"]
 
         return False
@@ -267,6 +269,7 @@ class MemuEmulatorController(BaseEmulatorController):
     def create(self):
         self._start_memuc_console()
         vm_index = self.pmc.create_vm(vm_version="96")
+        self.vm_index = vm_index
         return vm_index
 
     def _close_everything_memu(self):
