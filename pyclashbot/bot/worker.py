@@ -73,6 +73,8 @@ class WorkerThread(PausableThread):
                 # Check for error states that should stop execution
                 if new_state in ["fail", None]:
                     self.logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
+                    if new_state == "fail":
+                        self.logger.add_restart_after_failure()
                     break
                     
                 state = new_state

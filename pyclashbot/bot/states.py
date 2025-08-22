@@ -254,6 +254,7 @@ def state_tree(
     
     if state == "fail":
         logger.error("State machine entered 'fail' state - stopping execution")
+        logger.add_restart_after_failure()
         raise RuntimeError("State machine entered fail state - unrecoverable error")
 
     if state == "start":
