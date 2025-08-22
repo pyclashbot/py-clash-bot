@@ -1,13 +1,13 @@
 import numpy as np
 import os
-from os.path import  normpath
+from os.path import normpath
 from contextlib import suppress
 from winreg import OpenKey, QueryValueEx, ConnectRegistry, HKEY_LOCAL_MACHINE
 import subprocess
 import time
 import cv2
 import pygetwindow as gw
-import xml.etree.ElementTree as ET  
+import xml.etree.ElementTree as ET
 
 DEBUG = False
 
@@ -329,6 +329,18 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             width, height = default
         if DEBUG:
             print(f"Resizing emulator to {width}x{height}...")
+
+        emulator_window = self._find_window(self.google_play_emulator_process_name)
+        
+        if emulator_window is None:
+            return False
+        if width is None:
+            return False
+        if height is None:
+            return False
+        
+        emulator_window.resizeTo(width, (height+150))
+
         self._set_screen_size(width, height)
 
     def restart(self):
