@@ -46,7 +46,9 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     """Create a dictionary of job toggles and increments based on the values of the GUI window."""
     jobs_dictionary: dict[str, str | int] = {
         "card_mastery_user_toggle": values["card_mastery_user_toggle"],
-        "trophy_road_1v1_battle_user_toggle": values["trophy_road_1v1_user_toggle"],
+        "classic_1v1_user_toggle": values["classic_1v1_user_toggle"],
+        "classic_2v2_user_toggle": values["classic_2v2_user_toggle"],
+        "trophy_road_user_toggle": values["trophy_road_user_toggle"],
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
         "deck_number_selection": values["deck_number_selection"],
@@ -70,13 +72,13 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     return jobs_dictionary
 
 
-
-
 def has_no_jobs_selected(job_dict) -> bool:
     """Check if no jobs are selected in the job dictionary."""
     job_keys = [
         "card_mastery_user_toggle",
-        "trophy_road_1v1_battle_user_toggle", 
+        "classic_1v1_user_toggle",
+        "classic_2v2_user_toggle",
+        "trophy_road_user_toggle",
         "upgrade_user_toggle",
     ]
     return not any(job_dict.get(key, False) for key in job_keys)
@@ -120,8 +122,6 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
         window.refresh()
 
 
-
-
 def start_button_event(logger: Logger, window: Window, values) -> WorkerThread | None:
     """Start the main bot thread with the given configuration."""
     job_dictionary = make_job_dictionary(values)
@@ -151,7 +151,7 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
     stop_button = window["Stop"]
     if stop_button is not None:
         stop_button.update(disabled=False)
-    
+
     main_tabs = window["-MAIN_TABS-"]
     if main_tabs is not None:
         main_tabs.Widget.select(2)  # Focus stats tab
@@ -173,7 +173,7 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
     time_element = window["time_since_start"]
     if time_element is not None:
         time_element.update(logger.calc_time_since_start())
-    
+
     stats = logger.get_stats()
     if stats:
         for stat, val in stats.items():
@@ -200,7 +200,7 @@ def handle_thread_finished(
             element = window[key]
             if element is not None:
                 element.update(disabled=False)
-        
+
         if thread.logger.errored:
             stop_button = window["Stop"]
             if stop_button is not None:
@@ -213,46 +213,48 @@ def handle_thread_finished(
 
 class BotApplication:
     """Main application class for the PyClashBot GUI."""
-    
+
     def __init__(self, settings: dict[str, str] | None = None):
         self.window = create_window()
         self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
         load_settings(settings, self.window)
-    
+
     def handle_start_event(self, values):
         """Handle the start button event."""
         self.logger = Logger(timed=True)
         self.thread = start_button_event(self.logger, self.window, values)
-    
+
     def handle_stop_event(self):
         """Handle the stop button event."""
         if self.thread is not None:
             stop_button_event(self.logger, self.window, self.thread)
-    
+
     def handle_settings_change(self, values):
         """Handle settings changes."""
         save_current_settings(values)
-    
+
     def handle_external_links(self, event):
         """Handle opening external links."""
         if event == "bug-report":
-            webbrowser.open("https://github.com/pyclashbot/py-clash-bot/issues/new/choose")
+            webbrowser.open(
+                "https://github.com/pyclashbot/py-clash-bot/issues/new/choose"
+            )
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
-    
+
     def cleanup(self):
         """Clean up resources when closing."""
         self.window.close()
         if self.thread is not None:
             self.thread.shutdown(kill=True)
             self.thread.join()
-    
+
     def run(self, start_on_run=False) -> None:
         """Run the main GUI event loop."""
         while True:
             event, values = read_window(self.window, timeout=10)
-            
+
             if start_on_run:
                 event = "Start"
                 start_on_run = False
@@ -270,8 +272,10 @@ class BotApplication:
                 self.handle_external_links(event)
 
             # Handle thread completion cleanup
-            self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)
-            
+            self.thread, self.logger = handle_thread_finished(
+                self.window, self.thread, self.logger
+            )
+
             update_layout(self.window, self.logger)
 
         self.cleanup()
@@ -281,8 +285,6 @@ def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None
     """Main entry point for the GUI application."""
     app = BotApplication(settings)
     app.run(start_on_run)
-
-
 
 
 if __name__ == "__main__":
