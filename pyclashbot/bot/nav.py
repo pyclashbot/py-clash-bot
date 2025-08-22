@@ -1035,7 +1035,7 @@ def check_if_on_card_page(emulator) -> bool:
         iar[77][84],
     ]
 
-    colors = [
+    colors1 = [
         [222, 0, 235],
         [255, 255, 255],
         [203, 137, 44],
@@ -1046,135 +1046,38 @@ def check_if_on_card_page(emulator) -> bool:
         [178, 104, 15],
     ]
 
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(colors[i], p, tol=15):
-            return False
-
-    return True
-
-
-def get_to_challenges_tab_from_main(emulator, logger) -> Literal["restart", "good"]:
-
-    emulator.click(
-        CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[0],
-        CHALLENGES_TAB_ICON_FROM_CLASH_MAIN[1],
-    )
-    if wait_for_clash_main_challenges_tab(emulator, logger) == "restart":
-        logger.change_status(
-            status="Error 892572938 waited for challenges tab too long, restarting vm",
-        )
-        return "restart"
-    return "good"
-
-
-def handle_clash_main_tab_notifications(
-    emulator,
-    logger: Logger,
-) -> bool:
-
-    start_time: float = time.time()
-
-    # wait for clash main to appear
-    if wait_for_clash_main_menu(emulator, logger) is False:
-        logger.change_status(
-            status="Error 246246 Waited too long for clash main menu, restarting vm",
-        )
-        return False
-
-    # click card tab from main
-    print("Clicked card tab")
-    emulator.click(103, 598)
-    time.sleep(1)
-
-    # click shop tab from card tab
-    print("Clicked shop tab")
-    emulator.click(9, 594, clicks=3, interval=0.33)
-    time.sleep(1)
-
-    # click clan tab from shop tab
-    print("Clicked clan tab")
-    emulator.click(315, 594)
-    time.sleep(3)
-
-    if check_for_war_chest_obstruction(emulator):
-        open_war_chest_obstruction(emulator, logger)
-        logger.add_war_chest_collect()
-        print(f"Incremented war chest collects to {logger.war_chest_collects}")
-        time.sleep(3)
-
-    # click events tab from clan tab
-    print("Getting to events tab...")
-    while not check_for_events_page(emulator):
-        print("Still not on events page...")
-        emulator.click(408, 600)
-        handle_war_popup_pages(emulator, logger)
-
-    print("On events page")
-
-    # spam click shop page at the leftmost location, wait a little bit
-    print("Clicked shop page")
-    emulator.click(9, 594, clicks=3, interval=0.33)
-    time.sleep(2)
-
-    # click clash main from shop page
-    print("Clicked clash main")
-    emulator.click(240, 600)
-    time.sleep(2)
-
-    # handle possibility of trophy road obstructing clash main
-    if check_for_trophy_reward_menu(emulator):
-        handle_trophy_reward_menu(emulator, logger)
-        time.sleep(2)
-
-    # wait for clash main to appear
-    if wait_for_clash_main_menu(emulator, logger) is False:
-        logger.change_status(
-            status="Error 47 Waited too long for clash main menu, restarting vm",
-        )
-        return False
-
-    logger.change_status(
-        status=f"Handled clash main notifications in {str(time.time() - start_time)[:5]}s",
-    )
-
-    return True
-
-
-def check_for_events_page(emulator):
-    iar = emulator.screenshot()
-
-    pixels = [
-        iar[578][415],
-        iar[585][415],
-        iar[595][415],
-        iar[605][415],
-        iar[621][415],
-        iar[578][310],
-        iar[585][310],
-        iar[590][310],
-        iar[600][310],
-        iar[610][310],
-        iar[622][310],
+    colors2 = [
+        [220, 0, 234],
+        [255, 255, 255],
+        [209, 68, 41],
+        [202, 64, 41],
+        [255, 255, 255],
+        [255, 255, 255],
+        [185, 52, 41],
+        [185, 52, 41],
     ]
 
-    colors = [
-        [136, 103, 70],
-        [136, 103, 70],
-        [140, 107, 74],
-        [142, 110, 75],
-        [149, 117, 77],
-        [139, 101, 69],
-        [138, 103, 70],
-        [141, 106, 73],
-        [142, 108, 73],
-        [147, 114, 76],
-        [154, 119, 80],
-    ]
+    def pixel_to_string(pixel):
+        return f"[{pixel[0]},{pixel[1]},{pixel[2]}],"
 
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(colors[i], p, tol=15):
-            return False
-    return True
+    # print("{:^17} {:^17} {:^17}".format("pixel", "color1", "color2"))
+    # for pixel, color1, color2 in zip(pixels, colors1, colors2):
+    #     print(
+    #         "{:^17} {:^17} {:^17}".format(
+    #             pixel_to_string(pixel), pixel_to_string(color1), pixel_to_string(color2)
+    #         )
+    #     )
+
+    if all_pixels_are_equal(pixels, colors1, tol=25):
+        return True
+
+    if all_pixels_are_equal(pixels, colors2, tol=25):
+        return True
+
+    return False
+
+
+
 
 
 def wait_for_clash_main_challenges_tab(
