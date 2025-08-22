@@ -20,8 +20,10 @@ from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
     check_if_on_clash_main_menu,
+    find_fight_mode_icon,
     get_to_activity_log,
     handle_trophy_reward_menu,
+    select_mode,
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
@@ -757,83 +759,6 @@ def _random_fight_loop(emulator, logger) -> bool:
     return True
 
 
-def find_fight_mode_icon(emulator, mode: str):
-    expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
-
-    # Check if the mode is valid
-    if mode not in expected_mode_types:
-        print(
-            f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
-        )
-        return None
-
-    mode2folder = {
-        "Classic 1v1": "fight_mode_1v1",
-        "Classic 2v2": "fight_mode_2v2",
-        "Trophy Road": "fight_mode_trophy_road",
-    }
-
-    look_folder = mode2folder[mode]
-
-    fight_mode_1v1_button_location = find_image(
-        emulator.screenshot(),
-        look_folder,
-        tolerance=0.85,
-        subcrop=(27, 158, 206, 582),
-        show_image=False,
-    )
-    if fight_mode_1v1_button_location is not None:
-        return fight_mode_1v1_button_location
-    return None
-
-
-def select_mode(emulator, mode: str):
-    # Check if the mode is valid
-    expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
-    if type(mode) is not str:
-        print(f'[!] Warning: Mode "{mode}" is not a string. Expected a string.')
-        return False
-
-    # Check if the mode is valid
-    if mode not in expected_mode_types:
-        print(
-            f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
-        )
-        return False
-
-    # must be on clash main
-    if not check_if_on_clash_main_menu(emulator):
-        print("[!] Not on clash main menu, cannot select a fight mode")
-        return False
-
-    # open fight type selection menu
-    game_mode_coord = [308, 485]
-
-    # click select mode button
-    print("Clicking mode selection button")
-    emulator.click(game_mode_coord[0], game_mode_coord[1])
-    time.sleep(2)
-
-    def scroll_down_in_fight_mode_panel(emulator):
-        start_y = 400
-        end_y = 350
-        x = 400
-        emulator.swipe(x, start_y, x, end_y)
-        time.sleep(1)
-
-    # scroll and search, until we find the mode in question
-    search_timeout = 15  # s
-    while time.time() < time.time() + search_timeout:
-        coord = find_fight_mode_icon(emulator, mode)
-        if coord is not None:
-            print(f'Located the "{mode}" button, clicking it.')
-            emulator.click(*coord)
-            time.sleep(3)
-            return True
-
-        scroll_down_in_fight_mode_panel(emulator)
-
-    return False
 
 
 if __name__ == "__main__":
