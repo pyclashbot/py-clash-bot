@@ -5,3 +5,4 @@ dist
 __version__
 __pycache__
 recordings
+.claude/
