@@ -27,10 +27,7 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    find_references,
-    get_file_count,
-    get_first_location,
-    make_reference_image_list,
+    find_image,
     pixel_is_equal,
 )
 from pyclashbot.bot.recorder import save_play
@@ -104,10 +101,7 @@ def do_fight_state(
     logger.change_status("Starting fight loop")
 
     # Run regular fight loop if random mode not toggled
-    if (
-        not random_fight_mode
-        and _fight_loop(emulator, logger, recording_flag) is False
-    ):
+    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
         logger.log("Failure in fight loop")
         return False
 
@@ -122,7 +116,7 @@ def do_fight_state(
             logger.add_1v1_fight()
         elif fight_mode_choosed == "Classic 2v2":
             logger.increment_2v2_fights()
-            
+
         if fight_mode_choosed == "Trophy Road":
             logger.increment_trophy_road_fights()
         elif fight_mode_choosed == "Classic 1v1":
@@ -180,11 +174,11 @@ def start_fight(emulator, logger, mode) -> bool:
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(203, 487)
 
-    #if its 2v2 mode, we gotta click that second popup
-    if mode == 'Classic 2v2':
-        print(f'Its 2v2 mode so we gotta click the quickmatch popup option!')
+    # if its 2v2 mode, we gotta click that second popup
+    if mode == "Classic 2v2":
+        print(f"Its 2v2 mode so we gotta click the quickmatch popup option!")
         time.sleep(3)
-        quick_match_button_coord = [280,350]
+        quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
 
     return True
@@ -399,64 +393,50 @@ def check_pixels_for_win_in_battle_log(emulator) -> bool:
 
 def find_post_battle_button(emulator):
     """Find and return coordinates for post-battle exit/OK button.
-    
+
     Tries multiple detection methods in order:
     1. Pixel-based detection (fastest)
     2. Image recognition for OK button
     3. Image recognition for exit button
-    
+
     Returns:
         tuple[int, int] | None: Button coordinates (x, y) or None if not found
     """
     iar = emulator.screenshot()
-    
+
     # Method 1: Fast pixel-based detection
     pixels = [
         iar[545][178],
-        iar[547][239], 
+        iar[547][239],
         iar[553][214],
         iar[554][201],
     ]
     colors = [
         [255, 187, 104],
         [255, 187, 104],
-        [255, 255, 255], 
+        [255, 255, 255],
         [255, 255, 255],
     ]
-    
+
     pixel_match = True
     for i, p in enumerate(pixels):
         if not pixel_is_equal(p, colors[i], tol=20):
             pixel_match = False
             break
-    
+
     if pixel_match:
         return (200, 550)
-    
+
     # Method 2: Image recognition for OK button
-    names = make_reference_image_list(get_file_count("ok_post_battle_button"))
-    locations = find_references(
-        iar,
-        "ok_post_battle_button",
-        names,
-        tolerance=0.85,
-    )
-    coord = get_first_location(locations)
+    coord = find_image(iar, "ok_post_battle_button", tolerance=0.85)
     if coord is not None:
-        return (coord[1], coord[0])
-    
+        return coord
+
     # Method 3: Image recognition for exit button
-    names = make_reference_image_list(get_file_count("exit_battle_button"))
-    locations = find_references(
-        iar,
-        "exit_battle_button", 
-        names,
-        tolerance=0.9,
-    )
-    coord = get_first_location(locations)
+    coord = find_image(iar, "exit_battle_button", tolerance=0.9)
     if coord is not None:
-        return (coord[1], coord[0])
-    
+        return coord
+
     return None
 
 
@@ -537,7 +517,9 @@ def select_card_index(card_indices, last_three_cards):
     return random.choice(preferred_cards)
 
 
-def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy") -> bool:
+def play_a_card(
+    emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy"
+) -> bool:
     print("\n")
 
     # check which cards are available
@@ -564,7 +546,9 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
 
     # get a coord based on the selected side
     play_coord_calculation_start_time = time.time()
-    card_id, play_coord = get_play_coords_for_card(emulator, logger, card_index, battle_strategy.get_elapsed_time())
+    card_id, play_coord = get_play_coords_for_card(
+        emulator, logger, card_index, battle_strategy.get_elapsed_time()
+    )
     play_coord_calculation_time_taken = str(
         time.time() - play_coord_calculation_start_time,
     )[:3]
@@ -603,57 +587,89 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
 
 class BattleStrategy:
     """Manages battle timing and elixir selection strategy.
-    
+
     Encapsulates the sophisticated elixir selection logic that changes
     based on battle phase, eliminating the need for global variables.
     """
-    
+
     def __init__(self):
         self.start_time = None
         self.elixir_amounts = [3, 4, 5, 6, 7, 8, 9]
-        
+
         # Strategy weights for each battle phase
         self.phase_strategies = {
-            'early': [0, 0, 0, 0, 0.3, 0.3, 0.4],           # 0-7s: Conservative, wait for more elixir
-            'single': [0.05, 0.05, 0.1, 0.15, 0.15, 0.3, 0.2],  # 7-90s: Balanced distribution
-            'double': [0.05, 0.05, 0.1, 0.15, 0.25, 0.3, 0.1],  # 90-200s: Favor 7-8 elixir
-            'triple': [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0]       # 200s+: Heavy favor 7-8, never 9
+            "early": [
+                0,
+                0,
+                0,
+                0,
+                0.3,
+                0.3,
+                0.4,
+            ],  # 0-7s: Conservative, wait for more elixir
+            "single": [
+                0.05,
+                0.05,
+                0.1,
+                0.15,
+                0.15,
+                0.3,
+                0.2,
+            ],  # 7-90s: Balanced distribution
+            "double": [
+                0.05,
+                0.05,
+                0.1,
+                0.15,
+                0.25,
+                0.3,
+                0.1,
+            ],  # 90-200s: Favor 7-8 elixir
+            "triple": [
+                0.05,
+                0.05,
+                0.1,
+                0.1,
+                0.3,
+                0.4,
+                0,
+            ],  # 200s+: Heavy favor 7-8, never 9
         }
-        
+
         # Wait/play thresholds for each phase
         self.phase_thresholds = {
-            'early': (6000, 9000),
-            'single': (6000, 9000),
-            'double': (7000, 10000),
-            'triple': (8000, 11000)
+            "early": (6000, 9000),
+            "single": (6000, 9000),
+            "double": (7000, 10000),
+            "triple": (8000, 11000),
         }
-    
+
     def start_battle(self):
         """Call when battle begins to start timing."""
         self.start_time = time.time()
-    
+
     def get_elapsed_time(self):
         """Get seconds elapsed since battle start."""
         return time.time() - self.start_time if self.start_time else 0
-    
+
     def get_battle_phase(self):
         """Determine current battle phase based on elapsed time."""
         elapsed = self.get_elapsed_time()
         if elapsed < 7:
-            return 'early'
+            return "early"
         elif elapsed < 90:
-            return 'single'
+            return "single"
         elif elapsed < 200:
-            return 'double'
+            return "double"
         else:
-            return 'triple'
-    
+            return "triple"
+
     def select_elixir_amount(self):
         """Select elixir amount to wait for based on current battle phase."""
         phase = self.get_battle_phase()
         weights = self.phase_strategies[phase]
         return random.choices(self.elixir_amounts, weights=weights, k=1)[0]
-    
+
     def get_thresholds(self):
         """Get (WAIT_THRESHOLD, PLAY_THRESHOLD) for current battle phase."""
         phase = self.get_battle_phase()
@@ -665,7 +681,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)
     prev_cards_played = logger.get_cards_played()
-    
+
     # Initialize battle strategy and start timing
     battle_strategy = BattleStrategy()
     battle_strategy.start_battle()
@@ -673,7 +689,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     while check_for_in_battle_with_delay(emulator):
         if recording_flag:
             save_image(emulator.screenshot())
-        
+
         # Get elixir amount and thresholds based on current battle phase
         elixir_amount = battle_strategy.select_elixir_amount()
         wait_threshold, play_threshold = battle_strategy.get_thresholds()
@@ -741,6 +757,36 @@ def _random_fight_loop(emulator, logger) -> bool:
     return True
 
 
+def find_fight_mode_icon(emulator, mode: str):
+    expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
+
+    # Check if the mode is valid
+    if mode not in expected_mode_types:
+        print(
+            f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
+        )
+        return None
+
+    mode2folder = {
+        "Classic 1v1": "fight_mode_1v1",
+        "Classic 2v2": "fight_mode_2v2",
+        "Trophy Road": "fight_mode_trophy_road",
+    }
+
+    look_folder = mode2folder[mode]
+
+    fight_mode_1v1_button_location = find_image(
+        emulator.screenshot(),
+        look_folder,
+        tolerance=0.85,
+        subcrop=(27, 158, 206, 582),
+        show_image=False,
+    )
+    if fight_mode_1v1_button_location is not None:
+        return fight_mode_1v1_button_location
+    return None
+
+
 def select_mode(emulator, mode: str):
     # Check if the mode is valid
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
@@ -760,7 +806,7 @@ def select_mode(emulator, mode: str):
         print("[!] Not on clash main menu, cannot select a fight mode")
         return False
 
-    print(f'Selecting mode  "{mode}"')
+    # open fight type selection menu
     game_mode_coord = [308, 485]
 
     # click select mode button
@@ -768,50 +814,27 @@ def select_mode(emulator, mode: str):
     emulator.click(game_mode_coord[0], game_mode_coord[1])
     time.sleep(2)
 
-    # if its trophy road, we can jhust click it from the top
-    if mode == "Trophy Road":
-        print("Selecting Trophy Road mode")
-        trophy_road_mode_coord = [184, 252]
-        emulator.click(trophy_road_mode_coord[0], trophy_road_mode_coord[1])
-        time.sleep(2)
-        return True
+    def scroll_down_in_fight_mode_panel(emulator):
+        start_y = 400
+        end_y = 350
+        x = 400
+        emulator.swipe(x, start_y, x, end_y)
+        time.sleep(1)
 
-    # if its classic 1v1 or classic 2v2
-    # we need to scroll to the bottom
-    if mode in ["Classic 1v1", "Classic 2v2"]:
-        print(f"Mode {mode} requires scrolling to the bottom")
-        start_y = 300
-        swipe_distance = -290
-        emulator.swipe(
-            397,
-            start_y,
-            397,
-            start_y + swipe_distance,
-        )
-        time.sleep(4)
+    # scroll and search, until we find the mode in question
+    search_timeout = 15  # s
+    while time.time() < time.time() + search_timeout:
+        coord = find_fight_mode_icon(emulator, mode)
+        if coord is not None:
+            print(f'Located the "{mode}" button, clicking it.')
+            emulator.click(*coord)
+            time.sleep(3)
+            return True
 
-    # if classic 2v2
-    if mode == "Classic 2v2":
-        print("Selecting Classic 2v2 mode")
-        classic_2v2_mode_coord = [200, 255]
-        emulator.click(classic_2v2_mode_coord[0], classic_2v2_mode_coord[1])
-        time.sleep(2)
-        return True
+        scroll_down_in_fight_mode_panel(emulator)
 
-    # if classic 1v1
-    if mode == "Classic 1v1":
-        print("Selecting Classic 1v1 mode")
-        classic_1v1_mode_coord = [202, 173]
-        emulator.click(classic_1v1_mode_coord[0], classic_1v1_mode_coord[1])
-        time.sleep(2)
-        return True
-
-    print(f'[!] Warning: Mode "{mode}" selection failed. This should not happen.')
     return False
 
 
 if __name__ == "__main__":
-    from pyclashbot.emulators.google_play import GooglePlayEmulatorController
-
-    emulator = GooglePlayEmulatorController()
-    select_mode(emulator, mode="Trophy Road")
+    pass
