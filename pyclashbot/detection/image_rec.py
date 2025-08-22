@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 from pyclashbot.utils.image_handler import open_from_path
-
+import matplotlib.pyplot as plt
 
 # =============================================================================
 # IMAGE RECOGNITION FUNCTIONS
@@ -16,6 +16,8 @@ def find_image(
     image: np.ndarray,
     folder: str,
     tolerance: float = 0.88,
+    subcrop: tuple[int, int, int, int] | None = None,
+    show_image: bool = False,
 ) -> tuple[int, int] | None:
     """Find the first matching reference image in a screenshot
     
@@ -23,14 +25,34 @@ def find_image(
         image: image to search through
         folder: folder containing reference images (within reference_images directory)
         tolerance: matching tolerance (0.0 to 1.0)
+        subcrop: optional subcrop region as (x1, y1, x2, y2) to search within
         
     Returns:
-        tuple[int, int] | None: (x, y) coordinates of found image, or None if not found
+        tuple[int, int] | None: (x, y) coordinates of found image relative to full image, or None if not found
     """
-    locations = find_references(image, folder, tolerance)
+    search_image = image
+    offset_x, offset_y = 0, 0
+    
+    if subcrop is not None:
+        x1, y1, x2, y2 = subcrop
+        search_image = image[y1:y2, x1:x2]
+        offset_x, offset_y = x1, y1
+
+    if show_image:
+        plt.imshow(search_image)
+        plt.title(f"Searching for {folder} in image")
+        plt.show()
+    
+    locations, filenames = find_references(search_image, folder, tolerance)
     coord = get_first_location(locations)
     if coord is not None:
-        return (coord[1], coord[0])  # Convert from [y, x] to (x, y)
+        # Find which file matched
+        for i, location in enumerate(locations):
+            if location is not None:
+                print(f"Match found in file: {filenames[i]}")
+                break
+        # Convert from [y, x] to (x, y) and add offset to get coordinates relative to full image
+        return (coord[1] + offset_x, coord[0] + offset_y)
     return None
 
 
@@ -38,7 +60,7 @@ def find_references(
     image: np.ndarray,
     folder: str,
     tolerance=0.88,
-) -> list[list[int] | None]:
+) -> tuple[list[list[int] | None], list[str]]:
     """Find all reference images in a screenshot
 
     Args:
@@ -49,16 +71,21 @@ def find_references(
 
     Returns:
     -------
-        list[list[int] | None]: coordinate locations
+        tuple[list[list[int] | None], list[str]]: coordinate locations and corresponding filenames
 
     """
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images", folder))
 
-    reference_images = [
-        open_from_path(join(reference_folder, name))
+    filenames = [
+        name
         for name in os.listdir(reference_folder)
         if name.endswith(".png") or name.endswith(".jpg")
+    ]
+    
+    reference_images = [
+        open_from_path(join(reference_folder, name))
+        for name in filenames
     ]
 
     with ThreadPoolExecutor(
@@ -74,7 +101,8 @@ def find_references(
             )
             for template in reference_images
         ]
-        return [future.result() for future in as_completed(futures)]
+        results = [future.result() for future in as_completed(futures)]
+        return results, filenames
 
 
 def compare_images(
@@ -94,6 +122,10 @@ def compare_images(
     """
     img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     template_gray = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
+
+    # Check if template is larger than image
+    if template_gray.shape[0] > img_gray.shape[0] or template_gray.shape[1] > img_gray.shape[1]:
+        return None
 
     res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
     loc = np.where(res >= threshold)
