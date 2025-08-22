@@ -1,15 +1,14 @@
 import numpy as np
 import os
-from os.path import join, normpath
+from os.path import  normpath
 from contextlib import suppress
 from winreg import OpenKey, QueryValueEx, ConnectRegistry, HKEY_LOCAL_MACHINE
 import subprocess
 import time
 import cv2
 import pygetwindow as gw
-import xml.etree.ElementTree as ET  # for parsing config file
+import xml.etree.ElementTree as ET  
 
-# Debug flag to control debug print statements
 DEBUG = False
 
 from pyclashbot.emulators.base import BaseEmulatorController
@@ -166,20 +165,20 @@ class GooglePlayEmulatorController(BaseEmulatorController):
     def _connect(self):
         if DEBUG:
             print("[CONNECT DEBUG] Starting connection process...")
-        
+
         if DEBUG:
             print("[CONNECT DEBUG] Disconnecting any existing connections...")
         disconnect_result = self.adb("disconnect localhost:6520")
         if DEBUG:
             print(f"[CONNECT DEBUG] Disconnect result: {disconnect_result.stdout}")
-        
+
         if DEBUG:
             print("[CONNECT DEBUG] Attempting to connect to localhost:6520...")
         connect_result = self.adb("connect localhost:6520")
         if DEBUG:
             print(f"[CONNECT DEBUG] Connect result: {connect_result.stdout}")
             print(f"[CONNECT DEBUG] Connect return code: {connect_result.returncode}")
-        
+
         time.sleep(1)
 
         if DEBUG:
@@ -188,12 +187,12 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         if DEBUG:
             print(f"[CONNECT DEBUG] Devices output: {result.stdout}")
             print(f"[CONNECT DEBUG] Devices return code: {result.returncode}")
-        
+
         if result.stdout is None:
             if DEBUG:
                 print("[CONNECT DEBUG] Devices command returned None stdout")
             return False
-            
+
         if "offline" in result.stdout:
             print("[!] Emulator is offline. Please check the connection.")
             return False
@@ -252,23 +251,29 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             print(f"[ADB DEBUG] Executing: {full_command}")
             print(f"[ADB DEBUG] ADB path exists: {os.path.exists(self.adb_path)}")
             print(f"[ADB DEBUG] Binary output mode: {binary_output}")
-        
+
         result = subprocess.run(
-            full_command, 
-            shell=True, 
-            capture_output=True, 
-            text=not binary_output  # Use binary mode for screenshots
+            full_command,
+            shell=True,
+            capture_output=True,
+            text=not binary_output,  # Use binary mode for screenshots
         )
-        
+
         if DEBUG:
             print(f"[ADB DEBUG] Return code: {result.returncode}")
             if binary_output:
                 print(f"[ADB DEBUG] Stdout type: {type(result.stdout)}")
-                print(f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}")
+                print(
+                    f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}"
+                )
             else:
-                print(f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}...")
-            print(f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}...")
-        
+                print(
+                    f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}..."
+                )
+            print(
+                f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}..."
+            )
+
         return result
 
     def create(self):
@@ -367,8 +372,13 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             return False
 
         # boot clash
+        time.sleep(10)
         clash_royale_name = "com.supercell.clashroyale"
-        self.start_app(clash_royale_name)
+        start_app_count = 3
+        for i in range(start_app_count):
+            print(f"Starting clash app (attempt {i+1}/{start_app_count})...")
+            self.start_app(clash_royale_name)
+            time.sleep(1)
 
         # wait for clash main to appear
         print("Waiting for CR main menu")
@@ -446,54 +456,70 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         """
         if DEBUG:
             print("[SCREENSHOT DEBUG] Starting screenshot capture...")
-        
+
         # First test basic connectivity
         if DEBUG:
             print("[SCREENSHOT DEBUG] Testing ADB connectivity...")
         devices_result = self.adb("devices")
         if DEBUG:
             print(f"[SCREENSHOT DEBUG] ADB devices output: {devices_result.stdout}")
-        
+
         if devices_result.returncode != 0:
             if DEBUG:
-                print(f"[SCREENSHOT DEBUG] ADB devices failed with return code: {devices_result.returncode}")
+                print(
+                    f"[SCREENSHOT DEBUG] ADB devices failed with return code: {devices_result.returncode}"
+                )
                 print(f"[SCREENSHOT DEBUG] ADB devices stderr: {devices_result.stderr}")
             raise RuntimeError(f"ADB connectivity test failed: {devices_result.stderr}")
-        
+
         # Now try the screenshot command with binary output
         if DEBUG:
             print("[SCREENSHOT DEBUG] Executing screencap command...")
         result = self.adb("exec-out screencap -p", binary_output=True)
-        
+
         if DEBUG:
-            print(f"[SCREENSHOT DEBUG] Screenshot command return code: {result.returncode}")
+            print(
+                f"[SCREENSHOT DEBUG] Screenshot command return code: {result.returncode}"
+            )
             print(f"[SCREENSHOT DEBUG] Screenshot stdout type: {type(result.stdout)}")
-            print(f"[SCREENSHOT DEBUG] Screenshot stdout is None: {result.stdout is None}")
-        
+            print(
+                f"[SCREENSHOT DEBUG] Screenshot stdout is None: {result.stdout is None}"
+            )
+
         if result.returncode != 0:
             error_msg = result.stderr if result.stderr else "Unknown error"
             if DEBUG:
-                print(f"[SCREENSHOT DEBUG] ADB screenshot failed with error: {error_msg}")
+                print(
+                    f"[SCREENSHOT DEBUG] ADB screenshot failed with error: {error_msg}"
+                )
             raise RuntimeError(f"ADB screenshot failed: {error_msg}")
-        
+
         if result.stdout is None:
             if DEBUG:
-                print("[SCREENSHOT DEBUG] Screenshot stdout is None - this indicates ADB command failure")
-            raise RuntimeError("ADB screenshot returned None stdout - command failed silently")
-        
+                print(
+                    "[SCREENSHOT DEBUG] Screenshot stdout is None - this indicates ADB command failure"
+                )
+            raise RuntimeError(
+                "ADB screenshot returned None stdout - command failed silently"
+            )
+
         if len(result.stdout) == 0:
             if DEBUG:
                 print("[SCREENSHOT DEBUG] Screenshot stdout is empty")
             raise RuntimeError("ADB screenshot returned empty data")
-        
+
         if DEBUG:
-            print(f"[SCREENSHOT DEBUG] Screenshot data length: {len(result.stdout)} bytes")
-        
+            print(
+                f"[SCREENSHOT DEBUG] Screenshot data length: {len(result.stdout)} bytes"
+            )
+
         # Convert bytes to NumPy array
         try:
             img_array = np.frombuffer(result.stdout, dtype=np.uint8)
             if DEBUG:
-                print(f"[SCREENSHOT DEBUG] NumPy array created, shape: {img_array.shape}")
+                print(
+                    f"[SCREENSHOT DEBUG] NumPy array created, shape: {img_array.shape}"
+                )
         except Exception as e:
             if DEBUG:
                 print(f"[SCREENSHOT DEBUG] Failed to create NumPy array: {e}")
@@ -503,7 +529,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         try:
             img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
             if DEBUG:
-                print(f"[SCREENSHOT DEBUG] Image decoded, shape: {img.shape if img is not None else 'None'}")
+                print(
+                    f"[SCREENSHOT DEBUG] Image decoded, shape: {img.shape if img is not None else 'None'}"
+                )
         except Exception as e:
             if DEBUG:
                 print(f"[SCREENSHOT DEBUG] Failed to decode image: {e}")
@@ -511,15 +539,21 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         if img is None:
             if DEBUG:
-                print("[SCREENSHOT DEBUG] cv2.imdecode returned None - invalid image data")
+                print(
+                    "[SCREENSHOT DEBUG] cv2.imdecode returned None - invalid image data"
+                )
                 # Let's save the raw data to analyze
                 try:
                     with open("debug_screenshot_data.bin", "wb") as f:
                         f.write(result.stdout)
-                    print("[SCREENSHOT DEBUG] Raw screenshot data saved to debug_screenshot_data.bin")
+                    print(
+                        "[SCREENSHOT DEBUG] Raw screenshot data saved to debug_screenshot_data.bin"
+                    )
                 except Exception as e:
                     print(f"[SCREENSHOT DEBUG] Failed to save debug data: {e}")
-            raise ValueError("Failed to decode screenshot - image data may be corrupted")
+            raise ValueError(
+                "Failed to decode screenshot - image data may be corrupted"
+            )
 
         if DEBUG:
             print(f"[SCREENSHOT DEBUG] Screenshot successful! Image shape: {img.shape}")
@@ -535,40 +569,40 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         self.adb(
             f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
         )
-    
+
     def debug_adb_connectivity(self):
         """
         Comprehensive ADB debugging method to test connectivity and commands.
         """
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("ADB CONNECTIVITY DEBUG REPORT")
-        print("="*50)
-        
+        print("=" * 50)
+
         # Test 1: ADB executable
         print(f"1. ADB Path: {self.adb_path}")
         print(f"   Exists: {os.path.exists(self.adb_path)}")
-        
+
         # Test 2: ADB version
         print("\n2. ADB Version Test:")
         version_result = self.adb("version")
         print(f"   Return code: {version_result.returncode}")
         print(f"   Output: {version_result.stdout}")
-        
+
         # Test 3: ADB devices
         print("\n3. ADB Devices Test:")
         devices_result = self.adb("devices")
         print(f"   Return code: {devices_result.returncode}")
         print(f"   Output: {devices_result.stdout}")
-        
+
         # Test 4: Check if emulator process is running
         print("\n4. Emulator Process Check:")
         print(f"   Is emulator running: {self._is_emulator_running()}")
-        
+
         # Test 5: Try to connect
         print("\n5. Connection Attempt:")
         connect_success = self._connect()
         print(f"   Connection successful: {connect_success}")
-        
+
         # Test 6: If connected, test screencap
         if connect_success:
             print("\n6. Screenshot Test:")
@@ -577,60 +611,32 @@ class GooglePlayEmulatorController(BaseEmulatorController):
                 result = self.adb("exec-out screencap -p", binary_output=True)
                 print(f"   Screenshot return code: {result.returncode}")
                 print(f"   Screenshot data type: {type(result.stdout)}")
-                print(f"   Screenshot data length: {len(result.stdout) if result.stdout else 'None'}")
-                
+                print(
+                    f"   Screenshot data length: {len(result.stdout) if result.stdout else 'None'}"
+                )
+
                 if result.stdout and len(result.stdout) > 0:
                     # Check if it looks like PNG data
-                    png_header = result.stdout[:8] if len(result.stdout) >= 8 else result.stdout
-                    is_png = png_header.startswith(b'\x89PNG\r\n\x1a\n')
+                    png_header = (
+                        result.stdout[:8] if len(result.stdout) >= 8 else result.stdout
+                    )
+                    is_png = png_header.startswith(b"\x89PNG\r\n\x1a\n")
                     print(f"   Data appears to be PNG: {is_png}")
-                    print(f"   First 16 bytes: {result.stdout[:16] if result.stdout else 'None'}")
+                    print(
+                        f"   First 16 bytes: {result.stdout[:16] if result.stdout else 'None'}"
+                    )
                 else:
                     print("   No screenshot data received")
-                    
+
             except Exception as e:
                 print(f"   Screenshot test failed: {e}")
         else:
             print("\n6. Screenshot Test: Skipped (not connected)")
-        
-        print("\n" + "="*50)
+
+        print("\n" + "=" * 50)
         print("END DEBUG REPORT")
-        print("="*50)
+        print("=" * 50)
 
 
 if __name__ == "__main__":
-    print("Starting Google Play Emulator Controller debug session...")
-    try:
-        emulator = GooglePlayEmulatorController()
-        print("Emulator controller initialized successfully!")
-        
-        # Run debug report
-        emulator.debug_adb_connectivity()
-        
-        # Test screenshot
-        print("\nTesting screenshot method...")
-        try:
-            img = emulator.screenshot()
-            print(f"Screenshot successful! Image shape: {img.shape}")
-        except Exception as e:
-            print(f"Screenshot failed: {e}")
-        
-    except Exception as e:
-        print(f"Failed to initialize emulator controller: {e}")
-        print("This might be because the emulator is not running.")
-        print("Let's try just testing the ADB path...")
-        
-        # Try to test ADB directly
-        try:
-            import os
-            import subprocess
-            adb_path = "C:\\Program Files\\Google\\Play Games Developer Emulator\\current\\emulator\\adb.exe"
-            if os.path.exists(adb_path):
-                print(f"ADB path exists: {adb_path}")
-                result = subprocess.run(f'"{adb_path}" devices', shell=True, capture_output=True, text=True)
-                print(f"ADB devices command output: {result.stdout}")
-                print(f"ADB devices command error: {result.stderr}")
-            else:
-                print(f"ADB path does not exist: {adb_path}")
-        except Exception as direct_test_error:
-            print(f"Direct ADB test failed: {direct_test_error}")
+    pass
