@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 
 from pyclashbot.utils.image_handler import open_from_path
-import matplotlib.pyplot as plt
 
 # =============================================================================
 # IMAGE RECOGNITION FUNCTIONS
@@ -38,10 +37,10 @@ def find_image(
         search_image = image[y1:y2, x1:x2]
         offset_x, offset_y = x1, y1
 
-    if show_image:
-        plt.imshow(search_image)
-        plt.title(f"Searching for {folder} in image")
-        plt.show()
+    # if show_image:
+    #     plt.imshow(search_image)
+    #     plt.title(f"Searching for {folder} in image")
+    #     plt.show()
     
     locations, filenames = find_references(search_image, folder, tolerance)
     coord = get_first_location(locations)
