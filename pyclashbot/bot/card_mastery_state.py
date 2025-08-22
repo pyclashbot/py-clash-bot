@@ -164,5 +164,3 @@ def check_for_inventory_full_popup(emulator):
 
 if __name__ == "__main__":
     collect_first_mastery_reward(1)
-    # print('\n\n\n')
-    # print(check_for_inventory_full_popup(1))

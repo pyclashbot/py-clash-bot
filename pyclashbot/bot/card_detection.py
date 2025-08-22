@@ -4320,7 +4320,7 @@ def get_card_group(card_id) -> str:
     return CARD_TO_GROUP.get(card_id, "No group")
 
 
-def get_play_coords_for_card(emulator, logger, card_index):
+def get_play_coords_for_card(emulator, logger, card_index, elapsed_time: float = 0):
     # get the ID of this card(ram_rider, zap, etc)
     id_cards_start_time = time.time()
     identity = identify_hand_cards(emulator, card_index)
@@ -4331,16 +4331,14 @@ def get_play_coords_for_card(emulator, logger, card_index):
     group = get_card_group(identity)
 
     # get the play coords of this grouping
-    coords = calculate_play_coords(group, play_side)
+    coords = calculate_play_coords(group, play_side, elapsed_time)
 
     return identity, coords
 
 
-def calculate_play_coords(card_grouping: str, side_preference: str):
+def calculate_play_coords(card_grouping: str, side_preference: str, elapsed_time: float = 0):
     # if there is a dedicated coordinate for this card
     if card_grouping == "No group":
-        from pyclashbot.bot.fight import elapsed_time
-
         if elapsed_time < 12:  # Less than 5 seconds
             if side_preference == "left":
                 return (random.randint(60, 206), random.randint(441, 456))

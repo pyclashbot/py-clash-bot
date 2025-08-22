@@ -51,11 +51,47 @@ class WorkerThread(PausableThread):
         state = "start"
         state_history = StateHistory(self.logger)
         state_order = StateOrder()
+        consecutive_restarts = 0
+        max_consecutive_restarts = 5
 
         while not self.shutdown_flag.is_set():
-            state = state_tree(
-                emulator, self.logger, state, jobs, state_history, state_order
-            )
+            try:
+                new_state = state_tree(
+                    emulator, self.logger, state, jobs, state_history, state_order
+                )
+                
+                # Check for restart loops
+                if new_state == "restart":
+                    consecutive_restarts += 1
+                    if consecutive_restarts >= max_consecutive_restarts:
+                        self.logger.error(f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop")
+                        break
+                    self.logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
+                else:
+                    consecutive_restarts = 0  # Reset counter on successful state
+                
+                # Check for error states that should stop execution
+                if new_state in ["fail", None]:
+                    self.logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
+                    break
+                    
+                state = new_state
+                    
+            except Exception as e:
+                self.logger.error(f"Exception in state_tree: {e}")
+                self.logger.log(f"Current state was: {state}")
+                print(f"[ERROR] Exception in state_tree: {e}")
+                print(f"[ERROR] Current state was: {state}")
+                # Try to restart from a known state
+                state = "restart"
+                # If we keep getting exceptions, break out
+                import traceback
+                traceback.print_exc()
+                consecutive_restarts += 1
+                if consecutive_restarts >= max_consecutive_restarts:
+                    self.logger.error("Too many consecutive exceptions - stopping bot")
+                    break
+                
             while self.pause_flag.is_set():
                 time.sleep(0.33)
 
