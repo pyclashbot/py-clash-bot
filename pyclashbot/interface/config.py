@@ -97,7 +97,6 @@ JOBS = [
     JobConfig("disable_win_track_toggle", "Skip win/loss check", default=False),
     JobConfig("card_mastery_user_toggle", "Card Masteries", default=False),
     JobConfig("card_upgrade_user_toggle", "Upgrade Cards", default=False),
-    JobConfig("season_shop_buys_user_toggle", "Season Shop Offers", default=False),
 ]
 
 # Emulator Settings Configuration
