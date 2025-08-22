@@ -46,7 +46,9 @@ BATTLE_STATS = [
     StatConfig("losses", "Loss"),
     StatConfig("winrate", "Win %"),
     StatConfig("cards_played", "Moves"),
-    StatConfig("trophy_road_1v1_fights", "1v1s"),
+    StatConfig("classic_1v1_fights", "Classic 1v1s"),
+    StatConfig("classic_2v2_fights", "Classic 2v2s"),
+    StatConfig("trophy_road_1v1_fights", "Trophy Road 1v1s"),
     StatConfig("card_randomizations", "Decks"),
 ]
 
@@ -64,8 +66,18 @@ BOT_STATS = [
 # Job Configuration
 JOBS = [
     JobConfig(
-        "trophy_road_1v1_user_toggle",
-        "Trophy road battles",
+        "classic_1v1_user_toggle",
+        "Classic 1v1 battles",
+        default=False
+    ),
+    JobConfig(
+        "classic_2v2_user_toggle",
+        "Classic 2v2 battles",
+        default=False
+    ),
+    JobConfig(
+        "trophy_road_user_toggle",
+        "Trophy Road battles",
         default=True
     ),
     JobConfig(
