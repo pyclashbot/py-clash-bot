@@ -61,9 +61,8 @@ def check_for_underleveled_deck_options_location(emulator):
 
 def click_delete_deck_button(emulator):
     if check_for_underleveled_delete_deck_button_location(emulator):
-        print("Detected underleveled delete deck button location. Clicking...")
+        print("Detected underleveled delete deck button location. Using that instead...")
         emulator.click(297, 276)
-
     else:
         emulator.click(291, 305)
 
