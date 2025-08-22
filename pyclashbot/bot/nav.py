@@ -23,7 +23,7 @@ CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
 
 
-def wait_for_battle_start(emulator, logger, timeout: int = 60) -> bool:
+def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
     """Waits for any battle to start (1v1 or 2v2).
 
     Args:
