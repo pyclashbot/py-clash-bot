@@ -3,10 +3,7 @@ import time
 from typing import Literal
 
 from pyclashbot.detection.image_rec import (
-    check_line_for_color,
     pixel_is_equal,
-    pixels_match_colors,
-    region_is_color,
     all_pixels_are_equal,
 )
 
@@ -562,22 +559,5 @@ def wait_for_clash_main_burger_button_options_menu(
 
 
 if __name__ == "__main__":
-    logger = Logger()
-
-    from pyclashbot.emulators.google_play import GooglePlayEmulatorController
-    from pyclashbot.emulators.memu import MemuEmulatorController
-
-    # emulator = GooglePlayEmulatorController()
-    emulator = MemuEmulatorController()
-    on_main = check_if_on_clash_main_menu(emulator)
-    print(f"on clash main?: {on_main}")
-
-    # print("Testing get_to_card_page_from_clash_main() on google play")
-    # emulator = GooglePlayEmulatorController()
-    # print(get_to_card_page_from_clash_main(emulator, logger))
-    # emulator.stop()
-
-    # print("Testing get_to_card_page_from_clash_main() on memu")
-    # emulator = MemuEmulatorController()
-    # print(get_to_card_page_from_clash_main(emulator, logger))
-    # emulator.stop()
+    pass
+    
