@@ -558,6 +558,8 @@ def wait_for_clash_main_burger_button_options_menu(
         logger.log("Done waiting for clash main options menu to appear")
     return "good"
 
+import cv2
+import os
 
 def find_fight_mode_icon(emulator, mode: str):
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
@@ -577,8 +579,15 @@ def find_fight_mode_icon(emulator, mode: str):
 
     look_folder = mode2folder[mode]
 
+    image = emulator.screenshot()
+
+    # os.makedirs('select_mode_images', exist_ok=True)
+    # file_name = f'{random.randint(0,100000)}.png'
+    # file_path = os.path.join('select_mode_images', file_name)
+    # cv2.imwrite(file_path, image)
+
     fight_mode_1v1_button_location = find_image(
-        emulator.screenshot(),
+        image,
         look_folder,
         tolerance=0.85,
         subcrop=(27, 158, 206, 582),
