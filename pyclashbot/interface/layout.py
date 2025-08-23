@@ -137,15 +137,6 @@ def create_status_bar():
                         font=('Arial', 9),
                         tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
                     ),
-                    sg.Text(
-                        "YouTube",
-                        key="-YOUTUBE_LINK-",
-                        enable_events=True,
-                        text_color="blue",
-                        font=('Arial', 9, 'underline'),
-                        tooltip="https://www.youtube.com/@matthewmiglio1171",
-                        pad=(10, 0)
-                    ),
                 ],
             ],
             expand_x=True,

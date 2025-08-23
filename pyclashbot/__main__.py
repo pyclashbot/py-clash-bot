@@ -242,8 +242,6 @@ class BotApplication:
             )
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
-        elif event == "-YOUTUBE_LINK-":
-            webbrowser.open("https://www.youtube.com/@matthewmiglio1171")
 
     def cleanup(self):
         """Clean up resources when closing."""
@@ -270,7 +268,7 @@ class BotApplication:
                 self.handle_stop_event()
             elif event in user_config_keys:
                 self.handle_settings_change(values)
-            elif event in ["bug-report", "discord", "-YOUTUBE_LINK-"]:
+            elif event in ["bug-report", "discord"]:
                 self.handle_external_links(event)
 
             # Handle thread completion cleanup
