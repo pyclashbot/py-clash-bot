@@ -1,6 +1,6 @@
 """Builder functions for creating FreeSimpleGUI elements from configuration."""
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as SG
 
 from .config import (
     BATTLE_STATS,
@@ -18,12 +18,12 @@ from .config import (
 from .theme import COLORS
 
 
-def build_stat_box(stat: StatConfig) -> sg.Text:
+def build_stat_box(stat: StatConfig) -> SG.Text:
     """Build a stat display text box with clean styling."""
-    return sg.Text(
+    return SG.Text(
         "0",
         key=stat.key,
-        relief=sg.RELIEF_SUNKEN,
+        relief=SG.RELIEF_SUNKEN,
         text_color=COLORS["white"],
         background_color=COLORS["navy"],
         size=stat.size,
@@ -33,30 +33,30 @@ def build_stat_box(stat: StatConfig) -> sg.Text:
     )
 
 
-def build_stat_title(stat: StatConfig) -> sg.Text:
+def build_stat_title(stat: StatConfig) -> SG.Text:
     """Build a stat title text."""
-    return sg.Text(stat.title, pad=(2, 1), font=("Arial", 9), justification="right", size=(10, 1))
+    return SG.Text(stat.title, pad=(2, 1), font=("Arial", 9), justification="right", size=(10, 1))
 
 
-def build_stats_section(stats: list[StatConfig], title: str) -> sg.Frame:
+def build_stats_section(stats: list[StatConfig], title: str) -> SG.Frame:
     """Build a clean stats section."""
     titles = [[build_stat_title(stat)] for stat in stats]
     values = [[build_stat_box(stat)] for stat in stats]
 
     layout = [
         [
-            sg.Column(titles, element_justification="right", pad=(2, 2)),
-            sg.Column(values, element_justification="left", pad=(2, 2)),
+            SG.Column(titles, element_justification="right", pad=(2, 2)),
+            SG.Column(values, element_justification="left", pad=(2, 2)),
         ]
     ]
 
-    return sg.Frame(layout=layout, title=title, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
+    return SG.Frame(layout=layout, title=title, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
 
 
-def build_job_checkbox(job: JobConfig) -> list[sg.Element]:
+def build_job_checkbox(job: JobConfig) -> list[SG.Element]:
     """Build a compact job checkbox."""
     elements = [
-        sg.Checkbox(job.title, default=job.default, key=job.key, enable_events=True, font=("Arial", 9), pad=(3, 2))
+        SG.Checkbox(job.title, default=job.default, key=job.key, enable_events=True, font=("Arial", 9), pad=(3, 2))
     ]
 
     if job.extras:
@@ -64,8 +64,8 @@ def build_job_checkbox(job: JobConfig) -> list[sg.Element]:
             if isinstance(extra_config, ComboConfig):
                 elements.extend(
                     [
-                        sg.Text(f"{extra_config.label}", size=(6, 1), font=("Arial", 9)),
-                        sg.Combo(
+                        SG.Text(f"{extra_config.label}", size=(6, 1), font=("Arial", 9)),
+                        SG.Combo(
                             values=extra_config.values,
                             default_value=extra_config.default,
                             key=extra_config.key,
@@ -80,16 +80,16 @@ def build_job_checkbox(job: JobConfig) -> list[sg.Element]:
     return elements
 
 
-def build_jobs_section() -> list[list[sg.Element]]:
+def build_jobs_section() -> list[list[SG.Element]]:
     """Build the jobs checklist section."""
     return [[*build_job_checkbox(job)] for job in JOBS]
 
 
-def build_radio_section(radios: list[RadioConfig], title: str) -> sg.Frame:
+def build_radio_section(radios: list[RadioConfig], title: str) -> SG.Frame:
     """Build a clean radio button section."""
     layout = [
         [
-            sg.Radio(
+            SG.Radio(
                 enable_events=True,
                 text=radio.title,
                 group_id=radio.group_id,
@@ -102,10 +102,10 @@ def build_radio_section(radios: list[RadioConfig], title: str) -> sg.Frame:
         for radio in radios
     ]
 
-    return sg.Frame(layout=layout, title=title, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
+    return SG.Frame(layout=layout, title=title, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
 
 
-def build_combo_section(combos: list[ComboConfig], title: str) -> sg.Frame:
+def build_combo_section(combos: list[ComboConfig], title: str) -> SG.Frame:
     """Build a clean combo box section."""
     # For Google Play Settings, create a clean 3x2 grid layout like original
     if title == "Google Play Options":
@@ -117,8 +117,8 @@ def build_combo_section(combos: list[ComboConfig], title: str) -> sg.Frame:
                     combo = combos[i + j]
                     row.extend(
                         [
-                            sg.Text(combo.label, size=(6, 1), font=("Arial", 9)),
-                            sg.Combo(
+                            SG.Text(combo.label, size=(6, 1), font=("Arial", 9)),
+                            SG.Combo(
                                 combo.values,
                                 key=combo.key,
                                 readonly=True,
@@ -129,49 +129,49 @@ def build_combo_section(combos: list[ComboConfig], title: str) -> sg.Frame:
                         ]
                     )
                 else:
-                    row.extend([sg.Text("", size=(10, 1))])
+                    row.extend([SG.Text("", size=(10, 1))])
             layout.append(row)
     else:
         layout = [
             [
-                sg.Text(combo.label, size=(10, 1), font=("Arial", 9)),
-                sg.Combo(combo.values, key=combo.key, readonly=True, default_value=combo.default, font=("Arial", 9)),
+                SG.Text(combo.label, size=(10, 1), font=("Arial", 9)),
+                SG.Combo(combo.values, key=combo.key, readonly=True, default_value=combo.default, font=("Arial", 9)),
             ]
             for combo in combos
         ]
 
-    return sg.Frame(title=title, layout=layout, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
+    return SG.Frame(title=title, layout=layout, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
 
 
-def build_memu_settings() -> sg.Frame:
+def build_memu_settings() -> SG.Frame:
     """Build the Memu settings frame."""
     return build_radio_section(MEMU_SETTINGS, "Memu Settings")
 
 
-def build_emulator_choice() -> sg.Frame:
+def build_emulator_choice() -> SG.Frame:
     """Build the emulator choice frame."""
     return build_radio_section(EMULATOR_CHOICE, "Emulator Type")
 
 
-def build_google_play_settings() -> sg.Frame:
+def build_google_play_settings() -> SG.Frame:
     """Build the Google Play settings frame."""
     return build_combo_section(GOOGLE_PLAY_SETTINGS, "Google Play Settings")
 
 
-def build_emulator_settings_tabs() -> sg.TabGroup:
+def build_emulator_settings_tabs() -> SG.TabGroup:
     """Build clean tabbed emulator settings."""
-    google_play_tab = sg.Tab(
+    google_play_tab = SG.Tab(
         "Google Play Settings",
         [[build_combo_section(GOOGLE_PLAY_SETTINGS, "Google Play Options")]],
         key="-GOOGLE_PLAY_TAB-",
         pad=(3, 3),
     )
 
-    memu_tab = sg.Tab(
+    memu_tab = SG.Tab(
         "Memu Settings", [[build_radio_section(MEMU_SETTINGS, "Render Mode")]], key="-MEMU_TAB-", pad=(3, 3)
     )
 
-    return sg.TabGroup(
+    return SG.TabGroup(
         [[google_play_tab, memu_tab]],
         key="-EMULATOR_TABS-",
         enable_events=True,
@@ -184,27 +184,27 @@ def build_emulator_settings_tabs() -> sg.TabGroup:
     )
 
 
-def build_data_settings() -> sg.Frame:
+def build_data_settings() -> SG.Frame:
     """Build the data settings frame."""
     layout = [
         [
-            sg.Checkbox("Record fights", key="record_fights_toggle", default=False, font=("Arial", 9), pad=(5, 2)),
+            SG.Checkbox("Record fights", key="record_fights_toggle", default=False, font=("Arial", 9), pad=(5, 2)),
         ],
     ]
 
-    return sg.Frame(title="Data Settings", layout=layout, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
+    return SG.Frame(title="Data Settings", layout=layout, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
 
 
-def build_battle_stats() -> sg.Frame:
+def build_battle_stats() -> SG.Frame:
     """Build the battle stats section."""
     return build_stats_section(BATTLE_STATS, "Battle Stats")
 
 
-def build_collection_stats() -> sg.Frame:
+def build_collection_stats() -> SG.Frame:
     """Build the collection stats section."""
     return build_stats_section(COLLECTION_STATS, "Collection Stats")
 
 
-def build_bot_stats() -> sg.Frame:
+def build_bot_stats() -> SG.Frame:
     """Build the bot stats section."""
     return build_stats_section(BOT_STATS, "Bot Stats")
