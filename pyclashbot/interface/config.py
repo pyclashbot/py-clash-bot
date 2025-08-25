@@ -7,6 +7,7 @@ from typing import Any
 @dataclass
 class StatConfig:
     """Configuration for a stat display element."""
+
     key: str
     title: str
     size: tuple[int, int] = (6, 1)
@@ -15,6 +16,7 @@ class StatConfig:
 @dataclass
 class JobConfig:
     """Configuration for a job checkbox element."""
+
     key: str
     title: str
     default: bool = False
@@ -24,6 +26,7 @@ class JobConfig:
 @dataclass
 class RadioConfig:
     """Configuration for a radio button element."""
+
     key: str
     title: str
     group_id: str
@@ -33,6 +36,7 @@ class RadioConfig:
 @dataclass
 class ComboConfig:
     """Configuration for a combo box element."""
+
     key: str
     label: str
     values: list[str | int]
@@ -65,33 +69,18 @@ BOT_STATS = [
 
 # Job Configuration
 JOBS = [
-    JobConfig(
-        "classic_1v1_user_toggle",
-        "Classic 1v1 battles",
-        default=False
-    ),
-    JobConfig(
-        "classic_2v2_user_toggle",
-        "Classic 2v2 battles",
-        default=False
-    ),
-    JobConfig(
-        "trophy_road_user_toggle",
-        "Trophy Road battles",
-        default=True
-    ),
+    JobConfig("classic_1v1_user_toggle", "Classic 1v1 battles", default=False),
+    JobConfig("classic_2v2_user_toggle", "Classic 2v2 battles", default=False),
+    JobConfig("trophy_road_user_toggle", "Trophy Road battles", default=True),
     JobConfig(
         "random_decks_user_toggle",
         "Random decks",
         default=False,
         extras={
             "deck_selector": ComboConfig(
-                "deck_number_selection",
-                "Deck #:",
-                values=[1, 2, 3, 4, 5],
-                default=2
+                "deck_number_selection", "Deck #:", values=[1, 2, 3, 4, 5], default=2
             )
-        }
+        },
     ),
     JobConfig("random_plays_user_toggle", "Random plays", default=False),
     JobConfig("disable_win_track_toggle", "Skip win/loss check", default=False),
@@ -123,10 +112,10 @@ GOOGLE_PLAY_SETTINGS = [
 
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
-    [job.key for job in JOBS] +
-    [radio.key for radio in MEMU_SETTINGS + EMULATOR_CHOICE] +
-    [combo.key for combo in GOOGLE_PLAY_SETTINGS] +
-    ["record_fights_toggle"]  # Data settings
+    [job.key for job in JOBS]
+    + [radio.key for radio in MEMU_SETTINGS + EMULATOR_CHOICE]
+    + [combo.key for combo in GOOGLE_PLAY_SETTINGS]
+    + ["record_fights_toggle"]  # Data settings
 )
 
 # Keys to disable when bot is running
