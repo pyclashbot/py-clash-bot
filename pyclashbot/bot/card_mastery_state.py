@@ -26,9 +26,8 @@ def card_mastery_state(emulator, logger):
             'Failed somewhere in collect_card_mastery_rewards(), returning "restart"',
         )
         return False
-    
-    return True
 
+    return True
 
 
 def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:

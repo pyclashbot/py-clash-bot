@@ -1,18 +1,19 @@
-import numpy as np
 import os
-from os.path import normpath
-from contextlib import suppress
-from winreg import OpenKey, QueryValueEx, ConnectRegistry, HKEY_LOCAL_MACHINE
 import subprocess
 import time
-import cv2
-import pygetwindow as gw
 import xml.etree.ElementTree as ET
+from contextlib import suppress
+from os.path import normpath
+from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
+
+import cv2
+import numpy as np
+import pygetwindow as gw
 
 DEBUG = False
 
-from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.emulators.base import BaseEmulatorController
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
@@ -28,15 +29,11 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             raise FileNotFoundError("Google Play Games Developer Emulator not found.")
 
         # locate the executable
-        self.emulator_executable_path = os.path.join(
-            self.base_folder, "Bootstrapper.exe"
-        )
+        self.emulator_executable_path = os.path.join(self.base_folder, "Bootstrapper.exe")
 
         # locate the config file
         # C:\Program Files\Google\Play Games Developer Emulator\current\service\Service.exe.config
-        self.service_config_path = os.path.join(
-            self.base_folder, "current", "service", "Service.exe.config"
-        )
+        self.service_config_path = os.path.join(self.base_folder, "current", "service", "Service.exe.config")
 
         # locate the adb executable
         self.adb_path = self._find_adb_path()
@@ -52,9 +49,8 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         ]:
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
-            else:
-                if DEBUG:
-                    print(f"[INIT DEBUG] Path verified: {path}")
+            elif DEBUG:
+                print(f"[INIT DEBUG] Path verified: {path}")
 
         # configure the emulator via file
         self._configure_settings(render_settings)
@@ -120,9 +116,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         valid_keys = {"angle", "vulkan", "gles", "surfaceless", "egl", "backend", "wsi"}
 
         # Filter to valid keys only
-        updates = {
-            k: v for k, v in settings.items() if k in valid_keys and v is not None
-        }
+        updates = {k: v for k, v in settings.items() if k in valid_keys and v is not None}
 
         if not updates:
             return
@@ -256,23 +250,18 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             full_command,
             shell=True,
             capture_output=True,
-            text=not binary_output,  # Use binary mode for screenshots
+            text=not binary_output,
+            check=False,  # Use binary mode for screenshots
         )
 
         if DEBUG:
             print(f"[ADB DEBUG] Return code: {result.returncode}")
             if binary_output:
                 print(f"[ADB DEBUG] Stdout type: {type(result.stdout)}")
-                print(
-                    f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}"
-                )
+                print(f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}")
             else:
-                print(
-                    f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}..."
-                )
-            print(
-                f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}..."
-            )
+                print(f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}...")
+            print(f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}...")
 
         return result
 
@@ -289,7 +278,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         raise NotImplementedError
 
     def _is_emulator_running(self):
-        result = subprocess.run("tasklist", shell=True, capture_output=True, text=True)
+        result = subprocess.run("tasklist", shell=True, capture_output=True, text=True, check=False)
         return "crosvm.exe" in result.stdout
 
     def _find_window(self, title_keyword):
@@ -331,15 +320,15 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             print(f"Resizing emulator to {width}x{height}...")
 
         emulator_window = self._find_window(self.google_play_emulator_process_name)
-        
+
         if emulator_window is None:
             return False
         if width is None:
             return False
         if height is None:
             return False
-        
-        emulator_window.resizeTo(width, (height+150))
+
+        emulator_window.resizeTo(width, (height + 150))
 
         self._set_screen_size(width, height)
 
@@ -388,7 +377,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         clash_royale_name = "com.supercell.clashroyale"
         start_app_count = 3
         for i in range(start_app_count):
-            print(f"Starting clash app (attempt {i+1}/{start_app_count})...")
+            print(f"Starting clash app (attempt {i + 1}/{start_app_count})...")
             self.start_app(clash_royale_name)
             time.sleep(1)
 
@@ -399,9 +388,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         time.sleep(12)
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
-                print(
-                    "[!] Fatal error: Timeout reached while waiting for clash main menu to appear."
-                )
+                print("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
@@ -438,7 +425,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         for proc in process_names:
             result = subprocess.run(
-                f'taskkill /f /im "{proc}"', shell=True, capture_output=True, text=True
+                f'taskkill /f /im "{proc}"', shell=True, capture_output=True, text=True, check=False
             )
 
             if result.returncode == 0:
@@ -478,9 +465,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         if devices_result.returncode != 0:
             if DEBUG:
-                print(
-                    f"[SCREENSHOT DEBUG] ADB devices failed with return code: {devices_result.returncode}"
-                )
+                print(f"[SCREENSHOT DEBUG] ADB devices failed with return code: {devices_result.returncode}")
                 print(f"[SCREENSHOT DEBUG] ADB devices stderr: {devices_result.stderr}")
             raise RuntimeError(f"ADB connectivity test failed: {devices_result.stderr}")
 
@@ -490,30 +475,20 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         result = self.adb("exec-out screencap -p", binary_output=True)
 
         if DEBUG:
-            print(
-                f"[SCREENSHOT DEBUG] Screenshot command return code: {result.returncode}"
-            )
+            print(f"[SCREENSHOT DEBUG] Screenshot command return code: {result.returncode}")
             print(f"[SCREENSHOT DEBUG] Screenshot stdout type: {type(result.stdout)}")
-            print(
-                f"[SCREENSHOT DEBUG] Screenshot stdout is None: {result.stdout is None}"
-            )
+            print(f"[SCREENSHOT DEBUG] Screenshot stdout is None: {result.stdout is None}")
 
         if result.returncode != 0:
             error_msg = result.stderr if result.stderr else "Unknown error"
             if DEBUG:
-                print(
-                    f"[SCREENSHOT DEBUG] ADB screenshot failed with error: {error_msg}"
-                )
+                print(f"[SCREENSHOT DEBUG] ADB screenshot failed with error: {error_msg}")
             raise RuntimeError(f"ADB screenshot failed: {error_msg}")
 
         if result.stdout is None:
             if DEBUG:
-                print(
-                    "[SCREENSHOT DEBUG] Screenshot stdout is None - this indicates ADB command failure"
-                )
-            raise RuntimeError(
-                "ADB screenshot returned None stdout - command failed silently"
-            )
+                print("[SCREENSHOT DEBUG] Screenshot stdout is None - this indicates ADB command failure")
+            raise RuntimeError("ADB screenshot returned None stdout - command failed silently")
 
         if len(result.stdout) == 0:
             if DEBUG:
@@ -521,17 +496,13 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             raise RuntimeError("ADB screenshot returned empty data")
 
         if DEBUG:
-            print(
-                f"[SCREENSHOT DEBUG] Screenshot data length: {len(result.stdout)} bytes"
-            )
+            print(f"[SCREENSHOT DEBUG] Screenshot data length: {len(result.stdout)} bytes")
 
         # Convert bytes to NumPy array
         try:
             img_array = np.frombuffer(result.stdout, dtype=np.uint8)
             if DEBUG:
-                print(
-                    f"[SCREENSHOT DEBUG] NumPy array created, shape: {img_array.shape}"
-                )
+                print(f"[SCREENSHOT DEBUG] NumPy array created, shape: {img_array.shape}")
         except Exception as e:
             if DEBUG:
                 print(f"[SCREENSHOT DEBUG] Failed to create NumPy array: {e}")
@@ -541,9 +512,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         try:
             img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
             if DEBUG:
-                print(
-                    f"[SCREENSHOT DEBUG] Image decoded, shape: {img.shape if img is not None else 'None'}"
-                )
+                print(f"[SCREENSHOT DEBUG] Image decoded, shape: {img.shape if img is not None else 'None'}")
         except Exception as e:
             if DEBUG:
                 print(f"[SCREENSHOT DEBUG] Failed to decode image: {e}")
@@ -551,21 +520,15 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         if img is None:
             if DEBUG:
-                print(
-                    "[SCREENSHOT DEBUG] cv2.imdecode returned None - invalid image data"
-                )
+                print("[SCREENSHOT DEBUG] cv2.imdecode returned None - invalid image data")
                 # Let's save the raw data to analyze
                 try:
                     with open("debug_screenshot_data.bin", "wb") as f:
                         f.write(result.stdout)
-                    print(
-                        "[SCREENSHOT DEBUG] Raw screenshot data saved to debug_screenshot_data.bin"
-                    )
+                    print("[SCREENSHOT DEBUG] Raw screenshot data saved to debug_screenshot_data.bin")
                 except Exception as e:
                     print(f"[SCREENSHOT DEBUG] Failed to save debug data: {e}")
-            raise ValueError(
-                "Failed to decode screenshot - image data may be corrupted"
-            )
+            raise ValueError("Failed to decode screenshot - image data may be corrupted")
 
         if DEBUG:
             print(f"[SCREENSHOT DEBUG] Screenshot successful! Image shape: {img.shape}")
@@ -578,9 +541,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         raise NotImplementedError
 
     def start_app(self, package_name: str):
-        self.adb(
-            f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1"
-        )
+        self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
 
     def debug_adb_connectivity(self):
         """
@@ -623,20 +584,14 @@ class GooglePlayEmulatorController(BaseEmulatorController):
                 result = self.adb("exec-out screencap -p", binary_output=True)
                 print(f"   Screenshot return code: {result.returncode}")
                 print(f"   Screenshot data type: {type(result.stdout)}")
-                print(
-                    f"   Screenshot data length: {len(result.stdout) if result.stdout else 'None'}"
-                )
+                print(f"   Screenshot data length: {len(result.stdout) if result.stdout else 'None'}")
 
                 if result.stdout and len(result.stdout) > 0:
                     # Check if it looks like PNG data
-                    png_header = (
-                        result.stdout[:8] if len(result.stdout) >= 8 else result.stdout
-                    )
+                    png_header = result.stdout[:8] if len(result.stdout) >= 8 else result.stdout
                     is_png = png_header.startswith(b"\x89PNG\r\n\x1a\n")
                     print(f"   Data appears to be PNG: {is_png}")
-                    print(
-                        f"   First 16 bytes: {result.stdout[:16] if result.stdout else 'None'}"
-                    )
+                    print(f"   First 16 bytes: {result.stdout[:16] if result.stdout else 'None'}")
                 else:
                     print("   No screenshot data received")
 

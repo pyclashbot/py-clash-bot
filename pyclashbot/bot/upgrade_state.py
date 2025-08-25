@@ -2,7 +2,6 @@ import time
 from typing import Any
 
 from pyclashbot.bot.nav import (
-    check_if_on_card_page,
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
     select_mode,
@@ -73,13 +72,11 @@ def upgrade_cards_state(emulator, logger: Logger):
         logger.change_status("Not on clash main at the start of upgrade_cards_state()")
         return False
 
-
     # select Trophy Road mode
     logger.change_status(status="Selecting Trophy Road mode")
     if not select_mode(emulator, "Trophy Road"):
         logger.change_status("Failed to select Trophy Road mode")
         return False
-
 
     # get to card page
     logger.change_status(status="Getting to card page")

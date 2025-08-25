@@ -3,11 +3,10 @@ import time
 from typing import Literal
 
 from pyclashbot.detection.image_rec import (
-    pixel_is_equal,
     all_pixels_are_equal,
     find_image,
+    pixel_is_equal,
 )
-
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
@@ -17,8 +16,6 @@ CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 520)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
-
-
 
 
 def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
@@ -35,7 +32,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         bool: True if battle started, False if timed out.
     """
     start_time = time.time()
-    
+
     while time.time() - start_time < timeout:
         time_taken = str(time.time() - start_time)[:4]
         logger.change_status(
@@ -43,7 +40,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         )
 
         battle_result = check_if_in_battle(emulator)
-        
+
         if battle_result:  # True for any battle type
             logger.change_status("Detected an ongoing battle!")
             return True
@@ -72,7 +69,6 @@ def check_for_in_battle_with_delay(emulator) -> bool:
         if battle_result:  # True for any battle type ("1v1", "2v2")
             return True
     return False
-
 
 
 def check_if_in_battle(emulator):
@@ -106,7 +102,7 @@ def check_if_in_battle(emulator):
         [255, 255, 255],
         [255, 255, 255],
         [255, 255, 255],
-        [231,57,242],
+        [231, 57, 242],
     ]
 
     # def pixel_to_string(pixel):
@@ -179,7 +175,6 @@ def handle_trophy_reward_menu(
     logger: Logger,
     printmode=False,
 ) -> Literal["good"]:
-
     if printmode:
         logger.change_status(status="Handling trophy reward menu")
     else:
@@ -210,7 +205,6 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
             handle_trophy_reward_menu(emulator, logger)
             time.sleep(2)
             continue
-
 
         # click deadspace
         if deadspace_click and random.randint(0, 1) == 0:
@@ -293,7 +287,6 @@ def get_to_card_page_from_clash_main(
     emulator,
     logger: Logger,
 ) -> Literal["restart", "good"]:
-
     start_time = time.time()
 
     logger.change_status(status="Getting to card page from clash main")
@@ -383,7 +376,6 @@ def get_to_activity_log(
     logger: Logger,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
-
     if printmode:
         logger.change_status(status="Getting to activity log")
     else:
@@ -431,7 +423,6 @@ def wait_for_battle_log_page(
     logger: Logger,
     printmode=False,
 ) -> Literal["restart", "good"]:
-
     start_time = time.time()
     if printmode:
         logger.change_status(status="Waiting for battle log page to appear")
@@ -488,7 +479,6 @@ def check_if_on_battle_log_page(emulator) -> bool:
 
 
 def check_if_on_clash_main_burger_button_options_menu(emulator) -> bool:
-
     iar = emulator.screenshot()
     pixels = [
         iar[42][256],
@@ -558,17 +548,13 @@ def wait_for_clash_main_burger_button_options_menu(
         logger.log("Done waiting for clash main options menu to appear")
     return "good"
 
-import cv2
-import os
 
 def find_fight_mode_icon(emulator, mode: str):
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
 
     # Check if the mode is valid
     if mode not in expected_mode_types:
-        print(
-            f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
-        )
+        print(f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
         return None
 
     mode2folder = {
@@ -607,9 +593,7 @@ def select_mode(emulator, mode: str):
 
     # Check if the mode is valid
     if mode not in expected_mode_types:
-        print(
-            f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
-        )
+        print(f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
         return False
 
     # must be on clash main
@@ -649,4 +633,3 @@ def select_mode(emulator, mode: str):
 
 if __name__ == "__main__":
     pass
-    

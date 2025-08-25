@@ -13,9 +13,7 @@ from pyclashbot.utils.logger import Logger
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
 
-def randomize_deck_state(
-    emulator, logger: Logger,  deck_number: int = 2
-):
+def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
     # increment job count
 
     # if not on clash main, return 'restart'
@@ -115,7 +113,6 @@ def check_for_randomize_deck_icon(emulator):
         [255, 255, 255],
         [255, 255, 255],
     ]
-
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):

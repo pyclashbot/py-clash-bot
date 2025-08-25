@@ -1,10 +1,10 @@
-import threading
-import os
-import time
-from PIL import Image
-import numpy as np
 import csv
 import json
+import os
+import time
+
+import numpy as np
+from PIL import Image
 
 top_folder = r"recordings"
 
@@ -19,15 +19,11 @@ def is_valid_play_input(play_coord, card_index):
         return False
 
     if not (coords_low_limit <= play_coord[0] <= coords_max_limit):
-        print(
-            f"[!] Warning. Your play coordinates X are out of bounds: {play_coord[0]}"
-        )
+        print(f"[!] Warning. Your play coordinates X are out of bounds: {play_coord[0]}")
         return False
 
     if not (coords_low_limit <= play_coord[1] <= coords_max_limit):
-        print(
-            f"[!] Warning. Your play coordinates Y are out of bounds: {play_coord[1]}"
-        )
+        print(f"[!] Warning. Your play coordinates Y are out of bounds: {play_coord[1]}")
         return False
 
     if card_index not in card_indices:
@@ -52,7 +48,7 @@ def save_play(play_coord, card_index):
 
     with open(fp, "w") as f:
         json.dump(data, f)
-    print('Saved a fight play to', fp)
+    print("Saved a fight play to", fp)
 
     return True
 
@@ -72,26 +68,26 @@ def save_win_loss(result: str):
     fp = f"{top_folder}/result_{timestamp}.txt"
     if os.path.exists(fp):
         return False
-    print('Saved a fight result to', fp)
+    print("Saved a fight result to", fp)
     with open(fp, "w") as f:
         f.write(result)
 
 
 def save_image(image: np.ndarray):
-    print('Saving a fight image')
+    print("Saving a fight image")
     os.makedirs(top_folder, exist_ok=True)
 
     timestamp = int(time.time())
     fp = f"{top_folder}/fight_image_{timestamp}.png"
     if os.path.exists(fp):
-        print(f'[!] Warning. Fight image file {fp} already exists.')
+        print(f"[!] Warning. Fight image file {fp} already exists.")
         return False
 
     # Convert BGR (OpenCV) to RGB (PIL)
     rgb_image = image[..., ::-1]
     pil_image = Image.fromarray(rgb_image)
     pil_image.save(fp)
-    print('Saved a fight image to', fp)
+    print("Saved a fight image to", fp)
     return True
 
 
@@ -100,12 +96,8 @@ def to_csv():
     rows = []
 
     files = os.listdir(top_folder)
-    remaining_image_files = [
-        f for f in files if f.startswith("fight_image_") and f.endswith(".png")
-    ]
-    remaining_play_files = [
-        f for f in files if f.startswith("play_") and f.endswith(".json")
-    ]
+    remaining_image_files = [f for f in files if f.startswith("fight_image_") and f.endswith(".png")]
+    remaining_play_files = [f for f in files if f.startswith("play_") and f.endswith(".json")]
     result_files = [f for f in files if f.startswith("result_") and f.endswith(".txt")]
 
     # go fight by fight
@@ -115,28 +107,12 @@ def to_csv():
         results_timestamps.append(result_timestamp)
 
     def get_image_files_before_timestamp(timestamp, range_length: int):
-        files = [
-            f
-            for f in remaining_image_files
-            if int(f.split("_")[2].split(".")[0]) <= int(timestamp)
-        ]
-        return [
-            f
-            for f in files
-            if int(f.split("_")[2].split(".")[0]) > int(timestamp) - range_length
-        ]
+        files = [f for f in remaining_image_files if int(f.split("_")[2].split(".")[0]) <= int(timestamp)]
+        return [f for f in files if int(f.split("_")[2].split(".")[0]) > int(timestamp) - range_length]
 
     def get_play_files_before_timestamp(timestamp, range_length: int):
-        files = [
-            f
-            for f in remaining_play_files
-            if int(f.split("_")[1].split(".")[0]) <= int(timestamp)
-        ]
-        return [
-            f
-            for f in files
-            if int(f.split("_")[1].split(".")[0]) > int(timestamp) - range_length
-        ]
+        files = [f for f in remaining_play_files if int(f.split("_")[1].split(".")[0]) <= int(timestamp)]
+        return [f for f in files if int(f.split("_")[1].split(".")[0]) > int(timestamp) - range_length]
 
     def extract_timestamp_from_filename(file_name):
         # fight_image_1754003855.png
@@ -149,9 +125,7 @@ def to_csv():
             timestamp_part = parts[-1].split(".")[0]
             return int(timestamp_part)
         except Exception as e:
-            print(
-                f"[!] Warning! Could not extract timestamp from file name {file_name}: {e}"
-            )
+            print(f"[!] Warning! Could not extract timestamp from file name {file_name}: {e}")
             return None
 
     def find_images_in_range(play_timestamp, range_length: int, image_file_names):
@@ -171,9 +145,7 @@ def to_csv():
             #     print('This image timestamp is out of range:', image_timestamp, 'from this target_timestamp:', play_timestamp)
 
         # sort the dict by timestamp
-        sorted_timestamp2image_name = dict(
-            sorted(timestamp2image_name.items(), key=lambda item: item[0])
-        )
+        sorted_timestamp2image_name = dict(sorted(timestamp2image_name.items(), key=lambda item: item[0]))
 
         # return the image names
         return list(sorted_timestamp2image_name.values())
@@ -182,7 +154,6 @@ def to_csv():
         no_play_image_files = []
 
         for image_file in image_files:
-
             image_timestamp = extract_timestamp_from_filename(image_file)
             if image_timestamp is None:
                 continue
@@ -208,7 +179,7 @@ def to_csv():
             return fp
 
     def read_result(results_file):
-        with open(results_file, "r") as f:
+        with open(results_file) as f:
             result = f.read().strip()
             return result
 
@@ -244,7 +215,7 @@ def to_csv():
             most_recent_image = file_names[-1]
             print(f"\tPlay: {play}, Most Recent Image: {most_recent_image}")
             play_data = json.load(open(f"{top_folder}/{play}"))
-            print(f'Play play_coord: {play_data["play_coord"]}')
+            print(f"Play play_coord: {play_data['play_coord']}")
             print("Type of play data[play_coord]:", type(play_data["play_coord"]))
             row = [
                 most_recent_image,

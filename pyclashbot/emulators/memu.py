@@ -1,23 +1,21 @@
-import logging
-from pymemuc import PyMemuc, PyMemucError, VMInfo
-import numpy as np
-import json
-import os
-import time
-import contextlib
-import subprocess
-from os.path import join
-import psutil
 import base64
 import binascii
+import contextlib
+import json
+import logging
+import os
+import re
+import subprocess
+import time
+from os.path import join
 
 import cv2
 import numpy as np
-import re
-from pymemuc import PyMemucError
+import psutil
+from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.emulators.base import BaseEmulatorController
 
 
 class InvalidImageError(Exception):
@@ -32,9 +30,7 @@ class InvalidImageError(Exception):
 class MemuScreenCapture:
     def __init__(self, pmc):
         self.pmc = pmc
-        self.image_b64_pattern = re.compile(
-            r"already connected to 127\.0\.0\.1:[\d]*\n\n"
-        )
+        self.image_b64_pattern = re.compile(r"already connected to 127\.0\.0\.1:[\d]*\n\n")
 
     def open_from_b64(self, image_b64: str):
         """A method to validate and open an image from a base64 string
@@ -76,9 +72,7 @@ class MemuScreenCapture:
 
     def __getitem__(self, vm_index) -> np.ndarray:
         if vm_index is None:
-            print(
-                "[!] Fatal error: vm_index is None in MemuScreenCapture.__getitem__()"
-            )
+            print("[!] Fatal error: vm_index is None in MemuScreenCapture.__getitem__()")
             return np.zeros((1, 1, 3), dtype=np.uint8)
 
         while True:  # loop until a valid image is returned
@@ -101,7 +95,7 @@ def verify_memu_installation():
     try:
         PyMemuc()
         return True
-    except:
+    except Exception:
         pass
     return False
 
@@ -114,7 +108,7 @@ class MemuEmulatorController(BaseEmulatorController):
         """
         init_start_time = time.time()
         self.pmc = PyMemuc()
-            
+
         self.config = self._read_config_data()
         self.render_mode = render_mode
 
@@ -180,7 +174,7 @@ class MemuEmulatorController(BaseEmulatorController):
             return {}
 
         # read the config file, return data
-        with open(config_file_path, "r") as config_file:
+        with open(config_file_path) as config_file:
             config_data = json.load(config_file)
 
         return config_data
@@ -205,9 +199,7 @@ class MemuEmulatorController(BaseEmulatorController):
         current_configuration = {}
         for key in self.config:
             try:
-                current_value = self.pmc.get_configuration_vm(
-                    key, vm_index=self.vm_index
-                )
+                current_value = self.pmc.get_configuration_vm(key, vm_index=self.vm_index)
                 current_configuration[key] = current_value
             except PyMemucError as e:
                 logging.exception("Failed to get configuration for key %s: %s", key, e)
@@ -255,9 +247,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
         console_path = join(self.pmc._get_memu_top_level(), "MEMuConsole.exe")
         print("[+] Starting memu console at:", console_path)
-        process = subprocess.Popen(
-            console_path, creationflags=subprocess.DETACHED_PROCESS
-        )
+        process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
 
         time.sleep(2)
 
@@ -375,9 +365,7 @@ class MemuEmulatorController(BaseEmulatorController):
         while 1:
             # if timed out, retry restarting
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
-                print(
-                    "[!] Fatal error: Timeout reached while waiting for clash main menu to appear."
-                )
+                print("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
@@ -412,9 +400,7 @@ class MemuEmulatorController(BaseEmulatorController):
         start_time = time.time()
         while self._check_for_emulator_running() is True:
             if time.time() - start_time > timeout:
-                print(
-                    f"[!] Non fatal error: Timeout of {timeout} seconds reached while stopping the emulator.\n"
-                )
+                print(f"[!] Non fatal error: Timeout of {timeout} seconds reached while stopping the emulator.\n")
                 return False
 
             self.pmc.stop_vm(vm_index=self.vm_index)
@@ -485,9 +471,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
         if not found:
             # notify user that clash royale is not installed, program will exit
-            print(
-                f"[!] Fatal error: {package_name} is not installed.\nPlease install it and restart"
-            )
+            print(f"[!] Fatal error: {package_name} is not installed.\nPlease install it and restart")
             return False
 
         # start Clash Royale

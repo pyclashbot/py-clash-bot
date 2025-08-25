@@ -1,10 +1,10 @@
 import time
 
-from pyclashbot.bot.states import StateHistory, state_tree, StateOrder
+from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
-from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
-from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 
 
 class WorkerThread(PausableThread):
@@ -17,27 +17,27 @@ class WorkerThread(PausableThread):
         """Create and return a Google Play emulator instance."""
         try:
             emulator = GooglePlayEmulatorController()
-            print('Successfully created google play emulator')
+            print("Successfully created google play emulator")
             return emulator
         except Exception as e:
-            print(f'Failed to create Google Play emulator: {e}')
+            print(f"Failed to create Google Play emulator: {e}")
             self.logger.change_status("Failed to start Google Play. Verify its installation!")
             return None
 
     def _create_memu_emulator(self, render_mode):
         """Create and return a MEmu emulator instance."""
         if not verify_memu_installation():
-            self.logger.change_status('Memu is not installed! Please install it to use Memu Emulator Mode')
+            self.logger.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
             return None
-        
+
         return MemuEmulatorController(render_mode)
 
     def _setup_emulator(self, jobs):
         """Set up the appropriate emulator based on job configuration."""
         emulator_selection = jobs.get("emulator", "MEmu")
-        
+
         if emulator_selection == "Google Play":
-            print('Creating google play emulator')
+            print("Creating google play emulator")
             return self._create_google_play_emulator()
         elif emulator_selection == "MEmu":
             render_mode = jobs.get("memu_render_mode", "opengl")
@@ -56,29 +56,29 @@ class WorkerThread(PausableThread):
 
         while not self.shutdown_flag.is_set():
             try:
-                new_state = state_tree(
-                    emulator, self.logger, state, jobs, state_history, state_order
-                )
-                
+                new_state = state_tree(emulator, self.logger, state, jobs, state_history, state_order)
+
                 # Check for restart loops
                 if new_state == "restart":
                     consecutive_restarts += 1
                     if consecutive_restarts >= max_consecutive_restarts:
-                        self.logger.error(f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop")
+                        self.logger.error(
+                            f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop"
+                        )
                         break
                     self.logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
                 else:
                     consecutive_restarts = 0  # Reset counter on successful state
-                
+
                 # Check for error states that should stop execution
                 if new_state in ["fail", None]:
                     self.logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
                     if new_state == "fail":
                         self.logger.add_restart_after_failure()
                     break
-                    
+
                 state = new_state
-                    
+
             except Exception as e:
                 self.logger.error(f"Exception in state_tree: {e}")
                 self.logger.log(f"Current state was: {state}")
@@ -88,12 +88,13 @@ class WorkerThread(PausableThread):
                 state = "restart"
                 # If we keep getting exceptions, break out
                 import traceback
+
                 traceback.print_exc()
                 consecutive_restarts += 1
                 if consecutive_restarts >= max_consecutive_restarts:
                     self.logger.error("Too many consecutive exceptions - stopping bot")
                     break
-                
+
             while self.pause_flag.is_set():
                 time.sleep(0.33)
 
@@ -101,7 +102,7 @@ class WorkerThread(PausableThread):
         """Main worker thread execution."""
         print("WorkerThread run()...")
         jobs = self.args
-        
+
         emulator = self._setup_emulator(jobs)
         if emulator is None:
             return

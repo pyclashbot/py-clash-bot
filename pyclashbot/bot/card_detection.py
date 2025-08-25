@@ -4,7 +4,6 @@ from collections import Counter
 
 import numpy
 
-
 # play coord data
 PLAY_COORDS = {
     # done
@@ -4139,9 +4138,7 @@ COLORS_KEYS = list(COLORS.keys())
 
 # Pre-compute numpy arrays for each card's corner data
 for card_name, card_data in card_color_data.items():
-    card_color_data[card_name] = [
-        numpy.array(list(corner.values())) for corner in card_data
-    ]
+    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
 
 
 def calculate_offset(card_name, card_data, collected_data_array):
@@ -4376,11 +4373,7 @@ bridge_pixel = [[100, 200], [275, 200]]
 def switch_side():
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
-        all_coords = [
-            (y, x)
-            for x in range(bridge[0], bridge[0] + 40)
-            for y in range(bridge[1], bridge[1] + 175)
-        ]
+        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
         pixel_coords = numpy.array(all_coords)
         iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]

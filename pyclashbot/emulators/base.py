@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Literal
 
 
 class BaseEmulatorController:
@@ -31,7 +30,7 @@ class BaseEmulatorController:
         This method is used to restart the emulator.
         """
         raise NotImplementedError
-    
+
     def start(self):
         """
         This method is used to start the emulator.

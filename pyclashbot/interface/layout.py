@@ -12,9 +12,7 @@ from pyclashbot.interface.builder import (
     build_data_settings,
     build_emulator_choice,
     build_emulator_settings_tabs,
-    build_google_play_settings,
     build_jobs_section,
-    build_memu_settings,
 )
 from pyclashbot.interface.config import DISABLE_KEYS, USER_CONFIG_KEYS
 from pyclashbot.interface.theme import THEME
@@ -62,7 +60,7 @@ def create_jobs_tab():
                 expand_x=True,
                 expand_y=True,
                 pad=(5, 3),
-                font=('Arial', 9, 'bold')
+                font=("Arial", 9, "bold"),
             )
         ],
     ]
@@ -134,7 +132,7 @@ def create_status_bar():
                         disabled=True,
                         text_color="blue",
                         expand_x=True,
-                        font=('Arial', 9),
+                        font=("Arial", 9),
                         tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
                     ),
                 ],
@@ -147,19 +145,8 @@ def create_status_bar():
 def create_control_buttons():
     """Create compact control buttons."""
     return [
-        sg.Button(
-            "Start",
-            button_color=("white", "green"),
-            size=(10, 1),
-            font=('Arial', 9, 'bold')
-        ),
-        sg.Button(
-            "Stop",
-            disabled=True,
-            button_color=("white", "red"),
-            size=(10, 1),
-            font=('Arial', 9, 'bold')
-        ),
+        sg.Button("Start", button_color=("white", "green"), size=(10, 1), font=("Arial", 9, "bold")),
+        sg.Button("Stop", disabled=True, button_color=("white", "red"), size=(10, 1), font=("Arial", 9, "bold")),
     ]
 
 
@@ -167,14 +154,7 @@ main_layout = [
     [
         sg.Column(
             [
-                [
-                    sg.Frame(
-                        layout=create_main_tabs(), 
-                        title="", 
-                        border_width=0, 
-                        pad=0
-                    )
-                ],
+                [sg.Frame(layout=create_main_tabs(), title="", border_width=0, pad=0)],
             ],
             key="-stacked-section-",
             expand_x=True,
@@ -197,12 +177,7 @@ def create_window() -> Window:
     icon_path = "pixel-pycb.ico"
     if not path.isfile(path=icon_path):
         icon_path = path.join("..\\..\\..\\assets\\", icon_path)
-    return sg.Window(
-        title=f"py-clash-bot | {__version__}",
-        layout=main_layout,
-        icon=icon_path,
-        resizable=False
-    )
+    return sg.Window(title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path, resizable=False)
 
 
 if __name__ == "__main__":

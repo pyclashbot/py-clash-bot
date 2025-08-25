@@ -1,5 +1,5 @@
-from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 import os
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from os.path import abspath, dirname, join
 
 import cv2
@@ -11,6 +11,7 @@ from pyclashbot.utils.image_handler import open_from_path
 # IMAGE RECOGNITION FUNCTIONS
 # =============================================================================
 
+
 def find_image(
     image: np.ndarray,
     folder: str,
@@ -19,19 +20,19 @@ def find_image(
     show_image: bool = False,
 ) -> tuple[int, int] | None:
     """Find the first matching reference image in a screenshot
-    
+
     Args:
         image: image to search through
         folder: folder containing reference images (within reference_images directory)
         tolerance: matching tolerance (0.0 to 1.0)
         subcrop: optional subcrop region as (x1, y1, x2, y2) to search within
-        
+
     Returns:
         tuple[int, int] | None: (x, y) coordinates of found image relative to full image, or None if not found
     """
     search_image = image
     offset_x, offset_y = 0, 0
-    
+
     if subcrop is not None:
         x1, y1, x2, y2 = subcrop
         search_image = image[y1:y2, x1:x2]
@@ -41,7 +42,7 @@ def find_image(
     #     plt.imshow(search_image)
     #     plt.title(f"Searching for {folder} in image")
     #     plt.show()
-    
+
     locations, filenames = find_references(search_image, folder, tolerance)
     coord = get_first_location(locations)
     if coord is not None:
@@ -76,16 +77,9 @@ def find_references(
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images", folder))
 
-    filenames = [
-        name
-        for name in os.listdir(reference_folder)
-        if name.endswith(".png") or name.endswith(".jpg")
-    ]
-    
-    reference_images = [
-        open_from_path(join(reference_folder, name))
-        for name in filenames
-    ]
+    filenames = [name for name in os.listdir(reference_folder) if name.endswith(".png") or name.endswith(".jpg")]
+
+    reference_images = [open_from_path(join(reference_folder, name)) for name in filenames]
 
     with ThreadPoolExecutor(
         max_workers=len(reference_images),
@@ -258,11 +252,7 @@ def get_first_location(
 
     """
     return next(
-        (
-            [location[1], location[0]] if flip else location
-            for location in locations
-            if location is not None
-        ),
+        ([location[1], location[0]] if flip else location for location in locations if location is not None),
         None,
     )
 
@@ -297,9 +287,7 @@ def convert_pixel(bgr_pixel) -> list[int]:
     return [red, green, blue]
 
 
-def get_line_coordinates(
-    x_1: int, y_1: int, x_2: int, y_2: int
-) -> list[tuple[int, int]]:
+def get_line_coordinates(x_1: int, y_1: int, x_2: int, y_2: int) -> list[tuple[int, int]]:
     """Get all pixel coordinates along a line using Bresenham's algorithm
 
     Args:

@@ -76,11 +76,7 @@ JOBS = [
         "random_decks_user_toggle",
         "Random decks",
         default=False,
-        extras={
-            "deck_selector": ComboConfig(
-                "deck_number_selection", "Deck #:", values=[1, 2, 3, 4, 5], default=2
-            )
-        },
+        extras={"deck_selector": ComboConfig("deck_number_selection", "Deck #:", values=[1, 2, 3, 4, 5], default=2)},
     ),
     JobConfig("random_plays_user_toggle", "Random plays", default=False),
     JobConfig("disable_win_track_toggle", "Skip win/loss check", default=False),

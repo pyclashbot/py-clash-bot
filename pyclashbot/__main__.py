@@ -10,8 +10,7 @@ from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface import disable_keys, user_config_keys
-from pyclashbot.interface.layout import no_jobs_popup
-from pyclashbot.interface.layout import create_window
+from pyclashbot.interface.layout import create_window, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
@@ -116,9 +115,7 @@ def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
                 if key in list(window.key_dict.keys()):
                     window[key].update(settings[key])  # type: ignore  # noqa: PGH003
                 else:
-                    print(
-                        f"This key {key} appears in saved settings, but not the active window."
-                    )
+                    print(f"This key {key} appears in saved settings, but not the active window.")
         window.refresh()
 
 
@@ -237,9 +234,7 @@ class BotApplication:
     def handle_external_links(self, event):
         """Handle opening external links."""
         if event == "bug-report":
-            webbrowser.open(
-                "https://github.com/pyclashbot/py-clash-bot/issues/new/choose"
-            )
+            webbrowser.open("https://github.com/pyclashbot/py-clash-bot/issues/new/choose")
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
 
@@ -272,9 +267,7 @@ class BotApplication:
                 self.handle_external_links(event)
 
             # Handle thread completion cleanup
-            self.thread, self.logger = handle_thread_finished(
-                self.window, self.thread, self.logger
-            )
+            self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)
 
             update_layout(self.window, self.logger)
 

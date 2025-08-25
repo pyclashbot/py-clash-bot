@@ -5,10 +5,6 @@ import random
 import time
 from typing import Literal
 
-import numpy
-
-from pyclashbot.bot.recorder import save_image, save_win_loss
-
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
@@ -20,22 +16,18 @@ from pyclashbot.bot.nav import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
     check_if_on_clash_main_menu,
-    find_fight_mode_icon,
     get_to_activity_log,
     handle_trophy_reward_menu,
-    select_mode,
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.recorder import save_image, save_play, save_win_loss
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     find_image,
     pixel_is_equal,
 )
-from pyclashbot.bot.recorder import save_play
-
 from pyclashbot.utils.logger import Logger
-
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
@@ -178,7 +170,7 @@ def start_fight(emulator, logger, mode) -> bool:
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
-        print(f"Its 2v2 mode so we gotta click the quickmatch popup option!")
+        print("Its 2v2 mode so we gotta click the quickmatch popup option!")
         time.sleep(3)
         quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
@@ -502,15 +494,11 @@ def select_card_index(card_indices, last_three_cards):
 
     # Second preference: Cards not among the last two added to the queue
     if not preferred_cards and len(last_three_cards) == 3:
-        preferred_cards = [
-            index for index in card_indices if index not in list(last_three_cards)[-2:]
-        ]
+        preferred_cards = [index for index in card_indices if index not in list(last_three_cards)[-2:]]
 
     # Third preference: Any card except the most recently added one
     if not preferred_cards and last_three_cards:
-        preferred_cards = [
-            index for index in card_indices if index != last_three_cards[-1]
-        ]
+        preferred_cards = [index for index in card_indices if index != last_three_cards[-1]]
 
     # Fallback: If all else fails, consider all cards
     if not preferred_cards:
@@ -519,9 +507,7 @@ def select_card_index(card_indices, last_three_cards):
     return random.choice(preferred_cards)
 
 
-def play_a_card(
-    emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy"
-) -> bool:
+def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy") -> bool:
     print("\n")
 
     # check which cards are available
@@ -548,9 +534,7 @@ def play_a_card(
 
     # get a coord based on the selected side
     play_coord_calculation_start_time = time.time()
-    card_id, play_coord = get_play_coords_for_card(
-        emulator, logger, card_index, battle_strategy.get_elapsed_time()
-    )
+    card_id, play_coord = get_play_coords_for_card(emulator, logger, card_index, battle_strategy.get_elapsed_time())
     play_coord_calculation_time_taken = str(
         time.time() - play_coord_calculation_start_time,
     )[:3]
@@ -573,9 +557,7 @@ def play_a_card(
         return False
 
     emulator.click(play_coord[0], play_coord[1])
-    click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[
-        :3
-    ]
+    click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[:3]
     if recording_flag:
         save_play(play_coord, card_index)
 
@@ -757,8 +739,6 @@ def _random_fight_loop(emulator, logger) -> bool:
 
     logger.change_status("Finished with battle with random plays...")
     return True
-
-
 
 
 if __name__ == "__main__":
