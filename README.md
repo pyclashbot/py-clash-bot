@@ -56,7 +56,7 @@ The bot tracks detailed statistics across three categories:
 
 **py-clash-bot** supports two emulators. Choose the one that works best for your system:
 
-### Option 1: MEmu Emulator (Recommended)
+### Option 1: MEmu Emulator
 
 1. **Download MEmu** - Get it from [https://www.memuplay.com/](https://www.memuplay.com/)
 2. **Install MEmu** - Run the installer
