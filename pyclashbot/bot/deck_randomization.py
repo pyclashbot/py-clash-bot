@@ -13,9 +13,7 @@ from pyclashbot.utils.logger import Logger
 CARD_PAGE_ICON_FROM_CLASH_MAIN: tuple[Literal[115], Literal[600]] = (115, 600)
 
 
-def randomize_deck_state(
-    emulator, logger: Logger,  deck_number: int = 2
-):
+def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
     # increment job count
 
     # if not on clash main, return 'restart'
@@ -61,9 +59,8 @@ def check_for_underleveled_deck_options_location(emulator):
 
 def click_delete_deck_button(emulator):
     if check_for_underleveled_delete_deck_button_location(emulator):
-        print("Detected underleveled delete deck button location. Clicking...")
+        print("Detected underleveled delete deck button location. Using that instead...")
         emulator.click(297, 276)
-
     else:
         emulator.click(291, 305)
 
@@ -116,7 +113,6 @@ def check_for_randomize_deck_icon(emulator):
         [255, 255, 255],
         [255, 255, 255],
     ]
-
 
     for i, p in enumerate(pixels):
         if not pixel_is_equal(colors[i], p, tol=25):

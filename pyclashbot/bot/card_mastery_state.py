@@ -26,9 +26,8 @@ def card_mastery_state(emulator, logger):
             'Failed somewhere in collect_card_mastery_rewards(), returning "restart"',
         )
         return False
-    
-    return True
 
+    return True
 
 
 def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
@@ -164,5 +163,3 @@ def check_for_inventory_full_popup(emulator):
 
 if __name__ == "__main__":
     collect_first_mastery_reward(1)
-    # print('\n\n\n')
-    # print(check_for_inventory_full_popup(1))

@@ -104,6 +104,8 @@ class Logger:
         self.enemy_crowns = 0
         self._1v1_fights = 0
         self._2v2_fights = 0
+        self.classic_1v1_fights = 0
+        self.classic_2v2_fights = 0
         self.trophy_road_1v1_fights = 0
         self.cards_played = 0
         self.war_fights = 0
@@ -159,6 +161,8 @@ class Logger:
                 # fight stats
                 "wins": self.wins,
                 "losses": self.losses,
+                "classic_1v1_fights": self.classic_1v1_fights,
+                "classic_2v2_fights": self.classic_2v2_fights,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
@@ -264,6 +268,15 @@ class Logger:
     def increment_magic_item_buys(self):
         self.magic_item_buys += 1
 
+    @_updates_gui
+    def increment_classic_1v1_fights(self):
+        self.classic_1v1_fights += 1
+
+    @_updates_gui
+    def increment_classic_2v2_fights(self):
+        self.classic_2v2_fights += 1
+
+    @_updates_gui
     def increment_trophy_road_fights(self):
         self.trophy_road_1v1_fights += 1
 

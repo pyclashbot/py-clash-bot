@@ -4,6 +4,7 @@ import ctypes
 import logging
 import platform
 import subprocess
+
 import psutil
 
 from pyclashbot.utils.subprocess import run

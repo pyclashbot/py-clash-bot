@@ -4,7 +4,6 @@ from collections import Counter
 
 import numpy
 
-
 # play coord data
 PLAY_COORDS = {
     # done
@@ -4139,9 +4138,7 @@ COLORS_KEYS = list(COLORS.keys())
 
 # Pre-compute numpy arrays for each card's corner data
 for card_name, card_data in card_color_data.items():
-    card_color_data[card_name] = [
-        numpy.array(list(corner.values())) for corner in card_data
-    ]
+    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
 
 
 def calculate_offset(card_name, card_data, collected_data_array):
@@ -4320,7 +4317,7 @@ def get_card_group(card_id) -> str:
     return CARD_TO_GROUP.get(card_id, "No group")
 
 
-def get_play_coords_for_card(emulator, logger, card_index):
+def get_play_coords_for_card(emulator, logger, card_index, elapsed_time: float = 0):
     # get the ID of this card(ram_rider, zap, etc)
     id_cards_start_time = time.time()
     identity = identify_hand_cards(emulator, card_index)
@@ -4331,16 +4328,14 @@ def get_play_coords_for_card(emulator, logger, card_index):
     group = get_card_group(identity)
 
     # get the play coords of this grouping
-    coords = calculate_play_coords(group, play_side)
+    coords = calculate_play_coords(group, play_side, elapsed_time)
 
     return identity, coords
 
 
-def calculate_play_coords(card_grouping: str, side_preference: str):
+def calculate_play_coords(card_grouping: str, side_preference: str, elapsed_time: float = 0):
     # if there is a dedicated coordinate for this card
     if card_grouping == "No group":
-        from pyclashbot.bot.do_fight_state import elapsed_time
-
         if elapsed_time < 12:  # Less than 5 seconds
             if side_preference == "left":
                 return (random.randint(60, 206), random.randint(441, 456))
@@ -4378,11 +4373,7 @@ bridge_pixel = [[100, 200], [275, 200]]
 def switch_side():
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
-        all_coords = [
-            (y, x)
-            for x in range(bridge[0], bridge[0] + 40)
-            for y in range(bridge[1], bridge[1] + 175)
-        ]
+        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
         pixel_coords = numpy.array(all_coords)
         iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
         bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]

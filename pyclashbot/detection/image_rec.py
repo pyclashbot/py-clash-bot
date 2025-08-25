@@ -1,6 +1,5 @@
-import time
+import os
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-from os import walk
 from os.path import abspath, dirname, join
 
 import cv2
@@ -8,152 +7,83 @@ import numpy as np
 
 from pyclashbot.utils.image_handler import open_from_path
 
-
-def get_file_count(folder) -> int:
-    """Method to return the amount of a files in a given directory
-
-    Args:
-    ----
-        directory (str): Directory to count files in
-
-    Returns:
-    -------
-        int: Amount of files in the given directory
-
-    """
-    directory = join(dirname(__file__), "reference_images", folder)
-
-    return sum(len(files) for _, _, files in walk(directory))
+# =============================================================================
+# IMAGE RECOGNITION FUNCTIONS
+# =============================================================================
 
 
-def make_reference_image_list(size):
-    # Method to make a reference array of a given size
-    reference_image_list = []
-
-    for index in range(1, size + 1):
-        image_name: str = f"{index}.png"
-        reference_image_list.append(image_name)
-
-    return reference_image_list
-
-
-def get_first_location(
-    locations: list[list[int] | None],
-    flip=False,
-) -> list[int] | None:
-    """Get the first location from a list of locations
+def find_image(
+    image: np.ndarray,
+    folder: str,
+    tolerance: float = 0.88,
+    subcrop: tuple[int, int, int, int] | None = None,
+    show_image: bool = False,
+) -> tuple[int, int] | None:
+    """Find the first matching reference image in a screenshot
 
     Args:
-    ----
-        locations (list[list[int]]): list of locations
-        flip (bool, optional): flip coordinates. Defaults to False.
+        image: image to search through
+        folder: folder containing reference images (within reference_images directory)
+        tolerance: matching tolerance (0.0 to 1.0)
+        subcrop: optional subcrop region as (x1, y1, x2, y2) to search within
 
     Returns:
-    -------
-        list[int]: location
-
+        tuple[int, int] | None: (x, y) coordinates of found image relative to full image, or None if not found
     """
-    return next(
-        (
-            [location[1], location[0]] if flip else location
-            for location in locations
-            if location is not None
-        ),
-        None,
-    )
+    search_image = image
+    offset_x, offset_y = 0, 0
 
+    if subcrop is not None:
+        x1, y1, x2, y2 = subcrop
+        search_image = image[y1:y2, x1:x2]
+        offset_x, offset_y = x1, y1
 
-def find_and_click_button_by_image(emulator, folder_name) -> bool:
-    # Create a list of reference image names from the folder
-    names = make_reference_image_list(get_file_count(folder_name))
+    # if show_image:
+    #     plt.imshow(search_image)
+    #     plt.title(f"Searching for {folder} in image")
+    #     plt.show()
 
-    # Find references in the screenshot
-    locations = find_references(
-        emulator.screenshot(),
-        folder_name,
-        names,
-        tolerance=0.85,  # Adjust the tolerance as needed to improve accuracy
-    )
-
-    # Get the first location of the detected reference
+    locations, filenames = find_references(search_image, folder, tolerance)
     coord = get_first_location(locations)
-
-    if coord is None:
-        return False
-
-    # Click on the detected button location
-    emulator.click(coord[1], coord[0])
-    time.sleep(2)
-    return True
-
-
-def crop_image(image: np.ndarray, region: list) -> np.ndarray:
-    """Crop the given image using the specified region.
-
-    Parameters
-    ----------
-    - image: numpy.ndarray
-        The image to be cropped.
-    - region: list [left, top, width, height]
-        The region to be cropped, denoted by [left, top, width, height].
-
-    Returns
-    -------
-    - cropped_image: numpy.ndarray
-        The cropped image.
-
-    """
-    left, top, width, height = region
-
-    # Crop the image using array slicing
-    cropped_image = image[top : top + height, left : left + width]
-
-    return cropped_image
-
-
-def check_for_location(locations: list[list[int] | None]):
-    """Check for a location
-
-    Args:
-    ----
-        locations (list[list[int]]): _description_
-
-    Returns:
-    -------
-        bool: if location is found or not
-
-    """
-    return any(location is not None for location in locations)
+    if coord is not None:
+        # Find which file matched
+        for i, location in enumerate(locations):
+            if location is not None:
+                print(f"Match found in file: {filenames[i]}")
+                break
+        # Convert from [y, x] to (x, y) and add offset to get coordinates relative to full image
+        return (coord[1] + offset_x, coord[0] + offset_y)
+    return None
 
 
 def find_references(
     image: np.ndarray,
     folder: str,
-    names: list[str],
     tolerance=0.88,
-) -> list[list[int] | None]:
+) -> tuple[list[list[int] | None], list[str]]:
     """Find all reference images in a screenshot
 
     Args:
     ----
-        screenshot (numpy.ndarray): find references in screenshot
+        image (numpy.ndarray): image to find references in
         folder (str): folder to find references (from within reference_images)
-        names (list[str]): names of references
-        tolerance (float, optional): tolerance. Defaults to 0.97.
+        tolerance (float, optional): tolerance. Defaults to 0.88.
 
     Returns:
     -------
-        list[list[int] | None]: coordinate locations
+        tuple[list[list[int] | None], list[str]]: coordinate locations and corresponding filenames
 
     """
     top_level = dirname(__file__)
     reference_folder = abspath(join(top_level, "reference_images", folder))
 
-    reference_images = [open_from_path(join(reference_folder, name)) for name in names]
+    filenames = [name for name in os.listdir(reference_folder) if name.endswith(".png") or name.endswith(".jpg")]
+
+    reference_images = [open_from_path(join(reference_folder, name)) for name in filenames]
 
     with ThreadPoolExecutor(
         max_workers=len(reference_images),
-        thread_name_prefix="EmulatorThread",
+        thread_name_prefix="ImageRecognition",
     ) as executor:
         futures: list[Future[list[int] | None]] = [
             executor.submit(
@@ -164,7 +94,8 @@ def find_references(
             )
             for template in reference_images
         ]
-        return [future.result() for future in as_completed(futures)]
+        results = [future.result() for future in as_completed(futures)]
+        return results, filenames
 
 
 def compare_images(
@@ -172,66 +103,76 @@ def compare_images(
     template: np.ndarray,
     threshold=0.8,
 ):
-    """Detects pixel location of a template in an image
+    """Detects pixel location of a template in an image using template matching
+
     Args:
         image (numpy.ndarray): image to find template within
         template (numpy.ndarray): template image to match to
-        threshold (float, optional): matching threshold. defaults to 0.8
+        threshold (float, optional): matching threshold. Defaults to 0.8
+
     Returns:
-        list[list[int] | None]: a list of pixel location (x,y)
+        list[int] | None: pixel location [y, x] or None if not found
     """
-    # pylint: disable=no-member
-    # Convert image colors
-    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)  # type: ignore  # noqa: PGH003
-    template_gray = cv2.cvtColor(  # type: ignore  # noqa: PGH003
-        template,
-        cv2.COLOR_RGB2GRAY,  # type: ignore  # noqa: PGH003
-    )
+    img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    template_gray = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
 
-    # Perform match operations.
-    res = cv2.matchTemplate(  # type: ignore  # noqa: PGH003
-        img_gray,
-        template_gray,
-        cv2.TM_CCOEFF_NORMED,  # type: ignore  # noqa: PGH003
-    )
+    # Check if template is larger than image
+    if template_gray.shape[0] > img_gray.shape[0] or template_gray.shape[1] > img_gray.shape[1]:
+        return None
 
-    # Store the coordinates of matched area in a np array
-    loc = np.where(res >= threshold)  # type: ignore  # noqa: PGH003
+    res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+    loc = np.where(res >= threshold)
 
     return None if len(loc[0]) != 1 else [int(loc[0][0]), int(loc[1][0])]
 
 
-# pixel comparison
+# =============================================================================
+# PIXEL RECOGNITION FUNCTIONS
+# =============================================================================
 
 
-def line_is_color(  # pylint: disable=too-many-arguments
-    emulator,
-    x_1,
-    y_1,
-    x_2,
-    y_2,
-    color,
+def pixel_is_equal(
+    pix1: tuple[int, int, int] | list[int],
+    pix2: tuple[int, int, int] | list[int],
+    tol: float,
 ) -> bool:
-    coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
-    iar = np.asarray(emulator.screenshot())
+    """Check if two pixels are equal within tolerance
 
-    for coordinate in coordinates:
-        pixel = iar[coordinate[1]][coordinate[0]]
-        pixel = convert_pixel(pixel)
+    Args:
+    ----
+        pix1: first RGB pixel
+        pix2: second RGB pixel
+        tol: color tolerance
 
-        if not pixel_is_equal(color, pixel, tol=35):
-            return False
-    return True
+    Returns:
+    -------
+        bool: whether pixels are equal within tolerance
+
+    """
+    diff_r = abs(int(pix1[0]) - int(pix2[0]))
+    diff_g = abs(int(pix1[1]) - int(pix2[1]))
+    diff_b = abs(int(pix1[2]) - int(pix2[2]))
+    return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
 
 
-def check_line_for_color(  # pylint: disable=too-many-arguments
+def check_line_for_color(
     emulator,
-    x_1,
-    y_1,
-    x_2,
-    y_2,
+    x_1: int,
+    y_1: int,
+    x_2: int,
+    y_2: int,
     color: tuple[int, int, int],
 ) -> bool:
+    """Check if any pixel along a line matches a specific color
+
+    Args:
+        emulator: emulator instance
+        x_1, y_1, x_2, y_2: line coordinates
+        color: RGB color to check for
+
+    Returns:
+        bool: True if any pixel on line matches color
+    """
     coordinates = get_line_coordinates(x_1, y_1, x_2, y_2)
     iar = np.asarray(emulator.screenshot())
 
@@ -244,24 +185,18 @@ def check_line_for_color(  # pylint: disable=too-many-arguments
     return False
 
 
-def check_region_for_color(emulator, region, color):
+def region_is_color(emulator, region: list, color: tuple[int, int, int]) -> bool:
+    """Check if entire region matches a specific color (sampled every 2 pixels)
+
+    Args:
+        emulator: emulator instance
+        region: [left, top, width, height] region to check
+        color: RGB color to check for
+
+    Returns:
+        bool: True if entire region matches color
+    """
     left, top, width, height = region
-
-    iar = np.asarray(emulator.screenshot())
-
-    for x_index in range(left, left + width):
-        for y_index in range(top, top + height):
-            pixel = iar[y_index][x_index]
-            pixel = convert_pixel(pixel)
-            if pixel_is_equal(color, pixel, tol=35):
-                return True
-
-    return False
-
-
-def region_is_color(emulator, region, color):
-    left, top, width, height = region
-
     iar = np.asarray(emulator.screenshot())
 
     for x_index in range(left, left + width, 2):
@@ -274,76 +209,94 @@ def region_is_color(emulator, region, color):
     return True
 
 
-def convert_pixel(bad_format_pixel):
-    red = bad_format_pixel[2]
-    green = bad_format_pixel[1]
-    blue = bad_format_pixel[0]
-    return [red, green, blue]
-
-
-def condense_coordinates(coords, distance_threshold=5):
-    """Condense a list of coordinates by removing similar ones.
-
-    Parameters
-    ----------
-    - coords: List of coordinates, where each coordinate is a list [x, y].
-    - distance_threshold: Maximum distance for coordinates to be considered similar.
-
-    Returns
-    -------
-    - List of condensed coordinates.
-
-    """
-    condensed_coords = []
-
-    for coord in coords:
-        x, y = coord
-        if not any(
-            np.abs(existing_coord[0] - x) < distance_threshold
-            and np.abs(existing_coord[1] - y) < distance_threshold
-            for existing_coord in condensed_coords
-        ):
-            condensed_coords.append(coord)
-
-    return condensed_coords
-
-
-def pixel_is_equal(
-    pix1: tuple[int, int, int] | list[int],
-    pix2: tuple[int, int, int] | list[int],
+def all_pixels_are_equal(
+    pixels_1: list,
+    pixels_2: list,
     tol: float,
-):
-    """Check pixel equality
+) -> bool:
+    """Check if two lists of pixels are equal within tolerance
 
     Args:
-    ----
-        pix1 (list[int]): [R,G,B] pixel
-        pix2 (list[int]): [R,G,B] pixel
-        tol (float): tolerance
+        pixels_1: first list of pixels
+        pixels_2: second list of pixels
+        tol: color tolerance
 
     Returns:
-    -------
-        bool: are pixels equal
-
+        bool: True if all pixels match within tolerance
     """
-    diff_r = abs(int(pix1[0]) - int(pix2[0]))
-    diff_g = abs(int(pix1[1]) - int(pix2[1]))
-    diff_b = abs(int(pix1[2]) - int(pix2[2]))
-    return (diff_r < tol) and (diff_g < tol) and (diff_b < tol)
-
-
-def all_pixels_are_equal(
-    pixels_1,
-    pixels_2,
-    tol: float,
-):
     for pixel1, pixel2 in zip(pixels_1, pixels_2):
         if not pixel_is_equal(pixel1, pixel2, tol):
             return False
     return True
 
 
-def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
+
+def get_first_location(
+    locations: list[list[int] | None],
+    flip=False,
+) -> list[int] | None:
+    """Get the first valid location from a list of locations
+
+    Args:
+    ----
+        locations: list of coordinate locations
+        flip: whether to flip x,y coordinates
+
+    Returns:
+    -------
+        list[int] | None: first valid location or None
+
+    """
+    return next(
+        ([location[1], location[0]] if flip else location for location in locations if location is not None),
+        None,
+    )
+
+
+def check_for_location(locations: list[list[int] | None]) -> bool:
+    """Check if any location in the list is valid
+
+    Args:
+    ----
+        locations: list of coordinate locations
+
+    Returns:
+    -------
+        bool: True if any location is not None
+
+    """
+    return any(location is not None for location in locations)
+
+
+def convert_pixel(bgr_pixel) -> list[int]:
+    """Convert BGR pixel format to RGB
+
+    Args:
+        bgr_pixel: pixel in BGR format
+
+    Returns:
+        list[int]: pixel in RGB format [red, green, blue]
+    """
+    red = bgr_pixel[2]
+    green = bgr_pixel[1]
+    blue = bgr_pixel[0]
+    return [red, green, blue]
+
+
+def get_line_coordinates(x_1: int, y_1: int, x_2: int, y_2: int) -> list[tuple[int, int]]:
+    """Get all pixel coordinates along a line using Bresenham's algorithm
+
+    Args:
+        x_1, y_1: start coordinates
+        x_2, y_2: end coordinates
+
+    Returns:
+        list[tuple[int, int]]: list of (x, y) coordinates along the line
+    """
     coordinates = []
     delta_x = abs(x_2 - x_1)
     delta_y = abs(y_2 - y_1)
@@ -363,10 +316,3 @@ def get_line_coordinates(x_1, y_1, x_2, y_2) -> list[tuple[int, int]]:
 
     coordinates.append((x_1, y_1))
     return coordinates
-
-
-def pixels_match_colors(pixels, colors, tol=10) -> bool:
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=tol):
-            return False
-    return True

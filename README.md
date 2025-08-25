@@ -39,8 +39,8 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 ### ⚙️ **Advanced Settings**
 
 - **Account Switching** - Switch between multiple accounts using SuperCell ID
-- **MEmu Integration** - Optimized for MEmu Android emulator
-- **Render Mode Selection** - Choose between OpenGL and DirectX rendering
+- **Dual Emulator Support** - Works with both MEmu and Google Play Games emulators
+- **Render Mode Selection** - Choose between OpenGL, DirectX, and Vulkan rendering
 - **Real-time Statistics** - Track wins, losses, chests opened, and more
 - **Performance Monitoring** - Monitor bot runtime, failures, and account switches
 
@@ -52,37 +52,43 @@ The bot tracks detailed statistics across three categories:
 - **Collection Stats**: Requests, donations, chests unlocked, rewards collected
 - **Bot Stats**: Runtime, failures, account switches, and performance metrics
 
-## 🚀 Installation
+## 🚀 Setup Instructions
 
-### Prerequisites
+**py-clash-bot** supports two emulators. Choose the one that works best for your system:
 
-1. **Windows 10/11** operating system
-2. **MEmu Android Emulator** - Download from [MEmu Play](https://www.memuplay.com/)
+### Option 1: MEmu Emulator (Recommended)
 
-### Setup Steps
+1. **Download MEmu** - Get it from [https://www.memuplay.com/](https://www.memuplay.com/)
+2. **Install MEmu** - Run the installer
+3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
+4. **Install py-clash-bot** - Run the installer
+5. **Start py-clash-bot** - The bot will automatically create a MEmu emulator configured for the bot
+6. **Install Clash Royale** - Install Clash Royale on the new emulator
+7. **Close all MEmu instances** - The bot starts them automatically
+8. **Start the bot** - It will open the emulator and start playing automatically
 
-1. **Install MEmu** - Download and install the latest version of MEmu
-2. **Download py-clash-bot** - Get the latest Windows installer from [releases](https://github.com/pyclashbot/py-clash-bot/releases/latest)
-3. **Install py-clash-bot** - Run the downloaded installer
+**Troubleshooting MEmu:**
+- Switch render mode to Vulkan, DirectX, or OpenGL if experiencing issues
+- Delete the VM and let the bot create a new one
+- Enable UEFI in BIOS if needed
 
-## 📖 Usage
+### Option 2: Google Play Games Emulator
 
-### Initial Setup
+1. **Download Google Play Games Emulator** - Get it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
+2. **Install the emulator** - Run the installer
+3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
+4. **Open the emulator manually** - Install Clash Royale on it
+5. **Optional: Set display ratio** - Go to Google Play Emulator > Developer Options > Display Ratio > 9:16 (Portrait) for optimal look
+6. **Close everything** - Close the Google Play emulator completely
+7. **Start the bot** - It will open the Google Play emulator for you and start playing automatically
 
-1. **Launch py-clash-bot** - Use the desktop shortcut created during installation
-2. **Create Emulator** - Click "Start" to create a new MEmu emulator instance
-3. **Install Clash Royale** - Manually install Clash Royale on the new emulator
-4. **Complete Tutorial** - Finish the in-game tutorial (takes ~30 seconds)
-5. **Account Login** - Sign in with your SuperCell ID or use a fresh account
-6. **Language Setting** - Ensure the game language is set to English
+### After Setup (Both Emulators)
 
-### Running the Bot
-
-1. **Select Jobs** - Choose which tasks you want the bot to perform
-2. **Configure Settings** - Set up account switching, render modes, and preferences
-3. **Start Bot** - Click the "Start" button to begin automation
-4. **Monitor Progress** - Watch real-time statistics and status updates
-5. **Enjoy Automation** - Let the bot handle your daily Clash Royale tasks!
+1. **Complete the Clash Royale tutorial** - Takes about 30 seconds
+2. **Sign in with your account** - Use SuperCell ID or create a new account
+3. **Set language to English** - Ensure the game language is English
+4. **Configure the bot** - Select which tasks you want automated
+5. **Start automation** - Click "Start" and let the bot handle your gameplay!
 
 ## 🎯 Demo
 
