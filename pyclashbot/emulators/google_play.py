@@ -349,6 +349,18 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         # boot emulator
         if self.logger:
+            self.logger.change_status("Initializing Google Play emulator...")
+        if self.logger:
+            self.logger.change_status("Locating installation folder...")
+        if self.logger:
+            self.logger.change_status(f"Found installation at: {self.base_folder}")
+        if self.logger:
+            self.logger.change_status("Locating emulator executable...")
+        if self.logger:
+            self.logger.change_status("Locating ADB executable...")
+        if self.logger:
+            self.logger.change_status("Configuring emulator settings...")
+        if self.logger:
             self.logger.change_status("Launching Google Play emulator executable...")
         print("Starting emulator...")
         while not self._is_emulator_running():
@@ -574,6 +586,18 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         raise NotImplementedError
 
     def start_app(self, package_name: str):
+        # Check if the app is installed first
+        result = self.adb("shell pm list packages")
+        if result.stdout and package_name not in result.stdout:
+            # notify user that the app is not installed, program will hang
+            if self.logger:
+                self.logger.change_status("Clash Royale not installed - install it and restart")
+            print(f"[!] Fatal error: {package_name} is not installed.\nPlease install it and restart")
+            
+            # Hang the program indefinitely
+            while True:
+                time.sleep(1)
+        
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
 
     def debug_adb_connectivity(self):

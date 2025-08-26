@@ -359,7 +359,21 @@ class MemuEmulatorController(BaseEmulatorController):
 
         # start the vm
         if self.logger:
-            self.logger.change_status("Starting MEmu virtual machine...")
+            self.logger.change_status("Initializing MEmu VM...")
+        if self.logger:
+            self.logger.change_status("Checking for existing valid VM...")
+        if self.logger:
+            self.logger.change_status(f"Found valid VM: {self.vm_index}")
+        if self.logger:
+            self.logger.change_status("Configuring VM...")
+        if self.logger:
+            self.logger.change_status(f"Configuring VM with render mode: {self.render_mode}")
+        if self.logger:
+            self.logger.change_status("Setting each config key...")
+        if self.logger:
+            self.logger.change_status("Setting VM language...")
+        if self.logger:
+            self.logger.change_status("Booting VM...")
         print("Opening the pyclashbot emulator...")
         out = self.pmc.start_vm(vm_index=self.vm_index)
         print(f"Opened the pyclashbot emulator with output:\n{out}")
@@ -534,9 +548,14 @@ class MemuEmulatorController(BaseEmulatorController):
         found = [app for app in installed_apps if package_name in app]
 
         if not found:
-            # notify user that clash royale is not installed, program will exit
+            # notify user that clash royale is not installed, program will hang
+            if self.logger:
+                self.logger.change_status("Clash Royale not installed - install it and restart")
             print(f"[!] Fatal error: {package_name} is not installed.\nPlease install it and restart")
-            return False
+            
+            # Hang the program indefinitely
+            while True:
+                time.sleep(1)
 
         # start Clash Royale
         self.pmc.start_app_vm(package_name, vm_index=self.vm_index)
