@@ -16,6 +16,7 @@ dependencies = [
     "freesimplegui>=5.2.0,<6",
     "pygetwindow (>=0.0.9,<0.0.10)",
     "pillow (>=11.3.0,<12.0.0)",
+    "customtkinter (>=5.2.2,<6.0.0)",
 ]
 
 [project.urls]

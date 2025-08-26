@@ -13,10 +13,12 @@ class WorkerThread(PausableThread):
         self.logger: Logger = logger
         self.in_a_clan = False
 
-    def _create_google_play_emulator(self):
+    def _create_google_play_emulator(self, render_settings=None):
         """Create and return a Google Play emulator instance."""
         try:
-            emulator = GooglePlayEmulatorController()
+            if render_settings is None:
+                render_settings = {}
+            emulator = GooglePlayEmulatorController(render_settings)
             print("Successfully created google play emulator")
             return emulator
         except Exception as e:
@@ -38,7 +40,8 @@ class WorkerThread(PausableThread):
 
         if emulator_selection == "Google Play":
             print("Creating google play emulator")
-            return self._create_google_play_emulator()
+            graphics_settings = jobs.get("google_play_graphics", {})
+            return self._create_google_play_emulator(graphics_settings)
         elif emulator_selection == "MEmu":
             render_mode = jobs.get("memu_render_mode", "opengl")
             return self._create_memu_emulator(render_mode)
@@ -61,6 +64,8 @@ class WorkerThread(PausableThread):
                 # Check for restart loops
                 if new_state == "restart":
                     consecutive_restarts += 1
+                    # Increment failure counter when entering restart state
+                    self.logger.add_restart_after_failure()
                     if consecutive_restarts >= max_consecutive_restarts:
                         self.logger.error(
                             f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop"
