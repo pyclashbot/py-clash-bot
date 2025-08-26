@@ -58,7 +58,7 @@ The bot tracks detailed statistics across three categories:
 
 ### Option 1: MEmu Emulator
 
-1. **Download MEmu 9.2.5.0** - Get it from [https://www.memuplay.com/](https://www.memuplay.com/) or use this [working installer](https://drive.google.com/file/d/1FDMa5oKIhbM_X2TGHg6qSi3bnIuIXcPf/view?usp=sharing) (version 9.2.5.0 recommended)
+1. **Download MEmu 9.2.5.0** - Get it from the [official site](https://www.memuplay.com/) or use this [working installer](https://drive.google.com/file/d/1FDMa5oKIhbM_X2TGHg6qSi3bnIuIXcPf/view?usp=sharing) (version 9.2.5.0 recommended)
 2. **Install MEmu** - Run the installer
 3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
 4. **Install py-clash-bot** - Run the installer
