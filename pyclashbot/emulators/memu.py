@@ -101,7 +101,7 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
-    def __init__(self, render_mode: str = "opengl", logger):
+    def __init__(self, logger, render_mode: str = "opengl"):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
@@ -605,7 +605,7 @@ class MemuEmulatorController(BaseEmulatorController):
 if __name__ == "__main__":
     from pyclashbot.utils.logger import Logger
     test_logger = Logger()
-    memu = MemuEmulatorController(render_mode="directx", logger=test_logger)
+    memu = MemuEmulatorController(test_logger, render_mode="directx")
     while 1:
         print("Running")
         time.sleep(10)

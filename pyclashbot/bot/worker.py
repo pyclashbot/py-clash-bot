@@ -30,7 +30,7 @@ class WorkerThread(PausableThread):
             self.logger.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
             return None
 
-        return MemuEmulatorController(render_mode, logger=self.logger)
+        return MemuEmulatorController(self.logger, render_mode)
 
     def _setup_emulator(self, jobs):
         """Set up the appropriate emulator based on job configuration."""

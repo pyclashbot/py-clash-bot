@@ -17,7 +17,7 @@ from pyclashbot.emulators.base import BaseEmulatorController
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
-    def __init__(self, render_settings: dict = {}, logger):
+    def __init__(self, logger, render_settings: dict = {}):
         self.logger = logger
         # clear existing stuff
         self.stop()
