@@ -589,16 +589,54 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         # Check if the app is installed first
         result = self.adb("shell pm list packages")
         if result.stdout and package_name not in result.stdout:
-            # notify user that the app is not installed, program will hang
-            if self.logger:
-                self.logger.change_status("Clash Royale not installed - install it and restart")
-            print(f"[!] Fatal error: {package_name} is not installed.\nPlease install it and restart")
-            
-            # Hang the program indefinitely
-            while True:
-                time.sleep(1)
+            return self._wait_for_clash_installation(package_name)
         
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
+
+    def _wait_for_clash_installation(self, package_name: str):
+        """Wait for user to install Clash Royale using the logger action system"""
+        self.current_package_name = package_name  # Store for retry logic
+        if self.logger:
+            self.logger.show_temporary_action(
+                message=f"{package_name} not installed - please install it and complete tutorial",
+                action_text="Retry",
+                callback=self._retry_installation_check
+            )
+        
+        print(f"[!] {package_name} not installed.")
+        print("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
+        
+        # Wait for the callback to be triggered
+        self.installation_waiting = True
+        while self.installation_waiting:
+            time.sleep(0.5)
+        
+        print("[+] Installation confirmed, continuing...")
+        return True
+
+    def _retry_installation_check(self):
+        """Callback method triggered when user clicks Retry button"""
+        if self.logger:
+            self.logger.change_status("Checking for Clash Royale installation...")
+        
+        # Check if app is now installed
+        package_name = getattr(self, 'current_package_name', 'com.supercell.clashroyale')
+        result = self.adb("shell pm list packages")
+        
+        if result.stdout and package_name in result.stdout:
+            # Installation successful!
+            self.installation_waiting = False
+            if self.logger:
+                self.logger.change_status("Installation complete - continuing...")
+        else:
+            # Still not installed, show the retry button again
+            if self.logger:
+                self.logger.show_temporary_action(
+                    message=f"{package_name} still not found - please install it and complete tutorial",
+                    action_text="Retry",
+                    callback=self._retry_installation_check
+                )
+            print(f"[!] {package_name} still not installed. Please try again.")
 
     def debug_adb_connectivity(self):
         """

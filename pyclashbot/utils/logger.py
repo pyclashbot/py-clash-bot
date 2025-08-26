@@ -147,6 +147,11 @@ class Logger:
         # track errored logger
         self.errored = False
 
+        # action system for UI callbacks
+        self.action_needed = False
+        self.action_callback = None
+        self.action_text = "Continue"
+
         # write initial values to queue
         self._update_stats()
 
@@ -418,16 +423,36 @@ class Logger:
         self.daily_rewards += 1
 
     @_updates_gui
-    def change_status(self, status) -> None:
+    def change_status(self, status, action_needed=False, action_callback=None) -> None:
         """Change status of bot in log
 
         Args:
         ----
             status (str): status of bot
+            action_needed (bool): whether an action button should be shown
+            action_callback (callable): callback function to call when action is taken
 
         """
         self.current_status = status
+        self.action_needed = action_needed
+        self.action_callback = action_callback
         self.log(status)
+
+    @_updates_gui
+    def show_temporary_action(self, message, action_text="Retry", callback=None) -> None:
+        """Show a temporary action button with the given message
+        
+        Args:
+        ----
+            message (str): message to display to user
+            action_text (str): text for the action button
+            callback (callable): function to call when action is taken
+        """
+        self.current_status = message
+        self.action_needed = True
+        self.action_text = action_text
+        self.action_callback = callback
+        self.log(message)
 
     @_updates_gui
     def add_restart_after_failure(self) -> None:
