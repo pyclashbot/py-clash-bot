@@ -101,11 +101,12 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
-    def __init__(self, render_mode: str = "opengl"):
+    def __init__(self, render_mode: str = "opengl", logger=None):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
         """
+        self.logger = logger
         init_start_time = time.time()
         self.pmc = PyMemuc()
 
@@ -303,23 +304,40 @@ class MemuEmulatorController(BaseEmulatorController):
         self.pmc.rename_vm(vm_index=self.vm_index, new_name=name)
 
     def _check_vm_size(self):
+        expected_width, expected_height = 419, 633
         try:
+            if self.logger:
+                self.logger.change_status("Pressing home key to prepare for screen size check...")
             self.pmc.trigger_keystroke_vm("home", vm_index=self.vm_index)
 
+            time.sleep(2)  # Wait for screen to stabilize
+            
+            if self.logger:
+                self.logger.change_status("Taking screenshot to verify screen dimensions...")
             image = self.screenshot()
 
             height, width, _ = image.shape
 
-            if width != 419 or height != 633:
+            if self.logger:
+                self.logger.change_status(f"Screen dimensions: {width}x{height} (expected: {expected_width}x{expected_height})")
+
+            if width != expected_width or height != expected_height:
+                if self.logger:
+                    self.logger.change_status(f"Screen size validation FAILED: got {width}x{height}, expected {expected_width}x{expected_height}")
                 print(f"Size is bad: {width},{height}")
                 return False
 
+            if self.logger:
+                self.logger.change_status("Screen size validation PASSED")
             return True
         except Exception as e:
+            if self.logger:
+                self.logger.change_status(f"Error during screen size check: {e}")
             print("sizing error:", e)
 
-        # in the case of errors,
-        # just return True who cares
+        # in the case of errors, assume size is correct to avoid infinite loops
+        if self.logger:
+            self.logger.change_status("Screen size check error - assuming valid size")
         return True
 
     def restart(self):
@@ -330,34 +348,73 @@ class MemuEmulatorController(BaseEmulatorController):
             start_time (float, optional): Start time. Defaults to time.time().
         """
         restart_start_time = time.time()
+        
+        if self.logger:
+            self.logger.change_status("Starting MEmu emulator restart process...")
 
         # stop all vms
+        if self.logger:
+            self.logger.change_status("Stopping all MEmu processes...")
         self._close_everything_memu()
 
         # start the vm
+        if self.logger:
+            self.logger.change_status("Starting MEmu virtual machine...")
         print("Opening the pyclashbot emulator...")
         out = self.pmc.start_vm(vm_index=self.vm_index)
         print(f"Opened the pyclashbot emulator with output:\n{out}")
 
         # skip ads
+        if self.logger:
+            self.logger.change_status("Skipping MEmu startup ads...")
         if self._skip_ads() is False:
+            if self.logger:
+                self.logger.change_status("Failed to skip ads, retrying restart...")
             print("[!] Fatal error! Failed to skip ads during memu startup.")
             return self.restart()
 
-        # ensure valid size
-        valid_size = self._check_vm_size()
-        if not valid_size:
-            print("[!] Fatal error! VM size is not valid. Restarting...")
-            return self.restart()
+        # ensure valid size with retry logic
+        max_size_check_attempts = 3
+        for size_attempt in range(max_size_check_attempts):
+            if self.logger:
+                self.logger.change_status(f"Validating MEmu screen dimensions (attempt {size_attempt + 1}/{max_size_check_attempts})...")
+            
+            valid_size = self._check_vm_size()
+            if valid_size:
+                break
+            
+            if size_attempt < max_size_check_attempts - 1:
+                if self.logger:
+                    self.logger.change_status(f"Invalid screen size detected, reconfiguring VM and trying again...")
+                print(f"[!] VM size is not valid (attempt {size_attempt + 1}). Reconfiguring...")
+                
+                # Reconfigure the VM before trying again
+                if self.logger:
+                    self.logger.change_status("Reconfiguring VM settings...")
+                self.configure()
+                
+                # Give time for configuration to take effect
+                time.sleep(5)
+            else:
+                if self.logger:
+                    self.logger.change_status("Screen size validation failed after maximum attempts - continuing anyway to avoid infinite loop")
+                print("[!] Warning: VM size validation failed after multiple attempts. Continuing anyway.")
+                break
 
         # start clash royale
+        if self.logger:
+            self.logger.change_status("Launching Clash Royale application...")
         print("Starting clash royale")
         clash_apk_base_name = "com.supercell.clashroyale"
         if self.start_app(clash_apk_base_name) is False:
+            if self.logger:
+                self.logger.change_status("Failed to start Clash Royale - restart failed")
             print("[!] Fatal error! Failed to start Clash Royale.")
             return False
 
         # wait for clash main to appear
+        if self.logger:
+            self.logger.change_status("Waiting for Clash Royale main menu to load...")
         print("Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
@@ -365,19 +422,26 @@ class MemuEmulatorController(BaseEmulatorController):
         while 1:
             # if timed out, retry restarting
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
+                if self.logger:
+                    self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
                 print("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:
+                if self.logger:
+                    self.logger.change_status("Clash Royale main menu detected successfully!")
                 print("Detected clash main!")
                 break
 
             # click deadspace
             self.click(5, 350)
 
+        restart_duration = str(time.time() - restart_start_time)[:5]
+        if self.logger:
+            self.logger.change_status(f"MEmu emulator restart completed successfully in {restart_duration}s")
         print(
-            f"Took {str(time.time() - restart_start_time)[:5]}s to launch emulator",
+            f"Took {restart_duration}s to launch emulator",
         )
         return True
 
