@@ -177,6 +177,15 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
             element = window[stat]
             if element is not None:
                 element.update(val)
+    
+    # Handle action button visibility and text
+    action_button = window["action_button"]
+    if action_button is not None:
+        if hasattr(logger, 'action_needed') and logger.action_needed:
+            action_text = getattr(logger, 'action_text', 'Continue')
+            action_button.update(text=action_text, visible=True)
+        else:
+            action_button.update(visible=False)
 
 
 def exit_button_event(thread) -> None:
@@ -238,6 +247,21 @@ class BotApplication:
         elif event == "discord":
             webbrowser.open("https://discord.gg/eXdVuHuaZv")
 
+    def handle_action_button(self):
+        """Handle action button click - call the logger's callback function"""
+        if hasattr(self.logger, 'action_callback') and self.logger.action_callback:
+            try:
+                # Call the callback function
+                self.logger.action_callback()
+            except Exception as e:
+                print(f"Error calling action callback: {e}")
+                self.logger.log(f"Error executing action callback: {e}")
+        
+        # Clear action state after executing
+        if hasattr(self.logger, 'action_needed'):
+            self.logger.action_needed = False
+            self.logger.action_callback = None
+
     def cleanup(self):
         """Clean up resources when closing."""
         self.window.close()
@@ -265,6 +289,8 @@ class BotApplication:
                 self.handle_settings_change(values)
             elif event in ["bug-report", "discord"]:
                 self.handle_external_links(event)
+            elif event == "action_button":
+                self.handle_action_button()
 
             # Handle thread completion cleanup
             self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)

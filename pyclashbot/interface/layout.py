@@ -125,14 +125,15 @@ def create_status_bar():
         sg.Column(
             [
                 [
-                    sg.Input(
+                    sg.Multiline(
                         "Idle",
                         key="current_status",
-                        use_readonly_for_disable=True,
                         disabled=True,
                         text_color="blue",
                         expand_x=True,
                         font=("Arial", 9),
+                        size=(47, 2),
+                        no_scrollbar=True,
                         tooltip=r"Logs available in %appdata%/py-clash-bot/log.txt",
                     ),
                 ],
@@ -145,8 +146,27 @@ def create_status_bar():
 def create_control_buttons():
     """Create compact control buttons."""
     return [
-        sg.Button("Start", button_color=("white", "green"), size=(10, 1), font=("Arial", 9, "bold")),
-        sg.Button("Stop", disabled=True, button_color=("white", "red"), size=(10, 1), font=("Arial", 9, "bold")),
+        sg.Button(
+            "Start",
+            button_color=("white", "green"),
+            size=(10, 1),
+            font=("Arial", 9, "bold"),
+        ),
+        sg.Button(
+            "Stop",
+            disabled=True,
+            button_color=("white", "red"),
+            size=(10, 1),
+            font=("Arial", 9, "bold"),
+        ),
+        sg.Button(
+            "Retry",
+            key="action_button",
+            visible=False,
+            button_color=("white", "orange"),
+            size=(10, 1),
+            font=("Arial", 9, "bold"),
+        ),
     ]
 
 
@@ -177,7 +197,12 @@ def create_window() -> Window:
     icon_path = "pixel-pycb.ico"
     if not path.isfile(path=icon_path):
         icon_path = path.join("..\\..\\..\\assets\\", icon_path)
-    return sg.Window(title=f"py-clash-bot | {__version__}", layout=main_layout, icon=icon_path, resizable=False)
+    return sg.Window(
+        title=f"py-clash-bot | {__version__}",
+        layout=main_layout,
+        icon=icon_path,
+        resizable=False,
+    )
 
 
 if __name__ == "__main__":

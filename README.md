@@ -58,14 +58,15 @@ The bot tracks detailed statistics across three categories:
 
 ### Option 1: MEmu Emulator
 
-1. **Download MEmu** - Get it from [https://www.memuplay.com/](https://www.memuplay.com/)
-2. **Install MEmu** - Run the installer
+1. **Download MEmu 9.2.5.0** - Get it from the [official site](https://www.memuplay.com/) or use this [working installer](https://drive.google.com/file/d/1FDMa5oKIhbM_X2TGHg6qSi3bnIuIXcPf/view?usp=sharing) (version 9.2.5.0 recommended)
+2. **Install MEmu** - Run the MEmu installer
 3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
 4. **Install py-clash-bot** - Run the installer
-5. **Start py-clash-bot** - The bot will automatically create a MEmu emulator configured for the bot
-6. **Install Clash Royale** - Install Clash Royale on the new emulator
-7. **Close all MEmu instances** - The bot starts them automatically
-8. **Start the bot** - It will open the emulator and start playing automatically
+5. **Create the VM** - Start the bot once to let it automatically create the "pyclashbot-96" MEmu emulator
+6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-96" emulator via Google Play Store
+7. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
+8. **Close MEmu** - Close the MEmu emulator completely
+9. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
 
 **Troubleshooting MEmu:**
 - Switch render mode to Vulkan, DirectX, or OpenGL if experiencing issues
@@ -75,20 +76,20 @@ The bot tracks detailed statistics across three categories:
 ### Option 2: Google Play Games Emulator
 
 1. **Download Google Play Games Emulator** - Get it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
-2. **Install the emulator** - Run the installer
-3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
-4. **Open the emulator manually** - Install Clash Royale on it
-5. **Optional: Set display ratio** - Go to Google Play Emulator > Developer Options > Display Ratio > 9:16 (Portrait) for optimal look
-6. **Close everything** - Close the Google Play emulator completely
-7. **Start the bot** - It will open the Google Play emulator for you and start playing automatically
+2. **Install the emulator** - Run the Google Play installer
+3. **Initial setup** - Boot the Google Play Games Emulator once. This will trigger a Google sign-in flow in your web browser - complete this process. If prompted to allow USB debugging, click "Accept"
+4. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
+5. **Install Clash Royale** - Download Clash Royale manually from the emulator
+6. **Complete setup** - Start Clash Royale manually, complete the tutorial, and optionally sign in to your account
+7. **Optional: Set display ratio** - Go to Google Play Emulator > Developer Options > Display Ratio > 9:16 (Portrait) for optimal look
+8. **Close emulator** - Close the Google Play emulator completely
+9. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
 
-### After Setup (Both Emulators)
+### Important Notes
 
-1. **Complete the Clash Royale tutorial** - Takes about 30 seconds
-2. **Sign in with your account** - Use SuperCell ID or create a new account
-3. **Set language to English** - Ensure the game language is English
-4. **Configure the bot** - Select which tasks you want automated
-5. **Start automation** - Click "Start" and let the bot handle your gameplay!
+- **Language Setting** - Ensure Clash Royale is set to English for optimal bot performance
+- **Tutorial Completion** - The tutorial must be completed manually before starting the bot
+- **Account Setup** - Sign in with SuperCell ID or create a new account as needed
 
 ## 🎯 Demo
 

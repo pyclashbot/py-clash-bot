@@ -16,7 +16,7 @@ class WorkerThread(PausableThread):
     def _create_google_play_emulator(self):
         """Create and return a Google Play emulator instance."""
         try:
-            emulator = GooglePlayEmulatorController()
+            emulator = GooglePlayEmulatorController(logger=self.logger)
             print("Successfully created google play emulator")
             return emulator
         except Exception as e:
@@ -30,7 +30,7 @@ class WorkerThread(PausableThread):
             self.logger.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
             return None
 
-        return MemuEmulatorController(render_mode)
+        return MemuEmulatorController(self.logger, render_mode)
 
     def _setup_emulator(self, jobs):
         """Set up the appropriate emulator based on job configuration."""

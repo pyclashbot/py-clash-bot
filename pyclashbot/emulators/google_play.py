@@ -17,7 +17,8 @@ from pyclashbot.emulators.base import BaseEmulatorController
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
-    def __init__(self, render_settings: dict = {}):
+    def __init__(self, logger, render_settings: dict = {}):
+        self.logger = logger
         # clear existing stuff
         self.stop()
         while self._is_emulator_running():
@@ -188,11 +189,11 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             return False
 
         if "offline" in result.stdout:
-            print("[!] Emulator is offline. Please check the connection.")
+            self.logger.log("[!] Emulator is offline. Please check the connection.")
             return False
 
         elif "localhost:6520" in result.stdout and "device" in result.stdout:
-            print("Connected to emulator at localhost:6520")
+            self.logger.log("Connected to emulator at localhost:6520")
             return True
 
         if DEBUG:
@@ -333,13 +334,19 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         self._set_screen_size(width, height)
 
     def restart(self):
+        restart_start_time = time.time()
+        
+        self.logger.change_status("Starting Google Play emulator restart process...")
+
         # close emulator
+        self.logger.change_status("Shutting down Google Play emulator processes...")
         print("Restarting emulator...")
         print("Closing emulator...")
         while self._is_emulator_running():
             self.stop()
 
         # boot emulator
+        self.logger.change_status("Starting Google Play emulator...")
         print("Starting emulator...")
         while not self._is_emulator_running():
             self.start()
@@ -348,11 +355,13 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             time.sleep(0.3)
 
         # wait for window to appear
+        self.logger.change_status("Waiting for Google Play emulator window...")
         while self._find_window(self.google_play_emulator_process_name) is None:
             print("Waiting for emulator window to appear...")
             time.sleep(0.3)
 
         # reconnect to adb
+        self.logger.change_status("Establishing ADB connection to Google Play emulator...")
         while not self._is_connected():
             self._connect()
             time.sleep(20)
@@ -360,12 +369,15 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         time.sleep(10)
 
         # configure emulator
+        self.logger.change_status("Configuring Google Play emulator window size and settings...")
         for i in range(3):
             self._resize_emulator()
             time.sleep(1)
 
         # validate image size
+        self.logger.change_status("Validating Google Play emulator screen dimensions...")
         if not self._valid_screen_size(self.expected_dims):
+            self.logger.change_status(f"Invalid screen size - expected {self.expected_dims}")
             print(
                 f"[!] Fatal error: Emulator screen size is not {self.expected_dims}. "
                 "Please check the emulator settings."
@@ -373,33 +385,40 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             return False
 
         # boot clash
+        self.logger.change_status("Launching Clash Royale application...")
         time.sleep(10)
         clash_royale_name = "com.supercell.clashroyale"
         start_app_count = 3
         for i in range(start_app_count):
+            self.logger.change_status(f"Starting Clash Royale (attempt {i + 1}/{start_app_count})...")
             print(f"Starting clash app (attempt {i + 1}/{start_app_count})...")
             self.start_app(clash_royale_name)
             time.sleep(1)
 
         # wait for clash main to appear
+        self.logger.change_status("Waiting for Clash Royale main menu to load...")
         print("Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
         time.sleep(12)
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
-                print("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
+                self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
+                self.logger.log("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:
-                print("Detected clash main!")
+                self.logger.change_status("Clash Royale main menu detected successfully!")
+                self.logger.log("Detected clash main!")
                 break
 
             # click deadspace
             self.click(5, 350)
 
-        print("Emulator restarted and configured successfully.")
+        restart_duration = str(time.time() - restart_start_time)[:5]
+        self.logger.change_status(f"Google Play emulator restart completed successfully in {restart_duration}s")
+        self.logger.log("Emulator restarted and configured successfully.")
         return True
 
     def start(self):
@@ -541,7 +560,53 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         raise NotImplementedError
 
     def start_app(self, package_name: str):
+        # Check if the app is installed first
+        result = self.adb("shell pm list packages")
+        if result.stdout and package_name not in result.stdout:
+            return self._wait_for_clash_installation(package_name)
+        
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
+
+    def _wait_for_clash_installation(self, package_name: str):
+        """Wait for user to install Clash Royale using the logger action system"""
+        self.current_package_name = package_name  # Store for retry logic
+        self.logger.show_temporary_action(
+            message=f"{package_name} not installed - please install it and complete tutorial",
+            action_text="Retry",
+            callback=self._retry_installation_check
+        )
+        
+        self.logger.log(f"[!] {package_name} not installed.")
+        self.logger.log("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
+        
+        # Wait for the callback to be triggered
+        self.installation_waiting = True
+        while self.installation_waiting:
+            time.sleep(0.5)
+        
+        self.logger.log("[+] Installation confirmed, continuing...")
+        return True
+
+    def _retry_installation_check(self):
+        """Callback method triggered when user clicks Retry button"""
+        self.logger.change_status("Checking for Clash Royale installation...")
+        
+        # Check if app is now installed
+        package_name = getattr(self, 'current_package_name', 'com.supercell.clashroyale')
+        result = self.adb("shell pm list packages")
+        
+        if result.stdout and package_name in result.stdout:
+            # Installation successful!
+            self.installation_waiting = False
+            self.logger.change_status("Installation complete - continuing...")
+        else:
+            # Still not installed, show the retry button again
+            self.logger.show_temporary_action(
+                message=f"{package_name} still not found - please install it and complete tutorial",
+                action_text="Retry",
+                callback=self._retry_installation_check
+            )
+            self.logger.log(f"[!] {package_name} still not installed. Please try again.")
 
     def debug_adb_connectivity(self):
         """
