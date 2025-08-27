@@ -77,7 +77,7 @@ The bot tracks detailed statistics across three categories:
 
 1. **Download Google Play Games Emulator** - Get it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
 2. **Install the emulator** - Run the Google Play installer
-3. **Initial setup** - Boot the Google Play Games Emulator once. This will trigger a Google sign-in flow in your web browser - complete this process
+3. **Initial setup** - Boot the Google Play Games Emulator once. This will trigger a Google sign-in flow in your web browser - complete this process. If prompted to allow USB debugging, click "Accept"
 4. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
 5. **Install Clash Royale** - Download Clash Royale manually from the emulator
 6. **Complete setup** - Start Clash Royale manually, complete the tutorial, and optionally sign in to your account
