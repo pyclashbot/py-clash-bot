@@ -358,7 +358,7 @@ class MemuEmulatorController(BaseEmulatorController):
         self.logger.change_status("Skipping MEmu startup ads...")
         if self._skip_ads() is False:
             self.logger.change_status("Failed to skip ads, retrying restart...")
-            print("[!] Fatal error! Failed to skip ads during memu startup.")
+            self.logger.log("[!] Fatal error! Failed to skip ads during memu startup.")
             return self.restart()
 
         # ensure valid size with retry logic
@@ -382,7 +382,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 time.sleep(5)
             else:
                 self.logger.change_status("Screen size validation failed after maximum attempts - continuing anyway to avoid infinite loop")
-                print("[!] Warning: VM size validation failed after multiple attempts. Continuing anyway.")
+                self.logger.log("[!] Warning: VM size validation failed after multiple attempts. Continuing anyway.")
                 break
 
         # start clash royale
@@ -391,7 +391,7 @@ class MemuEmulatorController(BaseEmulatorController):
         clash_apk_base_name = "com.supercell.clashroyale"
         if self.start_app(clash_apk_base_name) is False:
             self.logger.change_status("Failed to start Clash Royale - restart failed")
-            print("[!] Fatal error! Failed to start Clash Royale.")
+            self.logger.log("[!] Fatal error! Failed to start Clash Royale.")
             return False
 
         # wait for clash main to appear
@@ -404,13 +404,13 @@ class MemuEmulatorController(BaseEmulatorController):
             # if timed out, retry restarting
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
-                print("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
+                self.logger.log("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:
                 self.logger.change_status("Clash Royale main menu detected successfully!")
-                print("Detected clash main!")
+                self.logger.log("Detected clash main!")
                 break
 
             # click deadspace
@@ -516,7 +516,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
         # start Clash Royale
         self.pmc.start_app_vm(package_name, vm_index=self.vm_index)
-        print("Successfully initialized Clash app")
+        self.logger.log("Successfully initialized Clash app")
         return True
 
     def _wait_for_clash_installation(self, package_name: str):
@@ -528,15 +528,15 @@ class MemuEmulatorController(BaseEmulatorController):
             callback=self._retry_installation_check
         )
         
-        print(f"[!] {package_name} not installed.")
-        print("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
+        self.logger.log(f"[!] {package_name} not installed.")
+        self.logger.log("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
         
         # Wait for the callback to be triggered
         self.installation_waiting = True
         while self.installation_waiting:
             time.sleep(0.5)
         
-        print("[+] Installation confirmed, continuing...")
+        self.logger.log("[+] Installation confirmed, continuing...")
         return True
 
     def _retry_installation_check(self):
@@ -559,7 +559,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 action_text="Retry",
                 callback=self._retry_installation_check
             )
-            print(f"[!] {package_name} still not installed. Please try again.")
+            self.logger.log(f"[!] {package_name} still not installed. Please try again.")
 
 
 if __name__ == "__main__":

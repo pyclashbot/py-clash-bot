@@ -189,11 +189,11 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             return False
 
         if "offline" in result.stdout:
-            print("[!] Emulator is offline. Please check the connection.")
+            self.logger.log("[!] Emulator is offline. Please check the connection.")
             return False
 
         elif "localhost:6520" in result.stdout and "device" in result.stdout:
-            print("Connected to emulator at localhost:6520")
+            self.logger.log("Connected to emulator at localhost:6520")
             return True
 
         if DEBUG:
@@ -404,13 +404,13 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
-                print("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
+                self.logger.log("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:
                 self.logger.change_status("Clash Royale main menu detected successfully!")
-                print("Detected clash main!")
+                self.logger.log("Detected clash main!")
                 break
 
             # click deadspace
@@ -418,7 +418,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         restart_duration = str(time.time() - restart_start_time)[:5]
         self.logger.change_status(f"Google Play emulator restart completed successfully in {restart_duration}s")
-        print("Emulator restarted and configured successfully.")
+        self.logger.log("Emulator restarted and configured successfully.")
         return True
 
     def start(self):
@@ -576,15 +576,15 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             callback=self._retry_installation_check
         )
         
-        print(f"[!] {package_name} not installed.")
-        print("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
+        self.logger.log(f"[!] {package_name} not installed.")
+        self.logger.log("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
         
         # Wait for the callback to be triggered
         self.installation_waiting = True
         while self.installation_waiting:
             time.sleep(0.5)
         
-        print("[+] Installation confirmed, continuing...")
+        self.logger.log("[+] Installation confirmed, continuing...")
         return True
 
     def _retry_installation_check(self):
@@ -606,7 +606,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
                 action_text="Retry",
                 callback=self._retry_installation_check
             )
-            print(f"[!] {package_name} still not installed. Please try again.")
+            self.logger.log(f"[!] {package_name} still not installed. Please try again.")
 
     def debug_adb_connectivity(self):
         """
