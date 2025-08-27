@@ -91,6 +91,25 @@ The bot tracks detailed statistics across three categories:
 - **Tutorial Completion** - The tutorial must be completed manually before starting the bot
 - **Account Setup** - Sign in with SuperCell ID or create a new account as needed
 
+## 🔧 Emulator Debugging
+
+Having trouble with your emulator? This section provides troubleshooting tips for common issues with both supported emulators.
+
+### Google Play Games Emulator Debugging
+
+- **Use the correct version** - Make sure you're using the DEVELOPER Google Play Games emulator, not the BETA version. Download it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
+- **Watch for login prompts** - Google Play makes a popup in your default browser for the Google sign-in prompt. Sometimes you might miss this during emulator boot, and it'll hang forever. If you're experiencing booting issues, check for a login prompt in a minimized browser window!
+- **Adjust rendering settings** - If it's still not rendering properly, try adjusting render mode settings at System tray > Google Play Games emulator > Graphics settings > Vulkan device override OR Graphics > Graphics stack override
+
+### MEmu Emulator Debugging  
+
+- **Hardware requirements** - MEmu is more hardware intensive, so if you're on a low-end machine try using Google Play Games emulator instead
+- **Black screen or boot issues** - If it's showing a black screen or never fully booting, try adjusting render mode via the ClashBot settings, then start the bot to apply those settings
+- **BIOS requirements** - MEmu REQUIRES your BIOS to have UEFI and Hyper-V enabled!
+  - Enable UEFI: [https://www.youtube.com/watch?v=uAMLGIlFMdI](https://www.youtube.com/watch?v=uAMLGIlFMdI)  
+  - Enable Hyper-V: [https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/install-hyper-v?tabs=powershell&pivots=windows](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/install-hyper-v?tabs=powershell&pivots=windows)
+- **Version conflicts** - Some old versions of pyclashbot create corrupt instances of MEmu. If you're switching between versions and MEmu is breaking, try deleting your existing MEmu VMs, or reinstalling MEmu entirely
+
 ## 🎯 Demo
 
 <img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
