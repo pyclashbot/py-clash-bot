@@ -4141,95 +4141,65 @@ for card_name, card_data in card_color_data.items():
     card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
 
 
-def calculate_offset(card_name, card_data, collected_data_array):
-    total_offset = 0
-    for i, corner_data_array in enumerate(card_data):
-        offset = numpy.sum(numpy.abs(collected_data_array[i] - corner_data_array))
-        total_offset += offset
-    return card_name, total_offset
 
 
 def find_closest_card(collected_data):
-    best_card = None
-    best_offset = 1001
-
-    collected_data_array = numpy.array(
-        [list(corner.values()) for corner in collected_data],
-    )
-
+    """Find the best matching card based on color data comparison."""
+    collected_array = numpy.array([list(corner.values()) for corner in collected_data])
+    
+    best_card = "UNKNOWN"
+    best_score = 1001  # Higher scores are worse
+    
     for card_name, card_data in card_color_data.items():
-        card_name, total_offset = calculate_offset(  # noqa: PLW2901
-            card_name,
-            card_data,
-            collected_data_array,
-        )
-        if total_offset < best_offset:
-            best_offset = total_offset
+        score = _calculate_color_difference(card_data, collected_array)
+        if score < best_score:
+            best_score = score
             best_card = card_name
+    
+    return best_card if best_score <= 1000 else "UNKNOWN"
 
-    if best_offset > 1000:
-        return "UNKNOWN"
-
-    return best_card
+def _calculate_color_difference(reference_data, sample_data):
+    """Calculate total color difference between reference and sample."""
+    return sum(numpy.sum(numpy.abs(sample_data[i] - corner_data)) 
+              for i, corner_data in enumerate(reference_data))
 
 
 # identification methods
 def make_pixel_dict_from_color_list(color_list):
-    # Initialize the pixel_dict with zeros
-    pixel_dict = dict.fromkeys(COLORS.keys(), 0)
-
-    # Count the occurrences of each color in color_list
+    """Create color histogram from list of color names."""
+    pixel_dict = dict.fromkeys(COLORS.keys(), 0)  # Initialize with zeros
     color_counts = Counter(color_list)
-
-    # Update the pixel_dict with the counts
     pixel_dict.update(color_counts)
-
     return pixel_dict
 
 
 def color_from_pixel(pixels):
-    # Calculate the Euclidean distance between the pixels and each color
+    """Map pixels to closest predefined colors using Euclidean distance."""
     distances = numpy.linalg.norm(COLORS_ARRAY - pixels[:, None], axis=2)
-
-    # Find the color with the minimum distance for each pixel
-    closest_colors = [COLORS_KEYS[i] for i in numpy.argmin(distances, axis=1)]
-
-    return closest_colors
+    closest_indices = numpy.argmin(distances, axis=1)
+    return [COLORS_KEYS[i] for i in closest_indices]
 
 
-def get_corner_pixels(x_range, y_range, iar):
-    # Get all pixels in the range
-    pixels = iar[y_range[0] : y_range[1], x_range[0] : x_range[1]].reshape(-1, 3)
-
-    # Get the color for each pixel
+def get_corner_pixels(x_range, y_range, screenshot):
+    """Extract and count colors in a rectangular region."""
+    pixels = screenshot[y_range[0]:y_range[1], x_range[0]:x_range[1]].reshape(-1, 3)
     colors = color_from_pixel(pixels)
-
     return make_pixel_dict_from_color_list(colors)
 
 
-def get_all_pixel_data(emulator, chosen_card_index):
-    topleft = toplefts[chosen_card_index]
-
-    corners = [
-        ((topleft[0], topleft[0] + HALF_WIDTH), (topleft[1], topleft[1] + HALF_HEIGHT)),
-        (
-            (topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH),
-            (topleft[1], topleft[1] + HALF_HEIGHT),
-        ),
-        (
-            (topleft[0], topleft[0] + HALF_WIDTH),
-            (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT),
-        ),
-        (
-            (topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH),
-            (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT),
-        ),
+def get_all_pixel_data(emulator, card_index):
+    """Extract color data from the four corners of a card for identification."""
+    topleft = toplefts[card_index]
+    
+    # Define four corner regions of the card
+    corner_regions = [
+        ((topleft[0], topleft[0] + HALF_WIDTH), (topleft[1], topleft[1] + HALF_HEIGHT)),  # Top-left
+        ((topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH), (topleft[1], topleft[1] + HALF_HEIGHT)),  # Top-right  
+        ((topleft[0], topleft[0] + HALF_WIDTH), (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT)),  # Bottom-left
+        ((topleft[0] + HALF_WIDTH, topleft[0] + TOTAL_WIDTH), (topleft[1] + HALF_HEIGHT, topleft[1] + TOTAL_HEIGHT)),  # Bottom-right
     ]
-
-    color_list = [get_corner_pixels(*corner, battle_iar) for corner in corners]
-
-    # print(f"card_name: {color_list},")
-    return color_list
+    
+    return [get_corner_pixels(*region, battle_iar) for region in corner_regions]
 
 
 purple_color = numpy.array([255, 43, 227])
@@ -4258,54 +4228,45 @@ play_side = "left"
 
 
 def check_which_cards_are_available(emulator, check_champion=False, check_side=False):
-    global battle_iar
+    """Check which cards are ready to play based on purple ready indicators."""
+    global battle_iar, play_side
     battle_iar = emulator.screenshot()
-    card_exists_list = []
-
-    if check_champion and (
-        check_for_champion_ability(
-            battle_iar[462][324],
-            battle_iar[453][334],
-            battle_iar[462][336],
-        )
-    ):
+    
+    # Handle champion ability if requested
+    if check_champion and _has_champion_ability_ready():
         emulator.click(330, 460)
-
+    
+    # Update play side if requested
     if check_side:
-        global play_side
         _, play_side = switch_side()
+    
+    # Check each card slot for purple ready indicator
+    available_cards = []
+    for i, (x_coords, y_coords) in enumerate(card_coords):
+        card_pixels = battle_iar[numpy.ix_(y_coords, x_coords)]
+        purple_pixels = numpy.all(numpy.abs(card_pixels - purple_color) <= 30, axis=-1)
+        if numpy.sum(purple_pixels) >= 26:  # Threshold for "ready" card
+            available_cards.append(i)
+    
+    return available_cards
 
-    for i, coords in enumerate(card_coords):
-        x_coords, y_coords = coords
-        iar_pixels = battle_iar[numpy.ix_(y_coords, x_coords)]
-        purple_pixels = numpy.all(numpy.abs(iar_pixels - purple_color) <= 30, axis=-1)
-        count = numpy.sum(purple_pixels)
-        if count >= 26:
-            card_exists_list.append(i)
-
-    return card_exists_list
-
-
-def check_for_champion_ability(a, b, c):
-    pixels = numpy.array([a, b, c])
-    colors = numpy.array(
-        [
-            [215, 28, 223],
-            [240, 39, 254],
-            [239, 40, 251],
-        ],
-    )
-
-    for p in pixels:
-        if numpy.any(numpy.all(numpy.abs(colors - p) <= 30, axis=1)):
+def _has_champion_ability_ready():
+    """Check if champion ability is ready based on purple pixels."""
+    test_pixels = [battle_iar[462][324], battle_iar[453][334], battle_iar[462][336]]
+    champion_colors = numpy.array([[215, 28, 223], [240, 39, 254], [239, 40, 251]])
+    
+    for pixel in test_pixels:
+        if numpy.any(numpy.all(numpy.abs(champion_colors - pixel) <= 30, axis=1)):
             return True
-
     return False
 
 
+
+
 def identify_hand_cards(emulator, card_index):
-    color_chosen_card = get_all_pixel_data(emulator, card_index)
-    return find_closest_card(color_chosen_card)
+    """Identify a card by analyzing its corner color patterns."""
+    card_color_data = get_all_pixel_data(emulator, card_index)
+    return find_closest_card(card_color_data)
 
 
 # Create the reverse lookup dictionary
@@ -4313,56 +4274,66 @@ CARD_TO_GROUP = {card: group for group, cards in CARD_GROUPS.items() for card in
 
 
 def get_card_group(card_id) -> str:
-    # Use the reverse lookup dictionary for O(1) lookups
+    """Get the tactical group (spell, hog, turret, etc.) for a card."""
     return CARD_TO_GROUP.get(card_id, "No group")
 
 
 def get_play_coords_for_card(emulator, logger, card_index, elapsed_time: float = 0):
-    # get the ID of this card(ram_rider, zap, etc)
-    id_cards_start_time = time.time()
-    identity = identify_hand_cards(emulator, card_index)
-    time_taken = str(time.time() - id_cards_start_time)[:3]
-    logger.change_status(f"Identified card as {identity} ({time_taken}s)")
-
-    # get the grouping of this card (hog, turret, spell, etc)
-    group = get_card_group(identity)
-
-    # get the play coords of this grouping
+    """Identify card and get optimal play coordinates."""
+    start_time = time.time()
+    card_id = identify_hand_cards(emulator, card_index)
+    id_time = time.time() - start_time
+    
+    logger.change_status(f"Card: {card_id} ({id_time:.2f}s)")
+    
+    group = get_card_group(card_id)
     coords = calculate_play_coords(group, play_side, elapsed_time)
+    
+    return card_id, coords
 
-    return identity, coords
 
+def calculate_play_coords(card_group: str, side: str, elapsed_time: float = 0):
+    """Calculate play coordinates based on card group and battle time."""
+    # Handle unknown cards with time-based positioning
+    if card_group == "No group":
+        return _get_default_coords(side, elapsed_time)
+    
+    # Use predefined coordinates for known card groups
+    if card_group in PLAY_COORDS:
+        coords_data = PLAY_COORDS[card_group]
+        
+        # Try side-specific coordinates first
+        if side in coords_data:
+            return random.choice(coords_data[side])
+        
+        # Fallback to generic coordinates
+        if "coords" in coords_data:
+            return random.choice(coords_data["coords"])
+    
+    # Final fallback
+    return _get_default_coords(side, elapsed_time)
 
-def calculate_play_coords(card_grouping: str, side_preference: str, elapsed_time: float = 0):
-    # if there is a dedicated coordinate for this card
-    if card_grouping == "No group":
-        if elapsed_time < 12:  # Less than 5 seconds
-            if side_preference == "left":
-                return (random.randint(60, 206), random.randint(441, 456))
-            return (random.randint(210, 351), random.randint(441, 456))
-        if elapsed_time < 80:  # Less than 2 minutes
-            if side_preference == "left":
-                return (random.randint(60, 206), random.randint(360, 456))
-            return (random.randint(210, 351), random.randint(360, 456))
-        # 2 minutes or more
-        if side_preference == "left":
-            return (random.randint(60, 206), random.randint(281, 456))
-        return (random.randint(210, 351), random.randint(281, 456))
-
-    if PLAY_COORDS.get(card_grouping):
-        group_datum = PLAY_COORDS[card_grouping]
-        if side_preference == "left" and "left" in group_datum:
-            return random.choice(group_datum["left"])
-        if side_preference == "right" and "right" in group_datum:
-            return random.choice(group_datum["right"])
-        if "coords" in group_datum:
-            return random.choice(group_datum["coords"])
+def _get_default_coords(side: str, elapsed_time: float):
+    """Get default coordinates based on side and battle progression."""
+    # Determine Y range based on battle time (more aggressive over time)
+    if elapsed_time < 12:
+        y_range = (441, 456)  # Very back
+    elif elapsed_time < 80:
+        y_range = (360, 456)  # Mid-back
+    else:
+        y_range = (281, 456)  # Aggressive
+    
+    # X range based on side
+    x_range = (60, 206) if side == "left" else (210, 351)
+    
+    return (random.randint(*x_range), random.randint(*y_range))
 
 
 bridge_iar = 0
 
 
 def create_default_bridge_iar(emulator):
+    """Capture baseline bridge screenshot for action detection."""
     global bridge_iar
     bridge_iar = emulator.screenshot()
 
@@ -4371,17 +4342,29 @@ bridge_pixel = [[100, 200], [275, 200]]
 
 
 def switch_side():
-    bridge_color_offset = []
-    for i, bridge in enumerate(bridge_pixel):
-        all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]
-        pixel_coords = numpy.array(all_coords)
-        iar_pixels = battle_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
-        bridge_iar_pixels = bridge_iar[pixel_coords[:, 0], pixel_coords[:, 1]]
-        bridge_color_offset.append(numpy.linalg.norm(iar_pixels - bridge_iar_pixels))
-
-    if bridge_color_offset[0] > bridge_color_offset[1]:
-        return bridge_color_offset[0], "left"
-    return bridge_color_offset[1], "right"
+    """Determine which side has more action by comparing bridge pixel changes."""
+    bridge_positions = [[100, 200], [275, 200]]  # Left and right bridge
+    action_levels = []
+    
+    for bridge_pos in bridge_positions:
+        # Sample 40x175 pixel area around bridge
+        x_start, y_start = bridge_pos
+        coords = [(y, x) for x in range(x_start, x_start + 40) 
+                         for y in range(y_start, y_start + 175)]
+        
+        # Compare current vs baseline bridge pixels
+        current_pixels = battle_iar[numpy.array(coords)[:, 0], numpy.array(coords)[:, 1]]
+        baseline_pixels = bridge_iar[numpy.array(coords)[:, 0], numpy.array(coords)[:, 1]]
+        
+        # Calculate color difference magnitude
+        action_level = numpy.linalg.norm(current_pixels - baseline_pixels)
+        action_levels.append(action_level)
+    
+    # Return side with more action
+    if action_levels[0] > action_levels[1]:
+        return action_levels[0], "left"
+    else:
+        return action_levels[1], "right"
 
 
 if __name__ == "__main__":

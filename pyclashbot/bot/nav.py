@@ -19,154 +19,75 @@ CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
 
 def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
-    """Waits for any battle to start (1v1 or 2v2).
-
-    Args:
-    ----
-        emulator: The emulator controller.
-        logger: The logger object.
-        timeout: Maximum time to wait in seconds
-
-    Returns:
-    -------
-        bool: True if battle started, False if timed out.
-    """
+    """Wait for battle to start with periodic deadspace clicking."""
     start_time = time.time()
 
     while time.time() - start_time < timeout:
-        time_taken = str(time.time() - start_time)[:4]
-        logger.change_status(
-            status=f"Waiting for battle to start for {time_taken}s",
-        )
+        elapsed = time.time() - start_time
+        logger.change_status(f"Waiting for battle ({elapsed:.1f}s)")
 
-        battle_result = check_if_in_battle(emulator)
-
-        if battle_result:  # True for any battle type
-            logger.change_status("Detected an ongoing battle!")
+        if check_if_in_battle(emulator):
+            logger.change_status("Battle started!")
             return True
 
-        emulator.click(x_coord=20, y_coord=200)
+        emulator.click(20, 200)  # Deadspace click
+        time.sleep(1)
 
     return False
 
 
 def check_for_in_battle_with_delay(emulator) -> bool:
-    """Checks if the virtual machine is in any battle with a delay.
-
-    Args:
-    ----
-        emulator: The emulator controller.
-
-    Returns:
-    -------
-        bool: True if the virtual machine is in any battle, False otherwise.
-
-    """
-    timeout = 3  # s
+    """Check if in battle with 3-second sampling delay."""
+    timeout = 3
     start_time = time.time()
+    
     while time.time() - start_time < timeout:
-        battle_result = check_if_in_battle(emulator)
-        if battle_result:  # True for any battle type ("1v1", "2v2")
+        if check_if_in_battle(emulator):
             return True
+        time.sleep(0.1)  # Small delay between checks
+    
     return False
 
 
 def check_if_in_battle(emulator):
-    iar = emulator.screenshot()
-
-    pixels_1v1 = [
-        iar[515][49],
-        iar[518][77],
-        iar[530][52],
-        iar[530][77],
-        iar[618][115],
-    ]
-
-    pixels_2v2 = [
-        iar[515][53],
-        iar[518][80],
-        iar[531][52],
-        iar[514][76],
-        iar[615][114],
-    ]
-
-    colors_1v1 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [232, 63, 242],
-    ]
-    colors_2v2 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [231, 57, 242],
-    ]
-
-    # def pixel_to_string(pixel):
-    #     return f"{pixel[0]} {pixel[1]} {pixel[2]}"
-
-    # print("\nBattle detection check:")
-    # print(
-    #     "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #         "Seen 1v1", "Expected 1v1", "Seen 2v2", "Expected 2v2"
-    #     )
-    # )
-    # for pixel1v1, pixel2v2, color1v1, color2v2 in zip(
-    #     pixels_1v1, pixels_2v2, colors_1v1, colors_2v2
-    # ):
-    #     print(
-    #         "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #             pixel_to_string(pixel1v1),
-    #             pixel_to_string(color1v1),
-    #             pixel_to_string(pixel2v2),
-    #             pixel_to_string(color2v2),
-    #         )
-    #     )
-
-    if all_pixels_are_equal(colors_1v1, pixels_1v1, tol=35):
-        # print(f"Yes in a battle. Its of type 1v1")
-        return True
-    if all_pixels_are_equal(colors_2v2, pixels_2v2, tol=35):
-        # print(f"Yes in a battle. Its of type 2v2")
-        return True
-
-    # print(f"Not in a battle")
+    """Check if currently in a battle (1v1 or 2v2) using UI indicators."""
+    screenshot = emulator.screenshot()
+    
+    # Test patterns for both battle types
+    battle_patterns = {
+        "1v1": {
+            "pixels": [(515, 49), (518, 77), (530, 52), (530, 77), (618, 115)],
+            "colors": [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [232, 63, 242]]
+        },
+        "2v2": {
+            "pixels": [(515, 53), (518, 80), (531, 52), (514, 76), (615, 114)],
+            "colors": [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [231, 57, 242]]
+        }
+    }
+    
+    # Check each battle type pattern
+    for battle_type, pattern in battle_patterns.items():
+        pixels = [screenshot[y][x] for y, x in pattern["pixels"]]
+        if all_pixels_are_equal(pattern["colors"], pixels, tol=35):
+            return True
+    
     return False
 
 
 def check_for_trophy_reward_menu(emulator) -> bool:
-    iar = emulator.screenshot()
-
-    pixels = [
-        iar[592][172],
-        iar[617][180],
-        iar[607][190],
-        iar[603][200],
-        iar[596][210],
-        iar[593][220],
-        iar[600][230],
-        iar[610][235],
-        iar[623][246],
-    ]
-    colors = [
-        [255, 184, 68],
-        [255, 175, 78],
-        [255, 175, 78],
-        [248, 239, 227],
-        [255, 187, 104],
-        [255, 176, 79],
-        [255, 187, 104],
-        [255, 175, 78],
-        [253, 135, 39],
-    ]
-
-    for i, pixel in enumerate(pixels):
-        if not pixel_is_equal(pixel, colors[i], tol=25):
+    """Check if trophy reward menu is visible using color pattern matching."""
+    screenshot = emulator.screenshot()
+    
+    # Trophy reward UI detection points and expected colors
+    test_points = [(592, 172), (617, 180), (607, 190), (603, 200), (596, 210), 
+                   (593, 220), (600, 230), (610, 235), (623, 246)]
+    expected_colors = [[255, 184, 68], [255, 175, 78], [255, 175, 78], [248, 239, 227],
+                      [255, 187, 104], [255, 176, 79], [255, 187, 104], [255, 175, 78], [253, 135, 39]]
+    
+    for (y, x), expected_color in zip(test_points, expected_colors):
+        if not pixel_is_equal(screenshot[y][x], expected_color, tol=25):
             return False
-
+    
     return True
 
 
@@ -189,232 +110,118 @@ def handle_trophy_reward_menu(
 
 
 def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> bool:
-    """Waits for the user to be on the clash main menu.
-    Returns True if on main menu, prints the pixels if False then return False
-    """
-    start_time: float = time.time()
-    while check_if_on_clash_main_menu(emulator) is not True:
-        # timeout check
+    """Wait for main menu, handling popups and timeouts."""
+    start_time = time.time()
+    
+    while not check_if_on_clash_main_menu(emulator):
+        # Check timeout
         if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
-            logger.change_status("Timed out waiting for clash main")
-            break
+            logger.change_status("Timeout waiting for main menu")
+            return False
 
-        # handle geting stuck on trophy road screen
+        # Handle trophy reward popup
         if check_for_trophy_reward_menu(emulator):
-            print("Handling trophy reward menu")
             handle_trophy_reward_menu(emulator, logger)
             time.sleep(2)
             continue
 
-        # click deadspace
+        # Random deadspace clicking to clear popups
         if deadspace_click and random.randint(0, 1) == 0:
-            emulator.click(
-                CLASH_MAIN_MENU_DEADSPACE_COORD[0],
-                CLASH_MAIN_MENU_DEADSPACE_COORD[1],
-            )
+            emulator.click(*CLASH_MAIN_MENU_DEADSPACE_COORD)
+        
         time.sleep(1)
-
-    time.sleep(1)
-    if check_if_on_clash_main_menu(emulator) is not True:
-        print("Failed to get to clash main! Saw these pixels before restarting:")
-        return False
-
+    
     return True
 
 
 def check_if_on_clash_main_menu(emulator) -> bool:
-    """Checks if the user is on the clash main menu.
-    Returns True if on main menu, False if not.
-    """
-    image = emulator.screenshot()
-    pixels = [
-        image[14][209],  # white
-        image[14][325],  # white
-        image[19][298],  # yellow
-        image[17][399],  # green
-        image[581][261],  # green
-        image[584][166],  # bluegrey
-        image[621][166],  # bluegrey
+    """Check if on main menu using emulator-specific color patterns."""
+    screenshot = emulator.screenshot()
+    
+    # Test pixel locations
+    test_points = [(14, 209), (14, 325), (19, 298), (17, 399), (581, 261), (584, 166), (621, 166)]
+    pixels = [screenshot[y][x] for y, x in test_points]
+    
+    # Color patterns for different emulators
+    emulator_patterns = [
+        [[255, 255, 255], [255, 255, 255], [53, 199, 233], [25, 198, 65], 
+         [138, 105, 71], [139, 105, 72], [155, 120, 82]],  # Google Play
+        [[255, 255, 255], [255, 255, 255], [53, 200, 233], [24, 199, 65], 
+         [138, 105, 71], [139, 105, 72], [155, 120, 81]]   # Memu
     ]
-
-    # google play colors
-    colors_1 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [53, 199, 233],
-        [25, 198, 65],
-        [138, 105, 71],
-        [139, 105, 72],
-        [155, 120, 82],
-    ]
-
-    # memu colors
-    colors_2 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [53, 200, 233],
-        [24, 199, 65],
-        [138, 105, 71],
-        [139, 105, 72],
-        [155, 120, 81],
-    ]
-
-    # print("{:^15} | {:^15} | {:^15}".format("Seen", "Google", "Memu"))
-    # for seen_pixel, google_play_color, memu_color in zip(pixels, colors_1, colors_2):
-    #     seen_pixel =str(seen_pixel[0])+ ' '+ str(seen_pixel[1])+ ' '+ str(seen_pixel[2])
-    #     google_play_color = (
-    #         str(google_play_color[0]) + ' ' +
-    #         str(google_play_color[1]) + ' ' +
-    #         str(google_play_color[2])
-    #     )
-    #     memu_color = str(memu_color[0]) + ' ' + str(memu_color[1]) + ' ' + str(memu_color[2])
-    #     print(
-    #         "{:^15} | {:^15} | {:^15}".format(seen_pixel, google_play_color, memu_color)
-    #     )
-
-    for colors in [colors_1, colors_2]:
-        if all_pixels_are_equal(
-            pixels,
-            colors,
-            25,
-        ):
-            return True
-
-    return False
+    
+    # Check if pixels match any emulator pattern
+    return any(all_pixels_are_equal(pixels, pattern, 25) for pattern in emulator_patterns)
 
 
-def get_to_card_page_from_clash_main(
-    emulator,
-    logger: Logger,
-) -> Literal["restart", "good"]:
+def get_to_card_page_from_clash_main(emulator, logger: Logger) -> Literal["restart", "good"]:
+    """Navigate from main menu to card page with timeout."""
+    logger.change_status("Navigating to card page")
     start_time = time.time()
-
-    logger.change_status(status="Getting to card page from clash main")
-
-    # click card page icon
-    emulator.click(
-        CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
-        CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
-    )
+    timeout = 30
+    
+    # Initial click to card page
+    emulator.click(*CARD_PAGE_ICON_FROM_CLASH_MAIN)
     time.sleep(2.5)
-
-    # while not on the card page, cycle the card page
+    
+    # Keep clicking until we reach card page or timeout
     while not check_if_on_card_page(emulator):
-        time_taken = time.time() - start_time
-        if time_taken > 30:
+        if time.time() - start_time > timeout:
             return "restart"
-
-        emulator.click(
-            CARD_PAGE_ICON_FROM_CARD_PAGE[0],
-            CARD_PAGE_ICON_FROM_CARD_PAGE[1],
-        )
+        
+        emulator.click(*CARD_PAGE_ICON_FROM_CARD_PAGE)
         time.sleep(3)
-
-    logger.change_status(status="Made it to card page")
-
+    
+    logger.change_status("Reached card page")
     return "good"
 
 
 def check_if_on_card_page(emulator) -> bool:
-    iar = emulator.screenshot()
-
-    pixels = [
-        iar[433][58],
-        iar[116][59],
-        iar[58][82],
-        iar[64][179],
-        iar[62][108],
-        iar[67][146],
-        iar[77][185],
-        iar[77][84],
+    """Check if currently on the card page using UI color patterns."""
+    screenshot = emulator.screenshot()
+    
+    # Sample key UI pixels
+    test_points = [(433, 58), (116, 59), (58, 82), (64, 179), 
+                   (62, 108), (67, 146), (77, 185), (77, 84)]
+    pixels = [screenshot[y][x] for y, x in test_points]
+    
+    # Two possible color patterns for card page
+    patterns = [
+        [[222, 0, 235], [255, 255, 255], [203, 137, 44], [195, 126, 34],
+         [255, 255, 255], [255, 255, 255], [177, 103, 15], [178, 104, 15]],
+        [[220, 0, 234], [255, 255, 255], [209, 68, 41], [202, 64, 41],
+         [255, 255, 255], [255, 255, 255], [185, 52, 41], [185, 52, 41]]
     ]
-
-    colors1 = [
-        [222, 0, 235],
-        [255, 255, 255],
-        [203, 137, 44],
-        [195, 126, 34],
-        [255, 255, 255],
-        [255, 255, 255],
-        [177, 103, 15],
-        [178, 104, 15],
-    ]
-
-    colors2 = [
-        [220, 0, 234],
-        [255, 255, 255],
-        [209, 68, 41],
-        [202, 64, 41],
-        [255, 255, 255],
-        [255, 255, 255],
-        [185, 52, 41],
-        [185, 52, 41],
-    ]
-
-    def pixel_to_string(pixel):
-        return f"[{pixel[0]},{pixel[1]},{pixel[2]}],"
-
-    # print("{:^17} {:^17} {:^17}".format("pixel", "color1", "color2"))
-    # for pixel, color1, color2 in zip(pixels, colors1, colors2):
-    #     print(
-    #         "{:^17} {:^17} {:^17}".format(
-    #             pixel_to_string(pixel), pixel_to_string(color1), pixel_to_string(color2)
-    #         )
-    #     )
-
-    if all_pixels_are_equal(pixels, colors1, tol=25):
-        return True
-
-    if all_pixels_are_equal(pixels, colors2, tol=25):
-        return True
-
-    return False
+    
+    return any(all_pixels_are_equal(pixels, pattern, tol=25) for pattern in patterns)
 
 
-def get_to_activity_log(
-    emulator,
-    logger: Logger,
-    printmode: bool = False,
-) -> Literal["restart", "good"]:
-    if printmode:
-        logger.change_status(status="Getting to activity log")
-    else:
-        logger.log("Getting to activity log")
-
-    # if not on main return restart
-    if check_if_on_clash_main_menu(emulator) is not True:
-        logger.change_status(
-            status="Eror 08752389 Not on clash main menu, restarting vm",
-        )
+def get_to_activity_log(emulator, logger: Logger, printmode: bool = False) -> Literal["restart", "good"]:
+    """Navigate to activity log from main menu."""
+    log_func = logger.change_status if printmode else logger.log
+    log_func("Navigating to activity log")
+    
+    # Verify we're on main menu
+    if not check_if_on_clash_main_menu(emulator):
+        logger.change_status("Not on main menu, cannot access activity log")
         return "restart"
-
-    # click clash main burger options button
-    if printmode:
-        logger.change_status(status="Opening clash main options menu")
-    else:
-        logger.log("Opening clash main options menu")
-    emulator.click(
-        CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
-        CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
-    )
+    
+    # Open options menu
+    log_func("Opening options menu")
+    emulator.click(*CLASH_MAIN_OPTIONS_BURGER_BUTTON)
+    
     if wait_for_clash_main_burger_button_options_menu(emulator, logger) == "restart":
-        logger.change_status(
-            status="Error 99993 Waited too long for clash main options menu, restarting vm",
-        )
+        logger.change_status("Failed to open options menu")
         return "restart"
-
-    # click battle log button
-    if printmode:
-        logger.change_status(status="Clicking activity log button")
-    else:
-        logger.log("Clicking activity log button")
-    emulator.click(BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
+    
+    # Click battle log
+    log_func("Opening battle log")
+    emulator.click(*BATTLE_LOG_BUTTON)
+    
     if wait_for_battle_log_page(emulator, logger, printmode) == "restart":
-        logger.change_status(
-            status="Error 923593 Waited too long for battle log page, restarting vm",
-        )
+        logger.change_status("Failed to open battle log")
         return "restart"
-
+    
     return "good"
 
 
