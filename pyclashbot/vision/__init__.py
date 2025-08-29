@@ -1,0 +1,1 @@
+"""Vision module for Clash Royale fight analysis."""

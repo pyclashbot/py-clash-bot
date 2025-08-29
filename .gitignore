@@ -7,3 +7,9 @@ __pycache__
 recordings
 .claude/
 .claude/settings.local.json
+
+#IGNORE ACTUAL MODELS FOR THIS BRANCH
+#pyclashbot\vision\interface.py should be replaced
+#with cloud API calls
+*pyclashbot/models/
+*pyclashbot/bot/data/

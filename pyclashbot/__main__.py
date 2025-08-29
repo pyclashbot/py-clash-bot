@@ -16,6 +16,7 @@ from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
 
+
 initalize_pylogging()
 
 
@@ -298,6 +299,7 @@ class BotApplication:
             update_layout(self.window, self.logger)
 
         self.cleanup()
+
 
 
 def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:

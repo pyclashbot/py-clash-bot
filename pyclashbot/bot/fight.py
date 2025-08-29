@@ -5,6 +5,8 @@ import random
 import time
 from typing import Literal
 
+import cv2
+
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
@@ -29,6 +31,13 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.utils.logger import Logger
 
+# Simple hardcoded flags for fight vision
+ENABLE_FIGHT_VISION = True
+ENABLE_DEBUG_VISUALIZATION = True
+
+from pyclashbot.vision.interface import LocalInferenceProvider, InferenceManager
+from pyclashbot.vision.fight_visualizer import create_fight_visualizer, FightVisualizer
+
 # Battle UI coordinates
 HAND_CARDS_COORDS = [(142, 561), (210, 563), (272, 561), (341, 563)]
 EMOTE_BUTTON_COORD = (67, 521)
@@ -43,6 +52,38 @@ ELIXIR_COLOR = [240, 137, 244]
 ELIXER_WAIT_TIMEOUT = 40
 
 
+def initialize_vision_system():
+    """Initialize the vision system if enabled."""
+    if not ENABLE_FIGHT_VISION:
+        return None
+    
+    try:
+        # Create local inference provider
+        local_provider = LocalInferenceProvider()
+        inference_manager = InferenceManager(local_provider)
+        
+        if inference_manager.initialize():
+            print("Fight vision enabled")
+            return inference_manager
+        else:
+            return None
+    except Exception as e:
+        print(f"Failed to initialize vision system: {e}")
+        return None
+
+
+def initialize_debug_visualizer():
+    """Initialize the debug visualization system if enabled."""
+    if not ENABLE_DEBUG_VISUALIZATION:
+        return None
+    
+    try:
+        return create_fight_visualizer()
+    except Exception as e:
+        print(f"Failed to initialize debug visualizer: {e}")
+        return None
+
+
 def do_fight_state(
     emulator,
     logger: Logger,
@@ -50,8 +91,20 @@ def do_fight_state(
     fight_mode_choosed,
     called_from_launching=False,
     recording_flag: bool = False,
+    vision_system=None,
+    debug_visualizer: FightVisualizer = None,
 ) -> bool:
     """Handle complete battle: wait for start, fight, log results."""
+    
+    # Auto-initialize vision systems if not provided
+    if vision_system is None and ENABLE_FIGHT_VISION:
+        vision_system = initialize_vision_system()
+    
+    if debug_visualizer is None and ENABLE_DEBUG_VISUALIZATION:
+        debug_visualizer = initialize_debug_visualizer()
+        if debug_visualizer:
+            print("Debug visualization enabled - press ESC during fight to disable")
+    
     logger.change_status("Waiting for battle to start")
     
     if not wait_for_battle_start(emulator, logger):
@@ -62,7 +115,7 @@ def do_fight_state(
     
     # Choose fight strategy
     fight_success = (_random_fight_loop(emulator, logger) if random_fight_mode 
-                    else _fight_loop(emulator, logger, recording_flag))
+                    else _fight_loop(emulator, logger, recording_flag, vision_system, debug_visualizer))
     
     if not fight_success:
         logger.log("Fight failed")
@@ -343,8 +396,29 @@ def select_card_index(card_indices, recent_cards):
     return random.choice(card_indices)
 
 
-def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy") -> bool:
+def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy", vision_system=None) -> bool:
     """Play a single card using smart selection logic."""
+    
+    # Optional: Use vision system for enhanced card analysis
+    vision_data = None
+    if vision_system:
+        try:
+            screenshot = emulator.screenshot()
+            vision_start = time.time()
+            vision_results = vision_system.run_inference(screenshot, screenshot)
+            vision_time = time.time() - vision_start
+            
+            if hasattr(vision_results, 'hand_cards') and vision_results.hand_cards:
+                vision_data = {
+                    "hand_cards": vision_results.hand_cards,
+                    "units": vision_results.units if hasattr(vision_results, 'units') else [],
+                    "tower_health": vision_results.tower_health if hasattr(vision_results, 'tower_health') else {},
+                    "inference_time": vision_time
+                }
+                logger.change_status(f"Vision analysis: {len(vision_results.hand_cards)} cards detected ({vision_time:.2f}s)")
+        except Exception as e:
+            logger.change_status(f"Vision system error: {e}")
+    
     # Find available cards
     start_time = time.time()
     available_cards = check_which_cards_are_available(emulator, False, True)
@@ -360,9 +434,27 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     card_index = select_card_index(available_cards, last_three_cards)
     last_three_cards.append(card_index)
     
-    # Get play coordinates
+    # Get play coordinates (optionally enhanced with vision data)
     start_time = time.time()
-    card_id, play_coord = get_play_coords_for_card(emulator, logger, card_index, battle_strategy.get_elapsed_time())
+    
+    # Try vision-enhanced card identification first
+    card_id = None
+    if vision_data and card_index < len(vision_data["hand_cards"]):
+        try:
+            vision_card = vision_data["hand_cards"][card_index]
+            if vision_card["confidence"] > 0.5:  # High confidence threshold
+                card_id = vision_card["label"]
+                logger.change_status(f"Vision identified card {card_index}: {card_id} ({vision_card['confidence']:.2f})")
+        except (IndexError, KeyError):
+            pass
+    
+    # Fallback to traditional card detection
+    if not card_id:
+        card_id, play_coord = get_play_coords_for_card(emulator, logger, card_index, battle_strategy.get_elapsed_time())
+    else:
+        # Use vision-identified card with traditional coordinate calculation
+        _, play_coord = get_play_coords_for_card(emulator, logger, card_index, battle_strategy.get_elapsed_time())
+    
     coord_time = time.time() - start_time
     
     if not play_coord:
@@ -429,7 +521,7 @@ class BattleStrategy:
         return thresholds
 
 
-def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
+def _fight_loop(emulator, logger: Logger, recording_flag: bool, vision_system=None, debug_visualizer: FightVisualizer = None) -> bool:
     """Main strategic fight loop with dynamic elixir management."""
     create_default_bridge_iar(emulator)
     cards_at_start = logger.get_cards_played()
@@ -440,6 +532,35 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     while check_for_in_battle_with_delay(emulator):
         if recording_flag:
             save_image(emulator.screenshot())
+
+        # Debug visualization with vision data
+        if debug_visualizer and vision_system:
+            screenshot = emulator.screenshot()
+            vision_results = vision_system.run_inference(screenshot, screenshot)
+
+            print(f'These are vision results')
+            print(vision_results)
+            
+            # Convert InferenceResult to dictionary format for visualizer
+            vision_dict = {
+                "units": vision_results.units if hasattr(vision_results, 'units') else [],
+                "hand_cards": vision_results.hand_cards if hasattr(vision_results, 'hand_cards') else [],
+                "tower_health": vision_results.tower_health if hasattr(vision_results, 'tower_health') else {},
+                "inference_time_ms": vision_results.elapsed_ms if hasattr(vision_results, 'elapsed_ms') else 0
+            }
+            
+            # Create visualizations
+            raw_viz, heatmap_viz = debug_visualizer.visualize_frame(screenshot, vision_dict)
+            
+            # Show debug windows
+            debug_visualizer.show_debug_windows(raw_viz, heatmap_viz)
+            
+            # Allow user to control windows
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:  # ESC to exit debug mode
+                logger.change_status("Debug visualization disabled")
+                debug_visualizer.cleanup()
+                debug_visualizer = None
 
         # Get battle phase strategy
         elixir_amount = battle_strategy.select_elixir_amount()
@@ -461,13 +582,16 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             save_image(emulator.screenshot())
             
         play_start = time.time()
-        if not play_a_card(emulator, logger, recording_flag, battle_strategy):
+        if not play_a_card(emulator, logger, recording_flag, battle_strategy, vision_system):
             logger.change_status("Card play failed, continuing...")
         else:
             play_time = time.time() - play_start
             logger.change_status(f"Card played in {play_time:.2f}s")
 
-    # Fight complete
+    # Fight complete - cleanup debug visualizer
+    if debug_visualizer:
+        debug_visualizer.cleanup()
+    
     time.sleep(2)
     cards_played_this_fight = logger.get_cards_played() - cards_at_start
     logger.change_status(f"Fight ended - played {cards_played_this_fight} cards")
@@ -497,5 +621,56 @@ def _random_fight_loop(emulator, logger) -> bool:
     return True
 
 
+def create_enhanced_fight_system():
+    """Create a simple enhanced fight system with vision and debug visualization."""
+    vision_system = initialize_vision_system()
+    debug_visualizer = initialize_debug_visualizer()
+    
+    if debug_visualizer:
+        print("Debug visualization enabled - press ESC during fight to disable")
+    
+    def enhanced_do_fight_state(emulator, logger, random_fight_mode, fight_mode_choosed, 
+                               called_from_launching=False, recording_flag=False):
+        return do_fight_state(emulator, logger, random_fight_mode, fight_mode_choosed,
+                            called_from_launching, recording_flag, vision_system, debug_visualizer)
+    
+    return enhanced_do_fight_state, vision_system, debug_visualizer
+
+
 if __name__ == "__main__":
-    pass
+    # Simple integration test
+    print("Testing fight vision integration...")
+    
+    print(f"Configuration:")
+    print(f"   Fight vision: {'YES' if ENABLE_FIGHT_VISION else 'NO'}")
+    print(f"   Debug visualization: {'YES' if ENABLE_DEBUG_VISUALIZATION else 'NO'}")
+    
+    # Test vision system
+    vision_system = initialize_vision_system()
+    if vision_system:
+        print("Vision system initialized successfully")
+    else:
+        print("Vision system failed to initialize")
+    
+    # Test debug visualizer
+    debug_visualizer = initialize_debug_visualizer()
+    if debug_visualizer:
+        print("Debug visualizer initialized successfully")
+        print(f"Loaded {len(debug_visualizer.unit_db.units)} unit types")
+        debug_visualizer.cleanup()
+    else:
+        print("Debug visualizer failed to initialize")
+    
+    # Test complete system
+    try:
+        enhanced_fight, vision, visualizer = create_enhanced_fight_system()
+        print("Enhanced fight system created successfully")
+        
+        # Cleanup
+        if visualizer:
+            visualizer.cleanup()
+            
+    except Exception as e:
+        print(f"Enhanced system creation failed: {e}")
+    
+    print("Integration test complete.")
