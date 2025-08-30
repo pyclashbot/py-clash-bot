@@ -11,46 +11,20 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 - **Trophy Road 1v1 Battles** - Automatically fight in trophy road ladder matches
 - **Path of Legends 1v1 Battles** - Battle in the competitive Path of Legends mode
 - **2v2 Battles** - Team up with clan members for 2v2 matches
-- **War Battles** - Participate in clan war battles automatically
 - **Random Decks** - Randomize your deck selection before each battle
-- **Random Plays** - Play cards randomly (ideal for low-end machines)
 - **Smart Battle Management** - Skip fights when chests are full, disable win/loss tracking
 
 ### 🎁 **Rewards & Collection**
 
-- **Chest Management** - Automatically unlock and open chests earned from battles
-- **Battlepass Rewards** - Collect battlepass rewards (works for non-battlepass owners too)
 - **Card Mastery Rewards** - Collect mastery rewards earned from battles
-- **Daily Challenges** - Automatically claim daily and weekly challenge rewards
-- **Level Up Rewards** - Collect level up chests and rewards
-- **Bannerbox Chests** - Open bannerbox crates for additional rewards
-- **Trophy Road Rewards** - Collect rewards from climbing the trophy ladder
-- **Season Shop** - Automatically spend currency from 2v2 battles and events
-
-### 🃏 **Card Management**
-
-- **Card Requests** - Automatically request cards from your clan
-- **Card Donations** - Donate cards to clan members
-- **Free Donations** - Donate cards without spending gold
-- **Shop Management** - Buy daily free shop offers and gold offers
 - **Card Upgrades** - Upgrade your current deck after each battle
-- **Bulk Upgrades** - Upgrade all cards in your collection
 
 ### ⚙️ **Advanced Settings**
 
-- **Account Switching** - Switch between multiple accounts using SuperCell ID
-- **Dual Emulator Support** - Works with both MEmu and Google Play Games emulators
+- **Emulator Support** - Works with both MEmu and Google Play Games emulators
 - **Render Mode Selection** - Choose between OpenGL, DirectX, and Vulkan rendering
 - **Real-time Statistics** - Track wins, losses, chests opened, and more
 - **Performance Monitoring** - Monitor bot runtime, failures, and account switches
-
-### 📊 **Comprehensive Statistics**
-
-The bot tracks detailed statistics across three categories:
-
-- **Battle Stats**: Wins, losses, win rate, cards played, battle counts by mode
-- **Collection Stats**: Requests, donations, chests unlocked, rewards collected
-- **Bot Stats**: Runtime, failures, account switches, and performance metrics
 
 ## 🚀 Setup Instructions
 
