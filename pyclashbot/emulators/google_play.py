@@ -61,7 +61,12 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         self.expected_dims = (419, 633)
 
         # boot the emulator
-        self.restart()
+        # self.restart()
+        
+        
+        while self.restart() is False:
+            print("Restart failed, trying again...")
+            time.sleep(2)
 
     def _get_settings_configuration(self):
         """
@@ -313,26 +318,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
     def _set_screen_size(self, width, height):
         self.adb(f"shell wm size {width}x{height}")
 
-    def _resize_emulator(self, width=None, height=None):
-        default = self.expected_dims
-        if None in [width, height]:
-            width, height = default
-        if DEBUG:
-            print(f"Resizing emulator to {width}x{height}...")
-
-        emulator_window = self._find_window(self.google_play_emulator_process_name)
-
-        if emulator_window is None:
-            return False
-        if width is None:
-            return False
-        if height is None:
-            return False
-
-        emulator_window.resizeTo(width, (height + 150))
-
-        self._set_screen_size(width, height)
-
+    
     def restart(self):
         restart_start_time = time.time()
         
@@ -344,6 +330,10 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         print("Closing emulator...")
         while self._is_emulator_running():
             self.stop()
+
+        for i in range(3):
+            print(f'Setting adb screen size to {self.expected_dims}')
+            self._set_screen_size(*self.expected_dims)
 
         # boot emulator
         self.logger.change_status("Starting Google Play emulator...")
@@ -368,11 +358,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         time.sleep(10)
 
-        # configure emulator
-        self.logger.change_status("Configuring Google Play emulator window size and settings...")
-        for i in range(3):
-            self._resize_emulator()
-            time.sleep(1)
+        
 
         # validate image size
         self.logger.change_status("Validating Google Play emulator screen dimensions...")
