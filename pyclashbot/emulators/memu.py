@@ -156,6 +156,13 @@ class MemuEmulatorController(BaseEmulatorController):
         print("Booting the vm...")
         self.restart()
 
+    def _set_screen_size(self, width, height):
+        self.pmc.send_adb_command_vm(
+            vm_index=self.vm_index,
+            command=f"shell wm size {width}x{height}",
+        )
+
+    
     def _get_clashbot_vm_index(self):
         vms: list[VMInfo] = self.pmc.list_vm_info()
 
@@ -234,6 +241,11 @@ class MemuEmulatorController(BaseEmulatorController):
         print("Setting vm language...")
         self._set_vm_language()
         logging.info("Configured VM %s", self.vm_index)
+
+        #set size
+        for i in range(3):
+            print(f'Setting vm size: {i}/{3}   ',end='\r')
+            self._set_screen_size(419, 633)
 
     def _start_memuc_console(self):
         """Start the memuc console and return the process ID"""
@@ -341,12 +353,17 @@ class MemuEmulatorController(BaseEmulatorController):
             start_time (float, optional): Start time. Defaults to time.time().
         """
         restart_start_time = time.time()
+
         
         self.logger.change_status("Starting MEmu emulator restart process...")
 
         # stop all vms
         self.logger.change_status("Stopping all MEmu processes...")
         self._close_everything_memu()
+
+        #configure vm
+        self.configure()
+
 
         # start the vm
         self.logger.change_status("Starting MEmu VM...")
@@ -368,22 +385,9 @@ class MemuEmulatorController(BaseEmulatorController):
             
             valid_size = self._check_vm_size()
             if valid_size:
+                self.logger.change_status(f"Valid MEmu screen dimensions!")
                 break
-            
-            if size_attempt < max_size_check_attempts - 1:
-                self.logger.change_status(f"Invalid screen size detected, reconfiguring VM and trying again...")
-                print(f"[!] VM size is not valid (attempt {size_attempt + 1}). Reconfiguring...")
-                
-                # Reconfigure the VM before trying again
-                self.logger.change_status("Reconfiguring VM settings...")
-                self.configure()
-                
-                # Give time for configuration to take effect
-                time.sleep(5)
-            else:
-                self.logger.change_status("Screen size validation failed after maximum attempts - continuing anyway to avoid infinite loop")
-                self.logger.log("[!] Warning: VM size validation failed after multiple attempts. Continuing anyway.")
-                break
+        
 
         # start clash royale
         self.logger.change_status("Launching Clash Royale application...")
