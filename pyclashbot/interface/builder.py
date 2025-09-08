@@ -208,3 +208,17 @@ def build_collection_stats() -> sg.Frame:
 def build_bot_stats() -> sg.Frame:
     """Build the bot stats section."""
     return build_stats_section(BOT_STATS, "Bot Stats")
+
+
+def build_fightvision_section() -> list[list[sg.Element]]:
+    """Build the FightVision section with instructions and API key input."""
+    return [
+        [sg.Text("1. go to www.placeholder.net", font=("Arial", 10), pad=(10, 5))],
+        [sg.Text("2. purchase an api key", font=("Arial", 10), pad=(10, 5))],
+        [sg.Text("3. input the key below", font=("Arial", 10), pad=(10, 5))],
+        [sg.Text("")],  # Spacing
+        [
+            sg.Text("API Key:", size=(8, 1), font=("Arial", 10)),
+            sg.InputText(key="fightvision_api_key", size=(30, 1), font=("Arial", 10))
+        ],
+    ]

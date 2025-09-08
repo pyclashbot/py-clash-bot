@@ -12,6 +12,7 @@ from pyclashbot.interface.builder import (
     build_data_settings,
     build_emulator_choice,
     build_emulator_settings_tabs,
+    build_fightvision_section,
     build_jobs_section,
 )
 from pyclashbot.interface.config import DISABLE_KEYS, USER_CONFIG_KEYS
@@ -75,6 +76,22 @@ def create_emulator_tab():
     ]
 
 
+def create_fightvision_tab():
+    """Create the FightVision tab layout."""
+    return [
+        [
+            sg.Frame(
+                layout=build_fightvision_section(),
+                title="FightVision Setup",
+                expand_x=True,
+                expand_y=True,
+                pad=(5, 3),
+                font=("Arial", 9, "bold"),
+            )
+        ],
+    ]
+
+
 def create_stats_tab():
     """Create the compact stats tab layout."""
     return [
@@ -105,6 +122,7 @@ def create_main_tabs():
                 [
                     [
                         sg.Tab("Jobs", create_jobs_tab(), key="-JOBS_TAB-"),
+                        sg.Tab("FightVision", create_fightvision_tab(), key="-FIGHTVISION_TAB-"),
                         sg.Tab("Emulator", create_emulator_tab(), key="-EMULATOR_TAB-"),
                         sg.Tab("Stats", create_stats_tab(), key="-STATS_TAB-"),
                     ]
