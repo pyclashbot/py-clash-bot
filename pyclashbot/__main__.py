@@ -62,9 +62,19 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
     else:
         jobs_dictionary["memu_render_mode"] = "opengl"
 
+    # BlueStacks render mode selection
+    if values.get("bs_renderer_dx"):
+        jobs_dictionary["bluestacks_render_mode"] = "dx"
+    elif values.get("bs_renderer_vk"):
+        jobs_dictionary["bluestacks_render_mode"] = "vlcn"
+    else:
+        jobs_dictionary["bluestacks_render_mode"] = "gl"
+
     # Set emulator based on toggle
     if values.get("google_play_emulator_toggle"):
         jobs_dictionary["emulator"] = "Google Play"
+    elif values.get("bluestacks_emulator_toggle"):
+        jobs_dictionary["emulator"] = "BlueStacks 5"
     else:
         jobs_dictionary["emulator"] = "MEmu"
 
