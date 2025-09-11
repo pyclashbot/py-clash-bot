@@ -331,10 +331,6 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         while self._is_emulator_running():
             self.stop()
 
-        for i in range(3):
-            print(f'Setting adb screen size to {self.expected_dims}')
-            self._set_screen_size(*self.expected_dims)
-
         # boot emulator
         self.logger.change_status("Starting Google Play emulator...")
         print("Starting emulator...")
@@ -358,7 +354,11 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         time.sleep(10)
 
-        
+        self.logger.change_status(f"Setting emulator screen size to {self.expected_dims}...")
+        for i in range(3):
+            print(f'Setting adb screen size to {self.expected_dims}')
+            self._set_screen_size(*self.expected_dims)
+            time.sleep(1)
 
         # validate image size
         self.logger.change_status("Validating Google Play emulator screen dimensions...")
