@@ -93,15 +93,16 @@ def do_fight_state(
         return False
 
     logger.change_status("Starting fight loop")
+    logger.log(f'This is the fight mode: "{fight_mode_choosed}"')
 
     # Run regular fight loop if random mode not toggled
     if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
-        logger.log("Failure in fight loop")
+        logger.change_status("Failure in fight loop")
         return False
 
     # Run random fight loop if random mode toggled
     if random_fight_mode and _random_fight_loop(emulator, logger) is False:
-        logger.log("Failure in fight loop")
+        logger.change_status("Failure in fight loop")
         return False
 
     # Only log the fight if not called from the start
@@ -152,14 +153,19 @@ def start_fight(emulator, logger, mode) -> bool:
         bool: True if fight started successfully, False otherwise
     """
     # Validate mode parameter
+    logger.log(f'Input mode type: "{type(mode)}"')
+    logger.log(f"Input mode value: {mode}")
     valid_modes = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
+    logger.log(f"Valid modes: {valid_modes}")
     if mode not in valid_modes:
-        logger.change_status(f"Invalid mode '{mode}'. Must be one of {valid_modes}")
+        logger.log(f'The valid modes for start_fight() are: {valid_modes}')
+        logger.log(f"But start_fight() got an invalid mode: '{mode}'")
         return False
 
     logger.change_status(f"Starting a {mode} fight")
 
     # Check if on clash main menu
+    logger.log('Checking if on clash main before starting fight...')
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main menu, cannot start fight")
         return False
