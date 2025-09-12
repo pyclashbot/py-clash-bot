@@ -10,6 +10,7 @@ from .config import (
     GOOGLE_PLAY_SETTINGS,
     JOBS,
     MEMU_SETTINGS,
+    BLUESTACKS_SETTINGS,
     ComboConfig,
     JobConfig,
     RadioConfig,
@@ -35,7 +36,8 @@ def build_stat_box(stat: StatConfig) -> sg.Text:
 
 def build_stat_title(stat: StatConfig) -> sg.Text:
     """Build a stat title text."""
-    return sg.Text(stat.title, pad=(2, 1), font=("Arial", 9), justification="right", size=(10, 1))
+    # Slightly wider so longer labels like "Trophy Road 1v1s" fit fully
+    return sg.Text(stat.title, pad=(2, 1), font=("Arial", 9), justification="right", size=(16, 1))
 
 
 def build_stats_section(stats: list[StatConfig], title: str) -> sg.Frame:
@@ -171,8 +173,15 @@ def build_emulator_settings_tabs() -> sg.TabGroup:
         "Memu Settings", [[build_radio_section(MEMU_SETTINGS, "Render Mode")]], key="-MEMU_TAB-", pad=(3, 3)
     )
 
+    bluestacks_tab = sg.Tab(
+        "BlueStacks Settings",
+        [[build_radio_section(BLUESTACKS_SETTINGS, "Render Mode")]],
+        key="-BLUESTACKS_TAB-",
+        pad=(3, 3),
+    )
+
     return sg.TabGroup(
-        [[google_play_tab, memu_tab]],
+        [[google_play_tab, memu_tab, bluestacks_tab]],
         key="-EMULATOR_TABS-",
         enable_events=True,
         expand_x=True,
