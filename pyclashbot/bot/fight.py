@@ -154,14 +154,14 @@ def start_fight(emulator, logger, mode) -> bool:
     # Validate mode parameter
     valid_modes = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
     if mode not in valid_modes:
-        print(f"Invalid mode '{mode}'. Must be one of {valid_modes}")
+        logger.change_status(f"Invalid mode '{mode}'. Must be one of {valid_modes}")
         return False
 
     logger.change_status(f"Starting a {mode} fight")
 
     # Check if on clash main menu
     if not check_if_on_clash_main_menu(emulator):
-        print("Not on clash main menu, cannot start fight")
+        logger.change_status("Not on clash main menu, cannot start fight")
         return False
 
     # For all modes (1v1 and 2v2), use the same start button
@@ -170,7 +170,7 @@ def start_fight(emulator, logger, mode) -> bool:
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
-        print("Its 2v2 mode so we gotta click the quickmatch popup option!")
+        logger.change_status("Its 2v2 mode so we gotta click the quickmatch popup option!")
         time.sleep(3)
         quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
@@ -200,7 +200,7 @@ def mag_dump(emulator, logger):
 
     logger.log("Mag dumping...")
     for index in range(3):
-        print(f"mag dump play {index}")
+        logger.change_status(f"mag dump play {index}")
         card_index = random.randint(0, 3)
         card_coord = card_coords[card_index]
         play_coord = (random.randint(101, 440), random.randint(50, 526))
@@ -546,14 +546,14 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     # click the card index
     click_and_play_card_start_time = time.time()
     if None in [HAND_CARDS_COORDS, card_index]:
-        print("[!] Non fatal error: card_index is None")
+        logger.change_status("[!] Non fatal error: card_index is None")
         return False
 
     emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
 
     # click the play coord
     if play_coord is None:
-        print("[!] Non fatal error: play_coord is None")
+        logger.change_status("[!] Non fatal error: play_coord is None")
         return False
 
     emulator.click(play_coord[0], play_coord[1])
@@ -696,10 +696,9 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             break
 
         if not check_if_in_battle(emulator):
-            print("Not in a battle anymore")
+            logger.change_status("Not in a battle anymore")
             break
 
-        # print("playing a card in 1v1...")
         if recording_flag:
             save_image(emulator.screenshot())
 
