@@ -74,6 +74,7 @@ Having trouble with your emulator? This section provides troubleshooting tips fo
 - **Use the correct version** - Make sure you're using the DEVELOPER Google Play Games emulator, not the BETA version. Download it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
 - **Watch for login prompts** - Google Play makes a popup in your default browser for the Google sign-in prompt. Sometimes you might miss this during emulator boot, and it'll hang forever. If you're experiencing booting issues, check for a login prompt in a minimized browser window!
 - **Adjust rendering settings** - If it's still not rendering properly, try adjusting render mode settings at System tray > Google Play Games emulator > Graphics settings > Vulkan device override OR Graphics > Graphics stack override
+- **Installer download fix** - If you're having trouble downloading the emulator installer, this tested solution works: Open your task manager, click File, press "Run new task", drop the installer path, and press "Run as admin"
 
 ### MEmu Emulator Debugging  
 
