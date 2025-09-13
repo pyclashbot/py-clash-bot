@@ -1,6 +1,7 @@
 import time
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+from pyclashbot.bot.recorder import close_recorder
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
 from pyclashbot.utils.logger import Logger
@@ -110,6 +111,21 @@ class WorkerThread(PausableThread):
         try:
             self._run_bot_loop(emulator, jobs)
         except ThreadKilled:
+            print("WorkerThread killed - cleaning up recorder...")
+            self._cleanup_recorder()
             return
         except Exception as err:
             self.logger.error(str(err))
+            print(f"WorkerThread error - cleaning up recorder: {err}")
+            self._cleanup_recorder()
+        finally:
+            print("WorkerThread finished - ensuring recorder cleanup...")
+            self._cleanup_recorder()
+
+    def _cleanup_recorder(self):
+        """Ensure recorder is properly closed when thread ends."""
+        try:
+            close_recorder()
+            print("WorkerThread: Recorder cleanup completed")
+        except Exception as e:
+            print(f"WorkerThread: Error during recorder cleanup: {e}")
