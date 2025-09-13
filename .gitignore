@@ -4,6 +4,7 @@ build
 dist
 __version__
 __pycache__
-recordings
+recordings_compressed/
+recordings/
 .claude/
 .claude/settings.local.json

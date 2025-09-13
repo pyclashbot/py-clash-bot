@@ -9,6 +9,7 @@ import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.bot.recorder import close_recorder, register_signal_handlers, register_exit_handler
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.layout import create_window, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
@@ -17,6 +18,10 @@ from pyclashbot.utils.logger import Logger, initalize_pylogging
 from pyclashbot.utils.thread import StoppableThread
 
 initalize_pylogging()
+
+# Register recorder signal and exit handlers for proper cleanup
+register_signal_handlers()
+register_exit_handler()
 
 
 def read_window(
@@ -190,6 +195,12 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
 
 def exit_button_event(thread) -> None:
     """Shut down the thread if it is still running."""
+    # Ensure recorder is properly closed
+    try:
+        close_recorder()
+    except Exception as e:
+        print(f"Warning: Error closing recorder during exit: {e}")
+
     if thread is not None:
         thread.shutdown(kill=True)
 
@@ -264,6 +275,12 @@ class BotApplication:
 
     def cleanup(self):
         """Clean up resources when closing."""
+        # Ensure recorder is properly closed
+        try:
+            close_recorder()
+        except Exception as e:
+            print(f"Warning: Error closing recorder during cleanup: {e}")
+
         self.window.close()
         if self.thread is not None:
             self.thread.shutdown(kill=True)
