@@ -133,7 +133,7 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
-    def __init__(self, logger, render_mode: str = "opengl"):
+    def __init__(self, logger, render_mode: str = "directx"):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
@@ -519,23 +519,24 @@ class MemuEmulatorController(BaseEmulatorController):
 
             if render_mode not in ["opengl", "directx"]:
                 if debug_configure:
-                    self.logger.log("[CONFIG] ✗ RENDER MODE VALIDATION FAILED")
-                    self.logger.log(f"[CONFIG] Invalid render mode: {render_mode!r}")
-                    self.logger.log('[CONFIG] Valid options are: ["opengl", "directx"]')
-                    self.logger.log('[CONFIG] Applying fallback to "opengl"...')
-                render_mode = "opengl"
-            elif debug_configure:
-                self.logger.log("[CONFIG] ✓ RENDER MODE VALIDATION PASSED")
-                self.logger.log(f"[CONFIG] Valid render mode: {render_mode!r}")
+                    self.logger.log(f'[CONFIG] ✗ RENDER MODE VALIDATION FAILED')
+                    self.logger.log(f'[CONFIG] Invalid render mode: {repr(render_mode)}')
+                    self.logger.log(f'[CONFIG] Valid options are: ["opengl", "directx"]')
+                    self.logger.log(f'[CONFIG] Applying fallback to "directx"...')
+                render_mode = "directx"
+            else:
+                if debug_configure:
+                    self.logger.log(f'[CONFIG] ✓ RENDER MODE VALIDATION PASSED')
+                    self.logger.log(f'[CONFIG] Valid render mode: {repr(render_mode)}')
         except Exception as e:
             render_mode_end = time.time()
             if debug_configure:
-                self.logger.log("[CONFIG] ✗ EXCEPTION DURING RENDER MODE CONVERSION")
-                self.logger.log(f"[CONFIG] Exception type: {type(e)}")
-                self.logger.log(f"[CONFIG] Exception message: {e}")
-                self.logger.log(f"[CONFIG] Render mode conversion duration: {render_mode_end - render_mode_start:.3f}s")
-                self.logger.log('[CONFIG] Applying fallback to "opengl"...')
-            render_mode = "opengl"
+                self.logger.log(f'[CONFIG] ✗ EXCEPTION DURING RENDER MODE CONVERSION')
+                self.logger.log(f'[CONFIG] Exception type: {type(e)}')
+                self.logger.log(f'[CONFIG] Exception message: {e}')
+                self.logger.log(f'[CONFIG] Render mode conversion duration: {render_mode_end - render_mode_start:.3f}s')
+                self.logger.log(f'[CONFIG] Applying fallback to "directx"...')
+            render_mode = "directx"
 
         render_mode_end = time.time()
         if debug_configure:
