@@ -16,6 +16,7 @@ from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.utils.graphics_detection import GraphicsDetector
 
 # Debug configuration flags - set to True to enable verbose logging for specific areas
 DEBUG_CONFIGURATION = {
@@ -133,13 +134,25 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
-    def __init__(self, logger, render_mode: str = "directx"):
+    def __init__(self, logger, render_mode: str | None = None):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
         """
         self.logger = logger
         init_start_time = time.time()
+
+        # Detect best graphics API if not specified
+        if render_mode is None:
+            render_mode = GraphicsDetector.get_best_default_api("memu")
+            self.logger.log(f"Auto-detected graphics API for MEmu: {render_mode}")
+        else:
+            # Validate and potentially correct the provided render mode
+            corrected_mode = GraphicsDetector.get_corrected_api(render_mode, "memu")
+            if corrected_mode != render_mode:
+                self.logger.log(f"Graphics API corrected from {render_mode} to {corrected_mode} for MEmu")
+                render_mode = corrected_mode
+
         self.pmc = PyMemuc()
 
         self.config = self._read_config_data()

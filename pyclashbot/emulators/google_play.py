@@ -14,15 +14,32 @@ DEBUG = False
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.utils.graphics_detection import GraphicsDetector
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
     def __init__(self, logger, render_settings: dict | None = None):
         self.logger = logger
 
-        # Set DirectX defaults if no render settings provided
+        # Set graphics defaults based on system capabilities if no render settings provided
         if render_settings is None:
-            render_settings = {"angle": True, "vulkan": False, "gles": False, "backend": "angle"}
+            best_api = GraphicsDetector.get_best_default_api("googleplay")
+            if best_api == "directx":
+                render_settings = {"angle": True, "vulkan": False, "gles": False, "backend": "angle"}
+            elif best_api == "vulkan":
+                render_settings = {"angle": False, "vulkan": True, "gles": False, "backend": "gfxstream"}
+            else:  # opengl fallback
+                render_settings = {"angle": False, "vulkan": False, "gles": True, "backend": "gfxstream"}
+            self.logger.log(f"Auto-detected graphics settings for Google Play emulator: {best_api}")
+        else:
+            # Validate that requested settings are available
+            capabilities = GraphicsDetector.detect_capabilities()
+            if render_settings.get("vulkan", False) and not capabilities.vulkan_available:
+                self.logger.log("Vulkan requested but not available, switching to DirectX/Angle")
+                render_settings.update({"angle": True, "vulkan": False, "backend": "angle"})
+            elif render_settings.get("angle", False) and not capabilities.directx_available:
+                self.logger.log("DirectX/Angle requested but DirectX not available, switching to OpenGL")
+                render_settings.update({"angle": False, "gles": True, "backend": "gfxstream"})
         # clear existing stuff
         self.stop()
         while self._is_emulator_running():

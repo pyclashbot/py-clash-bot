@@ -19,6 +19,7 @@ import numpy as np
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.utils.graphics_detection import GraphicsDetector
 
 DEBUG = False
 
@@ -33,6 +34,31 @@ class BlueStacksEmulatorController(BaseEmulatorController):
 
     def __init__(self, logger, render_settings: dict | None = None):
         self.logger = logger
+
+        # Set default graphics renderer if not specified
+        if render_settings is None:
+            best_api = GraphicsDetector.get_best_default_api("bluestacks")
+            # Convert API name to BlueStacks format
+            api_mapping = {"directx": "dx", "opengl": "gl", "vulkan": "vlcn"}
+            render_settings = {"graphics_renderer": api_mapping.get(best_api, "dx")}
+            self.logger.log(
+                f"Auto-detected graphics renderer for BlueStacks: {best_api} -> {render_settings['graphics_renderer']}"
+            )
+        elif "graphics_renderer" in render_settings:
+            # Validate the provided renderer
+            api_mapping_reverse = {"dx": "directx", "gl": "opengl", "vlcn": "vulkan"}
+            current_api = api_mapping_reverse.get(
+                render_settings["graphics_renderer"], render_settings["graphics_renderer"]
+            )
+            corrected_api = GraphicsDetector.get_corrected_api(current_api, "bluestacks")
+            api_mapping = {"directx": "dx", "opengl": "gl", "vulkan": "vlcn"}
+            corrected_renderer = api_mapping.get(corrected_api, "dx")
+            if corrected_renderer != render_settings["graphics_renderer"]:
+                self.logger.log(
+                    f"Graphics renderer corrected from {render_settings['graphics_renderer']} to {corrected_renderer} for BlueStacks"
+                )
+                render_settings["graphics_renderer"] = corrected_renderer
+
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
         self.instance_name = "pyclashbot-96"
