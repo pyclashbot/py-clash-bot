@@ -21,7 +21,7 @@ from pyclashbot.bot.nav import (
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.recorder import save_image, save_play, save_win_loss
+from pyclashbot.bot.recorder import save_image
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     find_image,
@@ -306,14 +306,9 @@ def end_fight_state(
 
         if win_check_return:
             logger.add_win()
-
-            if recording_flag:
-                save_win_loss("win")
             return True
 
         logger.add_loss()
-        if recording_flag:
-            save_win_loss("loss")
     else:
         logger.log("Not checking win/loss because check is disabled")
 
@@ -564,8 +559,6 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
 
     emulator.click(play_coord[0], play_coord[1])
     click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[:3]
-    if recording_flag:
-        save_play(play_coord, card_index)
 
     logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
     logger.add_card_played()
