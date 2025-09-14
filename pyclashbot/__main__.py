@@ -187,12 +187,12 @@ def update_layout(window: sg.Window, logger: Logger) -> None:
             element = window[stat]
             if element is not None:
                 element.update(val)
-    
+
     # Handle action button visibility and text
     action_button = window["action_button"]
     if action_button is not None:
-        if hasattr(logger, 'action_needed') and logger.action_needed:
-            action_text = getattr(logger, 'action_text', 'Continue')
+        if hasattr(logger, "action_needed") and logger.action_needed:
+            action_text = getattr(logger, "action_text", "Continue")
             action_button.update(text=action_text, visible=True)
         else:
             action_button.update(visible=False)
@@ -259,16 +259,16 @@ class BotApplication:
 
     def handle_action_button(self):
         """Handle action button click - call the logger's callback function"""
-        if hasattr(self.logger, 'action_callback') and self.logger.action_callback:
+        if hasattr(self.logger, "action_callback") and self.logger.action_callback:
             try:
                 # Call the callback function
                 self.logger.action_callback()
             except Exception as e:
                 print(f"Error calling action callback: {e}")
                 self.logger.log(f"Error executing action callback: {e}")
-        
+
         # Clear action state after executing
-        if hasattr(self.logger, 'action_needed'):
+        if hasattr(self.logger, "action_needed"):
             self.logger.action_needed = False
             self.logger.action_callback = None
 

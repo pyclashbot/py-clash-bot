@@ -11,9 +11,9 @@ from pyclashbot.bot.fight import (
     end_fight_state,
     start_fight,
 )
+from pyclashbot.bot.nav import select_mode
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.utils.logger import Logger
-from pyclashbot.bot.nav import select_mode
 
 
 def handle_state_failure(logger: Logger, state_name: str, function_name: str, error_msg: str | None = None) -> str:

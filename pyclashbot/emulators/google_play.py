@@ -62,8 +62,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         # boot the emulator
         # self.restart()
-        
-        
+
         while self.restart() is False:
             print("Restart failed, trying again...")
             time.sleep(2)
@@ -318,10 +317,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
     def _set_screen_size(self, width, height):
         self.adb(f"shell wm size {width}x{height}")
 
-    
     def restart(self):
         restart_start_time = time.time()
-        
+
         self.logger.change_status("Starting Google Play emulator restart process...")
 
         # close emulator
@@ -356,7 +354,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
 
         self.logger.change_status(f"Setting emulator screen size to {self.expected_dims}...")
         for i in range(3):
-            print(f'Setting adb screen size to {self.expected_dims}')
+            print(f"Setting adb screen size to {self.expected_dims}")
             self._set_screen_size(*self.expected_dims)
             time.sleep(1)
 
@@ -550,7 +548,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         result = self.adb("shell pm list packages")
         if result.stdout and package_name not in result.stdout:
             return self._wait_for_clash_installation(package_name)
-        
+
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
 
     def _wait_for_clash_installation(self, package_name: str):
@@ -559,28 +557,28 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         self.logger.show_temporary_action(
             message=f"{package_name} not installed - please install it and complete tutorial",
             action_text="Retry",
-            callback=self._retry_installation_check
+            callback=self._retry_installation_check,
         )
-        
+
         self.logger.log(f"[!] {package_name} not installed.")
         self.logger.log("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
-        
+
         # Wait for the callback to be triggered
         self.installation_waiting = True
         while self.installation_waiting:
             time.sleep(0.5)
-        
+
         self.logger.log("[+] Installation confirmed, continuing...")
         return True
 
     def _retry_installation_check(self):
         """Callback method triggered when user clicks Retry button"""
         self.logger.change_status("Checking for Clash Royale installation...")
-        
+
         # Check if app is now installed
-        package_name = getattr(self, 'current_package_name', 'com.supercell.clashroyale')
+        package_name = getattr(self, "current_package_name", "com.supercell.clashroyale")
         result = self.adb("shell pm list packages")
-        
+
         if result.stdout and package_name in result.stdout:
             # Installation successful!
             self.installation_waiting = False
@@ -590,7 +588,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             self.logger.show_temporary_action(
                 message=f"{package_name} still not found - please install it and complete tutorial",
                 action_text="Retry",
-                callback=self._retry_installation_check
+                callback=self._retry_installation_check,
             )
             self.logger.log(f"[!] {package_name} still not installed. Please try again.")
 
