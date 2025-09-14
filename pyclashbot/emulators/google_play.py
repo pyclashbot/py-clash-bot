@@ -17,17 +17,12 @@ from pyclashbot.emulators.base import BaseEmulatorController
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
-    def __init__(self, logger, render_settings: dict = None):
+    def __init__(self, logger, render_settings: dict | None = None):
         self.logger = logger
 
         # Set DirectX defaults if no render settings provided
         if render_settings is None:
-            render_settings = {
-                "angle": True,
-                "vulkan": False,
-                "gles": False,
-                "backend": "angle"
-            }
+            render_settings = {"angle": True, "vulkan": False, "gles": False, "backend": "angle"}
         # clear existing stuff
         self.stop()
         while self._is_emulator_running():
