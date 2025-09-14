@@ -86,14 +86,14 @@ JOBS = [
 
 # Emulator Settings Configuration
 MEMU_SETTINGS = [
-    RadioConfig("opengl_toggle", "OpenGL", "render_mode_radio", default=True),
-    RadioConfig("directx_toggle", "DirectX", "render_mode_radio"),
+    RadioConfig("opengl_toggle", "OpenGL", "render_mode_radio"),
+    RadioConfig("directx_toggle", "DirectX", "render_mode_radio", default=True),
 ]
 
 # BlueStacks specific renderer settings
 BLUESTACKS_SETTINGS = [
-    RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio", default=True),
-    RadioConfig("bs_renderer_dx", "DirectX", "bs_render_mode_radio"),
+    RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio"),
+    RadioConfig("bs_renderer_dx", "DirectX", "bs_render_mode_radio", default=True),
     RadioConfig("bs_renderer_vk", "Vulkan", "bs_render_mode_radio"),
 ]
 
@@ -105,7 +105,7 @@ EMULATOR_CHOICE = [
 
 # Google Play Settings Configuration
 GOOGLE_PLAY_SETTINGS = [
-    ComboConfig("gp_angle", "angle", ["true", "false"]),
+    ComboConfig("gp_angle", "angle", ["true", "false"], default="true"),
     ComboConfig("gp_vulkan", "vulkan", ["true", "false"]),
     ComboConfig("gp_gles", "gles", ["true", "false"]),
     ComboConfig("gp_surfaceless", "surfaceless", ["true", "false"]),
