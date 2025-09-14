@@ -1,8 +1,9 @@
 import time
+import traceback
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
-from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
+from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
@@ -98,8 +99,6 @@ class WorkerThread(PausableThread):
                 # Try to restart from a known state
                 state = "restart"
                 # If we keep getting exceptions, break out
-                import traceback
-
                 traceback.print_exc()
                 consecutive_restarts += 1
                 if consecutive_restarts >= max_consecutive_restarts:

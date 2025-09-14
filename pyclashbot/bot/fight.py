@@ -158,14 +158,14 @@ def start_fight(emulator, logger, mode) -> bool:
     valid_modes = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
     logger.log(f"Valid modes: {valid_modes}")
     if mode not in valid_modes:
-        logger.log(f'The valid modes for start_fight() are: {valid_modes}')
+        logger.log(f"The valid modes for start_fight() are: {valid_modes}")
         logger.log(f"But start_fight() got an invalid mode: '{mode}'")
         return False
 
     logger.change_status(f"Starting a {mode} fight")
 
     # Check if on clash main menu
-    logger.log('Checking if on clash main before starting fight...')
+    logger.log("Checking if on clash main before starting fight...")
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main menu, cannot start fight")
         return False

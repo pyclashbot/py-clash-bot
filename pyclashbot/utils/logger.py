@@ -441,7 +441,7 @@ class Logger:
     @_updates_gui
     def show_temporary_action(self, message, action_text="Retry", callback=None) -> None:
         """Show a temporary action button with the given message
-        
+
         Args:
         ----
             message (str): message to display to user

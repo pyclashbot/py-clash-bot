@@ -1,16 +1,16 @@
 """Builder functions for creating FreeSimpleGUI elements from configuration."""
 
-import FreeSimpleGUI as sg
+import FreeSimpleGUI as sg  # noqa: N813
 
 from .config import (
     BATTLE_STATS,
+    BLUESTACKS_SETTINGS,
     BOT_STATS,
     COLLECTION_STATS,
     EMULATOR_CHOICE,
     GOOGLE_PLAY_SETTINGS,
     JOBS,
     MEMU_SETTINGS,
-    BLUESTACKS_SETTINGS,
     ComboConfig,
     JobConfig,
     RadioConfig,

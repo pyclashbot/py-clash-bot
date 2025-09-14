@@ -1,22 +1,21 @@
-﻿import os
+import csv
+import io
 import json
+import os
 import re
 import subprocess
 import time
 from contextlib import suppress
-
-import cv2
-import numpy as np
-import csv
-import io
 from os.path import normpath
-
 from winreg import (
     HKEY_LOCAL_MACHINE,
     ConnectRegistry,
     OpenKey,
     QueryValueEx,
 )
+
+import cv2
+import numpy as np
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
@@ -29,12 +28,12 @@ class BlueStacksEmulatorController(BaseEmulatorController):
 
     - Read instance port from bluestacks.conf.
     - All ADB device commands are scoped with -s 127.0.0.1:<instance_port>.
-    - Start/stop only this instance. Allows for future multi instance implementation for farming multiple accounts. 
+    - Start/stop only this instance. Allows for future multi instance implementation for farming multiple accounts.
     """
 
     def __init__(self, logger, render_settings: dict | None = None):
         self.logger = logger
-        self.expected_dims = (419, 633) # Bypassing bs5's stupid dim limits
+        self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
         self.instance_name = "pyclashbot-96"
         self.internal_name: str | None = None
@@ -46,13 +45,13 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         self.adb_env["ADB_SERVER_PORT"] = str(self.adb_server_port)
 
         # Do not auto-close BlueStacks 5 when controller is GC'd
-        self._auto_stop_on_del = False # yes it leaks, no I don't want to talk about it
+        self._auto_stop_on_del = False  # yes it leaks, no I don't want to talk about it
 
         self.render_settings = render_settings or {}
 
         # Clean up our target instance only
         self.stop()
-        while self._is_this_instance_running(): # Because Windows: I'm closing, also Windows: isn't closing
+        while self._is_this_instance_running():  # Because Windows: I'm closing, also Windows: isn't closing
             self.stop()
             time.sleep(1)
 
@@ -80,7 +79,9 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         self.bs_conf_path = os.path.join(os.path.dirname(dd), "bluestacks.conf")
         self.mim_meta_path = os.path.join(dd, "UserData", "MimMetaData.json")
         if not os.path.isfile(self.mim_meta_path):
-            print(f"[Bluestacks 5] MimMetaData.json not found at {self.mim_meta_path}. Launching Multi-Instance Manager to create it...")
+            print(
+                f"[Bluestacks 5] MimMetaData.json not found at {self.mim_meta_path}. Launching Multi-Instance Manager to create it..."
+            )
             with suppress(Exception):
                 os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
             deadline = time.time() + 10
@@ -118,7 +119,9 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         base = normpath(str(install_dir))
         if os.path.isdir(base) and os.path.isfile(os.path.join(base, "HD-Player.exe")):
             return base
-        raise FileNotFoundError("BlueStacks 5 installation not found (HD-Player.exe missing).") # Seriously wtf happened better reinstall to fix
+        raise FileNotFoundError(
+            "BlueStacks 5 installation not found (HD-Player.exe missing)."
+        )  # Seriously wtf happened better reinstall to fix
 
     def _get_bluestacks_registry_value(self, value_name: str) -> str | None:
         """Read a BlueStacks_nxt registry value from HKLM."""
@@ -137,7 +140,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         if not os.path.isfile(path):
             return None
         try:
-            with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            with open(path, encoding="utf-8", errors="ignore") as f:
                 return f.read()
         except Exception:
             return None
@@ -146,7 +149,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         if not os.path.isfile(path):
             return {}
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             return {}
@@ -168,10 +171,12 @@ class BlueStacksEmulatorController(BaseEmulatorController):
 
     def _list_pie64_internals(self, conf_text: str) -> list[str]:
         names = set()
-        for m in re.finditer(r'^bst\.instance\.(Pie64(?:_\d+)?)\.', conf_text, flags=re.M):
+        for m in re.finditer(r"^bst\.instance\.(Pie64(?:_\d+)?)\.", conf_text, flags=re.M):
             names.add(m.group(1))
         # change this and then spend an afternoon wondering why nothing starts
-        return sorted(names, key=lambda s: (0 if "_" in s else 1, int(s.split("_")[1]) if "_" in s else -1), reverse=True)
+        return sorted(
+            names, key=lambda s: (0 if "_" in s else 1, int(s.split("_")[1]) if "_" in s else -1), reverse=True
+        )
 
     def _find_internal_in_conf_by_display(self, conf_path: str, display_name: str) -> str | None:
         text = self._read_text(conf_path) or ""
@@ -194,8 +199,10 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         if not text:
             return None
         internal = name_or_internal
-        if not re.search(rf'^bst\.instance\.{re.escape(internal)}\.', text, flags=re.M):
-            m = re.search(rf'^bst\.instance\.([^.=]+)\.display_name="{re.escape(name_or_internal)}"\s*$', text, flags=re.M)
+        if not re.search(rf"^bst\.instance\.{re.escape(internal)}\.", text, flags=re.M):
+            m = re.search(
+                rf'^bst\.instance\.([^.=]+)\.display_name="{re.escape(name_or_internal)}"\s*$', text, flags=re.M
+            )
             if m:
                 internal = m.group(1)
         for key in (f"bst.instance.{internal}.status.adb_port", f"bst.instance.{internal}.adb_port"):
@@ -221,8 +228,10 @@ class BlueStacksEmulatorController(BaseEmulatorController):
 
     def _ensure_custom_resolution(self, conf_text: str, token: str = "418 x 633") -> str:
         existing = self._get_conf_value(conf_text, "bst.custom_resolutions")
+
         def norm(s: str) -> str:
-            return s.lower().replace("Ã—", "x").replace(" ", "") # Because of Unicode stuff
+            return s.lower().replace("Ã—", "x").replace(" ", "")  # Because of Unicode stuff
+
         want = norm(token)
         if not existing:
             return self._set_conf_value(conf_text, "bst.custom_resolutions", token)
@@ -234,7 +243,10 @@ class BlueStacksEmulatorController(BaseEmulatorController):
 
     def _display_name_exists(self, conf_path: str, display_name: str) -> bool:
         text = self._read_text(conf_path) or ""
-        return re.search(rf'^bst\.instance\.[^.=]+\.display_name="{re.escape(display_name)}"\s*$', text, flags=re.M) is not None
+        return (
+            re.search(rf'^bst\.instance\.[^.=]+\.display_name="{re.escape(display_name)}"\s*$', text, flags=re.M)
+            is not None
+        )
 
     def _update_mim_name(self, mim_path: str, internal_name: str, ui_name: str) -> None:
         data = self._read_json(mim_path)
@@ -242,14 +254,16 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         org = data["Organization"]
         for conf in org:
             if conf.get("InstanceName") == internal_name:
-                conf["Name"] = ui_name # rename here so the Instance Manager stops gaslighting us
+                conf["Name"] = ui_name  # rename here so the Instance Manager stops gaslighting us
                 break
         with open(mim_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
 
     def _close_multi_instance_manager(self) -> None:
         """Close BlueStacks Multi-Instance Manager if it's open after renaiming to update instance name in it."""
-        subprocess.run('taskkill /IM "HD-MultiInstanceManager.exe" /F', shell=True, capture_output=True, text=True, check=False)
+        subprocess.run(
+            'taskkill /IM "HD-MultiInstanceManager.exe" /F', shell=True, capture_output=True, text=True, check=False
+        )
 
     def _reuse_and_rename_internal(self, internal: str) -> bool:
         conf = self._read_text(self.bs_conf_path)
@@ -272,7 +286,9 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
         self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
 
-        self.logger.log(f"[BlueStacks 5] Reused instance '{internal}' as '{self.instance_name}'. Port={self.instance_port}")
+        self.logger.log(
+            f"[BlueStacks 5] Reused instance '{internal}' as '{self.instance_name}'. Port={self.instance_port}"
+        )
         with suppress(Exception):
             self._close_multi_instance_manager()
         return True
@@ -288,16 +304,15 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         accounts = {m.group(1): m.group(2) for m in ga_re.finditer(conf)}
         for internal in pie_list:
             if accounts.get(internal, "").strip() == "":
-                return internal # hoping it won't fuck up someones VM
+                return internal  # hoping it won't fuck up someones VM
         return None
 
     def _ensure_managed_instance(self):
         # If display entry exists
         if self._display_name_exists(self.bs_conf_path, self.instance_name):
-            self.internal_name = (
-                self._find_internal_by_display_name(self.mim_meta_path, self.instance_name)
-                or self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
-            )
+            self.internal_name = self._find_internal_by_display_name(
+                self.mim_meta_path, self.instance_name
+            ) or self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
             if self.internal_name:
                 self.instance_port = self._read_instance_adb_port(self.bs_conf_path, self.internal_name)
             return
@@ -328,10 +343,9 @@ class BlueStacksEmulatorController(BaseEmulatorController):
             if getattr(self, "_request_instance_retry", False):
                 # If our display name exists, resolve internal and port
                 if self._display_name_exists(self.bs_conf_path, self.instance_name):
-                    internal = (
-                        self._find_internal_by_display_name(self.mim_meta_path, self.instance_name)
-                        or self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
-                    )
+                    internal = self._find_internal_by_display_name(
+                        self.mim_meta_path, self.instance_name
+                    ) or self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
                     if internal:
                         self.internal_name = internal
                         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
@@ -443,11 +457,13 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         """Run an adb command via our private server. Device-scoped by default unless server-scoped."""
         base = f'"{self.adb_path}" -P {self.adb_server_port} '
         if not self._cmd_is_server_scoped(command) and self.device_serial:
-            base += f'-s {self.device_serial} '
+            base += f"-s {self.device_serial} "
         full = base + command
         if DEBUG:
             print(f"[Bluestacks 5/ADB] {full}")
-        return subprocess.run(full, shell=True,capture_output=True, text=not binary_output, check=False, env=self.adb_env)
+        return subprocess.run(
+            full, shell=True, capture_output=True, text=not binary_output, check=False, env=self.adb_env
+        )
 
     def adb_server(self, command: str) -> subprocess.CompletedProcess:
         full = f'"{self.adb_path}" -P {self.adb_server_port} {command}'
@@ -457,7 +473,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
 
     def _reset_adb_server(self) -> None:
         with suppress(Exception):
-            self.adb_server("kill-server") # Cause ADB loves to randomly fuck around
+            self.adb_server("kill-server")  # Cause ADB loves to randomly fuck around
 
     def _refresh_instance_port(self):
         """Re-read the instance port and update device_serial."""
@@ -488,12 +504,18 @@ class BlueStacksEmulatorController(BaseEmulatorController):
                 self.adb_server(f"connect {self.device_serial}")
                 state = self.adb("get-state")
                 ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
-        return ok # False means ADB is in a mood again
+        return ok  # False means ADB is in a mood again
 
     def _is_this_instance_running(self) -> bool:
         title = self.instance_name
         try:
-            res = subprocess.run('tasklist /v /fi "IMAGENAME eq HD-Player.exe" /fo csv', shell=True, capture_output=True, text=True, check=False)
+            res = subprocess.run(
+                'tasklist /v /fi "IMAGENAME eq HD-Player.exe" /fo csv',
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
             if res.returncode != 0 or not res.stdout:
                 return False
             reader = csv.reader(io.StringIO(res.stdout))
@@ -504,7 +526,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
                 image = (row[0] if len(row) > 0 else "").strip().lower()
                 window_title = (row[-1] if len(row) > 0 else "").strip()
                 if image == "hd-player.exe" and window_title == title:
-                    return True # yes, I parsed CSV from tasklist. no, I'm not proud of it
+                    return True  # yes, I parsed CSV from tasklist. no, I'm not proud of it
         except Exception:
             return False
         return False
@@ -524,7 +546,13 @@ class BlueStacksEmulatorController(BaseEmulatorController):
     def stop(self, display_name: str | None = None):
         """Stop only this instance using the window title match."""
         title = display_name or self.instance_name
-        subprocess.run(f'taskkill /fi "WINDOWTITLE eq {title}" /IM "HD-Player.exe" /F', shell=True, capture_output=True, text=True, check=False)
+        subprocess.run(
+            f'taskkill /fi "WINDOWTITLE eq {title}" /IM "HD-Player.exe" /F',
+            shell=True,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
 
     def restart(self) -> bool:
         start_ts = time.time()
@@ -557,7 +585,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         while not self._connect():
             if time.time() - t1 > 60:
                 self.logger.change_status("Failed to connect ADB to BlueStacks 5 - retrying...")
-                return False # if this makes issues big problems
+                return False  # if this makes issues big problems
             time.sleep(1)
 
         # Launch Clash Royale
@@ -620,7 +648,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
     def _wait_for_clash_installation(self, package_name: str):
         self.current_package_name = package_name
         self.logger.show_temporary_action(
-            message=f"Clashroyal not installed - install the app and complete tutorial before retrying",
+            message="Clashroyal not installed - install the app and complete tutorial before retrying",
             action_text="Retry",
             callback=self._retry_installation_check,
         )
@@ -637,9 +665,12 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         return True
 
     def _retry_installation_check(self):
-        self.logger.log("[BlueStacks 5] Retry clicked, restarting the startup process...") # full restart because people might close emulator
+        self.logger.log(
+            "[BlueStacks 5] Retry clicked, restarting the startup process..."
+        )  # full restart because people might close emulator
         self._request_restart = True
         self.installation_waiting = False
+
 
 if __name__ == "__main__":
     pass
