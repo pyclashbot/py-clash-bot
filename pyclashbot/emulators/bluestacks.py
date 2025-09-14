@@ -214,7 +214,7 @@ class BlueStacksEmulatorController(BaseEmulatorController):
             "dx": "dx",
             "vlcn": "vlcn",
         }
-        code = alias.get(s, "gl")
+        code = alias.get(s, "dx")
         if DEBUG:
             print(f"[Bluestacks 5] Renderer requested='{s}' normalized='{code}'")
         return code
