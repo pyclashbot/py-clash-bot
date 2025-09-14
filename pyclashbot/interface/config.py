@@ -90,9 +90,17 @@ MEMU_SETTINGS = [
     RadioConfig("directx_toggle", "DirectX", "render_mode_radio"),
 ]
 
+# BlueStacks specific renderer settings
+BLUESTACKS_SETTINGS = [
+    RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio", default=True),
+    RadioConfig("bs_renderer_dx", "DirectX", "bs_render_mode_radio"),
+    RadioConfig("bs_renderer_vk", "Vulkan", "bs_render_mode_radio"),
+]
+
 EMULATOR_CHOICE = [
     RadioConfig("memu_emulator_toggle", "Memu", "emulator_type_radio", default=True),
     RadioConfig("google_play_emulator_toggle", "Google Play", "emulator_type_radio"),
+    RadioConfig("bluestacks_emulator_toggle", "BlueStacks 5", "emulator_type_radio"),
 ]
 
 # Google Play Settings Configuration
@@ -109,7 +117,7 @@ GOOGLE_PLAY_SETTINGS = [
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
     [job.key for job in JOBS]
-    + [radio.key for radio in MEMU_SETTINGS + EMULATOR_CHOICE]
+    + [radio.key for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key for combo in GOOGLE_PLAY_SETTINGS]
     + ["record_fights_toggle"]  # Data settings
 )

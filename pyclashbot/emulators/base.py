@@ -11,7 +11,13 @@ class BaseEmulatorController:
         raise NotImplementedError
 
     def __del__(self):
-        raise NotImplementedError
+        # Avoid raising in destructor, subclasses may optionally implement cleanup.
+        # Allow controllers to opt out by setting "_auto_stop_on_del = False".
+        try:
+            if getattr(self, "_auto_stop_on_del", True):  # type: ignore[attr-defined]
+                self.stop()  # type: ignore[attr-defined]
+        except Exception:
+            pass
 
     def create(self):
         """

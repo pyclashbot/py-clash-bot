@@ -2,6 +2,7 @@ import time
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
@@ -39,6 +40,16 @@ class WorkerThread(PausableThread):
         if emulator_selection == "Google Play":
             print("Creating google play emulator")
             return self._create_google_play_emulator()
+        elif emulator_selection in ("BlueStacks 5"):
+            print("Creating BlueStacks 5 emulator")
+            try:
+                bs_mode = jobs.get("bluestacks_render_mode", "gl")
+                render_settings = {"graphics_renderer": bs_mode}
+                return BlueStacksEmulatorController(logger=self.logger, render_settings=render_settings)
+            except Exception as e:
+                print(f"Failed to create BlueStacks 5 emulator: {e}")
+                self.logger.change_status("Failed to start BlueStacks 5. Verify its installation!")
+                return None
         elif emulator_selection == "MEmu":
             render_mode = jobs.get("memu_render_mode", "opengl")
             return self._create_memu_emulator(render_mode)
