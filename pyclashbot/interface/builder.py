@@ -62,11 +62,17 @@ def build_job_checkbox(job: JobConfig) -> list[sg.Element]:
     ]
 
     if job.extras:
+        elements.append(sg.Push())
         for extra_key, extra_config in job.extras.items():
             if isinstance(extra_config, ComboConfig):
                 elements.extend(
                     [
-                        sg.Text(f"{extra_config.label}", size=(6, 1), font=("Arial", 9)),
+                        sg.Text(
+                            f"{extra_config.label}",
+                            size=extra_config.label_size,
+                            font=("Arial", 9),
+                            justification="right",
+                        ),
                         sg.Combo(
                             values=extra_config.values,
                             default_value=extra_config.default,

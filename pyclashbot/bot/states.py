@@ -4,6 +4,7 @@ import random
 import time
 
 from pyclashbot.bot.card_mastery_state import card_mastery_state
+from pyclashbot.bot.deck_cycle import select_deck_state
 from pyclashbot.bot.deck_randomization import randomize_deck_state
 from pyclashbot.bot.fight import (
     do_2v2_fight_state,
@@ -13,6 +14,7 @@ from pyclashbot.bot.fight import (
 )
 from pyclashbot.bot.nav import select_mode
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
+from pyclashbot.utils.caching import get_deck_number, set_deck_number
 from pyclashbot.utils.logger import Logger
 
 
@@ -193,6 +195,7 @@ class StateOrder:
             "upgrade",
             "card_mastery",
             "randomize_deck",
+            "cycle_deck",
             "start_fight",
             "1v1_fight",
             "2v2_fight",
@@ -270,6 +273,26 @@ def state_tree(
         deck_number = job_list.get("deck_number_selection", 2)
         if randomize_deck_state(emulator, logger, deck_number) is False:
             return handle_state_failure(logger, "randomize_deck", "randomize_deck_state")
+
+        return state_order.next_state(state)
+
+    if state == "cycle_deck":
+        if not job_list["cycle_decks_user_toggle"]:
+            logger.log("deck cycling isn't toggled. skipping this state")
+            return state_order.next_state(state)
+
+        deck_cycle_index = get_deck_number()
+
+        deck_count = job_list.get("max_deck_selection", 10)
+
+        success, selected_deck_number = select_deck_state(emulator, logger, deck_cycle_index, deck_count)
+
+        if not success or selected_deck_number is None:
+            return handle_state_failure(logger, "cycle_deck", "select_deck_state")
+
+        next_deck = selected_deck_number + 1 if selected_deck_number < deck_count else 1
+
+        set_deck_number(next_deck)
 
         return state_order.next_state(state)
 

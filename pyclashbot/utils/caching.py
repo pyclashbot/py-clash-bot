@@ -60,6 +60,25 @@ class FileCache:
 
 USER_SETTINGS_CACHE = FileCache("user_settings.json")
 
+# In-memory store for the deck number, initialized to 1
+_deck_cycle_index = 1
+
+
+def get_deck_number() -> int:
+    """
+    Returns the current deck number from memory.
+    """
+    global _deck_cycle_index  # noqa: PLW0602
+    return _deck_cycle_index
+
+
+def set_deck_number(deck_number: int) -> None:
+    """
+    Sets the deck number in memory.
+    """
+    global _deck_cycle_index
+    _deck_cycle_index = deck_number
+
 
 ### The following section is for supporting the old pickle format for user settings ###
 
