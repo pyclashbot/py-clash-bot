@@ -1,98 +1,28 @@
 """
 Deck cycling and selection methods for py-clash-bot.
-This module handles finding and selecting a user-specified deck.
-It includes a fallback to randomize any partial deck that is found.
 """
 
 import time
 
-import numpy
-
+from pyclashbot.bot.deck_utils import (
+    DECK_TABS_REGION,
+    is_deck_full,
+    is_single_deck_layout_by_pixel,
+    randomize_and_check_deck,
+    return_to_clash_main_from_card_page,
+    switch_deck_page,
+)
 from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
 )
-from pyclashbot.detection.image_rec import find_image, pixel_is_equal
+from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.logger import Logger
 
-DECK_TABS_REGION = (0, 80, 416, 146)
-
-
-def is_deck_full(emulator):
-    """
-    Checks if all eight card slots are filled using pixel analysis.
-    """
-    iar = numpy.asarray(emulator.screenshot())
-
-    pixels = [
-        iar[172][43],
-        iar[172][130],
-        iar[172][216],
-        iar[172][302],
-        iar[310][43],
-        iar[311][130],
-        iar[309][216],
-        iar[309][302],
-    ]
-
-    valid_colors = [
-        [175, 5, 179],
-        [178, 5, 182],
-        [178, 5, 183],
-        [188, 2, 194],
-        [185, 4, 191],
-        [197, 2, 209],
-        [193, 2, 203],
-    ]
-
-    for p in pixels:
-        match_found = any(pixel_is_equal(valid_color, p, tol=40) for valid_color in valid_colors)
-
-        if not match_found:
-            return False
-
-    return True
-
-
-def is_single_deck_layout_by_pixel(emulator) -> bool:
-    """
-    Checks for the single-deck layout by verifying three specific pixel colors.
-    """
-    iar = numpy.asarray(emulator.screenshot())
-
-    pixel_coords = [(99, 165), (117, 166), (99, 313), (117, 313)]
-    expected_colors = [
-        [141, 29, 0],
-        [147, 34, 0],
-        [145, 31, 4],
-        [149, 34, 3],
-    ]
-
-    actual_pixels = [iar[y][x] for y, x in pixel_coords]
-
-    for actual, expected in zip(actual_pixels, expected_colors):
-        if not pixel_is_equal(expected, actual, tol=45):
-            return False
-
-    return True
-
-
-def randomize_and_check_deck(emulator, logger, deck_to_randomize):
-    """
-    Performs the clicks to randomize a deck and checks if it is full afterward.
-    """
-    logger.change_status(f"Randomizing deck {deck_to_randomize}")
-    emulator.click(53, 106)
-    time.sleep(0.1)
-    emulator.click(125, 188)
-    time.sleep(0.1)
-    logger.add_card_randomization()
-    if not is_deck_full(emulator):
-        logger.change_status(f"Deck {deck_to_randomize} still not full after randomizing.")
+DECKS_PAGE_BUTTON_COORDS = (125, 60)
 
 
 def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tuple[bool, int | None]:
-    """High-level state to select a given deck."""
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main for select_deck_state().")
         return False, None
@@ -104,25 +34,7 @@ def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tupl
     return True, selected_deck_number
 
 
-def switch_deck_page(emulator, logger: Logger) -> bool:
-    """Switches the deck page in the card menu."""
-    logger.change_status("Switching deck page...")
-    switch_button_coord = find_image(
-        emulator.screenshot(), "deck_tabs/switch_deck", subcrop=DECK_TABS_REGION, tolerance=0.98
-    )
-    if switch_button_coord is not None:
-        emulator.click(switch_button_coord[0], switch_button_coord[1])
-        time.sleep(1)
-        return True
-    logger.change_status("Could not find switch deck page button.")
-    return False
-
-
 def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
-    """
-    Finds and clicks a complete deck. If a partial deck is found, it
-    randomizes it and selects it.
-    """
     if is_single_deck_layout_by_pixel(emulator):
         logger.change_status("Pixel check confirmed single-deck layout.")
         if is_deck_full(emulator):
@@ -130,8 +42,11 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
             return True, 1
         else:
             logger.change_status("Single deck is not complete. Randomizing it.")
-            randomize_and_check_deck(emulator, logger, 1)
-            return True, 1
+            if randomize_and_check_deck(emulator, logger, 1):
+                return True, 1
+            else:
+                logger.error("Failed to randomize the single deck.")
+                return False, None
 
     logger.change_status("Pixel check failed. Assuming multi-deck layout.")
     ss = emulator.screenshot()
@@ -167,39 +82,41 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
 
         if is_deck_full(emulator):
             logger.change_status(f"Found complete deck: #{deck_to_check}.")
-
             return True, deck_to_check
-
         else:
             logger.change_status(f"Found partial deck #{deck_to_check}. Randomizing it now.")
-            randomize_and_check_deck(emulator, logger, deck_to_check)
-            return True, deck_to_check
+            if randomize_and_check_deck(emulator, logger, deck_to_check):
+                return True, deck_to_check
+            else:
+                logger.change_status(f"Failed to randomize deck #{deck_to_check}. Continuing...")
+                continue
 
     logger.error("Could not find any usable decks after checking all available pages.")
     return False, None
 
 
-def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
-    """Navigates to the card page and selects a deck."""
-    start_time = time.time()
+def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
+    logger.change_status("Navigating to the deck selection page...")
     if not get_to_card_page_from_clash_main(emulator, logger):
         logger.change_status("Failed to get to card page from main.")
-        return False, None
-    emulator.click(125, 60)
+        return False
+    emulator.click(*DECKS_PAGE_BUTTON_COORDS)
     time.sleep(0.1)
+    return True
+
+
+def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
+    start_time = time.time()
+    if not _navigate_to_deck_selection(emulator, logger):
+        return False, None
 
     success, selected_deck_number = find_and_click_deck(emulator, logger, deck_number, deck_count)
     if not success:
         logger.change_status("find_and_click_deck() failed.")
-        emulator.click(248, 603)
-        time.sleep(1)
+        return_to_clash_main_from_card_page(emulator, logger)
         return False, None
 
-    logger.change_status("Returning to clash main")
-    emulator.click(248, 603)
-    time.sleep(1)
-    if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Failed to return to clash main after selecting deck.")
+    if not return_to_clash_main_from_card_page(emulator, logger):
         return False, None
 
     logger.change_status(f"Selected deck {selected_deck_number} in {str(time.time() - start_time)[:4]}s")

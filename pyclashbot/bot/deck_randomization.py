@@ -1,12 +1,14 @@
 """
 Deck randomization methods for py-clash-bot.
-This module handles finding and randomizing a user-specified deck with robust page handling and fallbacks.
 """
 
 import time
 
-from pyclashbot.bot.deck_cycle import (
+from pyclashbot.bot.deck_utils import (
+    DECK_TABS_REGION,
     is_single_deck_layout_by_pixel,
+    randomize_and_check_deck,
+    return_to_clash_main_from_card_page,
     switch_deck_page,
 )
 from pyclashbot.bot.nav import (
@@ -16,11 +18,8 @@ from pyclashbot.bot.nav import (
 from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.logger import Logger
 
-DECK_TABS_REGION = (0, 80, 416, 146)
-
 
 def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
-    """High-level state for randomizing a given deck."""
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main for randomize_deck_state().")
         return False
@@ -34,10 +33,6 @@ def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
 
 
 def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number: int) -> tuple[bool, int | None]:
-    """
-    Finds and selects a specific deck for randomization, returning the deck number that was actually selected.
-    Includes robust fallback to Deck 1 if the target deck is not found.
-    """
     if is_single_deck_layout_by_pixel(emulator):
         logger.change_status("Single deck layout detected. Selecting it for randomization.")
         return True, 1
@@ -69,7 +64,13 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
     logger.change_status(f"Could not find deck #{deck_number}. Defaulting to deck #1.")
 
     on_page_1_after_fail = (
-        find_image(emulator.screenshot(), "deck_tabs/deck_1", subcrop=DECK_TABS_REGION, tolerance=0.95) is not None
+        find_image(
+            emulator.screenshot(),
+            "deck_tabs/deck_1",
+            subcrop=DECK_TABS_REGION,
+            tolerance=0.95,
+        )
+        is not None
     )
 
     if not on_page_1_after_fail:
@@ -92,7 +93,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
 
 def randomize_deck(emulator, logger: Logger, deck_number: int) -> bool:
     """
-    Main function to navigate, find, and randomize the specified deck.
+    Orchestrates the entire deck randomization process including navigation.
     """
     start_time = time.time()
 
@@ -103,21 +104,12 @@ def randomize_deck(emulator, logger: Logger, deck_number: int) -> bool:
     if not success or selected_deck is None:
         return False
 
-    logger.change_status(f"Performing randomization clicks for deck #{selected_deck}.")
-    emulator.click(53, 106)
-    time.sleep(0.1)
-    emulator.click(125, 188)
-    time.sleep(0.1)
-    emulator.click(280, 390)
-    time.sleep(0.1)
-    logger.add_card_randomization()
+    if not randomize_and_check_deck(emulator, logger, selected_deck):
+        logger.error(f"Failed to randomize and verify deck #{selected_deck}.")
+        return_to_clash_main_from_card_page(emulator, logger)
+        return False
 
-    logger.change_status("Returning to clash main")
-    emulator.click(248, 603)
-    time.sleep(1)
-
-    if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Failed to return to clash main after randomizing deck.")
+    if not return_to_clash_main_from_card_page(emulator, logger):
         return False
 
     logger.change_status(f"Successfully randomized deck #{selected_deck} in {str(time.time() - start_time)[:4]}s")
