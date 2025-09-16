@@ -60,25 +60,31 @@ class FileCache:
 
 USER_SETTINGS_CACHE = FileCache("user_settings.json")
 
-_deck_cycle_index = 1
-_deck_cycle_lock = threading.Lock()
+# Create a thread-local storage object for the deck cycle cache.
+_thread_local = threading.local()
 
 
-def get_deck_number() -> int:
+def _get_deck_cache():
     """
-    Returns the current deck number from memory.
+    Returns a deck cache dictionary that is local to the current thread.
+    If a cache doesn't exist for the thread, it is initialized.
     """
-    with _deck_cycle_lock:
-        return _deck_cycle_index
+    if not hasattr(_thread_local, "deck_cache"):
+        # Initialize the cache for the current thread if it's the first time.
+        _thread_local.deck_cache = {}
+    return _thread_local.deck_cache
 
 
-def set_deck_number(deck_number: int) -> None:
-    """
-    Sets the deck number in memory.
-    """
-    global _deck_cycle_index
-    with _deck_cycle_lock:
-        _deck_cycle_index = deck_number
+def get_deck_number_for_battle_mode(battle_mode: str) -> int:
+    """Get the deck number for a specific battle mode from the thread-local cache."""
+    cache = _get_deck_cache()
+    return cache.get(battle_mode, 1)
+
+
+def set_deck_number_for_battle_mode(battle_mode: str, deck_number: int):
+    """Set the deck number for a specific battle mode in the thread-local cache."""
+    cache = _get_deck_cache()
+    cache[battle_mode] = deck_number
 
 
 ### The following section is for supporting the old pickle format for user settings ###

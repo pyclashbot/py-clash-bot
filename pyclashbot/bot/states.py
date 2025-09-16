@@ -14,7 +14,10 @@ from pyclashbot.bot.fight import (
 )
 from pyclashbot.bot.nav import select_mode
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
-from pyclashbot.utils.caching import get_deck_number, set_deck_number
+from pyclashbot.utils.caching import (
+    get_deck_number_for_battle_mode,
+    set_deck_number_for_battle_mode,
+)
 from pyclashbot.utils.logger import Logger
 
 
@@ -194,6 +197,7 @@ class StateOrder:
         self.states = [
             "upgrade",
             "card_mastery",
+            "select_battle_mode",
             "randomize_deck",
             "cycle_deck",
             "start_fight",
@@ -281,7 +285,11 @@ def state_tree(
             logger.log("deck cycling isn't toggled. skipping this state")
             return state_order.next_state(state)
 
-        deck_cycle_index = get_deck_number()
+        if mode_used_in_1v1 is None:
+            logger.log("No battle mode selected, skipping deck cycling.")
+            return state_order.next_state(state)
+
+        deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1)
 
         deck_count = job_list.get("max_deck_selection", 10)
 
@@ -292,7 +300,7 @@ def state_tree(
 
         next_deck = selected_deck_number + 1 if selected_deck_number < deck_count else 1
 
-        set_deck_number(next_deck)
+        set_deck_number_for_battle_mode(mode_used_in_1v1, next_deck)
 
         return state_order.next_state(state)
 
@@ -330,7 +338,7 @@ def state_tree(
 
         return state_order.next_state(state)
 
-    if state == "start_fight":
+    if state == "select_battle_mode":
         # Get the next fight mode to use
         selected_mode = get_next_fight_mode(job_list)
 
@@ -338,18 +346,25 @@ def state_tree(
             print("No fight modes are enabled. Skipping this state")
             return state_order.next_state(state)
 
-        print(f"Starting a {selected_mode} fight")
+        print(f"Selected {selected_mode} as the next battle mode")
+        mode_used_in_1v1 = selected_mode
 
         # Use select_mode to set the fight mode before starting
         if select_mode(emulator, selected_mode) is False:
-            return handle_state_failure(logger, "start_fight", "select_mode", f"Failed to select mode: {selected_mode}")
+            return handle_state_failure(
+                logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
+            )
+
+        return state_order.next_state(state)
+
+    if state == "start_fight":
+        if mode_used_in_1v1 is None:
+            print("No battle mode selected. Skipping this state")
+            return state_order.next_state(state)
 
         # Start fight using the selected mode directly
-        if start_fight(emulator, logger, selected_mode) is False:
+        if start_fight(emulator, logger, mode_used_in_1v1) is False:
             return handle_state_failure(logger, "start_fight", "start_fight", "Failed while starting fight")
-
-        # Store the selected mode for use in fight states
-        mode_used_in_1v1 = selected_mode
 
         # go to next state
         return state_order.next_state(state)

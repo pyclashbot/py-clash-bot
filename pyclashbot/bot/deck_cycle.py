@@ -119,5 +119,6 @@ def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> 
     if not return_to_clash_main_from_card_page(emulator, logger):
         return False, None
 
+    logger.add_deck_cycled()
     logger.change_status(f"Selected deck {selected_deck_number} in {str(time.time() - start_time)[:4]}s")
     return True, selected_deck_number

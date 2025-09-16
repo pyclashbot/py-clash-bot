@@ -54,7 +54,8 @@ BATTLE_STATS = [
     StatConfig("classic_1v1_fights", "Classic 1v1s"),
     StatConfig("classic_2v2_fights", "Classic 2v2s"),
     StatConfig("trophy_road_1v1_fights", "Trophy Road 1v1s"),
-    StatConfig("card_randomizations", "Decks"),
+    StatConfig("card_randomizations", "Decks Randomized"),
+    StatConfig("card_cycles", "Decks Cycled"),
 ]
 
 COLLECTION_STATS = [
