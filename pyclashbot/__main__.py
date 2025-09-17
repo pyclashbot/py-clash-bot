@@ -51,6 +51,8 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "upgrade_user_toggle": values["card_upgrade_user_toggle"],
         "random_decks_user_toggle": values["random_decks_user_toggle"],
         "deck_number_selection": values["deck_number_selection"],
+        "cycle_decks_user_toggle": values["cycle_decks_user_toggle"],
+        "max_deck_selection": values["max_deck_selection"],
         "random_plays_user_toggle": values["random_plays_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "record_fights_toggle": values.get("record_fights_toggle", False),
@@ -295,6 +297,14 @@ class BotApplication:
                 self.handle_start_event(values)
             elif event == "Stop":
                 self.handle_stop_event()
+            elif event == "random_decks_user_toggle":
+                if values["random_decks_user_toggle"]:
+                    self.window["cycle_decks_user_toggle"].update(False)
+                self.handle_settings_change(values)
+            elif event == "cycle_decks_user_toggle":
+                if values["cycle_decks_user_toggle"]:
+                    self.window["random_decks_user_toggle"].update(False)
+                self.handle_settings_change(values)
             elif event in user_config_keys:
                 self.handle_settings_change(values)
             elif event in ["bug-report", "discord"]:
