@@ -66,7 +66,7 @@ def check_for_in_battle_with_delay(emulator) -> bool:
     start_time = time.time()
     while time.time() - start_time < timeout:
         battle_result = check_if_in_battle(emulator)
-        if battle_result:  # True for any battle type ("1v1", "2v2")
+        if battle_result:
             return True
     return False
 
@@ -97,6 +97,7 @@ def check_if_in_battle(emulator):
         [255, 255, 255],
         [232, 63, 242],
     ]
+
     colors_2v2 = [
         [255, 255, 255],
         [255, 255, 255],
@@ -105,35 +106,34 @@ def check_if_in_battle(emulator):
         [231, 57, 242],
     ]
 
-    # def pixel_to_string(pixel):
-    #     return f"{pixel[0]} {pixel[1]} {pixel[2]}"
+    colors_emote_disabled_1 = [
+        [255, 255, 255],
+        [59, 59, 233],
+        [255, 255, 255],
+        [255, 255, 255],
+        [235, 70, 247],
+    ]
 
-    # print("\nBattle detection check:")
-    # print(
-    #     "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #         "Seen 1v1", "Expected 1v1", "Seen 2v2", "Expected 2v2"
-    #     )
-    # )
-    # for pixel1v1, pixel2v2, color1v1, color2v2 in zip(
-    #     pixels_1v1, pixels_2v2, colors_1v1, colors_2v2
-    # ):
-    #     print(
-    #         "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #             pixel_to_string(pixel1v1),
-    #             pixel_to_string(color1v1),
-    #             pixel_to_string(pixel2v2),
-    #             pixel_to_string(color2v2),
-    #         )
-    #     )
+    colors_emote_disabled_2 = [
+        [255, 255, 255],
+        [179, 179, 208],
+        [255, 255, 255],
+        [250, 250, 250],
+        [238, 87, 254],
+    ]
+
+    # for p1, p2, c1, c2, ced1, ced2 in zip(pixels_1v1, pixels_2v2, colors_1v1, colors_2v2, colors_emote_disabled_1, colors_emote_disabled_2):
+    #     print(p1, p2, c1, c2, ced1, ced2)
 
     if all_pixels_are_equal(colors_1v1, pixels_1v1, tol=35):
-        # print(f"Yes in a battle. Its of type 1v1")
         return True
     if all_pixels_are_equal(colors_2v2, pixels_2v2, tol=35):
-        # print(f"Yes in a battle. Its of type 2v2")
         return True
-
-    # print(f"Not in a battle")
+    if all_pixels_are_equal(colors_emote_disabled_1, pixels_1v1, tol=35):
+        return True
+    if all_pixels_are_equal(colors_emote_disabled_2, pixels_2v2, tol=35):
+        return True
+    
     return False
 
 
@@ -554,7 +554,9 @@ def find_fight_mode_icon(emulator, mode: str):
 
     # Check if the mode is valid
     if mode not in expected_mode_types:
-        print(f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
+        print(
+            f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
+        )
         return None
 
     mode2folder = {
@@ -593,7 +595,9 @@ def select_mode(emulator, mode: str):
 
     # Check if the mode is valid
     if mode not in expected_mode_types:
-        print(f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
+        print(
+            f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
+        )
         return False
 
     # must be on clash main
