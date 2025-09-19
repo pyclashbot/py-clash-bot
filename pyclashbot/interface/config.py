@@ -129,7 +129,7 @@ EMULATOR_CHOICE = [
 
 # Google Play Settings Configuration
 GOOGLE_PLAY_SETTINGS = [
-    ComboConfig("gp_angle", "angle", ["true", "false"], default="true"),
+    ComboConfig("gp_angle", "angle", ["true", "false"]),
     ComboConfig("gp_vulkan", "vulkan", ["true", "false"]),
     ComboConfig("gp_gles", "gles", ["true", "false"]),
     ComboConfig("gp_surfaceless", "surfaceless", ["true", "false"]),
