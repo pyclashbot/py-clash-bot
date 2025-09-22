@@ -18,7 +18,7 @@ from pyclashbot.utils.graphics_detection import GraphicsDetector
 
 
 class GooglePlayEmulatorController(BaseEmulatorController):
-    def __init__(self, logger, render_settings: dict | None = None):
+    def __init__(self, logger, render_settings: dict = {}):
         self.logger = logger
 
         # Set graphics defaults based on system capabilities if no render settings provided
@@ -40,6 +40,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             elif render_settings.get("angle", False) and not capabilities.directx_available:
                 self.logger.log("DirectX/Angle requested but DirectX not available, switching to OpenGL")
                 render_settings.update({"angle": False, "gles": True, "backend": "gfxstream"})
+
         # clear existing stuff
         self.stop()
         while self._is_emulator_running():

@@ -110,6 +110,7 @@ class Logger:
         self.cards_played = 0
         self.war_fights = 0
         self.card_randomizations = 0
+        self.card_cycles = 0
         self.winrate: str = "0%"
 
         # job stats
@@ -171,6 +172,7 @@ class Logger:
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
+                "card_cycles": self.card_cycles,
                 # collection stats
                 "war_chest_collects": self.war_chest_collects,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
@@ -396,6 +398,11 @@ class Logger:
     def add_card_randomization(self):
         """Incremenet card_randomizations counter"""
         self.card_randomizations += 1
+
+    @_updates_gui
+    def add_deck_cycled(self):
+        """Increment card_cycles counter"""
+        self.card_cycles += 1
 
     @_updates_gui
     def increment_2v2_fights(self) -> None:

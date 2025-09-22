@@ -36,6 +36,8 @@ EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 # Default Memu configuration - matches the working example
 # see https://pymemuc.readthedocs.io/pymemuc.html#the-vm-configuration-keys-table
 MEMU_CONFIGURATION: dict[str, str | int | float] = {
+    "cpus": 2,  # allocate 2 virtual CPU cores
+    "memory": 2048,  # allocate 2048 MB RAM (2 GB)
     "start_window_mode": 1,  # remember window position
     "win_scaling_percent2": 100,  # 100% scaling
     "is_customed_resolution": 1,

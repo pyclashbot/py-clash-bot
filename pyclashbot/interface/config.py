@@ -49,6 +49,7 @@ class ComboConfig:
     values: list[str | int]
     default: str | int = ""
     size: tuple[int, int] = (5, 1)
+    label_size: tuple[int, int] = (6, 1)
 
 
 def get_available_memu_settings() -> list[RadioConfig]:
@@ -107,7 +108,8 @@ BATTLE_STATS = [
     StatConfig("classic_1v1_fights", "Classic 1v1s"),
     StatConfig("classic_2v2_fights", "Classic 2v2s"),
     StatConfig("trophy_road_1v1_fights", "Trophy Road 1v1s"),
-    StatConfig("card_randomizations", "Decks"),
+    StatConfig("card_randomizations", "Decks Randomized"),
+    StatConfig("card_cycles", "Decks Cycled"),
 ]
 
 COLLECTION_STATS = [
@@ -130,7 +132,29 @@ JOBS = [
         "random_decks_user_toggle",
         "Random decks",
         default=False,
-        extras={"deck_selector": ComboConfig("deck_number_selection", "Deck #:", values=[1, 2, 3, 4, 5], default=2)},
+        extras={
+            "deck_number_selection": ComboConfig(
+                key="deck_number_selection",
+                label="Deck #",
+                values=[1, 2, 3, 4, 5],
+                default=2,
+                label_size=(10, 1),
+            )
+        },
+    ),
+    JobConfig(
+        "cycle_decks_user_toggle",
+        "Cycle decks",
+        default=False,
+        extras={
+            "max_deck_selection": ComboConfig(
+                key="max_deck_selection",
+                label="Decks to Cycle:",
+                values=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                default=2,
+                label_size=(15, 1),
+            )
+        },
     ),
     JobConfig("random_plays_user_toggle", "Random plays", default=False),
     JobConfig("disable_win_track_toggle", "Skip win/loss check", default=False),
@@ -152,7 +176,7 @@ EMULATOR_CHOICE = [
 
 # Google Play Settings Configuration
 GOOGLE_PLAY_SETTINGS = [
-    ComboConfig("gp_angle", "angle", ["true", "false"], default="true"),
+    ComboConfig("gp_angle", "angle", ["true", "false"]),
     ComboConfig("gp_vulkan", "vulkan", ["true", "false"]),
     ComboConfig("gp_gles", "gles", ["true", "false"]),
     ComboConfig("gp_surfaceless", "surfaceless", ["true", "false"]),
@@ -167,6 +191,11 @@ USER_CONFIG_KEYS = (
     + [radio.key for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key for combo in GOOGLE_PLAY_SETTINGS]
     + ["record_fights_toggle"]  # Data settings
+    + [
+        "deck_number_selection",
+        "max_deck_selection",
+        "cycle_decks_user_toggle",
+    ]
 )
 
 # Keys to disable when bot is running
