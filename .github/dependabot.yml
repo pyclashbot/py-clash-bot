@@ -6,6 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory: "/src/"
+    directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
