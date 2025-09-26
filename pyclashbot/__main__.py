@@ -1,9 +1,10 @@
 """This module contains the main entry point for the py-clash-bot program.
 It provides a GUI interface for users to configure and run the bot.
 """
-
+import os
 import sys
 import webbrowser
+from os.path import expandvars, join
 
 import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
@@ -311,6 +312,11 @@ class BotApplication:
                 self.handle_external_links(event)
             elif event == "action_button":
                 self.handle_action_button()
+            elif event == "-OPEN_RECORDINGS_FOLDER-":
+                folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                os.startfile(folder_path)
 
             # Handle thread completion cleanup
             self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)
