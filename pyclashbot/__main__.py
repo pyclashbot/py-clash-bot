@@ -238,6 +238,28 @@ class BotApplication:
         self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
         load_settings(settings, self.window)
+        self._select_emulator_tab()
+
+    def _select_emulator_tab(self):
+        """Select the emulator tab based on the current settings."""
+        user_settings = USER_SETTINGS_CACHE.load_data()
+        if not user_settings:
+            return
+
+        emulator_tab_map = {
+            "memu_emulator_toggle": 0,
+            "google_play_emulator_toggle": 1,
+            "bluestacks_emulator_toggle": 2,
+            "real_android_toggle": 3,
+        }
+
+        for toggle, tab_index in emulator_tab_map.items():
+            if user_settings.get(toggle):
+                try:
+                    self.window["-EMULATOR_TABS-"].Widget.select(tab_index)
+                except Exception as e:
+                    print(f"Could not select emulator tab: {e}")
+                break
 
     def handle_start_event(self, values):
         """Handle the start button event."""
@@ -305,6 +327,15 @@ class BotApplication:
             elif event == "cycle_decks_user_toggle":
                 if values["cycle_decks_user_toggle"]:
                     self.window["random_decks_user_toggle"].update(False)
+                self.handle_settings_change(values)
+            elif event == "memu_emulator_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(0)
+                self.handle_settings_change(values)
+            elif event == "google_play_emulator_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(1)
+                self.handle_settings_change(values)
+            elif event == "bluestacks_emulator_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(2)
                 self.handle_settings_change(values)
             elif event in user_config_keys:
                 self.handle_settings_change(values)

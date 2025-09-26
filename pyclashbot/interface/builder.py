@@ -187,7 +187,7 @@ def build_emulator_settings_tabs() -> sg.TabGroup:
     )
 
     return sg.TabGroup(
-        [[google_play_tab, memu_tab, bluestacks_tab]],
+        [[memu_tab, google_play_tab, bluestacks_tab]],
         key="-EMULATOR_TABS-",
         enable_events=True,
         expand_x=True,
