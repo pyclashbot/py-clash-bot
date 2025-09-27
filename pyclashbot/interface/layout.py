@@ -202,6 +202,7 @@ def create_window() -> Window:
         layout=main_layout,
         icon=icon_path,
         resizable=False,
+        finalize=True,
     )
 
 

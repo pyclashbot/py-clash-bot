@@ -549,6 +549,42 @@ def wait_for_clash_main_burger_button_options_menu(
     return "good"
 
 
+def check_if_battle_mode_is_selected(emulator, mode: str):
+    """Checks if the given battle mode is selected on the clash main menu.
+
+    Args:
+        emulator: The emulator controller.
+        mode: The battle mode to check for.
+
+    Returns:
+        True if the mode is selected, False otherwise.
+    """
+    expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
+
+    # Check if the mode is valid
+    if mode not in expected_mode_types:
+        print(f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
+        return None
+
+    mode2folder = {
+        "Classic 1v1": "selected_1v1_on_main",
+        "Classic 2v2": "selected_2v2_on_main",
+        "Trophy Road": "selected_trophy_road_on_main",
+    }
+
+    look_folder = mode2folder[mode]
+
+    # find image on screen
+    coord = find_image(
+        emulator.screenshot(),
+        look_folder,
+        tolerance=0.9,
+        subcrop=(270, 455, 350, 533),
+    )
+
+    return coord is not None
+
+
 def find_fight_mode_icon(emulator, mode: str):
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
 

@@ -12,7 +12,7 @@ from pyclashbot.bot.fight import (
     end_fight_state,
     start_fight,
 )
-from pyclashbot.bot.nav import select_mode
+from pyclashbot.bot.nav import check_if_battle_mode_is_selected, select_mode
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.utils.caching import (
     get_deck_number_for_battle_mode,
@@ -339,21 +339,41 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "select_battle_mode":
-        # Get the next fight mode to use
-        selected_mode = get_next_fight_mode(job_list)
+        # Get all enabled fight modes
+        enabled_modes = []
+        if job_list.get("classic_1v1_user_toggle", False):
+            enabled_modes.append("Classic 1v1")
+        if job_list.get("classic_2v2_user_toggle", False):
+            enabled_modes.append("Classic 2v2")
+        if job_list.get("trophy_road_user_toggle", False):
+            enabled_modes.append("Trophy Road")
 
-        if selected_mode is None:
+        if not enabled_modes:
             print("No fight modes are enabled. Skipping this state")
             return state_order.next_state(state)
 
-        print(f"Selected {selected_mode} as the next battle mode")
-        mode_used_in_1v1 = selected_mode
-
-        # Use select_mode to set the fight mode before starting
-        if select_mode(emulator, selected_mode) is False:
-            return handle_state_failure(
-                logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
-            )
+        # if more than one mode is selected, just cycle through them
+        if len(enabled_modes) > 1:
+            selected_mode = get_next_fight_mode(job_list)
+            print(f"Multiple modes enabled. Selected {selected_mode} as the next battle mode")
+            mode_used_in_1v1 = selected_mode
+            if select_mode(emulator, selected_mode) is False:
+                return handle_state_failure(
+                    logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
+                )
+        else:
+            # if only one mode is selected, check if it's already selected
+            selected_mode = enabled_modes[0]
+            mode_used_in_1v1 = selected_mode
+            print(f"Only one mode enabled: {selected_mode}. Checking if it's selected.")
+            if not check_if_battle_mode_is_selected(emulator, selected_mode):
+                print(f"{selected_mode} is not selected. Selecting it now.")
+                if select_mode(emulator, selected_mode) is False:
+                    return handle_state_failure(
+                        logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
+                    )
+            else:
+                print(f"{selected_mode} is already selected.")
 
         return state_order.next_state(state)
 

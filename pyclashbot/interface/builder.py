@@ -187,7 +187,7 @@ def build_emulator_settings_tabs() -> sg.TabGroup:
     )
 
     return sg.TabGroup(
-        [[google_play_tab, memu_tab, bluestacks_tab]],
+        [[memu_tab, google_play_tab, bluestacks_tab]],
         key="-EMULATOR_TABS-",
         enable_events=True,
         expand_x=True,
@@ -204,6 +204,8 @@ def build_data_settings() -> sg.Frame:
     layout = [
         [
             sg.Checkbox("Record fights", key="record_fights_toggle", default=False, font=("Arial", 9), pad=(5, 2)),
+            sg.Push(),
+            sg.Button("Open Recordings Folder", key="-OPEN_RECORDINGS_FOLDER-", font=("Arial", 9, "bold")),
         ],
     ]
 
