@@ -1,9 +1,10 @@
 """This module contains the main entry point for the py-clash-bot program.
 It provides a GUI interface for users to configure and run the bot.
 """
-
+import os
 import sys
 import webbrowser
+from os.path import expandvars, join
 
 import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
@@ -237,6 +238,28 @@ class BotApplication:
         self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
         load_settings(settings, self.window)
+        self._select_emulator_tab()
+
+    def _select_emulator_tab(self):
+        """Select the emulator tab based on the current settings."""
+        user_settings = USER_SETTINGS_CACHE.load_data()
+        if not user_settings:
+            return
+
+        emulator_tab_map = {
+            "memu_emulator_toggle": 0,
+            "google_play_emulator_toggle": 1,
+            "bluestacks_emulator_toggle": 2,
+            "real_android_toggle": 3,
+        }
+
+        for toggle, tab_index in emulator_tab_map.items():
+            if user_settings.get(toggle):
+                try:
+                    self.window["-EMULATOR_TABS-"].Widget.select(tab_index)
+                except Exception as e:
+                    print(f"Could not select emulator tab: {e}")
+                break
 
     def handle_start_event(self, values):
         """Handle the start button event."""
@@ -305,12 +328,26 @@ class BotApplication:
                 if values["cycle_decks_user_toggle"]:
                     self.window["random_decks_user_toggle"].update(False)
                 self.handle_settings_change(values)
+            elif event == "memu_emulator_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(0)
+                self.handle_settings_change(values)
+            elif event == "google_play_emulator_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(1)
+                self.handle_settings_change(values)
+            elif event == "bluestacks_emulator_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(2)
+                self.handle_settings_change(values)
             elif event in user_config_keys:
                 self.handle_settings_change(values)
             elif event in ["bug-report", "discord"]:
                 self.handle_external_links(event)
             elif event == "action_button":
                 self.handle_action_button()
+            elif event == "-OPEN_RECORDINGS_FOLDER-":
+                folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                os.startfile(folder_path)
 
             # Handle thread completion cleanup
             self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)
