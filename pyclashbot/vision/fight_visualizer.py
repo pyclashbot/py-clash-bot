@@ -12,6 +12,12 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+# Import timing flags from fight.py if available, otherwise use defaults
+try:
+    from pyclashbot.bot.fight import TIMING_VISUALIZATION
+except ImportError:
+    TIMING_VISUALIZATION = False
+
 # Hardcoded configuration flags
 ENABLE_HEALTH_VIZ = True
 ENABLE_DPS_VIZ = True
@@ -21,10 +27,8 @@ SHOW_DEBUG_WINDOWS = True
 class UnitDatabase:
     """Database for unit stats from units.json"""
     
-    def __init__(self, units_json_path: str = None):
-        if units_json_path is None:
-            units_json_path = str(Path(__file__).parent.parent / "bot" / "data" / "units.json")
-        
+    def __init__(self, units_json_path: str):
+        self.units_json_path = units_json_path
         self.units = {}
         self.load_units_data(units_json_path)
     
@@ -124,28 +128,49 @@ class UnitDatabase:
 
 
 class FightVisualizer:
-    """Main visualizer for fight debugging with multiple windows"""
+    """Main visualizer for fight debugging with single combined window"""
     
     def __init__(self):
-        self.unit_db = UnitDatabase()
+        units_file_path = r'pyclashbot\data\units.json'
+        self.unit_db = UnitDatabase(units_file_path)
         
-        # Window names
-        self.raw_window = "Debug: Fight Details"
-        self.heatmap_window = "Debug: Health/DPS Heatmap"
+        # Single window name
+        self.main_window = "Fight Vision Debug"
         
         # Frame counter
         self.frame_id = 0
         
-        # Heatmap grid settings (64x64 tiles)
-        self.grid_size = 64
+        # Heatmap grid settings (reduced for performance)
+        self.grid_size = 32  # Reduced from 64 for better performance
         self.battlefield_width = 400  # Approximate battlefield width in pixels
         self.battlefield_height = 400  # Approximate battlefield height
         self.battlefield_offset = (56, 60)  # Offset from image top-left
         
         # Font loading
-        self.font = self._load_font(12)
+        self.font = self._load_font(10)  # Smaller font
+        
+        # View modes - toggleable with keyboard (single window only)
+        self.view_modes = {
+            'z': {'name': 'Raw Game Only', 'mode': 'raw'},
+            'x': {'name': 'Heatmap Overlay', 'mode': 'heatmap_overlay'},
+            'c': {'name': 'Combined Overlay', 'mode': 'combined_overlay'},
+            'v': {'name': 'Units Only', 'mode': 'units_overlay'},
+            'b': {'name': 'Debug Info', 'mode': 'debug_overlay'},
+            'n': {'name': 'Performance Stats', 'mode': 'minimal'},
+            'm': {'name': 'Debug Off', 'mode': 'off'}
+        }
+        
+        self.current_mode = 'c'  # Default to combined overlay
+        
+        # Display settings for better visibility
+        self.display_scale = 1.0  # Full size display
+        self.target_width = 640  # Target width for performance
+        
+        # Performance settings
+        self.max_units_to_draw = 20  # Limit unit drawings for performance
         
         print(f"Fight visualizer ready - {len(self.unit_db.units)} units loaded")
+        print("Controls: Z=Raw, X=Heatmap, C=Combined, V=Units, B=Debug, N=Stats, M=Off")
         
     def _load_font(self, size: int):
         """Load font for text rendering"""
@@ -154,459 +179,317 @@ class FightVisualizer:
         except:
             return ImageFont.load_default()
     
-    def visualize_frame(self, image_bgr: np.ndarray, vision_results: Dict) -> Tuple[np.ndarray, np.ndarray]:
+    def visualize_frame(self, image_bgr: np.ndarray, vision_results: Dict) -> np.ndarray:
         """
-        Process a frame and create both visualization windows
+        Process a frame and create optimized visualization based on current view mode
         
         Returns:
-            Tuple of (raw_details_image, heatmap_image)
+            Single visualization image optimized for performance
         """
+        viz_start_time = time.perf_counter()
+        
         self.frame_id += 1
         
-        # Create visualizations
-        raw_viz = self._create_raw_details_viz(image_bgr.copy(), vision_results)
-        heatmap_viz = self._create_heatmap_viz(image_bgr.copy(), vision_results) if (ENABLE_HEALTH_VIZ or ENABLE_DPS_VIZ) else image_bgr.copy()
+        # Handle keyboard input
+        keyboard_start = time.perf_counter()
+        self._handle_keyboard_input()
+        keyboard_time = (time.perf_counter() - keyboard_start) * 1000
         
-        return raw_viz, heatmap_viz
+        # Get current view mode
+        mode_config = self.view_modes.get(self.current_mode, self.view_modes['c'])
+        mode = mode_config['mode']
+        
+        # Downscale first for performance (if needed)
+        prep_start = time.perf_counter()
+        base_image = self._prepare_base_image(image_bgr)
+        prep_time = (time.perf_counter() - prep_start) * 1000
+        
+        # Create visualization based on mode
+        viz_mode_start = time.perf_counter()
+        if mode == 'off':
+            result = base_image
+        elif mode == 'raw':
+            result = base_image
+        elif mode == 'minimal':
+            result = self._create_minimal_overlay(base_image, vision_results)
+        elif mode == 'heatmap_overlay':
+            result = self._create_heatmap_overlay(base_image, vision_results)
+        elif mode == 'units_overlay':
+            result = self._create_units_overlay(base_image, vision_results)
+        elif mode == 'debug_overlay':
+            result = self._create_debug_overlay(base_image, vision_results)
+        elif mode == 'combined_overlay':
+            result = self._create_combined_overlay(base_image, vision_results)
+        else:
+            result = base_image
+        viz_mode_time = (time.perf_counter() - viz_mode_start) * 1000
+        
+        # Add mode indicator
+        indicator_start = time.perf_counter()
+        result = self._add_mode_indicator_cv2(result, mode_config)
+        indicator_time = (time.perf_counter() - indicator_start) * 1000
+        
+        total_viz_time = (time.perf_counter() - viz_start_time) * 1000
+        
+        # Print timing information if enabled
+        if TIMING_VISUALIZATION:
+            print(f"  Visualization Timing:")
+            print(f"    Keyboard Input: {keyboard_time:.1f}ms")
+            print(f"    Image Preparation: {prep_time:.1f}ms")  
+            print(f"    Mode '{mode}' Rendering: {viz_mode_time:.1f}ms")
+            print(f"    Mode Indicator: {indicator_time:.1f}ms")
+            print(f"    Total Visualization: {total_viz_time:.1f}ms")
+        
+        return result
     
-    def _create_raw_details_viz(self, image_bgr: np.ndarray, vision_results: Dict) -> np.ndarray:
-        """Create raw fight details visualization (Window 1)"""
-        # Convert to PIL for drawing
-        im = Image.fromarray(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)).convert("RGBA")
-        overlay = Image.new("RGBA", im.size, (0, 0, 0, 0))
-        dr = ImageDraw.Draw(overlay, "RGBA")
+    def _prepare_base_image(self, image_bgr: np.ndarray) -> np.ndarray:
+        """Prepare base image with optimal scaling for performance"""
+        h, w = image_bgr.shape[:2]
         
-        # Draw units with enhanced info
+        # Scale down if image is too large for performance
+        if w > self.target_width:
+            scale = self.target_width / w
+            new_h = int(h * scale)
+            new_w = self.target_width
+            image_bgr = cv2.resize(image_bgr, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+        
+        # Ensure contiguous array for performance
+        return np.ascontiguousarray(image_bgr, dtype=np.uint8)
+    
+    def _create_minimal_overlay(self, image: np.ndarray, vision_results: Dict) -> np.ndarray:
+        """Create minimal overlay with basic stats using cv2"""
+        result = image.copy()
+        
+        # Basic stats
+        units_count = len(vision_results.get('units', []))
+        text = f"Frame {self.frame_id} | Units: {units_count}"
+        
+        # Draw background rectangle for text
+        (text_w, text_h), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        cv2.rectangle(result, (5, 5), (15 + text_w, 25 + text_h), (0, 0, 0), -1)
+        cv2.rectangle(result, (5, 5), (15 + text_w, 25 + text_h), (100, 100, 100), 1)
+        
+        # Draw text
+        cv2.putText(result, text, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_8)
+        
+        return result
+    
+    def _create_units_overlay(self, image: np.ndarray, vision_results: Dict) -> np.ndarray:
+        """Create overlay with unit bounding boxes using cv2"""
+        result = image.copy()
+        overlay = np.zeros_like(result, dtype=np.uint8)
+        
+        units = vision_results.get('units', [])[:self.max_units_to_draw]  # Limit for performance
+        
+        for unit in units:
+            x1, y1, x2, y2 = unit.get('xyxy', [0, 0, 0, 0])
+            unit_name = unit.get('cls_label', 'unknown')
+            side = unit.get('side', 'unknown')
+            
+            # Scale coordinates if image was downscaled
+            scale = image.shape[1] / 512  # Assume original is around 512px wide
+            x1, y1, x2, y2 = int(x1*scale), int(y1*scale), int(x2*scale), int(y2*scale)
+            
+            # Color based on side
+            if side == 'friendly':
+                color = (80, 200, 40)  # Green (BGR)
+            elif side == 'enemy':
+                color = (60, 60, 220)  # Red (BGR)
+            else:
+                color = (200, 200, 200)  # Gray (BGR)
+            
+            # Draw bounding box
+            cv2.rectangle(overlay, (x1, y1), (x2, y2), color, 2)
+            
+            # Draw unit name
+            text = f"{side[0].upper()}:{unit_name[:6]}"
+            cv2.putText(overlay, text, (x1, max(15, y1 - 5)), cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1, cv2.LINE_8)
+        
+        # Blend overlay with original image
+        result = cv2.addWeighted(result, 0.7, overlay, 0.3, 0)
+        return result
+    
+    def _create_heatmap_overlay(self, image: np.ndarray, vision_results: Dict) -> np.ndarray:
+        """Create heatmap overlay using cv2"""
+        result = image.copy()
+        h, w = result.shape[:2]
+        
+        # Create heatmap overlay
+        heatmap_overlay = np.zeros((h, w, 3), dtype=np.uint8)
+        
+        # Simplified heatmap grid (smaller for performance)
+        grid_size = 16  # Much smaller grid
+        tile_w = w // grid_size
+        tile_h = h // grid_size
+        
+        # Build simplified heatmap
         units = vision_results.get('units', [])
         for unit in units:
-            self._draw_unit_detailed(dr, unit)
-        
-        # Draw tower health
-        tower_health = vision_results.get('tower_health', {})
-        self._draw_tower_health(dr, tower_health)
-        
-        # Draw hand cards
-        hand_cards = vision_results.get('hand_cards', [])
-        self._draw_hand_cards(dr, hand_cards)
-        
-        # Draw performance stats
-        self._draw_performance_stats(dr, vision_results, im.size)
-        
-        # Compose final image
-        out = Image.alpha_composite(im, overlay).convert("RGB")
-        return cv2.cvtColor(np.array(out), cv2.COLOR_RGB2BGR)
-    
-    def _draw_unit_detailed(self, dr: ImageDraw.Draw, unit: Dict):
-        """Draw detailed unit information"""
-        x1, y1, x2, y2 = unit.get('xyxy', [0, 0, 0, 0])
-        unit_name = unit.get('cls_label', 'unknown')
-        side = unit.get('side', 'unknown')
-        
-        # Get unit stats
-        unit_stats = self.unit_db.get_unit_stats(unit_name)
-        
-        # Side-based colors
-        if side == 'friendly':
-            color = (40, 200, 80)  # Green
-            side_prefix = "F:"
-        elif side == 'enemy':
-            color = (220, 60, 60)  # Red  
-            side_prefix = "E:"
-        else:
-            color = (200, 200, 200)  # Gray
-            side_prefix = ""
-        
-        # Draw bounding box
-        dr.rounded_rectangle(
-            [x1, y1, x2, y2],
-            radius=4,
-            outline=(*color, 200),
-            width=2,
-            fill=(*color, 40)  # Semi-transparent fill
-        )
-        
-        # Prepare detailed text
-        texts = [
-            f"{side_prefix}{unit_name}",
-            f"HP: {unit_stats['hitpoints']:.0f}",
-            f"DPS: {unit_stats['dps']:.0f}",
-            f"Det: {unit.get('det_score', 0):.2f}",
-        ]
-        
-        # Draw text label
-        label_text = "\n".join(texts)
-        
-        # Calculate text position (above unit)
-        text_y = max(10, y1 - 80)  # Above the unit
-        text_x = x1
-        
-        # Draw text background
-        text_lines = label_text.split('\n')
-        line_height = 15
-        max_width = max(dr.textlength(line, font=self.font) for line in text_lines)
-        
-        bg_x1 = text_x - 2
-        bg_y1 = text_y - 2
-        bg_x2 = text_x + max_width + 4
-        bg_y2 = text_y + len(text_lines) * line_height + 2
-        
-        dr.rounded_rectangle(
-            [bg_x1, bg_y1, bg_x2, bg_y2],
-            radius=3,
-            fill=(0, 0, 0, 160),
-            outline=(*color, 180),
-            width=1
-        )
-        
-        # Draw text lines
-        for i, line in enumerate(text_lines):
-            dr.text(
-                (text_x, text_y + i * line_height),
-                line,
-                font=self.font,
-                fill=(*color, 255),
-                stroke_width=1,
-                stroke_fill=(0, 0, 0, 100)
-            )
-    
-    def _draw_tower_health(self, dr: ImageDraw.Draw, tower_health: Dict):
-        """Draw tower health information"""
-        # Tower display positions (approximate)
-        tower_positions = {
-            "enemy_left_tower": (118, 90),
-            "enemy_right_tower": (301, 90), 
-            "enemy_main_tower": (211, 19),
-            "friendly_left_tower": (118, 392),
-            "friendly_right_tower": (307, 391),
-            "friendly_main_tower": (208, 479),
-        }
-        
-        for tower_name, data in tower_health.items():
-            if tower_name not in tower_positions:
-                continue
-                
-            pos = tower_positions[tower_name]
-            classification = data.get('classification', 'unknown')
-            label = data.get('label', '—')
+            x1, y1, x2, y2 = unit.get('xyxy', [0, 0, 0, 0])
             
-            # Color based on health
-            if classification == "destroyed":
-                color = (220, 70, 70)  # Red
-            elif classification == "full":
-                color = (60, 200, 80)  # Green
+            # Scale coordinates
+            scale = w / 512
+            center_x = int(((x1 + x2) / 2) * scale)
+            center_y = int(((y1 + y2) / 2) * scale)
+            
+            # Convert to grid coordinates
+            grid_x = min(grid_size - 1, max(0, center_x // tile_w))
+            grid_y = min(grid_size - 1, max(0, center_y // tile_h))
+            
+            # Draw heatmap tile
+            tile_x1 = grid_x * tile_w
+            tile_y1 = grid_y * tile_h
+            tile_x2 = tile_x1 + tile_w
+            tile_y2 = tile_y1 + tile_h
+            
+            # Color based on unit type (simplified)
+            unit_name = unit.get('cls_label', '').lower()
+            if 'tower' in unit_name:
+                color = (0, 100, 255)  # Orange for towers
             else:
-                # Try to extract percentage
-                try:
-                    if "%" in label:
-                        pct = float(label.replace("%", ""))
-                        if pct < 25:
-                            color = (220, 70, 70)  # Red
-                        elif pct < 75:
-                            color = (240, 170, 60)  # Yellow
-                        else:
-                            color = (60, 200, 80)  # Green
-                    else:
-                        color = (200, 200, 200)  # Gray
-                except:
-                    color = (200, 200, 200)
-            
-            # Draw tower info
-            text = f"{tower_name.replace('_', ' ').title()}\n{label.upper()}"
-            text_lines = text.split('\n')
-            
-            # Background
-            max_width = max(dr.textlength(line, font=self.font) for line in text_lines)
-            line_height = 15
-            
-            bg_x1 = pos[0] - max_width // 2 - 4
-            bg_y1 = pos[1] - 2
-            bg_x2 = pos[0] + max_width // 2 + 4
-            bg_y2 = pos[1] + len(text_lines) * line_height + 2
-            
-            dr.rounded_rectangle(
-                [bg_x1, bg_y1, bg_x2, bg_y2],
-                radius=4,
-                fill=(0, 0, 0, 140),
-                outline=(*color, 200),
-                width=1
-            )
-            
-            # Text
-            for i, line in enumerate(text_lines):
-                text_width = dr.textlength(line, font=self.font)
-                text_x = pos[0] - text_width // 2
-                text_y = pos[1] + i * line_height
+                color = (255, 100, 0)  # Blue for units
                 
-                dr.text(
-                    (text_x, text_y),
-                    line,
-                    font=self.font,
-                    fill=(*color, 255),
-                    stroke_width=1,
-                    stroke_fill=(0, 0, 0, 120)
-                )
-    
-    def _draw_hand_cards(self, dr: ImageDraw.Draw, hand_cards: List[Dict]):
-        """Draw hand card information"""
-        card_positions = [
-            (142, 563),  # Card 0
-            (210, 563),  # Card 1
-            (277, 563),  # Card 2 
-            (344, 563),  # Card 3
-        ]
+            cv2.rectangle(heatmap_overlay, (tile_x1, tile_y1), (tile_x2, tile_y2), color, -1)
         
-        for card in hand_cards:
-            position = card.get('position', 0)
-            if position < 0 or position >= len(card_positions):
-                continue
-                
-            pos = card_positions[position]
-            label = card.get('label', 'Unknown')
-            confidence = card.get('confidence', 0.0)
-            
-            # Color based on confidence
-            if confidence >= 0.8:
-                color = (60, 200, 80)  # Green
-            elif confidence >= 0.6:
-                color = (240, 170, 60)  # Yellow
-            else:
-                color = (220, 70, 70)  # Red
-            
-            # Draw card info above position
-            text = f"{label}\n{confidence*100:.0f}%"
-            text_lines = text.split('\n')
-            
-            # Background
-            max_width = max(dr.textlength(line, font=self.font) for line in text_lines)
-            line_height = 12
-            
-            text_x = pos[0] - max_width // 2
-            text_y = pos[1] - 50  # Above card
-            
-            bg_x1 = text_x - 3
-            bg_y1 = text_y - 2
-            bg_x2 = text_x + max_width + 3
-            bg_y2 = text_y + len(text_lines) * line_height + 2
-            
-            dr.rounded_rectangle(
-                [bg_x1, bg_y1, bg_x2, bg_y2],
-                radius=3,
-                fill=(0, 0, 0, 150),
-                outline=(*color, 200),
-                width=1
-            )
-            
-            # Text
-            for i, line in enumerate(text_lines):
-                dr.text(
-                    (text_x, text_y + i * line_height),
-                    line,
-                    font=self.font,
-                    fill=(*color, 255),
-                    stroke_width=1,
-                    stroke_fill=(0, 0, 0, 120)
-                )
+        # Blend heatmap with original image
+        result = cv2.addWeighted(result, 0.6, heatmap_overlay, 0.4, 0)
+        
+        # Add legend
+        cv2.rectangle(result, (w-120, 10), (w-10, 60), (0, 0, 0), -1)
+        cv2.putText(result, "Heatmap", (w-115, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
+        cv2.putText(result, "Blue=Units", (w-115, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 100, 0), 1)
+        cv2.putText(result, "Orange=Towers", (w-115, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 100, 255), 1)
+        
+        return result
     
-    def _draw_performance_stats(self, dr: ImageDraw.Draw, vision_results: Dict, image_size: Tuple[int, int]):
-        """Draw performance statistics"""
-        stats_text = [
+    def _create_debug_overlay(self, image: np.ndarray, vision_results: Dict) -> np.ndarray:
+        """Create debug overlay with detailed information using cv2"""
+        result = self._create_units_overlay(image, vision_results)
+        
+        # Add performance stats
+        stats = [
             f"Frame: {self.frame_id}",
             f"Units: {len(vision_results.get('units', []))}",
             f"Towers: {len(vision_results.get('tower_health', {}))}",
             f"Cards: {len(vision_results.get('hand_cards', []))}",
-            f"Inference: {vision_results.get('inference_time_ms', 0):.1f}ms",
+            f"Time: {vision_results.get('inference_time_ms', 0):.1f}ms"
         ]
         
-        # Draw in top-left corner
-        x, y = 10, 10
-        line_height = 14
+        # Draw stats background
+        max_width = max(cv2.getTextSize(s, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)[0][0] for s in stats)
+        cv2.rectangle(result, (10, 10), (20 + max_width, 20 + len(stats) * 15), (0, 0, 0), -1)
+        cv2.rectangle(result, (10, 10), (20 + max_width, 20 + len(stats) * 15), (100, 100, 100), 1)
         
-        # Background
-        max_width = max(dr.textlength(line, font=self.font) for line in stats_text)
-        bg_height = len(stats_text) * line_height + 4
+        # Draw stats text
+        for i, stat in enumerate(stats):
+            cv2.putText(result, stat, (15, 25 + i * 15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (220, 220, 220), 1, cv2.LINE_8)
         
-        dr.rounded_rectangle(
-            [x-4, y-2, x + max_width + 4, y + bg_height],
-            radius=5,
-            fill=(0, 0, 0, 160),
-            outline=(200, 200, 200, 200),
-            width=1
-        )
-        
-        # Text
-        for i, line in enumerate(stats_text):
-            dr.text(
-                (x, y + i * line_height),
-                line,
-                font=self.font,
-                fill=(220, 220, 220, 255),
-                stroke_width=1,
-                stroke_fill=(0, 0, 0, 100)
-            )
+        return result
     
-    def _create_heatmap_viz(self, image_bgr: np.ndarray, vision_results: Dict) -> np.ndarray:
-        """Create health/DPS heatmap visualization (Window 2)"""
-        units = vision_results.get('units', [])
+    def _create_combined_overlay(self, image: np.ndarray, vision_results: Dict) -> np.ndarray:
+        """Create combined overlay with units and simplified heatmap using cv2"""
+        # Start with heatmap
+        result = self._create_heatmap_overlay(image, vision_results)
         
-        # Create heatmap grids
-        health_grid = np.zeros((self.grid_size, self.grid_size), dtype=np.float32)
-        dps_grid = np.zeros((self.grid_size, self.grid_size), dtype=np.float32)
+        # Add unit overlays on top
+        overlay = np.zeros_like(result, dtype=np.uint8)
         
-        # Fill grids with unit data
+        units = vision_results.get('units', [])[:self.max_units_to_draw]
+        
         for unit in units:
             x1, y1, x2, y2 = unit.get('xyxy', [0, 0, 0, 0])
-            
-            # Convert to battlefield coordinates
-            center_x = (x1 + x2) // 2 - self.battlefield_offset[0]
-            center_y = (y1 + y2) // 2 - self.battlefield_offset[1]
-            
-            # Convert to grid coordinates
-            grid_x = int((center_x / self.battlefield_width) * self.grid_size)
-            grid_y = int((center_y / self.battlefield_height) * self.grid_size)
-            
-            # Clamp to grid bounds
-            grid_x = max(0, min(self.grid_size - 1, grid_x))
-            grid_y = max(0, min(self.grid_size - 1, grid_y))
-            
-            # Get unit stats
             unit_name = unit.get('cls_label', 'unknown')
-            unit_stats = self.unit_db.get_unit_stats(unit_name)
+            side = unit.get('side', 'unknown')
             
-            # Add to grids (accumulate values in each tile)
-            if ENABLE_HEALTH_VIZ:
-                health_grid[grid_y, grid_x] += unit_stats['hitpoints']
-            if ENABLE_DPS_VIZ:
-                dps_grid[grid_y, grid_x] += unit_stats['dps']
+            # Scale coordinates
+            scale = image.shape[1] / 512
+            x1, y1, x2, y2 = int(x1*scale), int(y1*scale), int(x2*scale), int(y2*scale)
+            
+            # Color based on side
+            if side == 'friendly':
+                color = (80, 255, 40)  # Bright green
+            elif side == 'enemy':
+                color = (40, 40, 255)  # Bright red
+            else:
+                color = (255, 255, 255)  # White
+            
+            # Draw thin bounding box
+            cv2.rectangle(overlay, (x1, y1), (x2, y2), color, 1)
+            
+            # Draw abbreviated unit name
+            text = unit_name[:3].upper()
+            cv2.putText(overlay, text, (x1, max(12, y1 - 2)), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1, cv2.LINE_8)
         
-        # Normalize grids
-        health_grid = self._normalize_grid(health_grid)
-        dps_grid = self._normalize_grid(dps_grid)
+        # Blend unit overlay
+        result = cv2.addWeighted(result, 0.8, overlay, 0.2, 0)
         
-        # Create overlay image
-        return self._render_heatmap_overlay(image_bgr, health_grid, dps_grid)
+        return result
     
-    def _normalize_grid(self, grid: np.ndarray) -> np.ndarray:
-        """Normalize grid values to 0-1 range"""
-        max_val = np.max(grid)
-        if max_val > 0:
-            return grid / max_val
-        return grid
+    def _add_mode_indicator_cv2(self, image: np.ndarray, mode_config: Dict) -> np.ndarray:
+        """Add mode indicator using cv2"""
+        result = image.copy()
+        h, w = result.shape[:2]
+        
+        # Mode text at bottom
+        mode_text = f"Mode: {mode_config['name']} (Z/X/C/V/B/N/M)"
+        
+        # Get text size
+        (text_w, text_h), baseline = cv2.getTextSize(mode_text, cv2.FONT_HERSHEY_SIMPLEX, 0.4, 1)
+        
+        # Draw background
+        y_pos = h - 25
+        cv2.rectangle(result, (5, y_pos - 5), (15 + text_w, y_pos + text_h + 5), (0, 0, 0), -1)
+        cv2.rectangle(result, (5, y_pos - 5), (15 + text_w, y_pos + text_h + 5), (100, 100, 100), 1)
+        
+        # Draw text
+        cv2.putText(result, mode_text, (10, y_pos + text_h), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (220, 220, 220), 1, cv2.LINE_8)
+        
+        return result
     
-    def _render_heatmap_overlay(self, image_bgr: np.ndarray, health_grid: np.ndarray, dps_grid: np.ndarray) -> np.ndarray:
-        """Render heatmap overlay on the image"""
-        # Create heatmap visualization
-        h, w = image_bgr.shape[:2]
-        overlay = np.zeros((h, w, 4), dtype=np.uint8)  # RGBA
+    def _handle_keyboard_input(self):
+        """Handle keyboard input for view switching"""
+        key = cv2.waitKey(1) & 0xFF
+        key_char = chr(key) if key < 128 else None
         
-        # Calculate tile size
-        battlefield_region = (
-            self.battlefield_offset[0],
-            self.battlefield_offset[1],
-            self.battlefield_offset[0] + self.battlefield_width,
-            self.battlefield_offset[1] + self.battlefield_height
-        )
-        
-        tile_w = self.battlefield_width // self.grid_size
-        tile_h = self.battlefield_height // self.grid_size
-        
-        # Render each tile
-        for gy in range(self.grid_size):
-            for gx in range(self.grid_size):
-                health_val = health_grid[gy, gx] if ENABLE_HEALTH_VIZ else 0
-                dps_val = dps_grid[gy, gx] if ENABLE_DPS_VIZ else 0
-                
-                if health_val > 0 or dps_val > 0:
-                    # Calculate tile position
-                    tile_x1 = battlefield_region[0] + gx * tile_w
-                    tile_y1 = battlefield_region[1] + gy * tile_h
-                    tile_x2 = tile_x1 + tile_w
-                    tile_y2 = tile_y1 + tile_h
-                    
-                    # Ensure within bounds
-                    tile_x1 = max(0, min(w-1, tile_x1))
-                    tile_y1 = max(0, min(h-1, tile_y1))
-                    tile_x2 = max(0, min(w, tile_x2))
-                    tile_y2 = max(0, min(h, tile_y2))
-                    
-                    # Create blended color (health in green channel, dps in red channel)
-                    red = int(dps_val * 255)    # DPS in red
-                    green = int(health_val * 255)  # Health in green
-                    blue = 0
-                    alpha = int(max(health_val, dps_val) * 120)  # Semi-transparent
-                    
-                    # Fill tile
-                    overlay[tile_y1:tile_y2, tile_x1:tile_x2] = [blue, green, red, alpha]
-        
-        # Convert to PIL for blending
-        image_pil = Image.fromarray(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)).convert("RGBA")
-        overlay_pil = Image.fromarray(overlay, "RGBA")
-        
-        # Blend and convert back
-        result = Image.alpha_composite(image_pil, overlay_pil).convert("RGB")
-        result_bgr = cv2.cvtColor(np.array(result), cv2.COLOR_RGB2BGR)
-        
-        # Add legend
-        result_bgr = self._add_heatmap_legend(result_bgr)
-        
-        return result_bgr
+        if key_char and key_char.lower() in self.view_modes:
+            old_mode = self.current_mode
+            self.current_mode = key_char.lower()
+            if old_mode != self.current_mode:
+                print(f"Switched to view mode: {self.view_modes[self.current_mode]['name']}")
     
-    def _add_heatmap_legend(self, image_bgr: np.ndarray) -> np.ndarray:
-        """Add legend to heatmap visualization"""
-        # Convert to PIL for text drawing
-        im = Image.fromarray(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)).convert("RGBA")
-        overlay = Image.new("RGBA", im.size, (0, 0, 0, 0))
-        dr = ImageDraw.Draw(overlay, "RGBA")
-        
-        # Legend position (top-right)
-        legend_x = im.size[0] - 200
-        legend_y = 10
-        
-        # Legend background
-        dr.rounded_rectangle(
-            [legend_x - 10, legend_y - 5, legend_x + 190, legend_y + 60],
-            radius=5,
-            fill=(0, 0, 0, 160),
-            outline=(200, 200, 200, 200),
-            width=1
-        )
-        
-        # Legend text
-        legend_text = [
-            "HEATMAP LEGEND:",
-            "🟢 Green = Health" if ENABLE_HEALTH_VIZ else "",
-            "🔴 Red = DPS" if ENABLE_DPS_VIZ else "", 
-            f"Grid: {self.grid_size}x{self.grid_size}"
-        ]
-        legend_text = [line for line in legend_text if line]  # Remove empty lines
-        
-        for i, line in enumerate(legend_text):
-            dr.text(
-                (legend_x, legend_y + i * 14),
-                line,
-                font=self.font,
-                fill=(220, 220, 220, 255),
-                stroke_width=1,
-                stroke_fill=(0, 0, 0, 100)
-            )
-        
-        # Compose final image
-        out = Image.alpha_composite(im, overlay).convert("RGB")
-        return cv2.cvtColor(np.array(out), cv2.COLOR_RGB2BGR)
     
-    def show_debug_windows(self, raw_viz: np.ndarray, heatmap_viz: np.ndarray):
-        """Display both debug windows"""
+    def show_debug_window(self, combined_viz: np.ndarray):
+        """Display single combined debug window with optimization"""
         if SHOW_DEBUG_WINDOWS:
-            cv2.imshow(self.raw_window, raw_viz)
-            cv2.imshow(self.heatmap_window, heatmap_viz)
+            display_start = time.perf_counter()
+            
+            # Try to use OpenGL for better performance
+            window_start = time.perf_counter()
+            try:
+                cv2.namedWindow(self.main_window, cv2.WINDOW_OPENGL | cv2.WINDOW_AUTOSIZE)
+            except:
+                cv2.namedWindow(self.main_window, cv2.WINDOW_AUTOSIZE)
+            window_time = (time.perf_counter() - window_start) * 1000
+            
+            show_start = time.perf_counter()
+            cv2.imshow(self.main_window, combined_viz)
+            show_time = (time.perf_counter() - show_start) * 1000
+            
+            total_display_time = (time.perf_counter() - display_start) * 1000
+            
+            if TIMING_VISUALIZATION:
+                print(f"  Display Window Timing:")
+                print(f"    Window Setup: {window_time:.1f}ms")
+                print(f"    Image Display: {show_time:.1f}ms")
+                print(f"    Total Display: {total_display_time:.1f}ms")
     
     def cleanup(self):
         """Clean up resources"""
         if SHOW_DEBUG_WINDOWS:
             try:
-                cv2.destroyWindow(self.raw_window)
-                cv2.destroyWindow(self.heatmap_window)
+                cv2.destroyWindow(self.main_window)
             except cv2.error:
-                pass  # Windows may not have been created
+                pass  # Window may not have been created
 
 
 def create_fight_visualizer() -> FightVisualizer:

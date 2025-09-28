@@ -4211,8 +4211,6 @@ card_toplefts = numpy.array(
         [334, 582],
     ],
 )
-
-# Pre-calculate x_coords and y_coords for each card
 card_coords = [
     (
         numpy.arange(topleft[0], topleft[0] + 20),
@@ -4221,26 +4219,13 @@ card_coords = [
     for topleft in card_toplefts
 ]
 
-global play_side  # noqa: PLW0604
-global battle_iar  # noqa: PLW0604
-
-play_side = "left"
 
 
-def check_which_cards_are_available(emulator, check_champion=False, check_side=False):
+
+def check_which_cards_are_available(emulator):
     """Check which cards are ready to play based on purple ready indicators."""
-    global battle_iar, play_side
     battle_iar = emulator.screenshot()
     
-    # Handle champion ability if requested
-    if check_champion and _has_champion_ability_ready():
-        emulator.click(330, 460)
-    
-    # Update play side if requested
-    if check_side:
-        _, play_side = switch_side()
-    
-    # Check each card slot for purple ready indicator
     available_cards = []
     for i, (x_coords, y_coords) in enumerate(card_coords):
         card_pixels = battle_iar[numpy.ix_(y_coords, x_coords)]
@@ -4250,15 +4235,15 @@ def check_which_cards_are_available(emulator, check_champion=False, check_side=F
     
     return available_cards
 
-def _has_champion_ability_ready():
-    """Check if champion ability is ready based on purple pixels."""
-    test_pixels = [battle_iar[462][324], battle_iar[453][334], battle_iar[462][336]]
-    champion_colors = numpy.array([[215, 28, 223], [240, 39, 254], [239, 40, 251]])
+# def _has_champion_ability_ready():
+#     """Check if champion ability is ready based on purple pixels."""
+#     test_pixels = [battle_iar[462][324], battle_iar[453][334], battle_iar[462][336]]
+#     champion_colors = numpy.array([[215, 28, 223], [240, 39, 254], [239, 40, 251]])
     
-    for pixel in test_pixels:
-        if numpy.any(numpy.all(numpy.abs(champion_colors - pixel) <= 30, axis=1)):
-            return True
-    return False
+#     for pixel in test_pixels:
+#         if numpy.any(numpy.all(numpy.abs(champion_colors - pixel) <= 30, axis=1)):
+#             return True
+#     return False
 
 
 

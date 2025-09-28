@@ -21,6 +21,12 @@ from torchvision import transforms
 DEBUG_PRINT = False  # Set to True to enable debug prints
 TIMING_PRINT = False  # Set to True to enable timing prints
 
+# Import timing flags from fight.py if available, otherwise use defaults
+try:
+    from pyclashbot.bot.fight import TIMING_INFERENCE
+except ImportError:
+    TIMING_INFERENCE = False
+
 
 # ---------- utils ----------
 
@@ -234,7 +240,7 @@ class UnitDetector:
         results = self.postprocess(pred, meta)
         postprocess_time = (time.perf_counter() - postprocess_start) * 1000
 
-        if TIMING_PRINT:
+        if TIMING_INFERENCE:
             print(
                 f"    Detection - Preprocess: {preprocess_time:.1f}ms, Inference: {predict_time:.1f}ms, Postprocess: {postprocess_time:.1f}ms"
             )
@@ -336,7 +342,7 @@ class UnitClassifier:
         result = self.predict(blob)
         predict_time = (time.perf_counter() - predict_start) * 1000
 
-        if TIMING_PRINT:
+        if TIMING_INFERENCE:
             print(
                 f"      Unit Classify - Preprocess: {preprocess_time:.1f}ms, Inference: {predict_time:.1f}ms"
             )
@@ -373,21 +379,62 @@ class SideClassifier:
         return np.expand_dims(np.ascontiguousarray(arr), 0)
     
     def predict(self, blob):
-        """Predict side (friendly/enemy)."""
-        logits = self.session.run(None, {self.in_name: blob})[0][0]
-        p = np.exp(logits - logits.max())
-        p = p / p.sum()
+        """Predict side (friendly/enemy) with robust scalar/array handling."""
+        outputs = self.session.run(None, {self.in_name: blob})
+        if not outputs:
+            return "friendly", 0.5
         
-        # Assume binary classification: 0=friendly, 1=enemy
-        side = "friendly" if np.argmax(p) == 0 else "enemy"
-        confidence = float(p[np.argmax(p)])
+        out = outputs[0]
+        out = np.array(out)
         
-        return side, confidence
+        # Remove batch dimension if present
+        if out.ndim >= 2 and out.shape[0] == 1:
+            out = np.squeeze(out, axis=0)
+        
+        # Handle different output shapes
+        if out.ndim == 1:
+            if out.size == 1:
+                # Binary sigmoid - single output value
+                p1 = 1.0 / (1.0 + np.exp(-float(out[0])))
+                probs = np.array([1.0 - p1, p1], dtype=np.float32)
+            else:
+                # Multiple outputs - apply softmax
+                probs = np.exp(out - out.max())
+                probs = probs / probs.sum()
+        elif out.ndim == 0:
+            # Scalar output - binary sigmoid
+            p1 = 1.0 / (1.0 + np.exp(-float(out)))
+            probs = np.array([1.0 - p1, p1], dtype=np.float32)
+        else:
+            # Flatten and handle
+            out = np.ravel(out)
+            if out.size == 1:
+                p1 = 1.0 / (1.0 + np.exp(-float(out[0])))
+                probs = np.array([1.0 - p1, p1], dtype=np.float32)
+            else:
+                probs = np.exp(out - out.max())
+                probs = probs / probs.sum()
+        
+        # Get prediction
+        pred_idx = int(np.argmax(probs))
+        pred_conf = float(probs[pred_idx])
+        side = "friendly" if pred_idx == 0 else "enemy"
+        
+        return side, pred_conf
     
     def classify_side(self, crop_bgr: np.ndarray):
         """Classify unit side."""
+        preprocess_start = time.perf_counter()
         blob = self.preprocess(crop_bgr)
-        return self.predict(blob)
+        preprocess_time = (time.perf_counter() - preprocess_start) * 1000
+
+        predict_start = time.perf_counter()
+        result = self.predict(blob)
+        predict_time = (time.perf_counter() - predict_start) * 1000
+
+        if TIMING_INFERENCE:
+            print(f"      Side Classify - Preprocess: {preprocess_time:.1f}ms, Inference: {predict_time:.1f}ms")
+        return result
 
 
 # ---------- Hand Card Classifier ----------
@@ -396,7 +443,7 @@ class SideClassifier:
 class HandCardClassifier:
     """Classifier for hand cards."""
     
-    def __init__(self, onnx_path: str, labels_path: str, input_size=(224, 224), prefer_cuda=True):
+    def __init__(self, onnx_path: str, labels_path: str, input_size=(64, 64), prefer_cuda=True):
         self.h, self.w = input_size
         self.session = ort.InferenceSession(
             onnx_path, providers=choose_providers(prefer_cuda)
@@ -438,8 +485,17 @@ class HandCardClassifier:
     
     def classify_card(self, crop_bgr: np.ndarray):
         """Classify hand card."""
+        preprocess_start = time.perf_counter()
         blob = self.preprocess(crop_bgr)
-        return self.predict(blob)
+        preprocess_time = (time.perf_counter() - preprocess_start) * 1000
+
+        predict_start = time.perf_counter()
+        result = self.predict(blob)
+        predict_time = (time.perf_counter() - predict_start) * 1000
+
+        if TIMING_INFERENCE:
+            print(f"      Card Classify - Preprocess: {preprocess_time:.1f}ms, Inference: {predict_time:.1f}ms")
+        return result
 
 
 # ---------- Tower Health Classifiers ----------
@@ -448,7 +504,7 @@ class HandCardClassifier:
 class TowerHealthClassifier:
     """Binary classifier for tower health state (destroyed/middle/full)."""
     
-    def __init__(self, onnx_path: str, input_size=(224, 224), prefer_cuda=True):
+    def __init__(self, onnx_path: str, input_size=(64, 64), prefer_cuda=True):
         self.h, self.w = input_size
         self.session = ort.InferenceSession(
             onnx_path, providers=choose_providers(prefer_cuda)
@@ -465,16 +521,20 @@ class TowerHealthClassifier:
         arr = np.asarray(pil).astype(np.float32) / 255.0
         arr = arr.transpose(2, 0, 1)  # HWC -> CHW
         
-        # Normalize
-        mean = np.array(IMAGENET_MEAN, dtype=np.float32)[:, None, None]
-        std = np.array(IMAGENET_STD, dtype=np.float32)[:, None, None]
+        # Normalize with tower health specific values (not ImageNet)
+        mean = np.array([0.5, 0.5, 0.5], dtype=np.float32)[:, None, None]
+        std = np.array([0.5, 0.5, 0.5], dtype=np.float32)[:, None, None]
         arr = (arr - mean) / std
         
         return np.expand_dims(np.ascontiguousarray(arr), 0)
     
     def classify(self, crop_bgr: np.ndarray):
         """Classify tower health state."""
+        preprocess_start = time.perf_counter()
         blob = self.preprocess(crop_bgr)
+        preprocess_time = (time.perf_counter() - preprocess_start) * 1000
+
+        predict_start = time.perf_counter()
         logits = self.session.run(None, {self.in_name: blob})[0][0]
         p = np.exp(logits - logits.max())
         p = p / p.sum()
@@ -482,6 +542,10 @@ class TowerHealthClassifier:
         idx = int(np.argmax(p))
         classification = self.classes[idx] if idx < len(self.classes) else "unknown"
         confidence = float(p[idx])
+        predict_time = (time.perf_counter() - predict_start) * 1000
+
+        if TIMING_INFERENCE:
+            print(f"      Tower Health Classify - Preprocess: {preprocess_time:.1f}ms, Inference: {predict_time:.1f}ms")
         
         return classification, confidence
 
@@ -489,7 +553,7 @@ class TowerHealthClassifier:
 class TowerHealthRegressor:
     """Regression model for exact tower health percentage."""
     
-    def __init__(self, onnx_path: str, input_size=(224, 224), prefer_cuda=True):
+    def __init__(self, onnx_path: str, input_size=(64, 64), prefer_cuda=True):
         self.h, self.w = input_size
         self.session = ort.InferenceSession(
             onnx_path, providers=choose_providers(prefer_cuda)
@@ -497,26 +561,40 @@ class TowerHealthRegressor:
         self.in_name = self.session.get_inputs()[0].name
     
     def preprocess(self, crop_bgr: np.ndarray):
-        """Preprocess tower crop."""
+        """Preprocess tower crop for regression (grayscale)."""
         rgb = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2RGB)
         pil = Image.fromarray(rgb)
         pil = pil.resize((self.w, self.h), Image.BILINEAR)
         
-        arr = np.asarray(pil).astype(np.float32) / 255.0
-        arr = arr.transpose(2, 0, 1)  # HWC -> CHW
+        # Convert to grayscale for regression model
+        gray = pil.convert('L')  # Convert to grayscale
+        arr = np.asarray(gray).astype(np.float32) / 255.0
         
-        # Normalize
-        mean = np.array(IMAGENET_MEAN, dtype=np.float32)[:, None, None]
-        std = np.array(IMAGENET_STD, dtype=np.float32)[:, None, None]
+        # Add channel dimension and batch dimension
+        arr = np.expand_dims(arr, 0)  # Add channel: (H,W) -> (1,H,W)
+        
+        # Normalize with tower health regression values
+        mean = 0.5
+        std = 0.5
         arr = (arr - mean) / std
         
         return np.expand_dims(np.ascontiguousarray(arr), 0)
     
     def predict_health(self, crop_bgr: np.ndarray):
         """Predict exact health percentage."""
+        preprocess_start = time.perf_counter()
         blob = self.preprocess(crop_bgr)
+        preprocess_time = (time.perf_counter() - preprocess_start) * 1000
+
+        predict_start = time.perf_counter()
         health_pct = self.session.run(None, {self.in_name: blob})[0][0][0]
-        return max(0.0, min(100.0, float(health_pct)))  # Clamp to 0-100%
+        result = max(0.0, min(100.0, float(health_pct)))  # Clamp to 0-100%
+        predict_time = (time.perf_counter() - predict_start) * 1000
+
+        if TIMING_INFERENCE:
+            print(f"      Tower Health Regress - Preprocess: {preprocess_time:.1f}ms, Inference: {predict_time:.1f}ms")
+        
+        return result
 
 
 # ---------- Main FightVision Class ----------
@@ -571,9 +649,12 @@ class FightVision:
         start_time = time.perf_counter()
         
         # Detect units
+        unit_detection_start = time.perf_counter()
         unit_detections = self.unit_detector.detect_units(image_bgr)
+        unit_detection_time = (time.perf_counter() - unit_detection_start) * 1000
         
         # Classify each detected unit
+        unit_classification_start = time.perf_counter()
         units = []
         for det in unit_detections:
             x1, y1, x2, y2 = det.xyxy
@@ -598,8 +679,10 @@ class FightVision:
                 "label": cls_result.label,  # Backwards compatibility
             }
             units.append(unit_info)
+        unit_classification_time = (time.perf_counter() - unit_classification_start) * 1000
         
         # Analyze hand cards (use raw image if available)
+        hand_card_start = time.perf_counter()
         hand_cards = []
         card_image = raw_image_bgr if raw_image_bgr is not None else image_bgr
         
@@ -616,8 +699,10 @@ class FightVision:
                         "confidence": confidence,
                         "bbox": (x1, y1, x2, y2)
                     })
+        hand_card_time = (time.perf_counter() - hand_card_start) * 1000
         
         # Analyze tower health
+        tower_health_start = time.perf_counter()
         tower_health = {}
         for tower_name, (x1, y1, x2, y2) in self.tower_positions.items():
             if (y2 <= image_bgr.shape[0] and x2 <= image_bgr.shape[1] and 
@@ -641,8 +726,18 @@ class FightVision:
                         "confidence": cls_confidence,
                         "bbox": (x1, y1, x2, y2)
                     }
+        tower_health_time = (time.perf_counter() - tower_health_start) * 1000
         
         elapsed_ms = (time.perf_counter() - start_time) * 1000
+        
+        # Print detailed timing breakdown if enabled
+        if TIMING_INFERENCE:
+            print(f"  FightVision Timing Breakdown:")
+            print(f"    Unit Detection: {unit_detection_time:.1f}ms ({len(unit_detections)} units)")
+            print(f"    Unit Classification: {unit_classification_time:.1f}ms ({len(units)} processed)")
+            print(f"    Hand Card Analysis: {hand_card_time:.1f}ms ({len(hand_cards)} cards)")
+            print(f"    Tower Health Analysis: {tower_health_time:.1f}ms ({len(tower_health)} towers)")
+            print(f"    Total FightVision Time: {elapsed_ms:.1f}ms")
         
         return {
             "units": units,

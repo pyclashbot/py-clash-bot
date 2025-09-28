@@ -12,6 +12,12 @@ import numpy as np
 
 from .stickiness_config import STICKINESS
 
+# Import timing flags from fight.py if available, otherwise use defaults
+try:
+    from pyclashbot.bot.fight import TIMING_INFERENCE
+except ImportError:
+    TIMING_INFERENCE = False
+
 
 # ---------- Unit Tracking ----------
 
@@ -691,27 +697,41 @@ class TrackingEngine:
         start_time = time.perf_counter()
         
         # Update unit tracking
+        unit_tracking_start = time.perf_counter()
         if self.unit_tracker and "units" in inference_results:
             self.unit_tracker.update(inference_results["units"])
             smoothed_units = self.unit_tracker.get_smoothed_results()
         else:
             smoothed_units = inference_results.get("units", [])
+        unit_tracking_time = (time.perf_counter() - unit_tracking_start) * 1000
         
         # Update hand card tracking
+        hand_card_tracking_start = time.perf_counter()
         if self.hand_card_tracker and "hand_cards" in inference_results:
             self.hand_card_tracker.update(inference_results["hand_cards"])
             smoothed_hand_cards = self.hand_card_tracker.get_smoothed_results()
         else:
             smoothed_hand_cards = inference_results.get("hand_cards", [])
+        hand_card_tracking_time = (time.perf_counter() - hand_card_tracking_start) * 1000
         
         # Update tower health tracking
+        tower_tracking_start = time.perf_counter()
         if self.tower_health_tracker and "tower_health" in inference_results:
             self.tower_health_tracker.update(inference_results["tower_health"])
             smoothed_tower_health = self.tower_health_tracker.get_smoothed_results()
         else:
             smoothed_tower_health = inference_results.get("tower_health", {})
+        tower_tracking_time = (time.perf_counter() - tower_tracking_start) * 1000
         
         tracking_time = (time.perf_counter() - start_time) * 1000
+        
+        # Print detailed timing breakdown if enabled
+        if TIMING_INFERENCE:
+            print(f"  Tracking Engine Timing:")
+            print(f"    Unit Tracking: {unit_tracking_time:.1f}ms ({len(smoothed_units)} units)")
+            print(f"    Hand Card Tracking: {hand_card_tracking_time:.1f}ms ({len(smoothed_hand_cards)} cards)")
+            print(f"    Tower Health Tracking: {tower_tracking_time:.1f}ms ({len(smoothed_tower_health)} towers)")
+            print(f"    Total Tracking Time: {tracking_time:.1f}ms")
         
         return {
             "units": smoothed_units,

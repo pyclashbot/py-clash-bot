@@ -1,0 +1,1004 @@
+{
+  "units": [
+    {
+      "name": "Knight",
+      "elixirCost": 3,
+      "hitpoints": "1,766",
+      "damage": "202",
+      "hit_speed": "1.2",
+      "dps": "168",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Archer",
+      "elixirCost": 3,
+      "hitpoints": "304",
+      "damage": "112",
+      "hit_speed": "0.9",
+      "dps": "124",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Rascal Girl",
+      "elixirCost": 3,
+      "hitpoints": "304",
+      "damage": "112",
+      "hit_speed": "0.9",
+      "dps": "124",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Goblin",
+      "elixirCost": 2,
+      "hitpoints": "202",
+      "damage": "120",
+      "hit_speed": "1.1",
+      "dps": "109",
+      "range": "0.50 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Giant",
+      "elixirCost": 5,
+      "hitpoints": "4,090",
+      "damage": "253",
+      "hit_speed": "1.5",
+      "dps": "168",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Pekka",
+      "elixirCost": 7,
+      "hitpoints": "3,760",
+      "damage": "816",
+      "hit_speed": "1.8",
+      "dps": "453",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Minion",
+      "elixirCost": 3,
+      "hitpoints": "230",
+      "damage": "117",
+      "hit_speed": "1",
+      "dps": "117",
+      "range": "2.5",
+      "type": "troops"
+    },
+    {
+      "name": "Balloon",
+      "elixirCost": 5,
+      "hitpoints": "1,679",
+      "damage": "640",
+      "hit_speed": "2",
+      "dps": "320",
+      "range": "0.10 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Witch",
+      "elixirCost": 5,
+      "hitpoints": "839",
+      "damage": "135",
+      "hit_speed": "1.1",
+      "dps": "122",
+      "range": "5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Barbarian",
+      "elixirCost": 5,
+      "hitpoints": "670",
+      "damage": "192",
+      "hit_speed": "1.3",
+      "dps": "147",
+      "range": "0.70 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Golem",
+      "elixirCost": 8,
+      "hitpoints": "5,120",
+      "damage": "312",
+      "hit_speed": "2.5",
+      "dps": "124",
+      "range": "0.75 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Skeleton",
+      "elixirCost": 1,
+      "hitpoints": "81",
+      "damage": "81",
+      "hit_speed": "1",
+      "dps": "81",
+      "range": "0.50 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Valkyrie",
+      "elixirCost": 4,
+      "hitpoints": "1,907",
+      "damage": "266",
+      "hit_speed": "1.5",
+      "dps": "177",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Bomber",
+      "elixirCost": 2,
+      "hitpoints": "332",
+      "damage": "225",
+      "hit_speed": "1.8",
+      "dps": "125",
+      "range": "4.5",
+      "type": "troops"
+    },
+    {
+      "name": "Musketeer",
+      "elixirCost": 4,
+      "hitpoints": "721",
+      "damage": "217",
+      "hit_speed": "1",
+      "dps": "217",
+      "range": "6",
+      "type": "troops"
+    },
+    {
+      "name": "Baby Dragon",
+      "elixirCost": 4,
+      "hitpoints": "1,152",
+      "damage": "161",
+      "hit_speed": "1.5",
+      "dps": "107",
+      "range": "3.5",
+      "type": "troops"
+    },
+    {
+      "name": "Prince",
+      "elixirCost": 5,
+      "hitpoints": "1,920",
+      "damage": "391",
+      "hit_speed": "1.4",
+      "dps": "279",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Wizard",
+      "elixirCost": 5,
+      "hitpoints": "755",
+      "damage": "281",
+      "hit_speed": "1.4",
+      "dps": "200",
+      "range": "5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Mini Pekka",
+      "elixirCost": 4,
+      "hitpoints": "1,433",
+      "damage": "755",
+      "hit_speed": "1.6",
+      "dps": "471",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Spear Goblin",
+      "elixirCost": 2,
+      "hitpoints": "133",
+      "damage": "81",
+      "hit_speed": "1.7",
+      "dps": "47",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Giant Skeleton",
+      "elixirCost": 6,
+      "hitpoints": "3,617",
+      "damage": "276",
+      "hit_speed": "1.4",
+      "dps": "197",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Hog Rider",
+      "elixirCost": 4,
+      "hitpoints": "1,697",
+      "damage": "317",
+      "hit_speed": "1.6",
+      "dps": "198",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Ice Wizard",
+      "elixirCost": 3,
+      "hitpoints": "688",
+      "damage": "89",
+      "hit_speed": "1.7",
+      "dps": "52",
+      "range": "5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Royal Giant",
+      "elixirCost": 6,
+      "hitpoints": "3,164",
+      "damage": "307",
+      "hit_speed": "1.7",
+      "dps": "180",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Guard",
+      "elixirCost": 3,
+      "hitpoints": "337 (81 + 256)",
+      "damage": "117",
+      "hit_speed": "1",
+      "dps": "117",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Princess",
+      "elixirCost": 3,
+      "hitpoints": "261",
+      "damage": "168",
+      "hit_speed": "3",
+      "dps": "56",
+      "range": "9",
+      "type": "troops"
+    },
+    {
+      "name": "Dark Prince",
+      "elixirCost": 4,
+      "hitpoints": "1440 (1,200+240)",
+      "damage": "248",
+      "hit_speed": "1.3",
+      "dps": "190",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Lava Hound",
+      "elixirCost": 7,
+      "hitpoints": "3,581",
+      "damage": "53",
+      "hit_speed": "1.3",
+      "dps": "40",
+      "range": "3.5",
+      "type": "troops"
+    },
+    {
+      "name": "Ice Spirit",
+      "elixirCost": 1,
+      "hitpoints": "230",
+      "damage": "110",
+      "range": "2.5",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Fire Spirit",
+      "elixirCost": 1,
+      "hitpoints": "230",
+      "damage": "207",
+      "range": "2.5",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Miner",
+      "elixirCost": 3,
+      "hitpoints": "1,210",
+      "damage": "194 (49 to towers)",
+      "hit_speed": "1.3",
+      "dps": "149 (37 to towers)",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Sparky",
+      "elixirCost": 6,
+      "hitpoints": "1,451",
+      "damage": "1,331",
+      "hit_speed": "4",
+      "dps": "332",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Bowler",
+      "elixirCost": 5,
+      "hitpoints": "2,081",
+      "damage": "289",
+      "hit_speed": "2.5",
+      "dps": "115",
+      "range": "4 (Projectile 7.5)",
+      "type": "troops"
+    },
+    {
+      "name": "Lumberjack",
+      "elixirCost": 4,
+      "hitpoints": "1,282",
+      "damage": "256",
+      "hit_speed": "0.8",
+      "dps": "320",
+      "range": "0.70 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Battle Ram",
+      "elixirCost": 4,
+      "hitpoints": "967",
+      "damage": "286",
+      "range": "0.50 (Melee: Short)",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Inferno Dragon",
+      "elixirCost": 4,
+      "hitpoints": "1,295",
+      "damage": "35-422",
+      "hit_speed": "0.4",
+      "dps": "87-1,055",
+      "range": "3.5",
+      "type": "troops"
+    },
+    {
+      "name": "Ice Golem",
+      "elixirCost": 2,
+      "hitpoints": "1,315",
+      "damage": "84",
+      "hit_speed": "2.5",
+      "dps": "33",
+      "range": "0.75 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Mega Minion",
+      "elixirCost": 3,
+      "hitpoints": "837",
+      "damage": "311",
+      "hit_speed": "1.5",
+      "dps": "207",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Blowdart Goblin",
+      "elixirCost": 3,
+      "hitpoints": "261",
+      "damage": "156",
+      "hit_speed": "0.8",
+      "dps": "195",
+      "range": "6.5",
+      "type": "troops"
+    },
+    {
+      "name": "Electro Wizard",
+      "elixirCost": 4,
+      "hitpoints": "714",
+      "damage": "115 (x2)",
+      "hit_speed": "1.8",
+      "dps": "126",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Elite Barbarian",
+      "elixirCost": 6,
+      "hitpoints": "1,341",
+      "damage": "384",
+      "hit_speed": "1.4",
+      "dps": "274",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Hunter",
+      "elixirCost": 4,
+      "hitpoints": "885",
+      "damage": "84 (x10)",
+      "hit_speed": "2.2",
+      "dps": "381",
+      "range": "4 (Projectile 6.5)",
+      "type": "troops"
+    },
+    {
+      "name": "Executioner",
+      "elixirCost": 5,
+      "hitpoints": "1,280",
+      "damage": "168 (x2)",
+      "hit_speed": "2.4",
+      "dps": "140",
+      "range": "4.5 (Projectile 7.5)",
+      "type": "troops"
+    },
+    {
+      "name": "Bandit",
+      "elixirCost": 3,
+      "hitpoints": "906",
+      "damage": "194",
+      "hit_speed": "1",
+      "dps": "194",
+      "range": "0.75 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Royal Recruit",
+      "elixirCost": 7,
+      "hitpoints": "787 (547+240)",
+      "damage": "133",
+      "hit_speed": "1.3",
+      "dps": "102",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Night Witch",
+      "elixirCost": 4,
+      "hitpoints": "906",
+      "damage": "314",
+      "hit_speed": "1.3",
+      "dps": "241",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Bat",
+      "elixirCost": 2,
+      "hitpoints": "81",
+      "damage": "81",
+      "hit_speed": "1.3",
+      "dps": "62",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Royal Ghost",
+      "elixirCost": 3,
+      "hitpoints": "1,210",
+      "damage": "261",
+      "hit_speed": "1.8",
+      "dps": "145",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Ram Rider",
+      "elixirCost": 5,
+      "hitpoints": "1,697",
+      "damage": "250/104",
+      "hit_speed": "1.8/1.1",
+      "dps": "147/94",
+      "range": "0.80 (Melee: Short)/5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Zappie",
+      "elixirCost": 4,
+      "hitpoints": "529",
+      "damage": "117",
+      "hit_speed": "2.1",
+      "dps": "55",
+      "range": "4.5",
+      "type": "troops"
+    },
+    {
+      "name": "Rascal Boy",
+      "elixirCost": 5,
+      "hitpoints": "1,940",
+      "damage": "204",
+      "hit_speed": "1.5",
+      "dps": "136",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Cannon Cart",
+      "elixirCost": 5,
+      "hitpoints": "1,809",
+      "damage": "212",
+      "hit_speed": "0.9",
+      "dps": "236",
+      "range": "5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Mega Knight",
+      "elixirCost": 7,
+      "type": "troops",
+      "hitpoints": "3,993",
+      "damage": "268",
+      "hit_speed": "1.7",
+      "dps": "157",
+      "range": "1.2 (Melee: Medium)"
+    },
+    {
+      "name": "Skeleton Balloon",
+      "elixirCost": 3,
+      "hitpoints": "532",
+      "damage": "145",
+      "range": "0.35 (Melee: Short)",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Flying Machine",
+      "elixirCost": 4,
+      "hitpoints": "614",
+      "damage": "171",
+      "hit_speed": "1.1",
+      "dps": "155",
+      "range": "6",
+      "type": "troops"
+    },
+    {
+      "name": "Wallbreaker",
+      "elixirCost": 2,
+      "hitpoints": "330",
+      "damage": "391",
+      "range": "0.50 (Melee: Short)",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Royal Hog",
+      "elixirCost": 5,
+      "hitpoints": "837",
+      "damage": "74",
+      "hit_speed": "1.2",
+      "dps": "61",
+      "range": "0.70 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Cursed Hog",
+      "elixirCost": 5,
+      "hitpoints": "837",
+      "damage": "74",
+      "hit_speed": "1.2",
+      "dps": "61",
+      "range": "0.70 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Goblin Giant",
+      "elixirCost": 6,
+      "hitpoints": "3,233",
+      "damage": "176/81",
+      "hit_speed": "1.5/1.7",
+      "dps": "117/47",
+      "range": "1.2 (Melee: Medium)/5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Fisherman",
+      "elixirCost": 3,
+      "hitpoints": "870",
+      "damage": "194",
+      "hit_speed": "1.3",
+      "dps": "149",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Magic Archer",
+      "elixirCost": 4,
+      "hitpoints": "529",
+      "damage": "133",
+      "hit_speed": "1.1",
+      "dps": "120",
+      "range": "7 (Projectile 11)",
+      "type": "troops"
+    },
+    {
+      "name": "Electro Dragon",
+      "elixirCost": 5,
+      "hitpoints": "949",
+      "damage": "192 (x3)",
+      "hit_speed": "2.1",
+      "dps": "91 (x3)",
+      "range": "3.5",
+      "type": "troops"
+    },
+    {
+      "name": "Firecracker",
+      "elixirCost": 3,
+      "hitpoints": "304",
+      "damage": "64 (x5)",
+      "hit_speed": "3",
+      "dps": "106",
+      "range": "6 (Projectile 10)",
+      "type": "troops"
+    },
+    {
+      "name": "Mighty Miner",
+      "elixirCost": 4,
+      "hitpoints": "2,250",
+      "damage": "40-409",
+      "hit_speed": "0.4",
+      "dps": "100-1022",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Elixir Golem",
+      "elixirCost": 3,
+      "type": "troops",
+      "hitpoints": "1,569",
+      "damage": "253",
+      "hit_speed": "1.1",
+      "dps": "230",
+      "range": "0.80 (Melee: Short)"
+    },
+    {
+      "name": "Healer",
+      "elixirCost": 4,
+      "hitpoints": "1,717",
+      "damage": "148",
+      "hit_speed": "1.5",
+      "dps": "98",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Skeleton King",
+      "elixirCost": 4,
+      "hitpoints": "2,298",
+      "damage": "204",
+      "hit_speed": "1.6",
+      "dps": "127",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Archer Queen",
+      "elixirCost": 5,
+      "hitpoints": "1,000",
+      "damage": "225",
+      "hit_speed": "1.2",
+      "dps": "187",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Golden Knight",
+      "elixirCost": 4,
+      "hitpoints": "1,799",
+      "damage": "161",
+      "hit_speed": "0.9",
+      "dps": "178",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+      {
+      "name": "Guardienne",
+      "elixirCost": 4,
+      "hitpoints": "1,799",
+      "damage": "161",
+      "hit_speed": "0.9",
+      "dps": "178",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Monk",
+      "elixirCost": 5,
+      "hitpoints": "2,214",
+      "damage": "140/422",
+      "hit_speed": "0.8",
+      "dps": "175",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Skeleton Dragon",
+      "elixirCost": 4,
+      "hitpoints": "560",
+      "damage": "161",
+      "hit_speed": "1.9",
+      "dps": "84",
+      "range": "3.5",
+      "type": "troops"
+    },
+    {
+      "name": "Witch Mother",
+      "elixirCost": 4,
+      "hit_speed": "1.1",
+      "dps": "122",
+      "damage": "135",
+      "range": "5.5",
+      "hitpoints": "839",
+      "type": "troops"
+    },
+    {
+      "name": "Electro Spirit",
+      "elixirCost": 1,
+      "hitpoints": "230",
+      "damage": "99 (x9)",
+      "range": "2.5",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Electro Giant",
+      "elixirCost": 7,
+      "hitpoints": "3,855",
+      "damage": "163",
+      "hit_speed": "2.1",
+      "dps": "77",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Phoenix",
+      "elixirCost": 4,
+      "hitpoints": "1,052",
+      "damage": "217",
+      "hit_speed": "1",
+      "dps": "217",
+      "range": "1.6 (Melee: Long)",
+      "type": "troops"
+    },
+    {
+      "name": "Little Prince",
+      "elixirCost": 3,
+      "hitpoints": "698",
+      "damage": "99",
+      "hit_speed": "1.2/0.8/0.4",
+      "dps": "83/124/248",
+      "range": "5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Goblin Demolisher",
+      "elixirCost": 4,
+      "hitpoints": "1300",
+      "damage": "186",
+      "hit_speed": "1.2",
+      "dps": "155",
+      "range": "5",
+      "type": "troops"
+    },
+    {
+      "name": "Goblin Machine",
+      "elixirCost": 5,
+      "hitpoints": "2,304",
+      "damage": "212/391 (195 to towers)",
+      "hit_speed": "1.2/3.5",
+      "dps": "176/112 (56 to towers)",
+      "range": "1.2 (Melee: Medium)/2.5-5",
+      "type": "troops"
+    },
+    {
+      "name": "Suspicious Bush",
+      "elixirCost": 2,
+      "hitpoints": "81",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops",
+      "damage": "N/A",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Rune Giant",
+      "elixirCost": 4,
+      "hitpoints": "2,662",
+      "damage": "120",
+      "hit_speed": "1.5",
+      "dps": "80",
+      "range": "1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Berserker",
+      "elixirCost": 2,
+      "hitpoints": "896",
+      "damage": "102",
+      "hit_speed": "0.5",
+      "dps": "204",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Boss Bandit",
+      "elixirCost": 6,
+      "hitpoints": "2,624",
+      "damage": "268",
+      "hit_speed": "1.2",
+      "dps": "223",
+      "range": "0.80 (Melee: Short)",
+      "type": "troops"
+    },
+    {
+      "name": "Cannon",
+      "elixirCost": 3,
+      "damage": "212",
+      "hit_speed": "1",
+      "dps": "212",
+      "type": "defensive_buildings",
+      "hitpoints": "824",
+      "range": "5.5"
+    },
+    {
+      "name": "Goblin Hut",
+      "elixirCost": 4,
+      "type": "spawners",
+      "damage": "N/A",
+      "dps": "N/A",
+      "hit_speed": "N/A",
+      "hitpoints": "N/A",
+      "range": "N/A"
+    },
+    {
+      "name": "Mortar",
+      "elixirCost": 4,
+      "damage": "266",
+      "hit_speed": "5",
+      "dps": "53",
+      "type": "defensive_buildings",
+      "hitpoints": "1,369",
+      "range": "3.5-11.5"
+    },
+    {
+      "name": "Inferno Tower",
+      "elixirCost": 5,
+      "damage": "43-847",
+      "hit_speed": "0.4",
+      "dps": "107-2,117",
+      "type": "defensive_buildings",
+      "hitpoints": "1,748",
+      "range": "6"
+    },
+    {
+      "name": "Bomb Tower",
+      "elixirCost": 4,
+      "damage": "222",
+      "hit_speed": "1.8",
+      "dps": "138",
+      "range": "6",
+      "type": "defensive_buildings",
+      "hitpoints": "1,356"
+    },
+    {
+      "name": "Barbarian Hut",
+      "elixirCost": 6,
+      "type": "spawners",
+      "damage": "N/A",
+      "dps": "N/A",
+      "hit_speed": "N/A",
+      "hitpoints": "N/A",
+      "range": "N/A"
+    },
+    {
+      "name": "Tesla",
+      "elixirCost": 4,
+      "damage": "220",
+      "hit_speed": "1.1",
+      "dps": "200",
+      "type": "defensive_buildings",
+      "hitpoints": "1,152",
+      "range": "5.5"
+    },
+    {
+      "name": "Elixir Collector",
+      "elixirCost": 6,
+      "type": "spawners",
+      "hit_speed": "N/A",
+      "dps": "N/A",
+      "damage": "N/A",
+      "range": "N/A",
+      "hitpoints": "1,070"
+    },
+    {
+      "name": "Xbow",
+      "elixirCost": 6,
+      "damage": "43",
+      "hit_speed": "0.3",
+      "dps": "143",
+      "type": "defensive_buildings",
+      "hitpoints": "1,600",
+      "range": "11.5"
+    },
+    {
+      "name": "Tombstone",
+      "elixirCost": 3,
+      "type": "spawners",
+      "damage": "N/A",
+      "dps": "N/A",
+      "hit_speed": "N/A",
+      "hitpoints": "N/A",
+      "range": "N/A"
+    },
+    {
+      "name": "Furnace",
+      "elixirCost": 4,
+      "hitpoints": "896",
+      "damage": "135",
+      "hit_speed": "1.8",
+      "dps": "75",
+      "range": "6",
+      "type": "troops"
+    },
+    {
+      "name": "Goblin Cage",
+      "elixirCost": 4,
+      "type": "spawners",
+      "damage": "N/A",
+      "dps": "N/A",
+      "hit_speed": "N/A",
+      "hitpoints": "N/A",
+      "range": "N/A"
+    },
+    {
+      "name": "Goblin Drill",
+      "elixirCost": 4,
+      "type": "spawners",
+      "damage": "N/A",
+      "dps": "N/A",
+      "hit_speed": "N/A",
+      "hitpoints": "N/A",
+      "range": "N/A"
+    },
+    {
+      "name": "Heal Spirit",
+      "elixirCost": 1,
+      "hitpoints": "230",
+      "damage": "110",
+      "range": "2.5",
+      "type": "troops",
+      "hit_speed": "N/A",
+      "dps": "N/A"
+    },
+    {
+      "name": "Spirit Empress",
+      "elixirCost": 6,
+      "hitpoints": "1,318/1,134",
+      "damage": "307",
+      "hit_speed": "1.4/1.1",
+      "dps": "219/279",
+      "range": "5/1.2 (Melee: Medium)",
+      "type": "troops"
+    },
+    {
+      "name": "Frankenstein Doctor",
+      "elixirCost": 5,
+      "hitpoints": "721",
+      "damage": "92",
+      "hit_speed": "1.8",
+      "dps": "51",
+      "range": "5.5",
+      "type": "troops"
+    },
+    {
+      "name": "Frankenstein Monster",
+      "elixirCost": 5,
+      "hitpoints": "721",
+      "damage": "92",
+      "hit_speed": "1.8",
+      "dps": "51",
+      "range": "5.5",
+      "type": "troops"
+    }
+  ]
+}
