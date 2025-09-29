@@ -151,6 +151,41 @@ def build_combo_section(combos: list[ComboConfig], title: str) -> sg.Frame:
     return sg.Frame(title=title, layout=layout, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
 
 
+def build_adb_settings() -> sg.Frame:
+    """Build the ADB device settings frame."""
+    layout = [
+        [
+            sg.Text("Device Serial:", size=(12, 1), font=("Arial", 9)),
+            sg.Combo(
+                values=[],
+                key="adb_serial",
+                default_value="",
+                tooltip="Select a device from the list or type in an address (e.g., 127.0.0.1:5555).",
+                size=(15, 1),
+                font=("Arial", 9),
+                enable_events=True,
+                readonly=False,
+            ),
+            sg.Push(),
+            sg.Button("Connect", key="-CONNECT_ADB-", font=("Arial", 9, "bold")),
+            sg.Button("Refresh Devices", key="-REFRESH_ADB-", font=("Arial", 9, "bold")),
+            sg.Push(),
+        ],
+        [
+            sg.Push(),
+            sg.Button(
+                "Set Size & Density",
+                key="-SET_SIZE_DENSITY-",
+                font=("Arial", 9, "bold"),
+                tooltip="Sets screen to 419x633 and density to 160",
+            ),
+            sg.Button("Reset Size & Density", key="-RESET_SIZE_DENSITY-", font=("Arial", 9, "bold")),
+            sg.Push(),
+        ],
+    ]
+    return sg.Frame(title="Device Settings", layout=layout, expand_x=True, pad=(5, 3), font=("Arial", 9, "bold"))
+
+
 def build_memu_settings() -> sg.Frame:
     """Build the Memu settings frame."""
     return build_radio_section(MEMU_SETTINGS, "Memu Settings")
@@ -186,8 +221,15 @@ def build_emulator_settings_tabs() -> sg.TabGroup:
         pad=(3, 3),
     )
 
+    adb_tab = sg.Tab(
+        "ADB Device",
+        [[build_adb_settings()]],
+        key="-ADB_TAB-",
+        pad=(3, 3),
+    )
+
     return sg.TabGroup(
-        [[memu_tab, google_play_tab, bluestacks_tab]],
+        [[memu_tab, google_play_tab, bluestacks_tab, adb_tab]],
         key="-EMULATOR_TABS-",
         enable_events=True,
         expand_x=True,

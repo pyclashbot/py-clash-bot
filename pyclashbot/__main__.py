@@ -1,7 +1,9 @@
 """This module contains the main entry point for the py-clash-bot program.
 It provides a GUI interface for users to configure and run the bot.
 """
+
 import os
+import subprocess
 import sys
 import webbrowser
 from os.path import expandvars, join
@@ -10,6 +12,7 @@ import FreeSimpleGUI as sg  # noqa: N813
 from FreeSimpleGUI import Window
 
 from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.emulators.adb import AdbController
 from pyclashbot.interface import disable_keys, user_config_keys
 from pyclashbot.interface.layout import create_window, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
@@ -57,6 +60,7 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         "random_plays_user_toggle": values["random_plays_user_toggle"],
         "disable_win_track_toggle": values["disable_win_track_toggle"],
         "record_fights_toggle": values.get("record_fights_toggle", False),
+        "adb_serial": values.get("adb_serial"),
     }
 
     # Set render mode based on toggle
@@ -78,6 +82,8 @@ def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
         jobs_dictionary["emulator"] = "Google Play"
     elif values.get("bluestacks_emulator_toggle"):
         jobs_dictionary["emulator"] = "BlueStacks 5"
+    elif values.get("adb_toggle"):
+        jobs_dictionary["emulator"] = "ADB Device"
     else:
         jobs_dictionary["emulator"] = "MEmu"
 
@@ -140,6 +146,13 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         no_jobs_popup()
         logger.log("No jobs are selected!")
         return None
+
+    if job_dictionary.get("emulator") == "ADB Device":
+        device_serial = job_dictionary.get("adb_serial")
+        connected_devices = AdbController.list_devices()
+        if not device_serial or device_serial not in connected_devices:
+            logger.change_status("Start cancelled: ADB device not connected.")
+            return None
 
     logger.log("Start Button Event")
     logger.change_status(status="Starting the bot!")
@@ -250,7 +263,7 @@ class BotApplication:
             "memu_emulator_toggle": 0,
             "google_play_emulator_toggle": 1,
             "bluestacks_emulator_toggle": 2,
-            "real_android_toggle": 3,
+            "adb_toggle": 3,
         }
 
         for toggle, tab_index in emulator_tab_map.items():
@@ -304,6 +317,25 @@ class BotApplication:
             self.thread.shutdown(kill=True)
             self.thread.join()
 
+    def _run_adb_command(self, serial: str, command: str):
+        """Helper to run a single ADB command and log the output."""
+        full_command = f"adb -s {serial} {command}"
+        self.logger.change_status(f"Running ADB command: {full_command}")
+        try:
+            result = subprocess.run(
+                full_command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if result.returncode == 0:
+                self.logger.change_status(f"Success: {result.stdout.strip()}")
+            else:
+                self.logger.change_status(f"Error: {result.stderr.strip()}")
+        except Exception as e:
+            self.logger.change_status(f"Failed to execute ADB command: {e}")
+
     def run(self, start_on_run=False) -> None:
         """Run the main GUI event loop."""
         while True:
@@ -337,7 +369,13 @@ class BotApplication:
             elif event == "bluestacks_emulator_toggle":
                 self.window["-EMULATOR_TABS-"].Widget.select(2)
                 self.handle_settings_change(values)
+            elif event == "adb_toggle":
+                self.window["-EMULATOR_TABS-"].Widget.select(3)
+                self.handle_settings_change(values)
             elif event in user_config_keys:
+                connect_button = self.window["-CONNECT_ADB-"]
+                if connect_button.get_text() == "Connected":
+                    connect_button.update(text="Connect", button_color=sg.theme_button_color())
                 self.handle_settings_change(values)
             elif event in ["bug-report", "discord"]:
                 self.handle_external_links(event)
@@ -348,6 +386,56 @@ class BotApplication:
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
                 os.startfile(folder_path)
+
+            # --- Handling for ADB Device Settings ---
+            elif event == "-REFRESH_ADB-":
+                self.logger.change_status("Refreshing ADB devices list...")
+                devices = AdbController.list_devices()
+                self.window["adb_serial"].update(values=devices, set_to_index=0 if devices else -1, size=(15, 1))
+                if devices:
+                    self.logger.change_status(f"Found devices: {devices}")
+                else:
+                    self.logger.change_status("No ADB devices found.")
+
+            elif event == "-SET_SIZE_DENSITY-":
+                serial = values["adb_serial"]
+                if not serial:
+                    self.logger.change_status("Please select a device serial first.")
+                    continue
+
+                # Hardcoded values
+                width, height, density = 419, 633, 160
+
+                self.logger.change_status(f"Setting size to {width}x{height} and density to {density} for {serial}")
+                self._run_adb_command(serial, f"shell wm size {width}x{height}")
+                self._run_adb_command(serial, f"shell wm density {density}")
+
+            elif event == "-RESET_SIZE_DENSITY-":
+                serial = values["adb_serial"]
+                if not serial:
+                    self.logger.change_status("Please select a device serial first.")
+                    continue
+                self._run_adb_command(serial, "shell wm size reset")
+                self._run_adb_command(serial, "shell wm density reset")
+
+            elif event == "-CONNECT_ADB-":
+                device_address = values["adb_serial"]
+                if not device_address:
+                    self.logger.change_status("Device address/serial cannot be empty.")
+                    continue
+
+                self.logger.change_status(f"Attempting to connect to {device_address}...")
+                self.window.refresh()  # Show 'Attempting to connect' message
+
+                if AdbController.connect_device(self.logger, device_address):
+                    self.logger.change_status(f"Successfully connected to {device_address}!")
+                    self.window["-CONNECT_ADB-"].update(text="Connected", button_color=("white", "green"))
+                    # Refresh device list
+                    devices = AdbController.list_devices()
+                    self.window["adb_serial"].update(values=devices, value=device_address, size=(15, 1))
+                else:
+                    self.logger.change_status(f"Failed to connect to {device_address}.")
+                    self.window["-CONNECT_ADB-"].update(text="Connect", button_color=sg.theme_button_color())
 
             # Handle thread completion cleanup
             self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)

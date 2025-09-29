@@ -2,6 +2,7 @@ import time
 import traceback
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
@@ -41,7 +42,7 @@ class WorkerThread(PausableThread):
         if emulator_selection == "Google Play":
             print("Creating google play emulator")
             return self._create_google_play_emulator()
-        elif emulator_selection in ("BlueStacks 5"):
+        elif emulator_selection == "BlueStacks 5":
             print("Creating BlueStacks 5 emulator")
             try:
                 bs_mode = jobs.get("bluestacks_render_mode", "gl")
@@ -54,6 +55,17 @@ class WorkerThread(PausableThread):
         elif emulator_selection == "MEmu":
             render_mode = jobs.get("memu_render_mode", "opengl")
             return self._create_memu_emulator(render_mode)
+        elif emulator_selection == "ADB Device":
+            print("Creating ADB Device controller")
+            try:
+                # Get serial from jobs, or pass None to auto-detect
+                adb_serial = jobs.get("adb_serial", None)
+                return AdbController(logger=self.logger, device_serial=adb_serial)
+            except Exception as e:
+                print(f"Failed to create ADB Device controller: {e}")
+                self.logger.change_status("Failed to connect to ADB device. Check connection and ADB setup!")
+                return None
+
         else:
             print(f"[!] Fatal error: Emulator {emulator_selection} is not supported!")
             return None
@@ -120,6 +132,13 @@ class WorkerThread(PausableThread):
         try:
             self._run_bot_loop(emulator, jobs)
         except ThreadKilled:
-            return
+            # Thread was killed, so we don't need to log an error.
+            # The finally block will still run for cleanup.
+            pass
         except Exception as err:
             self.logger.error(str(err))
+            traceback.print_exc()
+        finally:
+            self.logger.change_status("Stopping controller...")
+            emulator.stop()
+            self.logger.change_status("Stopped")
