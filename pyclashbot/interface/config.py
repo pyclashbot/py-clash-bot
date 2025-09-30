@@ -125,6 +125,7 @@ EMULATOR_CHOICE = [
     RadioConfig("memu_emulator_toggle", "Memu", "emulator_type_radio", default=True),
     RadioConfig("google_play_emulator_toggle", "Google Play", "emulator_type_radio"),
     RadioConfig("bluestacks_emulator_toggle", "BlueStacks 5", "emulator_type_radio"),
+    RadioConfig("adb_toggle", "ADB Device", "emulator_type_radio"),
 ]
 
 # Google Play Settings Configuration
@@ -149,6 +150,7 @@ USER_CONFIG_KEYS = (
         "max_deck_selection",
         "cycle_decks_user_toggle",
     ]
+    + ["adb_serial"]
 )
 
 # Keys to disable when bot is running

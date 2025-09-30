@@ -646,7 +646,7 @@ def select_mode(emulator, mode: str):
     time.sleep(2)
 
     def scroll_down_in_fight_mode_panel(emulator):
-        start_y = 400
+        start_y = 450
         end_y = 350
         x = 400
         emulator.swipe(x, start_y, x, end_y)
