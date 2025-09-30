@@ -418,6 +418,9 @@ class BotApplication:
                 self._run_adb_command(serial, "shell wm size reset")
                 self._run_adb_command(serial, "shell wm density reset")
 
+            elif event == "-RESTART_ADB-":
+                AdbController.restart_adb(self.logger)
+
             elif event == "-CONNECT_ADB-":
                 device_address = values["adb_serial"]
                 if not device_address:

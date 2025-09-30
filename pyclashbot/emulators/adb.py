@@ -230,6 +230,46 @@ class AdbController(BaseEmulatorController):
             check=False,
         )
 
+    @staticmethod
+    def restart_adb(logger):
+        """Restarts the ADB server."""
+        logger.change_status("Restarting ADB server...")
+        try:
+            # Kill the server
+            kill_result = subprocess.run(
+                "adb kill-server",
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if kill_result.returncode == 0:
+                logger.log("ADB server killed successfully.")
+            else:
+                logger.log(f"Failed to kill ADB server: {kill_result.stderr.strip()}")
+
+            time.sleep(1)
+
+            # Start the server
+            start_result = subprocess.run(
+                "adb start-server",
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if start_result.returncode == 0:
+                logger.change_status("ADB server started successfully.")
+                return True
+            logger.change_status(f"Failed to start ADB server: {start_result.stderr.strip()}")
+            return False
+        except FileNotFoundError:
+            logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")
+            return False
+        except subprocess.CalledProcessError as e:
+            logger.change_status(f"Error restarting ADB server: {e.stderr.strip()}")
+            return False
+
     def set_screen_size(self, width: int, height: int):
         """Sets the screen size of the device."""
         self.logger.log(f"Setting screen size to {width}x{height}")

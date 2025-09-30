@@ -173,6 +173,7 @@ def build_adb_settings() -> sg.Frame:
         ],
         [
             sg.Push(),
+            sg.Button("Restart ADB", key="-RESTART_ADB-", font=("Arial", 9, "bold")),
             sg.Button(
                 "Set Size & Density",
                 key="-SET_SIZE_DENSITY-",
