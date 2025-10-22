@@ -143,7 +143,7 @@ USER_CONFIG_KEYS = (
     [job.key for job in JOBS]
     + [radio.key for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key for combo in GOOGLE_PLAY_SETTINGS]
-    + ["record_fights_toggle"]  # Data settings
+    + ["theme_name", "record_fights_toggle"]  # Data settings
     + [
         "deck_number_selection",
         "max_deck_selection",
