@@ -7,6 +7,7 @@ from os.path import expandvars, join
 from typing import Any, Callable, Optional
 
 from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
@@ -18,39 +19,49 @@ initalize_pylogging()
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     """Create a dictionary of job toggles and increments based on UI values."""
+    def as_bool(field: UIField) -> bool:
+        return bool(values.get(field.value, False))
+
+    def as_int(field: UIField, default: int) -> int:
+        try:
+            return int(values.get(field.value, default))
+        except (TypeError, ValueError):
+            return default
+
     job_dictionary: dict[str, Any] = {
-        "card_mastery_user_toggle": bool(values.get("card_mastery_user_toggle", False)),
-        "classic_1v1_user_toggle": bool(values.get("classic_1v1_user_toggle", False)),
-        "classic_2v2_user_toggle": bool(values.get("classic_2v2_user_toggle", False)),
-        "trophy_road_user_toggle": bool(values.get("trophy_road_user_toggle", False)),
-        "upgrade_user_toggle": bool(values.get("card_upgrade_user_toggle", False)),
-        "random_decks_user_toggle": bool(values.get("random_decks_user_toggle", False)),
-        "deck_number_selection": values.get("deck_number_selection", 2),
-        "cycle_decks_user_toggle": bool(values.get("cycle_decks_user_toggle", False)),
-        "max_deck_selection": values.get("max_deck_selection", 2),
-        "random_plays_user_toggle": bool(values.get("random_plays_user_toggle", False)),
-        "disable_win_track_toggle": bool(values.get("disable_win_track_toggle", False)),
-        "record_fights_toggle": bool(values.get("record_fights_toggle", False)),
+        UIField.CARD_MASTERY_USER_TOGGLE.value: as_bool(UIField.CARD_MASTERY_USER_TOGGLE),
+        UIField.CLASSIC_1V1_USER_TOGGLE.value: as_bool(UIField.CLASSIC_1V1_USER_TOGGLE),
+        UIField.CLASSIC_2V2_USER_TOGGLE.value: as_bool(UIField.CLASSIC_2V2_USER_TOGGLE),
+        UIField.TROPHY_ROAD_USER_TOGGLE.value: as_bool(UIField.TROPHY_ROAD_USER_TOGGLE),
+        UIField.RANDOM_DECKS_USER_TOGGLE.value: as_bool(UIField.RANDOM_DECKS_USER_TOGGLE),
+        UIField.DECK_NUMBER_SELECTION.value: as_int(UIField.DECK_NUMBER_SELECTION, 2),
+        UIField.CYCLE_DECKS_USER_TOGGLE.value: as_bool(UIField.CYCLE_DECKS_USER_TOGGLE),
+        UIField.MAX_DECK_SELECTION.value: as_int(UIField.MAX_DECK_SELECTION, 2),
+        UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
+        UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
+        UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
     }
 
+    job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
+
     # MEmu render mode
-    if values.get("directx_toggle"):
+    if values.get(UIField.DIRECTX_TOGGLE.value):
         job_dictionary["memu_render_mode"] = "directx"
     else:
         job_dictionary["memu_render_mode"] = "opengl"
 
     # BlueStacks render mode selection
-    if values.get("bs_renderer_dx"):
+    if values.get(UIField.BS_RENDERER_DX.value):
         job_dictionary["bluestacks_render_mode"] = "dx"
-    elif values.get("bs_renderer_vk"):
+    elif values.get(UIField.BS_RENDERER_VK.value):
         job_dictionary["bluestacks_render_mode"] = "vlcn"
     else:
         job_dictionary["bluestacks_render_mode"] = "gl"
 
     # Emulator selection
-    if values.get("google_play_emulator_toggle"):
+    if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
         job_dictionary["emulator"] = "Google Play"
-    elif values.get("bluestacks_emulator_toggle"):
+    elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
         job_dictionary["emulator"] = "BlueStacks 5"
     else:
         job_dictionary["emulator"] = "MEmu"
@@ -60,14 +71,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
 
 def has_no_jobs_selected(job_dict: dict[str, Any]) -> bool:
     """Check if no jobs are selected in the job dictionary."""
-    job_keys = [
-        "card_mastery_user_toggle",
-        "classic_1v1_user_toggle",
-        "classic_2v2_user_toggle",
-        "trophy_road_user_toggle",
-        "upgrade_user_toggle",
-    ]
-    return not any(job_dict.get(key, False) for key in job_keys)
+    return not any(job_dict.get(field.value, False) for field in PRIMARY_JOB_TOGGLES)
 
 
 def save_current_settings(values: dict[str, Any]) -> None:
@@ -212,16 +216,18 @@ class BotApplication:
 
     def _on_config_change(self, values: dict[str, Any]) -> None:
         changed = {key for key, value in values.items() if self.current_values.get(key) != value}
-        if values.get("random_decks_user_toggle") and values.get("cycle_decks_user_toggle"):
-            if "random_decks_user_toggle" in changed:
-                self.ui.set_all_values({"cycle_decks_user_toggle": False})
-                values["cycle_decks_user_toggle"] = False
-            elif "cycle_decks_user_toggle" in changed:
-                self.ui.set_all_values({"random_decks_user_toggle": False})
-                values["random_decks_user_toggle"] = False
+        random_toggle = UIField.RANDOM_DECKS_USER_TOGGLE.value
+        cycle_toggle = UIField.CYCLE_DECKS_USER_TOGGLE.value
+        if values.get(random_toggle) and values.get(cycle_toggle):
+            if random_toggle in changed:
+                self.ui.set_all_values({cycle_toggle: False})
+                values[cycle_toggle] = False
+            elif cycle_toggle in changed:
+                self.ui.set_all_values({random_toggle: False})
+                values[random_toggle] = False
             else:
-                self.ui.set_all_values({"cycle_decks_user_toggle": False})
-                values["cycle_decks_user_toggle"] = False
+                self.ui.set_all_values({cycle_toggle: False})
+                values[cycle_toggle] = False
         self.current_values = values.copy()
         if not self._suppress_persist:
             save_current_settings(values)

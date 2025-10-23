@@ -14,6 +14,7 @@ from pyclashbot.bot.fight import (
 )
 from pyclashbot.bot.nav import check_if_battle_mode_is_selected, select_mode
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
+from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.caching import (
     get_deck_number_for_battle_mode,
     set_deck_number_for_battle_mode,
@@ -56,11 +57,11 @@ def get_next_fight_mode(job_list):
 
     # Get all enabled fight modes
     enabled_modes = []
-    if job_list.get("classic_1v1_user_toggle", False):
+    if job_list.get(UIField.CLASSIC_1V1_USER_TOGGLE, False):
         enabled_modes.append("Classic 1v1")
-    if job_list.get("classic_2v2_user_toggle", False):
+    if job_list.get(UIField.CLASSIC_2V2_USER_TOGGLE, False):
         enabled_modes.append("Classic 2v2")
-    if job_list.get("trophy_road_user_toggle", False):
+    if job_list.get(UIField.TROPHY_ROAD_USER_TOGGLE, False):
         enabled_modes.append("Trophy Road")
 
     if not enabled_modes:
@@ -259,29 +260,29 @@ def state_tree(
 
     if state == "randomize_deck":
         # if randomize deck isn't toggled, return next state
-        if not job_list["random_decks_user_toggle"]:
+        if not job_list[UIField.RANDOM_DECKS_USER_TOGGLE]:
             logger.log("deck randomization isn't toggled. skipping this state")
             return state_order.next_state(state)
 
         # make sure there's a relevant job toggled, else just skip deck randomization
         if (
-            not job_list.get("classic_1v1_user_toggle", False)
-            and not job_list.get("classic_2v2_user_toggle", False)
-            and not job_list.get("trophy_road_user_toggle", False)
+            not job_list.get(UIField.CLASSIC_1V1_USER_TOGGLE, False)
+            and not job_list.get(UIField.CLASSIC_2V2_USER_TOGGLE, False)
+            and not job_list.get(UIField.TROPHY_ROAD_USER_TOGGLE, False)
             and not job_list["upgrade_user_toggle"]
         ):
             print("No fight jobs, or card jobs are even toggled, so skipping random deck state.")
             return state_order.next_state(state)
 
         # Get the selected deck number from job_list, default to 2 if not found
-        deck_number = job_list.get("deck_number_selection", 2)
+        deck_number = job_list.get(UIField.DECK_NUMBER_SELECTION.value, 2)
         if randomize_deck_state(emulator, logger, deck_number) is False:
             return handle_state_failure(logger, "randomize_deck", "randomize_deck_state")
 
         return state_order.next_state(state)
 
     if state == "cycle_deck":
-        if not job_list["cycle_decks_user_toggle"]:
+        if not job_list[UIField.CYCLE_DECKS_USER_TOGGLE]:
             logger.log("deck cycling isn't toggled. skipping this state")
             return state_order.next_state(state)
 
@@ -291,7 +292,7 @@ def state_tree(
 
         deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1)
 
-        deck_count = job_list.get("max_deck_selection", 10)
+        deck_count = job_list.get(UIField.MAX_DECK_SELECTION.value, 10)
 
         success, selected_deck_number = select_deck_state(emulator, logger, deck_cycle_index, deck_count)
 
@@ -323,7 +324,7 @@ def state_tree(
 
     if state == "card_mastery":
         # if job not selected, return next state
-        if not job_list["card_mastery_user_toggle"]:
+        if not job_list[UIField.CARD_MASTERY_USER_TOGGLE]:
             logger.log("Card mastery job isn't toggled. Skipping this state")
             return state_order.next_state(state)
 
@@ -341,11 +342,11 @@ def state_tree(
     if state == "select_battle_mode":
         # Get all enabled fight modes
         enabled_modes = []
-        if job_list.get("classic_1v1_user_toggle", False):
+        if job_list.get(UIField.CLASSIC_1V1_USER_TOGGLE, False):
             enabled_modes.append("Classic 1v1")
-        if job_list.get("classic_2v2_user_toggle", False):
+        if job_list.get(UIField.CLASSIC_2V2_USER_TOGGLE, False):
             enabled_modes.append("Classic 2v2")
-        if job_list.get("trophy_road_user_toggle", False):
+        if job_list.get(UIField.TROPHY_ROAD_USER_TOGGLE, False):
             enabled_modes.append("Trophy Road")
 
         if not enabled_modes:
@@ -395,9 +396,9 @@ def state_tree(
             print(f"Current mode '{mode_used_in_1v1}' is not a 1v1 type. Skipping this state")
             return state_order.next_state(state)
 
-        random_plays_flag = job_list.get("random_plays_user_toggle", False)
+        random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
-        recording_flag = job_list.get("record_fights_toggle", False)
+        recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
             do_fight_state(
                 emulator,
@@ -421,9 +422,9 @@ def state_tree(
             print(f"Current mode '{mode_used_in_1v1}' is not a 2v2 type. Skipping this state")
             return state_order.next_state(state)
 
-        random_plays_flag = job_list.get("random_plays_user_toggle", False)
+        random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
-        recording_flag = job_list.get("record_fights_toggle", False)
+        recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
             do_2v2_fight_state(
                 emulator,
@@ -438,13 +439,13 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "end_fight":
-        recording_flag = job_list.get("record_fights_toggle", False)
+        recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
             end_fight_state(
                 emulator,
                 logger,
                 recording_flag,
-                job_list["disable_win_track_toggle"],
+                job_list[UIField.DISABLE_WIN_TRACK_TOGGLE],
             )
             is False
         ):
@@ -458,3 +459,4 @@ def state_tree(
 
 if __name__ == "__main__":
     pass
+

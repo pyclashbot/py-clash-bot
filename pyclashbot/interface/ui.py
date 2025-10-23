@@ -1,5 +1,3 @@
-# ttkbootstrap-based user interface for py-clash-bot. -nosh
-
 from __future__ import annotations
 
 import tkinter as tk
@@ -16,126 +14,26 @@ from pyclashbot.interface.config import (
     MEMU_SETTINGS,
     ComboConfig,
 )
+from pyclashbot.interface.enums import (
+    BATTLE_STAT_FIELDS,
+    BATTLE_STAT_LABELS,
+    BotStatField,
+    BOT_STAT_FIELDS,
+    BOT_STAT_LABELS,
+    COLLECTION_STAT_FIELDS,
+    COLLECTION_STAT_LABELS,
+    DerivedStatField,
+    PRIMARY_JOB_TOGGLES,
+    StatField,
+    UIField,
+)
+from pyclashbot.interface.widgets import DualRingGauge
 
 
 def no_jobs_popup() -> None:
-    messagebox.showerror("Critical Error!", "You must select at least one job!") # Display an error message when no jobs are selected.
+    messagebox.showerror("Critical Error!", "You must select at least one job!")
 
-
-class DualRingGauge(tk.Canvas):
-
-    def __init__(
-        self,
-        master,
-        diameter: int = 120,
-        thickness: int = 12,
-        start_angle: float = -90,
-        fg: str = "#2ecc71",
-        bg: str = "#e74c3c",
-        text_color: str = "#ffffff",
-        **kwargs,
-    ):
-        size = diameter + thickness + 4
-        super().__init__(master, width=size, height=size, highlightthickness=0, **kwargs)
-        self.diameter = diameter
-        self.thickness = thickness
-        self.start_angle = start_angle
-        self.foreground_colour = fg
-        self.background_colour = bg
-        self.text_colour = text_color
-        self._value = 0.0
-        self._arc_fg = None
-        self._arc_bg = None
-        self._text = None
-        self._draw_static()
-        self._draw_dynamic(0, "0%")
-
-    def _bbox(self) -> tuple[int, int, int, int]:
-        padding = self.thickness // 2 + 4
-        return (padding, padding, padding + self.diameter, padding + self.diameter)
-
-    def _draw_static(self) -> None:
-        bbox = self._bbox()
-        if self._arc_bg:
-            self.delete(self._arc_bg)
-        self._arc_bg = self.create_arc(
-            *bbox,
-            start=0,
-            extent=359.9,
-            style="arc",
-            width=self.thickness,
-            outline=self.background_colour,
-        )
-        centre = self.winfo_reqwidth() // 2
-        if self._text:
-            self.delete(self._text)
-        self._text = self.create_text(
-            centre,
-            centre,
-            text="0%",
-            fill=self.text_colour,
-            font=("-size", 16, "-weight", "bold"),
-        )
-
-    def _draw_dynamic(
-        self,
-        percent: float,
-        label: str,
-        fg_colour: Optional[str] = None,
-        text_colour: Optional[str] = None,
-    ) -> None:
-        percent = max(0, min(100, float(percent)))
-        bbox = self._bbox()
-        extent = percent / 100 * 360
-        outline = fg_colour or self.foreground_colour
-        if self._arc_fg:
-            self.delete(self._arc_fg)
-        self._arc_fg = self.create_arc(
-            *bbox,
-            start=self.start_angle,
-            extent=extent,
-            style="arc",
-            width=self.thickness,
-            outline=outline,
-        )
-        self.itemconfig(self._text, text=label, fill=text_colour or self.text_colour)
-        self._value = percent
-
-    def animate_to(
-        self,
-        target_percent: float,
-        label_format: str = "{:.0f}%",
-        fg_colour: Optional[str] = None,
-        text_colour: Optional[str] = None,
-        duration_ms: int = 400,
-    ) -> None:
-        start = self._value
-        target = max(0, min(100, float(target_percent)))
-        steps = max(1, duration_ms // 10)
-        delta = (target - start) / steps
-        frame = 0
-
-        def step() -> None:
-            nonlocal frame, start
-            start += delta
-            frame += 1
-            final_frame = frame >= steps
-            current = target if final_frame else start
-            self._draw_dynamic(current, label_format.format(current), fg_colour, text_colour)
-            if not final_frame:
-                self.after(10, step)
-
-        step()
-
-    def set_colours(self, fg: str, bg: str, text: str) -> None:
-        """Update the colours used by the gauge."""
-        self.foreground_colour = fg
-        self.background_colour = bg
-        self.text_colour = text
-        self._draw_static()
-        self._draw_dynamic(self._value, f"{self._value:.0f}%", fg, text)
-
-class PyClashBotUI(ttk.Window): # main window
+class PyClashBotUI(ttk.Window):
 
     DEFAULT_THEME = "darkly"
 
@@ -175,75 +73,77 @@ class PyClashBotUI(ttk.Window): # main window
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         """Register the callback for opening the logs folder."""
         self._open_logs_callback = callback
-    def get_all_values(self) -> dict[str, object]: # Return current UI values using legacy configuration keys.
+    def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
-        for key, var in self.jobs_vars.items():
-            values[key] = bool(var.get())
+        for field, var in self.jobs_vars.items():
+            values[field.value] = bool(var.get())
 
-        values["deck_number_selection"] = self._safe_int(self.deck_var.get(), fallback=2)
-        values["cycle_decks_user_toggle"] = bool(self.jobs_vars["cycle_decks_user_toggle"].get())
-        values["max_deck_selection"] = self._safe_int(self.max_deck_var.get(), fallback=2)
-        values["record_fights_toggle"] = bool(self.record_var.get())
+        values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
+        values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(
+            self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get()
+        )
+        values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
+        values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
 
         emulator_choice = self.emulator_var.get()
-        values["memu_emulator_toggle"] = emulator_choice == "MEmu"
-        values["google_play_emulator_toggle"] = emulator_choice == "Google Play"
-        values["bluestacks_emulator_toggle"] = emulator_choice == "BlueStacks 5"
+        values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == "MEmu"
+        values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == "Google Play"
+        values[UIField.BLUESTACKS_EMULATOR_TOGGLE.value] = emulator_choice == "BlueStacks 5"
 
         memu_render = self.memu_render_var.get()
-        values["directx_toggle"] = memu_render == "DirectX"
-        values["opengl_toggle"] = memu_render == "OpenGL"
+        values[UIField.DIRECTX_TOGGLE.value] = memu_render == "DirectX"
+        values[UIField.OPENGL_TOGGLE.value] = memu_render == "OpenGL"
 
         bs_render = self.bs_render_var.get()
-        values["bs_renderer_dx"] = bs_render == "DirectX"
-        values["bs_renderer_gl"] = bs_render == "OpenGL"
-        values["bs_renderer_vk"] = bs_render == "Vulkan"
+        values[UIField.BS_RENDERER_DX.value] = bs_render == "DirectX"
+        values[UIField.BS_RENDERER_GL.value] = bs_render == "OpenGL"
+        values[UIField.BS_RENDERER_VK.value] = bs_render == "Vulkan"
 
-        for key, var in self.gp_vars.items():
-            values[key] = var.get()
-        values["theme_name"] = self.theme_var.get() or self.DEFAULT_THEME
+        for field, var in self.gp_vars.items():
+            values[field.value] = var.get()
+        values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         return values
 
-    def set_all_values(self, values: dict[str, object]) -> None: # Apply a collection of previously saved configuration values.
+    def set_all_values(self, values: dict[str, object]) -> None:
         theme_value: Optional[str] = None
         self._suspend_traces += 1
         try:
-            for key, var in self.jobs_vars.items():
-                if key in values:
-                    var.set(bool(values[key]))
+            for field, var in self.jobs_vars.items():
+                if field.value in values:
+                    var.set(bool(values[field.value]))
 
-            if "deck_number_selection" in values:
-                self.deck_var.set(str(values["deck_number_selection"]))
-            if "max_deck_selection" in values:
-                self.max_deck_var.set(str(values["max_deck_selection"]))
-            if "record_fights_toggle" in values:
-                self.record_var.set(bool(values["record_fights_toggle"]))
+            if UIField.DECK_NUMBER_SELECTION.value in values:
+                self.deck_var.set(str(values[UIField.DECK_NUMBER_SELECTION.value]))
+            if UIField.MAX_DECK_SELECTION.value in values:
+                self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
+            if UIField.RECORD_FIGHTS_TOGGLE.value in values:
+                self.record_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
 
-            if "theme_name" in values:
-                theme_value = str(values["theme_name"])
+            if UIField.THEME_NAME.value in values:
+                theme_value = str(values[UIField.THEME_NAME.value])
 
-            if values.get("google_play_emulator_toggle"):
+            if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
                 self.emulator_var.set("Google Play")
-            elif values.get("bluestacks_emulator_toggle"):
+            elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
                 self.emulator_var.set("BlueStacks 5")
             else:
                 self.emulator_var.set("MEmu")
 
-            if values.get("directx_toggle"):
+            if values.get(UIField.DIRECTX_TOGGLE.value):
                 self.memu_render_var.set("DirectX")
-            elif values.get("opengl_toggle"):
+            elif values.get(UIField.OPENGL_TOGGLE.value):
                 self.memu_render_var.set("OpenGL")
 
-            if values.get("bs_renderer_vk"):
+            if values.get(UIField.BS_RENDERER_VK.value):
                 self.bs_render_var.set("Vulkan")
-            elif values.get("bs_renderer_dx"):
+            elif values.get(UIField.BS_RENDERER_DX.value):
                 self.bs_render_var.set("DirectX")
-            elif values.get("bs_renderer_gl"):
+            elif values.get(UIField.BS_RENDERER_GL.value):
                 self.bs_render_var.set("OpenGL")
 
-            for key, var in self.gp_vars.items():
-                if key in values and values[key]:
-                    var.set(str(values[key]))
+            for field, var in self.gp_vars.items():
+                if field.value in values and values[field.value]:
+                    var.set(str(values[field.value]))
 
             self._update_google_play_comboboxes()
             self._show_emulator_settings()
@@ -290,44 +190,32 @@ class PyClashBotUI(ttk.Window): # main window
         if not stats:
             return
 
-        def as_string(key: str, default: str = "0") -> str:
-            value = stats.get(key, default)
+        def as_string(field: StatField, default: str = "0") -> str:
+            value = stats.get(field.value, default)
             return str(value)
 
-        def as_int(key: str) -> int:
-            value = stats.get(key)
+        def as_int(field: StatField) -> int:
+            value = stats.get(field.value)
             try:
                 return int(value)
             except (TypeError, ValueError):
                 return 0
 
-        for key in (
-            "wins",
-            "losses",
-            "cards_played",
-            "classic_1v1_fights",
-            "classic_2v2_fights",
-            "trophy_road_1v1_fights",
-            "card_randomizations",
-            "card_cycles",
-            "card_mastery_reward_collections",
-            "upgrades",
-            "war_chest_collects",
-        ):
-            if key in self.stat_labels:
-                self.stat_labels[key].set(as_string(key))
+        for field, var in self.stat_labels.items():
+            var.set(as_string(field))
 
-        runtime = stats.get("time_since_start")
+        runtime = stats.get(BotStatField.TIME_SINCE_START.value)
         if runtime is not None:
-            self.bot_labels["time_since_start"].set(str(runtime))
-        failures = stats.get("restarts_after_failure")
+            self.bot_labels[BotStatField.TIME_SINCE_START].set(str(runtime))
+        failures = stats.get(BotStatField.RESTARTS_AFTER_FAILURE.value)
         if failures is not None:
-            self.bot_labels["restarts_after_failure"].set(str(failures))
+            self.bot_labels[BotStatField.RESTARTS_AFTER_FAILURE].set(str(failures))
 
-        winrate_raw = stats.get("winrate")
-        wins = as_int("wins")
-        losses = as_int("losses")
-        winrate = self._extract_winrate(winrate_raw, wins, losses)
+        winrate_raw = stats.get(DerivedStatField.WINRATE.value)
+        wins = as_int(StatField.WINS)
+        losses = as_int(StatField.LOSSES)
+        parsed_winrate = self._parse_winrate_value(winrate_raw)
+        winrate = parsed_winrate if parsed_winrate is not None else self._calculate_winrate_percentage(wins, losses)
         gauge_fg = getattr(self._style.colors, "success", "#2ecc71") if hasattr(self._style, "colors") else "#2ecc71"
         self.win_gauge.animate_to(winrate, fg_colour=gauge_fg, text_colour=self._label_foreground())
     def _build_tabs(self) -> None:
@@ -380,10 +268,11 @@ class PyClashBotUI(ttk.Window): # main window
         frame.pack(padx=10, pady=10, anchor="n", fill="x")
 
         job_defaults = {job.key: job.default for job in JOBS}
-        self.jobs_vars: dict[str, ttk.BooleanVar] = {}
+        jobs_by_key = {job.key: job for job in JOBS}
+        self.jobs_vars: dict[UIField, ttk.BooleanVar] = {}
 
-        def add_job_checkbox(key: str, text: str, row_index: int, bootstyle: str) -> None:
-            var = ttk.BooleanVar(value=job_defaults.get(key, False))
+        def add_job_checkbox(field: UIField, text: str, row_index: int, bootstyle: str) -> None:
+            var = ttk.BooleanVar(value=job_defaults.get(field, False))
             checkbox = ttk.Checkbutton(
                 frame,
                 text=text,
@@ -392,29 +281,29 @@ class PyClashBotUI(ttk.Window): # main window
                 command=self._notify_config_change,
             )
             checkbox.grid(row=row_index, column=0, sticky="w", pady=2)
-            self.jobs_vars[key] = var
+            self.jobs_vars[field] = var
             self._trace_variable(var)
-            self._register_config_widget(key, checkbox)
+            self._register_config_widget(field.value, checkbox)
 
         primary_bootstyle = "warning-outline-toolbutton"
         secondary_bootstyle = "info-outline-toolbutton"
-        add_job_checkbox("classic_1v1_user_toggle", "Classic 1v1 battles", 0, primary_bootstyle)
-        add_job_checkbox("classic_2v2_user_toggle", "Classic 2v2 battles", 1, primary_bootstyle)
-        add_job_checkbox("trophy_road_user_toggle", "Trophy Road battles", 2, primary_bootstyle)
+        add_job_checkbox(UIField.CLASSIC_1V1_USER_TOGGLE, "Classic 1v1 battles", 0, primary_bootstyle)
+        add_job_checkbox(UIField.CLASSIC_2V2_USER_TOGGLE, "Classic 2v2 battles", 1, primary_bootstyle)
+        add_job_checkbox(UIField.TROPHY_ROAD_USER_TOGGLE, "Trophy Road battles", 2, primary_bootstyle)
 
-        random_job = next(job for job in JOBS if job.key == "random_decks_user_toggle")
-        deck_config: ComboConfig = random_job.extras["deck_number_selection"]
-        self.jobs_vars["random_decks_user_toggle"] = ttk.BooleanVar(value=random_job.default)
+        random_job = jobs_by_key[UIField.RANDOM_DECKS_USER_TOGGLE]
+        deck_config: ComboConfig = random_job.extras[UIField.DECK_NUMBER_SELECTION]
+        self.jobs_vars[UIField.RANDOM_DECKS_USER_TOGGLE] = ttk.BooleanVar(value=random_job.default)
         random_checkbox = ttk.Checkbutton(
             frame,
             text="Random decks",
-            variable=self.jobs_vars["random_decks_user_toggle"],
+            variable=self.jobs_vars[UIField.RANDOM_DECKS_USER_TOGGLE],
             bootstyle=secondary_bootstyle,
             command=self._notify_config_change,
         )
         random_checkbox.grid(row=3, column=0, sticky="w", pady=2)
-        self._trace_variable(self.jobs_vars["random_decks_user_toggle"])
-        self._register_config_widget("random_decks_user_toggle", random_checkbox)
+        self._trace_variable(self.jobs_vars[UIField.RANDOM_DECKS_USER_TOGGLE])
+        self._register_config_widget(UIField.RANDOM_DECKS_USER_TOGGLE.value, random_checkbox)
 
         ttk.Label(frame, text="Deck #").grid(row=3, column=1, padx=(20, 6), sticky="e")
         self.deck_var = ttk.StringVar(value=str(deck_config.default))
@@ -428,21 +317,21 @@ class PyClashBotUI(ttk.Window): # main window
         )
         self.deck_spin.grid(row=3, column=2, sticky="w")
         self._trace_variable(self.deck_var)
-        self._register_config_widget("deck_number_selection", self.deck_spin)
+        self._register_config_widget(UIField.DECK_NUMBER_SELECTION.value, self.deck_spin)
 
-        cycle_job = next(job for job in JOBS if job.key == "cycle_decks_user_toggle")
-        max_config: ComboConfig = cycle_job.extras["max_deck_selection"]
-        self.jobs_vars["cycle_decks_user_toggle"] = ttk.BooleanVar(value=cycle_job.default)
+        cycle_job = jobs_by_key[UIField.CYCLE_DECKS_USER_TOGGLE]
+        max_config: ComboConfig = cycle_job.extras[UIField.MAX_DECK_SELECTION]
+        self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE] = ttk.BooleanVar(value=cycle_job.default)
         cycle_checkbox = ttk.Checkbutton(
             frame,
             text="Cycle decks",
-            variable=self.jobs_vars["cycle_decks_user_toggle"],
+            variable=self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE],
             bootstyle=secondary_bootstyle,
             command=self._notify_config_change,
         )
         cycle_checkbox.grid(row=4, column=0, sticky="w", pady=2)
-        self._trace_variable(self.jobs_vars["cycle_decks_user_toggle"])
-        self._register_config_widget("cycle_decks_user_toggle", cycle_checkbox)
+        self._trace_variable(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE])
+        self._register_config_widget(UIField.CYCLE_DECKS_USER_TOGGLE.value, cycle_checkbox)
 
         ttk.Label(frame, text="Decks to Cycle:").grid(row=4, column=1, padx=(20, 6), sticky="e")
         self.max_deck_var = ttk.StringVar(value=str(max_config.default))
@@ -456,26 +345,26 @@ class PyClashBotUI(ttk.Window): # main window
         )
         self.max_deck_spin.grid(row=4, column=2, sticky="w")
         self._trace_variable(self.max_deck_var)
-        self._register_config_widget("max_deck_selection", self.max_deck_spin)
+        self._register_config_widget(UIField.MAX_DECK_SELECTION.value, self.max_deck_spin)
 
-        add_job_checkbox("random_plays_user_toggle", "Random plays", 5, secondary_bootstyle)
-        add_job_checkbox("disable_win_track_toggle", "Skip win/loss check", 6, secondary_bootstyle)
-        add_job_checkbox("card_mastery_user_toggle", "Card Masteries", 7, secondary_bootstyle)
-        add_job_checkbox("card_upgrade_user_toggle", "Upgrade Cards", 8, secondary_bootstyle)
+        add_job_checkbox(UIField.RANDOM_PLAYS_USER_TOGGLE, "Random plays", 5, secondary_bootstyle)
+        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "Skip win/loss check", 6, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "Card Masteries", 7, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", 8, secondary_bootstyle)
     def _create_emulator_tab(self) -> None:
         outer = ttk.Labelframe(self.emulator_tab, text="Emulator Type", padding=10)
         outer.pack(padx=10, pady=10, anchor="n", fill="x")
 
         self.emulator_var = ttk.StringVar(value="MEmu")
         choices = [
-            ("MEmu", "memu_emulator_toggle"),
-            ("Google Play", "google_play_emulator_toggle"),
-            ("BlueStacks 5", "bluestacks_emulator_toggle"),
+            ("MEmu", UIField.MEMU_EMULATOR_TOGGLE),
+            ("Google Play", UIField.GOOGLE_PLAY_EMULATOR_TOGGLE),
+            ("BlueStacks 5", UIField.BLUESTACKS_EMULATOR_TOGGLE),
         ]
 
         radio_row = ttk.Frame(outer)
         radio_row.pack(anchor="w")
-        for text, key in choices:
+        for text, field in choices:
             rb = ttk.Radiobutton(
                 radio_row,
                 text=text,
@@ -484,7 +373,7 @@ class PyClashBotUI(ttk.Window): # main window
                 command=self._on_emulator_changed,
             )
             rb.pack(side=LEFT, padx=(0, 12))
-            self._register_config_widget(key, rb)
+            self._register_config_widget(field.value, rb)
 
         self.sub_notebook = ttk.Notebook(outer)
         self.sub_notebook.pack(fill="x", pady=8)
@@ -497,7 +386,7 @@ class PyClashBotUI(ttk.Window): # main window
         self.sub_notebook.add(self.memu_frame, text="MEmu Settings")
         self.sub_notebook.add(self.bluestacks_frame, text="BlueStacks Settings")
 
-        self.gp_vars: dict[str, ttk.StringVar] = {}
+        self.gp_vars: dict[UIField, ttk.StringVar] = {}
         self._create_google_play_settings()
         self._create_memu_settings()
         self._create_bluestacks_settings()
@@ -522,7 +411,7 @@ class PyClashBotUI(ttk.Window): # main window
 
         self.memu_render_var = ttk.StringVar(value="DirectX")
         for config in MEMU_SETTINGS:
-            text = "DirectX" if "directx" in config.key else "OpenGL"
+            text = "DirectX" if config.key == UIField.DIRECTX_TOGGLE else "OpenGL"
             rb = ttk.Radiobutton(
                 frame,
                 text=text,
@@ -531,7 +420,7 @@ class PyClashBotUI(ttk.Window): # main window
                 command=self._notify_config_change,
             )
             rb.pack(anchor="w")
-            self._register_config_widget(config.key, rb)
+            self._register_config_widget(config.key.value, rb)
 
     def _create_bluestacks_settings(self) -> None:
         frame = ttk.Labelframe(self.bluestacks_frame, text="Render Mode", padding=10)
@@ -539,9 +428,9 @@ class PyClashBotUI(ttk.Window): # main window
 
         self.bs_render_var = ttk.StringVar(value="DirectX")
         for config in BLUESTACKS_SETTINGS:
-            if "dx" in config.key:
+            if config.key == UIField.BS_RENDERER_DX:
                 value = "DirectX"
-            elif "vk" in config.key:
+            elif config.key == UIField.BS_RENDERER_VK:
                 value = "Vulkan"
             else:
                 value = "OpenGL"
@@ -553,7 +442,7 @@ class PyClashBotUI(ttk.Window): # main window
                 command=self._notify_config_change,
             )
             rb.pack(anchor="w")
-            self._register_config_widget(config.key, rb)
+            self._register_config_widget(config.key.value, rb)
     def _create_stats_tab(self) -> None:
         container = ttk.Frame(self.stats_tab, padding=10)
         container.pack(fill=BOTH, expand=YES)
@@ -572,24 +461,15 @@ class PyClashBotUI(ttk.Window): # main window
 
         battle_frame = ttk.Labelframe(left, text="Battle Stats", padding=10)
         battle_frame.pack(fill=BOTH, expand=YES, pady=(8, 0))
-        battle_fields = [
-            ("wins", "Win"),
-            ("losses", "Loss"),
-            ("cards_played", "Moves"),
-            ("classic_1v1_fights", "Classic 1v1s"),
-            ("classic_2v2_fights", "Classic 2v2s"),
-            ("trophy_road_1v1_fights", "Trophy Road 1v1s"),
-            ("card_randomizations", "Decks Randomized"),
-            ("card_cycles", "Decks Cycled"),
-        ]
-        self.stat_labels: dict[str, ttk.StringVar] = {}
-        for row, (key, title) in enumerate(battle_fields):
+        self.stat_labels: dict[StatField, ttk.StringVar] = {}
+        for row, field in enumerate(BATTLE_STAT_FIELDS):
+            title = BATTLE_STAT_LABELS[field]
             label = ttk.Label(battle_frame, text=title)
             label.grid(row=row, column=0, sticky="w")
             self._theme_labels.append(label)
             var = ttk.StringVar(value="0")
             ttk.Label(battle_frame, textvariable=var, foreground="#00aaff").grid(row=row, column=1, sticky="e")
-            self.stat_labels[key] = var
+            self.stat_labels[field] = var
 
         right = ttk.Frame(container)
         right.grid(row=0, column=1, sticky="nsew")
@@ -598,38 +478,31 @@ class PyClashBotUI(ttk.Window): # main window
 
         collection_frame = ttk.Labelframe(right, text="Collection Stats", padding=10)
         collection_frame.pack(fill=X)
-        for row, (key, title) in enumerate(
-            [
-                ("card_mastery_reward_collections", "Masteries"),
-                ("upgrades", "Upgrades"),
-                ("war_chest_collects", "War Chests"),
-            ]
-        ):
+        for row, field in enumerate(COLLECTION_STAT_FIELDS):
+            title = COLLECTION_STAT_LABELS[field]
             label = ttk.Label(collection_frame, text=title)
             label.grid(row=row, column=0, sticky="w")
             self._theme_labels.append(label)
             var = ttk.StringVar(value="0")
             ttk.Label(collection_frame, textvariable=var, foreground="#00aaff").grid(row=row, column=1, sticky="e")
-            self.stat_labels[key] = var
+            self.stat_labels[field] = var
 
         bot_frame = ttk.Labelframe(right, text="Bot Stats", padding=10)
         bot_frame.pack(fill=BOTH, expand=YES, pady=(8, 0))
         self.bot_labels = {
-            "restarts_after_failure": ttk.StringVar(value="0"),
-            "time_since_start": ttk.StringVar(value="00:00:00"),
+            BotStatField.RESTARTS_AFTER_FAILURE: ttk.StringVar(value="0"),
+            BotStatField.TIME_SINCE_START: ttk.StringVar(value="00:00:00"),
         }
-        label_failures = ttk.Label(bot_frame, text="Bot Failures")
-        label_failures.grid(row=0, column=0, sticky="w")
-        self._theme_labels.append(label_failures)
-        ttk.Label(bot_frame, textvariable=self.bot_labels["restarts_after_failure"], foreground="#00aaff").grid(
-            row=0, column=1, sticky="e"
-        )
-        label_runtime = ttk.Label(bot_frame, text="Runtime")
-        label_runtime.grid(row=1, column=0, sticky="w")
-        self._theme_labels.append(label_runtime)
-        ttk.Label(bot_frame, textvariable=self.bot_labels["time_since_start"], foreground="#00aaff").grid(
-            row=1, column=1, sticky="e"
-        )
+        for row, field in enumerate(BOT_STAT_FIELDS):
+            title = BOT_STAT_LABELS[field]
+            label = ttk.Label(bot_frame, text=title)
+            label.grid(row=row, column=0, sticky="w")
+            self._theme_labels.append(label)
+            ttk.Label(
+                bot_frame,
+                textvariable=self.bot_labels[field],
+                foreground="#00aaff",
+            ).grid(row=row, column=1, sticky="e")
 
     def _create_misc_tab(self) -> None:
         appearance = ttk.Labelframe(self.misc_tab, text="Appearance", padding=10)
@@ -646,7 +519,7 @@ class PyClashBotUI(ttk.Window): # main window
         self.theme_combo.pack(anchor="w")
         self.theme_combo.bind("<<ComboboxSelected>>", self._on_theme_change)
         self._trace_variable(self.theme_var)
-        self._register_config_widget("theme_name", self.theme_combo)
+        self._register_config_widget(UIField.THEME_NAME.value, self.theme_combo)
 
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
         data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
@@ -662,7 +535,7 @@ class PyClashBotUI(ttk.Window): # main window
         )
         record_checkbox.pack(anchor="w")
         self._trace_variable(self.record_var)
-        self._register_config_widget("record_fights_toggle", record_checkbox)
+        self._register_config_widget(UIField.RECORD_FIGHTS_TOGGLE.value, record_checkbox)
 
         self.open_recordings_btn = ttk.Button(
             data_frame,
@@ -708,13 +581,14 @@ class PyClashBotUI(ttk.Window): # main window
         )
         combo.grid(row=row, column=column_offset + 1, sticky="w")
         combo.bind("<<ComboboxSelected>>", self._notify_config_change)
-        self.gp_vars[config.key] = var
+        field = config.key
+        self.gp_vars[field] = var
         self._trace_variable(var)
-        self._register_config_widget(config.key, combo)
+        self._register_config_widget(field.value, combo)
 
     def _update_google_play_comboboxes(self) -> None:
-        for key, var in self.gp_vars.items():
-            widget = self._config_widgets.get(key)
+        for field, var in self.gp_vars.items():
+            widget = self._config_widgets.get(field.value)
             if not widget:
                 continue
             values = [str(option) for option in widget.cget("values")]
@@ -787,13 +661,22 @@ class PyClashBotUI(ttk.Window): # main window
             return fallback
 
     @staticmethod
-    def _extract_winrate(raw: object, wins: int, losses: int) -> float:
-        if isinstance(raw, str) and raw.endswith("%"):
+    def _parse_winrate_value(raw: object) -> Optional[float]:
+        if isinstance(raw, str):
+            stripped = raw.strip()
+            if stripped.endswith("%"):
+                stripped = stripped[:-1]
             try:
-                return float(raw.strip("%"))
+                return float(stripped)
             except ValueError:
-                pass
+                return None
+        if isinstance(raw, (int, float)):
+            return float(raw)
+        return None
+
+    @staticmethod
+    def _calculate_winrate_percentage(wins: int, losses: int) -> float:
         total = wins + losses
-        if total == 0:
+        if total <= 0:
             return 0.0
         return wins / total * 100

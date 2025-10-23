@@ -1,14 +1,27 @@
 """Configuration for PyClashBot interface elements."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any
+from typing import Dict
+
+from pyclashbot.interface.enums import (
+    BATTLE_STAT_FIELDS,
+    BATTLE_STAT_LABELS,
+    BOT_STAT_LABELS,
+    COLLECTION_STAT_FIELDS,
+    COLLECTION_STAT_LABELS,
+    BotStatField,
+    StatField,
+    UIField,
+)
 
 
 @dataclass
 class StatConfig:
     """Configuration for a stat display element."""
 
-    key: str
+    key: StatField | BotStatField
     title: str
     size: tuple[int, int] = (6, 1)
 
@@ -17,17 +30,17 @@ class StatConfig:
 class JobConfig:
     """Configuration for a job checkbox element."""
 
-    key: str
+    key: UIField
     title: str
     default: bool = False
-    extras: dict[str, Any] | None = None
+    extras: Dict[UIField, "ComboConfig"] | None = None
 
 
 @dataclass
 class RadioConfig:
     """Configuration for a radio button element."""
 
-    key: str
+    key: UIField
     title: str
     group_id: str
     default: bool = False
@@ -37,7 +50,7 @@ class RadioConfig:
 class ComboConfig:
     """Configuration for a combo box element."""
 
-    key: str
+    key: UIField
     label: str
     values: list[str | int]
     default: str | int = ""
@@ -46,41 +59,27 @@ class ComboConfig:
 
 
 # Statistics Configuration
-BATTLE_STATS = [
-    StatConfig("wins", "Win"),
-    StatConfig("losses", "Loss"),
-    StatConfig("winrate", "Win %"),
-    StatConfig("cards_played", "Moves"),
-    StatConfig("classic_1v1_fights", "Classic 1v1s"),
-    StatConfig("classic_2v2_fights", "Classic 2v2s"),
-    StatConfig("trophy_road_1v1_fights", "Trophy Road 1v1s"),
-    StatConfig("card_randomizations", "Decks Randomized"),
-    StatConfig("card_cycles", "Decks Cycled"),
-]
+BATTLE_STATS = [StatConfig(field, BATTLE_STAT_LABELS[field]) for field in BATTLE_STAT_FIELDS]
 
-COLLECTION_STATS = [
-    StatConfig("card_mastery_reward_collections", "Masteries"),
-    StatConfig("upgrades", "Upgrades"),
-    StatConfig("war_chest_collects", "War Chests"),
-]
+COLLECTION_STATS = [StatConfig(field, COLLECTION_STAT_LABELS[field]) for field in COLLECTION_STAT_FIELDS]
 
 BOT_STATS = [
-    StatConfig("restarts_after_failure", "Bot Failures"),
-    StatConfig("time_since_start", "Runtime", size=(8, 1)),
+    StatConfig(BotStatField.RESTARTS_AFTER_FAILURE, BOT_STAT_LABELS[BotStatField.RESTARTS_AFTER_FAILURE]),
+    StatConfig(BotStatField.TIME_SINCE_START, BOT_STAT_LABELS[BotStatField.TIME_SINCE_START], size=(8, 1)),
 ]
 
 # Job Configuration
 JOBS = [
-    JobConfig("classic_1v1_user_toggle", "Classic 1v1 battles", default=False),
-    JobConfig("classic_2v2_user_toggle", "Classic 2v2 battles", default=False),
-    JobConfig("trophy_road_user_toggle", "Trophy Road battles", default=True),
+    JobConfig(UIField.CLASSIC_1V1_USER_TOGGLE, "Classic 1v1 battles", default=False),
+    JobConfig(UIField.CLASSIC_2V2_USER_TOGGLE, "Classic 2v2 battles", default=False),
+    JobConfig(UIField.TROPHY_ROAD_USER_TOGGLE, "Trophy Road battles", default=True),
     JobConfig(
-        "random_decks_user_toggle",
+        UIField.RANDOM_DECKS_USER_TOGGLE,
         "Random decks",
         default=False,
         extras={
-            "deck_number_selection": ComboConfig(
-                key="deck_number_selection",
+            UIField.DECK_NUMBER_SELECTION: ComboConfig(
+                key=UIField.DECK_NUMBER_SELECTION,
                 label="Deck #",
                 values=[1, 2, 3, 4, 5],
                 default=2,
@@ -89,12 +88,12 @@ JOBS = [
         },
     ),
     JobConfig(
-        "cycle_decks_user_toggle",
+        UIField.CYCLE_DECKS_USER_TOGGLE,
         "Cycle decks",
         default=False,
         extras={
-            "max_deck_selection": ComboConfig(
-                key="max_deck_selection",
+            UIField.MAX_DECK_SELECTION: ComboConfig(
+                key=UIField.MAX_DECK_SELECTION,
                 label="Decks to Cycle:",
                 values=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 default=2,
@@ -102,52 +101,52 @@ JOBS = [
             )
         },
     ),
-    JobConfig("random_plays_user_toggle", "Random plays", default=False),
-    JobConfig("disable_win_track_toggle", "Skip win/loss check", default=False),
-    JobConfig("card_mastery_user_toggle", "Card Masteries", default=False),
-    JobConfig("card_upgrade_user_toggle", "Upgrade Cards", default=False),
+    JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "Random plays", default=False),
+    JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "Skip win/loss check", default=False),
+    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "Card Masteries", default=False),
+    JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", default=False),
 ]
 
 # Emulator Settings Configuration
 MEMU_SETTINGS = [
-    RadioConfig("opengl_toggle", "OpenGL", "render_mode_radio"),
-    RadioConfig("directx_toggle", "DirectX", "render_mode_radio", default=True),
+    RadioConfig(UIField.OPENGL_TOGGLE, "OpenGL", "render_mode_radio"),
+    RadioConfig(UIField.DIRECTX_TOGGLE, "DirectX", "render_mode_radio", default=True),
 ]
 
 # BlueStacks specific renderer settings
 BLUESTACKS_SETTINGS = [
-    RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio"),
-    RadioConfig("bs_renderer_dx", "DirectX", "bs_render_mode_radio", default=True),
-    RadioConfig("bs_renderer_vk", "Vulkan", "bs_render_mode_radio"),
+    RadioConfig(UIField.BS_RENDERER_GL, "OpenGL", "bs_render_mode_radio"),
+    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=True),
+    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio"),
 ]
 
 EMULATOR_CHOICE = [
-    RadioConfig("memu_emulator_toggle", "Memu", "emulator_type_radio", default=True),
-    RadioConfig("google_play_emulator_toggle", "Google Play", "emulator_type_radio"),
-    RadioConfig("bluestacks_emulator_toggle", "BlueStacks 5", "emulator_type_radio"),
+    RadioConfig(UIField.MEMU_EMULATOR_TOGGLE, "Memu", "emulator_type_radio", default=True),
+    RadioConfig(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE, "Google Play", "emulator_type_radio"),
+    RadioConfig(UIField.BLUESTACKS_EMULATOR_TOGGLE, "BlueStacks 5", "emulator_type_radio"),
 ]
 
 # Google Play Settings Configuration
 GOOGLE_PLAY_SETTINGS = [
-    ComboConfig("gp_angle", "angle", ["true", "false"]),
-    ComboConfig("gp_vulkan", "vulkan", ["true", "false"]),
-    ComboConfig("gp_gles", "gles", ["true", "false"]),
-    ComboConfig("gp_surfaceless", "surfaceless", ["true", "false"]),
-    ComboConfig("gp_egl", "egl", ["true", "false"]),
-    ComboConfig("gp_backend", "backend", ["gfxstream", "angle", "swiftshader"]),
-    ComboConfig("gp_wsi", "wsi", ["vk", "glx"]),
+    ComboConfig(UIField.GP_ANGLE, "angle", ["true", "false"]),
+    ComboConfig(UIField.GP_VULKAN, "vulkan", ["true", "false"]),
+    ComboConfig(UIField.GP_GLES, "gles", ["true", "false"]),
+    ComboConfig(UIField.GP_SURFACELESS, "surfaceless", ["true", "false"]),
+    ComboConfig(UIField.GP_EGL, "egl", ["true", "false"]),
+    ComboConfig(UIField.GP_BACKEND, "backend", ["gfxstream", "angle", "swiftshader"]),
+    ComboConfig(UIField.GP_WSI, "wsi", ["vk", "glx"]),
 ]
 
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
-    [job.key for job in JOBS]
-    + [radio.key for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
-    + [combo.key for combo in GOOGLE_PLAY_SETTINGS]
-    + ["theme_name", "record_fights_toggle"]  # Data settings
+    [job.key.value for job in JOBS]
+    + [radio.key.value for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
+    + [combo.key.value for combo in GOOGLE_PLAY_SETTINGS]
+    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value]  # Data settings
     + [
-        "deck_number_selection",
-        "max_deck_selection",
-        "cycle_decks_user_toggle",
+        UIField.DECK_NUMBER_SELECTION.value,
+        UIField.MAX_DECK_SELECTION.value,
+        UIField.CYCLE_DECKS_USER_TOGGLE.value,
     ]
 )
 

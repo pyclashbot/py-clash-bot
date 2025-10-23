@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 
 from cx_Freeze import Executable, setup
-import ttkbootstrap
 
 ROOT_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT_DIR))
@@ -16,8 +15,6 @@ ENTRY_POINT = ROOT_DIR / "pyclashbot" / "__main__.py"
 ICON_PATH = ROOT_DIR / "assets" / "pixel-pycb.ico"
 GUI = True
 UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
-# Copy full ttkbootstrap package so cx_Freeze doesn't miss utility modules
-TTKBOOTSTRAP_PATH = Path(ttkbootstrap.__file__).parent
 
 
 try:
@@ -34,12 +31,11 @@ with version_file.open("w", encoding="utf-8") as f:
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
-    "packages": ["pyclashbot"],
+    "packages": ["pyclashbot", "ttkbootstrap", "tkinter"],
     "include_files": [
         ROOT_DIR / "assets" / "pixel-pycb.ico",
         ROOT_DIR / "pyclashbot" / "detection" / "reference_images",
         ROOT_DIR / "pyclashbot" / "__version__",
-        (TTKBOOTSTRAP_PATH, Path("lib") / "ttkbootstrap"),
     ],
     "include_msvcr": True,
 }
