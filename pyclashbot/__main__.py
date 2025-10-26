@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from os.path import expandvars, join
-from typing import Any, Callable, Optional
+from typing import TYPE_CHECKING, Any
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
@@ -12,13 +12,19 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
-from pyclashbot.utils.thread import StoppableThread
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from pyclashbot.utils.thread import StoppableThread
+
 
 initalize_pylogging()
 
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     """Create a dictionary of job toggles and increments based on UI values."""
+
     def as_bool(field: UIField) -> bool:
         return bool(values.get(field.value, False))
 
@@ -79,7 +85,7 @@ def save_current_settings(values: dict[str, Any]) -> None:
     USER_SETTINGS_CACHE.cache_data(values)
 
 
-def load_settings(settings: Optional[dict[str, Any]], ui: PyClashBotUI) -> Optional[dict[str, Any]]:
+def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str, Any] | None:
     """Load settings into the UI from CLI args or cached data."""
     loaded = settings
     if not loaded and USER_SETTINGS_CACHE.exists():
@@ -89,7 +95,7 @@ def load_settings(settings: Optional[dict[str, Any]], ui: PyClashBotUI) -> Optio
     return loaded
 
 
-def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> Optional[WorkerThread]:
+def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
     """Start the worker thread with the current configuration."""
     job_dictionary = make_job_dictionary(values)
 
@@ -129,16 +135,16 @@ def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
     ui.append_log(status_text)
 
 
-def exit_button_event(thread: Optional[StoppableThread]) -> None:
+def exit_button_event(thread: StoppableThread | None) -> None:
     if thread is not None:
         thread.shutdown(kill=True)
 
 
 def handle_thread_finished(
     ui: PyClashBotUI,
-    thread: Optional[WorkerThread],
+    thread: WorkerThread | None,
     logger: Logger,
-) -> tuple[Optional[WorkerThread], Logger]:
+) -> tuple[WorkerThread | None, Logger]:
     if thread is not None and not thread.is_alive():
         ui.set_running_state(False)
         if getattr(thread.logger, "errored", False):
@@ -171,10 +177,11 @@ def open_logs_folder() -> None:
 
         subprocess.Popen(["xdg-open", folder_path])
 
+
 class BotApplication:
     """Main application class for the ttkbootstrap GUI."""
 
-    def __init__(self, settings: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, settings: dict[str, Any] | None = None) -> None:
         self.ui = PyClashBotUI()
         self.ui.start_btn.configure(command=self._on_start)
         self.ui.stop_btn.configure(command=self._on_stop)
@@ -183,7 +190,7 @@ class BotApplication:
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
 
-        self.thread: Optional[WorkerThread] = None
+        self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
         self._closing = False
         self._suppress_persist = True
@@ -233,11 +240,11 @@ class BotApplication:
             save_current_settings(values)
 
     def _dispatch_action(self) -> None:
-        callback: Optional[Callable[[], None]] = getattr(self.logger, "action_callback", None)
+        callback: Callable[[], None] | None = getattr(self.logger, "action_callback", None)
         if callable(callback):
             try:
                 callback()
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 self.logger.log(f"Error executing action callback: {exc}")
         if hasattr(self.logger, "action_needed"):
             self.logger.action_needed = False
@@ -273,7 +280,8 @@ class BotApplication:
             self.ui.after(200, self._on_start)
         self.ui.mainloop()
 
-def main_gui(start_on_run: bool = False, settings: Optional[dict[str, Any]] = None) -> None:
+
+def main_gui(start_on_run: bool = False, settings: dict[str, Any] | None = None) -> None:
     app = BotApplication(settings)
     app.run(start_on_run)
 
