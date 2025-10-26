@@ -13,7 +13,9 @@ from pyclashbot.detection.image_rec import compare_images, pixel_is_equal
 from pyclashbot.utils.image_handler import open_from_path
 from pyclashbot.utils.logger import Logger
 
-CARD_MASTERY_BUTTON_IMAGE_PATH = Path(__file__).resolve().parent.parent / "detection" / "reference_images" / "card_mastery_button.png"
+CARD_MASTERY_BUTTON_IMAGE_PATH = (
+    Path(__file__).resolve().parent.parent / "detection" / "reference_images" / "card_mastery_button.png"
+)
 CARD_MASTERY_BUTTON_TEMPLATE = open_from_path(str(CARD_MASTERY_BUTTON_IMAGE_PATH))
 
 

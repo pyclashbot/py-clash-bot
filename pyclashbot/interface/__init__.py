@@ -5,9 +5,9 @@ from .ui import PyClashBotUI, no_jobs_popup
 
 __all__ = [
     "DISABLE_KEYS",
+    "USER_CONFIG_KEYS",
     "PyClashBotUI",
     "no_jobs_popup",
     "show_clash_royale_setup_gui",
     "show_help_gui",
-    "USER_CONFIG_KEYS",
 ]
