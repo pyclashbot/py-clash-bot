@@ -1,139 +1,96 @@
-"""This module contains the main entry point for the py-clash-bot program.
-It provides a GUI interface for users to configure and run the bot.
-"""
-import os
-import sys
-import webbrowser
-from os.path import expandvars, join
+"""Main entry point for the py-clash-bot ttkbootstrap interface."""
 
-import FreeSimpleGUI as sg  # noqa: N813
-from FreeSimpleGUI import Window
+from __future__ import annotations
+
+import os
+from os.path import expandvars, join
+from typing import Any, Callable, Optional
 
 from pyclashbot.bot.worker import WorkerThread
-from pyclashbot.interface import disable_keys, user_config_keys
-from pyclashbot.interface.layout import create_window, no_jobs_popup
+from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
+from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
-from pyclashbot.utils.logger import Logger, initalize_pylogging
+from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
 from pyclashbot.utils.thread import StoppableThread
 
 initalize_pylogging()
 
 
-def read_window(
-    window: sg.Window,
-    timeout: int = 10,
-) -> tuple[str, dict[str, str | int]]:
-    """Method for reading the attributes of the window
-    args:
-        window: the window to read
-        timeout: the timeout for the  read method
+def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
+    """Create a dictionary of job toggles and increments based on UI values."""
+    def as_bool(field: UIField) -> bool:
+        return bool(values.get(field.value, False))
 
-    Returns
-    -------
-        tuple of the event and the values of the window
+    def as_int(field: UIField, default: int) -> int:
+        try:
+            return int(values.get(field.value, default))
+        except (TypeError, ValueError):
+            return default
 
-    """
-    # have a timeout so the output can be updated when no events are happening
-    read_result = window.read(timeout=timeout)  # ms
-    if read_result is None:
-        print("Window not found")
-        sys.exit()
-    return read_result
-
-
-def make_job_dictionary(values: dict[str, str | int]) -> dict[str, str | int]:
-    """Create a dictionary of job toggles and increments based on the values of the GUI window."""
-    jobs_dictionary: dict[str, str | int] = {
-        "card_mastery_user_toggle": values["card_mastery_user_toggle"],
-        "classic_1v1_user_toggle": values["classic_1v1_user_toggle"],
-        "classic_2v2_user_toggle": values["classic_2v2_user_toggle"],
-        "trophy_road_user_toggle": values["trophy_road_user_toggle"],
-        "upgrade_user_toggle": values["card_upgrade_user_toggle"],
-        "random_decks_user_toggle": values["random_decks_user_toggle"],
-        "deck_number_selection": values["deck_number_selection"],
-        "cycle_decks_user_toggle": values["cycle_decks_user_toggle"],
-        "max_deck_selection": values["max_deck_selection"],
-        "random_plays_user_toggle": values["random_plays_user_toggle"],
-        "disable_win_track_toggle": values["disable_win_track_toggle"],
-        "record_fights_toggle": values.get("record_fights_toggle", False),
+    job_dictionary: dict[str, Any] = {
+        UIField.CARD_MASTERY_USER_TOGGLE.value: as_bool(UIField.CARD_MASTERY_USER_TOGGLE),
+        UIField.CLASSIC_1V1_USER_TOGGLE.value: as_bool(UIField.CLASSIC_1V1_USER_TOGGLE),
+        UIField.CLASSIC_2V2_USER_TOGGLE.value: as_bool(UIField.CLASSIC_2V2_USER_TOGGLE),
+        UIField.TROPHY_ROAD_USER_TOGGLE.value: as_bool(UIField.TROPHY_ROAD_USER_TOGGLE),
+        UIField.RANDOM_DECKS_USER_TOGGLE.value: as_bool(UIField.RANDOM_DECKS_USER_TOGGLE),
+        UIField.DECK_NUMBER_SELECTION.value: as_int(UIField.DECK_NUMBER_SELECTION, 2),
+        UIField.CYCLE_DECKS_USER_TOGGLE.value: as_bool(UIField.CYCLE_DECKS_USER_TOGGLE),
+        UIField.MAX_DECK_SELECTION.value: as_int(UIField.MAX_DECK_SELECTION, 2),
+        UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
+        UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
+        UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
     }
 
-    # Set render mode based on toggle
-    if values.get("directx_toggle"):
-        jobs_dictionary["memu_render_mode"] = "directx"
+    job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
+
+    # MEmu render mode
+    if values.get(UIField.DIRECTX_TOGGLE.value):
+        job_dictionary["memu_render_mode"] = "directx"
     else:
-        jobs_dictionary["memu_render_mode"] = "opengl"
+        job_dictionary["memu_render_mode"] = "opengl"
 
     # BlueStacks render mode selection
-    if values.get("bs_renderer_dx"):
-        jobs_dictionary["bluestacks_render_mode"] = "dx"
-    elif values.get("bs_renderer_vk"):
-        jobs_dictionary["bluestacks_render_mode"] = "vlcn"
+    if values.get(UIField.BS_RENDERER_DX.value):
+        job_dictionary["bluestacks_render_mode"] = "dx"
+    elif values.get(UIField.BS_RENDERER_VK.value):
+        job_dictionary["bluestacks_render_mode"] = "vlcn"
     else:
-        jobs_dictionary["bluestacks_render_mode"] = "gl"
+        job_dictionary["bluestacks_render_mode"] = "gl"
 
-    # Set emulator based on toggle
-    if values.get("google_play_emulator_toggle"):
-        jobs_dictionary["emulator"] = "Google Play"
-    elif values.get("bluestacks_emulator_toggle"):
-        jobs_dictionary["emulator"] = "BlueStacks 5"
+    # Emulator selection
+    if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
+        job_dictionary["emulator"] = "Google Play"
+    elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
+        job_dictionary["emulator"] = "BlueStacks 5"
     else:
-        jobs_dictionary["emulator"] = "MEmu"
+        job_dictionary["emulator"] = "MEmu"
 
-    return jobs_dictionary
+    return job_dictionary
 
 
-def has_no_jobs_selected(job_dict) -> bool:
+def has_no_jobs_selected(job_dict: dict[str, Any]) -> bool:
     """Check if no jobs are selected in the job dictionary."""
-    job_keys = [
-        "card_mastery_user_toggle",
-        "classic_1v1_user_toggle",
-        "classic_2v2_user_toggle",
-        "trophy_road_user_toggle",
-        "upgrade_user_toggle",
-    ]
-    return not any(job_dict.get(key, False) for key in job_keys)
+    return not any(job_dict.get(field.value, False) for field in PRIMARY_JOB_TOGGLES)
 
 
-def save_current_settings(values) -> None:
-    """Method for caching the user's current settings
-    args:
-        values: dictionary of the values of the window
-    returns:
-        None
-    """
-    # read the currently selected values for each key in user_coinfig_keys
-    user_settings = {key: values[key] for key in user_config_keys if key in values}
-    # cache the user settings
-    print("Cached settings")
-    USER_SETTINGS_CACHE.cache_data(user_settings)
+def save_current_settings(values: dict[str, Any]) -> None:
+    """Cache the user's current settings."""
+    USER_SETTINGS_CACHE.cache_data(values)
 
 
-def load_settings(settings: None | dict[str, str], window: sg.Window) -> None:
-    """Method for loading settings to the gui
-    args:
-        settings: dictionary of the settings to load
-        window: the gui window
-    """
-    if not settings and USER_SETTINGS_CACHE.exists():
-        read_window(window)  # read the window to edit the layout
-        user_settings = USER_SETTINGS_CACHE.load_data()
-        if user_settings is not None:
-            settings = user_settings
-
-    if settings is not None:
-        for key in user_config_keys:
-            if key in settings:
-                if key in list(window.key_dict.keys()):
-                    window[key].update(settings[key])  # type: ignore  # noqa: PGH003
-                else:
-                    print(f"This key {key} appears in saved settings, but not the active window.")
-        window.refresh()
+def load_settings(settings: Optional[dict[str, Any]], ui: PyClashBotUI) -> Optional[dict[str, Any]]:
+    """Load settings into the UI from CLI args or cached data."""
+    loaded = settings
+    if not loaded and USER_SETTINGS_CACHE.exists():
+        loaded = USER_SETTINGS_CACHE.load_data()
+    if loaded:
+        ui.set_all_values(loaded)
+    return loaded
 
 
-def start_button_event(logger: Logger, window: Window, values) -> WorkerThread | None:
-    """Start the main bot thread with the given configuration."""
+def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> Optional[WorkerThread]:
+    """Start the worker thread with the current configuration."""
     job_dictionary = make_job_dictionary(values)
 
     if has_no_jobs_selected(job_dictionary):
@@ -142,223 +99,181 @@ def start_button_event(logger: Logger, window: Window, values) -> WorkerThread |
         return None
 
     logger.log("Start Button Event")
-    logger.change_status(status="Starting the bot!")
+    logger.change_status("Starting the bot!")
     save_current_settings(values)
     logger.log_job_dictionary(job_dictionary)
 
-    # Disable UI controls
-    for key in disable_keys:
-        if key in window.key_dict:
-            element = window[key]
-            if element is not None:
-                element.update(disabled=True)
+    ui.set_running_state(True)
+    ui.notebook.select(ui.stats_tab)
 
-    # Start worker thread
     thread = WorkerThread(logger, job_dictionary)
     thread.start()
-
-    # Update UI state
-    stop_button = window["Stop"]
-    if stop_button is not None:
-        stop_button.update(disabled=False)
-
-    main_tabs = window["-MAIN_TABS-"]
-    if main_tabs is not None:
-        main_tabs.Widget.select(2)  # Focus stats tab
-
     return thread
 
 
-def stop_button_event(logger: Logger, window, thread: StoppableThread) -> None:
-    """Stop the main bot thread."""
-    logger.change_status(status="Stopping")
-    stop_button = window["Stop"]
-    if stop_button is not None:
-        stop_button.update(disabled=True)
+def stop_button_event(logger: Logger, ui: PyClashBotUI, thread: StoppableThread) -> None:
+    """Stop the worker thread."""
+    logger.change_status("Stopping")
+    ui.stop_btn.configure(state="disabled")
     thread.shutdown(kill=False)
 
 
-def update_layout(window: sg.Window, logger: Logger) -> None:
-    """Update the GUI window with current stats and time."""
-    time_element = window["time_since_start"]
-    if time_element is not None:
-        time_element.update(logger.calc_time_since_start())
-
+def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
+    """Update UI widgets from the logger's statistics."""
     stats = logger.get_stats()
-    if stats:
-        for stat, val in stats.items():
-            element = window[stat]
-            if element is not None:
-                element.update(val)
-
-    # Handle action button visibility and text
-    action_button = window["action_button"]
-    if action_button is not None:
-        if hasattr(logger, "action_needed") and logger.action_needed:
-            action_text = getattr(logger, "action_text", "Continue")
-            action_button.update(text=action_text, visible=True)
-        else:
-            action_button.update(visible=False)
+    ui.update_stats(stats)
+    status_text = logger.current_status
+    if stats and "current_status" in stats:
+        status_text = str(stats["current_status"])
+    ui.set_status(status_text)
+    ui.append_log(status_text)
 
 
-def exit_button_event(thread) -> None:
-    """Shut down the thread if it is still running."""
+def exit_button_event(thread: Optional[StoppableThread]) -> None:
     if thread is not None:
         thread.shutdown(kill=True)
 
 
 def handle_thread_finished(
-    window: sg.Window,
-    thread: WorkerThread | None,
+    ui: PyClashBotUI,
+    thread: Optional[WorkerThread],
     logger: Logger,
-):
-    """Handle cleanup when the worker thread is finished."""
+) -> tuple[Optional[WorkerThread], Logger]:
     if thread is not None and not thread.is_alive():
-        # Re-enable UI controls
-        for key in disable_keys:
-            element = window[key]
-            if element is not None:
-                element.update(disabled=False)
-
-        if thread.logger.errored:
-            stop_button = window["Stop"]
-            if stop_button is not None:
-                stop_button.update(disabled=True)
+        ui.set_running_state(False)
+        if getattr(thread.logger, "errored", False):
+            logger = thread.logger
         else:
             logger = Logger(timed=False)
             thread = None
     return thread, logger
 
 
+def open_recordings_folder() -> None:
+    folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
+    os.makedirs(folder_path, exist_ok=True)
+    try:
+        os.startfile(folder_path)
+    except AttributeError:
+        # Non-Windows fallback
+        import subprocess
+
+        subprocess.Popen(["xdg-open", folder_path])
+
+
+def open_logs_folder() -> None:
+    folder_path = log_dir
+    os.makedirs(folder_path, exist_ok=True)
+    try:
+        os.startfile(folder_path)
+    except AttributeError:
+        import subprocess
+
+        subprocess.Popen(["xdg-open", folder_path])
+
 class BotApplication:
-    """Main application class for the PyClashBot GUI."""
+    """Main application class for the ttkbootstrap GUI."""
 
-    def __init__(self, settings: dict[str, str] | None = None):
-        self.window = create_window()
-        self.thread: WorkerThread | None = None
+    def __init__(self, settings: Optional[dict[str, Any]] = None) -> None:
+        self.ui = PyClashBotUI()
+        self.ui.start_btn.configure(command=self._on_start)
+        self.ui.stop_btn.configure(command=self._on_stop)
+        self.ui.register_config_callback(self._on_config_change)
+        self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
+        self.ui.register_open_logs_callback(self._on_open_logs_clicked)
+        self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
+
+        self.thread: Optional[WorkerThread] = None
         self.logger = Logger(timed=False)
-        load_settings(settings, self.window)
-        self._select_emulator_tab()
+        self._closing = False
+        self._suppress_persist = True
+        self.current_values = self.ui.get_all_values()
 
-    def _select_emulator_tab(self):
-        """Select the emulator tab based on the current settings."""
-        user_settings = USER_SETTINGS_CACHE.load_data()
-        if not user_settings:
+        loaded = load_settings(settings, self.ui)
+        if loaded:
+            self.current_values = self.ui.get_all_values()
+        self._suppress_persist = False
+
+        self.ui.set_running_state(False)
+        self._poll()
+
+    def _on_start(self) -> None:
+        if self.thread is not None and self.thread.is_alive():
             return
+        values = self.ui.get_all_values()
+        new_logger = Logger(timed=True)
+        thread = start_button_event(new_logger, self.ui, values)
+        if thread is not None:
+            self.logger = new_logger
+            self.thread = thread
+            self.current_values = values.copy()
+        else:
+            self.ui.set_running_state(False)
 
-        emulator_tab_map = {
-            "memu_emulator_toggle": 0,
-            "google_play_emulator_toggle": 1,
-            "bluestacks_emulator_toggle": 2,
-            "real_android_toggle": 3,
-        }
-
-        for toggle, tab_index in emulator_tab_map.items():
-            if user_settings.get(toggle):
-                try:
-                    self.window["-EMULATOR_TABS-"].Widget.select(tab_index)
-                except Exception as e:
-                    print(f"Could not select emulator tab: {e}")
-                break
-
-    def handle_start_event(self, values):
-        """Handle the start button event."""
-        self.logger = Logger(timed=True)
-        self.thread = start_button_event(self.logger, self.window, values)
-
-    def handle_stop_event(self):
-        """Handle the stop button event."""
+    def _on_stop(self) -> None:
         if self.thread is not None:
-            stop_button_event(self.logger, self.window, self.thread)
+            stop_button_event(self.logger, self.ui, self.thread)
 
-    def handle_settings_change(self, values):
-        """Handle settings changes."""
-        save_current_settings(values)
+    def _on_config_change(self, values: dict[str, Any]) -> None:
+        changed = {key for key, value in values.items() if self.current_values.get(key) != value}
+        random_toggle = UIField.RANDOM_DECKS_USER_TOGGLE.value
+        cycle_toggle = UIField.CYCLE_DECKS_USER_TOGGLE.value
+        if values.get(random_toggle) and values.get(cycle_toggle):
+            if random_toggle in changed:
+                self.ui.set_all_values({cycle_toggle: False})
+                values[cycle_toggle] = False
+            elif cycle_toggle in changed:
+                self.ui.set_all_values({random_toggle: False})
+                values[random_toggle] = False
+            else:
+                self.ui.set_all_values({cycle_toggle: False})
+                values[cycle_toggle] = False
+        self.current_values = values.copy()
+        if not self._suppress_persist:
+            save_current_settings(values)
 
-    def handle_external_links(self, event):
-        """Handle opening external links."""
-        if event == "bug-report":
-            webbrowser.open("https://github.com/pyclashbot/py-clash-bot/issues/new/choose")
-        elif event == "discord":
-            webbrowser.open("https://discord.gg/eXdVuHuaZv")
-
-    def handle_action_button(self):
-        """Handle action button click - call the logger's callback function"""
-        if hasattr(self.logger, "action_callback") and self.logger.action_callback:
+    def _dispatch_action(self) -> None:
+        callback: Optional[Callable[[], None]] = getattr(self.logger, "action_callback", None)
+        if callable(callback):
             try:
-                # Call the callback function
-                self.logger.action_callback()
-            except Exception as e:
-                print(f"Error calling action callback: {e}")
-                self.logger.log(f"Error executing action callback: {e}")
-
-        # Clear action state after executing
+                callback()
+            except Exception as exc:  # noqa: BLE001
+                self.logger.log(f"Error executing action callback: {exc}")
         if hasattr(self.logger, "action_needed"):
             self.logger.action_needed = False
             self.logger.action_callback = None
+            self.logger.action_text = "Continue"
+        self.ui.hide_action_button()
 
-    def cleanup(self):
-        """Clean up resources when closing."""
-        self.window.close()
-        if self.thread is not None:
-            self.thread.shutdown(kill=True)
-            self.thread.join()
+    def _poll(self) -> None:
+        if self._closing:
+            return
+        self.thread, self.logger = handle_thread_finished(self.ui, self.thread, self.logger)
+        update_layout(self.ui, self.logger)
+        if hasattr(self.logger, "action_needed") and self.logger.action_needed:
+            action_text = getattr(self.logger, "action_text", "Continue")
+            self.ui.show_action_button(action_text, self._dispatch_action)
+        else:
+            self.ui.hide_action_button()
+        self.ui.after(100, self._poll)
 
-    def run(self, start_on_run=False) -> None:
-        """Run the main GUI event loop."""
-        while True:
-            event, values = read_window(self.window, timeout=10)
+    def _on_open_recordings_clicked(self) -> None:
+        open_recordings_folder()
 
-            if start_on_run:
-                event = "Start"
-                start_on_run = False
+    def _on_open_logs_clicked(self) -> None:
+        open_logs_folder()
 
-            if event in [sg.WIN_CLOSED, "Exit"]:
-                exit_button_event(self.thread)
-                break
-            elif event == "Start":
-                self.handle_start_event(values)
-            elif event == "Stop":
-                self.handle_stop_event()
-            elif event == "random_decks_user_toggle":
-                if values["random_decks_user_toggle"]:
-                    self.window["cycle_decks_user_toggle"].update(False)
-                self.handle_settings_change(values)
-            elif event == "cycle_decks_user_toggle":
-                if values["cycle_decks_user_toggle"]:
-                    self.window["random_decks_user_toggle"].update(False)
-                self.handle_settings_change(values)
-            elif event == "memu_emulator_toggle":
-                self.window["-EMULATOR_TABS-"].Widget.select(0)
-                self.handle_settings_change(values)
-            elif event == "google_play_emulator_toggle":
-                self.window["-EMULATOR_TABS-"].Widget.select(1)
-                self.handle_settings_change(values)
-            elif event == "bluestacks_emulator_toggle":
-                self.window["-EMULATOR_TABS-"].Widget.select(2)
-                self.handle_settings_change(values)
-            elif event in user_config_keys:
-                self.handle_settings_change(values)
-            elif event in ["bug-report", "discord"]:
-                self.handle_external_links(event)
-            elif event == "action_button":
-                self.handle_action_button()
-            elif event == "-OPEN_RECORDINGS_FOLDER-":
-                folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
-                if not os.path.exists(folder_path):
-                    os.makedirs(folder_path)
-                os.startfile(folder_path)
+    def _on_close(self) -> None:
+        self._closing = True
+        exit_button_event(self.thread)
+        self.ui.destroy()
 
-            # Handle thread completion cleanup
-            self.thread, self.logger = handle_thread_finished(self.window, self.thread, self.logger)
+    def run(self, start_on_run: bool = False) -> None:
+        if start_on_run:
+            self.ui.after(200, self._on_start)
+        self.ui.mainloop()
 
-            update_layout(self.window, self.logger)
-
-        self.cleanup()
-
-
-def main_gui(start_on_run=False, settings: None | dict[str, str] = None) -> None:
-    """Main entry point for the GUI application."""
+def main_gui(start_on_run: bool = False, settings: Optional[dict[str, Any]] = None) -> None:
     app = BotApplication(settings)
     app.run(start_on_run)
 

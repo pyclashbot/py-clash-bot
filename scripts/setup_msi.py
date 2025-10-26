@@ -31,7 +31,7 @@ with version_file.open("w", encoding="utf-8") as f:
 
 build_exe_options = {
     "excludes": ["test", "setuptools"],
-    "packages": ["pyclashbot"],
+    "packages": ["pyclashbot", "ttkbootstrap", "tkinter"],
     "include_files": [
         ROOT_DIR / "assets" / "pixel-pycb.ico",
         ROOT_DIR / "pyclashbot" / "detection" / "reference_images",
