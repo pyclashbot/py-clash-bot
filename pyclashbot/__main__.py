@@ -3,12 +3,21 @@
 from __future__ import annotations
 
 import os
+import warnings
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
+
+warnings.filterwarnings( # mutes localization error from console (no functionality loss)
+    "ignore",
+    category=SyntaxWarning,
+    module=r"ttkbootstrap\.localization\.msgs",
+)
+warnings.filterwarnings("ignore", message=r".*invalid escape sequence.*", category=SyntaxWarning)
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
+from pyclashbot.integrations.rpc import DiscordRPCManager
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
@@ -190,6 +199,7 @@ class BotApplication:
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
 
+        self.rpc_manager = DiscordRPCManager()
         self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
         self._closing = False
@@ -201,6 +211,7 @@ class BotApplication:
             self.current_values = self.ui.get_all_values()
         self._suppress_persist = False
 
+        self._apply_rpc_setting(self.current_values, force_update=True)
         self.ui.set_running_state(False)
         self._poll()
 
@@ -214,6 +225,7 @@ class BotApplication:
             self.logger = new_logger
             self.thread = thread
             self.current_values = values.copy()
+            self._apply_rpc_setting(self.current_values, force_update=True)
         else:
             self.ui.set_running_state(False)
 
@@ -236,8 +248,29 @@ class BotApplication:
                 self.ui.set_all_values({cycle_toggle: False})
                 values[cycle_toggle] = False
         self.current_values = values.copy()
+        self._apply_rpc_setting(self.current_values)
         if not self._suppress_persist:
             save_current_settings(values)
+
+    def _apply_rpc_setting(self, values: dict[str, Any], force_update: bool = False) -> None:
+        emulator_label = self._derive_emulator_label(values)
+        self.logger.set_current_emulator(emulator_label)
+
+        enabled = bool(values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
+        was_enabled = self.rpc_manager.enabled
+        if enabled:
+            self.rpc_manager.enable()
+            self.rpc_manager.update(self.logger, force=force_update or not was_enabled)
+        elif was_enabled:
+            self.rpc_manager.disable()
+
+    @staticmethod
+    def _derive_emulator_label(values: dict[str, Any]) -> str:
+        if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value, False):
+            return "Google Play"
+        if values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value, False):
+            return "BlueStacks 5"
+        return "MEmu"
 
     def _dispatch_action(self) -> None:
         callback: Callable[[], None] | None = getattr(self.logger, "action_callback", None)
@@ -255,13 +288,18 @@ class BotApplication:
     def _poll(self) -> None:
         if self._closing:
             return
-        self.thread, self.logger = handle_thread_finished(self.ui, self.thread, self.logger)
+        thread, logger = handle_thread_finished(self.ui, self.thread, self.logger)
+        if logger is not self.logger:
+            self.logger = logger
+            self._apply_rpc_setting(self.current_values, force_update=True)
+        self.thread = thread
         update_layout(self.ui, self.logger)
         if hasattr(self.logger, "action_needed") and self.logger.action_needed:
             action_text = getattr(self.logger, "action_text", "Continue")
             self.ui.show_action_button(action_text, self._dispatch_action)
         else:
             self.ui.hide_action_button()
+        self.rpc_manager.update(self.logger)
         self.ui.after(100, self._poll)
 
     def _on_open_recordings_clicked(self) -> None:
@@ -273,6 +311,7 @@ class BotApplication:
     def _on_close(self) -> None:
         self._closing = True
         exit_button_event(self.thread)
+        self.rpc_manager.shutdown()
         self.ui.destroy()
 
     def run(self, start_on_run: bool = False) -> None:

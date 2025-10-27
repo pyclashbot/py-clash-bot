@@ -11,6 +11,7 @@ if exists(VERSION_FILE) and isfile(VERSION_FILE):
         VERSION = f.read().strip()
 
 __version__ = VERSION
+APP_VERSION = __version__
 
 del VERSION_FILE, VERSION
 

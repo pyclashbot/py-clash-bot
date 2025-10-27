@@ -3,6 +3,14 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import messagebox
 from typing import TYPE_CHECKING
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    category=SyntaxWarning,
+    module=r"ttkbootstrap\.localization\.msgs",
+)
+warnings.filterwarnings("ignore", message=r".*invalid escape sequence.*", category=SyntaxWarning)
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, LEFT, READONLY, YES, X
@@ -28,6 +36,7 @@ from pyclashbot.interface.enums import (
     UIField,
 )
 from pyclashbot.interface.widgets import DualRingGauge
+from pyclashbot.utils.versioning import APP_VERSION
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -42,7 +51,8 @@ class PyClashBotUI(ttk.Window):
 
     def __init__(self) -> None:
         super().__init__(themename=self.DEFAULT_THEME)
-        self.title("py-clash-bot")
+        version_label = APP_VERSION if APP_VERSION and APP_VERSION.lower() != "dev" else "testing"
+        self.title(f"py-clash-bot ({version_label})")
         self.geometry("460x500")
         self.resizable(False, False)
 
@@ -86,6 +96,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
         values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
+        values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.rpc_var.get())
 
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == "MEmu"
@@ -120,6 +131,8 @@ class PyClashBotUI(ttk.Window):
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
             if UIField.RECORD_FIGHTS_TOGGLE.value in values:
                 self.record_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
+            if UIField.DISCORD_RPC_TOGGLE.value in values:
+                self.rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
 
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
@@ -423,6 +436,11 @@ class PyClashBotUI(ttk.Window):
         self.sub_notebook.add(self.google_play_frame, text="Google Play Settings")
         self.sub_notebook.add(self.memu_frame, text="MEmu Settings")
         self.sub_notebook.add(self.bluestacks_frame, text="BlueStacks Settings")
+        self._emulator_tabs = {
+            "Google Play": self.google_play_frame,
+            "MEmu": self.memu_frame,
+            "BlueStacks 5": self.bluestacks_frame,
+        }
 
         self.gp_vars: dict[UIField, ttk.StringVar] = {}
         self._create_google_play_settings()
@@ -564,6 +582,18 @@ class PyClashBotUI(ttk.Window):
         data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
 
+        self.rpc_var = ttk.BooleanVar()
+        rpc_checkbox = ttk.Checkbutton(
+            data_frame,
+            text="Enable Discord Rich Presence",
+            variable=self.rpc_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        rpc_checkbox.pack(anchor="w")
+        self._trace_variable(self.rpc_var)
+        self._register_config_widget(UIField.DISCORD_RPC_TOGGLE.value, rpc_checkbox)
+
         self.record_var = ttk.BooleanVar()
         record_checkbox = ttk.Checkbutton(
             data_frame,
@@ -672,8 +702,16 @@ class PyClashBotUI(ttk.Window):
         self._notify_config_change()
 
     def _show_emulator_settings(self) -> None:
-        index_map = {"Google Play": 0, "MEmu": 1, "BlueStacks 5": 2}
-        self.sub_notebook.select(index_map.get(self.emulator_var.get(), 1))
+        current = self.emulator_var.get()
+        target_frame = self._emulator_tabs.get(current)
+        for name, frame in self._emulator_tabs.items():
+            state = "normal" if frame is target_frame else "hidden"
+            try:
+                self.sub_notebook.tab(frame, state=state)
+            except tk.TclError:
+                continue
+        if target_frame is not None:
+            self.sub_notebook.select(target_frame)
 
     def _hide_action_button(self) -> None:
         self.action_btn.grid_remove()
