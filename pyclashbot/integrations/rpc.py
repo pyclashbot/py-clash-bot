@@ -29,7 +29,6 @@ class DiscordRPCManager:
     """Manage Discord Rich Presence for the application."""
 
     APPLICATION_ID = "1431881110261858401"
-    FIGHT_STATES = {"start_fight", "1v1_fight", "2v2_fight"}
     MODE_ASSET_KEYS = {
         "classic 1v1": "1v1",
         "1v1": "1v1",
@@ -79,10 +78,6 @@ class DiscordRPCManager:
     def update(self, logger: Logger | None, force: bool = False) -> None:
         """Update Discord Rich Presence from the provided logger."""
         if not self._enabled or logger is None:
-            return
-
-        current_state = getattr(logger, "current_state", None)
-        if current_state in self.FIGHT_STATES:
             return
 
         snapshot = self._build_snapshot(logger)

@@ -245,10 +245,6 @@ def state_tree(
     # header in the log file to split the log by state loop iterations
     logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
 
-    if state not in FIGHT_STATE_NAMES and ACTIVE_BATTLE_MODE is not None:
-        ACTIVE_BATTLE_MODE = None
-        logger.set_current_mode(None)
-
     if state is None:
         logger.error("Error! State is None!!")
         raise ValueError("State is None - critical error in state machine")
@@ -393,8 +389,6 @@ def state_tree(
     if state == "start_fight":
         if mode_used_in_1v1 is None:
             print("No battle mode selected. Skipping this state")
-            ACTIVE_BATTLE_MODE = None
-            logger.set_current_mode(None)
             return state_order.next_state(state)
 
         # Start fight using the selected mode directly
@@ -410,8 +404,6 @@ def state_tree(
         # Check if the current mode is a 1v1 type (Classic 1v1 or Trophy Road)
         if mode_used_in_1v1 not in ["Classic 1v1", "Trophy Road"]:
             print(f"Current mode '{mode_used_in_1v1}' is not a 1v1 type. Skipping this state")
-            ACTIVE_BATTLE_MODE = None
-            logger.set_current_mode(None)
             return state_order.next_state(state)
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
@@ -440,8 +432,6 @@ def state_tree(
         # Check if the current mode is a 2v2 type (Classic 2v2)
         if mode_used_in_1v1 != "Classic 2v2":
             print(f"Current mode '{mode_used_in_1v1}' is not a 2v2 type. Skipping this state")
-            ACTIVE_BATTLE_MODE = None
-            logger.set_current_mode(None)
             return state_order.next_state(state)
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
