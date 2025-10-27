@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+from collections.abc import Callable
 from tkinter import messagebox
 from typing import TYPE_CHECKING
 
@@ -43,7 +44,7 @@ class PyClashBotUI(ttk.Window):
     def __init__(self) -> None:
         super().__init__(themename=self.DEFAULT_THEME)
         self.title("py-clash-bot")
-        self.geometry("460x500")
+        self.geometry("480x500")
         self.resizable(False, False)
 
         self._style = ttk.Style()
@@ -70,11 +71,9 @@ class PyClashBotUI(ttk.Window):
         self._config_callback = callback
 
     def register_open_recordings_callback(self, callback: Callable[[], None]) -> None:
-        """Register the callback for opening the recordings folder."""
         self._open_recordings_callback = callback
 
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
-        """Register the callback for opening the logs folder."""
         self._open_logs_callback = callback
 
     def get_all_values(self) -> dict[str, object]:
@@ -144,15 +143,21 @@ class PyClashBotUI(ttk.Window):
                 self.bs_render_var.set("OpenGL")
 
             for field, var in self.gp_vars.items():
-                if values.get(field.value):
+                config = next((c for c in GOOGLE_PLAY_SETTINGS if c.key == field), None)
+                if field.value in values and values[field.value] is not None:
                     var.set(str(values[field.value]))
+                elif config:
+                    var.set(str(config.default))
 
             self._update_google_play_comboboxes()
-            self._show_emulator_settings()
+
         finally:
             self._suspend_traces -= 1
+
         if theme_value is not None:
             self._apply_theme(theme_value)
+
+        self._show_current_emulator_settings()
 
     def set_running_state(self, running: bool) -> None:
         start_state = tk.DISABLED if running else tk.NORMAL
@@ -160,11 +165,30 @@ class PyClashBotUI(ttk.Window):
         self.start_btn.configure(state=start_state)
         self.stop_btn.configure(state=stop_state)
 
-        for widget in self._config_widgets.values():
+        for key, widget in self._config_widgets.items():
             if widget in {self.stop_btn, self.start_btn}:
                 continue
             try:
-                widget.configure(state=tk.DISABLED if running else tk.NORMAL)
+                if isinstance(widget, ttk.Combobox):
+                    if key == "emulator_combobox":
+                        widget.configure(state=tk.DISABLED if running else READONLY)
+                    else:
+                        widget.configure(state=tk.DISABLED if running else READONLY)
+                elif isinstance(widget, ttk.Spinbox):
+                    widget.configure(state=tk.DISABLED if running else READONLY)
+                elif isinstance(widget, ttk.Radiobutton) and key in [
+                    UIField.DIRECTX_TOGGLE.value,
+                    UIField.OPENGL_TOGGLE.value,
+                    UIField.BS_RENDERER_DX.value,
+                    UIField.BS_RENDERER_GL.value,
+                    UIField.BS_RENDERER_VK.value,
+                ]:
+                    widget.configure(state=tk.DISABLED if running else tk.NORMAL)
+                elif isinstance(widget, ttk.Checkbutton):
+                    widget.configure(state=tk.DISABLED if running else tk.NORMAL)
+                elif isinstance(widget, ttk.Button):
+                    widget.configure(state=tk.DISABLED if running else tk.NORMAL)
+
             except tk.TclError:
                 continue
         if running:
@@ -348,6 +372,7 @@ class PyClashBotUI(ttk.Window):
             width=6,
             textvariable=self.deck_var,
             command=self._notify_config_change,
+            state=READONLY,
         )
         self.deck_spin.grid(row=3, column=3, sticky="e")
         self._trace_variable(self.deck_var)
@@ -379,6 +404,7 @@ class PyClashBotUI(ttk.Window):
             width=6,
             textvariable=self.max_deck_var,
             command=self._notify_config_change,
+            state=READONLY,
         )
         self.max_deck_spin.grid(row=4, column=3, sticky="e")
         self._trace_variable(self.max_deck_var)
@@ -390,48 +416,56 @@ class PyClashBotUI(ttk.Window):
         add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade Cards", 8, secondary_bootstyle)
 
     def _create_emulator_tab(self) -> None:
-        outer = ttk.Labelframe(self.emulator_tab, text="Emulator Type", padding=10)
-        outer.pack(padx=10, pady=10, anchor="n", fill="x")
+        # Main container frame for the tab
+        container = ttk.Frame(self.emulator_tab, padding=10)
+        container.pack(fill=BOTH, expand=YES)
 
-        self.emulator_var = ttk.StringVar(value="MEmu")
-        choices = [
-            ("MEmu", UIField.MEMU_EMULATOR_TOGGLE),
-            ("Google Play", UIField.GOOGLE_PLAY_EMULATOR_TOGGLE),
-            ("BlueStacks 5", UIField.BLUESTACKS_EMULATOR_TOGGLE),
-        ]
+        # Emulator Selection Dropdown
+        selection_frame = ttk.Frame(container)
+        selection_frame.pack(fill=X, pady=(0, 10))
+        ttk.Label(selection_frame, text="Select Emulator:").pack(side=LEFT, padx=(0, 5))
 
-        radio_row = ttk.Frame(outer)
-        radio_row.pack(anchor="w")
-        for text, field in choices:
-            rb = ttk.Radiobutton(
-                radio_row,
-                text=text,
-                variable=self.emulator_var,
-                value=text,
-                command=self._on_emulator_changed,
-            )
-            rb.pack(side=LEFT, padx=(0, 12))
-            self._register_config_widget(field.value, rb)
+        self.emulator_var = ttk.StringVar(value="MEmu")  # Default value
+        emulator_choices = ["MEmu", "Google Play", "BlueStacks 5"]
+        self.emulator_combo = ttk.Combobox(
+            selection_frame,
+            textvariable=self.emulator_var,
+            values=emulator_choices,
+            state=READONLY,
+            width=20,
+        )
+        self.emulator_combo.pack(side=LEFT, fill=X, expand=True)
+        self.emulator_combo.bind("<<ComboboxSelected>>", self._on_emulator_changed)
+        # Register the combobox itself for state management
+        self._register_config_widget("emulator_combobox", self.emulator_combo)
 
-        self.sub_notebook = ttk.Notebook(outer)
-        self.sub_notebook.pack(fill="x", pady=8)
+        # Frame to hold the currently selected emulator's settings
+        self.settings_container = ttk.Frame(container)
+        self.settings_container.pack(fill=BOTH, expand=YES)
 
-        self.google_play_frame = ttk.Frame(self.sub_notebook)
-        self.memu_frame = ttk.Frame(self.sub_notebook)
-        self.bluestacks_frame = ttk.Frame(self.sub_notebook)
+        # Create the individual settings frames but don't pack them yet
+        self.google_play_frame = ttk.Frame(self.settings_container)
+        self.memu_frame = ttk.Frame(self.settings_container)
+        self.bluestacks_frame = ttk.Frame(self.settings_container)
 
-        self.sub_notebook.add(self.google_play_frame, text="Google Play Settings")
-        self.sub_notebook.add(self.memu_frame, text="MEmu Settings")
-        self.sub_notebook.add(self.bluestacks_frame, text="BlueStacks Settings")
+        # Store frames in a dictionary for easy access
+        self.emulator_settings_frames = {
+            "MEmu": self.memu_frame,
+            "Google Play": self.google_play_frame,
+            "BlueStacks 5": self.bluestacks_frame,
+        }
 
+        # Populate the settings frames
         self.gp_vars: dict[UIField, ttk.StringVar] = {}
-        self._create_google_play_settings()
-        self._create_memu_settings()
-        self._create_bluestacks_settings()
-        self._show_emulator_settings()
+        self._create_google_play_settings(self.google_play_frame)
+        self._create_memu_settings(self.memu_frame)
+        self._create_bluestacks_settings(self.bluestacks_frame)
 
-    def _create_google_play_settings(self) -> None:
-        frame = ttk.Labelframe(self.google_play_frame, text="Google Play Options", padding=10)
+        # Show the initial settings based on the default value
+        self._show_current_emulator_settings()
+
+    def _create_google_play_settings(self, parent_frame: ttk.Frame) -> None:
+        frame = ttk.Labelframe(parent_frame, text="Google Play Options", padding=10)
         frame.pack(fill="x", padx=5, pady=5)
 
         left_keys = GOOGLE_PLAY_SETTINGS[:4]
@@ -443,8 +477,8 @@ class PyClashBotUI(ttk.Window):
         for row, config in enumerate(right_keys):
             self._add_google_play_row(frame, row, 3, config)
 
-    def _create_memu_settings(self) -> None:
-        frame = ttk.Labelframe(self.memu_frame, text="Render Mode", padding=10)
+    def _create_memu_settings(self, parent_frame: ttk.Frame) -> None:
+        frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
         frame.pack(fill="x", padx=5, pady=5)
 
         self.memu_render_var = ttk.StringVar(value="DirectX")
@@ -460,8 +494,8 @@ class PyClashBotUI(ttk.Window):
             rb.pack(anchor="w")
             self._register_config_widget(config.key.value, rb)
 
-    def _create_bluestacks_settings(self) -> None:
-        frame = ttk.Labelframe(self.bluestacks_frame, text="Render Mode", padding=10)
+    def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
+        frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
         frame.pack(fill="x", padx=5, pady=5)
 
         self.bs_render_var = ttk.StringVar(value="DirectX")
@@ -619,11 +653,14 @@ class PyClashBotUI(ttk.Window):
             textvariable=var,
         )
         combo.grid(row=row, column=column_offset + 1, sticky="w")
-        combo.bind("<<ComboboxSelected>>", self._notify_config_change)
+        combo.bind("<<ComboboxSelected>>", self._notify_config_change_event)
         field = config.key
         self.gp_vars[field] = var
         self._trace_variable(var)
         self._register_config_widget(field.value, combo)
+
+    def _notify_config_change_event(self, _event: object) -> None:
+        self._notify_config_change()
 
     def _update_google_play_comboboxes(self) -> None:
         for field, var in self.gp_vars.items():
@@ -649,8 +686,11 @@ class PyClashBotUI(ttk.Window):
         self._refresh_theme_colours()
 
     def _label_foreground(self) -> str:
-        colour = self._style.lookup("TLabel", "foreground")
-        return colour or "#202020"
+        try:
+            colour = self._style.lookup("TLabel", "foreground")
+            return colour or "#202020"
+        except tk.TclError:
+            return "#202020"
 
     def _refresh_theme_colours(self) -> None:
         foreground = self._label_foreground()
@@ -659,21 +699,30 @@ class PyClashBotUI(ttk.Window):
                 label.configure(foreground=foreground)
             except tk.TclError:
                 continue
-        gauge_fg = getattr(self._style.colors, "success", "#2ecc71") if hasattr(self._style, "colors") else "#2ecc71"
-        gauge_bg = getattr(self._style.colors, "danger", "#e74c3c") if hasattr(self._style, "colors") else "#e74c3c"
+        gauge_fg = getattr(self._style.colors, "success", "#2ecc71")
+        gauge_bg = getattr(self._style.colors, "danger", "#e74c3c")
         self.win_gauge.set_colours(gauge_fg, gauge_bg, foreground)
 
-    def _on_theme_change(self, _event: object) -> None:
+    def _on_theme_change(self, _event: object | None = None) -> None:
         self._apply_theme(self.theme_var.get(), skip_variable_update=True)
         self._notify_config_change()
 
-    def _on_emulator_changed(self) -> None:
-        self._show_emulator_settings()
+    def _on_emulator_changed(self, _event: object = None) -> None:
+        self._show_current_emulator_settings()
         self._notify_config_change()
 
-    def _show_emulator_settings(self) -> None:
-        index_map = {"Google Play": 0, "MEmu": 1, "BlueStacks 5": 2}
-        self.sub_notebook.select(index_map.get(self.emulator_var.get(), 1))
+    def _show_current_emulator_settings(self) -> None:
+        """Hides all emulator settings frames and shows the one selected in the combobox."""
+        selected_emulator = self.emulator_var.get()
+
+        # Hide all frames first
+        for frame in self.emulator_settings_frames.values():
+            frame.pack_forget()
+
+        # Show the selected frame
+        frame_to_show = self.emulator_settings_frames.get(selected_emulator)
+        if frame_to_show:
+            frame_to_show.pack(fill=BOTH, expand=YES)
 
     def _hide_action_button(self) -> None:
         self.action_btn.grid_remove()
