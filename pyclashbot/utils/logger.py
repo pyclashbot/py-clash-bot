@@ -141,6 +141,8 @@ class Logger:
 
         # bot stats
         self.current_state = "No state"
+        self.current_mode: str | None = None
+        self.current_emulator: str | None = None
         self.current_status = "Idle"
         self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
@@ -172,17 +174,19 @@ class Logger:
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
                 "winrate": self.winrate,
                 "card_randomizations": self.card_randomizations,
-                "card_cycles": self.card_cycles,
-                # collection stats
-                "war_chest_collects": self.war_chest_collects,
-                "card_mastery_reward_collections": self.card_mastery_reward_collections,
-                # card stats
-                "upgrades": self.cards_upgraded,
-                "cards_played": self.cards_played,
-                # bot stats
-                "restarts_after_failure": self.restarts_after_failure,
-                "current_status": self.current_status,
-            }
+                  "card_cycles": self.card_cycles,
+                  # collection stats
+                  "war_chest_collects": self.war_chest_collects,
+                  "card_mastery_reward_collections": self.card_mastery_reward_collections,
+                  # card stats
+                  "upgrades": self.cards_upgraded,
+                  "cards_played": self.cards_played,
+                  # bot stats
+                  "restarts_after_failure": self.restarts_after_failure,
+                  "current_status": self.current_status,
+                  "current_mode": self.current_mode,
+                  "current_emulator": self.current_emulator,
+              }
 
     def get_stats(self):
         """Get stats"""
@@ -325,6 +329,16 @@ class Logger:
     def set_current_state(self, state_to_set):
         """Set logger's current_state to state_to_set"""
         self.current_state = state_to_set
+
+    @_updates_gui
+    def set_current_mode(self, mode: str | None) -> None:
+        """Set the logger's current_mode for downstream integrations."""
+        self.current_mode = mode
+
+    @_updates_gui
+    def set_current_emulator(self, emulator: str | None) -> None:
+        """Set the logger's current_emulator for downstream integrations."""
+        self.current_emulator = emulator
 
     @_updates_gui
     def increment_battlepass_collects(self):

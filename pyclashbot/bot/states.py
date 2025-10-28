@@ -48,6 +48,9 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
 mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
 
+ACTIVE_BATTLE_MODE: str | None = None
+FIGHT_STATE_NAMES = {"select_battle_mode", "start_fight", "1v1_fight", "2v2_fight"}
+
 CLASH_MAIN_DEADSPACE_COORD = (20, 520)
 
 
@@ -232,9 +235,9 @@ def state_tree(
     job_list,
     state_history: StateHistory,
     state_order: StateOrder,
-) -> str:
+  ) -> str:
     """Method to handle and loop between the various states of the bot"""
-    global mode_used_in_1v1, fight_mode_cycle_index  # noqa: PLW0602
+    global mode_used_in_1v1, fight_mode_cycle_index, ACTIVE_BATTLE_MODE  # noqa: PLW0602
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
     time.sleep(0.1)
@@ -351,6 +354,9 @@ def state_tree(
 
         if not enabled_modes:
             print("No fight modes are enabled. Skipping this state")
+            mode_used_in_1v1 = None
+            ACTIVE_BATTLE_MODE = None
+            logger.set_current_mode(None)
             return state_order.next_state(state)
 
         # if more than one mode is selected, just cycle through them
@@ -376,6 +382,8 @@ def state_tree(
             else:
                 print(f"{selected_mode} is already selected.")
 
+        ACTIVE_BATTLE_MODE = selected_mode
+        logger.set_current_mode(selected_mode)
         return state_order.next_state(state)
 
     if state == "start_fight":
@@ -384,6 +392,8 @@ def state_tree(
             return state_order.next_state(state)
 
         # Start fight using the selected mode directly
+        ACTIVE_BATTLE_MODE = mode_used_in_1v1
+        logger.set_current_mode(mode_used_in_1v1)
         if start_fight(emulator, logger, mode_used_in_1v1) is False:
             return handle_state_failure(logger, "start_fight", "start_fight", "Failed while starting fight")
 
@@ -399,6 +409,8 @@ def state_tree(
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
+        ACTIVE_BATTLE_MODE = mode_used_in_1v1
+        logger.set_current_mode(mode_used_in_1v1)
         if (
             do_fight_state(
                 emulator,
@@ -425,6 +437,8 @@ def state_tree(
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
+        ACTIVE_BATTLE_MODE = mode_used_in_1v1
+        logger.set_current_mode(mode_used_in_1v1)
         if (
             do_2v2_fight_state(
                 emulator,
