@@ -3,16 +3,8 @@
 from __future__ import annotations
 
 import os
-import warnings
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
-
-warnings.filterwarnings( # mutes localization error from console (no functionality loss)
-    "ignore",
-    category=SyntaxWarning,
-    module=r"ttkbootstrap\.localization\.msgs",
-)
-warnings.filterwarnings("ignore", message=r".*invalid escape sequence.*", category=SyntaxWarning)
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
