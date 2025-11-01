@@ -15,7 +15,7 @@ dependencies = [
     "psutil>=6.1.0,<8",
     "pygetwindow (>=0.0.9,<0.0.10)",
     "pillow (>=11.3.0,<12.0.0)",
-    "ttkbootstrap>=1.12.1,<1.13",
+    "ttkbootstrap>=1.12.1,<1.19",
 ]
 
 [project.urls]
