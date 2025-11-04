@@ -25,6 +25,7 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 - **Render Mode Selection** - Choose between OpenGL, DirectX, and Vulkan rendering
 - **Real-time Statistics** - Track wins, losses, chests opened, and more
 - **Performance Monitoring** - Monitor bot runtime, failures, and account switches
+- **Discord Webhook Notifications** - Receive real-time notifications about bot status, battle results, and errors directly in Discord
 
 ## 🚀 Setup Instructions
 
@@ -81,6 +82,43 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 - **Language Setting** - Ensure Clash Royale is set to English for optimal bot performance
 - **Tutorial Completion** - The tutorial must be completed manually before starting the bot
 - **Account Setup** - Sign in with SuperCell ID or create a new account as needed
+
+## 📢 Discord Webhook Notifications
+
+Receive real-time notifications about your bot's activity directly in Discord! This feature allows you to monitor your bot remotely, getting notified about important events like bot starts, stops, battle results, and errors.
+
+### Setting Up Discord Webhooks
+
+1. **Create a Discord Webhook**
+   - Open your Discord server
+   - Go to **Server Settings** → **Integrations** → **Webhooks**
+   - Click **New Webhook** or **Create Webhook**
+   - Name your webhook (e.g., "PyClashBot Notifications")
+   - Copy the webhook URL (starts with `https://discord.com/api/webhooks/`)
+
+2. **Configure in py-clash-bot**
+   - Open the bot application
+   - Navigate to the **Misc** tab
+   - Find the **Discord Webhook** section
+   - Paste your webhook URL into the **Webhook URL** field
+   - The webhook URL is automatically saved in your settings
+
+### What You'll Receive
+
+The bot will send notifications for:
+
+- **🤖 Bot Started** - When the bot begins automation (includes current state)
+- **🛑 Bot Stopped** - When the bot stops (includes final statistics: wins, losses, win rate, runtime, failures)
+- **🎉 Battle Won** - When you win a battle (includes battle type and win rate)
+- **😔 Battle Lost** - When you lose a battle (includes battle type and win rate)
+- **⚠️ Bot Error** - When an error occurs (includes error message and context)
+
+### Notes
+
+- **Optional Feature** - Discord webhooks are completely optional. Leave the field empty to disable notifications.
+- **Privacy** - Webhook URLs are stored locally in your user settings and are not shared with anyone.
+- **Non-Blocking** - Webhook notifications are sent asynchronously and won't slow down or interfere with bot operation.
+- **Error Handling** - If a webhook fails to send (e.g., invalid URL or network issues), the bot will continue operating normally without disruption.
 
 ## 🔧 Emulator Debugging
 

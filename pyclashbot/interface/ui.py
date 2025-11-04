@@ -104,6 +104,7 @@ class PyClashBotUI(ttk.Window):
         for field, var in self.gp_vars.items():
             values[field.value] = var.get()
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
+        values[UIField.DISCORD_WEBHOOK_URL.value] = self.discord_webhook_var.get()
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -146,6 +147,9 @@ class PyClashBotUI(ttk.Window):
             for field, var in self.gp_vars.items():
                 if values.get(field.value):
                     var.set(str(values[field.value]))
+
+            if UIField.DISCORD_WEBHOOK_URL.value in values:
+                self.discord_webhook_var.set(str(values[UIField.DISCORD_WEBHOOK_URL.value]))
 
             self._update_google_play_comboboxes()
             self._show_emulator_settings()
@@ -589,6 +593,29 @@ class PyClashBotUI(ttk.Window):
             command=self._on_open_logs_clicked,
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
+
+        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        webhook_frame = ttk.Labelframe(self.misc_tab, text="Discord Webhook", padding=10)
+        webhook_frame.pack(fill="x", padx=10, pady=10)
+
+        ttk.Label(webhook_frame, text="Webhook URL:").pack(anchor="w", pady=(0, 4))
+        self.discord_webhook_var = ttk.StringVar(value="")
+        self.discord_webhook_entry = ttk.Entry(
+            webhook_frame,
+            textvariable=self.discord_webhook_var,
+            width=50,
+        )
+        self.discord_webhook_entry.pack(anchor="w", fill="x")
+        self.discord_webhook_entry.bind("<KeyRelease>", self._notify_config_change)
+        self._trace_variable(self.discord_webhook_var)
+        self._register_config_widget(UIField.DISCORD_WEBHOOK_URL.value, self.discord_webhook_entry)
+
+        ttk.Label(
+            webhook_frame,
+            text="Optional: Enter Discord webhook URL to receive notifications",
+            font=("TkDefaultFont", 8),
+            foreground="gray",
+        ).pack(anchor="w", pady=(4, 0))
 
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
         self._config_widgets[key] = widget

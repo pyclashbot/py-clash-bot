@@ -72,6 +72,11 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     else:
         job_dictionary["emulator"] = "MEmu"
 
+    # Discord webhook URL
+    webhook_url = values.get(UIField.DISCORD_WEBHOOK_URL.value)
+    if webhook_url:
+        job_dictionary["discord_webhook_url"] = str(webhook_url).strip()
+
     return job_dictionary
 
 
@@ -108,6 +113,13 @@ def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any])
     logger.change_status("Starting the bot!")
     save_current_settings(values)
     logger.log_job_dictionary(job_dictionary)
+
+    # Set Discord webhook URL if provided
+    webhook_url = job_dictionary.get("discord_webhook_url")
+    if webhook_url:
+        logger.set_discord_webhook(webhook_url)
+    else:
+        logger.set_discord_webhook(None)
 
     ui.set_running_state(True)
     ui.notebook.select(ui.stats_tab)
