@@ -10,6 +10,7 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import exists, expandvars, getmtime, join
 
+from pyclashbot.utils.discord_webhook import DiscordWebhook
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.versioning import __version__
 
@@ -152,6 +153,9 @@ class Logger:
         self.action_needed = False
         self.action_callback = None
         self.action_text = "Continue"
+
+        # Discord webhook integration
+        self.discord_webhook: DiscordWebhook | None = None
 
         # write initial values to queue
         self._update_stats()
@@ -333,39 +337,42 @@ class Logger:
 
     @_updates_gui
     def add_shop_offer_collection(self) -> None:
-        """Add level up chest collection to log"""
+        """Add level up chest collection to log."""
         self.shop_offer_collections += 1
 
     @_updates_gui
     def error(self, message: str) -> None:
-        """Log error message
+        """Log error message.
 
         Args:
         ----
-            message (str): error message
-
+            message (str): Error message to log
         """
         self.errored = True
         logging.error(message)
 
+        # Send Discord notification for errors
+        if self.discord_webhook:
+            self.discord_webhook.send_error(message, context=self.current_state)
+
     @_updates_gui
     def add_card_mastery_reward_collection(self) -> None:
-        """Increment logger's card mastery reward collection counter by 1"""
+        """Increment logger's card mastery reward collection counter by 1."""
         self.card_mastery_reward_collections += 1
 
     @_updates_gui
     def add_chest_unlocked(self) -> None:
-        """Add chest unlocked to log"""
+        """Add chest unlocked to log."""
         self.chests_unlocked += 1
 
     @_updates_gui
     def add_war_fight(self) -> None:
-        """Add card played to log"""
+        """Add war fight to log."""
         self.war_fights += 1
 
     @_updates_gui
     def add_card_played(self) -> None:
-        """Add card played to log"""
+        """Add card played to log."""
         self.cards_played += 1
 
     @_updates_gui
@@ -374,39 +381,49 @@ class Logger:
 
     @_updates_gui
     def add_card_upgraded(self):
-        """Add card upgraded to log"""
+        """Add card upgraded to log."""
         self.cards_upgraded += 1
 
     @_updates_gui
     def add_win(self):
-        """Add win to log"""
+        """Add win to log."""
         self.wins += 1
         self.winrate = self.calc_win_rate()
 
+        # Send Discord notification
+        if self.discord_webhook:
+            battle_type = "1v1" if self._1v1_fights > 0 else "2v2" if self._2v2_fights > 0 else "Battle"
+            self.discord_webhook.send_battle_result(True, battle_type, {"Win Rate": self.winrate})
+
     @_updates_gui
     def add_loss(self):
-        """Add loss to log"""
+        """Add loss to log."""
         self.losses += 1
         self.winrate = self.calc_win_rate()
 
+        # Send Discord notification
+        if self.discord_webhook:
+            battle_type = "1v1" if self._1v1_fights > 0 else "2v2" if self._2v2_fights > 0 else "Battle"
+            self.discord_webhook.send_battle_result(False, battle_type, {"Win Rate": self.winrate})
+
     @_updates_gui
     def add_1v1_fight(self) -> None:
-        """Add fight to log"""
+        """Add fight to log."""
         self._1v1_fights += 1
 
     @_updates_gui
     def add_card_randomization(self):
-        """Incremenet card_randomizations counter"""
+        """Increment card_randomizations counter."""
         self.card_randomizations += 1
 
     @_updates_gui
     def add_deck_cycled(self):
-        """Increment card_cycles counter"""
+        """Increment card_cycles counter."""
         self.card_cycles += 1
 
     @_updates_gui
     def increment_2v2_fights(self) -> None:
-        """Add fight to log"""
+        """Add fight to log."""
         self._2v2_fights += 1
 
     @_updates_gui
@@ -416,7 +433,7 @@ class Logger:
 
     @_updates_gui
     def add_war_chest_collect(self) -> None:
-        """Add request to log"""
+        """Add war chest collection to log."""
         self.war_chest_collects += 1
 
     @_updates_gui
@@ -426,24 +443,32 @@ class Logger:
 
     @_updates_gui
     def add_daily_reward(self) -> None:
-        """Add donate to log"""
+        """Add daily reward to log."""
         self.daily_rewards += 1
 
     @_updates_gui
     def change_status(self, status, action_needed=False, action_callback=None) -> None:
-        """Change status of bot in log
+        """Change status of bot and log it.
 
         Args:
         ----
-            status (str): status of bot
-            action_needed (bool): whether an action button should be shown
-            action_callback (callable): callback function to call when action is taken
-
+            status (str): Status message for the bot
+            action_needed (bool): Whether an action button should be shown
+            action_callback (callable): Callback function to call when action is taken
         """
         self.current_status = status
         self.action_needed = action_needed
         self.action_callback = action_callback
         self.log(status)
+
+        # Send Discord notification for important status changes
+        if self.discord_webhook:
+            status_lower = status.lower()
+            if status_lower.startswith("starting"):
+                self.discord_webhook.send_bot_started({"State": self.current_state})
+            elif status_lower.startswith("stopping") or status_lower.startswith("bot stopped") or status_lower == "idle":
+                stats = self.get_stats()
+                self.discord_webhook.send_bot_stopped(stats)
 
     @_updates_gui
     def show_temporary_action(self, message, action_text="Retry", callback=None) -> None:
@@ -497,6 +522,18 @@ class Logger:
     def update_time_of_last_card_upgrade(self, input_time) -> None:
         """Sets logger's time_of_last_card_upgrade to input_time"""
         self.time_of_last_card_upgrade = input_time
+
+    def set_discord_webhook(self, webhook_url: str | None) -> None:
+        """Set Discord webhook URL for notifications.
+
+        Args:
+        ----
+            webhook_url: Discord webhook URL string, or None to disable
+        """
+        if webhook_url and webhook_url.strip():
+            self.discord_webhook = DiscordWebhook(webhook_url.strip())
+        else:
+            self.discord_webhook = None
 
     def log_job_dictionary(self, job_dictionary: dict[str, str | int]) -> None:
         """Method for logging the job dictionary

@@ -123,3 +123,7 @@ class WorkerThread(PausableThread):
             return
         except Exception as err:
             self.logger.error(str(err))
+        finally:
+            # Send notification when bot stops naturally
+            if self.logger.discord_webhook:
+                self.logger.change_status("Bot stopped")

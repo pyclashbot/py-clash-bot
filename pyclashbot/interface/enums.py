@@ -55,6 +55,7 @@ class UIField(StrEnum):
     GP_EGL = "gp_egl"
     GP_BACKEND = "gp_backend"
     GP_WSI = "gp_wsi"
+    DISCORD_WEBHOOK_URL = "discord_webhook_url"
 
 
 BATTLE_STAT_LABELS: dict[StatField, str] = {
