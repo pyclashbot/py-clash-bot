@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import tkinter as tk
 
 
@@ -26,9 +24,9 @@ class DualRingGauge(tk.Canvas):
         self.background_colour = bg
         self.text_colour = text_color
         self._value = 0.0
-        self._arc_fg: Optional[int] = None
-        self._arc_bg: Optional[int] = None
-        self._text: Optional[int] = None
+        self._arc_fg: int | None = None
+        self._arc_bg: int | None = None
+        self._text: int | None = None
         self._draw_static()
         self._draw_dynamic(0, "0%")
 
@@ -63,8 +61,8 @@ class DualRingGauge(tk.Canvas):
         self,
         percent: float,
         label: str,
-        fg_colour: Optional[str] = None,
-        text_colour: Optional[str] = None,
+        fg_colour: str | None = None,
+        text_colour: str | None = None,
     ) -> None:
         percent = max(0, min(100, float(percent)))
         bbox = self._bbox()
@@ -87,8 +85,8 @@ class DualRingGauge(tk.Canvas):
         self,
         target_percent: float,
         label_format: str = "{:.0f}%",
-        fg_colour: Optional[str] = None,
-        text_colour: Optional[str] = None,
+        fg_colour: str | None = None,
+        text_colour: str | None = None,
         duration_ms: int = 400,
     ) -> None:
         start = self._value

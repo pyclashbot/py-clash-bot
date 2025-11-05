@@ -8,6 +8,7 @@ import sys
 from collections.abc import Callable
 from os.path import expandvars, join
 from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
@@ -15,7 +16,12 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
-from pyclashbot.utils.thread import StoppableThread
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from pyclashbot.utils.thread import StoppableThread
+
 
 initalize_pylogging()
 

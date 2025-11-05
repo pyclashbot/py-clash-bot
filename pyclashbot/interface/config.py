@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict
 
 from pyclashbot.interface.enums import (
     BATTLE_STAT_FIELDS,
@@ -33,7 +32,7 @@ class JobConfig:
     key: UIField
     title: str
     default: bool = False
-    extras: Dict[UIField, "ComboConfig"] | None = None
+    extras: dict[UIField, ComboConfig] | None = None
 
 
 @dataclass
