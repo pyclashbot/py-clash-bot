@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
+from collections.abc import Callable
 from os.path import expandvars, join
+from typing import Any
 from typing import TYPE_CHECKING, Any
 
 from pyclashbot.bot.worker import WorkerThread
@@ -183,11 +187,12 @@ class BotApplication:
 
     def __init__(self, settings: dict[str, Any] | None = None) -> None:
         self.ui = PyClashBotUI()
-        self.ui.start_btn.configure(command=self._on_start)
-        self.ui.stop_btn.configure(command=self._on_stop)
+        self.ui.register_start_callback(self._on_start)
+        self.ui.register_stop_callback(self._on_stop)
         self.ui.register_config_callback(self._on_config_change)
         self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
+        self.ui.register_switch_to_web_ui_callback(self._on_switch_to_web_ui)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self.thread: WorkerThread | None = None
@@ -270,6 +275,34 @@ class BotApplication:
     def _on_open_logs_clicked(self) -> None:
         open_logs_folder()
 
+    def _on_switch_to_web_ui(self) -> None:
+        """Switch to web UI: save settings, close tkinter UI, and spawn webview UI process."""
+        # Save current settings first
+        values = self.ui.get_all_values()
+        values["ui_mode"] = "web"
+        save_current_settings(values)
+
+        # Stop any running thread
+        if self.thread is not None:
+            exit_button_event(self.thread)
+
+        # Launch webview UI in a separate process to avoid GUI mainloop conflicts
+        try:
+            subprocess.Popen([sys.executable, "-m", "pyclashbot.web_main"], close_fds=False)
+        except Exception:
+            # Fallback: run in-process if subprocess fails
+            from pyclashbot.interface.webview_app import run_webview
+
+            run_webview()
+
+        # Close the tkinter window
+        self._closing = True
+        try:
+            self.ui.quit()
+        except Exception:
+            pass
+        self.ui.destroy()
+
     def _on_close(self) -> None:
         self._closing = True
         exit_button_event(self.thread)
@@ -288,4 +321,22 @@ def main_gui(start_on_run: bool = False, settings: dict[str, Any] | None = None)
 
 if __name__ == "__main__":
     cli_args = arg_parser()
-    main_gui(start_on_run=cli_args.start)
+
+    # Determine UI mode: CLI argument > cached setting > default (web)
+    ui_mode = cli_args.ui
+    if ui_mode is None:
+        # Check cached settings
+        if USER_SETTINGS_CACHE.exists():
+            cached_settings = USER_SETTINGS_CACHE.load_data()
+            ui_mode = cached_settings.get("ui_mode", "web")
+        else:
+            ui_mode = "web"
+
+    # Launch appropriate UI
+    if ui_mode == "regular":
+        main_gui(start_on_run=cli_args.start)
+    else:
+        # Default to web UI
+        from pyclashbot.interface.webview_app import run_webview
+
+        run_webview()
