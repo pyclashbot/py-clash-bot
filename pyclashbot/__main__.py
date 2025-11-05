@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
+from collections.abc import Callable
 from os.path import expandvars, join
-from typing import Any, Callable, Optional
+from typing import Any
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
@@ -19,6 +22,7 @@ initalize_pylogging()
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     """Create a dictionary of job toggles and increments based on UI values."""
+
     def as_bool(field: UIField) -> bool:
         return bool(values.get(field.value, False))
 
@@ -79,7 +83,7 @@ def save_current_settings(values: dict[str, Any]) -> None:
     USER_SETTINGS_CACHE.cache_data(values)
 
 
-def load_settings(settings: Optional[dict[str, Any]], ui: PyClashBotUI) -> Optional[dict[str, Any]]:
+def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str, Any] | None:
     """Load settings into the UI from CLI args or cached data."""
     loaded = settings
     if not loaded and USER_SETTINGS_CACHE.exists():
@@ -89,7 +93,7 @@ def load_settings(settings: Optional[dict[str, Any]], ui: PyClashBotUI) -> Optio
     return loaded
 
 
-def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> Optional[WorkerThread]:
+def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
     """Start the worker thread with the current configuration."""
     job_dictionary = make_job_dictionary(values)
 
@@ -129,16 +133,16 @@ def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
     ui.append_log(status_text)
 
 
-def exit_button_event(thread: Optional[StoppableThread]) -> None:
+def exit_button_event(thread: StoppableThread | None) -> None:
     if thread is not None:
         thread.shutdown(kill=True)
 
 
 def handle_thread_finished(
     ui: PyClashBotUI,
-    thread: Optional[WorkerThread],
+    thread: WorkerThread | None,
     logger: Logger,
-) -> tuple[Optional[WorkerThread], Logger]:
+) -> tuple[WorkerThread | None, Logger]:
     if thread is not None and not thread.is_alive():
         ui.set_running_state(False)
         if getattr(thread.logger, "errored", False):
@@ -171,19 +175,21 @@ def open_logs_folder() -> None:
 
         subprocess.Popen(["xdg-open", folder_path])
 
+
 class BotApplication:
     """Main application class for the ttkbootstrap GUI."""
 
-    def __init__(self, settings: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, settings: dict[str, Any] | None = None) -> None:
         self.ui = PyClashBotUI()
-        self.ui.start_btn.configure(command=self._on_start)
-        self.ui.stop_btn.configure(command=self._on_stop)
+        self.ui.register_start_callback(self._on_start)
+        self.ui.register_stop_callback(self._on_stop)
         self.ui.register_config_callback(self._on_config_change)
         self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
+        self.ui.register_switch_to_web_ui_callback(self._on_switch_to_web_ui)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
 
-        self.thread: Optional[WorkerThread] = None
+        self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
         self._closing = False
         self._suppress_persist = True
@@ -233,11 +239,11 @@ class BotApplication:
             save_current_settings(values)
 
     def _dispatch_action(self) -> None:
-        callback: Optional[Callable[[], None]] = getattr(self.logger, "action_callback", None)
+        callback: Callable[[], None] | None = getattr(self.logger, "action_callback", None)
         if callable(callback):
             try:
                 callback()
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 self.logger.log(f"Error executing action callback: {exc}")
         if hasattr(self.logger, "action_needed"):
             self.logger.action_needed = False
@@ -263,6 +269,34 @@ class BotApplication:
     def _on_open_logs_clicked(self) -> None:
         open_logs_folder()
 
+    def _on_switch_to_web_ui(self) -> None:
+        """Switch to web UI: save settings, close tkinter UI, and spawn webview UI process."""
+        # Save current settings first
+        values = self.ui.get_all_values()
+        values["ui_mode"] = "web"
+        save_current_settings(values)
+
+        # Stop any running thread
+        if self.thread is not None:
+            exit_button_event(self.thread)
+
+        # Launch webview UI in a separate process to avoid GUI mainloop conflicts
+        try:
+            subprocess.Popen([sys.executable, "-m", "pyclashbot.web_main"], close_fds=False)
+        except Exception:
+            # Fallback: run in-process if subprocess fails
+            from pyclashbot.interface.webview_app import run_webview
+
+            run_webview()
+
+        # Close the tkinter window
+        self._closing = True
+        try:
+            self.ui.quit()
+        except Exception:
+            pass
+        self.ui.destroy()
+
     def _on_close(self) -> None:
         self._closing = True
         exit_button_event(self.thread)
@@ -273,11 +307,30 @@ class BotApplication:
             self.ui.after(200, self._on_start)
         self.ui.mainloop()
 
-def main_gui(start_on_run: bool = False, settings: Optional[dict[str, Any]] = None) -> None:
+
+def main_gui(start_on_run: bool = False, settings: dict[str, Any] | None = None) -> None:
     app = BotApplication(settings)
     app.run(start_on_run)
 
 
 if __name__ == "__main__":
     cli_args = arg_parser()
-    main_gui(start_on_run=cli_args.start)
+
+    # Determine UI mode: CLI argument > cached setting > default (web)
+    ui_mode = cli_args.ui
+    if ui_mode is None:
+        # Check cached settings
+        if USER_SETTINGS_CACHE.exists():
+            cached_settings = USER_SETTINGS_CACHE.load_data()
+            ui_mode = cached_settings.get("ui_mode", "web")
+        else:
+            ui_mode = "web"
+
+    # Launch appropriate UI
+    if ui_mode == "regular":
+        main_gui(start_on_run=cli_args.start)
+    else:
+        # Default to web UI
+        from pyclashbot.interface.webview_app import run_webview
+
+        run_webview()

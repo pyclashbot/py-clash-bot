@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import tkinter as tk
+from collections.abc import Callable
 from tkinter import messagebox
-from typing import Callable, Optional
 
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import BOTH, LEFT, READONLY, X, YES
+from ttkbootstrap.constants import BOTH, LEFT, READONLY, YES, X
 
 from pyclashbot.interface.config import (
     BLUESTACKS_SETTINGS,
@@ -17,13 +17,12 @@ from pyclashbot.interface.config import (
 from pyclashbot.interface.enums import (
     BATTLE_STAT_FIELDS,
     BATTLE_STAT_LABELS,
-    BotStatField,
     BOT_STAT_FIELDS,
     BOT_STAT_LABELS,
     COLLECTION_STAT_FIELDS,
     COLLECTION_STAT_LABELS,
+    BotStatField,
     DerivedStatField,
-    PRIMARY_JOB_TOGGLES,
     StatField,
     UIField,
 )
@@ -33,8 +32,8 @@ from pyclashbot.interface.widgets import DualRingGauge
 def no_jobs_popup() -> None:
     messagebox.showerror("Critical Error!", "You must select at least one job!")
 
-class PyClashBotUI(ttk.Window):
 
+class PyClashBotUI(ttk.Window):
     DEFAULT_THEME = "darkly"
 
     def __init__(self) -> None:
@@ -48,9 +47,12 @@ class PyClashBotUI(ttk.Window):
         if not current_theme:
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
-        self._config_callback: Optional[Callable[[dict[str, object]], None]] = None
-        self._open_recordings_callback: Optional[Callable[[], None]] = None
-        self._open_logs_callback: Optional[Callable[[], None]] = None
+        self._config_callback: Callable[[dict[str, object]], None] | None = None
+        self._start_callback: Callable[[], None] | None = None
+        self._stop_callback: Callable[[], None] | None = None
+        self._open_recordings_callback: Callable[[], None] | None = None
+        self._open_logs_callback: Callable[[], None] | None = None
+        self._switch_to_web_ui_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
@@ -63,8 +65,24 @@ class PyClashBotUI(ttk.Window):
         self._build_bottom_row()
         self._refresh_theme_colours()
 
-    def register_config_callback(self, callback: Callable[[dict[str, object]], None]) -> None: # Call *callback* whenever a configuration control changes.
+    def register_config_callback(
+        self, callback: Callable[[dict[str, object]], None]
+    ) -> None:  # Call *callback* whenever a configuration control changes.
         self._config_callback = callback
+
+    def register_start_callback(self, callback: Callable[[], None]) -> None:
+        """Register the callback for the start button."""
+        self._start_callback = callback
+        # Configure button if it exists (it's created in _build_bottom_row)
+        if hasattr(self, "start_btn") and self.start_btn:
+            self.start_btn.configure(command=self._on_start_pressed)
+
+    def register_stop_callback(self, callback: Callable[[], None]) -> None:
+        """Register the callback for the stop button."""
+        self._stop_callback = callback
+        # Configure button if it exists (it's created in _build_bottom_row)
+        if hasattr(self, "stop_btn") and self.stop_btn:
+            self.stop_btn.configure(command=self._on_stop_pressed)
 
     def register_open_recordings_callback(self, callback: Callable[[], None]) -> None:
         """Register the callback for opening the recordings folder."""
@@ -73,15 +91,18 @@ class PyClashBotUI(ttk.Window):
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         """Register the callback for opening the logs folder."""
         self._open_logs_callback = callback
+
+    def register_switch_to_web_ui_callback(self, callback: Callable[[], None]) -> None:
+        """Register the callback for switching to web UI."""
+        self._switch_to_web_ui_callback = callback
+
     def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
         for field, var in self.jobs_vars.items():
             values[field.value] = bool(var.get())
 
         values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
-        values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(
-            self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get()
-        )
+        values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
         values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
 
@@ -105,7 +126,7 @@ class PyClashBotUI(ttk.Window):
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
-        theme_value: Optional[str] = None
+        theme_value: str | None = None
         self._suspend_traces += 1
         try:
             for field, var in self.jobs_vars.items():
@@ -142,7 +163,7 @@ class PyClashBotUI(ttk.Window):
                 self.bs_render_var.set("OpenGL")
 
             for field, var in self.gp_vars.items():
-                if field.value in values and values[field.value]:
+                if values.get(field.value):
                     var.set(str(values[field.value]))
 
             self._update_google_play_comboboxes()
@@ -186,7 +207,8 @@ class PyClashBotUI(ttk.Window):
 
     def set_status(self, text: str) -> None:
         self._status_text = text
-    def update_stats(self, stats: Optional[dict[str, object]]) -> None:
+
+    def update_stats(self, stats: dict[str, object] | None) -> None:
         if not stats:
             return
 
@@ -218,6 +240,7 @@ class PyClashBotUI(ttk.Window):
         winrate = parsed_winrate if parsed_winrate is not None else self._calculate_winrate_percentage(wins, losses)
         gauge_fg = getattr(self._style.colors, "success", "#2ecc71") if hasattr(self._style, "colors") else "#2ecc71"
         self.win_gauge.animate_to(winrate, fg_colour=gauge_fg, text_colour=self._label_foreground())
+
     def _build_tabs(self) -> None:
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, sticky="nsew", padx=10, pady=(10, 6))
@@ -253,16 +276,22 @@ class PyClashBotUI(ttk.Window):
         self.start_btn = tk.Button(bottom, text="Start", bg="green", fg="white", width=10)
         self.start_btn.grid(row=0, column=1, sticky="e", padx=(0, 6))
         self._register_config_widget("Start", self.start_btn)
+        if self._start_callback:
+            self.start_btn.configure(command=self._on_start_pressed)
 
-        self.stop_btn = tk.Button(bottom, text="Stop", bg="red", fg="white", width=10, state=tk.DISABLED)
+        self.stop_btn = tk.Button(bottom, text="Stop", bg="red", fg="white", width=10)
         self.stop_btn.grid(row=0, column=2, sticky="e")
+        self.stop_btn.configure(state=tk.DISABLED)
         self._register_config_widget("Stop", self.stop_btn)
+        if self._stop_callback:
+            self.stop_btn.configure(command=self._on_stop_pressed)
 
         self.action_btn = ttk.Button(bottom, text="Retry")
         self.action_btn.grid(row=0, column=2, sticky="e")
         self.action_btn.grid_remove()
-        self._action_callback: Optional[Callable[[], None]] = None
+        self._action_callback: Callable[[], None] | None = None
         self.action_btn.configure(command=self._on_action_pressed)
+
     def _create_jobs_tab(self) -> None:
         frame = ttk.Labelframe(self.jobs_tab, text="Jobs", padding=10)
         frame.pack(padx=10, pady=10, anchor="n", fill="x")
@@ -351,6 +380,7 @@ class PyClashBotUI(ttk.Window):
         add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "Skip win/loss check", 6, secondary_bootstyle)
         add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "Card Masteries", 7, secondary_bootstyle)
         add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", 8, secondary_bootstyle)
+
     def _create_emulator_tab(self) -> None:
         outer = ttk.Labelframe(self.emulator_tab, text="Emulator Type", padding=10)
         outer.pack(padx=10, pady=10, anchor="n", fill="x")
@@ -443,6 +473,7 @@ class PyClashBotUI(ttk.Window):
             )
             rb.pack(anchor="w")
             self._register_config_widget(config.key.value, rb)
+
     def _create_stats_tab(self) -> None:
         container = ttk.Frame(self.stats_tab, padding=10)
         container.pack(fill=BOTH, expand=YES)
@@ -551,6 +582,24 @@ class PyClashBotUI(ttk.Window):
         )
         self.open_logs_btn.pack(anchor="w", pady=(6, 0))
 
+        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        ui_frame = ttk.Labelframe(self.misc_tab, text="UI Settings", padding=10)
+        ui_frame.pack(fill="x", padx=10, pady=10)
+
+        self.switch_to_web_ui_btn = ttk.Button(
+            ui_frame,
+            text="Switch to Web UI",
+            command=self._on_switch_to_web_ui_clicked,
+            bootstyle="info",
+        )
+        self.switch_to_web_ui_btn.pack(anchor="w")
+        ttk.Label(
+            ui_frame,
+            text="Switch to the modern web-based interface",
+            font=("TkDefaultFont", 8),
+            foreground="gray",
+        ).pack(anchor="w", pady=(4, 0))
+
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
         self._config_widgets[key] = widget
 
@@ -653,6 +702,18 @@ class PyClashBotUI(ttk.Window):
         if self._open_logs_callback:
             self._open_logs_callback()
 
+    def _on_start_pressed(self) -> None:
+        if self._start_callback:
+            self._start_callback()
+
+    def _on_stop_pressed(self) -> None:
+        if self._stop_callback:
+            self._stop_callback()
+
+    def _on_switch_to_web_ui_clicked(self) -> None:
+        if self._switch_to_web_ui_callback:
+            self._switch_to_web_ui_callback()
+
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:
         try:
@@ -661,7 +722,7 @@ class PyClashBotUI(ttk.Window):
             return fallback
 
     @staticmethod
-    def _parse_winrate_value(raw: object) -> Optional[float]:
+    def _parse_winrate_value(raw: object) -> float | None:
         if isinstance(raw, str):
             stripped = raw.strip()
             if stripped.endswith("%"):

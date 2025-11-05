@@ -19,4 +19,13 @@ def arg_parser() -> Namespace:
         action="store_true",
         help="Start the bot when the program opens",
     )
+    parser.add_argument(
+        "--ui",
+        "-u",
+        dest="ui",
+        type=str,
+        choices=["web", "regular"],
+        default=None,
+        help="UI mode: 'web' for webview UI, 'regular' for tkinter UI (default: from settings)",
+    )
     return parser.parse_args()

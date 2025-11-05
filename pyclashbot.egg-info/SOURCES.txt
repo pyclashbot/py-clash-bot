@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+pyclashbot/__init__.py
+pyclashbot/__main__.py
+pyclashbot/web_main.py
+pyclashbot.egg-info/PKG-INFO
+pyclashbot.egg-info/SOURCES.txt
+pyclashbot.egg-info/dependency_links.txt
+pyclashbot.egg-info/requires.txt
+pyclashbot.egg-info/top_level.txt
