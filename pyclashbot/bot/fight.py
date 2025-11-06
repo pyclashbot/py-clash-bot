@@ -173,6 +173,7 @@ def start_fight(emulator, logger, mode) -> bool:
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(203, 487)
+    logger.log("Clicked Start button at (203, 487)")
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
@@ -180,6 +181,7 @@ def start_fight(emulator, logger, mode) -> bool:
         time.sleep(3)
         quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
+        logger.log(f"Clicked Quickmatch button at {quick_match_button_coord}")
 
     return True
 
