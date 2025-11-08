@@ -6,17 +6,15 @@ from contextlib import suppress
 from os.path import normpath
 from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
 
-import cv2
-import numpy as np
 import pygetwindow as gw
 
 DEBUG = False
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.emulators.adb_base import AdbBasedController
 
 
-class GooglePlayEmulatorController(BaseEmulatorController):
+class GooglePlayEmulatorController(AdbBasedController):
     def __init__(self, logger, render_settings: dict = {}):
         self.logger = logger
         # clear existing stuff
@@ -244,7 +242,10 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         raise FileNotFoundError(f"adb.exe not found at expected location: {adb_path}")
 
     def adb(self, command, binary_output=False):
-        """Runs an adb command using the located adb.exe path."""
+        """
+        Runs an adb command using the located adb.exe path.
+        This is the abstract method implementation for AdbBasedController.
+        """
         full_command = f'"{self.adb_path}" {command}'
         if DEBUG:
             print(f"[ADB DEBUG] Executing: {full_command}")
@@ -256,7 +257,7 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             shell=True,
             capture_output=True,
             text=not binary_output,
-            check=False,  # Use binary mode for screenshots
+            check=False,
         )
 
         if DEBUG:
@@ -269,6 +270,14 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             print(f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}...")
 
         return result
+
+    def _check_app_installed(self, package_name: str) -> bool:
+        """
+        Check if an app is installed using the emulator's bundled ADB.
+        This is the abstract method implementation for AdbBasedController.
+        """
+        result = self.adb("shell pm list packages")
+        return result.stdout is not None and package_name in result.stdout
 
     def create(self):
         """
@@ -376,7 +385,10 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         for i in range(start_app_count):
             self.logger.change_status(f"Starting Clash Royale (attempt {i + 1}/{start_app_count})...")
             print(f"Starting clash app (attempt {i + 1}/{start_app_count})...")
-            self.start_app(clash_royale_name)
+            if not self.start_app(clash_royale_name) and i == 0:
+                # App not installed, start_app triggered the wait.
+                # We just wait for it to return, then the loop will retry.
+                self.logger.log("App not installed. Waiting for user...")
             time.sleep(1)
 
         # wait for clash main to appear
@@ -436,106 +448,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             elif "not found" not in result.stderr.lower():
                 print(f"[!] Failed to terminate {proc}")
 
-    def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
-        for i in range(clicks):
-            self.adb(f"shell input tap {x_coord} {y_coord}")
-            if clicks == 1:
-                break
-            time.sleep(interval)
-
-    def swipe(
-        self,
-        x_coord1: int,
-        y_coord1: int,
-        x_coord2: int,
-        y_coord2: int,
-    ):
-        self.adb(f"shell input swipe {x_coord1} {y_coord1} {x_coord2} {y_coord2}")
-
-    def screenshot(self) -> np.ndarray:
-        """
-        Captures a screenshot from the emulator and returns it as a NumPy BGR image (OpenCV format).
-        """
-        if DEBUG:
-            print("[SCREENSHOT DEBUG] Starting screenshot capture...")
-
-        # First test basic connectivity
-        if DEBUG:
-            print("[SCREENSHOT DEBUG] Testing ADB connectivity...")
-        devices_result = self.adb("devices")
-        if DEBUG:
-            print(f"[SCREENSHOT DEBUG] ADB devices output: {devices_result.stdout}")
-
-        if devices_result.returncode != 0:
-            if DEBUG:
-                print(f"[SCREENSHOT DEBUG] ADB devices failed with return code: {devices_result.returncode}")
-                print(f"[SCREENSHOT DEBUG] ADB devices stderr: {devices_result.stderr}")
-            raise RuntimeError(f"ADB connectivity test failed: {devices_result.stderr}")
-
-        # Now try the screenshot command with binary output
-        if DEBUG:
-            print("[SCREENSHOT DEBUG] Executing screencap command...")
-        result = self.adb("exec-out screencap -p", binary_output=True)
-
-        if DEBUG:
-            print(f"[SCREENSHOT DEBUG] Screenshot command return code: {result.returncode}")
-            print(f"[SCREENSHOT DEBUG] Screenshot stdout type: {type(result.stdout)}")
-            print(f"[SCREENSHOT DEBUG] Screenshot stdout is None: {result.stdout is None}")
-
-        if result.returncode != 0:
-            error_msg = result.stderr if result.stderr else "Unknown error"
-            if DEBUG:
-                print(f"[SCREENSHOT DEBUG] ADB screenshot failed with error: {error_msg}")
-            raise RuntimeError(f"ADB screenshot failed: {error_msg}")
-
-        if result.stdout is None:
-            if DEBUG:
-                print("[SCREENSHOT DEBUG] Screenshot stdout is None - this indicates ADB command failure")
-            raise RuntimeError("ADB screenshot returned None stdout - command failed silently")
-
-        if len(result.stdout) == 0:
-            if DEBUG:
-                print("[SCREENSHOT DEBUG] Screenshot stdout is empty")
-            raise RuntimeError("ADB screenshot returned empty data")
-
-        if DEBUG:
-            print(f"[SCREENSHOT DEBUG] Screenshot data length: {len(result.stdout)} bytes")
-
-        # Convert bytes to NumPy array
-        try:
-            img_array = np.frombuffer(result.stdout, dtype=np.uint8)
-            if DEBUG:
-                print(f"[SCREENSHOT DEBUG] NumPy array created, shape: {img_array.shape}")
-        except Exception as e:
-            if DEBUG:
-                print(f"[SCREENSHOT DEBUG] Failed to create NumPy array: {e}")
-            raise RuntimeError(f"Failed to convert screenshot data to NumPy array: {e}")
-
-        # Decode PNG to image
-        try:
-            img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-            if DEBUG:
-                print(f"[SCREENSHOT DEBUG] Image decoded, shape: {img.shape if img is not None else 'None'}")
-        except Exception as e:
-            if DEBUG:
-                print(f"[SCREENSHOT DEBUG] Failed to decode image: {e}")
-            raise RuntimeError(f"Failed to decode screenshot image: {e}")
-
-        if img is None:
-            if DEBUG:
-                print("[SCREENSHOT DEBUG] cv2.imdecode returned None - invalid image data")
-                # Let's save the raw data to analyze
-                try:
-                    with open("debug_screenshot_data.bin", "wb") as f:
-                        f.write(result.stdout)
-                    print("[SCREENSHOT DEBUG] Raw screenshot data saved to debug_screenshot_data.bin")
-                except Exception as e:
-                    print(f"[SCREENSHOT DEBUG] Failed to save debug data: {e}")
-            raise ValueError("Failed to decode screenshot - image data may be corrupted")
-
-        if DEBUG:
-            print(f"[SCREENSHOT DEBUG] Screenshot successful! Image shape: {img.shape}")
-        return img
+    # click() is now inherited from AdbBasedController
+    # swipe() is now inherited from AdbBasedController
+    # screenshot() is now inherited from AdbBasedController
 
     def install_apk(self, apk_path: str):
         """
@@ -543,54 +458,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
         """
         raise NotImplementedError
 
-    def start_app(self, package_name: str):
-        # Check if the app is installed first
-        result = self.adb("shell pm list packages")
-        if result.stdout and package_name not in result.stdout:
-            return self._wait_for_clash_installation(package_name)
-
-        self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
-
-    def _wait_for_clash_installation(self, package_name: str):
-        """Wait for user to install Clash Royale using the logger action system"""
-        self.current_package_name = package_name  # Store for retry logic
-        self.logger.show_temporary_action(
-            message=f"{package_name} not installed - please install it and complete tutorial",
-            action_text="Retry",
-            callback=self._retry_installation_check,
-        )
-
-        self.logger.log(f"[!] {package_name} not installed.")
-        self.logger.log("Please install it in the emulator, complete tutorial, then click Retry in the GUI")
-
-        # Wait for the callback to be triggered
-        self.installation_waiting = True
-        while self.installation_waiting:
-            time.sleep(0.5)
-
-        self.logger.log("[+] Installation confirmed, continuing...")
-        return True
-
-    def _retry_installation_check(self):
-        """Callback method triggered when user clicks Retry button"""
-        self.logger.change_status("Checking for Clash Royale installation...")
-
-        # Check if app is now installed
-        package_name = getattr(self, "current_package_name", "com.supercell.clashroyale")
-        result = self.adb("shell pm list packages")
-
-        if result.stdout and package_name in result.stdout:
-            # Installation successful!
-            self.installation_waiting = False
-            self.logger.change_status("Installation complete - continuing...")
-        else:
-            # Still not installed, show the retry button again
-            self.logger.show_temporary_action(
-                message=f"{package_name} still not found - please install it and complete tutorial",
-                action_text="Retry",
-                callback=self._retry_installation_check,
-            )
-            self.logger.log(f"[!] {package_name} still not installed. Please try again.")
+    # start_app() is now inherited from AdbBasedController
+    # _wait_for_clash_installation() is now inherited from AdbBasedController
+    # _retry_installation_check() is now inherited from AdbBasedController
 
     def debug_adb_connectivity(self):
         """
@@ -630,19 +500,9 @@ class GooglePlayEmulatorController(BaseEmulatorController):
             print("\n6. Screenshot Test:")
             try:
                 print("   Attempting screenshot...")
-                result = self.adb("exec-out screencap -p", binary_output=True)
-                print(f"   Screenshot return code: {result.returncode}")
-                print(f"   Screenshot data type: {type(result.stdout)}")
-                print(f"   Screenshot data length: {len(result.stdout) if result.stdout else 'None'}")
-
-                if result.stdout and len(result.stdout) > 0:
-                    # Check if it looks like PNG data
-                    png_header = result.stdout[:8] if len(result.stdout) >= 8 else result.stdout
-                    is_png = png_header.startswith(b"\x89PNG\r\n\x1a\n")
-                    print(f"   Data appears to be PNG: {is_png}")
-                    print(f"   First 16 bytes: {result.stdout[:16] if result.stdout else 'None'}")
-                else:
-                    print("   No screenshot data received")
+                # Call inherited screenshot method
+                img = self.screenshot()
+                print(f"   Screenshot successful. Image shape: {img.shape}")
 
             except Exception as e:
                 print(f"   Screenshot test failed: {e}")

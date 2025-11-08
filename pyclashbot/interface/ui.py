@@ -44,7 +44,7 @@ class PyClashBotUI(ttk.Window):
     def __init__(self) -> None:
         super().__init__(themename=self.DEFAULT_THEME)
         self.title("py-clash-bot")
-        self.geometry("480x500")
+        self.geometry("490x500")
         self.resizable(False, False)
 
         self._style = ttk.Style()
@@ -90,6 +90,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == "MEmu"
         values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == "Google Play"
         values[UIField.BLUESTACKS_EMULATOR_TOGGLE.value] = emulator_choice == "BlueStacks 5"
+        values[UIField.ADB_TOGGLE.value] = emulator_choice == "ADB Device"
 
         memu_render = self.memu_render_var.get()
         values[UIField.DIRECTX_TOGGLE.value] = memu_render == "DirectX"
@@ -102,6 +103,9 @@ class PyClashBotUI(ttk.Window):
 
         for field, var in self.gp_vars.items():
             values[field.value] = var.get()
+
+        values[UIField.ADB_SERIAL.value] = self.adb_serial_var.get()
+
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         return values
 
@@ -127,6 +131,8 @@ class PyClashBotUI(ttk.Window):
                 self.emulator_var.set("Google Play")
             elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
                 self.emulator_var.set("BlueStacks 5")
+            elif values.get(UIField.ADB_TOGGLE.value):
+                self.emulator_var.set("ADB Device")
             else:
                 self.emulator_var.set("MEmu")
 
@@ -148,6 +154,9 @@ class PyClashBotUI(ttk.Window):
                     var.set(str(values[field.value]))
                 elif config:
                     var.set(str(config.default))
+
+            if UIField.ADB_SERIAL.value in values:
+                self.adb_serial_var.set(str(values[UIField.ADB_SERIAL.value]))
 
             self._update_google_play_comboboxes()
 
@@ -172,6 +181,8 @@ class PyClashBotUI(ttk.Window):
                 if isinstance(widget, ttk.Combobox):
                     if key == "emulator_combobox":
                         widget.configure(state=tk.DISABLED if running else READONLY)
+                    elif widget is self.adb_serial_combo:
+                        widget.configure(state=tk.DISABLED if running else tk.NORMAL)
                     else:
                         widget.configure(state=tk.DISABLED if running else READONLY)
                 elif isinstance(widget, ttk.Spinbox):
@@ -182,6 +193,14 @@ class PyClashBotUI(ttk.Window):
                     UIField.BS_RENDERER_DX.value,
                     UIField.BS_RENDERER_GL.value,
                     UIField.BS_RENDERER_VK.value,
+                ]:
+                    widget.configure(state=tk.DISABLED if running else tk.NORMAL)
+                elif widget in [
+                    self.adb_connect_btn,
+                    self.adb_refresh_btn,
+                    self.adb_restart_btn,
+                    self.adb_set_size_btn,
+                    self.adb_reset_size_btn,
                 ]:
                     widget.configure(state=tk.DISABLED if running else tk.NORMAL)
                 elif isinstance(widget, ttk.Checkbutton):
@@ -426,7 +445,7 @@ class PyClashBotUI(ttk.Window):
         ttk.Label(selection_frame, text="Select Emulator:").pack(side=LEFT, padx=(0, 5))
 
         self.emulator_var = ttk.StringVar(value="MEmu")  # Default value
-        emulator_choices = ["MEmu", "Google Play", "BlueStacks 5"]
+        emulator_choices = ["MEmu", "Google Play", "BlueStacks 5", "ADB Device"]
         self.emulator_combo = ttk.Combobox(
             selection_frame,
             textvariable=self.emulator_var,
@@ -447,12 +466,14 @@ class PyClashBotUI(ttk.Window):
         self.google_play_frame = ttk.Frame(self.settings_container)
         self.memu_frame = ttk.Frame(self.settings_container)
         self.bluestacks_frame = ttk.Frame(self.settings_container)
+        self.adb_frame = ttk.Frame(self.settings_container)
 
         # Store frames in a dictionary for easy access
         self.emulator_settings_frames = {
             "MEmu": self.memu_frame,
             "Google Play": self.google_play_frame,
             "BlueStacks 5": self.bluestacks_frame,
+            "ADB Device": self.adb_frame,
         }
 
         # Populate the settings frames
@@ -460,6 +481,7 @@ class PyClashBotUI(ttk.Window):
         self._create_google_play_settings(self.google_play_frame)
         self._create_memu_settings(self.memu_frame)
         self._create_bluestacks_settings(self.bluestacks_frame)
+        self._create_adb_tab(self.adb_frame)
 
         # Show the initial settings based on the default value
         self._show_current_emulator_settings()
@@ -515,6 +537,61 @@ class PyClashBotUI(ttk.Window):
             )
             rb.pack(anchor="w")
             self._register_config_widget(config.key.value, rb)
+
+    def _create_adb_tab(self, parent_frame: ttk.Frame) -> None:
+        """Create the widgets for the ADB Device settings tab."""
+        frame = ttk.Labelframe(parent_frame, text="Device Settings", padding=10)
+        frame.pack(fill="x", padx=5, pady=5)
+
+        # --- Row 1: Serial Input ---
+        row1 = ttk.Frame(frame)
+        row1.pack(fill="x", pady=(0, 5))
+        row1.columnconfigure(1, weight=1)
+
+        ttk.Label(row1, text="Device Serial:").grid(row=0, column=0, padx=(0, 5), sticky="w")
+
+        self.adb_serial_var = ttk.StringVar(value="")
+        self.adb_serial_combo = ttk.Combobox(
+            row1,
+            textvariable=self.adb_serial_var,
+            state=tk.NORMAL,
+        )
+        self.adb_serial_combo.grid(row=0, column=1, padx=5, sticky="ew")
+        self._register_config_widget(UIField.ADB_SERIAL.value, self.adb_serial_combo)
+        self._trace_variable(self.adb_serial_var)
+
+        # --- Row 2: Connect/Refresh Buttons ---
+        row_buttons_connect = ttk.Frame(frame)
+        row_buttons_connect.pack(fill="x", pady=(0, 8))
+        row_buttons_connect.columnconfigure(0, weight=1)
+        row_buttons_connect.columnconfigure(1, weight=1)
+
+        self.adb_connect_btn = ttk.Button(row_buttons_connect, text="Connect", style="success.TButton")
+        self.adb_connect_btn.grid(row=0, column=0, padx=(0, 3), sticky="ew")
+        self._register_config_widget("adb_connect_btn", self.adb_connect_btn)
+
+        self.adb_refresh_btn = ttk.Button(row_buttons_connect, text="Refresh")
+        self.adb_refresh_btn.grid(row=0, column=1, padx=(3, 0), sticky="ew")
+        self._register_config_widget("adb_refresh_btn", self.adb_refresh_btn)
+
+        # --- Row 3: Action Buttons (Stacked Vertically) ---
+        row_buttons_action = ttk.Frame(frame)
+        row_buttons_action.pack(fill="x")
+
+        self.adb_restart_btn = ttk.Button(row_buttons_action, text="Restart ADB")
+        self.adb_restart_btn.pack(fill=X, pady=(0, 3))
+        self._register_config_widget("adb_restart_btn", self.adb_restart_btn)
+
+        self.adb_set_size_btn = ttk.Button(row_buttons_action, text="Set Size & Density")
+        self.adb_set_size_btn.pack(fill=X, pady=3)
+        self._register_config_widget("adb_set_size_btn", self.adb_set_size_btn)
+
+        self.adb_reset_size_btn = ttk.Button(row_buttons_action, text="Reset Size & Density")
+        self.adb_reset_size_btn.pack(fill=X, pady=(3, 0))
+        self._register_config_widget("adb_reset_size_btn", self.adb_reset_size_btn)
+
+        ToolTip(self.adb_set_size_btn, "Sets screen to 419x633 and density to 160")
+        ToolTip(self.adb_reset_size_btn, "Resets screen size and density to device defaults")
 
     def _create_stats_tab(self) -> None:
         container = ttk.Frame(self.stats_tab, padding=10)

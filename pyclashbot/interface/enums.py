@@ -55,6 +55,8 @@ class UIField(StrEnum):
     GP_EGL = "gp_egl"
     GP_BACKEND = "gp_backend"
     GP_WSI = "gp_wsi"
+    ADB_TOGGLE = "adb_toggle"
+    ADB_SERIAL = "adb_serial"
 
 
 BATTLE_STAT_LABELS: dict[StatField, str] = {

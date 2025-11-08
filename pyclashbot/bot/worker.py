@@ -2,6 +2,7 @@ import time
 import traceback
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
@@ -54,6 +55,17 @@ class WorkerThread(PausableThread):
         elif emulator_selection == "MEmu":
             render_mode = jobs.get("memu_render_mode", "opengl")
             return self._create_memu_emulator(render_mode)
+
+        elif emulator_selection == "ADB Device":
+            print("Creating ADB Device controller")
+            try:
+                adb_serial = jobs.get("adb_serial", None)
+                return AdbController(logger=self.logger, device_serial=adb_serial)
+            except Exception as e:
+                print(f"Failed to create ADB Device controller: {e}")
+                self.logger.change_status("Failed to connect to ADB device. Check connection and ADB setup!")
+                return None
+
         else:
             print(f"[!] Fatal error: Emulator {emulator_selection} is not supported!")
             return None
