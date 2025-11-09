@@ -1,4 +1,5 @@
 import time
+from pathlib import Path
 
 import numpy
 
@@ -8,8 +9,14 @@ from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
     wait_for_clash_main_menu,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.detection.image_rec import compare_images, pixel_is_equal
+from pyclashbot.utils.image_handler import open_from_path
 from pyclashbot.utils.logger import Logger
+
+CARD_MASTERY_BUTTON_IMAGE_PATH = (
+    Path(__file__).resolve().parent.parent / "detection" / "reference_images" / "card_mastery_button.png"
+)
+CARD_MASTERY_BUTTON_TEMPLATE = open_from_path(str(CARD_MASTERY_BUTTON_IMAGE_PATH))
 
 
 def card_mastery_state(emulator, logger):
@@ -112,21 +119,8 @@ def card_mastery_rewards_exist_with_delay(emulator):
 
 
 def card_mastery_rewards_exist(emulator):
-    # Convert the screenshot to a NumPy array for easier access
-    iar = numpy.asarray(emulator.screenshot())
-
-    pixels = [
-        iar[432][366],
-        iar[432][376],
-    ]
-
-    target_color = [57, 9, 236]
-
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, target_color, tol=10):
-            return False
-
-    return True
+    screenshot = numpy.asarray(emulator.screenshot())
+    return compare_images(screenshot, CARD_MASTERY_BUTTON_TEMPLATE, threshold=0.88) is not None
 
 
 def check_for_inventory_full_popup(emulator):

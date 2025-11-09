@@ -1,5 +1,6 @@
 cert
 node_modules
+.venv
 build
 dist
 __version__
