@@ -391,8 +391,7 @@ class Logger:
 
         # Update win streak
         self.current_win_streak += 1
-        if self.current_win_streak > self.best_win_streak:
-            self.best_win_streak = self.current_win_streak
+        self.best_win_streak = max(self.best_win_streak, self.current_win_streak)
 
     @_updates_gui
     def add_loss(self):

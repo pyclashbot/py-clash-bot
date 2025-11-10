@@ -3,7 +3,7 @@ setup:
 	uvx pre-commit install
 
 dev:
-	uv run python pyclashbot/__main__.py
+	uv run python pyclashbot
 
 lint:
 	uvx pre-commit run --all-files

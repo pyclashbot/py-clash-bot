@@ -135,12 +135,13 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
-    def __init__(self, logger, render_mode: str = "directx"):
+    def __init__(self, logger, render_mode: str = "directx", debug_mode=False):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
         """
         self.logger = logger
+        self.debug_mode = debug_mode
         init_start_time = time.time()
         self.pmc = PyMemuc()
 
@@ -154,6 +155,8 @@ class MemuEmulatorController(BaseEmulatorController):
         self._initalize_valid_vm()
 
         self.logger.log(f"Initializing MemuEmulatorController took {str(time.time() - init_start_time)[:5]} seconds")
+        if self.debug_mode:
+            self.logger.log("You are using Debug MODE (NO RESTART, NO CONFIGURE)")
 
     def __del__(self):
         self.logger.log("Need to clear residual memu processes here")
@@ -180,11 +183,14 @@ class MemuEmulatorController(BaseEmulatorController):
                 break
 
         self.vm_index = vm_index
-        self.logger.log("Configuring the vm...")
-        self.configure()
 
-        self.logger.log("Booting the vm...")
-        self.restart()
+        if not self.debug_mode:
+            self.logger.log("Configuring the vm...")
+            self.configure()
+            self.logger.log("Booting the vm...")
+            self.restart()
+        else:
+            self.logger.log("Debug mode enabled - skipping configure and restart")
 
     def _set_screen_size(self, width, height):
         self.pmc.send_adb_command_vm(
@@ -1121,7 +1127,8 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("[RESTART] Logger status updated to: 'Configuring VM settings...'")
 
         config_start = time.time()
-        self.configure()  # This will do its own verbose configuration
+        if not self.debug_mode:
+            self.configure()  # This will do its own verbose configuration
         config_end = time.time()
 
         if debug_restart:

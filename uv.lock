@@ -337,11 +337,11 @@ dev = [
 requires-dist = [
     { name = "numpy", specifier = ">=2.2.1,<3" },
     { name = "opencv-python", specifier = ">=4.9.0,<5" },
-    { name = "pillow", specifier = ">=11.3.0,<12.0.0" },
+    { name = "pillow", specifier = ">=11.3.0,<13.0.0" },
     { name = "psutil", specifier = ">=6.1.0,<8" },
     { name = "pygetwindow", specifier = ">=0.0.9,<0.0.10" },
     { name = "pymemuc", specifier = ">=0.6.0,<0.7" },
-    { name = "ttkbootstrap", specifier = ">=1.12.1,<1.13" },
+    { name = "ttkbootstrap", specifier = ">=1.12.1,<1.19" },
 ]
 
 [package.metadata.requires-dev]
@@ -352,7 +352,7 @@ build = [
 ]
 dev = [
     { name = "pre-commit", specifier = ">=4.0.1,<5" },
-    { name = "ruff", specifier = ">=0.7.4,<0.14" },
+    { name = "ruff", specifier = ">=0.7.4,<0.15" },
 ]
 
 [[package]]

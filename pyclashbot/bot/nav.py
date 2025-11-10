@@ -574,6 +574,10 @@ def check_if_battle_mode_is_selected(emulator, mode: str):
 
     look_folder = mode2folder[mode]
 
+    print(f"[DEBUG] Checking if {mode} is selected...")
+    print(f"[DEBUG] Looking in folder: {look_folder}")
+    print("[DEBUG] Subcrop: (270, 455, 350, 533)")
+
     # find image on screen
     coord = find_image(
         emulator.screenshot(),
@@ -581,6 +585,8 @@ def check_if_battle_mode_is_selected(emulator, mode: str):
         tolerance=0.9,
         subcrop=(270, 455, 350, 533),
     )
+
+    print(f"[DEBUG] Found at: {coord}")
 
     return coord is not None
 
@@ -611,8 +617,7 @@ def find_fight_mode_icon(emulator, mode: str):
     fight_mode_1v1_button_location = find_image(
         image,
         look_folder,
-        tolerance=0.85,
-        subcrop=(27, 158, 206, 582),
+        tolerance=0.9,
         show_image=False,
     )
     if fight_mode_1v1_button_location is not None:
@@ -668,4 +673,30 @@ def select_mode(emulator, mode: str):
 
 
 if __name__ == "__main__":
+    # from pyclashbot.emulators.memu import MemuEmulatorController
+    # from pyclashbot.utils.logger import Logger
+    # import cv2
+    # import os
+
+    # print("Creating logger...")
+    # logger = Logger()
+
+    # print("Creating MEmu emulator controller in DEBUG mode (no restart)...")
+    # emulator = MemuEmulatorController(logger, render_mode="directx", debug_mode=True)
+
+    # # Save a screenshot for debugging
+    # print("\nSaving screenshot for debugging...")
+    # os.makedirs("debug_screenshots", exist_ok=True)
+    # screenshot = emulator.screenshot()
+    # cv2.imwrite("debug_screenshots/current_screen.png", screenshot)
+    # print(f"Screenshot saved to: debug_screenshots/current_screen.png")
+    # print(f"Screenshot size: {screenshot.shape}")
+
+    # print("\nTesting find_fight_mode_icon...")
+    # x = check_if_battle_mode_is_selected(emulator, "Classic 2v2")
+    # print(f"Result: Is Classic 2v2 selected? {x}")
+
+    # select_mode(emulator, "Classic 1v1")
+
+    # here matt if you want to test this and see debug info
     pass
