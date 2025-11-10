@@ -28,7 +28,7 @@ class PresenceSnapshot:
 class DiscordRPCManager:
     """Manage Discord Rich Presence for the application."""
 
-    APPLICATION_ID = "1431881110261858401"
+    APPLICATION_ID = "1181655703446888469"
     MODE_ASSET_KEYS = {
         "classic 1v1": "1v1",
         "1v1": "1v1",
