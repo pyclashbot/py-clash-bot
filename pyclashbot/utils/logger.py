@@ -113,6 +113,10 @@ class Logger:
         self.card_cycles = 0
         self.winrate: str = "0%"
 
+        # streak tracking
+        self.current_win_streak = 0
+        self.best_win_streak = 0
+
         # job stats
         self.battlepass_collects = 0
         self.bannerbox_collects = 0
@@ -171,6 +175,8 @@ class Logger:
                 "classic_2v2_fights": self.classic_2v2_fights,
                 "trophy_road_1v1_fights": self.trophy_road_1v1_fights,
                 "winrate": self.winrate,
+                "current_win_streak": self.current_win_streak,
+                "best_win_streak": self.best_win_streak,
                 "card_randomizations": self.card_randomizations,
                 "card_cycles": self.card_cycles,
                 # collection stats
@@ -383,11 +389,19 @@ class Logger:
         self.wins += 1
         self.winrate = self.calc_win_rate()
 
+        # Update win streak
+        self.current_win_streak += 1
+        if self.current_win_streak > self.best_win_streak:
+            self.best_win_streak = self.current_win_streak
+
     @_updates_gui
     def add_loss(self):
         """Add loss to log"""
         self.losses += 1
         self.winrate = self.calc_win_rate()
+
+        # Reset win streak on loss
+        self.current_win_streak = 0
 
     @_updates_gui
     def add_1v1_fight(self) -> None:

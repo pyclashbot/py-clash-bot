@@ -19,6 +19,8 @@ class StatField(StrEnum):
 
 class DerivedStatField(StrEnum):
     WINRATE = "winrate"
+    CURRENT_WIN_STREAK = "current_win_streak"
+    BEST_WIN_STREAK = "best_win_streak"
 
 
 class BotStatField(StrEnum):
@@ -55,6 +57,7 @@ class UIField(StrEnum):
     GP_EGL = "gp_egl"
     GP_BACKEND = "gp_backend"
     GP_WSI = "gp_wsi"
+    COMPACT_MODE_TOGGLE = "compact_mode_toggle"
 
 
 BATTLE_STAT_LABELS: dict[StatField, str] = {
