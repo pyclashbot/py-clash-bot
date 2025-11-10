@@ -46,6 +46,7 @@ class PyClashBotUI(ttk.Window):
         self.title("py-clash-bot")
         self.geometry("490x500")
         self.resizable(False, False)
+        self._compact_mode = False
 
         self._style = ttk.Style()
         current_theme = self._style.theme_use()
@@ -107,6 +108,8 @@ class PyClashBotUI(ttk.Window):
         values[UIField.ADB_SERIAL.value] = self.adb_serial_var.get()
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
+        if hasattr(self, "compact_mode_var"):
+            values[UIField.COMPACT_MODE_TOGGLE.value] = self.compact_mode_var.get()
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -157,6 +160,10 @@ class PyClashBotUI(ttk.Window):
 
             if UIField.ADB_SERIAL.value in values:
                 self.adb_serial_var.set(str(values[UIField.ADB_SERIAL.value]))
+            if UIField.COMPACT_MODE_TOGGLE.value in values and hasattr(self, "compact_mode_var"):
+                self.compact_mode_var.set(bool(values[UIField.COMPACT_MODE_TOGGLE.value]))
+                if hasattr(self, "_toggle_compact_mode"):
+                    self._toggle_compact_mode()
 
             self._update_google_play_comboboxes()
 
@@ -264,6 +271,14 @@ class PyClashBotUI(ttk.Window):
         winrate = parsed_winrate if parsed_winrate is not None else self._calculate_winrate_percentage(wins, losses)
         gauge_fg = getattr(self._style.colors, "success", "#2ecc71") if hasattr(self._style, "colors") else "#2ecc71"
         self.win_gauge.animate_to(winrate, fg_colour=gauge_fg, text_colour=self._label_foreground())
+
+        # Update win streak stats
+        current_streak = stats.get(DerivedStatField.CURRENT_WIN_STREAK.value, 0)
+        best_streak = stats.get(DerivedStatField.BEST_WIN_STREAK.value, 0)
+        if hasattr(self, "current_streak_var"):
+            self.current_streak_var.set(str(current_streak))
+        if hasattr(self, "best_streak_var"):
+            self.best_streak_var.set(str(best_streak))
 
     def _build_tabs(self) -> None:
         self.notebook = ttk.Notebook(self)
@@ -621,6 +636,16 @@ class PyClashBotUI(ttk.Window):
             ttk.Label(battle_frame, textvariable=var, foreground="#00aaff").grid(row=row, column=1, sticky="e")
             self.stat_labels[field] = var
 
+        # Add win streak stats
+        ttk.Separator(battle_frame, orient="horizontal").grid(row=len(BATTLE_STAT_FIELDS), column=0, columnspan=2, sticky="ew", pady=(8, 4))
+        streak_row = len(BATTLE_STAT_FIELDS) + 1
+        ttk.Label(battle_frame, text="Current Streak:").grid(row=streak_row, column=0, sticky="w")
+        self.current_streak_var = ttk.StringVar(value="0")
+        ttk.Label(battle_frame, textvariable=self.current_streak_var, foreground="#00aaff").grid(row=streak_row, column=1, sticky="e")
+        ttk.Label(battle_frame, text="Best Streak:").grid(row=streak_row + 1, column=0, sticky="w")
+        self.best_streak_var = ttk.StringVar(value="0")
+        ttk.Label(battle_frame, textvariable=self.best_streak_var, foreground="#00aaff").grid(row=streak_row + 1, column=1, sticky="e")
+
         right = ttk.Frame(container)
         right.grid(row=0, column=1, sticky="nsew")
         right.columnconfigure(0, weight=1)
@@ -700,6 +725,32 @@ class PyClashBotUI(ttk.Window):
             command=self._on_open_logs_clicked,
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
+
+        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
+        display_frame.pack(fill="x", padx=10, pady=10)
+
+        self.compact_mode_var = ttk.BooleanVar(value=False)
+        compact_checkbox = ttk.Checkbutton(
+            display_frame,
+            text="Compact mode (smaller window)",
+            variable=self.compact_mode_var,
+            bootstyle="round-toggle",
+            command=self._toggle_compact_mode,
+        )
+        compact_checkbox.pack(anchor="w")
+        self._trace_variable(self.compact_mode_var)
+        self._register_config_widget(UIField.COMPACT_MODE_TOGGLE.value, compact_checkbox)
+
+    def _toggle_compact_mode(self) -> None:
+        """Toggle compact mode on/off."""
+        if hasattr(self, "compact_mode_var"):
+            self._compact_mode = self.compact_mode_var.get()
+            if self._compact_mode:
+                self.geometry("360x400")
+            else:
+                self.geometry("460x500")
+            self._notify_config_change()
 
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
         self._config_widgets[key] = widget
