@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "pyclashbot"
 version = "v0.0.0"
@@ -17,6 +21,10 @@ dependencies = [
     "pillow (>=11.3.0,<13.0.0)",
     "ttkbootstrap>=1.12.1,<1.19",
 ]
+
+[tool.setuptools.packages.find]
+include = ["pyclashbot*"]
+exclude = ["assets*", "scripts*"]
 
 [project.urls]
 homepage = "https://pyclashbot.app"
