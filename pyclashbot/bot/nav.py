@@ -8,7 +8,6 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
 )
 from pyclashbot.utils.logger import Logger
-from pyclashbot.bot.recorder import save_image
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
 BATTLE_LOG_BUTTON = (241, 43)
@@ -33,25 +32,16 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         bool: True if battle started, False if timed out.
     """
     start_time = time.time()
-
-    last_saved = 0
     while time.time() - start_time < timeout:
         time_taken = str(time.time() - start_time)[:4]
         logger.change_status(
             status=f"Waiting for battle to start for {time_taken}s",
         )
 
-        # grab a screenshot once per few seconds to help debugging if
-        # matchmaking doesn't start. We save images to the recordings
-        # folder using the existing recorder helper.
-        try:
-            if time.time() - last_saved > 5:
-                img = emulator.screenshot()
-                save_image(img)
-                last_saved = time.time()
-        except Exception:
-            # best-effort only; don't crash waiting for a battle
-            pass
+            # NOTE: Debug screenshot saving was intentionally removed from
+            # the production flow. If you need screenshots for debugging,
+            # use the recorder helpers directly in a temporary script or
+            # enable a local-only change — do not commit such changes.
 
         battle_result = check_if_in_battle(emulator)
 

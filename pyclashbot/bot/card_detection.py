@@ -6033,7 +6033,6 @@ HALF_HEIGHT = int(TOTAL_HEIGHT / 2)
 
 # color stuff
 CARD_MATCH_THRESHOLD = 1000
-CARD_DETECTION_DEBUG = False  # important debug prints
 
 COLORS = {
     "Red": [255, 0, 0],
@@ -6073,7 +6072,8 @@ def calculate_offset(card_name, card_data, collected_data_array):
 def find_closest_card(collected_data):
     best_card = None
     best_offset = CARD_MATCH_THRESHOLD + 1
-    debug_offsets = [] if CARD_DETECTION_DEBUG else None
+    # Debug offsets disabled in production
+    debug_offsets = None
 
     collected_data_array = numpy.array(
         [list(corner.values()) for corner in collected_data],
@@ -6091,12 +6091,7 @@ def find_closest_card(collected_data):
         if debug_offsets is not None:
             debug_offsets.append((card_name, total_offset))
 
-    if CARD_DETECTION_DEBUG:
-        top_matches = sorted(debug_offsets, key=lambda item: item[1])[:5]
-        confidence = max(0.0, 1 - (best_offset / CARD_MATCH_THRESHOLD))
-        print("[card_detection] pixels:", collected_data_array.tolist())
-        print("[card_detection] best:", best_card, "offset:", best_offset, "confidence:", f"{confidence:.2%}")
-        print("[card_detection] top candidates:", top_matches)
+    # Debugging output removed from production.
 
     if best_offset > CARD_MATCH_THRESHOLD:
         return "UNKNOWN"

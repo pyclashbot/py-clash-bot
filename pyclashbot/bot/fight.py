@@ -234,9 +234,7 @@ def wait_for_elixer(
     start_time = time.time()
 
     while not count_elixer(emulator, random_elixer_wait):
-        if recording_flag:
-            save_image(emulator.screenshot())
-
+        # debug screenshot saving removed from production
         wait_time = time.time() - start_time
         logger.change_status(
             f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
@@ -679,8 +677,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     battle_strategy.start_battle()
 
     while check_for_in_battle_with_delay(emulator):
-        if recording_flag:
-            save_image(emulator.screenshot())
+        # debug screenshot saving removed from production
 
         # Get elixir amount and thresholds based on current battle phase
         elixir_amount = battle_strategy.select_elixir_amount()
@@ -708,7 +705,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             break
 
         if recording_flag:
-            save_image(emulator.screenshot())
+            # debug screenshot saving removed from production
 
         play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:
