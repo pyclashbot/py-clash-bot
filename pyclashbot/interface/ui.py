@@ -637,14 +637,20 @@ class PyClashBotUI(ttk.Window):
             self.stat_labels[field] = var
 
         # Add win streak stats
-        ttk.Separator(battle_frame, orient="horizontal").grid(row=len(BATTLE_STAT_FIELDS), column=0, columnspan=2, sticky="ew", pady=(8, 4))
+        ttk.Separator(battle_frame, orient="horizontal").grid(
+            row=len(BATTLE_STAT_FIELDS), column=0, columnspan=2, sticky="ew", pady=(8, 4)
+        )
         streak_row = len(BATTLE_STAT_FIELDS) + 1
         ttk.Label(battle_frame, text="Current Streak:").grid(row=streak_row, column=0, sticky="w")
         self.current_streak_var = ttk.StringVar(value="0")
-        ttk.Label(battle_frame, textvariable=self.current_streak_var, foreground="#00aaff").grid(row=streak_row, column=1, sticky="e")
+        ttk.Label(battle_frame, textvariable=self.current_streak_var, foreground="#00aaff").grid(
+            row=streak_row, column=1, sticky="e"
+        )
         ttk.Label(battle_frame, text="Best Streak:").grid(row=streak_row + 1, column=0, sticky="w")
         self.best_streak_var = ttk.StringVar(value="0")
-        ttk.Label(battle_frame, textvariable=self.best_streak_var, foreground="#00aaff").grid(row=streak_row + 1, column=1, sticky="e")
+        ttk.Label(battle_frame, textvariable=self.best_streak_var, foreground="#00aaff").grid(
+            row=streak_row + 1, column=1, sticky="e"
+        )
 
         right = ttk.Frame(container)
         right.grid(row=0, column=1, sticky="nsew")
