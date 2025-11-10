@@ -15,6 +15,13 @@ from pyclashbot.interface.enums import (
     UIField,
 )
 
+try:
+    from pyclashbot.utils.graphics_detection import GraphicsDetector
+
+    graphics_detection_available = True
+except ImportError:
+    graphics_detection_available = False
+
 
 @dataclass
 class StatConfig:
@@ -55,6 +62,53 @@ class ComboConfig:
     default: str | int = ""
     size: tuple[int, int] = (5, 1)
     label_size: tuple[int, int] = (6, 1)
+
+
+def get_available_memu_settings() -> list[RadioConfig]:
+    """Get MEmu settings based on available graphics APIs."""
+    if not graphics_detection_available:
+        # Fallback to static config if detection not available
+        return [
+            RadioConfig("opengl_toggle", "OpenGL", "render_mode_radio"),
+            RadioConfig("directx_toggle", "DirectX", "render_mode_radio", default=True),
+        ]
+
+    available_apis = GraphicsDetector.get_available_apis_for_emulator("memu")
+    best_api = GraphicsDetector.get_best_default_api("memu")
+
+    settings = []
+    if "opengl" in available_apis:
+        settings.append(RadioConfig("opengl_toggle", "OpenGL", "render_mode_radio", default=(best_api == "opengl")))
+    if "directx" in available_apis:
+        settings.append(RadioConfig("directx_toggle", "DirectX", "render_mode_radio", default=(best_api == "directx")))
+
+    return settings if settings else [RadioConfig("opengl_toggle", "OpenGL", "render_mode_radio", default=True)]
+
+
+def get_available_bluestacks_settings() -> list[RadioConfig]:
+    """Get BlueStacks settings based on available graphics APIs."""
+    if not graphics_detection_available:
+        # Fallback to static config if detection not available
+        return [
+            RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio"),
+            RadioConfig("bs_renderer_dx", "DirectX", "bs_render_mode_radio", default=True),
+            RadioConfig("bs_renderer_vk", "Vulkan", "bs_render_mode_radio"),
+        ]
+
+    available_apis = GraphicsDetector.get_available_apis_for_emulator("bluestacks")
+    best_api = GraphicsDetector.get_best_default_api("bluestacks")
+
+    settings = []
+    if "opengl" in available_apis:
+        settings.append(RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio", default=(best_api == "opengl")))
+    if "directx" in available_apis:
+        settings.append(
+            RadioConfig("bs_renderer_dx", "DirectX", "bs_render_mode_radio", default=(best_api == "directx"))
+        )
+    if "vulkan" in available_apis:
+        settings.append(RadioConfig("bs_renderer_vk", "Vulkan", "bs_render_mode_radio", default=(best_api == "vulkan")))
+
+    return settings if settings else [RadioConfig("bs_renderer_gl", "OpenGL", "bs_render_mode_radio", default=True)]
 
 
 # Statistics Configuration
@@ -106,18 +160,11 @@ JOBS = [
     JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", default=False),
 ]
 
-# Emulator Settings Configuration
-MEMU_SETTINGS = [
-    RadioConfig(UIField.OPENGL_TOGGLE, "OpenGL", "render_mode_radio"),
-    RadioConfig(UIField.DIRECTX_TOGGLE, "DirectX", "render_mode_radio", default=True),
-]
+# Emulator Settings Configuration (dynamically generated)
+MEMU_SETTINGS = get_available_memu_settings()
 
-# BlueStacks specific renderer settings
-BLUESTACKS_SETTINGS = [
-    RadioConfig(UIField.BS_RENDERER_GL, "OpenGL", "bs_render_mode_radio"),
-    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=True),
-    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio"),
-]
+# BlueStacks specific renderer settings (dynamically generated)
+BLUESTACKS_SETTINGS = get_available_bluestacks_settings()
 
 EMULATOR_CHOICE = [
     RadioConfig(UIField.MEMU_EMULATOR_TOGGLE, "Memu", "emulator_type_radio", default=True),
