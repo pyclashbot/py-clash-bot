@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import os
+import subprocess
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
 
 from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.emulators.adb import AdbController
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
@@ -69,8 +71,12 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         job_dictionary["emulator"] = "Google Play"
     elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
         job_dictionary["emulator"] = "BlueStacks 5"
+    elif values.get(UIField.ADB_TOGGLE.value):
+        job_dictionary["emulator"] = "ADB Device"
     else:
         job_dictionary["emulator"] = "MEmu"
+
+    job_dictionary[UIField.ADB_SERIAL.value] = values.get(UIField.ADB_SERIAL.value)
 
     return job_dictionary
 
@@ -103,6 +109,13 @@ def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any])
         no_jobs_popup()
         logger.log("No jobs are selected!")
         return None
+
+    if job_dictionary.get("emulator") == "ADB Device":
+        device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
+        connected_devices = AdbController.list_devices()
+        if not device_serial or device_serial not in connected_devices:
+            logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
+            return None
 
     logger.log("Start Button Event")
     logger.change_status("Starting the bot!")
@@ -189,6 +202,11 @@ class BotApplication:
         self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
+        self.ui.adb_refresh_btn.configure(command=self._on_adb_refresh)
+        self.ui.adb_connect_btn.configure(command=self._on_adb_connect)
+        self.ui.adb_restart_btn.configure(command=self._on_adb_restart)
+        self.ui.adb_set_size_btn.configure(command=self._on_adb_set_size)
+        self.ui.adb_reset_size_btn.configure(command=self._on_adb_reset_size)
 
         self.thread: WorkerThread | None = None
         self.logger = Logger(timed=False)
@@ -274,6 +292,88 @@ class BotApplication:
         self._closing = True
         exit_button_event(self.thread)
         self.ui.destroy()
+
+    def _run_adb_command(self, serial: str, command: str):
+        """Helper to run a single ADB command and log the output."""
+        if not serial:
+            self.logger.change_status("Please select a device serial first.")
+            return
+
+        full_command = f"adb -s {serial} {command}"
+        self.logger.change_status(f"Running ADB command: {full_command}")
+        try:
+            result = subprocess.run(
+                full_command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=10,
+            )
+            if result.returncode == 0:
+                self.logger.change_status(f"Success: {result.stdout.strip() if result.stdout else '(No output)'}")
+            else:
+                self.logger.change_status(f"Error: {result.stderr.strip() if result.stderr else '(No error message)'}")
+        except subprocess.TimeoutExpired:
+            self.logger.change_status(f"ADB command timed out: {full_command}")
+        except FileNotFoundError:
+            self.logger.change_status("ADB command not found. Is ADB installed and in your PATH?")
+        except Exception as e:
+            self.logger.change_status(f"Failed to execute ADB command: {e}")
+
+    def _on_adb_refresh(self) -> None:
+        self.logger.change_status("Refreshing ADB devices list...")
+        try:
+            devices = AdbController.list_devices()
+            self.ui.adb_serial_combo.configure(values=devices)
+            if devices:
+                current_selection = self.ui.adb_serial_var.get()
+                if current_selection not in devices:
+                    self.ui.adb_serial_var.set(devices[0])
+                self.logger.change_status(f"Found devices: {', '.join(devices)}")
+            else:
+                self.ui.adb_serial_var.set("")
+                self.logger.change_status("No ADB devices found.")
+        except Exception as e:
+            self.logger.change_status(f"Error refreshing ADB devices: {e}")
+
+    def _on_adb_connect(self) -> None:
+        device_address = self.ui.adb_serial_var.get()
+        if not device_address:
+            self.logger.change_status("Device address/serial cannot be empty.")
+            return
+
+        self.logger.change_status(f"Attempting to connect to {device_address}...")
+        self.ui.update_idletasks()
+
+        try:
+            if AdbController.connect_device(self.logger, device_address):
+                self.logger.change_status(f"Successfully connected/verified {device_address}!")
+                # Refresh device list to confirm connection status in list
+                self._on_adb_refresh()  # Call refresh to update list and potentially selection
+                # Re-set the variable just in case refresh changed it due to new device order
+                self.ui.adb_serial_var.set(device_address)
+            else:
+                # connect_device logs failure reason
+                pass  # Logger status already set by connect_device
+        except Exception as e:
+            self.logger.change_status(f"Error during ADB connect: {e}")
+
+    def _on_adb_restart(self) -> None:
+        AdbController.restart_adb(self.logger)
+
+    def _on_adb_set_size(self) -> None:
+        serial = self.ui.adb_serial_var.get()
+        width, height, density = 419, 633, 160
+        self.logger.change_status(f"Setting size to {width}x{height} and density to {density} for {serial}...")
+        self._run_adb_command(serial, f"shell wm size {width}x{height}")
+        self._run_adb_command(serial, f"shell wm density {density}")
+
+    def _on_adb_reset_size(self) -> None:
+        serial = self.ui.adb_serial_var.get()
+        self.logger.change_status(f"Resetting size and density for {serial}...")
+        self._run_adb_command(serial, "shell wm size reset")
+        self._run_adb_command(serial, "shell wm density reset")
 
     def run(self, start_on_run: bool = False) -> None:
         if start_on_run:

@@ -14,16 +14,13 @@ from winreg import (
     QueryValueEx,
 )
 
-import cv2
-import numpy as np
-
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.emulators.adb_base import AdbBasedController
 
 DEBUG = False
 
 
-class BlueStacksEmulatorController(BaseEmulatorController):
+class BlueStacksEmulatorController(AdbBasedController):
     """BlueStacks 5 controller using HD-Adb.
 
     - Read instance port from bluestacks.conf.
@@ -454,7 +451,10 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         return first in {"connect", "disconnect", "devices", "start-server", "kill-server", "version", "help", "keys"}
 
     def adb(self, command: str, binary_output: bool = False) -> subprocess.CompletedProcess:
-        """Run an adb command via our private server. Device-scoped by default unless server-scoped."""
+        """
+        Run an adb command via our private server. Device-scoped by default unless server-scoped.
+        This is the abstract method implementation for AdbBasedController.
+        """
         base = f'"{self.adb_path}" -P {self.adb_server_port} '
         if not self._cmd_is_server_scoped(command) and self.device_serial:
             base += f"-s {self.device_serial} "
@@ -464,6 +464,14 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         return subprocess.run(
             full, shell=True, capture_output=True, text=not binary_output, check=False, env=self.adb_env
         )
+
+    def _check_app_installed(self, package_name: str) -> bool:
+        """
+        Check if app is installed via ADB.
+        This is the abstract method implementation for AdbBasedController.
+        """
+        res = self.adb("shell pm list packages")
+        return res.stdout is not None and package_name in res.stdout
 
     def adb_server(self, command: str) -> subprocess.CompletedProcess:
         full = f'"{self.adb_path}" -P {self.adb_server_port} {command}'
@@ -591,9 +599,20 @@ class BlueStacksEmulatorController(BaseEmulatorController):
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
         self.logger.change_status("Launching Clash Royale...")
-        for _ in range(3):
+
+        # Use inherited start_app which handles installation check
+        if not self.start_app(clash_pkg):
+            # This means app is not installed and user is being prompted.
+            # We must wait for the installation loop (handled by base class) to finish
+            # The base class's _wait_for_clash_installation will block until
+            # the user clicks 'Retry' and the app is found.
+            self.logger.log("Waiting for app installation...")
+
+            # After _wait_for_clash_installation returns True, we need to manually
+            # re-trigger the app start, because the original call failed.
             self.start_app(clash_pkg)
-            time.sleep(5)
+
+        time.sleep(5)
 
         # Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")
@@ -604,72 +623,17 @@ class BlueStacksEmulatorController(BaseEmulatorController):
                 dur = f"{time.time() - start_ts:.1f}s"
                 self.logger.log(f"BlueStacks 5 restart completed in {dur}")
                 return True
-            self.click(5, 350)
+            self.click(5, 350)  # Use inherited click
 
         self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
         return False
 
-    def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
-        for _ in range(max(1, clicks)):
-            self.adb(f"shell input tap {x_coord} {y_coord}")
-            if clicks <= 1:
-                break
-            time.sleep(max(0.0, interval))
-
-    def swipe(self, x_coord1: int, y_coord1: int, x_coord2: int, y_coord2: int):
-        self.adb(f"shell input swipe {x_coord1} {y_coord1} {x_coord2} {y_coord2}")
-
-    def screenshot(self) -> np.ndarray:
-        # Verify device state on the scoped serial
-        state = self.adb("get-state")
-        if state.returncode != 0 or not state.stdout or "device" not in state.stdout:
-            self._connect()
-            state = self.adb("get-state")
-            if state.returncode != 0 or not state.stdout or "device" not in state.stdout:
-                raise RuntimeError("ADB device not ready on the instance port")
-
-        result = self.adb("exec-out screencap -p", binary_output=True)
-        if result.returncode != 0 or not result.stdout:
-            err = result.stderr if result.stderr else b"Unknown ADB error"
-            raise RuntimeError(f"ADB screencap failed: {err}")
-
-        arr = np.frombuffer(result.stdout, dtype=np.uint8)
-        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-        if img is None:
-            raise ValueError("Failed to decode screenshot image")
-        return img
-
-    def start_app(self, package_name: str):
-        res = self.adb("shell pm list packages")
-        if res.stdout and package_name not in res.stdout:
-            return self._wait_for_clash_installation(package_name)
-        self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
-
-    def _wait_for_clash_installation(self, package_name: str):
-        self.current_package_name = package_name
-        self.logger.show_temporary_action(
-            message="Clashroyal not installed - install the app and complete tutorial before retrying",
-            action_text="Retry",
-            callback=self._retry_installation_check,
-        )
-        self.logger.log(f"[BlueStacks 5] {package_name} not installed.")
-        self._request_restart = False
-        self.installation_waiting = True
-        while self.installation_waiting:
-            time.sleep(0.5)
-        if getattr(self, "_request_restart", False):
-            self.logger.change_status("Restarting BlueStacks...")
-            self._request_restart = False
-            return self.restart()
-        self.logger.log("[BlueStacks 5] Installation confirmed, continuing...")
-        return True
-
-    def _retry_installation_check(self):
-        self.logger.log(
-            "[BlueStacks 5] Retry clicked, restarting the startup process..."
-        )  # full restart because people might close emulator
-        self._request_restart = True
-        self.installation_waiting = False
+    # click() is now inherited from AdbBasedController
+    # swipe() is now inherited from AdbBasedController
+    # screenshot() is now inherited from AdbBasedController
+    # start_app() is now inherited from AdbBasedController
+    # _wait_for_clash_installation() is now inherited from AdbBasedController
+    # _retry_installation_check() is now inherited from AdbBasedController
 
 
 if __name__ == "__main__":
