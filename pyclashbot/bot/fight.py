@@ -704,9 +704,6 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             logger.change_status("Not in a battle anymore")
             break
 
-        if recording_flag:
-            # debug screenshot saving removed from production
-
         play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:
             logger.change_status("Failed to play a card, retrying...")
