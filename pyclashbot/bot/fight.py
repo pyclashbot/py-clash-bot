@@ -173,6 +173,7 @@ def start_fight(emulator, logger, mode) -> bool:
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(203, 487)
+    logger.log("Clicked Start button at (203, 487)")
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
@@ -180,6 +181,7 @@ def start_fight(emulator, logger, mode) -> bool:
         time.sleep(3)
         quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
+        logger.log(f"Clicked Quickmatch button at {quick_match_button_coord}")
 
     return True
 
@@ -232,9 +234,7 @@ def wait_for_elixer(
     start_time = time.time()
 
     while not count_elixer(emulator, random_elixer_wait):
-        if recording_flag:
-            save_image(emulator.screenshot())
-
+        # debug screenshot saving removed from production
         wait_time = time.time() - start_time
         logger.change_status(
             f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
@@ -677,8 +677,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     battle_strategy.start_battle()
 
     while check_for_in_battle_with_delay(emulator):
-        if recording_flag:
-            save_image(emulator.screenshot())
+        # debug screenshot saving removed from production
 
         # Get elixir amount and thresholds based on current battle phase
         elixir_amount = battle_strategy.select_elixir_amount()
@@ -704,9 +703,6 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
         if not check_if_in_battle(emulator):
             logger.change_status("Not in a battle anymore")
             break
-
-        if recording_flag:
-            save_image(emulator.screenshot())
 
         play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:

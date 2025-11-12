@@ -32,12 +32,16 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         bool: True if battle started, False if timed out.
     """
     start_time = time.time()
-
     while time.time() - start_time < timeout:
         time_taken = str(time.time() - start_time)[:4]
         logger.change_status(
             status=f"Waiting for battle to start for {time_taken}s",
         )
+
+            # NOTE: Debug screenshot saving was intentionally removed from
+            # the production flow. If you need screenshots for debugging,
+            # use the recorder helpers directly in a temporary script or
+            # enable a local-only change — do not commit such changes.
 
         battle_result = check_if_in_battle(emulator)
 
@@ -72,68 +76,41 @@ def check_for_in_battle_with_delay(emulator) -> bool:
 
 
 def check_if_in_battle(emulator):
-    iar = emulator.screenshot()
+    iar_bgr = emulator.screenshot()
+    if iar_bgr is None:
+        return False
 
-    pixels_1v1 = [
-        iar[515][49],
-        iar[518][77],
-        iar[530][52],
-        iar[530][77],
-        iar[618][115],
-    ]
+    # Convert to RGB for easier reasoning about expected colors.
+    iar = iar_bgr[..., ::-1]
 
-    pixels_2v2 = [
-        iar[515][53],
-        iar[518][80],
-        iar[531][52],
-        iar[514][76],
-        iar[615][114],
-    ]
+    def get_pixel(y: int, x: int) -> list[int] | None:
+        if y >= iar.shape[0] or x >= iar.shape[1]:
+            return None
+        return iar[y][x].tolist()
 
-    colors_1v1 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [232, 63, 242],
-    ]
-    colors_2v2 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [231, 57, 242],
-    ]
+    def is_bright(pixel: list[int] | None, threshold: int = 180) -> bool:
+        return pixel is not None and all(channel >= threshold for channel in pixel)
 
-    # def pixel_to_string(pixel):
-    #     return f"{pixel[0]} {pixel[1]} {pixel[2]}"
+    def is_scoreboard_purple(pixel: list[int] | None) -> bool:
+        if pixel is None:
+            return False
+        r, g, b = pixel
+        return r >= 200 and b >= 200 and g <= 140
 
-    # print("\nBattle detection check:")
-    # print(
-    #     "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #         "Seen 1v1", "Expected 1v1", "Seen 2v2", "Expected 2v2"
-    #     )
-    # )
-    # for pixel1v1, pixel2v2, color1v1, color2v2 in zip(
-    #     pixels_1v1, pixels_2v2, colors_1v1, colors_2v2
-    # ):
-    #     print(
-    #         "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #             pixel_to_string(pixel1v1),
-    #             pixel_to_string(color1v1),
-    #             pixel_to_string(pixel2v2),
-    #             pixel_to_string(color2v2),
-    #         )
-    #     )
+    def check_mode(coords: list[tuple[int, int]]) -> bool:
+        pixels = [get_pixel(y, x) for y, x in coords]
+        bright_required = len(coords) - 1
+        bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel))
+        return bright_count >= bright_required and is_scoreboard_purple(pixels[-1])
 
-    if all_pixels_are_equal(colors_1v1, pixels_1v1, tol=35):
-        # print(f"Yes in a battle. Its of type 1v1")
+    coords_1v1 = [(515, 49), (518, 77), (530, 52), (530, 77), (618, 115)]
+    coords_2v2 = [(515, 53), (518, 80), (531, 52), (514, 76), (615, 114)]
+
+    if check_mode(coords_1v1):
         return True
-    if all_pixels_are_equal(colors_2v2, pixels_2v2, tol=35):
-        # print(f"Yes in a battle. Its of type 2v2")
+    if check_mode(coords_2v2):
         return True
 
-    # print(f"Not in a battle")
     return False
 
 
@@ -659,12 +636,27 @@ def select_mode(emulator, mode: str):
 
     # scroll and search, until we find the mode in question
     search_timeout = 15  # s
-    while time.time() < time.time() + search_timeout:
+    start_time = time.time()
+
+    # Use a fixed start time so we actually time out correctly instead of
+    # comparing two moving time.time() values (which would never time out).
+    while time.time() - start_time < search_timeout:
         coord = find_fight_mode_icon(emulator, mode)
         if coord is not None:
             print(f'Located the "{mode}" button, clicking it.')
             emulator.click(*coord)
             time.sleep(3)
+
+            # After choosing a mode, the mode panel may remain open on some
+            # devices/emulators. Click a safe deadspace coord to ensure the
+            # selection panel closes and the main menu is active again so
+            # subsequent actions (like pressing Start) work reliably.
+            try:
+                emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
+            except Exception:
+                # Don't fail if the click doesn't work; best-effort only.
+                pass
+
             return True
 
         scroll_down_in_fight_mode_panel(emulator)
