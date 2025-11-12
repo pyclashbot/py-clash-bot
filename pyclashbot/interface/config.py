@@ -141,7 +141,7 @@ USER_CONFIG_KEYS = (
     [job.key.value for job in JOBS]
     + [radio.key.value for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key.value for combo in GOOGLE_PLAY_SETTINGS]
-    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value, UIField.COMPACT_MODE_TOGGLE.value]  # Data settings
+    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value]  # Data settings
     + [
         UIField.DECK_NUMBER_SELECTION.value,
         UIField.MAX_DECK_SELECTION.value,
