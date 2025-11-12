@@ -21,7 +21,7 @@ from pyclashbot.bot.nav import (
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.recorder import save_image, save_play, save_win_loss
+from pyclashbot.bot.recorder import save_play, save_win_loss
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     find_image,

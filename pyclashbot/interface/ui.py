@@ -28,6 +28,7 @@ from pyclashbot.interface.enums import (
     StatField,
     UIField,
 )
+from pyclashbot.interface.widget import StatsWidget
 from pyclashbot.interface.widgets import DualRingGauge
 
 if TYPE_CHECKING:
@@ -59,12 +60,15 @@ class PyClashBotUI(ttk.Window):
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
         self._suspend_traces = 0
+        self._stats_widget: StatsWidget | None = None
+        self._widget_mode_callback: Callable[[], None] | None = None
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
         self._build_tabs()
         self._build_bottom_row()
+        self._setup_keyboard_shortcuts()
         self._refresh_theme_colours()
 
     def register_config_callback(self, callback: Callable[[dict[str, object]], None]) -> None:
@@ -75,6 +79,25 @@ class PyClashBotUI(ttk.Window):
 
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
+
+    def register_widget_mode_callback(self, callback: Callable[[], None]) -> None:
+        """Register callback for switching to widget mode."""
+        self._widget_mode_callback = callback
+
+    def get_stats_callback(self) -> Callable[[], dict[str, object] | None]:
+        """Return a callback that provides current stats for widget."""
+
+        def stats_callback() -> dict[str, object] | None:
+            # This will be set by main application
+            if hasattr(self, "_stats_provider"):
+                return self._stats_provider()
+            return None
+
+        return stats_callback
+
+    def set_stats_provider(self, provider: Callable[[], dict[str, object] | None]) -> None:
+        """Set stats provider function for widget."""
+        self._stats_provider = provider
 
     def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
@@ -729,6 +752,17 @@ class PyClashBotUI(ttk.Window):
         display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
         display_frame.pack(fill="x", padx=10, pady=10)
 
+        # Widget mode button
+        self.widget_mode_btn = ttk.Button(
+            display_frame,
+            text="🎮 Switch to Widget Mode",
+            command=self._on_widget_mode_clicked,
+            bootstyle="primary",
+            width=25,
+        )
+        self.widget_mode_btn.pack(fill="x", pady=(0, 10))
+        self._register_config_widget("widget_mode_btn", self.widget_mode_btn)
+
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
         self._config_widgets[key] = widget
 
@@ -842,6 +876,18 @@ class PyClashBotUI(ttk.Window):
         if self._open_recordings_callback:
             self._open_recordings_callback()
 
+    def _on_widget_mode_clicked(self) -> None:
+        """Handle widget mode button click."""
+        if self._widget_mode_callback:
+            self._widget_mode_callback()
+
+    def _update_widget_mode_button(self, widget_active: bool) -> None:
+        """Update widget mode button appearance based on state."""
+        if widget_active:
+            self.widget_mode_btn.configure(text="🔄 Return to Main UI", bootstyle="danger")
+        else:
+            self.widget_mode_btn.configure(text="🎮 Switch to Widget Mode", bootstyle="primary")
+
     def _on_open_logs_clicked(self) -> None:
         if self._open_logs_callback:
             self._open_logs_callback()
@@ -866,6 +912,36 @@ class PyClashBotUI(ttk.Window):
         if isinstance(raw, int | float):
             return float(raw)
         return None
+
+    def _setup_keyboard_shortcuts(self) -> None:
+        """Setup keyboard shortcuts for the application."""
+        # Bind Ctrl+M to toggle the stats widget
+        self.bind_all("<Control-m>", lambda e: self._toggle_stats_widget())
+        self.bind_all("<Control-M>", lambda e: self._toggle_stats_widget())
+
+    def _toggle_stats_widget(self) -> None:
+        """Toggle stats widget visibility."""
+        if self._stats_widget is None or not self._stats_widget.winfo_exists():
+            # Create new widget
+            self._stats_widget = StatsWidget(self, self.get_stats_callback())
+            self._stats_widget.show()
+            self._update_widget_mode_button(True)
+        else:
+            # Toggle visibility
+            try:
+                if self._stats_widget.winfo_viewable():
+                    # Widget is visible, hide it and restore main UI
+                    self._stats_widget.hide()
+                    self._update_widget_mode_button(False)
+                else:
+                    # Widget is hidden, show it and hide main UI
+                    self._stats_widget.show()
+                    self._update_widget_mode_button(True)
+            except tk.TclError:
+                # Widget was destroyed, create new one
+                self._stats_widget = StatsWidget(self, self.get_stats_callback())
+                self._stats_widget.show()
+                self._update_widget_mode_button(True)
 
     @staticmethod
     def _calculate_winrate_percentage(wins: int, losses: int) -> float:
