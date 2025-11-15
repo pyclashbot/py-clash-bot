@@ -49,8 +49,8 @@ def is_single_deck_layout_by_pixel(emulator) -> bool:
     )
 
 
-def switch_deck_page(emulator, logger: BotStatistics) -> bool:
-    logger.change_status("Switching deck page...")
+def switch_deck_page(emulator, statistics: BotStatistics) -> bool:
+    statistics.change_status("Switching deck page...")
     switch_button_coord = find_image(
         emulator.screenshot(), "deck_tabs/switch_deck", subcrop=DECK_TABS_REGION, tolerance=0.98
     )
@@ -58,18 +58,18 @@ def switch_deck_page(emulator, logger: BotStatistics) -> bool:
         emulator.click(*switch_button_coord)
         time.sleep(1)
         return True
-    logger.change_status("Could not find switch deck page button.")
+    statistics.change_status("Could not find switch deck page button.")
     return False
 
 
-def randomize_and_check_deck(emulator, logger: BotStatistics, deck_to_randomize: int) -> bool:
+def randomize_and_check_deck(emulator, statistics: BotStatistics, deck_to_randomize: int) -> bool:
     """
     Randomizes the selected deck and verifies that it becomes full.
 
     This function intelligently handles whether the deck is full or partial
     before randomizing, applying the correct click sequence for each case.
     """
-    logger.change_status(f"Randomizing deck #{deck_to_randomize}...")
+    statistics.change_status(f"Randomizing deck #{deck_to_randomize}...")
 
     # Check if the deck is full to determine which click sequence to use
     deck_is_full_before_randomize = is_deck_full(emulator)
@@ -89,24 +89,24 @@ def randomize_and_check_deck(emulator, logger: BotStatistics, deck_to_randomize:
 
     # Wait for cards to populate, then check if the deck is now full
     time.sleep(1.0)
-    logger.add_card_randomization()
+    statistics.add_card_randomization()
 
     if not is_deck_full(emulator):
-        logger.change_status(f"Deck {deck_to_randomize} still not full after randomizing.")
+        statistics.change_status(f"Deck {deck_to_randomize} still not full after randomizing.")
         return False
 
-    logger.change_status(f"Deck #{deck_to_randomize} successfully randomized.")
+    statistics.change_status(f"Deck #{deck_to_randomize} successfully randomized.")
     return True
 
 
-def return_to_clash_main_from_card_page(emulator, logger: BotStatistics) -> bool:
+def return_to_clash_main_from_card_page(emulator, statistics: BotStatistics) -> bool:
     """
     Clicks the exit button on the card page and verifies the bot is on the main menu.
     """
-    logger.change_status("Returning to clash main...")
+    statistics.change_status("Returning to clash main...")
     emulator.click(*CARD_PAGE_EXIT_BUTTON_COORDS)
     time.sleep(1)
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Failed to return to clash main from the card page.")
+        statistics.change_status("Failed to return to clash main from the card page.")
         return False
     return True

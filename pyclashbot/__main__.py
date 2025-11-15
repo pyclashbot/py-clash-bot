@@ -102,47 +102,47 @@ def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str
     return loaded
 
 
-def start_button_event(logger: BotStatistics, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
+def start_button_event(statistics: BotStatistics, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
     """Start the worker thread with the current configuration."""
     job_dictionary = make_job_dictionary(values)
 
     if has_no_jobs_selected(job_dictionary):
         no_jobs_popup()
-        logger.log("No jobs are selected!")
+        statistics.log("No jobs are selected!")
         return None
 
     if job_dictionary.get("emulator") == "ADB Device":
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
         connected_devices = AdbController.list_devices()
         if not device_serial or device_serial not in connected_devices:
-            logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
+            statistics.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
             return None
 
-    logger.log("Start Button Event")
-    logger.change_status("Starting the bot!")
+    statistics.log("Start Button Event")
+    statistics.change_status("Starting the bot!")
     save_current_settings(values)
-    logger.log_job_dictionary(job_dictionary)
+    statistics.log_job_dictionary(job_dictionary)
 
     ui.set_running_state(True)
     ui.notebook.select(ui.stats_tab)
 
-    thread = WorkerThread(logger, job_dictionary)
+    thread = WorkerThread(statistics, job_dictionary)
     thread.start()
     return thread
 
 
-def stop_button_event(logger: BotStatistics, ui: PyClashBotUI, thread: StoppableThread) -> None:
+def stop_button_event(statistics: BotStatistics, ui: PyClashBotUI, thread: StoppableThread) -> None:
     """Stop the worker thread."""
-    logger.change_status("Stopping")
+    statistics.change_status("Stopping")
     ui.stop_btn.configure(state="disabled")
     thread.shutdown(kill=False)
 
 
-def update_layout(ui: PyClashBotUI, logger: BotStatistics) -> None:
-    """Update UI widgets from the logger's statistics."""
-    stats = logger.get_stats()
+def update_layout(ui: PyClashBotUI, statistics: BotStatistics) -> None:
+    """Update UI widgets from the statistics's statistics."""
+    stats = statistics.get_stats()
     ui.update_stats(stats)
-    status_text = logger.current_status
+    status_text = statistics.current_status
     if stats and "current_status" in stats:
         status_text = str(stats["current_status"])
     ui.set_status(status_text)
@@ -157,16 +157,16 @@ def exit_button_event(thread: StoppableThread | None) -> None:
 def handle_thread_finished(
     ui: PyClashBotUI,
     thread: WorkerThread | None,
-    logger: BotStatistics,
+    statistics: BotStatistics,
 ) -> tuple[WorkerThread | None, BotStatistics]:
     if thread is not None and not thread.is_alive():
         ui.set_running_state(False)
-        if getattr(thread.logger, "errored", False):
-            logger = thread.logger
+        if getattr(thread.statistics, "errored", False):
+            statistics = thread.statistics
         else:
-            logger = BotStatistics(timed=False)
+            statistics = BotStatistics(timed=False)
             thread = None
-    return thread, logger
+    return thread, statistics
 
 
 def open_recordings_folder() -> None:

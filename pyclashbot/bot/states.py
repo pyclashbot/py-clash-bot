@@ -23,7 +23,7 @@ from pyclashbot.utils.caching import (
 
 
 def handle_state_failure(
-    logger: BotStatistics, state_name: str, function_name: str, error_msg: str | None = None
+    statistics: BotStatistics, state_name: str, function_name: str, error_msg: str | None = None
 ) -> str:
     """Helper function to standardize error logging when states fail.
 
@@ -40,8 +40,8 @@ def handle_state_failure(
     if error_msg:
         full_msg += f": {error_msg}"
 
-    logger.error(full_msg)
-    logger.change_status(f"Error in {state_name} - restarting")
+    statistics.error(full_msg)
+    statistics.change_status(f"Error in {state_name} - restarting")
     print(f"[ERROR] {full_msg}")
 
     return "restart"
@@ -77,9 +77,9 @@ def get_next_fight_mode(job_list):
 
 
 class StateHistory:
-    def __init__(self, logger):
+    def __init__(self, statistics):
         self.time_history_string_list = []
-        self.logger = logger
+        self.logger = statistics
 
         # This increment time is hard-coded to be as
         # low as possible while not spamming slow states
@@ -128,7 +128,7 @@ class StateHistory:
         print("\n")
 
     def add_state(self, state):
-        time_history_string = f"{state} {time.time()} {int(self.logger.current_account)}"
+        time_history_string = f"{state} {time.time()} {int(self.statistics.current_account)}"
         self.time_history_string_list.append(time_history_string)
 
     def get_time_of_last_state(self, state: str) -> int:
@@ -142,7 +142,7 @@ class StateHistory:
                     state, time, this_account_index = line.split(" ")
                     time = float(time)
                     this_account_index = int(this_account_index)
-                    if int(this_account_index) != int(self.logger.current_account):
+                    if int(this_account_index) != int(self.statistics.current_account):
                         continue
 
                     # handling negative time for whatever reason
@@ -229,7 +229,7 @@ class StateOrder:
 
 def state_tree(
     emulator,
-    logger: BotStatistics,
+    statistics: BotStatistics,
     state,
     job_list,
     state_history: StateHistory,
@@ -237,35 +237,35 @@ def state_tree(
 ) -> str:
     """Method to handle and loop between the various states of the bot"""
     global mode_used_in_1v1, fight_mode_cycle_index  # noqa: PLW0602
-    logger.log(f'Set the current state to "{state}"')
-    logger.set_current_state(state)
+    statistics.log(f'Set the current state to "{state}"')
+    statistics.set_current_state(state)
     time.sleep(0.1)
 
     # header in the log file to split the log by state loop iterations
-    logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
+    statistics.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
 
     if state is None:
-        logger.error("Error! State is None!!")
+        statistics.error("Error! State is None!!")
         raise ValueError("State is None - critical error in state machine")
 
     if state == "fail":
-        logger.error("State machine entered 'fail' state - stopping execution")
-        logger.add_restart_after_failure()
+        statistics.error("State machine entered 'fail' state - stopping execution")
+        statistics.add_restart_after_failure()
         raise RuntimeError("State machine entered fail state - unrecoverable error")
 
     if state == "start":
         return state_order.next_state(state)
 
     if state == "restart":
-        logger.change_status("Restarting emulator...")
+        statistics.change_status("Restarting emulator...")
         emulator.restart()
-        logger.change_status("Emulator restarted successfully")
+        statistics.change_status("Emulator restarted successfully")
         return state_order.next_state(state)
 
     if state == "randomize_deck":
         # if randomize deck isn't toggled, return next state
         if not job_list[UIField.RANDOM_DECKS_USER_TOGGLE]:
-            logger.log("deck randomization isn't toggled. skipping this state")
+            statistics.log("deck randomization isn't toggled. skipping this state")
             return state_order.next_state(state)
 
         # make sure there's a relevant job toggled, else just skip deck randomization
@@ -280,28 +280,28 @@ def state_tree(
 
         # Get the selected deck number from job_list, default to 2 if not found
         deck_number = job_list.get(UIField.DECK_NUMBER_SELECTION.value, 2)
-        if randomize_deck_state(emulator, logger, deck_number) is False:
-            return handle_state_failure(logger, "randomize_deck", "randomize_deck_state")
+        if randomize_deck_state(emulator, statistics, deck_number) is False:
+            return handle_state_failure(statistics, "randomize_deck", "randomize_deck_state")
 
         return state_order.next_state(state)
 
     if state == "cycle_deck":
         if not job_list[UIField.CYCLE_DECKS_USER_TOGGLE]:
-            logger.log("deck cycling isn't toggled. skipping this state")
+            statistics.log("deck cycling isn't toggled. skipping this state")
             return state_order.next_state(state)
 
         if mode_used_in_1v1 is None:
-            logger.log("No battle mode selected, skipping deck cycling.")
+            statistics.log("No battle mode selected, skipping deck cycling.")
             return state_order.next_state(state)
 
         deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1)
 
         deck_count = job_list.get(UIField.MAX_DECK_SELECTION.value, 10)
 
-        success, selected_deck_number = select_deck_state(emulator, logger, deck_cycle_index, deck_count)
+        success, selected_deck_number = select_deck_state(emulator, statistics, deck_cycle_index, deck_count)
 
         if not success or selected_deck_number is None:
-            return handle_state_failure(logger, "cycle_deck", "select_deck_state")
+            return handle_state_failure(statistics, "cycle_deck", "select_deck_state")
 
         next_deck = selected_deck_number + 1 if selected_deck_number < deck_count else 1
 
@@ -312,34 +312,34 @@ def state_tree(
     if state == "upgrade":
         # if job not selected, return next state
         if not job_list["upgrade_user_toggle"]:
-            logger.log("Upgrade user toggle is off, skipping this state")
+            statistics.log("Upgrade user toggle is off, skipping this state")
             return state_order.next_state(state)
 
         # if job not ready, go next state
         if state_history.state_is_ready(state) is False:
-            logger.log(f"{state} isn't ready. Skipping this state...")
+            statistics.log(f"{state} isn't ready. Skipping this state...")
             return state_order.next_state(state)
 
         # return output of this state
-        if upgrade_cards_state(emulator, logger) is False:
-            return handle_state_failure(logger, "upgrade", "upgrade_cards_state")
+        if upgrade_cards_state(emulator, statistics) is False:
+            return handle_state_failure(statistics, "upgrade", "upgrade_cards_state")
 
         return state_order.next_state(state)
 
     if state == "card_mastery":
         # if job not selected, return next state
         if not job_list[UIField.CARD_MASTERY_USER_TOGGLE]:
-            logger.log("Card mastery job isn't toggled. Skipping this state")
+            statistics.log("Card mastery job isn't toggled. Skipping this state")
             return state_order.next_state(state)
 
         # if job not ready, go next state
         if state_history.state_is_ready(state) is False:
-            logger.log(f"{state} isn't ready. Skipping this state...")
+            statistics.log(f"{state} isn't ready. Skipping this state...")
             return state_order.next_state(state)
 
         # return output of this state
-        if card_mastery_state(emulator, logger) is False:
-            return handle_state_failure(logger, "card_mastery", "card_mastery_state")
+        if card_mastery_state(emulator, statistics) is False:
+            return handle_state_failure(statistics, "card_mastery", "card_mastery_state")
 
         return state_order.next_state(state)
 
@@ -364,7 +364,7 @@ def state_tree(
             mode_used_in_1v1 = selected_mode
             if select_mode(emulator, selected_mode) is False:
                 return handle_state_failure(
-                    logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
+                    statistics, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
                 )
         else:
             # if only one mode is selected, check if it's already selected
@@ -375,7 +375,7 @@ def state_tree(
                 print(f"{selected_mode} is not selected. Selecting it now.")
                 if select_mode(emulator, selected_mode) is False:
                     return handle_state_failure(
-                        logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
+                        statistics, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
                     )
             else:
                 print(f"{selected_mode} is already selected.")
@@ -388,8 +388,8 @@ def state_tree(
             return state_order.next_state(state)
 
         # Start fight using the selected mode directly
-        if start_fight(emulator, logger, mode_used_in_1v1) is False:
-            return handle_state_failure(logger, "start_fight", "start_fight", "Failed while starting fight")
+        if start_fight(emulator, statistics, mode_used_in_1v1) is False:
+            return handle_state_failure(statistics, "start_fight", "start_fight", "Failed while starting fight")
 
         # go to next state
         return state_order.next_state(state)
@@ -406,7 +406,7 @@ def state_tree(
         if (
             do_fight_state(
                 emulator,
-                logger,
+                statistics,
                 random_plays_flag,
                 mode_used_in_1v1,
                 False,
@@ -415,7 +415,7 @@ def state_tree(
             is False
         ):
             return handle_state_failure(
-                logger, "1v1_fight", "do_fight_state", f"1v1 fight failed in mode: {mode_used_in_1v1}"
+                statistics, "1v1_fight", "do_fight_state", f"1v1 fight failed in mode: {mode_used_in_1v1}"
             )
 
         return state_order.next_state(state)
@@ -432,13 +432,13 @@ def state_tree(
         if (
             do_2v2_fight_state(
                 emulator,
-                logger,
+                statistics,
                 random_plays_flag,
                 recording_flag,
             )
             is False
         ):
-            return handle_state_failure(logger, "2v2_fight", "do_2v2_fight_state", "2v2 fight failed")
+            return handle_state_failure(statistics, "2v2_fight", "do_2v2_fight_state", "2v2 fight failed")
 
         return state_order.next_state(state)
 
@@ -447,17 +447,17 @@ def state_tree(
         if (
             end_fight_state(
                 emulator,
-                logger,
+                statistics,
                 recording_flag,
                 job_list[UIField.DISABLE_WIN_TRACK_TOGGLE],
             )
             is False
         ):
-            return handle_state_failure(logger, "end_fight", "end_fight_state", "Failed to end fight properly")
+            return handle_state_failure(statistics, "end_fight", "end_fight_state", "Failed to end fight properly")
 
         return state_order.next_state(state)
 
-    logger.error("Failure in state tree")
+    statistics.error("Failure in state tree")
     return "fail"
 
 

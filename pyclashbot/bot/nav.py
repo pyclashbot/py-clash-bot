@@ -19,13 +19,13 @@ CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 520)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
 
-def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
+def wait_for_battle_start(emulator, statistics: BotStatistics, timeout: int = 120) -> bool:
     """Waits for any battle to start (1v1 or 2v2).
 
     Args:
     ----
         emulator: The emulator controller.
-        logger: The logger object.
+        statistics: The statistics object.
         timeout: Maximum time to wait in seconds
 
     Returns:
@@ -35,7 +35,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
     start_time = time.time()
     while time.time() - start_time < timeout:
         time_taken = str(time.time() - start_time)[:4]
-        logger.change_status(
+        statistics.change_status(
             status=f"Waiting for battle to start for {time_taken}s",
         )
 
@@ -47,7 +47,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         battle_result = check_if_in_battle(emulator)
 
         if battle_result:  # True for any battle type
-            logger.change_status("Detected an ongoing battle!")
+            statistics.change_status("Detected an ongoing battle!")
             return True
 
         emulator.click(x_coord=20, y_coord=200)
@@ -150,13 +150,13 @@ def check_for_trophy_reward_menu(emulator) -> bool:
 
 def handle_trophy_reward_menu(
     emulator,
-    logger: BotStatistics,
+    statistics: BotStatistics,
     printmode=False,
 ) -> Literal["good"]:
     if printmode:
-        logger.change_status(status="Handling trophy reward menu")
+        statistics.change_status(status="Handling trophy reward menu")
     else:
-        logger.log("Handling trophy reward menu")
+        statistics.log("Handling trophy reward menu")
     emulator.click(
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
@@ -166,7 +166,7 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def wait_for_clash_main_menu(emulator, logger: BotStatistics, deadspace_click=True) -> bool:
+def wait_for_clash_main_menu(emulator, statistics: BotStatistics, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
     """
@@ -174,13 +174,13 @@ def wait_for_clash_main_menu(emulator, logger: BotStatistics, deadspace_click=Tr
     while check_if_on_clash_main_menu(emulator) is not True:
         # timeout check
         if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
-            logger.change_status("Timed out waiting for clash main")
+            statistics.change_status("Timed out waiting for clash main")
             break
 
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu(emulator):
             print("Handling trophy reward menu")
-            handle_trophy_reward_menu(emulator, logger)
+            handle_trophy_reward_menu(emulator, statistics)
             time.sleep(2)
             continue
 
@@ -263,11 +263,11 @@ def check_if_on_clash_main_menu(emulator) -> bool:
 
 def get_to_card_page_from_clash_main(
     emulator,
-    logger: BotStatistics,
+    statistics: BotStatistics,
 ) -> Literal["restart", "good"]:
     start_time = time.time()
 
-    logger.change_status(status="Getting to card page from clash main")
+    statistics.change_status(status="Getting to card page from clash main")
 
     # click card page icon
     emulator.click(
@@ -288,7 +288,7 @@ def get_to_card_page_from_clash_main(
         )
         time.sleep(3)
 
-    logger.change_status(status="Made it to card page")
+    statistics.change_status(status="Made it to card page")
 
     return "good"
 
@@ -351,44 +351,44 @@ def check_if_on_card_page(emulator) -> bool:
 
 def get_to_activity_log(
     emulator,
-    logger: BotStatistics,
+    statistics: BotStatistics,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
     if printmode:
-        logger.change_status(status="Getting to activity log")
+        statistics.change_status(status="Getting to activity log")
     else:
-        logger.log("Getting to activity log")
+        statistics.log("Getting to activity log")
 
     # if not on main return restart
     if check_if_on_clash_main_menu(emulator) is not True:
-        logger.change_status(
+        statistics.change_status(
             status="Eror 08752389 Not on clash main menu, restarting vm",
         )
         return "restart"
 
     # click clash main burger options button
     if printmode:
-        logger.change_status(status="Opening clash main options menu")
+        statistics.change_status(status="Opening clash main options menu")
     else:
-        logger.log("Opening clash main options menu")
+        statistics.log("Opening clash main options menu")
     emulator.click(
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
     )
-    if wait_for_clash_main_burger_button_options_menu(emulator, logger) == "restart":
-        logger.change_status(
+    if wait_for_clash_main_burger_button_options_menu(emulator, statistics) == "restart":
+        statistics.change_status(
             status="Error 99993 Waited too long for clash main options menu, restarting vm",
         )
         return "restart"
 
     # click battle log button
     if printmode:
-        logger.change_status(status="Clicking activity log button")
+        statistics.change_status(status="Clicking activity log button")
     else:
-        logger.log("Clicking activity log button")
+        statistics.log("Clicking activity log button")
     emulator.click(BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
-    if wait_for_battle_log_page(emulator, logger, printmode) == "restart":
-        logger.change_status(
+    if wait_for_battle_log_page(emulator, statistics, printmode) == "restart":
+        statistics.change_status(
             status="Error 923593 Waited too long for battle log page, restarting vm",
         )
         return "restart"
@@ -398,26 +398,26 @@ def get_to_activity_log(
 
 def wait_for_battle_log_page(
     emulator,
-    logger: BotStatistics,
+    statistics: BotStatistics,
     printmode=False,
 ) -> Literal["restart", "good"]:
     start_time = time.time()
     if printmode:
-        logger.change_status(status="Waiting for battle log page to appear")
+        statistics.change_status(status="Waiting for battle log page to appear")
     else:
-        logger.log("Waiting for battle log page to appear")
+        statistics.log("Waiting for battle log page to appear")
     while not check_if_on_battle_log_page(emulator):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(
+            statistics.change_status(
                 status="Error 2457245645 Waiting too long for battle log page",
             )
             return "restart"
 
     if printmode:
-        logger.change_status(status="Done waiting for battle log page to appear")
+        statistics.change_status(status="Done waiting for battle log page to appear")
     else:
-        logger.log("Done waiting for battle log page to appear")
+        statistics.log("Done waiting for battle log page to appear")
 
     return "good"
 
@@ -488,7 +488,7 @@ def check_if_on_clash_main_burger_button_options_menu(emulator) -> bool:
 
 def wait_for_clash_main_burger_button_options_menu(
     emulator,
-    logger: BotStatistics,
+    statistics: BotStatistics,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
     """Waits for the virtual machine to be on the clash main burger button options menu.
@@ -508,22 +508,22 @@ def wait_for_clash_main_burger_button_options_menu(
     start_time = time.time()
 
     if printmode:
-        logger.change_status(status="Waiting for clash main options menu to appear")
+        statistics.change_status(status="Waiting for clash main options menu to appear")
     else:
-        logger.log("Waiting for clash main options menu to appear")
+        statistics.log("Waiting for clash main options menu to appear")
     while not check_if_on_clash_main_burger_button_options_menu(emulator):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(
+            statistics.change_status(
                 status="Error 57245645362 Waiting too long for clash main options menu to appear",
             )
             return "restart"
     if printmode:
-        logger.change_status(
+        statistics.change_status(
             status="Done waiting for clash main options menu to appear",
         )
     else:
-        logger.log("Done waiting for clash main options menu to appear")
+        statistics.log("Done waiting for clash main options menu to appear")
     return "good"
 
 
@@ -671,7 +671,7 @@ if __name__ == "__main__":
     # import cv2
     # import os
 
-    # print("Creating logger...")
+    # print("Creating statistics...")
     # logger = Logger()
 
     # print("Creating MEmu emulator controller in DEBUG mode (no restart)...")

@@ -11,9 +11,9 @@ from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
 
 class WorkerThread(PausableThread):
-    def __init__(self, logger: BotStatistics, args, kwargs=None) -> None:
+    def __init__(self, statistics: BotStatistics, args, kwargs=None) -> None:
         super().__init__(args, kwargs)
-        self.logger: BotStatistics = logger
+        self.statistics: BotStatistics = statistics
         self.in_a_clan = False
 
     def _create_google_play_emulator(self):
@@ -24,13 +24,13 @@ class WorkerThread(PausableThread):
             return emulator
         except Exception as e:
             print(f"Failed to create Google Play emulator: {e}")
-            self.logger.change_status("Failed to start Google Play. Verify its installation!")
+            self.statistics.change_status("Failed to start Google Play. Verify its installation!")
             return None
 
     def _create_memu_emulator(self, render_mode):
         """Create and return a MEmu emulator instance."""
         if not verify_memu_installation():
-            self.logger.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
+            self.statistics.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
             return None
 
         return MemuEmulatorController(render_mode)
@@ -50,7 +50,7 @@ class WorkerThread(PausableThread):
                 return BlueStacksEmulatorController(render_settings=render_settings)
             except Exception as e:
                 print(f"Failed to create BlueStacks 5 emulator: {e}")
-                self.logger.change_status("Failed to start BlueStacks 5. Verify its installation!")
+                self.statistics.change_status("Failed to start BlueStacks 5. Verify its installation!")
                 return None
         elif emulator_selection == "MEmu":
             render_mode = jobs.get("memu_render_mode", "opengl")
@@ -63,7 +63,7 @@ class WorkerThread(PausableThread):
                 return AdbController(device_serial=adb_serial)
             except Exception as e:
                 print(f"Failed to create ADB Device controller: {e}")
-                self.logger.change_status("Failed to connect to ADB device. Check connection and ADB setup!")
+                self.statistics.change_status("Failed to connect to ADB device. Check connection and ADB setup!")
                 return None
 
         else:
@@ -73,39 +73,39 @@ class WorkerThread(PausableThread):
     def _run_bot_loop(self, emulator, jobs):
         """Run the main bot state loop."""
         state = "start"
-        state_history = StateHistory(self.logger)
+        state_history = StateHistory(self.statistics)
         state_order = StateOrder()
         consecutive_restarts = 0
         max_consecutive_restarts = 5
 
         while not self.shutdown_flag.is_set():
             try:
-                new_state = state_tree(emulator, self.logger, state, jobs, state_history, state_order)
+                new_state = state_tree(emulator, self.statistics, state, jobs, state_history, state_order)
 
                 # Check for restart loops
                 if new_state == "restart":
                     consecutive_restarts += 1
                     if consecutive_restarts >= max_consecutive_restarts:
-                        self.logger.error(
+                        self.statistics.error(
                             f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop"
                         )
                         break
-                    self.logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
+                    self.statistics.log(f"Restart #{consecutive_restarts} - attempting to recover")
                 else:
                     consecutive_restarts = 0  # Reset counter on successful state
 
                 # Check for error states that should stop execution
                 if new_state in ["fail", None]:
-                    self.logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
+                    self.statistics.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
                     if new_state == "fail":
-                        self.logger.add_restart_after_failure()
+                        self.statistics.add_restart_after_failure()
                     break
 
                 state = new_state
 
             except Exception as e:
-                self.logger.error(f"Exception in state_tree: {e}")
-                self.logger.log(f"Current state was: {state}")
+                self.statistics.error(f"Exception in state_tree: {e}")
+                self.statistics.log(f"Current state was: {state}")
                 print(f"[ERROR] Exception in state_tree: {e}")
                 print(f"[ERROR] Current state was: {state}")
                 # Try to restart from a known state
@@ -114,7 +114,7 @@ class WorkerThread(PausableThread):
                 traceback.print_exc()
                 consecutive_restarts += 1
                 if consecutive_restarts >= max_consecutive_restarts:
-                    self.logger.error("Too many consecutive exceptions - stopping bot")
+                    self.statistics.error("Too many consecutive exceptions - stopping bot")
                     break
 
             while self.pause_flag.is_set():
@@ -134,4 +134,4 @@ class WorkerThread(PausableThread):
         except ThreadKilled:
             return
         except Exception as err:
-            self.logger.error(str(err))
+            self.statistics.error(str(err))

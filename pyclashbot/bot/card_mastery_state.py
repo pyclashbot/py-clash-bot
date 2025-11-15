@@ -20,17 +20,17 @@ CARD_MASTERY_BUTTON_IMAGE_PATH = (
 CARD_MASTERY_BUTTON_TEMPLATE = open_from_path(str(CARD_MASTERY_BUTTON_IMAGE_PATH))
 
 
-def card_mastery_state(emulator, logger):
-    logger.change_status("Going to collect card mastery rewards")
+def card_mastery_state(emulator, statistics: BotStatistics):
+    statistics.change_status("Going to collect card mastery rewards")
 
     if check_if_on_clash_main_menu(emulator) is not True:
-        logger.change_status(
+        statistics.change_status(
             'Not on clash main menu for card_mastery_state() returning "restart"',
         )
         return False
 
-    if collect_card_mastery_rewards(emulator, logger) is False:
-        logger.change_status(
+    if collect_card_mastery_rewards(emulator, statistics) is False:
+        statistics.change_status(
             'Failed somewhere in collect_card_mastery_rewards(), returning "restart"',
         )
         return False
@@ -38,37 +38,37 @@ def card_mastery_state(emulator, logger):
     return True
 
 
-def collect_card_mastery_rewards(emulator, logger: BotStatistics) -> bool:
+def collect_card_mastery_rewards(emulator, statistics: BotStatistics) -> bool:
     # get to card page
-    logger.change_status("Collecting card mastery rewards...")
-    if get_to_card_page_from_clash_main(emulator, logger) == "restart":
-        logger.change_status(
+    statistics.change_status("Collecting card mastery rewards...")
+    if get_to_card_page_from_clash_main(emulator, statistics) == "restart":
+        statistics.change_status(
             "Failed to get to card page to collect mastery rewards! Returning false",
         )
         return False
     time.sleep(3)
 
     if not card_mastery_rewards_exist_with_delay(emulator):
-        logger.change_status("No card mastery rewards to collect.")
+        statistics.change_status("No card mastery rewards to collect.")
         time.sleep(1)
 
     else:
         # while card mastery icon exists:
         while card_mastery_rewards_exist_with_delay(emulator):
-            logger.change_status("Detected card mastery rewards")
+            statistics.change_status("Detected card mastery rewards")
             #   click card mastery icon
-            collect_first_mastery_reward(emulator, logger)
-            logger.change_status("Collected a card mastery reward!")
-            logger.add_card_mastery_reward_collection()
+            collect_first_mastery_reward(emulator, statistics)
+            statistics.change_status("Collected a card mastery reward!")
+            statistics.add_card_mastery_reward_collection()
             time.sleep(2)
 
     # get to clash main
-    logger.change_status("Returning to clash main menu")
+    statistics.change_status("Returning to clash main menu")
     emulator.click(243, 600)
 
     # wait for main to appear
-    if wait_for_clash_main_menu(emulator, logger) is False:
-        logger.change_status(
+    if wait_for_clash_main_menu(emulator, statistics) is False:
+        statistics.change_status(
             "Failed to get back to clash main menu from card page! Returning false",
         )
         return False
@@ -76,8 +76,8 @@ def collect_card_mastery_rewards(emulator, logger: BotStatistics) -> bool:
     return True
 
 
-def collect_first_mastery_reward(emulator, logger: BotStatistics):
-    logger.change_status("Collecting card mastery reward...")
+def collect_first_mastery_reward(emulator, statistics: BotStatistics):
+    statistics.change_status("Collecting card mastery reward...")
 
     # click the card mastery reward icon
     emulator.click(362, 444)
