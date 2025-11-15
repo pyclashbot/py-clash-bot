@@ -229,7 +229,10 @@ class PyClashBotUI(ttk.Window):
                 elif isinstance(widget, ttk.Checkbutton):
                     widget.configure(state=tk.DISABLED if running else tk.NORMAL)
                 elif isinstance(widget, ttk.Button):
-                    widget.configure(state=tk.DISABLED if running else tk.NORMAL)
+                    if widget is self.widget_mode_btn:
+                        widget.configure(state=tk.NORMAL)
+                    else:
+                        widget.configure(state=tk.DISABLED if running else tk.NORMAL)
 
             except tk.TclError:
                 continue
