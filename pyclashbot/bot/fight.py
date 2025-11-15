@@ -1,6 +1,7 @@
 """random module for randomizing fight plays"""
 
 import collections
+import logging
 import random
 import time
 from typing import Literal
@@ -473,13 +474,13 @@ def get_to_main_after_fight(emulator, logger):
         if not clicked_ok_or_exit:
             button_coord = find_post_battle_button(emulator)
             if button_coord is not None:
-                print("Found post-battle button, clicking it.")
+                logging.info("Found post-battle button, clicking it.")
                 emulator.click(button_coord[0], button_coord[1])
                 clicked_ok_or_exit = True
                 continue
 
         time.sleep(1)
-        print("Clicking on deadspace to close potential pop-up windows.")
+        logging.info("Clicking on deadspace to close potential pop-up windows.")
         emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
     return False
@@ -555,6 +556,7 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
         logger.change_status("[!] Non fatal error: card_index is None")
         return False
 
+    logger.change_status(f"Playing card {card_index}")
     emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
 
     # click the play coord

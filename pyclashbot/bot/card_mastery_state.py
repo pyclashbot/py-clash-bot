@@ -1,3 +1,4 @@
+import logging
 import time
 from pathlib import Path
 
@@ -56,7 +57,7 @@ def collect_card_mastery_rewards(emulator, logger: BotStatistics) -> bool:
         while card_mastery_rewards_exist_with_delay(emulator):
             logger.change_status("Detected card mastery rewards")
             #   click card mastery icon
-            collect_first_mastery_reward(emulator)
+            collect_first_mastery_reward(emulator, logger)
             logger.change_status("Collected a card mastery reward!")
             logger.add_card_mastery_reward_collection()
             time.sleep(2)
@@ -75,7 +76,9 @@ def collect_card_mastery_rewards(emulator, logger: BotStatistics) -> bool:
     return True
 
 
-def collect_first_mastery_reward(emulator):
+def collect_first_mastery_reward(emulator, logger: BotStatistics):
+    logger.change_status("Collecting card mastery reward...")
+
     # click the card mastery reward icon
     emulator.click(362, 444)
     time.sleep(0.5)
@@ -90,7 +93,7 @@ def collect_first_mastery_reward(emulator):
         emulator.click(200, y)
         time.sleep(1)
         if check_for_inventory_full_popup(emulator):
-            print("Inventory full popup detected!\nClicking it")
+            logging.info("Inventory full popup detected - clicking OK button")
             emulator.click(260, 420)
             time.sleep(1)
 
@@ -102,7 +105,7 @@ def collect_first_mastery_reward(emulator):
         emulator.click(*ds)
 
         if time.time() - ds_start_time > ds_click_timeout:
-            print("Clicked deadspace after collecting card mastery reward for too long")
+            logging.info("Clicked deadspace after collecting card mastery reward for too long")
             return False
 
     return True

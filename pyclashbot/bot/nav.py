@@ -1,3 +1,4 @@
+import logging
 import random
 import time
 from typing import Literal
@@ -623,7 +624,7 @@ def select_mode(emulator, mode: str):
     game_mode_coord = [308, 485]
 
     # click select mode button
-    print("Clicking mode selection button")
+    logging.info("Clicking mode selection button")
     emulator.click(game_mode_coord[0], game_mode_coord[1])
     time.sleep(2)
 
@@ -643,7 +644,7 @@ def select_mode(emulator, mode: str):
     while time.time() - start_time < search_timeout:
         coord = find_fight_mode_icon(emulator, mode)
         if coord is not None:
-            print(f'Located the "{mode}" button, clicking it.')
+            logging.info(f'Located the "{mode}" button, clicking it.')
             emulator.click(*coord)
             time.sleep(3)
 

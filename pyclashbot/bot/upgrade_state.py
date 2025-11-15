@@ -1,3 +1,4 @@
+import logging
 import time
 from typing import Any
 
@@ -97,7 +98,7 @@ def upgrade_cards_state(emulator, logger: BotStatistics):
     time.sleep(1)
 
     # return to clash main
-    print("Returning to clash main after upgrading")
+    logging.info("Returning to clash main after upgrading")
     emulator.click(243, 600)
     time.sleep(3)
 
@@ -167,6 +168,8 @@ def get_upgradable_cards(emulator):
 
 
 def update_cards(emulator, logger: BotStatistics) -> bool:
+    logger.change_status("Updating cards...")
+
     # click a topleft card to open edit deck mode
     emulator.click(73, 201)
     time.sleep(0.3)
@@ -288,7 +291,7 @@ def upgrade_card(emulator, logger: BotStatistics, card_index) -> bool:
 
     # click the card
     while not card_is_open(emulator, card_index):
-        print(f"Opening this card options: {card_index}")
+        logging.info(f"Opening card options for card {card_index}")
         emulator.click(CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
         time.sleep(1)
 

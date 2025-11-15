@@ -19,7 +19,7 @@ class WorkerThread(PausableThread):
     def _create_google_play_emulator(self):
         """Create and return a Google Play emulator instance."""
         try:
-            emulator = GooglePlayEmulatorController(logger=self.logger)
+            emulator = GooglePlayEmulatorController()
             print("Successfully created google play emulator")
             return emulator
         except Exception as e:
@@ -33,7 +33,7 @@ class WorkerThread(PausableThread):
             self.logger.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
             return None
 
-        return MemuEmulatorController(self.logger, render_mode)
+        return MemuEmulatorController(render_mode)
 
     def _setup_emulator(self, jobs):
         """Set up the appropriate emulator based on job configuration."""
@@ -47,7 +47,7 @@ class WorkerThread(PausableThread):
             try:
                 bs_mode = jobs.get("bluestacks_render_mode", "gl")
                 render_settings = {"graphics_renderer": bs_mode}
-                return BlueStacksEmulatorController(logger=self.logger, render_settings=render_settings)
+                return BlueStacksEmulatorController(render_settings=render_settings)
             except Exception as e:
                 print(f"Failed to create BlueStacks 5 emulator: {e}")
                 self.logger.change_status("Failed to start BlueStacks 5. Verify its installation!")
@@ -60,7 +60,7 @@ class WorkerThread(PausableThread):
             print("Creating ADB Device controller")
             try:
                 adb_serial = jobs.get("adb_serial", None)
-                return AdbController(logger=self.logger, device_serial=adb_serial)
+                return AdbController(device_serial=adb_serial)
             except Exception as e:
                 print(f"Failed to create ADB Device controller: {e}")
                 self.logger.change_status("Failed to connect to ADB device. Check connection and ADB setup!")

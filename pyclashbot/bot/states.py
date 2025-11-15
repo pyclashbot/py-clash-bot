@@ -257,7 +257,9 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "restart":
+        logger.change_status("Restarting emulator...")
         emulator.restart()
+        logger.change_status("Emulator restarted successfully")
         return state_order.next_state(state)
 
     if state == "randomize_deck":
