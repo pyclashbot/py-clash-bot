@@ -2,12 +2,12 @@ import random
 import time
 from typing import Literal
 
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import (
     all_pixels_are_equal,
     find_image,
     pixel_is_equal,
 )
-from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
 BATTLE_LOG_BUTTON = (241, 43)
@@ -38,10 +38,10 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
             status=f"Waiting for battle to start for {time_taken}s",
         )
 
-            # NOTE: Debug screenshot saving was intentionally removed from
-            # the production flow. If you need screenshots for debugging,
-            # use the recorder helpers directly in a temporary script or
-            # enable a local-only change — do not commit such changes.
+        # NOTE: Debug screenshot saving was intentionally removed from
+        # the production flow. If you need screenshots for debugging,
+        # use the recorder helpers directly in a temporary script or
+        # enable a local-only change — do not commit such changes.
 
         battle_result = check_if_in_battle(emulator)
 
@@ -149,7 +149,7 @@ def check_for_trophy_reward_menu(emulator) -> bool:
 
 def handle_trophy_reward_menu(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     printmode=False,
 ) -> Literal["good"]:
     if printmode:
@@ -165,7 +165,7 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> bool:
+def wait_for_clash_main_menu(emulator, logger: BotStatistics, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
     """
@@ -262,7 +262,7 @@ def check_if_on_clash_main_menu(emulator) -> bool:
 
 def get_to_card_page_from_clash_main(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
 ) -> Literal["restart", "good"]:
     start_time = time.time()
 
@@ -350,7 +350,7 @@ def check_if_on_card_page(emulator) -> bool:
 
 def get_to_activity_log(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
     if printmode:
@@ -397,7 +397,7 @@ def get_to_activity_log(
 
 def wait_for_battle_log_page(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     printmode=False,
 ) -> Literal["restart", "good"]:
     start_time = time.time()
@@ -487,7 +487,7 @@ def check_if_on_clash_main_burger_button_options_menu(emulator) -> bool:
 
 def wait_for_clash_main_burger_button_options_menu(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     printmode: bool = False,
 ) -> Literal["restart", "good"]:
     """Waits for the virtual machine to be on the clash main burger button options menu.
@@ -666,7 +666,7 @@ def select_mode(emulator, mode: str):
 
 if __name__ == "__main__":
     # from pyclashbot.emulators.memu import MemuEmulatorController
-    # from pyclashbot.utils.logger import Logger
+    # from pyclashbot.bot.statistics import BotStatistics
     # import cv2
     # import os
 

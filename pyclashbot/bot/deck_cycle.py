@@ -16,13 +16,13 @@ from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
 )
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import find_image
-from pyclashbot.utils.logger import Logger
 
 DECKS_PAGE_BUTTON_COORDS = (125, 60)
 
 
-def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tuple[bool, int | None]:
+def select_deck_state(emulator, logger: BotStatistics, deck_number, deck_count) -> tuple[bool, int | None]:
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main for select_deck_state().")
         return False, None
@@ -34,7 +34,7 @@ def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tupl
     return True, selected_deck_number
 
 
-def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
+def find_and_click_deck(emulator, logger: BotStatistics, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
     if is_single_deck_layout_by_pixel(emulator):
         logger.change_status("Pixel check confirmed single-deck layout.")
         if is_deck_full(emulator):
@@ -95,7 +95,7 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
     return False, None
 
 
-def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
+def _navigate_to_deck_selection(emulator, logger: BotStatistics) -> bool:
     logger.change_status("Navigating to the deck selection page...")
     if not get_to_card_page_from_clash_main(emulator, logger):
         logger.change_status("Failed to get to card page from main.")
@@ -105,7 +105,7 @@ def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
     return True
 
 
-def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
+def select_deck(emulator, logger: BotStatistics, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
     start_time = time.time()
     if not _navigate_to_deck_selection(emulator, logger):
         return False, None

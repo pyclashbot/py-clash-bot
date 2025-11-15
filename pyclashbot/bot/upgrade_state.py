@@ -7,12 +7,12 @@ from pyclashbot.bot.nav import (
     select_mode,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.utils.logger import Logger
 
 CARD_COORDS: list[Any] = [
     (76, 227),
@@ -62,7 +62,7 @@ DEADSPACE_COORD = (10, 323)
 CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
-def upgrade_cards_state(emulator, logger: Logger):
+def upgrade_cards_state(emulator, logger: BotStatistics):
     logger.change_status(status="Upgrade cards state")
 
     # if not on clash main, return restart
@@ -166,7 +166,7 @@ def get_upgradable_cards(emulator):
     return good_indicies
 
 
-def update_cards(emulator, logger: Logger) -> bool:
+def update_cards(emulator, logger: BotStatistics) -> bool:
     # click a topleft card to open edit deck mode
     emulator.click(73, 201)
     time.sleep(0.3)
@@ -267,7 +267,7 @@ def card_is_open(emulator, index):
     return card_index_to_is_red[index]
 
 
-def upgrade_card(emulator, logger: Logger, card_index) -> bool:
+def upgrade_card(emulator, logger: BotStatistics, card_index) -> bool:
     """Upgrades a card if it is upgradable.
 
     Args:
@@ -407,7 +407,7 @@ def check_for_missing_gold_popup(emulator):
     return True
 
 
-# def check_if_card_is_upgradable(emulator, logger: Logger, card_index):
+# def check_if_card_is_upgradable(emulator, logger: BotStatistics, card_index):
 #     logger.change_status(status=f"Checking if {card_index} is upgradable")
 
 #     # click the selected card

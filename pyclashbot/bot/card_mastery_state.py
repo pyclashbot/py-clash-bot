@@ -9,9 +9,9 @@ from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import compare_images, pixel_is_equal
 from pyclashbot.utils.image_handler import open_from_path
-from pyclashbot.utils.logger import Logger
 
 CARD_MASTERY_BUTTON_IMAGE_PATH = (
     Path(__file__).resolve().parent.parent / "detection" / "reference_images" / "card_mastery_button.png"
@@ -37,7 +37,7 @@ def card_mastery_state(emulator, logger):
     return True
 
 
-def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
+def collect_card_mastery_rewards(emulator, logger: BotStatistics) -> bool:
     # get to card page
     logger.change_status("Collecting card mastery rewards...")
     if get_to_card_page_from_clash_main(emulator, logger) == "restart":

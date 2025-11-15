@@ -21,13 +21,13 @@ from pyclashbot.bot.nav import (
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.recorder import save_image, save_play, save_win_loss
+from pyclashbot.bot.recorder import save_play, save_win_loss
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     find_image,
     pixel_is_equal,
 )
-from pyclashbot.utils.logger import Logger
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
 # coords of the cards in the hand
@@ -74,7 +74,7 @@ ELIXIR_COLOR = [240, 137, 244]
 
 def do_fight_state(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     random_fight_mode,
     fight_mode_choosed,
     called_from_launching=False,
@@ -125,7 +125,7 @@ def do_fight_state(
 
 def do_2v2_fight_state(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     random_fight_mode,
     recording_flag: bool = False,
 ) -> bool:
@@ -146,7 +146,7 @@ def start_fight(emulator, logger, mode) -> bool:
 
     Args:
         emulator: The emulator controller
-        logger: Logger instance
+        logger: BotStatistics instance
         mode: Fight mode - must be one of "Classic 1v1", "Classic 2v2", or "Trophy Road"
 
     Returns:
@@ -186,7 +186,7 @@ def start_fight(emulator, logger, mode) -> bool:
     return True
 
 
-def send_emote(emulator, logger: Logger):
+def send_emote(emulator, logger: BotStatistics):
     """Method to do an emote in a fight"""
     logger.change_status("Hitting an emote")
 
@@ -280,7 +280,7 @@ def count_elixer(emulator, elixer_count) -> bool:
 
 def end_fight_state(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     recording_flag,
     disable_win_tracker_toggle=True,
 ):
@@ -322,7 +322,7 @@ def end_fight_state(
 
 def check_if_previous_game_was_win(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
 ) -> bool | Literal["restart"]:
     """Method to handle the checking if the previous game was a win or loss"""
     logger.change_status(status="Checking if last game was a win/loss")
@@ -666,7 +666,7 @@ class BattleStrategy:
         return self.phase_thresholds[phase]
 
 
-def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
+def _fight_loop(emulator, logger: BotStatistics, recording_flag: bool) -> bool:
     """Method for handling dynamically timed fight"""
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)

@@ -1464,7 +1464,7 @@ class MemuEmulatorController(BaseEmulatorController):
         """Start package_name in the emulator.
         Args:
         ----
-            logger (Logger): Logger object.
+            logger (Logger): BotStatistics object.
 
         """
         # Function implementation goes here
@@ -1527,9 +1527,9 @@ class MemuEmulatorController(BaseEmulatorController):
 
 
 if __name__ == "__main__":
-    from pyclashbot.utils.logger import Logger
+    from pyclashbot.bot.statistics import BotStatistics
 
-    test_logger = Logger()
+    test_logger = BotStatistics()
     memu = MemuEmulatorController(test_logger, render_mode="directx")
     while 1:
         test_logger.log("Running")

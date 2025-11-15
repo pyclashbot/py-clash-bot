@@ -7,13 +7,14 @@ import subprocess
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
 
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
-from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.logger import configure_logging, log_dir
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from pyclashbot.utils.thread import StoppableThread
 
 
-initalize_pylogging()
+configure_logging()
 
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
@@ -101,7 +102,7 @@ def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str
     return loaded
 
 
-def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
+def start_button_event(logger: BotStatistics, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
     """Start the worker thread with the current configuration."""
     job_dictionary = make_job_dictionary(values)
 
@@ -130,14 +131,14 @@ def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any])
     return thread
 
 
-def stop_button_event(logger: Logger, ui: PyClashBotUI, thread: StoppableThread) -> None:
+def stop_button_event(logger: BotStatistics, ui: PyClashBotUI, thread: StoppableThread) -> None:
     """Stop the worker thread."""
     logger.change_status("Stopping")
     ui.stop_btn.configure(state="disabled")
     thread.shutdown(kill=False)
 
 
-def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
+def update_layout(ui: PyClashBotUI, logger: BotStatistics) -> None:
     """Update UI widgets from the logger's statistics."""
     stats = logger.get_stats()
     ui.update_stats(stats)
@@ -156,14 +157,14 @@ def exit_button_event(thread: StoppableThread | None) -> None:
 def handle_thread_finished(
     ui: PyClashBotUI,
     thread: WorkerThread | None,
-    logger: Logger,
-) -> tuple[WorkerThread | None, Logger]:
+    logger: BotStatistics,
+) -> tuple[WorkerThread | None, BotStatistics]:
     if thread is not None and not thread.is_alive():
         ui.set_running_state(False)
         if getattr(thread.logger, "errored", False):
             logger = thread.logger
         else:
-            logger = Logger(timed=False)
+            logger = BotStatistics(timed=False)
             thread = None
     return thread, logger
 
@@ -209,7 +210,7 @@ class BotApplication:
         self.ui.adb_reset_size_btn.configure(command=self._on_adb_reset_size)
 
         self.thread: WorkerThread | None = None
-        self.logger = Logger(timed=False)
+        self.logger = BotStatistics(timed=False)
         self._closing = False
         self._suppress_persist = True
         self.current_values = self.ui.get_all_values()
@@ -226,7 +227,7 @@ class BotApplication:
         if self.thread is not None and self.thread.is_alive():
             return
         values = self.ui.get_all_values()
-        new_logger = Logger(timed=True)
+        new_logger = BotStatistics(timed=True)
         thread = start_button_event(new_logger, self.ui, values)
         if thread is not None:
             self.logger = new_logger
@@ -263,7 +264,7 @@ class BotApplication:
             try:
                 callback()
             except Exception as exc:
-                self.logger.log(f"Error executing action callback: {exc}")
+                self.logger.error(f"Error executing action callback: {exc}")
         if hasattr(self.logger, "action_needed"):
             self.logger.action_needed = False
             self.logger.action_callback = None

@@ -3,8 +3,8 @@ import time
 import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import find_image, pixel_is_equal
-from pyclashbot.utils.logger import Logger
 
 # --- Constants for UI element locations ---
 DECK_TABS_REGION = (0, 80, 416, 146)
@@ -49,7 +49,7 @@ def is_single_deck_layout_by_pixel(emulator) -> bool:
     )
 
 
-def switch_deck_page(emulator, logger: Logger) -> bool:
+def switch_deck_page(emulator, logger: BotStatistics) -> bool:
     logger.change_status("Switching deck page...")
     switch_button_coord = find_image(
         emulator.screenshot(), "deck_tabs/switch_deck", subcrop=DECK_TABS_REGION, tolerance=0.98
@@ -62,7 +62,7 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
     return False
 
 
-def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -> bool:
+def randomize_and_check_deck(emulator, logger: BotStatistics, deck_to_randomize: int) -> bool:
     """
     Randomizes the selected deck and verifies that it becomes full.
 
@@ -99,7 +99,7 @@ def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -
     return True
 
 
-def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
+def return_to_clash_main_from_card_page(emulator, logger: BotStatistics) -> bool:
     """
     Clicks the exit button on the card page and verifies the bot is on the main menu.
     """

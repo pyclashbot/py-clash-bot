@@ -15,11 +15,11 @@ from pyclashbot.bot.nav import (
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
 )
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import find_image
-from pyclashbot.utils.logger import Logger
 
 
-def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
+def randomize_deck_state(emulator, logger: BotStatistics, deck_number: int = 2):
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on clash main for randomize_deck_state().")
         return False
@@ -32,7 +32,9 @@ def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
     return True
 
 
-def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number: int) -> tuple[bool, int | None]:
+def find_and_select_deck_for_randomization(
+    emulator, logger: BotStatistics, deck_number: int
+) -> tuple[bool, int | None]:
     if is_single_deck_layout_by_pixel(emulator):
         logger.change_status("Single deck layout detected. Selecting it for randomization.")
         return True, 1
@@ -91,7 +93,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
     return True, 1
 
 
-def randomize_deck(emulator, logger: Logger, deck_number: int) -> bool:
+def randomize_deck(emulator, logger: BotStatistics, deck_number: int) -> bool:
     """
     Orchestrates the entire deck randomization process including navigation.
     """

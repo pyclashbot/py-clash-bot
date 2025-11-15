@@ -2,18 +2,18 @@ import time
 import traceback
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
-from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
 
 class WorkerThread(PausableThread):
-    def __init__(self, logger: Logger, args, kwargs=None) -> None:
+    def __init__(self, logger: BotStatistics, args, kwargs=None) -> None:
         super().__init__(args, kwargs)
-        self.logger: Logger = logger
+        self.logger: BotStatistics = logger
         self.in_a_clan = False
 
     def _create_google_play_emulator(self):

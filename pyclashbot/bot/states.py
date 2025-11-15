@@ -13,16 +13,18 @@ from pyclashbot.bot.fight import (
     start_fight,
 )
 from pyclashbot.bot.nav import check_if_battle_mode_is_selected, select_mode
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.caching import (
     get_deck_number_for_battle_mode,
     set_deck_number_for_battle_mode,
 )
-from pyclashbot.utils.logger import Logger
 
 
-def handle_state_failure(logger: Logger, state_name: str, function_name: str, error_msg: str | None = None) -> str:
+def handle_state_failure(
+    logger: BotStatistics, state_name: str, function_name: str, error_msg: str | None = None
+) -> str:
     """Helper function to standardize error logging when states fail.
 
     Args:
@@ -227,7 +229,7 @@ class StateOrder:
 
 def state_tree(
     emulator,
-    logger: Logger,
+    logger: BotStatistics,
     state,
     job_list,
     state_history: StateHistory,
