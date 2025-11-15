@@ -20,6 +20,7 @@ dependencies = [
     "pygetwindow (>=0.0.9,<0.0.10)",
     "pillow (>=11.3.0,<13.0.0)",
     "ttkbootstrap>=1.12.1,<1.19",
+    "pydantic>=2.0.0,<3",
 ]
 
 [tool.setuptools.packages.find]
@@ -48,7 +49,6 @@ select = [
     "UP",
     "N",
     "RUF",
-    "TC",
 ]
 
 ignore = [
@@ -68,7 +68,6 @@ ignore = [
     "PLR6301",
     "PLR6201",
     "RUF012",
-    "TC002",
     "E402",
     "C901",
     "E501",
