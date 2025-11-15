@@ -38,10 +38,10 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
             status=f"Waiting for battle to start for {time_taken}s",
         )
 
-            # NOTE: Debug screenshot saving was intentionally removed from
-            # the production flow. If you need screenshots for debugging,
-            # use the recorder helpers directly in a temporary script or
-            # enable a local-only change — do not commit such changes.
+        # NOTE: Debug screenshot saving was intentionally removed from
+        # the production flow. If you need screenshots for debugging,
+        # use the recorder helpers directly in a temporary script or
+        # enable a local-only change — do not commit such changes.
 
         battle_result = check_if_in_battle(emulator)
 
