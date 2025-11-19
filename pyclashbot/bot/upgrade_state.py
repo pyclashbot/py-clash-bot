@@ -1,3 +1,4 @@
+import logging
 import time
 from typing import Any
 
@@ -7,12 +8,12 @@ from pyclashbot.bot.nav import (
     select_mode,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.statistics import BotStatistics
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     pixel_is_equal,
     region_is_color,
 )
-from pyclashbot.utils.logger import Logger
 
 CARD_COORDS: list[Any] = [
     (76, 227),
@@ -62,51 +63,51 @@ DEADSPACE_COORD = (10, 323)
 CLOSE_CARD_PAGE_COORD = (355, 238)
 
 
-def upgrade_cards_state(emulator, logger: Logger):
-    logger.change_status(status="Upgrade cards state")
+def upgrade_cards_state(emulator, statistics: BotStatistics):
+    statistics.change_status(status="Upgrade cards state")
 
     # if not on clash main, return restart
     print("Making sure on clash main before upgrading cards")
     clash_main_check = check_if_on_clash_main_menu(emulator)
     if clash_main_check is not True:
-        logger.change_status("Not on clash main at the start of upgrade_cards_state()")
+        statistics.change_status("Not on clash main at the start of upgrade_cards_state()")
         return False
 
     # select Trophy Road mode
-    logger.change_status(status="Selecting Trophy Road mode")
+    statistics.change_status(status="Selecting Trophy Road mode")
     if not select_mode(emulator, "Trophy Road"):
-        logger.change_status("Failed to select Trophy Road mode")
+        statistics.change_status("Failed to select Trophy Road mode")
         return False
 
     # get to card page
-    logger.change_status(status="Getting to card page")
-    if get_to_card_page_from_clash_main(emulator, logger) == "restart":
-        logger.change_status(
+    statistics.change_status(status="Getting to card page")
+    if get_to_card_page_from_clash_main(emulator, statistics) == "restart":
+        statistics.change_status(
             status="Error 0751389 Failure getting to card page from clash main in Upgrade State",
         )
         return False
 
     # do card upgrade
-    if update_cards(emulator, logger) is False:
-        logger.change_status("Failed to update cards")
+    if update_cards(emulator, statistics) is False:
+        statistics.change_status("Failed to update cards")
         return False
 
     # get back to main when its done
-    logger.change_status(status="Done upgrading cards")
+    statistics.change_status(status="Done upgrading cards")
     emulator.click(211, 607)
     time.sleep(1)
 
     # return to clash main
-    print("Returning to clash main after upgrading")
+    logging.info("Returning to clash main after upgrading")
     emulator.click(243, 600)
     time.sleep(3)
 
     # wait for main
-    if wait_for_clash_main_menu(emulator, logger, deadspace_click=False) is False:
-        logger.change_status("Failed to wait for clash main after upgrading cards")
+    if wait_for_clash_main_menu(emulator, statistics, deadspace_click=False) is False:
+        statistics.change_status("Failed to wait for clash main after upgrading cards")
         return False
 
-    logger.update_time_of_last_card_upgrade(time.time())
+    statistics.update_time_of_last_card_upgrade(time.time())
     return True
 
 
@@ -166,7 +167,9 @@ def get_upgradable_cards(emulator):
     return good_indicies
 
 
-def update_cards(emulator, logger: Logger) -> bool:
+def update_cards(emulator, statistics: BotStatistics) -> bool:
+    statistics.change_status("Updating cards...")
+
     # click a topleft card to open edit deck mode
     emulator.click(73, 201)
     time.sleep(0.3)
@@ -178,10 +181,10 @@ def update_cards(emulator, logger: Logger) -> bool:
     upgradable_indicies = get_upgradable_cards(emulator)
 
     for index in upgradable_indicies:
-        if upgrade_card(emulator, logger, index) is True:
-            logger.log("Upgraded a card!")
+        if upgrade_card(emulator, statistics, index) is True:
+            statistics.log("Upgraded a card!")
         else:
-            logger.log("Can't upgraded this card yet")
+            statistics.log("Can't upgraded this card yet")
 
     return True
 
@@ -267,13 +270,13 @@ def card_is_open(emulator, index):
     return card_index_to_is_red[index]
 
 
-def upgrade_card(emulator, logger: Logger, card_index) -> bool:
+def upgrade_card(emulator, statistics: BotStatistics, card_index) -> bool:
     """Upgrades a card if it is upgradable.
 
     Args:
     ----
         emulator (int): The index of the virtual machine to perform the upgrade on.
-        logger (Logger): The logger object to use for logging.
+        statistics (BotStatistics): The statistics object to use for logging and tracking.
         index (int): The index of the card to upgrade.
         upgrade_list (list[bool]): A list of bool values indicating whether each card is upgradable.
 
@@ -284,22 +287,22 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
     """
     print("\n")
     upgraded_a_card = False
-    logger.change_status(status=f"Upgrading card index: {card_index}")
+    statistics.change_status(status=f"Upgrading card index: {card_index}")
 
     # click the card
     while not card_is_open(emulator, card_index):
-        print(f"Opening this card options: {card_index}")
+        logging.info(f"Opening card options for card {card_index}")
         emulator.click(CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
         time.sleep(1)
 
     # click the upgrade button
-    logger.change_status(status="Clicking the upgrade button for this card")
+    statistics.change_status(status="Clicking the upgrade button for this card")
     coord = UPGRADE_BUTTON_COORDS[card_index]
     emulator.click(coord[0], coord[1])
     time.sleep(1)
 
     # click second upgrade button
-    logger.change_status(status="Clicking the second upgrade button")
+    statistics.change_status(status="Clicking the second upgrade button")
     if check_for_second_upgrade_button_condition_1(emulator):
         emulator.click(
             SECOND_UPGRADE_BUTTON_COORDS_CONDITION_1[0],
@@ -312,18 +315,18 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
         )
     time.sleep(2)
 
-    # if gold popup doesnt exists: add to logger's upgrade stat
+    # if gold popup doesnt exists: add to statistics's upgrade stat
     if not check_for_missing_gold_popup(emulator):
         upgraded_a_card = True
-        prev_card_upgrades = logger.get_card_upgrades()
-        logger.add_card_upgraded()
+        prev_card_upgrades = statistics.get_card_upgrades()
+        statistics.add_card_upgraded()
 
-        card_upgrades = logger.get_card_upgrades()
-        logger.log(
+        card_upgrades = statistics.get_card_upgrades()
+        statistics.log(
             f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}",
         )
         # click confirm upgrade button
-        logger.change_status(status="Clicking the confirm upgrade button")
+        statistics.change_status(status="Clicking the confirm upgrade button")
         if check_for_confirm_upgrade_button_condition_1(emulator):
             emulator.click(
                 CONFIRM_UPGRADE_BUTTON_COORDS_CONDITION_1[0],
@@ -340,13 +343,13 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
         emulator.click(CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
         time.sleep(2)
 
-        logger.change_status("Upgraded this card")
+        statistics.change_status("Upgraded this card")
     else:
-        logger.log("Missing gold popup exists. Skipping this upgradable card.")
+        statistics.log("Missing gold popup exists. Skipping this upgradable card.")
         upgraded_a_card = False
 
     # click deadspace
-    logger.change_status(
+    statistics.change_status(
         status="Clicking deadspace after attemping upgrading this card",
     )
     for _ in range(6):
@@ -407,7 +410,7 @@ def check_for_missing_gold_popup(emulator):
     return True
 
 
-# def check_if_card_is_upgradable(emulator, logger: Logger, card_index):
+# def check_if_card_is_upgradable(emulator, logger: BotStatistics, card_index):
 #     logger.change_status(status=f"Checking if {card_index} is upgradable")
 
 #     # click the selected card

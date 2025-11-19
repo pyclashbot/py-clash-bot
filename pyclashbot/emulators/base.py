@@ -1,6 +1,14 @@
 import numpy as np
 
 
+class AppNotInstalledError(Exception):
+    """Raised when an app is not installed on the emulator"""
+
+    def __init__(self, package_name: str):
+        self.package_name = package_name
+        super().__init__(f"App {package_name} is not installed. Please install it and complete the tutorial.")
+
+
 class BaseEmulatorController:
     """
     Base class for emulator controllers.

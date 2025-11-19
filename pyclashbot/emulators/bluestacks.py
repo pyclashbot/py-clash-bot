@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import logging
 import os
 import re
 import subprocess
@@ -28,8 +29,7 @@ class BlueStacksEmulatorController(AdbBasedController):
     - Start/stop only this instance. Allows for future multi instance implementation for farming multiple accounts.
     """
 
-    def __init__(self, logger, render_settings: dict | None = None):
-        self.logger = logger
+    def __init__(self, render_settings: dict | None = None):
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
         self.instance_name = "pyclashbot-96"
@@ -283,7 +283,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
         self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
 
-        self.logger.log(
+        logging.info(
             f"[BlueStacks 5] Reused instance '{internal}' as '{self.instance_name}'. Port={self.instance_port}"
         )
         with suppress(Exception):
@@ -319,51 +319,17 @@ class BlueStacksEmulatorController(AdbBasedController):
         if internal and self._reuse_and_rename_internal(internal):
             return
 
-        # Open Multi-Instance Manager and prompt user to create a clean Pie64.
-        while True:
-            self._request_instance_retry = False
-            self.logger.show_temporary_action(
-                message="Open BlueStacks Multi-Instance Manager and create a fresh Pie64 instance wihtout logging into any google accounts, then click Retry.",
-                action_text="Retry",
-                callback=self._request_instance_creation_retry,
-            )
-            self.logger.log("[BlueStacks 5] No clean Pie64 instance found. Opening Multi-Instance Manager...")
-            with suppress(Exception):
-                os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
+        # No clean Pie64 instance found - raise exception for caller to handle
+        logging.error("[BlueStacks 5] No clean Pie64 instance found.")
+        logging.info("[BlueStacks 5] Opening Multi-Instance Manager...")
+        with suppress(Exception):
+            os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
 
-            # Wait for user action via Retry callback
-            self.instance_creation_waiting = True
-            while getattr(self, "instance_creation_waiting", False):
-                time.sleep(0.5)
-
-            # User clicked Retry check again for a clean instance outside the callback
-            if getattr(self, "_request_instance_retry", False):
-                # If our display name exists, resolve internal and port
-                if self._display_name_exists(self.bs_conf_path, self.instance_name):
-                    internal = self._find_internal_by_display_name(
-                        self.mim_meta_path, self.instance_name
-                    ) or self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
-                    if internal:
-                        self.internal_name = internal
-                        self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
-                        self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
-                        with suppress(Exception):
-                            self._close_multi_instance_manager()
-                        self.logger.change_status("Clean Pie64 instance detected - continuing...")
-                        return
-
-                # Otherwise try to reuse an unlinked Pie64
-                internal = self._pick_unlinked_pie64()
-                if internal and self._reuse_and_rename_internal(internal):
-                    self.logger.change_status("Prepared clean Pie64 instance - continuing...")
-                    return
-
-                self.logger.log("[BlueStacks 5] Still no clean Pie64 instance. Please try again.")
-
-    def _request_instance_creation_retry(self):
-        self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean Pie64 instance")
-        self._request_instance_retry = True
-        self.instance_creation_waiting = False
+        raise RuntimeError(
+            "No clean Pie64 instance found. Please open BlueStacks Multi-Instance Manager "
+            "and create a fresh Pie64 instance without logging into any Google accounts, "
+            "then restart the bot."
+        )
 
     def _apply_renderer_setting(self) -> None:
         desired = self.render_settings["graphics_renderer"]
@@ -381,7 +347,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             with suppress(Exception):
                 with open(self.bs_conf_path, "w", encoding="utf-8") as f:
                     f.write(new_conf)
-                self.logger.log(f"[BlueStacks 5] graphics_renderer set to {desired_code} for {internal}")
+                logging.info(f"[BlueStacks 5] graphics_renderer set to {desired_code} for {internal}")
 
     def _compose_instance_conf(self, conf: str, internal: str, ensure_display: bool = True) -> tuple[str, bool]:
         """Return (new_conf, changed) with required BlueStacks settings applied, including renderer."""
@@ -441,7 +407,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             with suppress(Exception):
                 with open(self.bs_conf_path, "w", encoding="utf-8") as f:
                     f.write(conf)
-                self.logger.log(f"[BlueStacks 5] Enforced VM config for '{internal}'")
+                logging.info(f"[BlueStacks 5] Enforced VM config for '{internal}'")
 
     def _cmd_is_server_scoped(self, command: str) -> bool:
         c = command.strip()
@@ -564,12 +530,12 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     def restart(self) -> bool:
         start_ts = time.time()
-        self.logger.change_status("Starting BlueStacks 5 emulator restart process...")
+        logging.info("Starting BlueStacks 5 emulator restart process...")
 
-        self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
+        logging.info("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
 
-        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-96)...")
+        logging.info("Launching BlueStacks 5 (pyclashbot-96)...")
         self.start()
 
         # Wait for only our instance
@@ -577,63 +543,51 @@ class BlueStacksEmulatorController(AdbBasedController):
         t0 = time.time()
         while not self._is_this_instance_running():
             if time.time() - t0 > boot_timeout:
-                self.logger.change_status("Timeout waiting for pyclashbot instance to start - retrying...")
+                logging.info("Timeout waiting for pyclashbot instance to start - retrying...")
                 return False
             time.sleep(0.5)
 
         # Refresh port after boot
         self._refresh_instance_port()
         if not self.device_serial:
-            self.logger.change_status("No ADB port resolved for this instance.")
+            logging.info("No ADB port resolved for this instance.")
             return False
 
         # Connect ADB scoped to our device
-        self.logger.change_status(f"Connecting ADB to {self.device_serial} ...")
+        logging.info(f"Connecting ADB to {self.device_serial} ...")
         t1 = time.time()
         while not self._connect():
             if time.time() - t1 > 60:
-                self.logger.change_status("Failed to connect ADB to BlueStacks 5 - retrying...")
+                logging.info("Failed to connect ADB to BlueStacks 5 - retrying...")
                 return False  # if this makes issues big problems
             time.sleep(1)
 
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
-        self.logger.change_status("Launching Clash Royale...")
+        logging.info("Launching Clash Royale...")
 
-        # Use inherited start_app which handles installation check
-        if not self.start_app(clash_pkg):
-            # This means app is not installed and user is being prompted.
-            # We must wait for the installation loop (handled by base class) to finish
-            # The base class's _wait_for_clash_installation will block until
-            # the user clicks 'Retry' and the app is found.
-            self.logger.log("Waiting for app installation...")
-
-            # After _wait_for_clash_installation returns True, we need to manually
-            # re-trigger the app start, because the original call failed.
-            self.start_app(clash_pkg)
-
+        # Use inherited start_app (raises AppNotInstalledError if not found)
+        self.start_app(clash_pkg)
         time.sleep(5)
 
         # Wait for main menu
-        self.logger.change_status("Waiting for Clash Royale main menu...")
+        logging.info("Waiting for Clash Royale main menu...")
         deadline = time.time() + 240
         while time.time() < deadline:
             if check_if_on_clash_main_menu(self):
-                self.logger.change_status("Clash Royale main menu detected")
+                logging.info("Clash Royale main menu detected")
                 dur = f"{time.time() - start_ts:.1f}s"
-                self.logger.log(f"BlueStacks 5 restart completed in {dur}")
+                logging.info(f"BlueStacks 5 restart completed in {dur}")
                 return True
             self.click(5, 350)  # Use inherited click
 
-        self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
+        logging.info("Timeout waiting for Clash main menu - retrying...")
         return False
 
     # click() is now inherited from AdbBasedController
     # swipe() is now inherited from AdbBasedController
     # screenshot() is now inherited from AdbBasedController
-    # start_app() is now inherited from AdbBasedController
-    # _wait_for_clash_installation() is now inherited from AdbBasedController
-    # _retry_installation_check() is now inherited from AdbBasedController
+    # start_app() is now inherited from AdbBasedController (raises AppNotInstalledError if app not found)
 
 
 if __name__ == "__main__":
