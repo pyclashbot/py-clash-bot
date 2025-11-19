@@ -201,6 +201,8 @@ class BotApplication:
         self.ui.register_config_callback(self._on_config_change)
         self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
+        self.ui.register_widget_mode_callback(self._on_widget_mode_clicked)
+        self.ui.set_stats_provider(self._get_stats_for_widget)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
         self.ui.adb_refresh_btn.configure(command=self._on_adb_refresh)
         self.ui.adb_connect_btn.configure(command=self._on_adb_connect)
@@ -374,6 +376,14 @@ class BotApplication:
         self.logger.change_status(f"Resetting size and density for {serial}...")
         self._run_adb_command(serial, "shell wm size reset")
         self._run_adb_command(serial, "shell wm density reset")
+
+    def _on_widget_mode_clicked(self) -> None:
+        """Handle widget mode button click."""
+        self.ui._toggle_stats_widget()
+
+    def _get_stats_for_widget(self) -> dict[str, object] | None:
+        """Provide current stats for widget display."""
+        return self.logger.get_stats()
 
     def run(self, start_on_run: bool = False) -> None:
         if start_on_run:
