@@ -103,8 +103,8 @@ def check_if_in_battle(emulator):
         bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel))
         return bright_count >= bright_required and is_scoreboard_purple(pixels[-1])
 
-    coords_1v1 = [(515, 49), (518, 77), (530, 52), (530, 77), (618, 115)]
-    coords_2v2 = [(515, 53), (518, 80), (531, 52), (514, 76), (615, 114)]
+    coords_1v1 = [(528, 49), (532, 77), (546, 52), (546, 77), (618, 115)]
+    coords_2v2 = [(534, 53), (533, 80), (548, 52), (548, 76), (615, 114)]
 
     if check_mode(coords_1v1):
         return True
