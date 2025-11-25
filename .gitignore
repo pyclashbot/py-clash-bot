@@ -8,3 +8,4 @@ __pycache__
 recordings
 .claude/
 .claude/settings.local.json
+**/*.egg-info

@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import time
 from abc import ABC, abstractmethod
@@ -5,7 +6,7 @@ from abc import ABC, abstractmethod
 import cv2
 import numpy as np
 
-from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.emulators.base import AppNotInstalledError, BaseEmulatorController
 
 
 class AdbBasedController(BaseEmulatorController, ABC):
@@ -96,64 +97,23 @@ class AdbBasedController(BaseEmulatorController, ABC):
         """
         Start an app using ADB monkey command.
 
-        If the app is not installed, it will trigger the
-        installation waiting mechanism.
+        If the app is not installed, raises AppNotInstalledError.
 
         Args:
             package_name (str): The package name to start.
 
+        Raises:
+            AppNotInstalledError: If the app is not installed.
+
         Returns:
-            True if the app was started or if the installation
-            wait was successfully initiated and completed.
+            True if the app was started successfully.
         """
         if not self._check_app_installed(package_name):
-            # App not found, trigger the user installation prompt
-            return self._wait_for_clash_installation(package_name)
+            # App not found, raise exception for caller to handle
+            logging.info(f"App {package_name} is not installed")
+            raise AppNotInstalledError(package_name)
 
         # App is installed, launch it
+        logging.info(f"Launching app: {package_name}")
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
         return True
-
-    def _wait_for_clash_installation(self, package_name: str):
-        """
-        Private method to show a UI prompt and wait for the user to install
-        the specified app.
-        """
-        self.current_package_name = package_name
-        self.logger.show_temporary_action(
-            message=f"{package_name} not installed - please install it and complete tutorial",
-            action_text="Retry",
-            callback=self._retry_installation_check,
-        )
-
-        self.logger.log(f"[!] {package_name} not installed.")
-        self.installation_waiting = True
-
-        while self.installation_waiting:
-            time.sleep(0.5)
-
-        # This loop breaks when _retry_installation_check sets
-        # self.installation_waiting = False
-        self.logger.log("[+] Installation confirmed, continuing...")
-        return True
-
-    def _retry_installation_check(self):
-        """
-        Callback method for the 'Retry' button. Checks if the app
-        has been installed.
-        """
-        self.logger.change_status("Checking for app installation...")
-
-        package_name = getattr(self, "current_package_name", "com.supercell.clashroyale")
-
-        if self._check_app_installed(package_name):
-            self.installation_waiting = False
-            self.logger.change_status("Installation complete - continuing...")
-        else:
-            # App still not found, show the prompt again
-            self.logger.show_temporary_action(
-                message=f"{package_name} still not found - please install it and complete tutorial",
-                action_text="Retry",
-                callback=self._retry_installation_check,
-            )
-            self.logger.log(f"[!] {package_name} still not installed. Please try again.")
