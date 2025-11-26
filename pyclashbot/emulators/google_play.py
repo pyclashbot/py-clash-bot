@@ -4,26 +4,6 @@ import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
 from os.path import normpath
-import sys
-
-if sys.platform == "win32":
-    from winreg import (
-        HKEY_LOCAL_MACHINE,
-        OpenKey,
-        QueryValueEx,
-        ConnectRegistry,
-    )
-else:
-    HKEY_LOCAL_MACHINE = None
-
-    def OpenKey(*args, **kwargs):
-        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
-
-    def QueryValueEx(*args, **kwargs):
-        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
-
-    def ConnectRegistry(*args, **kwargs):
-        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
 
 import pygetwindow as gw
 
@@ -31,9 +11,12 @@ DEBUG = False
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.platform import Platform
 
 
 class GooglePlayEmulatorController(AdbBasedController):
+    supported_platforms = [Platform.WINDOWS]
+
     def __init__(self, logger, render_settings: dict = {}):
         self.logger = logger
         # clear existing stuff
@@ -228,6 +211,8 @@ class GooglePlayEmulatorController(AdbBasedController):
         :return: The normalized installation path
         :raises FileNotFoundError: If the emulator is not found
         """
+        import winreg
+
         # C:\Program Files\Google\Play Games Developer Emulator\Bootstrapper.exe
         registry_keys = [
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GooglePlayGamesDeveloperEmulator",
@@ -236,8 +221,8 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         for key in registry_keys:
             with suppress(FileNotFoundError):
-                with OpenKey(ConnectRegistry(None, HKEY_LOCAL_MACHINE), key) as reg_key:
-                    install_path = QueryValueEx(reg_key, "InstallLocation")[0]
+                with winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE), key) as reg_key:
+                    install_path = winreg.QueryValueEx(reg_key, "InstallLocation")[0]
                     folder_path = normpath(install_path)
                     if os.path.exists(folder_path) and os.path.isdir(folder_path):
                         return folder_path

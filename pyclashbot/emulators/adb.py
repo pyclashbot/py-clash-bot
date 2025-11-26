@@ -5,6 +5,7 @@ import time
 # Assuming these are in the correct path
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.platform import Platform
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -18,6 +19,8 @@ class AdbController(AdbBasedController):
 
     It now inherits shared ADB logic from AdbBasedController.
     """
+
+    supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
     def __init__(self, logger, device_serial: str | None = None):
         """

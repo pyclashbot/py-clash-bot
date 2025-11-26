@@ -7,29 +7,10 @@ import subprocess
 import time
 from contextlib import suppress
 from os.path import normpath
-import sys
-
-if sys.platform == "win32":
-    from winreg import (
-        HKEY_LOCAL_MACHINE,
-        OpenKey,
-        QueryValueEx,
-        ConnectRegistry,
-    )
-else:
-    HKEY_LOCAL_MACHINE = None
-
-    def OpenKey(*args, **kwargs):
-        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
-
-    def QueryValueEx(*args, **kwargs):
-        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
-
-    def ConnectRegistry(*args, **kwargs):
-        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.platform import Platform
 
 DEBUG = False
 
@@ -41,6 +22,8 @@ class BlueStacksEmulatorController(AdbBasedController):
     - All ADB device commands are scoped with -s 127.0.0.1:<instance_port>.
     - Start/stop only this instance. Allows for future multi instance implementation for farming multiple accounts.
     """
+
+    supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
     def __init__(self, logger, render_settings: dict | None = None):
         self.logger = logger
@@ -136,13 +119,15 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     def _get_bluestacks_registry_value(self, value_name: str) -> str | None:
         """Read a BlueStacks_nxt registry value from HKLM."""
+        import winreg
+
         reg_paths = [r"SOFTWARE\BlueStacks_nxt"]
         with suppress(FileNotFoundError, OSError):
-            reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
+            reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
             for subkey in reg_paths:
                 with suppress(FileNotFoundError, OSError):
-                    with OpenKey(reg, subkey) as k:
-                        val = QueryValueEx(k, value_name)[0]
+                    with winreg.OpenKey(reg, subkey) as k:
+                        val = winreg.QueryValueEx(k, value_name)[0]
                         if isinstance(val, str) and val.strip():
                             return val
         return None
