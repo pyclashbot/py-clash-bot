@@ -9,6 +9,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, LEFT, READONLY, YES, X
 from ttkbootstrap.tooltip import ToolTip
 
+from pyclashbot.emulators import EmulatorType, get_available_emulators
 from pyclashbot.interface.config import (
     BLUESTACKS_SETTINGS,
     GOOGLE_PLAY_SETTINGS,
@@ -87,10 +88,10 @@ class PyClashBotUI(ttk.Window):
         values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
 
         emulator_choice = self.emulator_var.get()
-        values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == "MEmu"
-        values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == "Google Play"
-        values[UIField.BLUESTACKS_EMULATOR_TOGGLE.value] = emulator_choice == "BlueStacks 5"
-        values[UIField.ADB_TOGGLE.value] = emulator_choice == "ADB Device"
+        values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.MEMU
+        values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.GOOGLE_PLAY
+        values[UIField.BLUESTACKS_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.BLUESTACKS
+        values[UIField.ADB_TOGGLE.value] = emulator_choice == EmulatorType.ADB
 
         memu_render = self.memu_render_var.get()
         values[UIField.DIRECTX_TOGGLE.value] = memu_render == "DirectX"
@@ -127,14 +128,22 @@ class PyClashBotUI(ttk.Window):
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
+            # Determine saved emulator choice
             if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
-                self.emulator_var.set("Google Play")
+                saved_emulator = EmulatorType.GOOGLE_PLAY
             elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
-                self.emulator_var.set("BlueStacks 5")
+                saved_emulator = EmulatorType.BLUESTACKS
             elif values.get(UIField.ADB_TOGGLE.value):
-                self.emulator_var.set("ADB Device")
+                saved_emulator = EmulatorType.ADB
             else:
-                self.emulator_var.set("MEmu")
+                saved_emulator = EmulatorType.MEMU
+
+            # Use saved choice if available on this platform, otherwise fallback
+            available = get_available_emulators()
+            if saved_emulator in available:
+                self.emulator_var.set(saved_emulator)
+            elif available:
+                self.emulator_var.set(available[0])
 
             if values.get(UIField.DIRECTX_TOGGLE.value):
                 self.memu_render_var.set("DirectX")
@@ -452,12 +461,13 @@ class PyClashBotUI(ttk.Window):
         selection_frame.pack(fill=X, pady=(0, 10))
         ttk.Label(selection_frame, text="Select Emulator:").pack(side=LEFT, padx=(0, 5))
 
-        self.emulator_var = ttk.StringVar(value="MEmu")  # Default value
-        emulator_choices = ["MEmu", "Google Play", "BlueStacks 5", "ADB Device"]
+        available_emulators = get_available_emulators()
+        default_emulator = available_emulators[0] if available_emulators else EmulatorType.ADB
+        self.emulator_var = ttk.StringVar(value=default_emulator)
         self.emulator_combo = ttk.Combobox(
             selection_frame,
             textvariable=self.emulator_var,
-            values=emulator_choices,
+            values=available_emulators,
             state=READONLY,
             width=20,
         )
@@ -478,10 +488,10 @@ class PyClashBotUI(ttk.Window):
 
         # Store frames in a dictionary for easy access
         self.emulator_settings_frames = {
-            "MEmu": self.memu_frame,
-            "Google Play": self.google_play_frame,
-            "BlueStacks 5": self.bluestacks_frame,
-            "ADB Device": self.adb_frame,
+            EmulatorType.MEMU: self.memu_frame,
+            EmulatorType.GOOGLE_PLAY: self.google_play_frame,
+            EmulatorType.BLUESTACKS: self.bluestacks_frame,
+            EmulatorType.ADB: self.adb_frame,
         }
 
         # Populate the settings frames

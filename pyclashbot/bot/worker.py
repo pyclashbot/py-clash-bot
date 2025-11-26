@@ -2,6 +2,7 @@ import time
 import traceback
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
@@ -37,12 +38,12 @@ class WorkerThread(PausableThread):
 
     def _setup_emulator(self, jobs):
         """Set up the appropriate emulator based on job configuration."""
-        emulator_selection = jobs.get("emulator", "MEmu")
+        emulator_selection = jobs.get("emulator", EmulatorType.MEMU)
 
-        if emulator_selection == "Google Play":
+        if emulator_selection == EmulatorType.GOOGLE_PLAY:
             print("Creating google play emulator")
             return self._create_google_play_emulator()
-        elif emulator_selection in ("BlueStacks 5"):
+        elif emulator_selection == EmulatorType.BLUESTACKS:
             print("Creating BlueStacks 5 emulator")
             try:
                 bs_mode = jobs.get("bluestacks_render_mode", "gl")
@@ -52,11 +53,10 @@ class WorkerThread(PausableThread):
                 print(f"Failed to create BlueStacks 5 emulator: {e}")
                 self.logger.change_status("Failed to start BlueStacks 5. Verify its installation!")
                 return None
-        elif emulator_selection == "MEmu":
+        elif emulator_selection == EmulatorType.MEMU:
             render_mode = jobs.get("memu_render_mode", "opengl")
             return self._create_memu_emulator(render_mode)
-
-        elif emulator_selection == "ADB Device":
+        elif emulator_selection == EmulatorType.ADB:
             print("Creating ADB Device controller")
             try:
                 adb_serial = jobs.get("adb_serial", None)
@@ -65,7 +65,6 @@ class WorkerThread(PausableThread):
                 print(f"Failed to create ADB Device controller: {e}")
                 self.logger.change_status("Failed to connect to ADB device. Check connection and ADB setup!")
                 return None
-
         else:
             print(f"[!] Fatal error: Emulator {emulator_selection} is not supported!")
             return None
