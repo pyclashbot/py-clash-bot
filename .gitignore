@@ -6,6 +6,7 @@ node_modules
 .venv
 build
 dist
+*.spec
 __version__
 __pycache__
 recordings
