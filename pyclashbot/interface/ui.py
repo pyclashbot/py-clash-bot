@@ -305,7 +305,7 @@ class PyClashBotUI(ttk.Window):
         self.event_log.configure(state="disabled")
         self._status_text = "Idle"
 
-        self.start_btn = ttk.Button(bottom, text="Start", bootstyle="success", width=10)
+        self.start_btn = tk.Button(bottom, text="Start", bg="green", fg="white", width=10)
         self.start_btn.grid(row=0, column=1, sticky="e", padx=(0, 6))
         self._register_config_widget("Start", self.start_btn)
 
@@ -452,8 +452,8 @@ class PyClashBotUI(ttk.Window):
         selection_frame.pack(fill=X, pady=(0, 10))
         ttk.Label(selection_frame, text="Select Emulator:").pack(side=LEFT, padx=(0, 5))
 
-        self.emulator_var = ttk.StringVar(value="ADB Device")  # Default value
-        emulator_choices = ["ADB Device"]
+        self.emulator_var = ttk.StringVar(value="MEmu")  # Default value
+        emulator_choices = ["MEmu", "Google Play", "BlueStacks 5", "ADB Device"]
         self.emulator_combo = ttk.Combobox(
             selection_frame,
             textvariable=self.emulator_var,
@@ -776,21 +776,19 @@ class PyClashBotUI(ttk.Window):
             if var.get() not in values and values:
                 var.set(values[0])
 
-    def _apply_theme(self, selected: str):
-        """
-        Apply the ttkbootstrap theme.
-
-        On some Tk / ttkbootstrap combinations, theme_use() can raise a TclError
-        when trying to update styling for widgets that have already been destroyed
-        (e.g. combobox popdowns). That should not be fatal, so we catch and ignore it.
-        """
-        try:
-            self._style.theme_use(selected)
-        except tk.TclError as e:
-        # Non-fatal UI styling bug; log if you like, but don't crash the app.
-        # You can uncomment this if you want to see it in logs:
-        # print(f"Theme apply error ignored: {e}")
-            pass
+    def _apply_theme(self, theme_name: str, skip_variable_update: bool = False) -> None:
+        available = tuple(self._style.theme_names())
+        selected = theme_name if theme_name in available else self.DEFAULT_THEME
+        if selected not in available and available:
+            selected = available[0]
+        if not skip_variable_update or self.theme_var.get() != selected:
+            self._suspend_traces += 1
+            try:
+                self.theme_var.set(selected)
+            finally:
+                self._suspend_traces -= 1
+        self._style.theme_use(selected)
+        self._refresh_theme_colours()
 
     def _label_foreground(self) -> str:
         try:

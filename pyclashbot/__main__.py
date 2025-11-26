@@ -14,9 +14,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
-import sys
-import os
-import tkinter as tk
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -223,26 +221,6 @@ class BotApplication:
 
         self.ui.set_running_state(False)
         self._poll()
-        self._set_macos_icon()
-
-    def _set_macos_icon(self):
-        if sys.platform != "darwin":
-            return
-
-        try:
-            if getattr(sys, "frozen", False):
-                # Running from the bundled .app
-                base_dir = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
-            else:
-                # Running from source
-                base_dir = os.path.dirname(os.path.abspath(__file__))
-
-            icon_path = os.path.join(base_dir, "assets", "clashbot_icon.png")
-            icon_img = tk.PhotoImage(file=icon_path)
-            # True = apply to this window and all future toplevel windows
-            self.iconphoto(True, icon_img)
-        except Exception as e:
-            print("Failed to set macOS window/Dock icon:", e)
 
     def _on_start(self) -> None:
         if self.thread is not None and self.thread.is_alive():
