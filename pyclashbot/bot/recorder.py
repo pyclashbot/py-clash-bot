@@ -3,10 +3,16 @@ import json
 import os
 import time
 
+import cv2
 import numpy as np
 from PIL import Image
 
+from pyclashbot.utils.webhook import DECK_SCREENSHOT_WEBHOOK_URL, send_deck_screenshot_webhook
+
 top_folder = r"recordings"
+
+# Deck region for capturing deck area (x1, y1, x2, y2)
+DECK_REGION = (80, 520, 400, 633)
 
 
 def is_valid_play_input(play_coord, card_index):
@@ -33,7 +39,7 @@ def is_valid_play_input(play_coord, card_index):
     return True
 
 
-def save_play(play_coord, card_index):
+def save_play(play_coord, card_index, emulator=None):
     os.makedirs(top_folder, exist_ok=True)
 
     if not is_valid_play_input(play_coord, card_index):
@@ -49,6 +55,44 @@ def save_play(play_coord, card_index):
     with open(fp, "w") as f:
         json.dump(data, f)
     print("Saved a fight play to", fp)
+
+    # Capture deck screenshot if emulator is provided
+    if emulator is not None:
+        try:
+            screenshot = emulator.screenshot()
+            if screenshot is not None and screenshot.size > 0:
+                height, width = screenshot.shape[:2]
+                x1, y1, x2, y2 = DECK_REGION
+                
+                # Validate crop region is within screenshot bounds
+                if 0 <= x1 < x2 <= width and 0 <= y1 < y2 <= height:
+                    deck_crop = screenshot[y1:y2, x1:x2]
+                    if deck_crop.size > 0:
+                        deck_fp = f"{top_folder}/deck_{timestamp}.png"
+                        success = cv2.imwrite(deck_fp, deck_crop)
+                        if success:
+                            print("Saved deck screenshot to", deck_fp)
+                            
+                            # Optionally send to webhook if configured
+                            if DECK_SCREENSHOT_WEBHOOK_URL:
+                                try:
+                                    # Encode image to PNG bytes
+                                    _, encoded_img = cv2.imencode(".png", deck_crop)
+                                    if encoded_img is not None:
+                                        image_bytes = encoded_img.tobytes()
+                                        send_deck_screenshot_webhook(
+                                            image_bytes,
+                                            DECK_SCREENSHOT_WEBHOOK_URL,
+                                            timestamp=str(timestamp),
+                                            play_coord=play_coord,
+                                            card_index=card_index,
+                                        )
+                                except Exception as e:
+                                    # Silently fail - don't interrupt play recording
+                                    pass
+        except Exception as e:
+            # Silently fail - don't interrupt play recording if deck screenshot fails
+            print(f"[!] Warning: Failed to save deck screenshot: {e}")
 
     return True
 

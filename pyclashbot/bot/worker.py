@@ -1,11 +1,13 @@
 import time
 import traceback
 
+from pyclashbot.bot.deck_screenshot import capture_deck_screenshot, ensure_deck_folder_exists
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
+from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
@@ -78,8 +80,23 @@ class WorkerThread(PausableThread):
         consecutive_restarts = 0
         max_consecutive_restarts = 5
 
+        # Initialize deck screenshot capture if enabled
+        capture_deck_enabled = jobs.get(UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE.value, False)
+        last_deck_capture_time = 0
+        deck_capture_interval = 5  # seconds
+
+        if capture_deck_enabled:
+            ensure_deck_folder_exists()
+
         while not self.shutdown_flag.is_set():
             try:
+                # Periodic deck screenshot capture (every 5 seconds)
+                if capture_deck_enabled:
+                    current_time = time.time()
+                    if current_time - last_deck_capture_time >= deck_capture_interval:
+                        capture_deck_screenshot(emulator, self.logger)
+                        last_deck_capture_time = current_time
+
                 new_state = state_tree(emulator, self.logger, state, jobs, state_history, state_order)
 
                 # Check for restart loops

@@ -565,7 +565,7 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     emulator.click(play_coord[0], play_coord[1])
     click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[:3]
     if recording_flag:
-        save_play(play_coord, card_index)
+        save_play(play_coord, card_index, emulator)
 
     logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
     logger.add_card_played()
