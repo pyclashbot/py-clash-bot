@@ -41,6 +41,7 @@ class UIField(StrEnum):
     RANDOM_PLAYS_USER_TOGGLE = "random_plays_user_toggle"
     DISABLE_WIN_TRACK_TOGGLE = "disable_win_track_toggle"
     RECORD_FIGHTS_TOGGLE = "record_fights_toggle"
+    CAPTURE_DECK_SCREENSHOTS_TOGGLE = "capture_deck_screenshots_toggle"
     OPENGL_TOGGLE = "opengl_toggle"
     DIRECTX_TOGGLE = "directx_toggle"
     BS_RENDERER_GL = "bs_renderer_gl"

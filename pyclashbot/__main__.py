@@ -7,6 +7,7 @@ import subprocess
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
 
+from pyclashbot.bot.deck_screenshot import DECK_SCREENSHOT_DIR
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
@@ -48,6 +49,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
+        UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE.value: as_bool(UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE),
     }
 
     job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
@@ -191,6 +193,17 @@ def open_logs_folder() -> None:
         subprocess.Popen(["xdg-open", folder_path])
 
 
+def open_deck_screenshots_folder() -> None:
+    folder_path = DECK_SCREENSHOT_DIR
+    os.makedirs(folder_path, exist_ok=True)
+    try:
+        os.startfile(folder_path)
+    except AttributeError:
+        import subprocess
+
+        subprocess.Popen(["xdg-open", folder_path])
+
+
 class BotApplication:
     """Main application class for the ttkbootstrap GUI."""
 
@@ -201,6 +214,7 @@ class BotApplication:
         self.ui.register_config_callback(self._on_config_change)
         self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
+        self.ui.register_open_deck_screenshots_callback(self._on_open_deck_screenshots_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
         self.ui.adb_refresh_btn.configure(command=self._on_adb_refresh)
         self.ui.adb_connect_btn.configure(command=self._on_adb_connect)
@@ -287,6 +301,9 @@ class BotApplication:
 
     def _on_open_logs_clicked(self) -> None:
         open_logs_folder()
+
+    def _on_open_deck_screenshots_clicked(self) -> None:
+        open_deck_screenshots_folder()
 
     def _on_close(self) -> None:
         self._closing = True

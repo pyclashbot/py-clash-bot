@@ -55,6 +55,7 @@ class PyClashBotUI(ttk.Window):
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_recordings_callback: Callable[[], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
+        self._open_deck_screenshots_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
@@ -76,6 +77,13 @@ class PyClashBotUI(ttk.Window):
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
 
+    def register_open_deck_screenshots_callback(self, callback: Callable[[], None]) -> None:
+        self._open_deck_screenshots_callback = callback
+
+    def _on_open_deck_screenshots_clicked(self) -> None:
+        if self._open_deck_screenshots_callback:
+            self._open_deck_screenshots_callback()
+
     def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
         for field, var in self.jobs_vars.items():
@@ -85,6 +93,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
         values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
+        values[UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE.value] = bool(self.capture_deck_var.get())
 
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == "MEmu"
@@ -123,6 +132,8 @@ class PyClashBotUI(ttk.Window):
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
             if UIField.RECORD_FIGHTS_TOGGLE.value in values:
                 self.record_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
+            if UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE.value in values:
+                self.capture_deck_var.set(bool(values[UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE.value]))
 
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
@@ -711,6 +722,18 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.record_var)
         self._register_config_widget(UIField.RECORD_FIGHTS_TOGGLE.value, record_checkbox)
 
+        self.capture_deck_var = ttk.BooleanVar()
+        capture_deck_checkbox = ttk.Checkbutton(
+            data_frame,
+            text="Capture deck screenshots during battle (every 5s)",
+            variable=self.capture_deck_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        capture_deck_checkbox.pack(anchor="w", pady=(6, 0))
+        self._trace_variable(self.capture_deck_var)
+        self._register_config_widget(UIField.CAPTURE_DECK_SCREENSHOTS_TOGGLE.value, capture_deck_checkbox)
+
         self.open_recordings_btn = ttk.Button(
             data_frame,
             text="Open Recordings Folder",
@@ -724,6 +747,13 @@ class PyClashBotUI(ttk.Window):
             command=self._on_open_logs_clicked,
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
+
+        self.open_deck_screenshots_btn = ttk.Button(
+            data_frame,
+            text="Open Deck Screenshots Folder",
+            command=self._on_open_deck_screenshots_clicked,
+        )
+        self.open_deck_screenshots_btn.pack(fill="x", pady=(6, 0))
 
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
         display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
