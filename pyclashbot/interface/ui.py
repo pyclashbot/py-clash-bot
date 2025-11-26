@@ -309,7 +309,7 @@ class PyClashBotUI(ttk.Window):
         self.start_btn.grid(row=0, column=1, sticky="e", padx=(0, 6))
         self._register_config_widget("Start", self.start_btn)
 
-        self.stop_btn = ttk.Button(bottom, text="Stop", bootstyle="danger", width=10, state=tk.DISABLED)
+        self.stop_btn = tk.Button(bottom, text="Stop", bg="red", fg="white", width=10, state=tk.DISABLED)
         self.stop_btn.grid(row=0, column=2, sticky="e")
         self._register_config_widget("Stop", self.stop_btn)
 
