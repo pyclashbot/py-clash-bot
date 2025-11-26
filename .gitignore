@@ -1,4 +1,5 @@
 .DS_Store
+platform-tools/
 cert
 node_modules
 .venv
