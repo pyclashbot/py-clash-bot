@@ -5,14 +5,34 @@ import pickle
 import threading
 from io import UnsupportedOperation
 from os import makedirs, remove
-from os.path import exists, expandvars, join
+from os.path import exists, join
 from typing import Any
+import os
+import sys
 
 # a module to cache and load program data to and from the disk
 
 MODULE_NAME = "py-clash-bot"
 
-top_level = join(expandvars("%appdata%"), MODULE_NAME)
+
+def _get_top_level_dir() -> str:
+    """Return an OS-appropriate, writable directory for cached data."""
+    if sys.platform == "win32":
+        base_dir = os.getenv("APPDATA")
+        if not base_dir:
+            base_dir = os.path.expanduser("~")
+        return join(base_dir, MODULE_NAME)
+    elif sys.platform == "darwin":
+        # Standard macOS application data location
+        base_dir = os.path.expanduser("~/Library/Application Support")
+        return join(base_dir, MODULE_NAME)
+    else:
+        # Generic Unix-like cache location
+        base_dir = os.path.expanduser("~/.cache")
+        return join(base_dir, MODULE_NAME)
+
+
+top_level = _get_top_level_dir()
 
 
 class FileCache:
@@ -28,14 +48,19 @@ class FileCache:
         if not exists(top_level):
             makedirs(top_level)
         with self.mutex:
-            with open(file_path, "w", encoding="utf-8") as this_file:
+            # Load existing data if present
+            file_data = {}
+            if exists(file_path):
                 try:
-                    file_data = json.load(this_file)
+                    with open(file_path, "r", encoding="utf-8") as this_file:
+                        file_data = json.load(this_file)
                 except (json.JSONDecodeError, UnsupportedOperation):
                     file_data = {}
-                file_data |= data
+            # Merge and write back
+            file_data |= data
+            with open(file_path, "w", encoding="utf-8") as this_file:
                 json.dump(file_data, this_file, indent=4)
-                return file_data
+            return file_data
 
     def load_data(self):
         """A method to load data from the disk using json"""

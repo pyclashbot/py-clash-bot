@@ -12,11 +12,16 @@ from os.path import exists, expandvars, getmtime, join
 
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.versioning import __version__
+import os
+import sys
+from typing import Optional
+
+_LOGGER: Optional[logging.Logger] = None
 
 MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
 
-log_dir = join(expandvars("%appdata%"), MODULE_NAME, "logs")
+log_dir = "~/Library/Logs/pyclashbot"
 log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
 archive_name: str = join(log_dir, "logs.zip")
 
@@ -39,37 +44,62 @@ def compress_logs() -> None:
                 remove(log)
 
 
-def initalize_pylogging() -> None:
-    """Method to be called once to initalize python logging"""
-    if not exists(log_dir):
-        makedirs(log_dir)
-    logging.basicConfig(
-        filename=log_name,
-        encoding="utf-8",
-        level=logging.DEBUG,
-        format="%(levelname)s:%(asctime)s %(message)s",
-    )
-    logging.info("Logging initialized for %s", __version__)
-    logging.info(
-        """
- ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
-(  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
- )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
-(__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
-""",
-    )
-    logging.info(
-        "Machine Info: \n%s",
-        pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
-    )
+def initalize_pylogging() -> logging.Logger:
+    """
+    Initialize the core Python logging for pyclashbot.
 
-    # vm_index = get_vm_index(EMULATOR_NAME)
+    On Windows:  use %APPDATA%\pyclashbot
+    On macOS:    use ~/Library/Logs/pyclashbot
+    On Linux:    use ~/.local/share/pyclashbot
 
-    # logging.info(
-    #     "VM Configuration: \n%s",
-    #     pprint.pformat(get_vm_configuration(vm_index), indent=4),
-    # )
-    compress_logs()
+    This avoids trying to write into the (read-only) .app bundle when frozen.
+    """
+    global _LOGGER
+    if _LOGGER is not None:
+        return _LOGGER
+
+    app_name = "pyclashbot"
+
+    if sys.platform == "win32":
+        # Normal Windows location
+        base_dir = os.getenv("APPDATA")
+        if not base_dir:
+            # Fallback: user home
+            base_dir = os.path.expanduser("~")
+        log_dir = os.path.join(base_dir, app_name)
+    elif sys.platform == "darwin":
+        # Standard macOS log location
+        log_dir = os.path.join(os.path.expanduser("~/Library/Logs"), app_name)
+    else:
+        # Generic Unix-ish location
+        log_dir = os.path.join(os.path.expanduser("~/.local/share"), app_name)
+
+    os.makedirs(log_dir, exist_ok=True)
+
+    log_file = os.path.join(log_dir, "pyclashbot.log")
+
+    logger = logging.getLogger(app_name)
+    logger.setLevel(logging.INFO)
+
+    # Avoid adding handlers multiple times if called repeatedly
+    if not logger.handlers:
+        fmt = logging.Formatter(
+            "%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+
+        # File handler
+        fh = logging.FileHandler(log_file, encoding="utf-8")
+        fh.setFormatter(fmt)
+        logger.addHandler(fh)
+
+        # Console handler (optional; useful while debugging)
+        ch = logging.StreamHandler()
+        ch.setFormatter(fmt)
+        logger.addHandler(ch)
+
+    _LOGGER = logger
+    return logger
 
 
 class Logger:

@@ -8,6 +8,7 @@ from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
+from pyclashbot.utils.logger import initalize_pylogging
 
 
 class WorkerThread(PausableThread):
@@ -121,17 +122,29 @@ class WorkerThread(PausableThread):
                 time.sleep(0.33)
 
     def run(self) -> None:
+        
         """Main worker thread execution."""
         print("WorkerThread run()...")
         jobs = self.args
 
+        logger = initalize_pylogging()
+        self.logger.log("WorkerThread starting with jobs: {}".format(jobs))
+        logger.info("WorkerThread starting with jobs: {}".format(jobs))
+        emulator_name = jobs.get("emulator")
+        self.logger.log(f"Selected emulator: {emulator_name}")
+        logger.info(f"Selected emulator: {emulator_name}")
+
         emulator = self._setup_emulator(jobs)
         if emulator is None:
+            self.logger.error("Emulator setup failed. Bot will not start.")
+            logger.error("Emulator setup failed. Bot will not start.")
             return
-
+        
         try:
             self._run_bot_loop(emulator, jobs)
         except ThreadKilled:
             return
         except Exception as err:
+            logger.error("Unhandled exception in WorkerThread.run():")
+            logger.error(traceback.format_exc())
             self.logger.error(str(err))

@@ -7,12 +7,26 @@ import subprocess
 import time
 from contextlib import suppress
 from os.path import normpath
-from winreg import (
-    HKEY_LOCAL_MACHINE,
-    ConnectRegistry,
-    OpenKey,
-    QueryValueEx,
-)
+import sys
+
+if sys.platform == "win32":
+    from winreg import (
+        HKEY_LOCAL_MACHINE,
+        OpenKey,
+        QueryValueEx,
+        ConnectRegistry,
+    )
+else:
+    HKEY_LOCAL_MACHINE = None
+
+    def OpenKey(*args, **kwargs):
+        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
+
+    def QueryValueEx(*args, **kwargs):
+        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
+
+    def ConnectRegistry(*args, **kwargs):
+        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController

@@ -1,0 +1,7 @@
+opencv-python<5,>=4.9.0
+numpy<3,>=2.2.1
+pymemuc<0.7,>=0.6.0
+psutil<8,>=6.1.0
+pygetwindow<0.0.10,>=0.0.9
+pillow<13.0.0,>=11.3.0
+ttkbootstrap<1.19,>=1.12.1

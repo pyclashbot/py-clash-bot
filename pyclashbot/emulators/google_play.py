@@ -4,7 +4,26 @@ import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
 from os.path import normpath
-from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
+import sys
+
+if sys.platform == "win32":
+    from winreg import (
+        HKEY_LOCAL_MACHINE,
+        OpenKey,
+        QueryValueEx,
+        ConnectRegistry,
+    )
+else:
+    HKEY_LOCAL_MACHINE = None
+
+    def OpenKey(*args, **kwargs):
+        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
+
+    def QueryValueEx(*args, **kwargs):
+        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
+
+    def ConnectRegistry(*args, **kwargs):
+        raise RuntimeError("BlueStacks emulator is only supported on Windows (winreg not available).")
 
 import pygetwindow as gw
 
