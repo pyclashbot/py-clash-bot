@@ -1,5 +1,6 @@
 .DS_Store
 platform-tools/
+*.egg-info/
 cert
 node_modules
 .venv
