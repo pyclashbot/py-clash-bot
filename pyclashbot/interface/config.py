@@ -14,6 +14,7 @@ from pyclashbot.interface.enums import (
     StatField,
     UIField,
 )
+from pyclashbot.utils.platform import is_macos
 
 
 @dataclass
@@ -113,10 +114,11 @@ MEMU_SETTINGS = [
 ]
 
 # BlueStacks specific renderer settings
+# DirectX is default on Windows, Vulkan on macOS (DirectX not available on macOS)
 BLUESTACKS_SETTINGS = [
     RadioConfig(UIField.BS_RENDERER_GL, "OpenGL", "bs_render_mode_radio"),
-    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=True),
-    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio"),
+    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=not is_macos()),
+    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio", default=is_macos()),
 ]
 
 EMULATOR_CHOICE = [

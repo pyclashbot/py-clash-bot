@@ -3,6 +3,8 @@
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
+from pyclashbot.utils.platform import is_windows
+
 if TYPE_CHECKING:
     from pyclashbot.emulators.base import BaseEmulatorController
 
@@ -19,19 +21,29 @@ class EmulatorType(StrEnum):
 def get_emulator_registry() -> dict[EmulatorType, type["BaseEmulatorController"]]:
     """Return mapping of emulator types to controller classes.
 
-    Uses lazy import to avoid circular dependencies.
+    Only imports modules that are supported on the current platform.
     """
-    from pyclashbot.emulators.adb import AdbController
-    from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
-    from pyclashbot.emulators.google_play import GooglePlayEmulatorController
-    from pyclashbot.emulators.memu import MemuEmulatorController
+    registry: dict[EmulatorType, type[BaseEmulatorController]] = {}
 
-    return {
-        EmulatorType.MEMU: MemuEmulatorController,
-        EmulatorType.GOOGLE_PLAY: GooglePlayEmulatorController,
-        EmulatorType.BLUESTACKS: BlueStacksEmulatorController,
-        EmulatorType.ADB: AdbController,
-    }
+    # Always available - pure ADB, no platform-specific deps
+    from pyclashbot.emulators.adb import AdbController
+
+    registry[EmulatorType.ADB] = AdbController
+
+    # BlueStacks - supports both Windows and macOS
+    from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
+
+    registry[EmulatorType.BLUESTACKS] = BlueStacksEmulatorController
+
+    # Windows-only emulators
+    if is_windows():
+        from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+        from pyclashbot.emulators.memu import MemuEmulatorController
+
+        registry[EmulatorType.GOOGLE_PLAY] = GooglePlayEmulatorController
+        registry[EmulatorType.MEMU] = MemuEmulatorController
+
+    return registry
 
 
 def get_available_emulators() -> list[EmulatorType]:

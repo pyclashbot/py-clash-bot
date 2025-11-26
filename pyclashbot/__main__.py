@@ -15,6 +15,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.platform import is_macos
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -64,8 +65,11 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         job_dictionary["bluestacks_render_mode"] = "dx"
     elif values.get(UIField.BS_RENDERER_VK.value):
         job_dictionary["bluestacks_render_mode"] = "vlcn"
-    else:
+    elif values.get(UIField.BS_RENDERER_GL.value):
         job_dictionary["bluestacks_render_mode"] = "gl"
+    else:
+        # Default: Vulkan on macOS, OpenGL on Windows
+        job_dictionary["bluestacks_render_mode"] = "vlcn" if is_macos() else "gl"
 
     # Emulator selection
     if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
