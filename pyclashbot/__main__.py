@@ -224,6 +224,7 @@ class BotApplication:
         self.ui = PyClashBotUI()
         self.ui.start_btn.configure(command=self._on_start)
         self.ui.stop_btn.configure(command=self._on_stop)
+        self.ui.force_stop_btn.configure(command=self._on_force_stop)
         self.ui.register_config_callback(self._on_config_change)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -263,6 +264,15 @@ class BotApplication:
     def _on_stop(self) -> None:
         if self.thread is not None:
             stop_button_event(self.logger, self.ui, self.thread)
+            # Enable Force Stop button in case graceful shutdown takes too long
+            self.ui.enable_force_stop()
+
+    def _on_force_stop(self) -> None:
+        """Force kill the worker thread using async exception injection."""
+        if self.thread is not None and self.thread.is_alive():
+            self.logger.change_status("Force stopping bot...")
+            self.thread.shutdown(kill=True)
+            self.ui.set_running_state(False)
 
     def _on_config_change(self, values: dict[str, Any]) -> None:
         changed = {key for key, value in values.items() if self.current_values.get(key) != value}

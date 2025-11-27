@@ -3,6 +3,8 @@ import threading
 import time
 from typing import Any
 
+from pyclashbot.utils.cancellation import CancellationToken
+
 
 class ThreadKilled(Exception):  # noqa: N818
     def __init__(self) -> None:
@@ -17,6 +19,9 @@ class StoppableThread(threading.Thread):
 
         # shutdown_flag is a threading Event object that says whether the thread should stop.
         self.shutdown_flag = threading.Event()
+
+        # Cancellation token for interruptible sleep operations
+        self.cancellation_token = CancellationToken(self.shutdown_flag)
 
         # ... Other thread setup code here ...
 

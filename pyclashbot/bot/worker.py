@@ -1,8 +1,8 @@
-import time
 import traceback
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
+from pyclashbot.utils.cancellation import CancellationToken, CancelledError, interruptible_sleep
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.platform import is_macos
 from pyclashbot.utils.thread import PausableThread, ThreadKilled
@@ -109,20 +109,30 @@ class WorkerThread(PausableThread):
                     break
 
             while self.pause_flag.is_set():
-                time.sleep(0.33)
+                interruptible_sleep(0.33)
 
     def run(self) -> None:
         """Main worker thread execution."""
         print("WorkerThread run()...")
         jobs = self.args
 
-        emulator = self._setup_emulator(jobs)
-        if emulator is None:
-            return
+        # Set the cancellation token for this thread context
+        CancellationToken.set_current(self.cancellation_token)
 
         try:
+            emulator = self._setup_emulator(jobs)
+            if emulator is None:
+                return
+
             self._run_bot_loop(emulator, jobs)
         except ThreadKilled:
+            self.logger.change_status("Bot force stopped")
+            return
+        except CancelledError:
+            self.logger.change_status("Bot stopped")
             return
         except Exception as err:
             self.logger.error(str(err))
+        finally:
+            # Clear the cancellation token when thread exits
+            CancellationToken.set_current(None)

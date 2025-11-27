@@ -174,9 +174,11 @@ class PyClashBotUI(ttk.Window):
         stop_state = tk.NORMAL if running else tk.DISABLED
         self.start_btn.configure(state=start_state)
         self.stop_btn.configure(state=stop_state)
+        # Force Stop is always disabled initially; enabled via enable_force_stop()
+        self.force_stop_btn.configure(state=tk.DISABLED)
 
         for key, widget in self._config_widgets.items():
-            if widget in {self.stop_btn, self.start_btn}:
+            if widget in {self.stop_btn, self.start_btn, self.force_stop_btn}:
                 continue
             try:
                 if isinstance(widget, ttk.Combobox):
@@ -213,6 +215,10 @@ class PyClashBotUI(ttk.Window):
                 continue
         if running:
             self._hide_action_button()
+
+    def enable_force_stop(self) -> None:
+        """Enable the Force Stop button after Stop has been clicked."""
+        self.force_stop_btn.configure(state=tk.NORMAL)
 
     def show_action_button(self, text: str, callback: Callable[[], None]) -> None:
         self._action_callback = callback
@@ -311,8 +317,12 @@ class PyClashBotUI(ttk.Window):
         self._register_config_widget("Start", self.start_btn)
 
         self.stop_btn = tk.Button(bottom, text="Stop", bg="red", fg="white", width=10, state=tk.DISABLED)
-        self.stop_btn.grid(row=0, column=2, sticky="e")
+        self.stop_btn.grid(row=0, column=2, sticky="e", padx=(0, 6))
         self._register_config_widget("Stop", self.stop_btn)
+
+        self.force_stop_btn = tk.Button(bottom, text="Force Stop", bg="orange", fg="white", width=10, state=tk.DISABLED)
+        self.force_stop_btn.grid(row=0, column=3, sticky="e")
+        self._register_config_widget("Force Stop", self.force_stop_btn)
 
         self.action_btn = ttk.Button(bottom, text="Retry")
         self.action_btn.grid(row=0, column=2, sticky="e")
