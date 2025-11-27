@@ -8,12 +8,14 @@ from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
 
 from pyclashbot.bot.worker import WorkerThread
+from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.platform import is_macos
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -63,18 +65,21 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         job_dictionary["bluestacks_render_mode"] = "dx"
     elif values.get(UIField.BS_RENDERER_VK.value):
         job_dictionary["bluestacks_render_mode"] = "vlcn"
-    else:
+    elif values.get(UIField.BS_RENDERER_GL.value):
         job_dictionary["bluestacks_render_mode"] = "gl"
+    else:
+        # Default: Vulkan on macOS, OpenGL on Windows
+        job_dictionary["bluestacks_render_mode"] = "vlcn" if is_macos() else "gl"
 
     # Emulator selection
     if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
-        job_dictionary["emulator"] = "Google Play"
+        job_dictionary["emulator"] = EmulatorType.GOOGLE_PLAY
     elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
-        job_dictionary["emulator"] = "BlueStacks 5"
+        job_dictionary["emulator"] = EmulatorType.BLUESTACKS
     elif values.get(UIField.ADB_TOGGLE.value):
-        job_dictionary["emulator"] = "ADB Device"
+        job_dictionary["emulator"] = EmulatorType.ADB
     else:
-        job_dictionary["emulator"] = "MEmu"
+        job_dictionary["emulator"] = EmulatorType.MEMU
 
     job_dictionary[UIField.ADB_SERIAL.value] = values.get(UIField.ADB_SERIAL.value)
 
@@ -110,7 +115,7 @@ def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any])
         logger.log("No jobs are selected!")
         return None
 
-    if job_dictionary.get("emulator") == "ADB Device":
+    if job_dictionary.get("emulator") == EmulatorType.ADB:
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
         connected_devices = AdbController.list_devices()
         if not device_serial or device_serial not in connected_devices:

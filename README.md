@@ -1,6 +1,6 @@
 # py-clash-bot
 
-**py-clash-bot** is an open-source automation tool that allows you to automate your Clash Royale gameplay on Windows using an emulated Android phone. The bot uses advanced image recognition, mouse control, and Android emulation to perform a comprehensive range of tasks automatically, letting you focus on strategy while it handles the daily grind.
+**py-clash-bot** is an open-source automation tool that allows you to automate your Clash Royale gameplay on Windows and macOS using an emulated Android phone. The bot uses advanced image recognition, mouse control, and Android emulation to perform a comprehensive range of tasks automatically, letting you focus on strategy while it handles the daily grind.
 
 _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, and community discussions!_
 
@@ -75,6 +75,23 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 7. **Optional: Set display ratio** - Go to Google Play Emulator > Developer Options > Display Ratio > 9:16 (Portrait) for optimal look
 8. **Close emulator** - Close the Google Play emulator completely
 9. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
+
+## 🍎 macOS Setup
+
+On macOS, py-clash-bot supports BlueStacks. The setup is similar to Windows but requires an additional security step.
+
+### BlueStacks for macOS
+
+1. **Download BlueStacks** - Get it from [https://www.bluestacks.com/mac](https://www.bluestacks.com/mac)
+2. **Install BlueStacks** - Run the BlueStacks installer
+3. **Download py-clash-bot** - Get the latest DMG from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
+4. **Install py-clash-bot** - Open the DMG and drag py-clash-bot to your Applications folder
+5. **Allow the app** - On first launch, macOS will block the app since it's not signed. Go to **System Settings → Privacy & Security** and click "Allow" or "Open Anyway" for py-clash-bot
+6. **Create the instance** - Start the bot and click "Start" to let it automatically create the BlueStacks instance
+7. **Install Clash Royale** - Install Clash Royale manually on the emulator via Google Play Store
+8. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
+9. **Close BlueStacks** - Fully close the BlueStacks emulator
+10. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
 
 ### Important Notes
 

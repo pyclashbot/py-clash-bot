@@ -1,11 +1,20 @@
 import numpy as np
 
+from pyclashbot.utils.platform import CURRENT_PLATFORM, Platform
+
 
 class BaseEmulatorController:
     """
     Base class for emulator controllers.
     This class is used to define the interface for all emulator controllers.
     """
+
+    supported_platforms: list[Platform] = []
+
+    @classmethod
+    def is_supported_on_current_platform(cls) -> bool:
+        """Check if this emulator is supported on the current platform."""
+        return CURRENT_PLATFORM in cls.supported_platforms
 
     def __init__(self):
         raise NotImplementedError

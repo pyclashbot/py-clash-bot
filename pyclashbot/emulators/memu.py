@@ -16,6 +16,7 @@ from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.utils.platform import Platform
 
 # Debug configuration flags - set to True to enable verbose logging for specific areas
 DEBUG_CONFIGURATION = {
@@ -135,6 +136,8 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
+    supported_platforms = [Platform.WINDOWS]
+
     def __init__(self, logger, render_mode: str = "directx", debug_mode=False):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
