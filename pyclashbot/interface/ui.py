@@ -53,6 +53,7 @@ class PyClashBotUI(ttk.Window):
         if not current_theme:
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
+        self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
@@ -103,6 +104,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.ADB_SERIAL.value] = self.adb_serial_var.get()
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
+        values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -166,6 +168,9 @@ class PyClashBotUI(ttk.Window):
 
         if theme_value is not None:
             self._apply_theme(theme_value)
+
+        if UIField.DISCORD_RPC_TOGGLE.value in values:
+            self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
 
         self._show_current_emulator_settings()
 
@@ -708,6 +713,17 @@ class PyClashBotUI(ttk.Window):
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
         data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
+
+        discord_checkbox = ttk.Checkbutton(
+            data_frame,
+            text="Discord Rich Presence",
+            variable=self.discord_rpc_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        discord_checkbox.pack(anchor="w", pady=(0, 6))
+        self._trace_variable(self.discord_rpc_var)
+        self._register_config_widget(UIField.DISCORD_RPC_TOGGLE.value, discord_checkbox)
 
         self.open_logs_btn = ttk.Button(
             data_frame,
