@@ -71,6 +71,6 @@ def interruptible_sleep(seconds: float) -> bool:
     token = CancellationToken.current()
     if token is None:
         # No cancellation context, fall back to regular sleep
-        time_module.sleep(seconds)
+        time_module.sleep(seconds)  # noqa: TID251
         return False
     return token.sleep(seconds)

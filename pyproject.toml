@@ -52,7 +52,8 @@ select = [
     "UP",
     "N",
     "RUF",
-    "TC",
+    "TCH",
+    "TID251",
 ]
 
 ignore = [
@@ -72,7 +73,7 @@ ignore = [
     "PLR6301",
     "PLR6201",
     "RUF012",
-    "TC002",
+    "TCH002",
     "E402",
     "C901",
     "E501",
@@ -80,6 +81,9 @@ ignore = [
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"time.sleep".msg = "Use interruptible_sleep() from pyclashbot.utils.cancellation instead for proper thread cancellation support."
 
 [tool.isort]
 profile = "black"

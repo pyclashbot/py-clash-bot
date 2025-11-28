@@ -1,9 +1,8 @@
 import ctypes
 import threading
-import time
 from typing import Any
 
-from pyclashbot.utils.cancellation import CancellationToken
+from pyclashbot.utils.cancellation import CancellationToken, interruptible_sleep
 
 
 class ThreadKilled(Exception):  # noqa: N818
@@ -29,7 +28,7 @@ class StoppableThread(threading.Thread):
         print(f"Thread #{self.ident} started")
         while not self.shutdown_flag.is_set():
             # ... Job code here ...
-            time.sleep(0.5)
+            interruptible_sleep(0.5)
             print(f"Doing job... {self.args}")
 
         # ... Clean shutdown code here ...
