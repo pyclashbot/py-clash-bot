@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from contextlib import suppress
 from os.path import normpath
 
-import pygetwindow as gw
+import psutil
 
 DEBUG = False
 
@@ -295,13 +295,37 @@ class GooglePlayEmulatorController(AdbBasedController):
         """
         raise NotImplementedError
 
-    def _is_emulator_running(self):
-        result = subprocess.run("tasklist", shell=True, capture_output=True, text=True, check=False)
-        return "crosvm.exe" in result.stdout
+    def _list_process_pids(self, names: set[str]) -> list[int]:
+        """Return PIDs for any processes whose image name matches the provided set."""
+        targets = {name.lower() for name in names}
+        pids: list[int] = []
+        for proc in psutil.process_iter(attrs=["pid", "name"]):
+            try:
+                name = (proc.info.get("name") or "").lower()
+                if name in targets:
+                    pids.append(proc.info["pid"])
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return pids
 
-    def _find_window(self, title_keyword):
-        windows = gw.getWindowsWithTitle(title_keyword)
-        return windows[0] if windows else None
+    def _is_emulator_running(self):
+        # Consider emulator running once the core VM process is present.
+        process_names = {"crosvm.exe"}
+        return bool(self._list_process_pids(process_names))
+
+    def _wait_for_adb_ready(self, timeout: float = 120.0) -> bool:
+        """Wait for the emulator to accept ADB connections, retrying until timeout."""
+        start = time.time()
+        while time.time() - start < timeout:
+            # Query adb devices directly to avoid relying on intermediate state.
+            result = self.adb("devices")
+            if result.stdout:
+                for line in result.stdout.strip().splitlines():
+                    if "localhost:6520" in line and "device" in line:
+                        return True
+            self._connect()
+            time.sleep(3)
+        return False
 
     def _is_connected(self):
         """Returns True if emulator is connected and not offline."""
@@ -351,19 +375,14 @@ class GooglePlayEmulatorController(AdbBasedController):
             self.start()
             time.sleep(0.3)
 
-        # wait for window to appear
-        self.logger.change_status("Waiting for Google Play emulator window...")
-        while self._find_window(self.google_play_emulator_process_name) is None:
-            print("Waiting for emulator window to appear...")
-            time.sleep(0.3)
+        # wait for adb readiness (locale-agnostic) once the VM process is up
+        self.logger.change_status("Waiting for Google Play emulator to finish starting...")
+        if not self._wait_for_adb_ready(timeout=120):
+            self.logger.change_status("Timed out waiting for Google Play emulator ADB to become ready.")
+            return False
 
-        # reconnect to adb
-        self.logger.change_status("Establishing ADB connection to Google Play emulator...")
-        while not self._is_connected():
-            self._connect()
-            time.sleep(20)
-
-        time.sleep(10)
+        # Allow emulator services/UI to settle before manipulating display or launching the app.
+        time.sleep(5)
 
         self.logger.change_status(f"Setting emulator screen size to {self.expected_dims}...")
         for i in range(3):

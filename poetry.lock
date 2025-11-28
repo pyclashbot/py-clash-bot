@@ -774,20 +774,6 @@ dev = ["abi3audit", "black", "check-manifest", "coverage", "packaging", "pylint"
 test = ["pytest", "pytest-xdist", "setuptools"]
 
 [[package]]
-name = "pygetwindow"
-version = "0.0.9"
-description = "A simple, cross-platform module for obtaining GUI information on application's windows."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "PyGetWindow-0.0.9.tar.gz", hash = "sha256:17894355e7d2b305cd832d717708384017c1698a90ce24f6f7fbf0242dd0a688"},
-]
-
-[package.dependencies]
-pyrect = "*"
-
-[[package]]
 name = "pymemuc"
 version = "0.6.0"
 description = "A Python API for MEmu Android Emulator."
@@ -797,17 +783,6 @@ groups = ["main"]
 files = [
     {file = "pymemuc-0.6.0-py3-none-any.whl", hash = "sha256:ed79165f7511a5cba2da1a5e354247c3ba91d53ab3f95ec0c1dae056f2a0db3d"},
     {file = "pymemuc-0.6.0.tar.gz", hash = "sha256:c1f5ab9c7834fa1390a2dc2adc56f263134b41876e8d338ed3d7f54b119b5a70"},
-]
-
-[[package]]
-name = "pyrect"
-version = "0.2.0"
-description = "PyRect is a simple module with a Rect class for Pygame-like rectangular areas."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "PyRect-0.2.0.tar.gz", hash = "sha256:f65155f6df9b929b67caffbd57c0947c5ae5449d3b580d178074bffb47a09b78"},
 ]
 
 [[package]]
