@@ -502,6 +502,7 @@ class PyClashBotUI(ttk.Window):
 
         # Show the initial settings based on the default value
         self._show_current_emulator_settings()
+        self._update_advanced_settings_visibility(self.emulator_var.get())
 
     def _create_google_play_settings(self, parent_frame: ttk.Frame) -> None:
         frame = ttk.Labelframe(parent_frame, text="Google Play Options", padding=10)
@@ -518,7 +519,7 @@ class PyClashBotUI(ttk.Window):
 
     def _create_memu_settings(self, parent_frame: ttk.Frame) -> None:
         self.memu_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
-        self.memu_advanced_frame.pack(fill="x", padx=5, pady=5)
+        self.memu_advanced_frame.pack_forget()
 
         self.memu_render_var = ttk.StringVar(value="DirectX")
         for config in MEMU_SETTINGS:
@@ -535,7 +536,7 @@ class PyClashBotUI(ttk.Window):
 
     def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
         self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
-        self.bluestacks_advanced_frame.pack(fill="x", padx=5, pady=5)
+        self.bluestacks_advanced_frame.pack_forget()
 
         self.bs_render_var = ttk.StringVar(value="DirectX")
         for config in BLUESTACKS_SETTINGS:
@@ -841,24 +842,21 @@ class PyClashBotUI(ttk.Window):
     def _update_advanced_settings_visibility(self, emulator_choice: str) -> None:
         show_advanced = bool(self.advanced_settings_var.get())
 
-        def _toggle_frame(frame: ttk.Frame | None) -> None:
+        def _toggle_frame(frame: ttk.Frame | None, should_show: bool) -> None:
             if not frame:
                 return
             try:
                 frame.pack_forget()
-                if show_advanced:
+                if should_show:
                     frame.pack(fill="x", padx=5, pady=5)
             except tk.TclError:
-                # If the frame is already destroyed or packing fails, skip.
                 return
 
-        if emulator_choice == EmulatorType.MEMU:
-            _toggle_frame(getattr(self, "memu_advanced_frame", None))
-        elif emulator_choice == EmulatorType.BLUESTACKS:
-            _toggle_frame(getattr(self, "bluestacks_advanced_frame", None))
-        else:
-            # Nothing to show for other emulators.
-            _toggle_frame(None)
+        is_memu = emulator_choice == EmulatorType.MEMU
+        is_bluestacks = emulator_choice == EmulatorType.BLUESTACKS
+
+        _toggle_frame(getattr(self, "memu_advanced_frame", None), show_advanced and is_memu)
+        _toggle_frame(getattr(self, "bluestacks_advanced_frame", None), show_advanced and is_bluestacks)
 
     def _on_advanced_settings_toggled(self) -> None:
         self._update_advanced_settings_visibility(self.emulator_var.get())
