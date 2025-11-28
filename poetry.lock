@@ -786,17 +786,6 @@ files = [
 ]
 
 [[package]]
-name = "pyrect"
-version = "0.2.0"
-description = "PyRect is a simple module with a Rect class for Pygame-like rectangular areas."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "PyRect-0.2.0.tar.gz", hash = "sha256:f65155f6df9b929b67caffbd57c0947c5ae5449d3b580d178074bffb47a09b78"},
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.3"
 description = "YAML parser and emitter for Python"

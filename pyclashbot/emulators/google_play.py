@@ -3,8 +3,9 @@ import subprocess
 import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
-from csv import reader
 from os.path import normpath
+
+import psutil
 
 DEBUG = False
 
@@ -296,27 +297,16 @@ class GooglePlayEmulatorController(AdbBasedController):
 
     def _list_process_pids(self, names: set[str]) -> list[int]:
         """Return PIDs for any processes whose image name matches the provided set."""
-        try:
-            tasklist = subprocess.run(
-                "tasklist /fo csv /nh",
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if tasklist.stdout is None:
-                return []
-            pids: list[int] = []
-            for row in reader(tasklist.stdout.splitlines()):
-                if not row:
-                    continue
-                image = row[0].strip('"').lower()
-                if image in names:
-                    with suppress(ValueError):
-                        pids.append(int(row[1]))
-            return pids
-        except Exception:
-            return []
+        targets = {name.lower() for name in names}
+        pids: list[int] = []
+        for proc in psutil.process_iter(attrs=["pid", "name"]):
+            try:
+                name = (proc.info.get("name") or "").lower()
+                if name in targets:
+                    pids.append(proc.info["pid"])
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return pids
 
     def _is_emulator_running(self):
         # Consider emulator running once the core VM process is present.
