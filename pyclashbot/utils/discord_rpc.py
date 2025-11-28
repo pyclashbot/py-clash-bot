@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import time
 from typing import Any
 
 try:
@@ -103,6 +102,8 @@ class DiscordRPCManager:
             return "In a 2v2", "2v2", "Classic 2v2"
         if "trophy" in lower or "road" in lower:
             return "Climbing Trophy Road", "trophy", "Trophy Road"
+        if any(keyword in lower for keyword in ["fight", "battle", "elixir", "waiting"]):
+            return "In a battle", "robot", "In battle"
         if "menu" in lower or "idle" in lower:
             return "In menus", "robot", "Idle"
         return status if status else "Idle", "robot", "Idle"
