@@ -282,7 +282,6 @@ dependencies = [
     { name = "opencv-python" },
     { name = "pillow" },
     { name = "psutil" },
-    { name = "pygetwindow" },
     { name = "pymemuc" },
     { name = "ttkbootstrap" },
 ]
@@ -305,7 +304,6 @@ requires-dist = [
     { name = "opencv-python", specifier = ">=4.9.0,<5" },
     { name = "pillow", specifier = ">=11.3.0,<13.0.0" },
     { name = "psutil", specifier = ">=6.1.0,<8" },
-    { name = "pygetwindow", specifier = ">=0.0.9,<0.0.10" },
     { name = "pymemuc", specifier = ">=0.6.0,<0.7" },
     { name = "ttkbootstrap", specifier = ">=1.12.1,<1.19" },
 ]
@@ -321,15 +319,6 @@ dev = [
     { name = "pre-commit", specifier = ">=4.0.1,<5" },
     { name = "ruff", specifier = ">=0.7.4,<0.15" },
 ]
-
-[[package]]
-name = "pygetwindow"
-version = "0.0.9"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pyrect" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e1/70/c7a4f46dbf06048c6d57d9489b8e0f9c4c3d36b7479f03c5ca97eaa2541d/PyGetWindow-0.0.9.tar.gz", hash = "sha256:17894355e7d2b305cd832d717708384017c1698a90ce24f6f7fbf0242dd0a688", size = 9699, upload-time = "2020-10-04T02:12:50.806Z" }
 
 [[package]]
 name = "pyinstaller"

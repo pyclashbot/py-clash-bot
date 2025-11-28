@@ -774,20 +774,6 @@ dev = ["abi3audit", "black", "check-manifest", "coverage", "packaging", "pylint"
 test = ["pytest", "pytest-xdist", "setuptools"]
 
 [[package]]
-name = "pygetwindow"
-version = "0.0.9"
-description = "A simple, cross-platform module for obtaining GUI information on application's windows."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "PyGetWindow-0.0.9.tar.gz", hash = "sha256:17894355e7d2b305cd832d717708384017c1698a90ce24f6f7fbf0242dd0a688"},
-]
-
-[package.dependencies]
-pyrect = "*"
-
-[[package]]
 name = "pymemuc"
 version = "0.6.0"
 description = "A Python API for MEmu Android Emulator."
