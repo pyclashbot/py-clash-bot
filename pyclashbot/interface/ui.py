@@ -470,6 +470,8 @@ class PyClashBotUI(ttk.Window):
         )
         self.emulator_combo.pack(side=LEFT, fill=X, expand=True)
         self.emulator_combo.bind("<<ComboboxSelected>>", self._on_emulator_changed)
+        # Ensure manual changes to the variable also trigger handler
+        self._trace_variable(self.emulator_var)
         # Register the combobox itself for state management
         self._register_config_widget("emulator_combobox", self.emulator_combo)
 
