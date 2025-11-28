@@ -4,21 +4,9 @@ from typing import Any
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
+from pyclashbot.utils.cancellation import CancellationToken
 from pyclashbot.utils.logger import ProcessLogger
 from pyclashbot.utils.platform import is_macos
-
-
-def interruptible_sleep(seconds: float, shutdown_event: Event) -> bool:
-    """Sleep that can be interrupted by shutdown event.
-
-    Args:
-        seconds: Time to sleep in seconds.
-        shutdown_event: Multiprocessing Event to check for shutdown.
-
-    Returns:
-        True if shutdown was requested during sleep, False otherwise.
-    """
-    return shutdown_event.wait(timeout=seconds)
 
 
 class WorkerProcess(Process):
@@ -140,6 +128,10 @@ class WorkerProcess(Process):
         """Main worker process execution."""
         print("WorkerProcess run()...")
 
+        # Set up cancellation token for interruptible sleeps
+        token = CancellationToken(self.shutdown_event)
+        CancellationToken.set_current(token)
+
         # Create logger that sends stats through queue
         logger = ProcessLogger(self.stats_queue)
 
@@ -153,4 +145,5 @@ class WorkerProcess(Process):
             logger.error(str(err))
             traceback.print_exc()
         finally:
+            CancellationToken.set_current(None)
             logger.change_status("Bot stopped")

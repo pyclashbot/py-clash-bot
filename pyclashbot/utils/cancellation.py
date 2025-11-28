@@ -1,7 +1,8 @@
-"""Cancellation infrastructure for cooperative thread termination."""
+"""Cancellation infrastructure for cooperative thread/process termination."""
 
 import threading
 import time as time_module
+from multiprocessing.synchronize import Event as MPEvent
 from typing import Optional
 
 
@@ -10,15 +11,17 @@ class CancelledError(Exception):
 
 
 class CancellationToken:
-    """Thread-safe cancellation token for cooperative thread termination.
+    """Cancellation token for cooperative thread/process termination.
 
-    Uses threading.Event.wait(timeout) instead of time.sleep() to allow
+    Uses Event.wait(timeout) instead of time.sleep() to allow
     immediate response to cancellation requests.
+
+    Works with both threading.Event and multiprocessing.Event.
     """
 
     _current: Optional["CancellationToken"] = None
 
-    def __init__(self, shutdown_event: threading.Event) -> None:
+    def __init__(self, shutdown_event: threading.Event | MPEvent) -> None:
         self._shutdown = shutdown_event
 
     @classmethod
