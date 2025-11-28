@@ -53,8 +53,8 @@ class PyClashBotUI(ttk.Window):
         if not current_theme:
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
+        self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
-        self._open_recordings_callback: Callable[[], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._theme_labels: list[tk.Widget] = []
@@ -71,9 +71,6 @@ class PyClashBotUI(ttk.Window):
     def register_config_callback(self, callback: Callable[[dict[str, object]], None]) -> None:
         self._config_callback = callback
 
-    def register_open_recordings_callback(self, callback: Callable[[], None]) -> None:
-        self._open_recordings_callback = callback
-
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
 
@@ -85,8 +82,6 @@ class PyClashBotUI(ttk.Window):
         values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
-        values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
-
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.MEMU
         values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.GOOGLE_PLAY
@@ -122,9 +117,6 @@ class PyClashBotUI(ttk.Window):
                 self.deck_var.set(str(values[UIField.DECK_NUMBER_SELECTION.value]))
             if UIField.MAX_DECK_SELECTION.value in values:
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
-            if UIField.RECORD_FIGHTS_TOGGLE.value in values:
-                self.record_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
-
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
@@ -309,7 +301,7 @@ class PyClashBotUI(ttk.Window):
         log_container = ttk.Frame(bottom)
         log_container.grid(row=0, column=0, sticky="ew", padx=(0, 8))
         log_container.columnconfigure(0, weight=1)
-        self.event_log = tk.Text(log_container, height=1, wrap="none")
+        self.event_log = tk.Text(log_container, height=3, wrap="word")
         self.event_log.grid(row=0, column=0, sticky="ew")
         self.event_log.configure(state="disabled")
         self._status_text = "Idle"
@@ -476,6 +468,13 @@ class PyClashBotUI(ttk.Window):
         # Register the combobox itself for state management
         self._register_config_widget("emulator_combobox", self.emulator_combo)
 
+        ttk.Checkbutton(
+            selection_frame,
+            text="Show advanced settings",
+            variable=self.advanced_settings_var,
+            command=self._on_advanced_settings_toggled,
+        ).pack(side=LEFT, padx=(8, 0))
+
         # Frame to hold the currently selected emulator's settings
         self.settings_container = ttk.Frame(container)
         self.settings_container.pack(fill=BOTH, expand=YES)
@@ -503,6 +502,7 @@ class PyClashBotUI(ttk.Window):
 
         # Show the initial settings based on the default value
         self._show_current_emulator_settings()
+        self._update_advanced_settings_visibility(self.emulator_var.get())
 
     def _create_google_play_settings(self, parent_frame: ttk.Frame) -> None:
         frame = ttk.Labelframe(parent_frame, text="Google Play Options", padding=10)
@@ -518,14 +518,14 @@ class PyClashBotUI(ttk.Window):
             self._add_google_play_row(frame, row, 3, config)
 
     def _create_memu_settings(self, parent_frame: ttk.Frame) -> None:
-        frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
-        frame.pack(fill="x", padx=5, pady=5)
+        self.memu_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
+        self.memu_advanced_frame.pack_forget()
 
         self.memu_render_var = ttk.StringVar(value="DirectX")
         for config in MEMU_SETTINGS:
             text = "DirectX" if config.key == UIField.DIRECTX_TOGGLE else "OpenGL"
             rb = ttk.Radiobutton(
-                frame,
+                self.memu_advanced_frame,
                 text=text,
                 variable=self.memu_render_var,
                 value=text,
@@ -535,8 +535,8 @@ class PyClashBotUI(ttk.Window):
             self._register_config_widget(config.key.value, rb)
 
     def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
-        frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
-        frame.pack(fill="x", padx=5, pady=5)
+        self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
+        self.bluestacks_advanced_frame.pack_forget()
 
         self.bs_render_var = ttk.StringVar(value="DirectX")
         for config in BLUESTACKS_SETTINGS:
@@ -547,7 +547,7 @@ class PyClashBotUI(ttk.Window):
             else:
                 value = "OpenGL"
             rb = ttk.Radiobutton(
-                frame,
+                self.bluestacks_advanced_frame,
                 text=value,
                 variable=self.bs_render_var,
                 value=value,
@@ -709,25 +709,6 @@ class PyClashBotUI(ttk.Window):
         data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
 
-        self.record_var = ttk.BooleanVar()
-        record_checkbox = ttk.Checkbutton(
-            data_frame,
-            text="Record fights",
-            variable=self.record_var,
-            bootstyle="round-toggle",
-            command=self._notify_config_change,
-        )
-        record_checkbox.pack(anchor="w")
-        self._trace_variable(self.record_var)
-        self._register_config_widget(UIField.RECORD_FIGHTS_TOGGLE.value, record_checkbox)
-
-        self.open_recordings_btn = ttk.Button(
-            data_frame,
-            text="Open Recordings Folder",
-            command=self._on_open_recordings_clicked,
-        )
-        self.open_recordings_btn.pack(fill="x", pady=(6, 0))
-
         self.open_logs_btn = ttk.Button(
             data_frame,
             text="Open Logs Folder",
@@ -823,6 +804,11 @@ class PyClashBotUI(ttk.Window):
         self._notify_config_change()
 
     def _on_emulator_changed(self, _event: object = None) -> None:
+        if self.emulator_var.get() == EmulatorType.ADB:
+            messagebox.showwarning(
+                "ADB Mode",
+                "ADB mode is intended for advanced users only. Support will not be provided for ADB mode.",
+            )
         self._show_current_emulator_settings()
         self._notify_config_change()
 
@@ -838,6 +824,7 @@ class PyClashBotUI(ttk.Window):
         frame_to_show = self.emulator_settings_frames.get(selected_emulator)
         if frame_to_show:
             frame_to_show.pack(fill=BOTH, expand=YES)
+        self._update_advanced_settings_visibility(selected_emulator)
 
     def _hide_action_button(self) -> None:
         self.action_btn.grid_remove()
@@ -848,13 +835,31 @@ class PyClashBotUI(ttk.Window):
             self._action_callback()
         self._hide_action_button()
 
-    def _on_open_recordings_clicked(self) -> None:
-        if self._open_recordings_callback:
-            self._open_recordings_callback()
-
     def _on_open_logs_clicked(self) -> None:
         if self._open_logs_callback:
             self._open_logs_callback()
+
+    def _update_advanced_settings_visibility(self, emulator_choice: str) -> None:
+        show_advanced = bool(self.advanced_settings_var.get())
+
+        def _toggle_frame(frame: ttk.Frame | None, should_show: bool) -> None:
+            if not frame:
+                return
+            try:
+                frame.pack_forget()
+                if should_show:
+                    frame.pack(fill="x", padx=5, pady=5)
+            except tk.TclError:
+                return
+
+        is_memu = emulator_choice == EmulatorType.MEMU
+        is_bluestacks = emulator_choice == EmulatorType.BLUESTACKS
+
+        _toggle_frame(getattr(self, "memu_advanced_frame", None), show_advanced and is_memu)
+        _toggle_frame(getattr(self, "bluestacks_advanced_frame", None), show_advanced and is_bluestacks)
+
+    def _on_advanced_settings_toggled(self) -> None:
+        self._update_advanced_settings_visibility(self.emulator_var.get())
 
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:
