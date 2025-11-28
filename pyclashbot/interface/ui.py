@@ -122,22 +122,28 @@ class PyClashBotUI(ttk.Window):
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
-            # Determine saved emulator choice
-            if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
-                saved_emulator = EmulatorType.GOOGLE_PLAY
-            elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
-                saved_emulator = EmulatorType.BLUESTACKS
-            elif values.get(UIField.ADB_TOGGLE.value):
-                saved_emulator = EmulatorType.ADB
-            else:
-                saved_emulator = EmulatorType.MEMU
-
-            # Use saved choice if available on this platform, otherwise fallback
-            available = get_available_emulators()
-            if saved_emulator in available:
-                self.emulator_var.set(saved_emulator)
-            elif available:
-                self.emulator_var.set(available[0])
+            # Determine saved emulator choice only if provided in values
+            emulator_keys = {
+                UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value,
+                UIField.BLUESTACKS_EMULATOR_TOGGLE.value,
+                UIField.ADB_TOGGLE.value,
+                UIField.MEMU_EMULATOR_TOGGLE.value,
+            }
+            if emulator_keys & values.keys():
+                if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
+                    saved_emulator = EmulatorType.GOOGLE_PLAY
+                elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
+                    saved_emulator = EmulatorType.BLUESTACKS
+                elif values.get(UIField.ADB_TOGGLE.value):
+                    saved_emulator = EmulatorType.ADB
+                else:
+                    saved_emulator = EmulatorType.MEMU
+                # Use saved choice if available on this platform, otherwise fallback
+                available = get_available_emulators()
+                if saved_emulator in available:
+                    self.emulator_var.set(saved_emulator)
+                elif available:
+                    self.emulator_var.set(available[0])
 
             if values.get(UIField.DIRECTX_TOGGLE.value):
                 self.memu_render_var.set("DirectX")
@@ -470,8 +476,6 @@ class PyClashBotUI(ttk.Window):
         )
         self.emulator_combo.pack(side=LEFT, fill=X, expand=True)
         self.emulator_combo.bind("<<ComboboxSelected>>", self._on_emulator_changed)
-        # Ensure manual changes to the variable also trigger handler
-        self._trace_variable(self.emulator_var)
         # Register the combobox itself for state management
         self._register_config_widget("emulator_combobox", self.emulator_combo)
 
