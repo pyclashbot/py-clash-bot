@@ -54,7 +54,6 @@ class PyClashBotUI(ttk.Window):
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
-        self._open_recordings_callback: Callable[[], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._theme_labels: list[tk.Widget] = []
@@ -71,9 +70,6 @@ class PyClashBotUI(ttk.Window):
     def register_config_callback(self, callback: Callable[[dict[str, object]], None]) -> None:
         self._config_callback = callback
 
-    def register_open_recordings_callback(self, callback: Callable[[], None]) -> None:
-        self._open_recordings_callback = callback
-
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
 
@@ -85,8 +81,6 @@ class PyClashBotUI(ttk.Window):
         values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
-        values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_var.get())
-
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.MEMU
         values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.GOOGLE_PLAY
@@ -122,9 +116,6 @@ class PyClashBotUI(ttk.Window):
                 self.deck_var.set(str(values[UIField.DECK_NUMBER_SELECTION.value]))
             if UIField.MAX_DECK_SELECTION.value in values:
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
-            if UIField.RECORD_FIGHTS_TOGGLE.value in values:
-                self.record_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
-
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
@@ -309,7 +300,7 @@ class PyClashBotUI(ttk.Window):
         log_container = ttk.Frame(bottom)
         log_container.grid(row=0, column=0, sticky="ew", padx=(0, 8))
         log_container.columnconfigure(0, weight=1)
-        self.event_log = tk.Text(log_container, height=1, wrap="none")
+        self.event_log = tk.Text(log_container, height=3, wrap="word")
         self.event_log.grid(row=0, column=0, sticky="ew")
         self.event_log.configure(state="disabled")
         self._status_text = "Idle"
@@ -709,25 +700,6 @@ class PyClashBotUI(ttk.Window):
         data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
 
-        self.record_var = ttk.BooleanVar()
-        record_checkbox = ttk.Checkbutton(
-            data_frame,
-            text="Record fights",
-            variable=self.record_var,
-            bootstyle="round-toggle",
-            command=self._notify_config_change,
-        )
-        record_checkbox.pack(anchor="w")
-        self._trace_variable(self.record_var)
-        self._register_config_widget(UIField.RECORD_FIGHTS_TOGGLE.value, record_checkbox)
-
-        self.open_recordings_btn = ttk.Button(
-            data_frame,
-            text="Open Recordings Folder",
-            command=self._on_open_recordings_clicked,
-        )
-        self.open_recordings_btn.pack(fill="x", pady=(6, 0))
-
         self.open_logs_btn = ttk.Button(
             data_frame,
             text="Open Logs Folder",
@@ -823,6 +795,11 @@ class PyClashBotUI(ttk.Window):
         self._notify_config_change()
 
     def _on_emulator_changed(self, _event: object = None) -> None:
+        if self.emulator_var.get() == EmulatorType.ADB:
+            messagebox.showwarning(
+                "ADB Mode",
+                "ADB mode is intended for advanced users only. Support will not be provided for ADB mode.",
+            )
         self._show_current_emulator_settings()
         self._notify_config_change()
 
@@ -847,10 +824,6 @@ class PyClashBotUI(ttk.Window):
         if self._action_callback:
             self._action_callback()
         self._hide_action_button()
-
-    def _on_open_recordings_clicked(self) -> None:
-        if self._open_recordings_callback:
-            self._open_recordings_callback()
 
     def _on_open_logs_clicked(self) -> None:
         if self._open_logs_callback:

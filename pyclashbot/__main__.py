@@ -204,7 +204,6 @@ class BotApplication:
         self.ui.start_btn.configure(command=self._on_start)
         self.ui.stop_btn.configure(command=self._on_stop)
         self.ui.register_config_callback(self._on_config_change)
-        self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
         self.ui.adb_refresh_btn.configure(command=self._on_adb_refresh)
@@ -286,9 +285,6 @@ class BotApplication:
         else:
             self.ui.hide_action_button()
         self.ui.after(100, self._poll)
-
-    def _on_open_recordings_clicked(self) -> None:
-        open_recordings_folder()
 
     def _on_open_logs_clicked(self) -> None:
         open_logs_folder()
