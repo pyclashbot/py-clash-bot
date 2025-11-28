@@ -2,10 +2,31 @@
 
 from __future__ import annotations
 
+import locale
 import os
 import subprocess
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
+
+_original_setlocale = locale.setlocale
+
+
+def _setlocale_safe(category: int, loc: str | None = None) -> str:
+    """Fallback to the C locale if the requested locale is unsupported."""
+    try:
+        return _original_setlocale(category, loc)
+    except locale.Error:
+        return _original_setlocale(category, "C")
+
+
+locale.setlocale = _setlocale_safe  # type: ignore[assignment]
+
+try:
+    # Force a portable locale so ttkbootstrap does not raise unsupported locale errors on non-English systems.
+    locale.setlocale(locale.LC_ALL, "C")
+except locale.Error:
+    # If even the C locale is unavailable, continue with the default to avoid crashing on import.
+    pass
 
 from pyclashbot.bot.worker import WorkerThread
 from pyclashbot.emulators import EmulatorType
