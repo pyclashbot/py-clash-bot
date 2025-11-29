@@ -106,4 +106,4 @@ class DiscordRPCManager:
             return "In a battle", "robot", "In battle"
         if "menu" in lower or "idle" in lower:
             return "In menus", "robot", "Idle"
-        return status if status else "Idle", "robot", "Idle"
+        return "Idle", "robot", "Idle"

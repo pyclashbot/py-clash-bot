@@ -30,7 +30,7 @@ DEBUG_CONFIGURATION = {
     "clash_startup": False,  # Enable verbose logging for Clash Royale startup
 }
 
-ANDROID_VERSION = "96"  # android 9, 64 bit
+ANDROID_VERSION = "126"  # android 9, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 # Default Memu configuration - matches the working example
@@ -181,7 +181,7 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("No existing valid vm!")
             vm_index = self.create()
             if vm_index != -1:
-                self._rename_vm("pyclashbot-96")
+                self._rename_vm("pyclashbot-126")
                 self.logger.log(f"[+] Created a new vm: {vm_index}")
                 break
 
@@ -206,7 +206,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
         for vm in vms:
             title = vm["title"]
-            if "pyclashbot-96" in title:
+            if "pyclashbot-126" in title:
                 self.vm_index = vm["index"]
                 return vm["index"]
 
