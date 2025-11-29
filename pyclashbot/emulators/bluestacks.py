@@ -29,7 +29,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.logger = logger
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
-        self.instance_name = "pyclashbot-126"
+        self.instance_name = "pyclashbot-96"
         self.internal_name: str | None = None
         self.instance_port: int | None = None
         self.device_serial: str | None = None  # "127.0.0.1:<port>"
@@ -639,7 +639,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
 
-        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-126)...")
+        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-96)...")
         self.start()
 
         # Wait for only our instance

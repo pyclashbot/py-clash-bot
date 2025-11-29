@@ -53,8 +53,8 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 2. **Install BlueStacks 5** - Run the BlueStacks 5 installer
 3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
 4. **Install py-clash-bot** - Run the installer
-5. **Create the instance** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings and then click "Start" to let it automatically create the "pyclashbot-126" Bluestacks 5 emulator Instance. Alternativly open the BlueStacks Multi-Instance Manager and create a fresh Pie 64-bit instance and retry it will automatically rename/configure it as "pyclashbot-126"
-6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-126" emulator via Google Play Store
+5. **Create the instance** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings and then click "Start" to let it automatically create the "pyclashbot-96" Bluestacks 5 emulator Instance. Alternativly open the BlueStacks Multi-Instance Manager and create a fresh Pie 64-bit instance and retry it will automatically rename/configure it as "pyclashbot-96"
+6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-96" emulator via Google Play Store
 7. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
 8. **Close BlueStacks 5** - Fully close the BlueStacks 5 emulator
 9. **Start automation** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings, then click "Start"

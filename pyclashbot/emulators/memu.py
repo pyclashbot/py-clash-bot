@@ -30,7 +30,7 @@ DEBUG_CONFIGURATION = {
     "clash_startup": False,  # Enable verbose logging for Clash Royale startup
 }
 
-ANDROID_VERSION = "126"  # android 9, 64 bit
+ANDROID_VERSION = "126"  # android 12, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 # Default Memu configuration - matches the working example
@@ -776,7 +776,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
     def create(self):
         self._start_memuc_console()
-        vm_index = self.pmc.create_vm(vm_version="96")
+        vm_index = self.pmc.create_vm(vm_version=ANDROID_VERSION)
         self.vm_index = vm_index
         return vm_index
 
