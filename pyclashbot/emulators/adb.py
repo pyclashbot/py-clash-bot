@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 import time
@@ -6,7 +7,7 @@ import time
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
-from pyclashbot.utils.platform import Platform
+from pyclashbot.utils.platform import Platform, is_linux
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -21,7 +22,7 @@ class AdbController(AdbBasedController):
     It now inherits shared ADB logic from AdbBasedController.
     """
 
-    supported_platforms = [Platform.WINDOWS, Platform.MACOS]
+    supported_platforms = [Platform.WINDOWS, Platform.MACOS, Platform.LINUX]
 
     def __init__(self, logger, device_serial: str | None = None):
         """
@@ -220,13 +221,13 @@ class AdbController(AdbBasedController):
         if DEBUG:
             print(f"[Android/ADB] {full_command}")
 
-        return subprocess.run(
-            full_command,
-            shell=True,
-            capture_output=True,
-            text=not binary_output,
-            check=False,
-        )
+        # Linux optimization: Use process groups for better signal handling
+        if is_linux():
+            return subprocess.run(
+                full_command, shell=True, capture_output=True, text=not binary_output, check=False, preexec_fn=os.setsid
+            )
+        else:
+            return subprocess.run(full_command, shell=True, capture_output=True, text=not binary_output, check=False)
 
     def _check_app_installed(self, package_name: str) -> bool:
         """
