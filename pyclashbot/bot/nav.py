@@ -7,6 +7,7 @@ from pyclashbot.detection.image_rec import (
     find_image,
     pixel_is_equal,
 )
+from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
@@ -160,7 +161,7 @@ def handle_trophy_reward_menu(
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
     )
-    time.sleep(1)
+    interruptible_sleep(1)
 
     return "good"
 
@@ -180,7 +181,7 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
         if check_for_trophy_reward_menu(emulator):
             print("Handling trophy reward menu")
             handle_trophy_reward_menu(emulator, logger)
-            time.sleep(2)
+            interruptible_sleep(2)
             continue
 
         # click deadspace
@@ -189,9 +190,9 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
             )
-        time.sleep(1)
+        interruptible_sleep(1)
 
-    time.sleep(1)
+    interruptible_sleep(1)
     if check_if_on_clash_main_menu(emulator) is not True:
         print("Failed to get to clash main! Saw these pixels before restarting:")
         return False
@@ -273,7 +274,7 @@ def get_to_card_page_from_clash_main(
         CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
     )
-    time.sleep(2.5)
+    interruptible_sleep(2.5)
 
     # while not on the card page, cycle the card page
     while not check_if_on_card_page(emulator):
@@ -285,7 +286,7 @@ def get_to_card_page_from_clash_main(
             CARD_PAGE_ICON_FROM_CARD_PAGE[0],
             CARD_PAGE_ICON_FROM_CARD_PAGE[1],
         )
-        time.sleep(3)
+        interruptible_sleep(3)
 
     logger.change_status(status="Made it to card page")
 
@@ -625,14 +626,14 @@ def select_mode(emulator, mode: str):
     # click select mode button
     print("Clicking mode selection button")
     emulator.click(game_mode_coord[0], game_mode_coord[1])
-    time.sleep(2)
+    interruptible_sleep(2)
 
     def scroll_down_in_fight_mode_panel(emulator):
         start_y = 400
         end_y = 350
         x = 400
         emulator.swipe(x, start_y, x, end_y)
-        time.sleep(1)
+        interruptible_sleep(1)
 
     # scroll and search, until we find the mode in question
     search_timeout = 15  # s
@@ -645,7 +646,7 @@ def select_mode(emulator, mode: str):
         if coord is not None:
             print(f'Located the "{mode}" button, clicking it.')
             emulator.click(*coord)
-            time.sleep(3)
+            interruptible_sleep(3)
 
             # After choosing a mode, the mode panel may remain open on some
             # devices/emulators. Click a safe deadspace coord to ensure the

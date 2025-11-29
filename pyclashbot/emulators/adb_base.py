@@ -1,11 +1,11 @@
 import subprocess
-import time
 from abc import ABC, abstractmethod
 
 import cv2
 import numpy as np
 
 from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.utils.cancellation import interruptible_sleep
 
 
 class AdbBasedController(BaseEmulatorController, ABC):
@@ -61,7 +61,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         for _ in range(max(1, clicks)):
             self.adb(f"shell input tap {x_coord} {y_coord}")
             if clicks > 1:
-                time.sleep(max(0.0, interval))
+                interruptible_sleep(max(0.0, interval))
 
     def swipe(self, x_coord1: int, y_coord1: int, x_coord2: int, y_coord2: int):
         """Swipe on the screen using ADB input swipe."""
@@ -130,7 +130,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         self.installation_waiting = True
 
         while self.installation_waiting:
-            time.sleep(0.5)
+            interruptible_sleep(0.5)
 
         # This loop breaks when _retry_installation_check sets
         # self.installation_waiting = False

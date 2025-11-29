@@ -12,6 +12,7 @@ from pyclashbot.detection.image_rec import (
     pixel_is_equal,
     region_is_color,
 )
+from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 CARD_COORDS: list[Any] = [
@@ -94,12 +95,12 @@ def upgrade_cards_state(emulator, logger: Logger):
     # get back to main when its done
     logger.change_status(status="Done upgrading cards")
     emulator.click(211, 607)
-    time.sleep(1)
+    interruptible_sleep(1)
 
     # return to clash main
     print("Returning to clash main after upgrading")
     emulator.click(243, 600)
-    time.sleep(3)
+    interruptible_sleep(3)
 
     # wait for main
     if wait_for_clash_main_menu(emulator, logger, deadspace_click=False) is False:
@@ -169,11 +170,11 @@ def get_upgradable_cards(emulator):
 def update_cards(emulator, logger: Logger) -> bool:
     # click a topleft card to open edit deck mode
     emulator.click(73, 201)
-    time.sleep(0.3)
+    interruptible_sleep(0.3)
 
     # click deadspace
     emulator.click(14, 300)
-    time.sleep(0.3)
+    interruptible_sleep(0.3)
 
     upgradable_indicies = get_upgradable_cards(emulator)
 
@@ -290,13 +291,13 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
     while not card_is_open(emulator, card_index):
         print(f"Opening this card options: {card_index}")
         emulator.click(CARD_COORDS[card_index][0], CARD_COORDS[card_index][1])
-        time.sleep(1)
+        interruptible_sleep(1)
 
     # click the upgrade button
     logger.change_status(status="Clicking the upgrade button for this card")
     coord = UPGRADE_BUTTON_COORDS[card_index]
     emulator.click(coord[0], coord[1])
-    time.sleep(1)
+    interruptible_sleep(1)
 
     # click second upgrade button
     logger.change_status(status="Clicking the second upgrade button")
@@ -310,7 +311,7 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
             SECOND_UPGRADE_BUTTON_COORDS[0],
             SECOND_UPGRADE_BUTTON_COORDS[1],
         )
-    time.sleep(2)
+    interruptible_sleep(2)
 
     # if gold popup doesnt exists: add to logger's upgrade stat
     if not check_for_missing_gold_popup(emulator):
@@ -334,11 +335,11 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
                 CONFIRM_UPGRADE_BUTTON_COORDS[0],
                 CONFIRM_UPGRADE_BUTTON_COORDS[1],
             )
-        time.sleep(2)
+        interruptible_sleep(2)
 
         # close card page
         emulator.click(CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
-        time.sleep(2)
+        interruptible_sleep(2)
 
         logger.change_status("Upgraded this card")
     else:
@@ -351,7 +352,7 @@ def upgrade_card(emulator, logger: Logger, card_index) -> bool:
     )
     for _ in range(6):
         emulator.click(DEADSPACE_COORD[0], DEADSPACE_COORD[1])
-        time.sleep(1)
+        interruptible_sleep(1)
 
     return upgraded_a_card
 
@@ -414,7 +415,7 @@ def check_for_missing_gold_popup(emulator):
 #     card_coord = CARD_COORDS[card_index]
 #     print(f"Clicking the #{card_index} card")
 #     emulator.click( card_coord[0], card_coord[1])
-#     time.sleep(0.66)
+#     interruptible_sleep(0.66)
 
 #     # see if green uprgade button exists in card context menu
 #     card_is_upgradable = False
