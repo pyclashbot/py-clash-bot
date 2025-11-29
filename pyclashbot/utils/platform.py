@@ -24,18 +24,20 @@ def get_platform() -> Platform:
 
 def get_app_data_dir(app_name: str) -> str:
     """Return OS-appropriate directory for application data/cache."""
-    if get_platform() == Platform.MACOS:
+    platform = get_platform()
+    if platform == Platform.MACOS:
         return os.path.join(os.path.expanduser("~/Library/Application Support"), app_name)
-    elif get_platform() == Platform.LINUX:
+    elif platform == Platform.LINUX:
         return os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), app_name)
     return os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), app_name)
 
 
 def get_log_dir(app_name: str) -> str:
     """Return OS-appropriate directory for log files."""
-    if get_platform() == Platform.MACOS:
+    platform = get_platform()
+    if platform == Platform.MACOS:
         return os.path.join(os.path.expanduser("~/Library/Logs"), app_name)
-    elif get_platform() == Platform.LINUX:
+    elif platform == Platform.LINUX:
         return os.path.join(os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")), app_name, "logs")
     return os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), app_name, "logs")
 
