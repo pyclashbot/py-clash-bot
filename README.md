@@ -53,14 +53,25 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 2. **Install BlueStacks 5** - Run the BlueStacks 5 installer
 3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
 4. **Install py-clash-bot** - Run the installer
-5. **Create the instance** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings and then click "Start" to let it automatically create the "pyclashbot-96" Bluestacks 5 emulator Instance. Alternativly open the BlueStacks Multi-Instance Manager and create a fresh Pie 64-bit instance and retry it will automatically rename/configure it as "pyclashbot-96"
+5. **Create the instance** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan), then click "Start". The bot will automatically find or create a "pyclashbot-96" instance.
+   - **Important:** If prompted to create an instance manually, the bot needs a "clean" instance - one where **no Google account has been logged in yet**. Create a new Pie 64-bit instance in the Multi-Instance Manager and do NOT sign into Google Play until after the bot has configured it.
 6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-96" emulator via Google Play Store
 7. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
 8. **Close BlueStacks 5** - Fully close the BlueStacks 5 emulator
 9. **Start automation** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings, then click "Start"
 
 **Troubleshooting BlueStacks 5:**
-- Open the Bluestacks Multi-Instance Manger -> Click on Instance (Blue, Bottom left) -> Choose Fresh instance -> Choose Android Version Pie 64-bit -> Click on Next -> Click on Create, then click Retry in the bot or restart it fully.
+
+**"No clean instance found" error:**
+The bot requires an instance without any Google account logins to auto-configure. If you see this error:
+1. Open BlueStacks Multi-Instance Manager
+2. Click "Instance" (bottom left) → "Fresh instance" → "Pie 64-bit" → Create
+3. **Do NOT log into Google** on this new instance
+4. Click "Retry" in the bot
+
+If all your instances already have Google accounts, create a new one following the steps above.
+
+**Other issues:**
 - Try switching render mode (OpenGL/DirectX/Vulkan) in the bot and start again
 - Restart your PC and let the bot try it again
 
@@ -105,11 +116,31 @@ Having trouble with your emulator? This section provides troubleshooting tips fo
 
 ### BlueStacks 5 Emulator Debugging
 
-- Use BlueStacks 5 only (BlueStacks 10/X are not supported)
-- Ensure install path exists: `C:\Program Files\BlueStacks_nxt`
-- If startup fails, create a clean "Pie 64-bit (Android 9)" instance in Multi-Instance Manager (no Google account yet), then click Retry in the bot so it can auto-configure
-- Switch render mode in the bot (OpenGL/DirectX/Vulkan) if you see black screens or poor performance, then start again
-- Fully close BlueStacks if it becomes unresponsive; the bot will relaunch it
+**Supported versions:**
+- BlueStacks 5 only (BlueStacks 10/X are not supported)
+- Install path: `C:\Program Files\BlueStacks_nxt` (Windows) or `/Applications/BlueStacks.app` (macOS)
+
+**"No clean instance found" error:**
+
+The bot needs an instance with no Google account logged in so it can auto-configure settings. This is checked via the `google_account_logins` field in BlueStacks config.
+
+To fix this:
+1. Open BlueStacks Multi-Instance Manager
+2. Create a new instance: Click "Instance" → "Fresh instance" → "Pie 64-bit" → Create
+3. **Do NOT sign into Google** on this new instance yet
+4. Click "Retry" in the bot - it will detect and configure the clean instance
+5. After the bot configures it as "pyclashbot-96", you can install Clash Royale via Google Play
+
+**If you need to reset an existing instance:**
+- Delete the instance in Multi-Instance Manager and create a new one, OR
+- Factory reset the instance (right-click → Settings → scroll down → Factory Reset)
+
+**Black screen or rendering issues:**
+- Switch render mode in the bot settings (OpenGL/DirectX/Vulkan) and restart
+
+**Instance won't start:**
+- Fully close all BlueStacks windows and processes, then let the bot relaunch it
+- Check that virtualization (VT-x/AMD-V) is enabled in your BIOS
 
 ### Google Play Games Emulator Debugging
 
