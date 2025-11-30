@@ -10,6 +10,7 @@ from os.path import normpath
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
 
 DEBUG = False
@@ -47,7 +48,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.stop()
         while self._is_this_instance_running():  # Because Windows: I'm closing, also Windows: isn't closing
             self.stop()
-            time.sleep(1)
+            interruptible_sleep(1)
 
         # Discover install
         install_base = self._find_install_location()
@@ -81,7 +82,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 if os.path.isfile(self.mim_meta_path):
                     print("[Bluestacks 5] MimMetaData.json detected.")
                     break
-                time.sleep(0.5)
+                interruptible_sleep(0.5)
             else:
                 raise FileNotFoundError("[Bluestacks 5] MimMetaData.json not created within 10 seconds.")
         if DEBUG:
@@ -100,7 +101,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Boot flow
         while self.restart() is False:
             print("[BlueStacks 5] Restart failed, retrying...")
-            time.sleep(2)
+            interruptible_sleep(2)
 
     def _find_install_location(self) -> str:
         """Locate BlueStacks 5 installation folder."""
@@ -373,7 +374,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             # Wait for user action via Retry callback
             self.instance_creation_waiting = True
             while getattr(self, "instance_creation_waiting", False):
-                time.sleep(0.5)
+                interruptible_sleep(0.5)
 
             # User clicked Retry check again for a clean instance outside the callback
             if getattr(self, "_request_instance_retry", False):
@@ -539,7 +540,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             return False
         self._reset_adb_server()
         self.adb_server(f"disconnect {self.device_serial}")
-        time.sleep(0.2)
+        interruptible_sleep(0.2)
         self.adb_server(f"connect {self.device_serial}")
         state = self.adb("get-state")
         ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
@@ -547,7 +548,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             self._refresh_instance_port()
             if self.device_serial:
                 self.adb_server(f"disconnect {self.device_serial}")
-                time.sleep(0.2)
+                interruptible_sleep(0.2)
                 self.adb_server(f"connect {self.device_serial}")
                 state = self.adb("get-state")
                 ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
@@ -611,7 +612,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 args = ["--instance", self.internal_name]
             cmd = '"' + self.emulator_executable_path + '"' + (" " + " ".join(args) if args else "")
             subprocess.Popen(cmd, shell=True)
-        time.sleep(5)
+        interruptible_sleep(5)
 
     def stop(self, display_name: str | None = None):
         """Stop only this instance."""
@@ -649,7 +650,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             if time.time() - t0 > boot_timeout:
                 self.logger.change_status("Timeout waiting for pyclashbot instance to start - retrying...")
                 return False
-            time.sleep(0.5)
+            interruptible_sleep(0.5)
 
         # Refresh port after boot
         self._refresh_instance_port()
@@ -664,7 +665,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             if time.time() - t1 > 60:
                 self.logger.change_status("Failed to connect ADB to BlueStacks 5 - retrying...")
                 return False  # if this makes issues big problems
-            time.sleep(1)
+            interruptible_sleep(1)
 
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
@@ -682,7 +683,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             # re-trigger the app start, because the original call failed.
             self.start_app(clash_pkg)
 
-        time.sleep(5)
+        interruptible_sleep(5)
 
         # Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")

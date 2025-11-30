@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-try:
-    from pypresence import Presence
-except Exception:  # pragma: no cover - dependency may be optional at runtime
-    Presence = None  # type: ignore[assignment]
+from pypresence import Presence
 
 
 class DiscordRPCManager:
@@ -26,7 +23,7 @@ class DiscordRPCManager:
 
     def enable(self) -> None:
         """Connect to Discord if not already connected."""
-        if self.connected or Presence is None:
+        if self.connected:
             return
         try:
             self.rpc = Presence(self.APP_ID)

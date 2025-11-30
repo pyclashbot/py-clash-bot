@@ -543,5 +543,26 @@ class Logger:
         self.log("-------------------------------\n\n")
 
 
+class ProcessLogger(Logger):
+    """Logger that sends stats updates through a multiprocessing Queue.
+
+    Used with WorkerProcess to communicate stats back to the main UI process.
+    """
+
+    def __init__(self, stats_queue, timed: bool = True) -> None:
+        super().__init__(timed=timed)
+        self._stats_queue = stats_queue
+
+    def _update_log(self) -> None:
+        """Override to send stats through queue instead of just updating local dict."""
+        super()._update_log()
+        # Non-blocking put to queue - if queue is full, skip this update
+        if self._stats_queue is not None:
+            try:
+                self._stats_queue.put_nowait(self.stats.copy())
+            except Exception:
+                pass  # Queue full or closed, skip this update
+
+
 if __name__ == "__main__":
     pass

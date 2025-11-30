@@ -45,8 +45,9 @@ class PyClashBotUI(ttk.Window):
     def __init__(self) -> None:
         super().__init__(themename=self.DEFAULT_THEME)
         self.title("py-clash-bot")
-        self.geometry("490x500")
-        self.resizable(False, False)
+        self.geometry("490x550")
+        self.resizable(True, True)
+        self.minsize(490, 450)
 
         self._style = ttk.Style()
         current_theme = self._style.theme_use()
@@ -63,7 +64,8 @@ class PyClashBotUI(ttk.Window):
         self._suspend_traces = 0
 
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(0, weight=3)  # Tabs get more space
+        self.rowconfigure(1, weight=1, minsize=120)  # Bottom row: log (60px min) + button (~40px) + padding
 
         self._build_tabs()
         self._build_bottom_row()
@@ -180,14 +182,20 @@ class PyClashBotUI(ttk.Window):
 
         self._show_current_emulator_settings()
 
-    def set_running_state(self, running: bool) -> None:
-        start_state = tk.DISABLED if running else tk.NORMAL
-        stop_state = tk.NORMAL if running else tk.DISABLED
-        self.start_btn.configure(state=start_state)
-        self.stop_btn.configure(state=stop_state)
+    def set_button_state(self, state: str) -> None:
+        """Set the main button state: 'idle', 'running', or 'stopping'."""
+        self._button_state = state
+        if state == "idle":
+            self.main_btn.configure(text="Start", bootstyle="success", state=tk.NORMAL)
+        elif state == "running":
+            self.main_btn.configure(text="Stop", bootstyle="danger", state=tk.NORMAL)
+        elif state == "stopping":
+            self.main_btn.configure(text="Force Stop", bootstyle="warning", state=tk.NORMAL)
 
+        # Disable/enable config widgets based on running state
+        running = state in ("running", "stopping")
         for key, widget in self._config_widgets.items():
-            if widget in {self.stop_btn, self.start_btn}:
+            if key == "main_btn":
                 continue
             try:
                 if isinstance(widget, ttk.Combobox):
@@ -225,10 +233,14 @@ class PyClashBotUI(ttk.Window):
         if running:
             self._hide_action_button()
 
+    def get_button_state(self) -> str:
+        """Get the current button state: 'idle', 'running', or 'stopping'."""
+        return self._button_state
+
     def show_action_button(self, text: str, callback: Callable[[], None]) -> None:
         self._action_callback = callback
         self.action_btn.configure(text=text)
-        self.stop_btn.grid_remove()
+        self.main_btn.grid_remove()
         self.action_btn.grid()
 
     def hide_action_button(self) -> None:
@@ -306,27 +318,25 @@ class PyClashBotUI(ttk.Window):
 
     def _build_bottom_row(self) -> None:
         bottom = ttk.Frame(self)
-        bottom.grid(row=1, column=0, sticky="ew", padx=10, pady=(0, 10))
+        bottom.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
         bottom.columnconfigure(0, weight=1)
+        bottom.rowconfigure(0, weight=1, minsize=60)  # Log expands, minimum 60px
 
-        log_container = ttk.Frame(bottom)
-        log_container.grid(row=0, column=0, sticky="ew", padx=(0, 8))
-        log_container.columnconfigure(0, weight=1)
-        self.event_log = tk.Text(log_container, height=3, wrap="word")
-        self.event_log.grid(row=0, column=0, sticky="ew")
+        # Log output (resizable)
+        self.event_log = tk.Text(bottom, height=3, wrap="word")
+        self.event_log.grid(row=0, column=0, sticky="nsew")
         self.event_log.configure(state="disabled")
         self._status_text = "Idle"
 
-        self.start_btn = tk.Button(bottom, text="Start", bg="green", fg="white", width=10)
-        self.start_btn.grid(row=0, column=1, sticky="e", padx=(0, 6))
-        self._register_config_widget("Start", self.start_btn)
+        # Single unified button below log
+        self.main_btn = ttk.Button(bottom, text="Start", bootstyle="success")
+        self.main_btn.grid(row=1, column=0, sticky="ew", pady=(8, 0), ipady=8)
+        self._register_config_widget("main_btn", self.main_btn)
+        self._button_state = "idle"  # Track: idle, running, stopping
 
-        self.stop_btn = tk.Button(bottom, text="Stop", bg="red", fg="white", width=10, state=tk.DISABLED)
-        self.stop_btn.grid(row=0, column=2, sticky="e")
-        self._register_config_widget("Stop", self.stop_btn)
-
+        # Action button (for retry etc.) - hidden by default
         self.action_btn = ttk.Button(bottom, text="Retry")
-        self.action_btn.grid(row=0, column=2, sticky="e")
+        self.action_btn.grid(row=1, column=0, sticky="ew", pady=(8, 0))
         self.action_btn.grid_remove()
         self._action_callback: Callable[[], None] | None = None
         self.action_btn.configure(command=self._on_action_pressed)
@@ -850,7 +860,7 @@ class PyClashBotUI(ttk.Window):
 
     def _hide_action_button(self) -> None:
         self.action_btn.grid_remove()
-        self.stop_btn.grid()
+        self.main_btn.grid()
 
     def _on_action_pressed(self) -> None:
         if self._action_callback:

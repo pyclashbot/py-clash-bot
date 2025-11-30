@@ -11,6 +11,7 @@ Welcome to the py-clash-bot project! We appreciate your interest in contributing
 - [Submitting Changes](#submitting-changes)
 - [Code Style](#code-style)
 - [Additional Guidelines](#additional-guidelines)
+- [Licensing](#licensing)
 
 ## Prerequisites
 
@@ -161,5 +162,31 @@ If you need help or have questions:
 2. Search the documentation
 3. Create a new issue with clear details
 4. Join our community discussions
+
+## Licensing
+
+### Contributor License Agreement
+
+By contributing to py-clash-bot, you agree that:
+
+1. **Your contributions are your original work** or you have the right to submit them under the project's licenses.
+
+2. **You grant a license** to your contributions under the same terms as the project:
+   - Source code contributions are licensed under the py-clash-bot Non-Commercial Copyleft License 1.0 (NC-CL-1.0)
+   - Asset contributions (images, documentation) are licensed under CC BY-NC-SA 4.0
+
+3. **You understand the non-commercial restriction** - your contributions, along with the project, may not be used commercially without separate agreement with the maintainers.
+
+4. **Your contributions become part of the project** - From the moment your contribution is merged, it is included under the project's dual-license and may be distributed accordingly.
+
+### Guidelines
+
+- Do not include proprietary or commercially-licensed content
+- Clearly attribute any third-party content and ensure license compatibility
+- Game assets from Clash Royale are property of Supercell - reference images are used for detection purposes only
+
+### Commercial Inquiries
+
+If you're interested in using py-clash-bot commercially, please contact the maintainers to discuss licensing options.
 
 Thank you for contributing to py-clash-bot! 🚀

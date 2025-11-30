@@ -146,6 +146,28 @@ We welcome contributions from the community! Whether you have ideas for new feat
 
 This tool is designed for educational and automation purposes. Please ensure you comply with Clash Royale's Terms of Service and use responsibly. The developers are not responsible for any consequences resulting from the use of this software.
 
+## License
+
+This project uses **dual-licensing**:
+
+### Source Code
+
+Licensed under the **py-clash-bot Non-Commercial Copyleft License 1.0** (NC-CL-1.0).
+
+- Use and modify for **non-commercial purposes**
+- Derivatives must use the **same license** and provide **source code**
+- Software communicating via public interfaces remains independent
+
+### Assets
+
+All images and documentation are licensed under **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)**.
+
+### Commercial Use
+
+For commercial licensing inquiries, please contact the maintainers.
+
+See the full [LICENSE](LICENSE) file for complete terms.
+
 ---
 
 **Made with ❤️ by the py-clash-bot community**

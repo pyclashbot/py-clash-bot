@@ -12,3 +12,5 @@ __pycache__
 recordings
 .claude/
 .claude/settings.local.json
+.DS_Store
+*.egg-info

@@ -16,6 +16,7 @@ from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
 )
 from pyclashbot.detection.image_rec import find_image
+from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 
@@ -50,7 +51,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
         if not switch_deck_page(emulator, logger):
             logger.error("Failed to switch to the correct deck page.")
             return False, None
-        time.sleep(1)
+        interruptible_sleep(1)
 
     deck_image_folder = f"deck_tabs/deck_{deck_number}"
     deck_coords = find_image(emulator.screenshot(), deck_image_folder, subcrop=DECK_TABS_REGION, tolerance=0.95)
@@ -58,7 +59,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
     if deck_coords is not None:
         logger.change_status(f"Found and selected deck #{deck_number}.")
         emulator.click(deck_coords[0] + 15, deck_coords[1] + 15)
-        time.sleep(1)
+        interruptible_sleep(1)
         return True, deck_number
 
     logger.change_status(f"Could not find deck #{deck_number}. Defaulting to deck #1.")
@@ -78,7 +79,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
         if not switch_deck_page(emulator, logger):
             logger.error("Failed to switch back to page 1 for fallback.")
             return False, None
-        time.sleep(1)
+        interruptible_sleep(1)
 
     deck1_coords = find_image(emulator.screenshot(), "deck_tabs/deck_1", subcrop=DECK_TABS_REGION, tolerance=0.95)
     if deck1_coords is None:
@@ -87,7 +88,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
 
     logger.change_status("Found and selected fallback deck #1.")
     emulator.click(deck1_coords[0] + 15, deck1_coords[1] + 15)
-    time.sleep(1)
+    interruptible_sleep(1)
     return True, 1
 
 
