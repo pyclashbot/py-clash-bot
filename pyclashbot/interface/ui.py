@@ -124,7 +124,8 @@ class PyClashBotUI(ttk.Window):
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
-            # Determine saved emulator choice only if provided in values
+            # Determine saved emulator choice; default to current selection if no data provided
+            saved_emulator = self.emulator_var.get()
             emulator_keys = {
                 UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value,
                 UIField.BLUESTACKS_EMULATOR_TOGGLE.value,
@@ -138,14 +139,14 @@ class PyClashBotUI(ttk.Window):
                     saved_emulator = EmulatorType.BLUESTACKS
                 elif values.get(UIField.ADB_TOGGLE.value):
                     saved_emulator = EmulatorType.ADB
-                else:
+                elif values.get(UIField.MEMU_EMULATOR_TOGGLE.value):
                     saved_emulator = EmulatorType.MEMU
-                # Use saved choice if available on this platform, otherwise fallback
-                available = get_available_emulators()
-                if saved_emulator in available:
-                    self.emulator_var.set(saved_emulator)
-                elif available:
-                    self.emulator_var.set(available[0])
+            # Use saved choice if available on this platform, otherwise fallback
+            available = get_available_emulators()
+            if saved_emulator in available:
+                self.emulator_var.set(saved_emulator)
+            elif available:
+                self.emulator_var.set(available[0])
 
             if values.get(UIField.DIRECTX_TOGGLE.value):
                 self.memu_render_var.set("DirectX")
@@ -847,6 +848,7 @@ class PyClashBotUI(ttk.Window):
     def _show_current_emulator_settings(self) -> None:
         """Hides all emulator settings frames and shows the one selected in the combobox."""
         selected_emulator = self.emulator_var.get()
+        show_advanced = bool(self.advanced_settings_var.get())
 
         # Hide all frames first
         for frame in self.emulator_settings_frames.values():
@@ -854,7 +856,10 @@ class PyClashBotUI(ttk.Window):
 
         # Show the selected frame
         frame_to_show = self.emulator_settings_frames.get(selected_emulator)
-        if frame_to_show:
+        should_show = True
+        if selected_emulator in {EmulatorType.MEMU, EmulatorType.BLUESTACKS, EmulatorType.GOOGLE_PLAY}:
+            should_show = show_advanced
+        if frame_to_show and should_show:
             frame_to_show.pack(fill=BOTH, expand=YES)
         self._update_advanced_settings_visibility(selected_emulator)
 
@@ -891,7 +896,8 @@ class PyClashBotUI(ttk.Window):
         _toggle_frame(getattr(self, "bluestacks_advanced_frame", None), show_advanced and is_bluestacks)
 
     def _on_advanced_settings_toggled(self) -> None:
-        self._update_advanced_settings_visibility(self.emulator_var.get())
+        # Re-evaluate which emulator settings should be visible when the toggle changes
+        self._show_current_emulator_settings()
 
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:
