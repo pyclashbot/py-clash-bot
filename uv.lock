@@ -283,6 +283,7 @@ dependencies = [
     { name = "pillow" },
     { name = "psutil" },
     { name = "pymemuc" },
+    { name = "pypresence" },
     { name = "ttkbootstrap" },
 ]
 
@@ -305,6 +306,7 @@ requires-dist = [
     { name = "pillow", specifier = ">=11.3.0,<13.0.0" },
     { name = "psutil", specifier = ">=6.1.0,<8" },
     { name = "pymemuc", specifier = ">=0.6.0,<0.7" },
+    { name = "pypresence", specifier = ">=4.3.0,<5" },
     { name = "ttkbootstrap", specifier = ">=1.12.1,<1.19" },
 ]
 
@@ -356,6 +358,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/79/78/2ac3fb8b21e3ffed668a27df06b022aeb526ba11404709c3edb45ee2d0e6/pymemuc-0.6.0.tar.gz", hash = "sha256:c1f5ab9c7834fa1390a2dc2adc56f263134b41876e8d338ed3d7f54b119b5a70", size = 12334, upload-time = "2024-09-13T03:08:05.775Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/35/70/361a0c54d34da483b16b4cf6f8c0b6fe5f58e9e54f0d30771715f8f25ed4/pymemuc-0.6.0-py3-none-any.whl", hash = "sha256:ed79165f7511a5cba2da1a5e354247c3ba91d53ab3f95ec0c1dae056f2a0db3d", size = 15324, upload-time = "2024-09-13T03:08:04.397Z" },
+]
+
+[[package]]
+name = "pypresence"
+version = "4.6.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/6b/dedacb949ee73c3fd4a11992a4e9a70fc4cd1046ed6870f9138348293ded/pypresence-4.6.1.tar.gz", hash = "sha256:05199516a3b4e182b637b3cd5415aab7ba542707664f634f35a7220c4f10334f", size = 20419, upload-time = "2025-10-17T18:53:39.484Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/0d/1c817c6769ce0b64cc0dcc20bc9d0edb4dc560e83a3b5f0d5cbda04c3d35/pypresence-4.6.1-py3-none-any.whl", hash = "sha256:33d4549fcdf4102f81935df4ba587bacb22193e0c50c541d1ab9329b21df33cd", size = 14033, upload-time = "2025-10-17T18:53:38.184Z" },
 ]
 
 [[package]]

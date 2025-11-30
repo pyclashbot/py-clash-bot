@@ -36,8 +36,8 @@ _Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, 
 2. **Install MEmu** - Run the MEmu installer
 3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
 4. **Install py-clash-bot** - Run the installer
-5. **Create the VM** - Start the bot once to let it automatically create the "pyclashbot-96" MEmu emulator
-6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-96" emulator via Google Play Store
+5. **Create the VM** - Start the bot once to let it automatically create the "pyclashbot-126" MEmu emulator
+6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-126" emulator via Google Play Store
 7. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
 8. **Close MEmu** - Close the MEmu emulator completely
 9. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation

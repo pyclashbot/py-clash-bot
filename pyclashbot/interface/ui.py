@@ -54,6 +54,7 @@ class PyClashBotUI(ttk.Window):
         if not current_theme:
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
+        self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
@@ -105,6 +106,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.ADB_SERIAL.value] = self.adb_serial_var.get()
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
+        values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -122,16 +124,23 @@ class PyClashBotUI(ttk.Window):
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
-            # Determine saved emulator choice
-            if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
-                saved_emulator = EmulatorType.GOOGLE_PLAY
-            elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
-                saved_emulator = EmulatorType.BLUESTACKS
-            elif values.get(UIField.ADB_TOGGLE.value):
-                saved_emulator = EmulatorType.ADB
-            else:
-                saved_emulator = EmulatorType.MEMU
-
+            # Determine saved emulator choice; default to current selection if no data provided
+            saved_emulator = self.emulator_var.get()
+            emulator_keys = {
+                UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value,
+                UIField.BLUESTACKS_EMULATOR_TOGGLE.value,
+                UIField.ADB_TOGGLE.value,
+                UIField.MEMU_EMULATOR_TOGGLE.value,
+            }
+            if emulator_keys & values.keys():
+                if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
+                    saved_emulator = EmulatorType.GOOGLE_PLAY
+                elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
+                    saved_emulator = EmulatorType.BLUESTACKS
+                elif values.get(UIField.ADB_TOGGLE.value):
+                    saved_emulator = EmulatorType.ADB
+                elif values.get(UIField.MEMU_EMULATOR_TOGGLE.value):
+                    saved_emulator = EmulatorType.MEMU
             # Use saved choice if available on this platform, otherwise fallback
             available = get_available_emulators()
             if saved_emulator in available:
@@ -168,6 +177,9 @@ class PyClashBotUI(ttk.Window):
 
         if theme_value is not None:
             self._apply_theme(theme_value)
+
+        if UIField.DISCORD_RPC_TOGGLE.value in values:
+            self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
 
         self._show_current_emulator_settings()
 
@@ -719,6 +731,17 @@ class PyClashBotUI(ttk.Window):
         data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
 
+        discord_checkbox = ttk.Checkbutton(
+            data_frame,
+            text="Discord Rich Presence",
+            variable=self.discord_rpc_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        discord_checkbox.pack(anchor="w", pady=(0, 6))
+        self._trace_variable(self.discord_rpc_var)
+        self._register_config_widget(UIField.DISCORD_RPC_TOGGLE.value, discord_checkbox)
+
         self.open_logs_btn = ttk.Button(
             data_frame,
             text="Open Logs Folder",
@@ -825,6 +848,7 @@ class PyClashBotUI(ttk.Window):
     def _show_current_emulator_settings(self) -> None:
         """Hides all emulator settings frames and shows the one selected in the combobox."""
         selected_emulator = self.emulator_var.get()
+        show_advanced = bool(self.advanced_settings_var.get())
 
         # Hide all frames first
         for frame in self.emulator_settings_frames.values():
@@ -832,7 +856,10 @@ class PyClashBotUI(ttk.Window):
 
         # Show the selected frame
         frame_to_show = self.emulator_settings_frames.get(selected_emulator)
-        if frame_to_show:
+        should_show = True
+        if selected_emulator in {EmulatorType.MEMU, EmulatorType.BLUESTACKS, EmulatorType.GOOGLE_PLAY}:
+            should_show = show_advanced
+        if frame_to_show and should_show:
             frame_to_show.pack(fill=BOTH, expand=YES)
         self._update_advanced_settings_visibility(selected_emulator)
 
@@ -869,7 +896,8 @@ class PyClashBotUI(ttk.Window):
         _toggle_frame(getattr(self, "bluestacks_advanced_frame", None), show_advanced and is_bluestacks)
 
     def _on_advanced_settings_toggled(self) -> None:
-        self._update_advanced_settings_visibility(self.emulator_var.get())
+        # Re-evaluate which emulator settings should be visible when the toggle changes
+        self._show_current_emulator_settings()
 
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:

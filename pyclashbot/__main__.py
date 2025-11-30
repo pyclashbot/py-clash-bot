@@ -37,6 +37,7 @@ from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
+from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
 from pyclashbot.utils.platform import is_macos
 
@@ -249,6 +250,8 @@ class BotApplication:
         self.last_stats: dict[str, Any] = {}
 
         self.logger = Logger(timed=False)
+        self.discord_rpc = DiscordRPCManager()
+        self.discord_rpc_enabled = False
         self._closing = False
         self._suppress_persist = True
         self.current_values = self.ui.get_all_values()
@@ -256,6 +259,7 @@ class BotApplication:
         loaded = load_settings(settings, self.ui)
         if loaded:
             self.current_values = self.ui.get_all_values()
+            self.discord_rpc_enabled = bool(self.current_values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
         self._suppress_persist = False
 
         self.ui.set_button_state("idle")
@@ -287,6 +291,8 @@ class BotApplication:
             self.logger = new_logger
             self.process = process
             self.current_values = values.copy()
+            if self.discord_rpc_enabled:
+                self.discord_rpc.enable()
             self.ui.set_button_state("running")
         else:
             self.ui.set_button_state("idle")
@@ -324,6 +330,7 @@ class BotApplication:
                 self.ui.set_all_values({cycle_toggle: False})
                 values[cycle_toggle] = False
         self.current_values = values.copy()
+        self.discord_rpc_enabled = bool(values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
         if not self._suppress_persist:
             save_current_settings(values)
 
@@ -359,6 +366,7 @@ class BotApplication:
 
         self.process, self.logger = handle_process_finished(self.ui, self.process, self.logger)
         update_layout(self.ui, self.logger)
+        self.discord_rpc.sync(self.discord_rpc_enabled, self.logger.get_stats())
         if hasattr(self.logger, "action_needed") and self.logger.action_needed:
             action_text = getattr(self.logger, "action_text", "Continue")
             self.ui.show_action_button(action_text, self._dispatch_action)
@@ -372,6 +380,7 @@ class BotApplication:
     def _on_close(self) -> None:
         self._closing = True
         exit_button_event(self.process, self.shutdown_event)
+        self.discord_rpc.disable()
         self.ui.destroy()
 
     def _run_adb_command(self, serial: str, command: str):
