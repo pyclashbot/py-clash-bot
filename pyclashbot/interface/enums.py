@@ -50,6 +50,7 @@ class UIField(StrEnum):
     GOOGLE_PLAY_EMULATOR_TOGGLE = "google_play_emulator_toggle"
     BLUESTACKS_EMULATOR_TOGGLE = "bluestacks_emulator_toggle"
     THEME_NAME = "theme_name"
+    DISCORD_RPC_TOGGLE = "discord_rpc_toggle"
     GP_ANGLE = "gp_angle"
     GP_VULKAN = "gp_vulkan"
     GP_GLES = "gp_gles"
