@@ -1,175 +1,93 @@
 # py-clash-bot
 
-**py-clash-bot** is an open-source automation tool that allows you to automate your Clash Royale gameplay on Windows and macOS using an emulated Android phone. The bot uses advanced image recognition, mouse control, and Android emulation to perform a comprehensive range of tasks automatically, letting you focus on strategy while it handles the daily grind.
+An open-source automation tool for Clash Royale on Windows and macOS. Uses Android emulation and image recognition to automate card leveling, pass progression, and daily gameplay tasks.
 
-_Join our [Discord server](https://discord.gg/nqKRkyq2UU) for support, updates, and community discussions!_
+[Join our Discord](https://discord.gg/nqKRkyq2UU) for support and updates.
 
-## ✨ Features
+## Features
 
-### 🎮 **Battle Automation**
+**Battle Automation**
+- Trophy Road 1v1, Path of Legends, and 2v2 battles
+- Random deck selection
+- Smart chest management
 
-- **Trophy Road 1v1 Battles** - Automatically fight in trophy road ladder matches
-- **Path of Legends 1v1 Battles** - Battle in the competitive Path of Legends mode
-- **2v2 Battles** - Team up with clan members for 2v2 matches
-- **Random Decks** - Randomize your deck selection before each battle
-- **Smart Battle Management** - Skip fights when chests are full, disable win/loss tracking
+**Progression**
+- Card mastery reward collection
+- Automatic card upgrades
+- Real-time win/loss tracking
 
-### 🎁 **Rewards & Collection**
+**Emulator Support**
+- MEmu, BlueStacks 5, Google Play Games
+- OpenGL, DirectX, and Vulkan render modes
 
-- **Card Mastery Rewards** - Collect mastery rewards earned from battles
-- **Card Upgrades** - Upgrade your current deck after each battle
+## Setup
 
-### ⚙️ **Advanced Settings**
+### 1. Install py-clash-bot
 
-- **Emulator Support** - Works with MEmu, BlueStacks 5, and Google Play Games emulators
-- **Render Mode Selection** - Choose between OpenGL, DirectX, and Vulkan rendering
-- **Real-time Statistics** - Track wins, losses, chests opened, and more
-- **Performance Monitoring** - Monitor bot runtime, failures, and account switches
+**Windows:** Download the installer from [releases](https://github.com/pyclashbot/py-clash-bot/releases) and run it.
 
-## 🚀 Setup Instructions
+**macOS:** Download the DMG from [releases](https://github.com/pyclashbot/py-clash-bot/releases), drag to Applications. On first launch, go to **System Settings > Privacy & Security** and click "Allow" for py-clash-bot.
 
-**py-clash-bot** supports three emulators. Choose the one that works best for your system:
+### 2. Install an Emulator
 
-### Option 1: MEmu Emulator
+Choose one:
 
-1. **Download MEmu 9.2.5.0** - Get it from the [official site](https://www.memuplay.com/) or use this [working installer](https://drive.google.com/file/d/1FDMa5oKIhbM_X2TGHg6qSi3bnIuIXcPf/view?usp=sharing) (version 9.2.5.0 recommended)
-2. **Install MEmu** - Run the MEmu installer
-3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
-4. **Install py-clash-bot** - Run the installer
-5. **Create the VM** - Start the bot once to let it automatically create the "pyclashbot-96" MEmu emulator
-6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-96" emulator via Google Play Store
-7. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
-8. **Close MEmu** - Close the MEmu emulator completely
-9. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
+**MEmu (Windows only)**
+- Download [MEmu 9.2.5.0](https://www.memuplay.com/) ([alternate link](https://drive.google.com/file/d/1FDMa5oKIhbM_X2TGHg6qSi3bnIuIXcPf/view?usp=sharing))
+- Run the installer
 
-**Troubleshooting MEmu:**
-- Switch render mode to Vulkan, DirectX, or OpenGL if experiencing issues
-- Delete the VM and let the bot create a new one
-- Enable UEFI in BIOS if needed
+**BlueStacks 5 (Windows/macOS)**
+- Download [BlueStacks 5](https://www.bluestacks.com/) (not BlueStacks X/10)
+- Run the installer
 
-### Option 2: BlueStacks 5 Emulator
+**Google Play Games (Windows only)**
+- Download the [developer emulator](https://developer.android.com/games/playgames/emulator) (not BETA)
+- Run the installer and complete the Google sign-in when prompted
 
-1. **Download BlueStacks 5** - Get it from the official site: https://www.bluestacks.com (ensure BlueStacks 5, not X/10)
-2. **Install BlueStacks 5** - Run the BlueStacks 5 installer
-3. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
-4. **Install py-clash-bot** - Run the installer
-5. **Create the instance** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings and then click "Start" to let it automatically create the "pyclashbot-96" Bluestacks 5 emulator Instance. Alternativly open the BlueStacks Multi-Instance Manager and create a fresh Pie 64-bit instance and retry it will automatically rename/configure it as "pyclashbot-96"
-6. **Install Clash Royale** - Install Clash Royale manually on the "pyclashbot-96" emulator via Google Play Store
-7. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
-8. **Close BlueStacks 5** - Fully close the BlueStacks 5 emulator
-9. **Start automation** - Start the bot, choose `Emulator Type: BlueStacks 5`, select a render mode (OpenGL/DirectX/Vulkan) under BlueStacks Settings, then click "Start"
+### 3. Configure and Run
 
-**Troubleshooting BlueStacks 5:**
-- Open the Bluestacks Multi-Instance Manger -> Click on Instance (Blue, Bottom left) -> Choose Fresh instance -> Choose Android Version Pie 64-bit -> Click on Next -> Click on Create, then click Retry in the bot or restart it fully.
-- Try switching render mode (OpenGL/DirectX/Vulkan) in the bot and start again
-- Restart your PC and let the bot try it again
+1. Start py-clash-bot
+2. Go to the **Emulator** tab and select your emulator from the dropdown
+3. Click **Start** — the bot creates the emulator instance automatically
+4. Install Clash Royale on the emulator via Google Play Store
+5. Open Clash Royale, complete the tutorial, set language to English
+6. Close the emulator completely
+7. Click **Start** again to begin automation
 
-### Option 3: Google Play Games Emulator
+Default settings work for most users. Only enable "Show advanced settings" to change render mode if troubleshooting.
 
-1. **Download Google Play Games Emulator** - Get it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
-2. **Install the emulator** - Run the Google Play installer
-3. **Initial setup** - Boot the Google Play Games Emulator once. This will trigger a Google sign-in flow in your web browser - complete this process. If prompted to allow USB debugging, click "Accept"
-4. **Download py-clash-bot** - Get the latest release from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
-5. **Install Clash Royale** - Download Clash Royale manually from the emulator
-6. **Complete setup** - Start Clash Royale manually, complete the tutorial, and optionally sign in to your account
-7. **Optional: Set display ratio** - Go to Google Play Emulator > Developer Options > Display Ratio > 9:16 (Portrait) for optimal look
-8. **Close emulator** - Close the Google Play emulator completely
-9. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
-
-## 🍎 macOS Setup
-
-On macOS, py-clash-bot supports BlueStacks. The setup is similar to Windows but requires an additional security step.
-
-### BlueStacks for macOS
-
-1. **Download BlueStacks** - Get it from [https://www.bluestacks.com/mac](https://www.bluestacks.com/mac)
-2. **Install BlueStacks** - Run the BlueStacks installer
-3. **Download py-clash-bot** - Get the latest DMG from [https://github.com/pyclashbot/py-clash-bot/releases](https://github.com/pyclashbot/py-clash-bot/releases)
-4. **Install py-clash-bot** - Open the DMG and drag py-clash-bot to your Applications folder
-5. **Allow the app** - On first launch, macOS will block the app since it's not signed. Go to **System Settings → Privacy & Security** and click "Allow" or "Open Anyway" for py-clash-bot
-6. **Create the instance** - Start the bot and click "Start" to let it automatically create the BlueStacks instance
-7. **Install Clash Royale** - Install Clash Royale manually on the emulator via Google Play Store
-8. **Complete setup** - Open Clash Royale manually, complete the tutorial, and optionally sign in to your account
-9. **Close BlueStacks** - Fully close the BlueStacks emulator
-10. **Start automation** - Start the bot, configure your settings, then click "Start" to begin automation
-
-### Important Notes
-
-- **Language Setting** - Ensure Clash Royale is set to English for optimal bot performance
-- **Tutorial Completion** - The tutorial must be completed manually before starting the bot
-- **Account Setup** - Sign in with SuperCell ID or create a new account as needed
-
-## 🔧 Emulator Debugging
-
-Having trouble with your emulator? This section provides troubleshooting tips for common issues with all supported emulators.
-
-### BlueStacks 5 Emulator Debugging
-
-- Use BlueStacks 5 only (BlueStacks 10/X are not supported)
-- Ensure install path exists: `C:\Program Files\BlueStacks_nxt`
-- If startup fails, create a clean "Pie 64-bit (Android 9)" instance in Multi-Instance Manager (no Google account yet), then click Retry in the bot so it can auto-configure
-- Switch render mode in the bot (OpenGL/DirectX/Vulkan) if you see black screens or poor performance, then start again
-- Fully close BlueStacks if it becomes unresponsive; the bot will relaunch it
-
-### Google Play Games Emulator Debugging
-
-- **Use the correct version** - Make sure you're using the DEVELOPER Google Play Games emulator, not the BETA version. Download it from [https://developer.android.com/games/playgames/emulator](https://developer.android.com/games/playgames/emulator)
-- **Watch for login prompts** - Google Play makes a popup in your default browser for the Google sign-in prompt. Sometimes you might miss this during emulator boot, and it'll hang forever. If you're experiencing booting issues, check for a login prompt in a minimized browser window!
-- **Adjust rendering settings** - If it's still not rendering properly, try adjusting render mode settings at System tray > Google Play Games emulator > Graphics settings > Vulkan device override OR Graphics > Graphics stack override
-- **Installer download fix** - If you're having trouble downloading the emulator installer, this tested solution works: Open your task manager, click File, press "Run new task", drop the installer path, and press "Run as admin"
-
-### MEmu Emulator Debugging  
-
-- **Hardware requirements** - MEmu is more hardware intensive, so if you're on a low-end machine try using Google Play Games emulator instead
-- **Black screen or boot issues** - If it's showing a black screen or never fully booting, try adjusting render mode via the ClashBot settings, then start the bot to apply those settings
-- **BIOS requirements** - MEmu REQUIRES your BIOS to have UEFI and Hyper-V enabled!
-  - Enable UEFI: [https://www.youtube.com/watch?v=uAMLGIlFMdI](https://www.youtube.com/watch?v=uAMLGIlFMdI)  
-  - Enable Hyper-V: [https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/install-hyper-v?tabs=powershell&pivots=windows](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/install-hyper-v?tabs=powershell&pivots=windows)
-- **Version conflicts** - Some old versions of pyclashbot create corrupt instances of MEmu. If you're switching between versions and MEmu is breaking, try deleting your existing MEmu VMs, or reinstalling MEmu entirely
-
-## 🎯 Demo
+## Demo
 
 <img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
 
-_Left: Bot automation in action | Right: User interface and controls_
+## Troubleshooting
 
-## 🤝 Contributing
+### MEmu
 
-We welcome contributions from the community! Whether you have ideas for new features, bug reports, or want to help with development, there are many ways to get involved:
+- Requires UEFI and Hyper-V enabled in BIOS ([enable UEFI](https://www.youtube.com/watch?v=uAMLGIlFMdI), [enable Hyper-V](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/install-hyper-v))
+- Hardware intensive — try Google Play Games on low-end machines
+- Black screen or boot issues: switch render mode in bot settings (OpenGL/DirectX/Vulkan)
+- Corrupt VMs from old versions: delete existing MEmu VMs or reinstall MEmu
 
-- **Report Issues** - Open an issue on [GitHub Issues](https://github.com/pyclashbot/py-clash-bot/issues)
-- **Feature Requests** - Suggest new automation features or improvements
-- **Code Contributions** - Check out our [Contributing Guide](CONTRIBUTING.md)
-- **Community Support** - Help other users on our [Discord server](https://discord.gg/nqKRkyq2UU)
+### BlueStacks 5
 
-## ⚠️ Disclaimer
+- Must use BlueStacks 5, not BlueStacks X/10
+- Expected install path: `C:\Program Files\BlueStacks_nxt`
+- Startup fails: open Multi-Instance Manager, create fresh "Pie 64-bit" instance, leave other settings as default, click Retry in bot
+- Black screen: switch render mode in bot settings
 
-This tool is designed for educational and automation purposes. Please ensure you comply with Clash Royale's Terms of Service and use responsibly. The developers are not responsible for any consequences resulting from the use of this software.
+### Google Play Games
+
+- Must use the DEVELOPER version, not BETA
+- Hanging on boot: check for Google sign-in popup in a minimized browser window
+- Rendering issues: adjust settings via System tray > Google Play Games > Graphics settings
+- Installer won't download: open Task Manager > File > Run new task, paste installer path, check "Run as admin"
+- Set emulator system language to English (in addition to game language)
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) | [Discord](https://discord.gg/nqKRkyq2UU) | [Issues](https://github.com/pyclashbot/py-clash-bot/issues)
 
 ## License
 
-This project uses **dual-licensing**:
-
-### Source Code
-
-Licensed under the **py-clash-bot Non-Commercial Copyleft License 1.0** (NC-CL-1.0).
-
-- Use and modify for **non-commercial purposes**
-- Derivatives must use the **same license** and provide **source code**
-- Software communicating via public interfaces remains independent
-
-### Assets
-
-All images and documentation are licensed under **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)**.
-
-### Commercial Use
-
-For commercial licensing inquiries, please contact the maintainers.
-
-See the full [LICENSE](LICENSE) file for complete terms.
-
----
-
-**Made with ❤️ by the py-clash-bot community**
-
-_Automate your Clash Royale experience and focus on what matters most - strategy and fun!_
+Source: [NC-CL-1.0](LICENSE) | Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) | [Commercial inquiries](LICENSE)
