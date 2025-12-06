@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 import time
@@ -5,6 +6,8 @@ import time
 # Assuming these are in the correct path
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.cancellation import interruptible_sleep
+from pyclashbot.utils.platform import Platform, is_linux
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -18,6 +21,8 @@ class AdbController(AdbBasedController):
 
     It now inherits shared ADB logic from AdbBasedController.
     """
+
+    supported_platforms = [Platform.WINDOWS, Platform.MACOS, Platform.LINUX]
 
     def __init__(self, logger, device_serial: str | None = None):
         """
@@ -216,13 +221,13 @@ class AdbController(AdbBasedController):
         if DEBUG:
             print(f"[Android/ADB] {full_command}")
 
-        return subprocess.run(
-            full_command,
-            shell=True,
-            capture_output=True,
-            text=not binary_output,
-            check=False,
-        )
+        # Linux optimization: Use process groups for better signal handling
+        if is_linux():
+            return subprocess.run(
+                full_command, shell=True, capture_output=True, text=not binary_output, check=False, preexec_fn=os.setsid
+            )
+        else:
+            return subprocess.run(full_command, shell=True, capture_output=True, text=not binary_output, check=False)
 
     def _check_app_installed(self, package_name: str) -> bool:
         """
@@ -250,7 +255,7 @@ class AdbController(AdbBasedController):
             else:
                 logger.log(f"Failed to kill ADB server: {kill_result.stderr.strip()}")
 
-            time.sleep(1)
+            interruptible_sleep(1)
 
             # Start the server
             start_result = subprocess.run(
@@ -353,7 +358,7 @@ class AdbController(AdbBasedController):
         # 1. Force stop the app
         self.logger.change_status(f"Force-stopping {clash_pkg}...")
         self.adb(f"shell am force-stop {clash_pkg}")
-        time.sleep(3)
+        interruptible_sleep(3)
 
         # 2. Start the app using the inherited method
         self.logger.change_status("Launching Clash Royale...")
@@ -363,7 +368,7 @@ class AdbController(AdbBasedController):
             self.logger.log("App not installed. Restart cannot complete.")
             return False
 
-        time.sleep(5)  # Give the app some time to load initially
+        interruptible_sleep(5)  # Give the app some time to load initially
 
         # 3. Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")
@@ -377,7 +382,7 @@ class AdbController(AdbBasedController):
 
             # Click in a safe area to dismiss potential pop-ups
             self.click(5, 350)
-            time.sleep(2)
+            interruptible_sleep(2)
 
         self.logger.change_status("Timeout waiting for Clash Royale main menu. Please check the device.")
         return False

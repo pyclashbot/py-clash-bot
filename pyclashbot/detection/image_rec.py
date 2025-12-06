@@ -121,9 +121,15 @@ def compare_images(
         return None
 
     res = cv2.matchTemplate(img_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-    loc = np.where(res >= threshold)
 
-    return None if len(loc[0]) != 1 else [int(loc[0][0]), int(loc[1][0])]
+    # Get the best match location
+    _min_val, max_val, _min_loc, max_loc = cv2.minMaxLoc(res)
+
+    # Return best match if it exceeds threshold
+    if max_val >= threshold:
+        return [int(max_loc[1]), int(max_loc[0])]  # [y, x]
+
+    return None
 
 
 # =============================================================================

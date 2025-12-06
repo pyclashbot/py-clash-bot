@@ -16,6 +16,8 @@ from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.utils.cancellation import interruptible_sleep
+from pyclashbot.utils.platform import Platform
 
 # Debug configuration flags - set to True to enable verbose logging for specific areas
 DEBUG_CONFIGURATION = {
@@ -29,7 +31,7 @@ DEBUG_CONFIGURATION = {
     "clash_startup": False,  # Enable verbose logging for Clash Royale startup
 }
 
-ANDROID_VERSION = "96"  # android 9, 64 bit
+ANDROID_VERSION = "126"  # android 12, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 # Default Memu configuration - matches the working example
@@ -122,7 +124,7 @@ class MemuScreenCapture:
                 return self.open_from_b64(image_b64)
 
             except (PyMemucError, FileNotFoundError, InvalidImageError):
-                time.sleep(0.1)
+                interruptible_sleep(0.1)
 
 
 def verify_memu_installation():
@@ -135,12 +137,15 @@ def verify_memu_installation():
 
 
 class MemuEmulatorController(BaseEmulatorController):
-    def __init__(self, logger, render_mode: str = "directx"):
+    supported_platforms = [Platform.WINDOWS]
+
+    def __init__(self, logger, render_mode: str = "directx", debug_mode=False):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
         """
         self.logger = logger
+        self.debug_mode = debug_mode
         init_start_time = time.time()
         self.pmc = PyMemuc()
 
@@ -154,6 +159,8 @@ class MemuEmulatorController(BaseEmulatorController):
         self._initalize_valid_vm()
 
         self.logger.log(f"Initializing MemuEmulatorController took {str(time.time() - init_start_time)[:5]} seconds")
+        if self.debug_mode:
+            self.logger.log("You are using Debug MODE (NO RESTART, NO CONFIGURE)")
 
     def __del__(self):
         self.logger.log("Need to clear residual memu processes here")
@@ -175,16 +182,19 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("No existing valid vm!")
             vm_index = self.create()
             if vm_index != -1:
-                self._rename_vm("pyclashbot-96")
+                self._rename_vm("pyclashbot-126")
                 self.logger.log(f"[+] Created a new vm: {vm_index}")
                 break
 
         self.vm_index = vm_index
-        self.logger.log("Configuring the vm...")
-        self.configure()
 
-        self.logger.log("Booting the vm...")
-        self.restart()
+        if not self.debug_mode:
+            self.logger.log("Configuring the vm...")
+            self.configure()
+            self.logger.log("Booting the vm...")
+            self.restart()
+        else:
+            self.logger.log("Debug mode enabled - skipping configure and restart")
 
     def _set_screen_size(self, width, height):
         self.pmc.send_adb_command_vm(
@@ -197,7 +207,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
         for vm in vms:
             title = vm["title"]
-            if "pyclashbot-96" in title:
+            if "pyclashbot-126" in title:
                 self.vm_index = vm["index"]
                 return vm["index"]
 
@@ -386,7 +396,7 @@ class MemuEmulatorController(BaseEmulatorController):
                     self.logger.log(f"[LANGUAGE] Failed commands so far: {failed_commands}")
                     self.logger.log("[LANGUAGE] Sleeping for 0.33 seconds...")
 
-            time.sleep(0.33)
+            interruptible_sleep(0.33)
 
         language_end = time.time()
         if debug_language:
@@ -758,7 +768,7 @@ class MemuEmulatorController(BaseEmulatorController):
         self.logger.log("[+] Starting memu console at:" + str(console_path))
         process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
 
-        time.sleep(2)
+        interruptible_sleep(2)
 
         if process.pid is not None:
             self.logger.log("[+] Memu console started successfully.")
@@ -767,7 +777,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
     def create(self):
         self._start_memuc_console()
-        vm_index = self.pmc.create_vm(vm_version="96")
+        vm_index = self.pmc.create_vm(vm_version=ANDROID_VERSION)
         self.vm_index = vm_index
         return vm_index
 
@@ -847,7 +857,7 @@ class MemuEmulatorController(BaseEmulatorController):
                         self.logger.log(f"[ADS] Failed keypresses so far: {failed_keypresses}")
                         self.logger.log("[ADS] Sleeping for 1 second...")
 
-                time.sleep(1)
+                interruptible_sleep(1)
 
             ads_end = time.time()
             if debug_ads:
@@ -916,7 +926,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[SCREEN] Keypress duration: {keypress_end - keypress_start:.3f}s")
                 self.logger.log("[SCREEN] Waiting 2 seconds for screen to stabilize...")
 
-            time.sleep(2)  # Wait for screen to stabilize
+            interruptible_sleep(2)  # Wait for screen to stabilize
 
             # Step 2: Take screenshot
             if debug_screen:
@@ -1121,7 +1131,8 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("[RESTART] Logger status updated to: 'Configuring VM settings...'")
 
         config_start = time.time()
-        self.configure()  # This will do its own verbose configuration
+        if not self.debug_mode:
+            self.configure()  # This will do its own verbose configuration
         config_end = time.time()
 
         if debug_restart:
@@ -1294,7 +1305,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART]   wait_end_time: {clash_main_wait_start_time + clash_main_wait_timeout}")
                 self.logger.log("[RESTART] Initial 12-second wait before checking main menu...")
 
-            time.sleep(12)  # Initial wait
+            interruptible_sleep(12)  # Initial wait
 
             if debug_clash:
                 self.logger.log("[RESTART] Initial wait complete, starting main menu detection loop...")
@@ -1350,7 +1361,7 @@ class MemuEmulatorController(BaseEmulatorController):
                     self.logger.log(f"[RESTART] Deadspace click completed ({click_end - click_start:.3f}s)")
                     self.logger.log("[RESTART] Sleeping for 1 second before next iteration...")
 
-                time.sleep(1)
+                interruptible_sleep(1)
 
             # Timeout waiting for main menu
             final_elapsed_wait = time.time() - clash_main_wait_start_time
@@ -1403,7 +1414,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 return False
 
             self.pmc.stop_vm(vm_index=self.vm_index)
-            time.sleep(3)
+            interruptible_sleep(3)
 
         return True
 
@@ -1419,7 +1430,7 @@ class MemuEmulatorController(BaseEmulatorController):
                     vm_index=self.vm_index,
                     command=f"shell input tap {x_coord} {y_coord}",
                 )
-                time.sleep(interval)
+                interruptible_sleep(interval)
 
     def swipe(
         self,
@@ -1491,7 +1502,7 @@ class MemuEmulatorController(BaseEmulatorController):
         # Wait for the callback to be triggered
         self.installation_waiting = True
         while self.installation_waiting:
-            time.sleep(0.5)
+            interruptible_sleep(0.5)
 
         self.logger.log("[+] Installation confirmed, continuing...")
         return True
@@ -1526,4 +1537,4 @@ if __name__ == "__main__":
     memu = MemuEmulatorController(test_logger, render_mode="directx")
     while 1:
         test_logger.log("Running")
-        time.sleep(10)
+        interruptible_sleep(10)

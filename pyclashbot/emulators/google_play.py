@@ -4,17 +4,20 @@ import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
 from os.path import normpath
-from winreg import HKEY_LOCAL_MACHINE, ConnectRegistry, OpenKey, QueryValueEx
 
-import pygetwindow as gw
+import psutil
 
 DEBUG = False
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.cancellation import interruptible_sleep
+from pyclashbot.utils.platform import Platform
 
 
 class GooglePlayEmulatorController(AdbBasedController):
+    supported_platforms = [Platform.WINDOWS]
+
     def __init__(self, logger, render_settings: dict = {}):
         self.logger = logger
         # clear existing stuff
@@ -63,7 +66,7 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         while self.restart() is False:
             print("Restart failed, trying again...")
-            time.sleep(2)
+            interruptible_sleep(2)
 
     def _get_settings_configuration(self):
         """
@@ -176,7 +179,7 @@ class GooglePlayEmulatorController(AdbBasedController):
             print(f"[CONNECT DEBUG] Connect result: {connect_result.stdout}")
             print(f"[CONNECT DEBUG] Connect return code: {connect_result.returncode}")
 
-        time.sleep(1)
+        interruptible_sleep(1)
 
         if DEBUG:
             print("[CONNECT DEBUG] Checking device list...")
@@ -209,6 +212,8 @@ class GooglePlayEmulatorController(AdbBasedController):
         :return: The normalized installation path
         :raises FileNotFoundError: If the emulator is not found
         """
+        import winreg
+
         # C:\Program Files\Google\Play Games Developer Emulator\Bootstrapper.exe
         registry_keys = [
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GooglePlayGamesDeveloperEmulator",
@@ -217,8 +222,8 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         for key in registry_keys:
             with suppress(FileNotFoundError):
-                with OpenKey(ConnectRegistry(None, HKEY_LOCAL_MACHINE), key) as reg_key:
-                    install_path = QueryValueEx(reg_key, "InstallLocation")[0]
+                with winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE), key) as reg_key:
+                    install_path = winreg.QueryValueEx(reg_key, "InstallLocation")[0]
                     folder_path = normpath(install_path)
                     if os.path.exists(folder_path) and os.path.isdir(folder_path):
                         return folder_path
@@ -291,13 +296,37 @@ class GooglePlayEmulatorController(AdbBasedController):
         """
         raise NotImplementedError
 
-    def _is_emulator_running(self):
-        result = subprocess.run("tasklist", shell=True, capture_output=True, text=True, check=False)
-        return "crosvm.exe" in result.stdout
+    def _list_process_pids(self, names: set[str]) -> list[int]:
+        """Return PIDs for any processes whose image name matches the provided set."""
+        targets = {name.lower() for name in names}
+        pids: list[int] = []
+        for proc in psutil.process_iter(attrs=["pid", "name"]):
+            try:
+                name = (proc.info.get("name") or "").lower()
+                if name in targets:
+                    pids.append(proc.info["pid"])
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return pids
 
-    def _find_window(self, title_keyword):
-        windows = gw.getWindowsWithTitle(title_keyword)
-        return windows[0] if windows else None
+    def _is_emulator_running(self):
+        # Consider emulator running once the core VM process is present.
+        process_names = {"crosvm.exe"}
+        return bool(self._list_process_pids(process_names))
+
+    def _wait_for_adb_ready(self, timeout: float = 120.0) -> bool:
+        """Wait for the emulator to accept ADB connections, retrying until timeout."""
+        start = time.time()
+        while time.time() - start < timeout:
+            # Query adb devices directly to avoid relying on intermediate state.
+            result = self.adb("devices")
+            if result.stdout:
+                for line in result.stdout.strip().splitlines():
+                    if "localhost:6520" in line and "device" in line:
+                        return True
+            self._connect()
+            interruptible_sleep(3)
+        return False
 
     def _is_connected(self):
         """Returns True if emulator is connected and not offline."""
@@ -345,27 +374,22 @@ class GooglePlayEmulatorController(AdbBasedController):
             self.start()
             print("Waiting for google play emulator to start...")
             self.start()
-            time.sleep(0.3)
+            interruptible_sleep(0.3)
 
-        # wait for window to appear
-        self.logger.change_status("Waiting for Google Play emulator window...")
-        while self._find_window(self.google_play_emulator_process_name) is None:
-            print("Waiting for emulator window to appear...")
-            time.sleep(0.3)
+        # wait for adb readiness (locale-agnostic) once the VM process is up
+        self.logger.change_status("Waiting for Google Play emulator to finish starting...")
+        if not self._wait_for_adb_ready(timeout=120):
+            self.logger.change_status("Timed out waiting for Google Play emulator ADB to become ready.")
+            return False
 
-        # reconnect to adb
-        self.logger.change_status("Establishing ADB connection to Google Play emulator...")
-        while not self._is_connected():
-            self._connect()
-            time.sleep(20)
-
-        time.sleep(10)
+        # Allow emulator services/UI to settle before manipulating display or launching the app.
+        interruptible_sleep(5)
 
         self.logger.change_status(f"Setting emulator screen size to {self.expected_dims}...")
         for i in range(3):
             print(f"Setting adb screen size to {self.expected_dims}")
             self._set_screen_size(*self.expected_dims)
-            time.sleep(1)
+            interruptible_sleep(1)
 
         # validate image size
         self.logger.change_status("Validating Google Play emulator screen dimensions...")
@@ -379,7 +403,7 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         # boot clash
         self.logger.change_status("Launching Clash Royale application...")
-        time.sleep(10)
+        interruptible_sleep(10)
         clash_royale_name = "com.supercell.clashroyale"
         start_app_count = 3
         for i in range(start_app_count):
@@ -389,14 +413,14 @@ class GooglePlayEmulatorController(AdbBasedController):
                 # App not installed, start_app triggered the wait.
                 # We just wait for it to return, then the loop will retry.
                 self.logger.log("App not installed. Waiting for user...")
-            time.sleep(1)
+            interruptible_sleep(1)
 
         # wait for clash main to appear
         self.logger.change_status("Waiting for Clash Royale main menu to load...")
         print("Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
-        time.sleep(12)
+        interruptible_sleep(12)
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
@@ -422,7 +446,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         Starts the emulator using the Windows shell to open the shortcut.
         """
         os.startfile(self.emulator_executable_path)
-        time.sleep(5)
+        interruptible_sleep(5)
 
     def stop(self):
         """

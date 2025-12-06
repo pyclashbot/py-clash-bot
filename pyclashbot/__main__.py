@@ -2,23 +2,47 @@
 
 from __future__ import annotations
 
+import locale
+import multiprocessing as mp
 import os
 import subprocess
+from multiprocessing import Event, Queue
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
 
-from pyclashbot.bot.worker import WorkerThread
+_original_setlocale = locale.setlocale
+
+
+def _setlocale_safe(category: int, loc: str | None = None) -> str:
+    """Fallback to the C locale if the requested locale is unsupported."""
+    try:
+        return _original_setlocale(category, loc)
+    except locale.Error:
+        return _original_setlocale(category, "C")
+
+
+locale.setlocale = _setlocale_safe  # type: ignore[assignment]
+
+try:
+    # Force a portable locale so ttkbootstrap does not raise unsupported locale errors on non-English systems.
+    locale.setlocale(locale.LC_ALL, "C")
+except locale.Error:
+    # If even the C locale is unavailable, continue with the default to avoid crashing on import.
+    pass
+
+from pyclashbot.bot.worker import WorkerProcess
+from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
+from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.platform import is_macos
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    from pyclashbot.utils.thread import StoppableThread
 
 
 initalize_pylogging()
@@ -63,18 +87,21 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         job_dictionary["bluestacks_render_mode"] = "dx"
     elif values.get(UIField.BS_RENDERER_VK.value):
         job_dictionary["bluestacks_render_mode"] = "vlcn"
-    else:
+    elif values.get(UIField.BS_RENDERER_GL.value):
         job_dictionary["bluestacks_render_mode"] = "gl"
+    else:
+        # Default: Vulkan on macOS, OpenGL on Windows
+        job_dictionary["bluestacks_render_mode"] = "vlcn" if is_macos() else "gl"
 
     # Emulator selection
     if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
-        job_dictionary["emulator"] = "Google Play"
+        job_dictionary["emulator"] = EmulatorType.GOOGLE_PLAY
     elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
-        job_dictionary["emulator"] = "BlueStacks 5"
+        job_dictionary["emulator"] = EmulatorType.BLUESTACKS
     elif values.get(UIField.ADB_TOGGLE.value):
-        job_dictionary["emulator"] = "ADB Device"
+        job_dictionary["emulator"] = EmulatorType.ADB
     else:
-        job_dictionary["emulator"] = "MEmu"
+        job_dictionary["emulator"] = EmulatorType.MEMU
 
     job_dictionary[UIField.ADB_SERIAL.value] = values.get(UIField.ADB_SERIAL.value)
 
@@ -101,8 +128,14 @@ def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str
     return loaded
 
 
-def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any]) -> WorkerThread | None:
-    """Start the worker thread with the current configuration."""
+def start_button_event(
+    logger: Logger,
+    ui: PyClashBotUI,
+    values: dict[str, Any],
+    stats_queue: Queue,
+    shutdown_event: Event,
+) -> WorkerProcess | None:
+    """Start the worker process with the current configuration."""
     job_dictionary = make_job_dictionary(values)
 
     if has_no_jobs_selected(job_dictionary):
@@ -110,7 +143,7 @@ def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any])
         logger.log("No jobs are selected!")
         return None
 
-    if job_dictionary.get("emulator") == "ADB Device":
+    if job_dictionary.get("emulator") == EmulatorType.ADB:
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
         connected_devices = AdbController.list_devices()
         if not device_serial or device_serial not in connected_devices:
@@ -122,19 +155,17 @@ def start_button_event(logger: Logger, ui: PyClashBotUI, values: dict[str, Any])
     save_current_settings(values)
     logger.log_job_dictionary(job_dictionary)
 
-    ui.set_running_state(True)
     ui.notebook.select(ui.stats_tab)
 
-    thread = WorkerThread(logger, job_dictionary)
-    thread.start()
-    return thread
+    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event)
+    process.start()
+    return process
 
 
-def stop_button_event(logger: Logger, ui: PyClashBotUI, thread: StoppableThread) -> None:
-    """Stop the worker thread."""
+def stop_button_event(logger: Logger, shutdown_event: Event) -> None:
+    """Signal the worker process to stop gracefully."""
     logger.change_status("Stopping")
-    ui.stop_btn.configure(state="disabled")
-    thread.shutdown(kill=False)
+    shutdown_event.set()
 
 
 def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
@@ -148,24 +179,30 @@ def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
     ui.append_log(status_text)
 
 
-def exit_button_event(thread: StoppableThread | None) -> None:
-    if thread is not None:
-        thread.shutdown(kill=True)
+def exit_button_event(process: WorkerProcess | None, shutdown_event: Event | None) -> None:
+    """Force stop the worker process on application exit."""
+    if shutdown_event is not None:
+        shutdown_event.set()
+    if process is not None and process.is_alive():
+        process.terminate()
+        process.join(timeout=1)
+        if process.is_alive():
+            process.kill()
 
 
-def handle_thread_finished(
+def handle_process_finished(
     ui: PyClashBotUI,
-    thread: WorkerThread | None,
+    process: WorkerProcess | None,
     logger: Logger,
-) -> tuple[WorkerThread | None, Logger]:
-    if thread is not None and not thread.is_alive():
-        ui.set_running_state(False)
-        if getattr(thread.logger, "errored", False):
-            logger = thread.logger
-        else:
-            logger = Logger(timed=False)
-            thread = None
-    return thread, logger
+) -> tuple[WorkerProcess | None, Logger]:
+    """Check if the worker process has finished and reset UI state if so."""
+    if process is not None and not process.is_alive():
+        ui.set_button_state("idle")
+        # Reset to a fresh logger for the next run
+        logger = Logger(timed=False)
+        logger.change_status("Idle")
+        process = None
+    return process, logger
 
 
 def open_recordings_folder() -> None:
@@ -196,10 +233,8 @@ class BotApplication:
 
     def __init__(self, settings: dict[str, Any] | None = None) -> None:
         self.ui = PyClashBotUI()
-        self.ui.start_btn.configure(command=self._on_start)
-        self.ui.stop_btn.configure(command=self._on_stop)
+        self.ui.main_btn.configure(command=self._on_main_button)
         self.ui.register_config_callback(self._on_config_change)
-        self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
         self.ui.adb_refresh_btn.configure(command=self._on_adb_refresh)
@@ -208,8 +243,15 @@ class BotApplication:
         self.ui.adb_set_size_btn.configure(command=self._on_adb_set_size)
         self.ui.adb_reset_size_btn.configure(command=self._on_adb_reset_size)
 
-        self.thread: WorkerThread | None = None
+        # Multiprocessing primitives
+        self.process: WorkerProcess | None = None
+        self.stats_queue: Queue | None = None
+        self.shutdown_event: Event | None = None
+        self.last_stats: dict[str, Any] = {}
+
         self.logger = Logger(timed=False)
+        self.discord_rpc = DiscordRPCManager()
+        self.discord_rpc_enabled = False
         self._closing = False
         self._suppress_persist = True
         self.current_values = self.ui.get_all_values()
@@ -217,27 +259,61 @@ class BotApplication:
         loaded = load_settings(settings, self.ui)
         if loaded:
             self.current_values = self.ui.get_all_values()
+            self.discord_rpc_enabled = bool(self.current_values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
         self._suppress_persist = False
 
-        self.ui.set_running_state(False)
+        self.ui.set_button_state("idle")
         self._poll()
 
+    def _on_main_button(self) -> None:
+        """Handle the unified Start/Stop/Force Stop button."""
+        state = self.ui.get_button_state()
+        if state == "idle":
+            self._on_start()
+        elif state == "running":
+            self._on_stop()
+        elif state == "stopping":
+            self._on_force_stop()
+
     def _on_start(self) -> None:
-        if self.thread is not None and self.thread.is_alive():
+        if self.process is not None and self.process.is_alive():
             return
         values = self.ui.get_all_values()
+
+        # Create fresh multiprocessing primitives for each run
+        self.stats_queue = mp.Queue(maxsize=100)
+        self.shutdown_event = mp.Event()
+        self.last_stats = {}
+
         new_logger = Logger(timed=True)
-        thread = start_button_event(new_logger, self.ui, values)
-        if thread is not None:
+        process = start_button_event(new_logger, self.ui, values, self.stats_queue, self.shutdown_event)
+        if process is not None:
             self.logger = new_logger
-            self.thread = thread
+            self.process = process
             self.current_values = values.copy()
+            if self.discord_rpc_enabled:
+                self.discord_rpc.enable()
+            self.ui.set_button_state("running")
         else:
-            self.ui.set_running_state(False)
+            self.ui.set_button_state("idle")
 
     def _on_stop(self) -> None:
-        if self.thread is not None:
-            stop_button_event(self.logger, self.ui, self.thread)
+        if self.shutdown_event is not None:
+            stop_button_event(self.logger, self.shutdown_event)
+            # Change to Force Stop button in case graceful shutdown takes too long
+            self.ui.set_button_state("stopping")
+
+    def _on_force_stop(self) -> None:
+        """Force kill the worker process using SIGTERM/SIGKILL."""
+        if self.process is not None and self.process.is_alive():
+            self.logger.change_status("Force stopping bot...")
+            self.process.terminate()  # SIGTERM
+            self.process.join(timeout=1)
+            if self.process.is_alive():
+                self.process.kill()  # SIGKILL
+            self.process = None
+            self.logger.change_status("Idle")
+            self.ui.set_button_state("idle")
 
     def _on_config_change(self, values: dict[str, Any]) -> None:
         changed = {key for key, value in values.items() if self.current_values.get(key) != value}
@@ -254,6 +330,7 @@ class BotApplication:
                 self.ui.set_all_values({cycle_toggle: False})
                 values[cycle_toggle] = False
         self.current_values = values.copy()
+        self.discord_rpc_enabled = bool(values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
         if not self._suppress_persist:
             save_current_settings(values)
 
@@ -273,8 +350,23 @@ class BotApplication:
     def _poll(self) -> None:
         if self._closing:
             return
-        self.thread, self.logger = handle_thread_finished(self.ui, self.thread, self.logger)
+
+        # Read all available stats from the queue
+        if self.stats_queue is not None:
+            try:
+                while True:
+                    stats = self.stats_queue.get_nowait()
+                    self.last_stats = stats
+                    # Update local logger with stats from worker process
+                    if "current_status" in stats:
+                        self.logger.current_status = stats["current_status"]
+                    self.logger.stats.update(stats)
+            except Exception:
+                pass  # Queue empty
+
+        self.process, self.logger = handle_process_finished(self.ui, self.process, self.logger)
         update_layout(self.ui, self.logger)
+        self.discord_rpc.sync(self.discord_rpc_enabled, self.logger.get_stats())
         if hasattr(self.logger, "action_needed") and self.logger.action_needed:
             action_text = getattr(self.logger, "action_text", "Continue")
             self.ui.show_action_button(action_text, self._dispatch_action)
@@ -282,15 +374,13 @@ class BotApplication:
             self.ui.hide_action_button()
         self.ui.after(100, self._poll)
 
-    def _on_open_recordings_clicked(self) -> None:
-        open_recordings_folder()
-
     def _on_open_logs_clicked(self) -> None:
         open_logs_folder()
 
     def _on_close(self) -> None:
         self._closing = True
-        exit_button_event(self.thread)
+        exit_button_event(self.process, self.shutdown_event)
+        self.discord_rpc.disable()
         self.ui.destroy()
 
     def _run_adb_command(self, serial: str, command: str):

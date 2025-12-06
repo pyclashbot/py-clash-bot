@@ -14,6 +14,7 @@ from pyclashbot.interface.enums import (
     StatField,
     UIField,
 )
+from pyclashbot.utils.platform import is_macos
 
 
 @dataclass
@@ -113,10 +114,11 @@ MEMU_SETTINGS = [
 ]
 
 # BlueStacks specific renderer settings
+# DirectX is default on Windows, Vulkan on macOS (DirectX not available on macOS)
 BLUESTACKS_SETTINGS = [
     RadioConfig(UIField.BS_RENDERER_GL, "OpenGL", "bs_render_mode_radio"),
-    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=True),
-    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio"),
+    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=not is_macos()),
+    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio", default=is_macos()),
 ]
 
 EMULATOR_CHOICE = [
@@ -141,7 +143,7 @@ USER_CONFIG_KEYS = (
     [job.key.value for job in JOBS]
     + [radio.key.value for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key.value for combo in GOOGLE_PLAY_SETTINGS]
-    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value, UIField.COMPACT_MODE_TOGGLE.value]  # Data settings
+    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value]  # Data settings
     + [
         UIField.DECK_NUMBER_SELECTION.value,
         UIField.MAX_DECK_SELECTION.value,

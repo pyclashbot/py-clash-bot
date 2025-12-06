@@ -5,14 +5,14 @@ import pickle
 import threading
 from io import UnsupportedOperation
 from os import makedirs, remove
-from os.path import exists, expandvars, join
+from os.path import exists, join
 from typing import Any
 
-# a module to cache and load program data to and from the disk
+from pyclashbot.utils.platform import get_app_data_dir
 
 MODULE_NAME = "py-clash-bot"
 
-top_level = join(expandvars("%appdata%"), MODULE_NAME)
+top_level = get_app_data_dir(MODULE_NAME)
 
 
 class FileCache:

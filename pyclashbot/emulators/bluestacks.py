@@ -7,15 +7,11 @@ import subprocess
 import time
 from contextlib import suppress
 from os.path import normpath
-from winreg import (
-    HKEY_LOCAL_MACHINE,
-    ConnectRegistry,
-    OpenKey,
-    QueryValueEx,
-)
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.utils.cancellation import interruptible_sleep
+from pyclashbot.utils.platform import Platform, is_macos
 
 DEBUG = False
 
@@ -27,6 +23,8 @@ class BlueStacksEmulatorController(AdbBasedController):
     - All ADB device commands are scoped with -s 127.0.0.1:<instance_port>.
     - Start/stop only this instance. Allows for future multi instance implementation for farming multiple accounts.
     """
+
+    supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
     def __init__(self, logger, render_settings: dict | None = None):
         self.logger = logger
@@ -50,7 +48,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.stop()
         while self._is_this_instance_running():  # Because Windows: I'm closing, also Windows: isn't closing
             self.stop()
-            time.sleep(1)
+            interruptible_sleep(1)
 
         # Discover install
         install_base = self._find_install_location()
@@ -58,8 +56,13 @@ class BlueStacksEmulatorController(AdbBasedController):
         if DEBUG:
             print(f"[Bluestacks 5] InstallDir: {install_base}")
 
-        self.emulator_executable_path = os.path.join(install_base, "HD-Player.exe")
-        self.adb_path = os.path.join(install_base, "HD-Adb.exe")
+        # Platform-aware executable names
+        if is_macos():
+            self.emulator_executable_path = os.path.join(install_base, "BlueStacks")
+            self.adb_path = os.path.join(install_base, "hd-adb")
+        else:
+            self.emulator_executable_path = os.path.join(install_base, "HD-Player.exe")
+            self.adb_path = os.path.join(install_base, "HD-Adb.exe")
         if DEBUG:
             print(f"[Bluestacks 5] HD-Player: {self.emulator_executable_path}")
             print(f"[Bluestacks 5] HD-Adb: {self.adb_path}")
@@ -67,30 +70,22 @@ class BlueStacksEmulatorController(AdbBasedController):
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
 
-        # Config paths from registry DataDir
-        data_dir = self._get_bluestacks_registry_value("DataDir")
-        dd = normpath(str(data_dir)) if data_dir else None
-        if not dd:
-            raise FileNotFoundError("BlueStacks DataDir not found in registry.")
-
-        self.bs_conf_path = os.path.join(os.path.dirname(dd), "bluestacks.conf")
-        self.mim_meta_path = os.path.join(dd, "UserData", "MimMetaData.json")
+        # Platform-aware config paths
+        self.bs_conf_path, self.mim_meta_path = self._find_config_paths()
         if not os.path.isfile(self.mim_meta_path):
             print(
                 f"[Bluestacks 5] MimMetaData.json not found at {self.mim_meta_path}. Launching Multi-Instance Manager to create it..."
             )
-            with suppress(Exception):
-                os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
+            self._open_multi_instance_manager()
             deadline = time.time() + 10
             while time.time() < deadline:
                 if os.path.isfile(self.mim_meta_path):
                     print("[Bluestacks 5] MimMetaData.json detected.")
                     break
-                time.sleep(0.5)
+                interruptible_sleep(0.5)
             else:
                 raise FileNotFoundError("[Bluestacks 5] MimMetaData.json not created within 10 seconds.")
         if DEBUG:
-            print(f"[Bluestacks 5] DataDir: {dd}")
             print(f"[Bluestacks 5] bs_conf_path: {self.bs_conf_path}")
             print(f"[Bluestacks 5] mim_meta_path: {self.mim_meta_path}")
 
@@ -106,10 +101,20 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Boot flow
         while self.restart() is False:
             print("[BlueStacks 5] Restart failed, retrying...")
-            time.sleep(2)
+            interruptible_sleep(2)
 
     def _find_install_location(self) -> str:
-        """Locate BlueStacks 5 installation folder from registry."""
+        """Locate BlueStacks 5 installation folder."""
+        if is_macos():
+            # macOS: Check standard app location
+            app_path = "/Applications/BlueStacks.app"
+            macos_dir = os.path.join(app_path, "Contents", "MacOS")
+            # macOS uses "BlueStacks" as the main executable, not "HD-Player"
+            if os.path.isdir(macos_dir) and os.path.isfile(os.path.join(macos_dir, "BlueStacks")):
+                return macos_dir
+            raise FileNotFoundError("BlueStacks.app not found in /Applications")
+
+        # Windows: Registry lookup
         install_dir = self._get_bluestacks_registry_value("InstallDir")
         if not install_dir:
             raise FileNotFoundError("BlueStacks 5 installation not found (InstallDir missing).")
@@ -120,15 +125,35 @@ class BlueStacksEmulatorController(AdbBasedController):
             "BlueStacks 5 installation not found (HD-Player.exe missing)."
         )  # Seriously wtf happened better reinstall to fix
 
+    def _find_config_paths(self) -> tuple[str, str]:
+        """Return (bluestacks_conf_path, mim_meta_path) for the current platform."""
+        if is_macos():
+            base = "/Users/Shared/Library/Application Support/BlueStacks"
+            bs_conf = os.path.join(base, "bluestacks.conf")
+            # macOS stores MimMetaData.json under Engine/UserData
+            mim_meta = os.path.join(base, "Engine", "UserData", "MimMetaData.json")
+            return bs_conf, mim_meta
+
+        # Windows: Use registry DataDir
+        data_dir = self._get_bluestacks_registry_value("DataDir")
+        dd = normpath(str(data_dir)) if data_dir else None
+        if not dd:
+            raise FileNotFoundError("BlueStacks DataDir not found in registry.")
+        bs_conf = os.path.join(os.path.dirname(dd), "bluestacks.conf")
+        mim_meta = os.path.join(dd, "UserData", "MimMetaData.json")
+        return bs_conf, mim_meta
+
     def _get_bluestacks_registry_value(self, value_name: str) -> str | None:
         """Read a BlueStacks_nxt registry value from HKLM."""
+        import winreg
+
         reg_paths = [r"SOFTWARE\BlueStacks_nxt"]
         with suppress(FileNotFoundError, OSError):
-            reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
+            reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
             for subkey in reg_paths:
                 with suppress(FileNotFoundError, OSError):
-                    with OpenKey(reg, subkey) as k:
-                        val = QueryValueEx(k, value_name)[0]
+                    with winreg.OpenKey(reg, subkey) as k:
+                        val = winreg.QueryValueEx(k, value_name)[0]
                         if isinstance(val, str) and val.strip():
                             return val
         return None
@@ -166,11 +191,13 @@ class BlueStacksEmulatorController(AdbBasedController):
             # bad solution but fuck it, it works
         return new
 
-    def _list_pie64_internals(self, conf_text: str) -> list[str]:
+    def _list_instance_internals(self, conf_text: str) -> list[str]:
+        """List all instance internal names (Pie64, Tiramisu64, etc)."""
         names = set()
-        for m in re.finditer(r"^bst\.instance\.(Pie64(?:_\d+)?)\.", conf_text, flags=re.M):
+        # Match any instance pattern: Pie64, Pie64_1, Tiramisu64, Tiramisu64_2, etc.
+        for m in re.finditer(r"^bst\.instance\.([A-Za-z0-9]+(?:_\d+)?)\.", conf_text, flags=re.M):
             names.add(m.group(1))
-        # change this and then spend an afternoon wondering why nothing starts
+        # Sort: numbered instances first, then base instances
         return sorted(
             names, key=lambda s: (0 if "_" in s else 1, int(s.split("_")[1]) if "_" in s else -1), reverse=True
         )
@@ -218,7 +245,9 @@ class BlueStacksEmulatorController(AdbBasedController):
             "dx": "dx",
             "vlcn": "vlcn",
         }
-        code = alias.get(s, "dx")
+        # Default to Vulkan on macOS (DirectX not available), DirectX on Windows
+        default = "vlcn" if is_macos() else "dx"
+        code = alias.get(s, default)
         if DEBUG:
             print(f"[Bluestacks 5] Renderer requested='{s}' normalized='{code}'")
         return code
@@ -257,10 +286,21 @@ class BlueStacksEmulatorController(AdbBasedController):
             json.dump(data, f, indent=4)
 
     def _close_multi_instance_manager(self) -> None:
-        """Close BlueStacks Multi-Instance Manager if it's open after renaiming to update instance name in it."""
-        subprocess.run(
-            'taskkill /IM "HD-MultiInstanceManager.exe" /F', shell=True, capture_output=True, text=True, check=False
-        )
+        """Close BlueStacks Multi-Instance Manager if it's open after renaming to update instance name in it."""
+        if is_macos():
+            subprocess.run(["pkill", "-f", "BlueStacksMIM"], check=False)
+        else:
+            subprocess.run(
+                'taskkill /IM "HD-MultiInstanceManager.exe" /F', shell=True, capture_output=True, text=True, check=False
+            )
+
+    def _open_multi_instance_manager(self) -> None:
+        """Open BlueStacks Multi-Instance Manager."""
+        if is_macos():
+            subprocess.Popen(["open", "/Applications/BlueStacksMIM.app"])
+        else:
+            with suppress(Exception):
+                os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
 
     def _reuse_and_rename_internal(self, internal: str) -> bool:
         conf = self._read_text(self.bs_conf_path)
@@ -290,18 +330,19 @@ class BlueStacksEmulatorController(AdbBasedController):
             self._close_multi_instance_manager()
         return True
 
-    def _pick_unlinked_pie64(self) -> str | None:
+    def _pick_unlinked_instance(self) -> str | None:
+        """Find an instance without Google account logins (clean instance)."""
         conf = self._read_text(self.bs_conf_path)
         if not conf:
             return None
-        pie_list = self._list_pie64_internals(conf)
-        if not pie_list:
+        instance_list = self._list_instance_internals(conf)
+        if not instance_list:
             return None
         ga_re = re.compile(r'^bst\.instance\.([^.=]+)\.google_account_logins="(.*)"\s*$', re.M)
         accounts = {m.group(1): m.group(2) for m in ga_re.finditer(conf)}
-        for internal in pie_list:
+        for internal in instance_list:
             if accounts.get(internal, "").strip() == "":
-                return internal  # hoping it won't fuck up someones VM
+                return internal
         return None
 
     def _ensure_managed_instance(self):
@@ -314,27 +355,26 @@ class BlueStacksEmulatorController(AdbBasedController):
                 self.instance_port = self._read_instance_adb_port(self.bs_conf_path, self.internal_name)
             return
 
-        # Try to reuse an existing "clean" Pie64 instance
-        internal = self._pick_unlinked_pie64()
+        # Try to reuse an existing clean instance (without Google login)
+        internal = self._pick_unlinked_instance()
         if internal and self._reuse_and_rename_internal(internal):
             return
 
-        # Open Multi-Instance Manager and prompt user to create a clean Pie64.
+        # Open Multi-Instance Manager and prompt user to create a clean instance.
         while True:
             self._request_instance_retry = False
             self.logger.show_temporary_action(
-                message="Open BlueStacks Multi-Instance Manager and create a fresh Pie64 instance wihtout logging into any google accounts, then click Retry.",
+                message="Open BlueStacks Multi-Instance Manager and create a fresh instance without logging into any Google accounts, then click Retry.",
                 action_text="Retry",
                 callback=self._request_instance_creation_retry,
             )
-            self.logger.log("[BlueStacks 5] No clean Pie64 instance found. Opening Multi-Instance Manager...")
-            with suppress(Exception):
-                os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
+            self.logger.log("[BlueStacks 5] No clean instance found. Opening Multi-Instance Manager...")
+            self._open_multi_instance_manager()
 
             # Wait for user action via Retry callback
             self.instance_creation_waiting = True
             while getattr(self, "instance_creation_waiting", False):
-                time.sleep(0.5)
+                interruptible_sleep(0.5)
 
             # User clicked Retry check again for a clean instance outside the callback
             if getattr(self, "_request_instance_retry", False):
@@ -349,19 +389,19 @@ class BlueStacksEmulatorController(AdbBasedController):
                         self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
                         with suppress(Exception):
                             self._close_multi_instance_manager()
-                        self.logger.change_status("Clean Pie64 instance detected - continuing...")
+                        self.logger.change_status("Clean instance detected - continuing...")
                         return
 
-                # Otherwise try to reuse an unlinked Pie64
-                internal = self._pick_unlinked_pie64()
+                # Otherwise try to reuse an unlinked instance
+                internal = self._pick_unlinked_instance()
                 if internal and self._reuse_and_rename_internal(internal):
-                    self.logger.change_status("Prepared clean Pie64 instance - continuing...")
+                    self.logger.change_status("Prepared clean instance - continuing...")
                     return
 
-                self.logger.log("[BlueStacks 5] Still no clean Pie64 instance. Please try again.")
+                self.logger.log("[BlueStacks 5] Still no clean instance found. Please try again.")
 
     def _request_instance_creation_retry(self):
-        self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean Pie64 instance")
+        self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean instance")
         self._request_instance_retry = True
         self.instance_creation_waiting = False
 
@@ -500,7 +540,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             return False
         self._reset_adb_server()
         self.adb_server(f"disconnect {self.device_serial}")
-        time.sleep(0.2)
+        interruptible_sleep(0.2)
         self.adb_server(f"connect {self.device_serial}")
         state = self.adb("get-state")
         ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
@@ -508,13 +548,28 @@ class BlueStacksEmulatorController(AdbBasedController):
             self._refresh_instance_port()
             if self.device_serial:
                 self.adb_server(f"disconnect {self.device_serial}")
-                time.sleep(0.2)
+                interruptible_sleep(0.2)
                 self.adb_server(f"connect {self.device_serial}")
                 state = self.adb("get-state")
                 ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
         return ok  # False means ADB is in a mood again
 
     def _is_this_instance_running(self) -> bool:
+        if is_macos():
+            # Check for BlueStacks process with instance argument
+            try:
+                res = subprocess.run(
+                    ["pgrep", "-fl", "BlueStacks"],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                # Parse output for our instance
+                return self.internal_name is not None and self.internal_name in (res.stdout or "")
+            except Exception:
+                return False
+
+        # Windows: tasklist CSV parsing
         title = self.instance_name
         try:
             res = subprocess.run(
@@ -544,23 +599,39 @@ class BlueStacksEmulatorController(AdbBasedController):
         with suppress(Exception):
             self._enforce_instance_config()
 
-        args = []
-        if self.internal_name:
-            args = ["--instance", self.internal_name]
-        cmd = '"' + self.emulator_executable_path + '"' + (" " + " ".join(args) if args else "")
-        subprocess.Popen(cmd, shell=True)
-        time.sleep(5)
+        if is_macos():
+            # Launch via direct execution
+            args = [self.emulator_executable_path]
+            if self.internal_name:
+                args.extend(["--instance", self.internal_name])
+            subprocess.Popen(args)
+        else:
+            # Windows
+            args = []
+            if self.internal_name:
+                args = ["--instance", self.internal_name]
+            cmd = '"' + self.emulator_executable_path + '"' + (" " + " ".join(args) if args else "")
+            subprocess.Popen(cmd, shell=True)
+        interruptible_sleep(5)
 
     def stop(self, display_name: str | None = None):
-        """Stop only this instance using the window title match."""
-        title = display_name or self.instance_name
-        subprocess.run(
-            f'taskkill /fi "WINDOWTITLE eq {title}" /IM "HD-Player.exe" /F',
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        """Stop only this instance."""
+        if is_macos():
+            # Kill BlueStacks processes matching our instance
+            if self.internal_name:
+                subprocess.run(["pkill", "-f", f"BlueStacks.*{self.internal_name}"], check=False)
+            else:
+                subprocess.run(["pkill", "-f", "BlueStacks"], check=False)
+        else:
+            # Windows: Stop using window title match
+            title = display_name or self.instance_name
+            subprocess.run(
+                f'taskkill /fi "WINDOWTITLE eq {title}" /IM "HD-Player.exe" /F',
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
 
     def restart(self) -> bool:
         start_ts = time.time()
@@ -579,7 +650,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             if time.time() - t0 > boot_timeout:
                 self.logger.change_status("Timeout waiting for pyclashbot instance to start - retrying...")
                 return False
-            time.sleep(0.5)
+            interruptible_sleep(0.5)
 
         # Refresh port after boot
         self._refresh_instance_port()
@@ -594,7 +665,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             if time.time() - t1 > 60:
                 self.logger.change_status("Failed to connect ADB to BlueStacks 5 - retrying...")
                 return False  # if this makes issues big problems
-            time.sleep(1)
+            interruptible_sleep(1)
 
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
@@ -612,7 +683,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             # re-trigger the app start, because the original call failed.
             self.start_app(clash_pkg)
 
-        time.sleep(5)
+        interruptible_sleep(5)
 
         # Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")

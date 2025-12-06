@@ -21,12 +21,13 @@ from pyclashbot.bot.nav import (
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.recorder import save_image, save_play, save_win_loss
+from pyclashbot.bot.recorder import save_play, save_win_loss
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
     find_image,
     pixel_is_equal,
 )
+from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
@@ -119,7 +120,7 @@ def do_fight_state(
         elif fight_mode_choosed == "Classic 2v2":
             logger.increment_classic_2v2_fights()
 
-    time.sleep(10)
+    interruptible_sleep(10)
     return True
 
 
@@ -173,13 +174,15 @@ def start_fight(emulator, logger, mode) -> bool:
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(203, 487)
+    logger.log("Clicked Start button at (203, 487)")
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
         logger.change_status("Its 2v2 mode so we gotta click the quickmatch popup option!")
-        time.sleep(3)
+        interruptible_sleep(3)
         quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
+        logger.log(f"Clicked Quickmatch button at {quick_match_button_coord}")
 
     return True
 
@@ -190,7 +193,7 @@ def send_emote(emulator, logger: Logger):
 
     # click emote button
     emulator.click(EMOTE_BUTTON_COORD[0], EMOTE_BUTTON_COORD[1])
-    time.sleep(0.33)
+    interruptible_sleep(0.33)
 
     emote_coord = random.choice(EMOTE_ICON_COORDS)
     emulator.click(emote_coord[0], emote_coord[1])
@@ -214,10 +217,10 @@ def mag_dump(emulator, logger):
         # record play here
 
         emulator.click(card_coord[0], card_coord[1])
-        time.sleep(0.1)
+        interruptible_sleep(0.1)
 
         emulator.click(play_coord[0], play_coord[1])
-        time.sleep(0.1)
+        interruptible_sleep(0.1)
 
 
 def wait_for_elixer(
@@ -232,9 +235,7 @@ def wait_for_elixer(
     start_time = time.time()
 
     while not count_elixer(emulator, random_elixer_wait):
-        if recording_flag:
-            save_image(emulator.screenshot())
-
+        # debug screenshot saving removed from production
         wait_time = time.time() - start_time
         logger.change_status(
             f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
@@ -294,7 +295,7 @@ def end_fight_state(
         return False
 
     logger.log("Made it to clash main after doing a fight")
-    time.sleep(3)
+    interruptible_sleep(3)
 
     # check if the prev game was a win
     if not disable_win_tracker_toggle:
@@ -352,7 +353,7 @@ def check_if_previous_game_was_win(
             status="Error 95867235 wait_for_clash_main_menu() in check_if_previous_game_was_win()",
         )
         return "restart"
-    time.sleep(2)
+    interruptible_sleep(2)
 
     return is_a_win
 
@@ -451,13 +452,13 @@ def get_to_main_after_fight(emulator, logger):
         # if on clash main
         if check_if_on_clash_main_menu(emulator) is True:
             # wait 3 seconds for the trophy road page to maybe appear bc of UI lag
-            time.sleep(3)
+            interruptible_sleep(3)
 
             # if that trophy road page appears, handle it, then return True
             if check_for_trophy_reward_menu(emulator):
                 print("Found trophy reward menu")
                 handle_trophy_reward_menu(emulator, logger, printmode=False)
-                time.sleep(2)
+                interruptible_sleep(2)
 
             print("Made it to clash main after a fight")
             return True
@@ -466,7 +467,7 @@ def get_to_main_after_fight(emulator, logger):
         if check_for_trophy_reward_menu(emulator):
             print("Found trophy reward menu!\nHandling Trophy Reward Menu")
             handle_trophy_reward_menu(emulator, logger, printmode=False)
-            time.sleep(3)
+            interruptible_sleep(3)
             continue
 
         # check for post-battle button (OK/exit)
@@ -478,7 +479,7 @@ def get_to_main_after_fight(emulator, logger):
                 clicked_ok_or_exit = True
                 continue
 
-        time.sleep(1)
+        interruptible_sleep(1)
         print("Clicking on deadspace to close potential pop-up windows.")
         emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
 
@@ -677,8 +678,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     battle_strategy.start_battle()
 
     while check_for_in_battle_with_delay(emulator):
-        if recording_flag:
-            save_image(emulator.screenshot())
+        # debug screenshot saving removed from production
 
         # Get elixir amount and thresholds based on current battle phase
         elixir_amount = battle_strategy.select_elixir_amount()
@@ -705,9 +705,6 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             logger.change_status("Not in a battle anymore")
             break
 
-        if recording_flag:
-            save_image(emulator.screenshot())
-
         play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:
             logger.change_status("Failed to play a card, retrying...")
@@ -717,7 +714,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
         )
 
     logger.change_status("End of the fight!")
-    time.sleep(2.13)
+    interruptible_sleep(2.13)
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
@@ -740,7 +737,7 @@ def _random_fight_loop(emulator, logger) -> bool:
         for _ in range(random.randint(1, 3)):
             logger.add_card_played()
 
-        time.sleep(8)
+        interruptible_sleep(8)
 
     logger.change_status("Finished with battle with random plays...")
     return True

@@ -7,6 +7,7 @@ from pyclashbot.detection.image_rec import (
     find_image,
     pixel_is_equal,
 )
+from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
@@ -32,12 +33,16 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         bool: True if battle started, False if timed out.
     """
     start_time = time.time()
-
     while time.time() - start_time < timeout:
         time_taken = str(time.time() - start_time)[:4]
         logger.change_status(
             status=f"Waiting for battle to start for {time_taken}s",
         )
+
+        # NOTE: Debug screenshot saving was intentionally removed from
+        # the production flow. If you need screenshots for debugging,
+        # use the recorder helpers directly in a temporary script or
+        # enable a local-only change — do not commit such changes.
 
         battle_result = check_if_in_battle(emulator)
 
@@ -72,68 +77,41 @@ def check_for_in_battle_with_delay(emulator) -> bool:
 
 
 def check_if_in_battle(emulator):
-    iar = emulator.screenshot()
+    iar_bgr = emulator.screenshot()
+    if iar_bgr is None:
+        return False
 
-    pixels_1v1 = [
-        iar[515][49],
-        iar[518][77],
-        iar[530][52],
-        iar[530][77],
-        iar[618][115],
-    ]
+    # Convert to RGB for easier reasoning about expected colors.
+    iar = iar_bgr[..., ::-1]
 
-    pixels_2v2 = [
-        iar[515][53],
-        iar[518][80],
-        iar[531][52],
-        iar[514][76],
-        iar[615][114],
-    ]
+    def get_pixel(y: int, x: int) -> list[int] | None:
+        if y >= iar.shape[0] or x >= iar.shape[1]:
+            return None
+        return iar[y][x].tolist()
 
-    colors_1v1 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [232, 63, 242],
-    ]
-    colors_2v2 = [
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [255, 255, 255],
-        [231, 57, 242],
-    ]
+    def is_bright(pixel: list[int] | None, threshold: int = 180) -> bool:
+        return pixel is not None and all(channel >= threshold for channel in pixel)
 
-    # def pixel_to_string(pixel):
-    #     return f"{pixel[0]} {pixel[1]} {pixel[2]}"
+    def is_scoreboard_purple(pixel: list[int] | None) -> bool:
+        if pixel is None:
+            return False
+        r, g, b = pixel
+        return r >= 200 and b >= 200 and g <= 140
 
-    # print("\nBattle detection check:")
-    # print(
-    #     "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #         "Seen 1v1", "Expected 1v1", "Seen 2v2", "Expected 2v2"
-    #     )
-    # )
-    # for pixel1v1, pixel2v2, color1v1, color2v2 in zip(
-    #     pixels_1v1, pixels_2v2, colors_1v1, colors_2v2
-    # ):
-    #     print(
-    #         "{:^20} | {:^20} | {:^20} | {:^20}".format(
-    #             pixel_to_string(pixel1v1),
-    #             pixel_to_string(color1v1),
-    #             pixel_to_string(pixel2v2),
-    #             pixel_to_string(color2v2),
-    #         )
-    #     )
+    def check_mode(coords: list[tuple[int, int]]) -> bool:
+        pixels = [get_pixel(y, x) for y, x in coords]
+        bright_required = len(coords) - 1
+        bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel))
+        return bright_count >= bright_required and is_scoreboard_purple(pixels[-1])
 
-    if all_pixels_are_equal(colors_1v1, pixels_1v1, tol=35):
-        # print(f"Yes in a battle. Its of type 1v1")
+    coords_1v1 = [(528, 49), (532, 77), (546, 52), (546, 77), (618, 115)]
+    coords_2v2 = [(534, 53), (533, 80), (548, 52), (548, 76), (615, 114)]
+
+    if check_mode(coords_1v1):
         return True
-    if all_pixels_are_equal(colors_2v2, pixels_2v2, tol=35):
-        # print(f"Yes in a battle. Its of type 2v2")
+    if check_mode(coords_2v2):
         return True
 
-    # print(f"Not in a battle")
     return False
 
 
@@ -183,7 +161,7 @@ def handle_trophy_reward_menu(
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
     )
-    time.sleep(1)
+    interruptible_sleep(1)
 
     return "good"
 
@@ -203,7 +181,7 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
         if check_for_trophy_reward_menu(emulator):
             print("Handling trophy reward menu")
             handle_trophy_reward_menu(emulator, logger)
-            time.sleep(2)
+            interruptible_sleep(2)
             continue
 
         # click deadspace
@@ -212,9 +190,9 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
             )
-        time.sleep(1)
+        interruptible_sleep(1)
 
-    time.sleep(1)
+    interruptible_sleep(1)
     if check_if_on_clash_main_menu(emulator) is not True:
         print("Failed to get to clash main! Saw these pixels before restarting:")
         return False
@@ -296,7 +274,7 @@ def get_to_card_page_from_clash_main(
         CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
     )
-    time.sleep(2.5)
+    interruptible_sleep(2.5)
 
     # while not on the card page, cycle the card page
     while not check_if_on_card_page(emulator):
@@ -308,7 +286,7 @@ def get_to_card_page_from_clash_main(
             CARD_PAGE_ICON_FROM_CARD_PAGE[0],
             CARD_PAGE_ICON_FROM_CARD_PAGE[1],
         )
-        time.sleep(3)
+        interruptible_sleep(3)
 
     logger.change_status(status="Made it to card page")
 
@@ -574,6 +552,10 @@ def check_if_battle_mode_is_selected(emulator, mode: str):
 
     look_folder = mode2folder[mode]
 
+    print(f"[DEBUG] Checking if {mode} is selected...")
+    print(f"[DEBUG] Looking in folder: {look_folder}")
+    print("[DEBUG] Subcrop: (270, 455, 350, 533)")
+
     # find image on screen
     coord = find_image(
         emulator.screenshot(),
@@ -581,6 +563,8 @@ def check_if_battle_mode_is_selected(emulator, mode: str):
         tolerance=0.9,
         subcrop=(270, 455, 350, 533),
     )
+
+    print(f"[DEBUG] Found at: {coord}")
 
     return coord is not None
 
@@ -611,8 +595,7 @@ def find_fight_mode_icon(emulator, mode: str):
     fight_mode_1v1_button_location = find_image(
         image,
         look_folder,
-        tolerance=0.85,
-        subcrop=(27, 158, 206, 582),
+        tolerance=0.9,
         show_image=False,
     )
     if fight_mode_1v1_button_location is not None:
@@ -643,23 +626,38 @@ def select_mode(emulator, mode: str):
     # click select mode button
     print("Clicking mode selection button")
     emulator.click(game_mode_coord[0], game_mode_coord[1])
-    time.sleep(2)
+    interruptible_sleep(2)
 
     def scroll_down_in_fight_mode_panel(emulator):
         start_y = 400
         end_y = 350
         x = 400
         emulator.swipe(x, start_y, x, end_y)
-        time.sleep(1)
+        interruptible_sleep(1)
 
     # scroll and search, until we find the mode in question
     search_timeout = 15  # s
-    while time.time() < time.time() + search_timeout:
+    start_time = time.time()
+
+    # Use a fixed start time so we actually time out correctly instead of
+    # comparing two moving time.time() values (which would never time out).
+    while time.time() - start_time < search_timeout:
         coord = find_fight_mode_icon(emulator, mode)
         if coord is not None:
             print(f'Located the "{mode}" button, clicking it.')
             emulator.click(*coord)
-            time.sleep(3)
+            interruptible_sleep(3)
+
+            # After choosing a mode, the mode panel may remain open on some
+            # devices/emulators. Click a safe deadspace coord to ensure the
+            # selection panel closes and the main menu is active again so
+            # subsequent actions (like pressing Start) work reliably.
+            try:
+                emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
+            except Exception:
+                # Don't fail if the click doesn't work; best-effort only.
+                pass
+
             return True
 
         scroll_down_in_fight_mode_panel(emulator)
@@ -668,4 +666,30 @@ def select_mode(emulator, mode: str):
 
 
 if __name__ == "__main__":
+    # from pyclashbot.emulators.memu import MemuEmulatorController
+    # from pyclashbot.utils.logger import Logger
+    # import cv2
+    # import os
+
+    # print("Creating logger...")
+    # logger = Logger()
+
+    # print("Creating MEmu emulator controller in DEBUG mode (no restart)...")
+    # emulator = MemuEmulatorController(logger, render_mode="directx", debug_mode=True)
+
+    # # Save a screenshot for debugging
+    # print("\nSaving screenshot for debugging...")
+    # os.makedirs("debug_screenshots", exist_ok=True)
+    # screenshot = emulator.screenshot()
+    # cv2.imwrite("debug_screenshots/current_screen.png", screenshot)
+    # print(f"Screenshot saved to: debug_screenshots/current_screen.png")
+    # print(f"Screenshot size: {screenshot.shape}")
+
+    # print("\nTesting find_fight_mode_icon...")
+    # x = check_if_battle_mode_is_selected(emulator, "Classic 2v2")
+    # print(f"Result: Is Classic 2v2 selected? {x}")
+
+    # select_mode(emulator, "Classic 1v1")
+
+    # here matt if you want to test this and see debug info
     pass

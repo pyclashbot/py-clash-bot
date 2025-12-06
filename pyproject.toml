@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "pyclashbot"
 version = "v0.0.0"
@@ -8,21 +12,34 @@ authors = [
 ]
 requires-python = ">=3.12.0,<3.13"
 readme = "README.md"
+license = {text = "NC-CL-1.0 AND CC-BY-NC-SA-4.0"}
+classifiers = [
+    "License :: Other/Proprietary License",
+]
 dependencies = [
     "opencv-python>=4.9.0,<5",
     "numpy>=2.2.1,<3",
     "pymemuc>=0.6.0,<0.7",
     "psutil>=6.1.0,<8",
-    "pygetwindow (>=0.0.9,<0.0.10)",
+    "pypresence>=4.3.0,<5",
     "pillow (>=11.3.0,<13.0.0)",
     "ttkbootstrap>=1.12.1,<1.19",
 ]
+
+[tool.setuptools.packages.find]
+include = ["pyclashbot*"]
+exclude = ["assets*", "scripts*"]
 
 [project.urls]
 homepage = "https://pyclashbot.app"
 
 [dependency-groups]
-build = ["cx-freeze>=8.3.0,<9", "packaging>=24.2", "requests>=2.32.4"]
+build = [
+    "cx-freeze>=8.3.0,<9; sys_platform == 'win32'",
+    "pyinstaller>=6.0.0,<7; sys_platform == 'darwin'",
+    "packaging>=24.2",
+    "requests>=2.32.4",
+]
 dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.15"]
 
 [tool.ruff.lint]
@@ -67,6 +84,9 @@ ignore = [
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"time.sleep".msg = "Use interruptible_sleep() from pyclashbot.utils.cancellation instead for proper thread cancellation support."
 
 [tool.isort]
 profile = "black"

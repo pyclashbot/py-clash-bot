@@ -1,10 +1,16 @@
+.DS_Store
+platform-tools/
+*.egg-info/
 cert
 node_modules
 .venv
 build
 dist
+*.spec
 __version__
 __pycache__
 recordings
 .claude/
 .claude/settings.local.json
+.DS_Store
+*.egg-info
