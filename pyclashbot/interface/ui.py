@@ -58,6 +58,7 @@ class PyClashBotUI(ttk.Window):
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
+        self._bluestacks_refresh_callback: Callable[[], list[str]] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
@@ -77,6 +78,12 @@ class PyClashBotUI(ttk.Window):
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
 
+    def register_bluestacks_refresh_callback(self, callback: Callable[[], list[str]]) -> None:
+        """Register a callback to get available BlueStacks instances.
+        
+        The callback should return a list of available instance names.
+        """
+        self._bluestacks_refresh_callback = callback
     def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
         for field, var in self.jobs_vars.items():
@@ -99,6 +106,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.BS_RENDERER_DX.value] = bs_render == "DirectX"
         values[UIField.BS_RENDERER_GL.value] = bs_render == "OpenGL"
         values[UIField.BS_RENDERER_VK.value] = bs_render == "Vulkan"
+        values[UIField.BLUESTACKS_INSTANCE.value] = self.bs_instance_var.get()
 
         for field, var in self.gp_vars.items():
             values[field.value] = var.get()
@@ -159,6 +167,10 @@ class PyClashBotUI(ttk.Window):
                 self.bs_render_var.set("DirectX")
             elif values.get(UIField.BS_RENDERER_GL.value):
                 self.bs_render_var.set("OpenGL")
+
+            if UIField.BLUESTACKS_INSTANCE.value in values:
+                instance = str(values[UIField.BLUESTACKS_INSTANCE.value])
+                self.bs_instance_var.set(instance)
 
             for field, var in self.gp_vars.items():
                 config = next((c for c in GOOGLE_PLAY_SETTINGS if c.key == field), None)
@@ -557,6 +569,36 @@ class PyClashBotUI(ttk.Window):
             self._register_config_widget(config.key.value, rb)
 
     def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
+        # Instance Selection Frame
+        instance_frame = ttk.Labelframe(parent_frame, text="Instance Selection", padding=10)
+        instance_frame.pack(fill="x", padx=5, pady=5)
+        instance_frame.columnconfigure(1, weight=1)
+
+        ttk.Label(instance_frame, text="BlueStacks Instance:").grid(row=0, column=0, padx=(0, 5), sticky="w")
+
+        self.bs_instance_var = ttk.StringVar(value="pyclashbot-96")
+        self.bs_instance_combo = ttk.Combobox(
+            instance_frame,
+            textvariable=self.bs_instance_var,
+            state=READONLY,
+            width=25,
+        )
+        self.bs_instance_combo.grid(row=0, column=1, padx=5, sticky="ew")
+        self._register_config_widget(UIField.BLUESTACKS_INSTANCE.value, self.bs_instance_combo)
+        self._trace_variable(self.bs_instance_var)
+
+        self.bs_refresh_btn = ttk.Button(
+            instance_frame,
+            text="Refresh",
+            command=self._on_bluestacks_refresh,
+        )
+        self.bs_refresh_btn.grid(row=0, column=2, padx=(5, 0), sticky="ew")
+        self._register_config_widget("bs_refresh_btn", self.bs_refresh_btn)
+
+        # Load available instances
+        self._update_bluestacks_instances()
+
+        # Render Mode Frame (Advanced)
         self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
         self.bluestacks_advanced_frame.pack_forget()
 
@@ -857,7 +899,9 @@ class PyClashBotUI(ttk.Window):
         # Show the selected frame
         frame_to_show = self.emulator_settings_frames.get(selected_emulator)
         should_show = True
-        if selected_emulator in {EmulatorType.MEMU, EmulatorType.BLUESTACKS, EmulatorType.GOOGLE_PLAY}:
+        # Show MEmu/Google Play settings only when Advanced is enabled.
+        # BlueStacks settings (instance selector) are always visible; its render mode stays in Advanced.
+        if selected_emulator in {EmulatorType.MEMU, EmulatorType.GOOGLE_PLAY}:
             should_show = show_advanced
         if frame_to_show and should_show:
             frame_to_show.pack(fill=BOTH, expand=YES)
@@ -898,6 +942,31 @@ class PyClashBotUI(ttk.Window):
     def _on_advanced_settings_toggled(self) -> None:
         # Re-evaluate which emulator settings should be visible when the toggle changes
         self._show_current_emulator_settings()
+
+    def _update_bluestacks_instances(self) -> None:
+        """Update the list of available BlueStacks instances in the combobox."""
+        if self._bluestacks_refresh_callback:
+            try:
+                instances = self._bluestacks_refresh_callback()
+                if instances:
+                    self.bs_instance_combo.configure(values=instances)
+                    # Set to the first instance if current value is not in the list
+                    current = self.bs_instance_var.get()
+                    if current not in instances:
+                        self.bs_instance_var.set(instances[0])
+            except Exception:
+                # If callback fails, just keep current values
+                pass
+        else:
+            # If no callback is registered, try to populate with default
+            current = self.bs_instance_var.get()
+            if current:
+                self.bs_instance_combo.configure(values=[current])
+
+    def _on_bluestacks_refresh(self) -> None:
+        """Handle the BlueStacks refresh button click."""
+        self._update_bluestacks_instances()
+
 
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:
