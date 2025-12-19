@@ -1,115 +1,152 @@
+import time
 import traceback
-from multiprocessing import Event, Process, Queue
-from typing import Any
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
-from pyclashbot.emulators import EmulatorType, get_emulator_registry
-from pyclashbot.utils.cancellation import CancellationToken
-from pyclashbot.utils.logger import ProcessLogger
-from pyclashbot.utils.platform import is_macos
+from pyclashbot.emulators.adb import AdbController
+from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
+from pyclashbot.emulators.google_play import GooglePlayEmulatorController
+from pyclashbot.emulators.memu import MemuEmulatorController, verify_memu_installation
+from pyclashbot.utils.logger import Logger
+from pyclashbot.utils.thread import PausableThread, ThreadKilled
 
 
-class WorkerProcess(Process):
-    """Worker process for running the bot.
+class WorkerThread(PausableThread):
+    def __init__(self, logger: Logger, args, kwargs=None) -> None:
+        super().__init__(args, kwargs)
+        self.logger: Logger = logger
+        self.in_a_clan = False
 
-    Uses multiprocessing instead of threading for reliable force termination.
-    Communicates stats back to main process via Queue.
-    """
-
-    def __init__(
-        self,
-        jobs: dict[str, Any],
-        stats_queue: Queue,
-        shutdown_event: Event,
-    ) -> None:
-        super().__init__(daemon=True)
-        self.jobs = jobs
-        self.stats_queue = stats_queue
-        self.shutdown_event = shutdown_event
-
-    def _setup_emulator(self, jobs: dict[str, Any], logger: ProcessLogger):
-        """Set up the appropriate emulator based on job configuration."""
-        emulator_selection = jobs.get("emulator", EmulatorType.MEMU)
-        registry = get_emulator_registry()
-
-        if emulator_selection not in registry:
-            print(f"[!] Fatal error: Emulator {emulator_selection} is not supported on this platform!")
-            logger.change_status(f"Emulator {emulator_selection} is not available on this platform.")
-            return None
-
-        controller_class = registry[emulator_selection]
-
+    def _create_google_play_emulator(self):
+        """Create and return a Google Play emulator instance."""
         try:
-            if emulator_selection == EmulatorType.GOOGLE_PLAY:
-                print("Creating Google Play emulator")
-                return controller_class(logger=logger)
-
-            elif emulator_selection == EmulatorType.BLUESTACKS:
-                print("Creating BlueStacks 5 emulator")
-                # Default: Vulkan on macOS, OpenGL on Windows
-                default_mode = "vlcn" if is_macos() else "gl"
-                bs_mode = jobs.get("bluestacks_render_mode", default_mode)
-                render_settings = {"graphics_renderer": bs_mode}
-                return controller_class(logger=logger, render_settings=render_settings)
-
-            elif emulator_selection == EmulatorType.MEMU:
-                print("Creating MEmu emulator")
-                from pyclashbot.emulators.memu import verify_memu_installation
-
-                if not verify_memu_installation():
-                    logger.change_status("MEmu is not installed! Please install it to use MEmu Emulator Mode")
-                    return None
-                render_mode = jobs.get("memu_render_mode", "opengl")
-                return controller_class(logger, render_mode)
-
-            elif emulator_selection == EmulatorType.ADB:
-                print("Creating ADB Device controller")
-                adb_serial = jobs.get("adb_serial", None)
-                return controller_class(logger=logger, device_serial=adb_serial)
-
+            emulator = GooglePlayEmulatorController(logger=self.logger)
+            print("Successfully created google play emulator")
+            return emulator
         except Exception as e:
-            print(f"Failed to create {emulator_selection} emulator: {e}")
-            logger.change_status(f"Failed to start {emulator_selection}. Verify its installation!")
+            print(f"Failed to create Google Play emulator: {e}")
+            self.logger.change_status("Failed to start Google Play. Verify its installation!")
             return None
 
-        return None
+    def _create_memu_emulator(self, render_mode):
+        """Create and return a MEmu emulator instance."""
+        if not verify_memu_installation():
+            self.logger.change_status("Memu is not installed! Please install it to use Memu Emulator Mode")
+            return None
 
-    def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
+        return MemuEmulatorController(self.logger, render_mode)
+
+    def _create_bluestacks_emulator(self, jobs):
+        """Create and return a BlueStacks 5 emulator instance."""
+        print("Creating BlueStacks 5 emulator")
+        try:
+            # Obtener configuración del renderer
+            bs_mode = jobs.get("bluestacks_render_mode", "dx")
+            if bs_mode == "opengl":
+                bs_mode = "gl"
+            elif bs_mode == "vulkan":
+                bs_mode = "vlcn"
+            else:
+                bs_mode = "dx"
+            
+            render_settings = {"graphics_renderer": bs_mode}
+            
+            # Obtener nombre de instancia desde los trabajos
+            instance_name = jobs.get("bluestacks_instance_name", "BlueStacks")
+            if not instance_name or instance_name == "":
+                instance_name = "BlueStacks"
+            
+            self.logger.log(f"Starting BlueStacks instance: {instance_name}")
+            
+            return BlueStacksEmulatorController(
+                logger=self.logger, 
+                instance_name=instance_name,
+                render_settings=render_settings
+            )
+        except Exception as e:
+            print(f"Failed to create BlueStacks 5 emulator: {e}")
+            self.logger.change_status("Failed to start BlueStacks 5. Verify its installation!")
+            return None
+
+    def _create_adb_device(self, jobs):
+        """Create and return an ADB Device controller."""
+        print("Creating ADB Device controller")
+        try:
+            adb_serial = jobs.get("adb_serial", None)
+            return AdbController(logger=self.logger, device_serial=adb_serial)
+        except Exception as e:
+            print(f"Failed to create ADB Device controller: {e}")
+            self.logger.change_status("Failed to connect to ADB device. Check connection and ADB setup!")
+            return None
+
+    def _setup_emulator(self, jobs):
+        """Set up the appropriate emulator based on job configuration."""
+        # Determinar qué emulador está seleccionado
+        emulator_selection = None
+        
+        if jobs.get("google_play_emulator_toggle"):
+            emulator_selection = "Google Play"
+        elif jobs.get("bluestacks_emulator_toggle"):
+            emulator_selection = "BlueStacks 5"
+        elif jobs.get("adb_toggle"):
+            emulator_selection = "ADB Device"
+        elif jobs.get("memu_emulator_toggle"):
+            emulator_selection = "MEmu"
+        else:
+            # Por defecto, usar BlueStacks
+            emulator_selection = "BlueStacks 5"
+
+        print(f"Selected emulator: {emulator_selection}")
+
+        if emulator_selection == "Google Play":
+            return self._create_google_play_emulator()
+        elif emulator_selection == "BlueStacks 5":
+            return self._create_bluestacks_emulator(jobs)
+        elif emulator_selection == "MEmu":
+            render_mode = jobs.get("memu_render_mode", "opengl")
+            return self._create_memu_emulator(render_mode)
+        elif emulator_selection == "ADB Device":
+            return self._create_adb_device(jobs)
+        else:
+            print(f"[!] Fatal error: Emulator {emulator_selection} is not supported!")
+            self.logger.change_status(f"Emulator {emulator_selection} is not supported!")
+            return None
+
+    def _run_bot_loop(self, emulator, jobs):
         """Run the main bot state loop."""
         state = "start"
-        state_history = StateHistory(logger)
+        state_history = StateHistory(self.logger)
         state_order = StateOrder()
         consecutive_restarts = 0
         max_consecutive_restarts = 5
 
-        while not self.shutdown_event.is_set():
+        while not self.shutdown_flag.is_set():
             try:
-                new_state = state_tree(emulator, logger, state, jobs, state_history, state_order)
+                new_state = state_tree(emulator, self.logger, state, jobs, state_history, state_order)
 
                 # Check for restart loops
                 if new_state == "restart":
                     consecutive_restarts += 1
                     if consecutive_restarts >= max_consecutive_restarts:
-                        logger.error(
+                        self.logger.error(
                             f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop"
                         )
                         break
-                    logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
+                    self.logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
                 else:
                     consecutive_restarts = 0  # Reset counter on successful state
 
                 # Check for error states that should stop execution
                 if new_state in ["fail", None]:
-                    logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
+                    self.logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
                     if new_state == "fail":
-                        logger.add_restart_after_failure()
+                        self.logger.add_restart_after_failure()
                     break
 
                 state = new_state
 
             except Exception as e:
-                logger.error(f"Exception in state_tree: {e}")
-                logger.log(f"Current state was: {state}")
+                self.logger.error(f"Exception in state_tree: {e}")
+                self.logger.log(f"Current state was: {state}")
                 print(f"[ERROR] Exception in state_tree: {e}")
                 print(f"[ERROR] Current state was: {state}")
                 # Try to restart from a known state
@@ -118,32 +155,24 @@ class WorkerProcess(Process):
                 traceback.print_exc()
                 consecutive_restarts += 1
                 if consecutive_restarts >= max_consecutive_restarts:
-                    logger.error("Too many consecutive exceptions - stopping bot")
+                    self.logger.error("Too many consecutive exceptions - stopping bot")
                     break
 
-            # Note: Pause functionality removed in multiprocessing version
-            # If pause is needed, use a separate mp.Event
+            while self.pause_flag.is_set():
+                time.sleep(0.33)
 
     def run(self) -> None:
-        """Main worker process execution."""
-        print("WorkerProcess run()...")
+        """Main worker thread execution."""
+        print("WorkerThread run()...")
+        jobs = self.args
 
-        # Set up cancellation token for interruptible sleeps
-        token = CancellationToken(self.shutdown_event)
-        CancellationToken.set_current(token)
-
-        # Create logger that sends stats through queue
-        logger = ProcessLogger(self.stats_queue)
+        emulator = self._setup_emulator(jobs)
+        if emulator is None:
+            return
 
         try:
-            emulator = self._setup_emulator(self.jobs, logger)
-            if emulator is None:
-                return
-
-            self._run_bot_loop(emulator, self.jobs, logger)
+            self._run_bot_loop(emulator, jobs)
+        except ThreadKilled:
+            return
         except Exception as err:
-            logger.error(str(err))
-            traceback.print_exc()
-        finally:
-            CancellationToken.set_current(None)
-            logger.change_status("Bot stopped")
+            self.logger.error(str(err))

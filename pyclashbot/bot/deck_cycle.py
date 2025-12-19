@@ -17,7 +17,6 @@ from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
 )
 from pyclashbot.detection.image_rec import find_image
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 DECKS_PAGE_BUTTON_COORDS = (125, 60)
@@ -79,7 +78,7 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
             continue
 
         emulator.click(deck_coords[0] + 15, deck_coords[1] + 15)
-        interruptible_sleep(1)
+        time.sleep(1)
 
         if is_deck_full(emulator):
             logger.change_status(f"Found complete deck: #{deck_to_check}.")
@@ -102,7 +101,7 @@ def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
         logger.change_status("Failed to get to card page from main.")
         return False
     emulator.click(*DECKS_PAGE_BUTTON_COORDS)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
     return True
 
 

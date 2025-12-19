@@ -1,8 +1,9 @@
+import time
+
 import numpy
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import find_image, pixel_is_equal
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 # --- Constants for UI element locations ---
@@ -55,7 +56,7 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
     )
     if switch_button_coord is not None:
         emulator.click(*switch_button_coord)
-        interruptible_sleep(1)
+        time.sleep(1)
         return True
     logger.change_status("Could not find switch deck page button.")
     return False
@@ -75,19 +76,19 @@ def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -
 
     # Click the options menu
     emulator.click(*DECK_OPTIONS_BUTTON_COORDS)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
 
     # Click the randomize button
     emulator.click(*RANDOMIZE_DECK_BUTTON_COORDS)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
 
     # If the deck was already full, a confirmation is required
     if deck_is_full_before_randomize:
         emulator.click(*RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS)
-        interruptible_sleep(0.1)
+        time.sleep(0.1)
 
     # Wait for cards to populate, then check if the deck is now full
-    interruptible_sleep(1.0)
+    time.sleep(1.0)
     logger.add_card_randomization()
 
     if not is_deck_full(emulator):
@@ -104,7 +105,7 @@ def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
     """
     logger.change_status("Returning to clash main...")
     emulator.click(*CARD_PAGE_EXIT_BUTTON_COORDS)
-    interruptible_sleep(1)
+    time.sleep(1)
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Failed to return to clash main from the card page.")
         return False

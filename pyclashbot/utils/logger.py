@@ -8,15 +8,15 @@ import time
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
-from os.path import exists, getmtime, join
+from os.path import exists, expandvars, getmtime, join
 
 from pyclashbot.utils.machine_info import MACHINE_INFO
-from pyclashbot.utils.platform import get_log_dir
 from pyclashbot.utils.versioning import __version__
 
+MODULE_NAME = "py-clash-bot"
 LOGS_TO_KEEP = 10
 
-log_dir = get_log_dir("py-clash-bot")
+log_dir = join(expandvars("%appdata%"), MODULE_NAME, "logs")
 log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
 archive_name: str = join(log_dir, "logs.zip")
 
@@ -63,6 +63,12 @@ def initalize_pylogging() -> None:
         pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
     )
 
+    # vm_index = get_vm_index(EMULATOR_NAME)
+
+    # logging.info(
+    #     "VM Configuration: \n%s",
+    #     pprint.pformat(get_vm_configuration(vm_index), indent=4),
+    # )
     compress_logs()
 
 
@@ -541,27 +547,6 @@ class Logger:
         self.log("-------------------------------")
         self.log("-------------------------------")
         self.log("-------------------------------\n\n")
-
-
-class ProcessLogger(Logger):
-    """Logger that sends stats updates through a multiprocessing Queue.
-
-    Used with WorkerProcess to communicate stats back to the main UI process.
-    """
-
-    def __init__(self, stats_queue, timed: bool = True) -> None:
-        super().__init__(timed=timed)
-        self._stats_queue = stats_queue
-
-    def _update_log(self) -> None:
-        """Override to send stats through queue instead of just updating local dict."""
-        super()._update_log()
-        # Non-blocking put to queue - if queue is full, skip this update
-        if self._stats_queue is not None:
-            try:
-                self._stats_queue.put_nowait(self.stats.copy())
-            except Exception:
-                pass  # Queue full or closed, skip this update
 
 
 if __name__ == "__main__":
