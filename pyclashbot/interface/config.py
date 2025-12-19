@@ -14,7 +14,6 @@ from pyclashbot.interface.enums import (
     StatField,
     UIField,
 )
-from pyclashbot.utils.platform import is_macos
 
 
 @dataclass
@@ -107,24 +106,24 @@ JOBS = [
     JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", default=False),
 ]
 
-# Emulator Settings Configuration
+# Emulator Settings Configuration - MEMU eliminado
 MEMU_SETTINGS = [
     RadioConfig(UIField.OPENGL_TOGGLE, "OpenGL", "render_mode_radio"),
     RadioConfig(UIField.DIRECTX_TOGGLE, "DirectX", "render_mode_radio", default=True),
 ]
 
 # BlueStacks specific renderer settings
-# DirectX is default on Windows, Vulkan on macOS (DirectX not available on macOS)
 BLUESTACKS_SETTINGS = [
     RadioConfig(UIField.BS_RENDERER_GL, "OpenGL", "bs_render_mode_radio"),
-    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=not is_macos()),
-    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio", default=is_macos()),
+    RadioConfig(UIField.BS_RENDERER_DX, "DirectX", "bs_render_mode_radio", default=True),
+    RadioConfig(UIField.BS_RENDERER_VK, "Vulkan", "bs_render_mode_radio"),
 ]
 
+# Eliminado MEMU de las opciones de emulador
 EMULATOR_CHOICE = [
-    RadioConfig(UIField.MEMU_EMULATOR_TOGGLE, "Memu", "emulator_type_radio", default=True),
     RadioConfig(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE, "Google Play", "emulator_type_radio"),
-    RadioConfig(UIField.BLUESTACKS_EMULATOR_TOGGLE, "BlueStacks 5", "emulator_type_radio"),
+    RadioConfig(UIField.BLUESTACKS_EMULATOR_TOGGLE, "BlueStacks 5", "emulator_type_radio", default=True),  # BlueStacks por defecto
+    RadioConfig(UIField.ADB_TOGGLE, "ADB Device", "emulator_type_radio"),
 ]
 
 # Google Play Settings Configuration
@@ -138,12 +137,21 @@ GOOGLE_PLAY_SETTINGS = [
     ComboConfig(UIField.GP_WSI, "wsi", ["vk", "glx"]),
 ]
 
+# Configuración de instancia de BlueStacks
+BLUESTACKS_INSTANCE_CONFIG = ComboConfig(
+    key=UIField.BLUESTACKS_INSTANCE_NAME,
+    label="Instance Name",
+    values=["BlueStacks", "BlueStacks-2", "BlueStacks-3", "pyclashbot-96", "Nougat32", "Nougat64", "Pie64"],  # Valores comunes
+    default="BlueStacks",
+    label_size=(15, 1),
+)
+
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
     [job.key.value for job in JOBS]
     + [radio.key.value for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key.value for combo in GOOGLE_PLAY_SETTINGS]
-    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value]  # Data settings
+    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value, UIField.BLUESTACKS_INSTANCE_NAME.value]  # Data settings + BlueStacks instance
     + [
         UIField.DECK_NUMBER_SELECTION.value,
         UIField.MAX_DECK_SELECTION.value,

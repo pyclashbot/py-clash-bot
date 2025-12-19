@@ -19,7 +19,6 @@ from pyclashbot.utils.caching import (
     get_deck_number_for_battle_mode,
     set_deck_number_for_battle_mode,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 
@@ -238,7 +237,7 @@ def state_tree(
     global mode_used_in_1v1, fight_mode_cycle_index  # noqa: PLW0602
     logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
 
     # header in the log file to split the log by state loop iterations
     logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")

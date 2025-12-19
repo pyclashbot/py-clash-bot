@@ -50,7 +50,6 @@ class UIField(StrEnum):
     GOOGLE_PLAY_EMULATOR_TOGGLE = "google_play_emulator_toggle"
     BLUESTACKS_EMULATOR_TOGGLE = "bluestacks_emulator_toggle"
     THEME_NAME = "theme_name"
-    DISCORD_RPC_TOGGLE = "discord_rpc_toggle"
     GP_ANGLE = "gp_angle"
     GP_VULKAN = "gp_vulkan"
     GP_GLES = "gp_gles"
@@ -60,6 +59,8 @@ class UIField(StrEnum):
     GP_WSI = "gp_wsi"
     ADB_TOGGLE = "adb_toggle"
     ADB_SERIAL = "adb_serial"
+    # Nuevo campo para instancia de BlueStacks
+    BLUESTACKS_INSTANCE_NAME = "bluestacks_instance_name"
 
 
 BATTLE_STAT_LABELS: dict[StatField, str] = {
