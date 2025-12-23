@@ -1354,7 +1354,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
                 # Click deadspace to handle any popups
                 click_start = time.time()
-                self.click(5, 350)
+                self.click(35, 405)
                 click_end = time.time()
 
                 if debug_clash:
