@@ -434,7 +434,7 @@ class GooglePlayEmulatorController(AdbBasedController):
                 break
 
             # click deadspace
-            self.click(5, 350)
+            self.click(35, 405)
 
         restart_duration = str(time.time() - restart_start_time)[:5]
         self.logger.change_status(f"Google Play emulator restart completed successfully in {restart_duration}s")
