@@ -60,6 +60,7 @@ class UIField(StrEnum):
     GP_WSI = "gp_wsi"
     ADB_TOGGLE = "adb_toggle"
     ADB_SERIAL = "adb_serial"
+    BLUESTACKS_INSTANCE = "bluestacks_instance"
 
 
 BATTLE_STAT_LABELS: dict[StatField, str] = {

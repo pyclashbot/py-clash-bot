@@ -49,8 +49,9 @@ class WorkerProcess(Process):
                 # Default: Vulkan on macOS, OpenGL on Windows
                 default_mode = "vlcn" if is_macos() else "gl"
                 bs_mode = jobs.get("bluestacks_render_mode", default_mode)
+                bs_instance = jobs.get("bluestacks_instance", "pyclashbot-96")
                 render_settings = {"graphics_renderer": bs_mode}
-                return controller_class(logger=logger, render_settings=render_settings)
+                return controller_class(logger=logger, render_settings=render_settings, instance_name=bs_instance)
 
             elif emulator_selection == EmulatorType.MEMU:
                 print("Creating MEmu emulator")
