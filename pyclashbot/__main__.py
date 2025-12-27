@@ -37,6 +37,7 @@ from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
+from pyclashbot.utils.discord_bot import DiscordBotManager
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
 from pyclashbot.utils.platform import is_macos
@@ -252,6 +253,8 @@ class BotApplication:
         self.logger = Logger(timed=False)
         self.discord_rpc = DiscordRPCManager()
         self.discord_rpc_enabled = False
+        self.discord_bot = DiscordBotManager(logger=self.logger)
+        self.discord_bot_token: str = ""
         self._closing = False
         self._suppress_persist = True
         self.current_values = self.ui.get_all_values()
@@ -260,7 +263,12 @@ class BotApplication:
         if loaded:
             self.current_values = self.ui.get_all_values()
             self.discord_rpc_enabled = bool(self.current_values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
+            self.discord_bot_token = str(self.current_values.get(UIField.DISCORD_BOT_TOKEN.value, ""))
         self._suppress_persist = False
+
+        # Connect Discord bot buttons
+        self.ui.discord_connect_btn.configure(command=self._on_discord_bot_connect)
+        self.ui.discord_disconnect_btn.configure(command=self._on_discord_bot_disconnect)
 
         self.ui.set_button_state("idle")
         self._poll()
@@ -291,6 +299,13 @@ class BotApplication:
             self.logger = new_logger
             self.process = process
             self.current_values = values.copy()
+
+            # Set emulator info for Discord bot
+            job_dict = make_job_dictionary(values)
+            emulator_type = job_dict.get("emulator", EmulatorType.MEMU)
+            adb_serial = job_dict.get(UIField.ADB_SERIAL.value)
+            self.discord_bot.set_emulator_info(emulator_type, adb_serial)
+
             if self.discord_rpc_enabled:
                 self.discord_rpc.enable()
             self.ui.set_button_state("running")
@@ -329,6 +344,12 @@ class BotApplication:
             else:
                 self.ui.set_all_values({cycle_toggle: False})
                 values[cycle_toggle] = False
+
+        # Handle Discord bot token changes
+        new_token = str(values.get(UIField.DISCORD_BOT_TOKEN.value, ""))
+        if new_token != self.discord_bot_token:
+            self.discord_bot_token = new_token
+
         self.current_values = values.copy()
         self.discord_rpc_enabled = bool(values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
         if not self._suppress_persist:
@@ -367,6 +388,12 @@ class BotApplication:
         self.process, self.logger = handle_process_finished(self.ui, self.process, self.logger)
         update_layout(self.ui, self.logger)
         self.discord_rpc.sync(self.discord_rpc_enabled, self.logger.get_stats())
+
+        # Update Discord bot stats
+        if self.discord_bot.is_running:
+            self.discord_bot.update_stats(self.logger.get_stats())
+            self.discord_bot.set_worker_process(self.process)
+
         if hasattr(self.logger, "action_needed") and self.logger.action_needed:
             action_text = getattr(self.logger, "action_text", "Continue")
             self.ui.show_action_button(action_text, self._dispatch_action)
@@ -381,7 +408,45 @@ class BotApplication:
         self._closing = True
         exit_button_event(self.process, self.shutdown_event)
         self.discord_rpc.disable()
+        self.discord_bot.stop_bot()
         self.ui.destroy()
+
+    def _on_discord_bot_connect(self) -> None:
+        """Handle Discord bot connect button."""
+        token = self.ui.discord_bot_token_var.get().strip()
+        if not token:
+            from tkinter import messagebox
+
+            messagebox.showerror("Error", "Please enter a bot token!")
+            return
+
+        try:
+            if self.discord_bot.start_bot(token, self.logger):
+                self.ui.set_discord_bot_status(True)
+                self.logger.change_status("Discord bot connected!")
+                # Update config
+                values = self.ui.get_all_values()
+                values[UIField.DISCORD_BOT_TOKEN.value] = token
+                self.discord_bot_token = token
+                save_current_settings(values)
+            else:
+                from tkinter import messagebox
+
+                messagebox.showerror("Error", "Failed to start Discord bot. Check your token and try again.")
+                self.ui.set_discord_bot_status(False)
+        except Exception as e:
+            from tkinter import messagebox
+
+            messagebox.showerror("Error", f"Failed to start Discord bot: {e!s}")
+            self.ui.set_discord_bot_status(False)
+            if self.logger:
+                self.logger.log(f"Discord bot connection error: {e}")
+
+    def _on_discord_bot_disconnect(self) -> None:
+        """Handle Discord bot disconnect button."""
+        self.discord_bot.stop_bot()
+        self.ui.set_discord_bot_status(False)
+        self.logger.change_status("Discord bot disconnected.")
 
     def _run_adb_command(self, serial: str, command: str):
         """Helper to run a single ADB command and log the output."""

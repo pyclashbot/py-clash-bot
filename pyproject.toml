@@ -24,6 +24,7 @@ dependencies = [
     "pypresence>=4.3.0,<5",
     "pillow (>=11.3.0,<13.0.0)",
     "ttkbootstrap>=1.12.1,<1.19",
+    "discord.py>=2.3.0,<3",
 ]
 
 [tool.setuptools.packages.find]

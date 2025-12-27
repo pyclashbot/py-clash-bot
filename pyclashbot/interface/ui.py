@@ -56,6 +56,8 @@ class PyClashBotUI(ttk.Window):
         self.theme_var = ttk.StringVar(value=current_theme)
         self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
+        self.discord_bot_token_var = ttk.StringVar(value="")
+        self.discord_bot_connected_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
@@ -107,6 +109,7 @@ class PyClashBotUI(ttk.Window):
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
+        values[UIField.DISCORD_BOT_TOKEN.value] = self.discord_bot_token_var.get()
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -180,6 +183,9 @@ class PyClashBotUI(ttk.Window):
 
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
+
+        if UIField.DISCORD_BOT_TOKEN.value in values:
+            self.discord_bot_token_var.set(str(values[UIField.DISCORD_BOT_TOKEN.value]))
 
         self._show_current_emulator_settings()
 
@@ -302,20 +308,77 @@ class PyClashBotUI(ttk.Window):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, sticky="nsew", padx=10, pady=(10, 6))
 
-        self.jobs_tab = ttk.Frame(self.notebook)
-        self.emulator_tab = ttk.Frame(self.notebook)
-        self.stats_tab = ttk.Frame(self.notebook)
-        self.misc_tab = ttk.Frame(self.notebook)
+        # Create scrollable frames for each tab
+        self.jobs_tab, self.jobs_scrollable = self._create_scrollable_frame(self.notebook)
+        self.emulator_tab, self.emulator_scrollable = self._create_scrollable_frame(self.notebook)
+        self.stats_tab, self.stats_scrollable = self._create_scrollable_frame(self.notebook)
+        self.misc_tab, self.misc_scrollable = self._create_scrollable_frame(self.notebook)
+        self.discord_tab, self.discord_scrollable = self._create_scrollable_frame(self.notebook)
 
         self.notebook.add(self.jobs_tab, text="Jobs")
         self.notebook.add(self.emulator_tab, text="Emulator")
         self.notebook.add(self.stats_tab, text="Stats")
         self.notebook.add(self.misc_tab, text="Misc")
+        self.notebook.add(self.discord_tab, text="Discord Bot")
 
+        # Use the scrollable frames for content
         self._create_jobs_tab()
         self._create_emulator_tab()
         self._create_stats_tab()
         self._create_misc_tab()
+        self._create_discord_tab()
+
+    def _create_scrollable_frame(self, parent: ttk.Notebook) -> tuple[ttk.Frame, ttk.Frame]:
+        """Create a scrollable frame with mouse wheel scrolling (no visible scrollbar).
+        Returns (outer_frame for notebook, scrollable_frame for content).
+        """
+        # Outer frame to hold canvas - this goes in the notebook
+        outer_frame = ttk.Frame(parent)
+        outer_frame.pack(fill=BOTH, expand=YES)
+        outer_frame.grid_rowconfigure(0, weight=1)
+        outer_frame.grid_columnconfigure(0, weight=1)
+
+        # Canvas for scrolling (no visible scrollbar)
+        canvas = tk.Canvas(outer_frame, highlightthickness=0)
+        scrollable_frame = ttk.Frame(canvas)
+
+        def configure_scroll_region(_event=None):
+            canvas.update_idletasks()
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        scrollable_frame.bind("<Configure>", configure_scroll_region)
+
+        canvas_frame = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        def configure_canvas_width(event=None):
+            if event:
+                canvas_width = event.width
+                canvas.itemconfig(canvas_frame, width=canvas_width)
+
+        canvas.bind("<Configure>", configure_canvas_width)
+
+        # Grid canvas (no scrollbar)
+        canvas.grid(row=0, column=0, sticky="nsew")
+
+        # Bind mousewheel to canvas
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        def _bind_to_mousewheel(_event):
+            canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        def _unbind_from_mousewheel(_event):
+            canvas.unbind_all("<MouseWheel>")
+
+        canvas.bind("<Enter>", _bind_to_mousewheel)
+        canvas.bind("<Leave>", _unbind_from_mousewheel)
+
+        # Store canvas reference for updating scroll region
+        scrollable_frame._canvas = canvas
+        scrollable_frame._outer_frame = outer_frame
+
+        # Return both: outer_frame for notebook, scrollable_frame for content
+        return outer_frame, scrollable_frame
 
     def _build_bottom_row(self) -> None:
         bottom = ttk.Frame(self)
@@ -343,7 +406,7 @@ class PyClashBotUI(ttk.Window):
         self.action_btn.configure(command=self._on_action_pressed)
 
     def _create_jobs_tab(self) -> None:
-        frame = ttk.Labelframe(self.jobs_tab, text="Jobs", padding=10)
+        frame = ttk.Labelframe(self.jobs_scrollable, text="Jobs", padding=10)
         frame.pack(padx=10, pady=10, anchor="n", fill="x")
 
         frame.columnconfigure(1, weight=1)
@@ -467,7 +530,7 @@ class PyClashBotUI(ttk.Window):
 
     def _create_emulator_tab(self) -> None:
         # Main container frame for the tab
-        container = ttk.Frame(self.emulator_tab, padding=10)
+        container = ttk.Frame(self.emulator_scrollable, padding=10)
         container.pack(fill=BOTH, expand=YES)
 
         # Emulator Selection Dropdown
@@ -634,7 +697,7 @@ class PyClashBotUI(ttk.Window):
         ToolTip(self.adb_reset_size_btn, "Resets screen size and density to device defaults")
 
     def _create_stats_tab(self) -> None:
-        container = ttk.Frame(self.stats_tab, padding=10)
+        container = ttk.Frame(self.stats_scrollable, padding=10)
         container.pack(fill=BOTH, expand=YES)
         container.columnconfigure(0, weight=1)
         container.columnconfigure(1, weight=1)
@@ -711,7 +774,7 @@ class PyClashBotUI(ttk.Window):
             ).grid(row=row, column=1, sticky="e")
 
     def _create_misc_tab(self) -> None:
-        appearance = ttk.Labelframe(self.misc_tab, text="Appearance", padding=10)
+        appearance = ttk.Labelframe(self.misc_scrollable, text="Appearance", padding=10)
         appearance.pack(padx=10, pady=10, anchor="n", fill="x")
 
         ttk.Label(appearance, text="Select Theme:").pack(anchor="w", pady=(0, 4))
@@ -727,8 +790,8 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.theme_var)
         self._register_config_widget(UIField.THEME_NAME.value, self.theme_combo)
 
-        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
-        data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
+        ttk.Separator(self.misc_scrollable, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        data_frame = ttk.Labelframe(self.misc_scrollable, text="Data Settings", padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
 
         discord_checkbox = ttk.Checkbutton(
@@ -749,9 +812,189 @@ class PyClashBotUI(ttk.Window):
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
 
-        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
-        display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
+        ttk.Separator(self.misc_scrollable, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        display_frame = ttk.Labelframe(self.misc_scrollable, text="Display Settings", padding=10)
         display_frame.pack(fill="x", padx=10, pady=10)
+
+    def _create_discord_tab(self) -> None:
+        """Create the Discord bot tab with login and instructions."""
+        # Instructions frame
+        instructions_frame = ttk.Labelframe(self.discord_scrollable, text="📖 Quick Setup Guide", padding=10)
+        instructions_frame.pack(fill="x", padx=10, pady=10)
+
+        # Split instructions into clearer sections
+        step1_text = """STEP 1: Create a Discord Bot
+• Open https://discord.com/developers/applications in your browser
+• Click the blue "New Application" button
+• Give it any name you want (like "py-clash-bot") and click "Create"
+• You'll see a page with settings - don't worry about most of it"""
+
+        step2_text = """STEP 2: Get Your Bot Token
+• In the left sidebar, click "Bot"
+• Click the "Add Bot" button and confirm
+• Scroll down to find the "Token" section
+• Click "Reset Token" or "Copy" - this is your bot's password
+• IMPORTANT: Keep this secret! Don't share it with anyone"""
+
+        step3_text = """STEP 3: Enable Required Settings
+• Still in the "Bot" section, scroll to "Privileged Gateway Intents"
+• Turn ON "Message Content Intent" (this lets the bot read messages)
+• That's it - no other settings needed"""
+
+        step4_text = """STEP 4: Invite Bot to Your Server
+• Click "OAuth2" in the left sidebar, then "URL Generator"
+• Under "Scopes", check the box for "bot"
+• Under "Bot Permissions", check "Administrator" (or select individual permissions)
+• Copy the generated URL at the bottom
+• Paste it in your browser and select your Discord server to invite the bot"""
+
+        step5_text = """STEP 5: Connect Here
+• Paste your bot token in the field below
+• Click "Connect" - you should see the status turn green
+• That's it! You can now use slash commands in Discord"""
+
+        # Create labels for each step
+        for step_text in [step1_text, step2_text, step3_text, step4_text, step5_text]:
+            step_label = ttk.Label(
+                instructions_frame,
+                text=step_text,
+                justify="left",
+                wraplength=480,
+                font=("TkDefaultFont", 9),
+            )
+            step_label.pack(anchor="w", pady=8, padx=5)
+
+        # Connection frame
+        connection_frame = ttk.Labelframe(self.discord_scrollable, text="🔐 Connection", padding=10)
+        connection_frame.pack(fill="x", padx=10, pady=10)
+
+        # Token input
+        token_row = ttk.Frame(connection_frame)
+        token_row.pack(fill="x", pady=(0, 10))
+        token_row.columnconfigure(1, weight=1)
+
+        ttk.Label(token_row, text="Bot Token:").grid(row=0, column=0, sticky="w", padx=(0, 5))
+        self.discord_token_entry = ttk.Entry(
+            token_row,
+            textvariable=self.discord_bot_token_var,
+            show="*",
+            width=50,
+        )
+        self.discord_token_entry.grid(row=0, column=1, sticky="ew", padx=5)
+        self._register_config_widget("discord_token_entry", self.discord_token_entry)
+
+        # Status and buttons row
+        status_row = ttk.Frame(connection_frame)
+        status_row.pack(fill="x", pady=(0, 10))
+
+        self.discord_status_label = ttk.Label(
+            status_row,
+            text="Status: 🔴 Disconnected",
+            foreground="#e74c3c",
+        )
+        self.discord_status_label.pack(side="left", padx=(0, 10))
+
+        button_frame = ttk.Frame(status_row)
+        button_frame.pack(side="right")
+
+        self.discord_connect_btn = ttk.Button(
+            button_frame,
+            text="Connect",
+            bootstyle="success",
+            command=self._on_discord_connect,
+        )
+        self.discord_connect_btn.pack(side="left", padx=(0, 5))
+        self._register_config_widget("discord_connect_btn", self.discord_connect_btn)
+
+        self.discord_disconnect_btn = ttk.Button(
+            button_frame,
+            text="Disconnect",
+            bootstyle="danger",
+            command=self._on_discord_disconnect,
+            state=tk.DISABLED,
+        )
+        self.discord_disconnect_btn.pack(side="left")
+        self._register_config_widget("discord_disconnect_btn", self.discord_disconnect_btn)
+
+        # Commands info frame
+        commands_frame = ttk.Labelframe(self.discord_scrollable, text="⚡ Commands You Can Use", padding=10)
+        commands_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        commands_intro = ttk.Label(
+            commands_frame,
+            text="Once connected, type these commands in any Discord channel:",
+            justify="left",
+            wraplength=480,
+            font=("TkDefaultFont", 9),
+        )
+        commands_intro.pack(anchor="w", pady=(0, 8))
+
+        commands_list = [
+            ("/help", "See all available commands"),
+            ("/stats", "View bot stats (wins, losses, winrate, runtime)"),
+            ("/screenshot", "Take a screenshot of what the bot sees"),
+            ("/status", "Check if the bot is running and what it's doing"),
+            ("/live", "Start live feed - screenshots every 5 seconds"),
+            ("/live channel:#channel-name", "Send live feed to a specific channel"),
+            ("/stop", "Stop the live feed"),
+        ]
+
+        for cmd, desc in commands_list:
+            cmd_frame = ttk.Frame(commands_frame)
+            cmd_frame.pack(fill="x", pady=3, padx=5)
+            cmd_label = ttk.Label(
+                cmd_frame,
+                text=f"{cmd:30}",
+                font=("TkDefaultFont", 9, "bold"),
+                foreground="#00aaff",
+            )
+            cmd_label.pack(side="left", anchor="w")
+            desc_label = ttk.Label(
+                cmd_frame,
+                text=desc,
+                font=("TkDefaultFont", 9),
+            )
+            desc_label.pack(side="left", padx=(5, 0))
+
+        tip_label = ttk.Label(
+            commands_frame,
+            text="💡 Tip: All commands use embeds for easy reading!",
+            justify="left",
+            wraplength=480,
+            font=("TkDefaultFont", 8),
+            foreground="#888888",
+        )
+        tip_label.pack(anchor="w", pady=(10, 0), padx=5)
+
+    def _on_discord_connect(self) -> None:
+        """Handle Discord bot connect button click."""
+        token = self.discord_bot_token_var.get().strip()
+        if not token:
+            from tkinter import messagebox
+
+            messagebox.showerror("Error", "Please enter a bot token!")
+            return
+
+        # This will be handled by the main application
+        self._notify_config_change()
+
+    def _on_discord_disconnect(self) -> None:
+        """Handle Discord bot disconnect button click."""
+        self._notify_config_change()
+
+    def set_discord_bot_status(self, connected: bool) -> None:
+        """Update the Discord bot connection status."""
+        self.discord_bot_connected_var.set(connected)
+        if connected:
+            self.discord_status_label.configure(text="Status: 🟢 Connected", foreground="#2ecc71")
+            self.discord_connect_btn.configure(state=tk.DISABLED)
+            self.discord_disconnect_btn.configure(state=tk.NORMAL)
+            self.discord_token_entry.configure(state=tk.DISABLED)
+        else:
+            self.discord_status_label.configure(text="Status: 🔴 Disconnected", foreground="#e74c3c")
+            self.discord_connect_btn.configure(state=tk.NORMAL)
+            self.discord_disconnect_btn.configure(state=tk.DISABLED)
+            self.discord_token_entry.configure(state=tk.NORMAL)
 
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
         self._config_widgets[key] = widget
