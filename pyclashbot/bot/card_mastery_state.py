@@ -11,7 +11,7 @@ from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 
-CARD_MASTERY_CORD = (340, 440)
+CARD_MASTERY_COORD = (340, 440)
 CARD_MASTERY_BGR = (95, 214, 251)
 PIXEL_TOLERANCE = 15
 
@@ -117,7 +117,7 @@ def card_mastery_rewards_exist_with_delay(emulator):
 def card_mastery_rewards_exist(emulator):
     screenshot = emulator.screenshot()
 
-    x, y = CARD_MASTERY_CORD
+    x, y = CARD_MASTERY_COORD
     pixel = screenshot[y][x]
 
     return pixel_is_equal(
