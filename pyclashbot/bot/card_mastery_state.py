@@ -1,6 +1,4 @@
 import time
-from pathlib import Path
-import numpy
 
 from pyclashbot.bot.nav import (
     check_if_on_card_page,
@@ -10,15 +8,13 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.cancellation import interruptible_sleep
-from pyclashbot.utils.image_handler import open_from_path
 from pyclashbot.utils.logger import Logger
 
 
-CARD_MASTERY_CORD =  (340, 440)
+CARD_MASTERY_CORD = (340, 440)
 CARD_MASTERY_BGR = (95, 214, 251)
 PIXEL_TOLERANCE = 15
 
-    
 def card_mastery_state(emulator, logger):
     logger.change_status("Going to collect card mastery rewards")
 
