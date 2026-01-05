@@ -307,7 +307,7 @@ requires-dist = [
     { name = "psutil", specifier = ">=6.1.0,<8" },
     { name = "pymemuc", specifier = ">=0.6.0,<0.7" },
     { name = "pypresence", specifier = ">=4.3.0,<5" },
-    { name = "ttkbootstrap", specifier = ">=1.12.1,<1.19" },
+    { name = "ttkbootstrap", specifier = ">=1.12.1,<1.20" },
 ]
 
 [package.metadata.requires-dev]
