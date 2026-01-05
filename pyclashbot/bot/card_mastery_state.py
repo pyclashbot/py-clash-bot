@@ -10,10 +10,10 @@ from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
-
 CARD_MASTERY_COORD = (340, 440)
 CARD_MASTERY_BGR = (95, 214, 251)
 PIXEL_TOLERANCE = 15
+
 
 def card_mastery_state(emulator, logger):
     logger.change_status("Going to collect card mastery rewards")
@@ -120,12 +120,7 @@ def card_mastery_rewards_exist(emulator):
     x, y = CARD_MASTERY_COORD
     pixel = screenshot[y][x]
 
-    return pixel_is_equal(
-        pixel,
-        CARD_MASTERY_BGR,
-        PIXEL_TOLERANCE
-    )
-
+    return pixel_is_equal(pixel, CARD_MASTERY_BGR, PIXEL_TOLERANCE)
 
 
 def check_for_inventory_full_popup(emulator):
