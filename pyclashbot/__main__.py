@@ -93,6 +93,10 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         # Default: Vulkan on macOS, OpenGL on Windows
         job_dictionary["bluestacks_render_mode"] = "vlcn" if is_macos() else "gl"
 
+    # BlueStacks instance selection
+    if UIField.BLUESTACKS_INSTANCE.value in values:
+        job_dictionary["bluestacks_instance"] = values.get(UIField.BLUESTACKS_INSTANCE.value)
+
     # Emulator selection
     if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
         job_dictionary["emulator"] = EmulatorType.GOOGLE_PLAY
@@ -242,6 +246,8 @@ class BotApplication:
         self.ui.adb_restart_btn.configure(command=self._on_adb_restart)
         self.ui.adb_set_size_btn.configure(command=self._on_adb_set_size)
         self.ui.adb_reset_size_btn.configure(command=self._on_adb_reset_size)
+        self.ui.bs_refresh_btn.configure(command=self._on_bluestacks_refresh)
+        self.ui.register_bluestacks_refresh_callback(self._get_bluestacks_instances)
 
         # Multiprocessing primitives
         self.process: WorkerProcess | None = None
@@ -469,6 +475,35 @@ class BotApplication:
         if start_on_run:
             self.ui.after(200, self._on_start)
         self.ui.mainloop()
+
+    def _get_bluestacks_instances(self) -> list[str]:
+        """Get list of available BlueStacks instances (no side effects)."""
+        try:
+            from pyclashbot.emulators.bluestacks import list_bluestacks_instances
+
+            instances = list_bluestacks_instances()
+            return instances if instances else ["pyclashbot-96"]
+        except Exception as e:
+            self.logger.change_status(f"Error getting BlueStacks instances: {e}")
+            return ["pyclashbot-96"]
+
+    def _on_bluestacks_refresh(self) -> None:
+        """Handle BlueStacks refresh button click."""
+        self.logger.change_status("Refreshing BlueStacks instances list...")
+        try:
+            instances = self._get_bluestacks_instances()
+            self.ui.bs_instance_combo.configure(values=instances)
+            if instances:
+                current_selection = self.ui.bs_instance_var.get()
+                if current_selection not in instances:
+                    self.ui.bs_instance_var.set(instances[0])
+                self.logger.change_status(f"Found instances: {', '.join(instances)}")
+            else:
+                self.ui.bs_instance_var.set("pyclashbot-96")
+                self.logger.change_status("No BlueStacks instances found.")
+        except Exception as e:
+            self.logger.change_status(f"Error refreshing BlueStacks instances: {e}")
+
 
 
 def main_gui(start_on_run: bool = False, settings: dict[str, Any] | None = None) -> None:
