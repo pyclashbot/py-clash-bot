@@ -90,7 +90,7 @@ def check_if_in_battle(emulator):
         return iar[y][x].tolist()
 
     def is_bright(pixel: list[int] | None, threshold: int = 180) -> bool:
-        return pixel is not None and all(channel >= threshold for channel in pixel)
+         return pixel is not None and all(channel >= threshold for channel in pixel) or (150 <= pixel[0] <= 195 and 40 <= pixel[1] <= 60 and 40 <= pixel[2] <= 60) 
 
     def is_scoreboard_purple(pixel: list[int] | None) -> bool:
         if pixel is None:
@@ -104,6 +104,8 @@ def check_if_in_battle(emulator):
         bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel))
         return bright_count >= bright_required and is_scoreboard_purple(pixels[-1])
 
+    # When the emote is closed these pixels are not considered bright:
+    # (533, 80) RGB=[157, 44, 44] and (532, 77) RGB=[187, 55, 55]
     coords_1v1 = [(528, 49), (532, 77), (546, 52), (546, 77), (618, 115)]
     coords_2v2 = [(534, 53), (533, 80), (548, 52), (548, 76), (615, 114)]
 
