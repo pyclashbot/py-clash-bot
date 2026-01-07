@@ -90,13 +90,9 @@ def check_if_in_battle(emulator):
         return iar[y][x].tolist()
 
     def is_bright(pixel: list[int] | None, threshold: int = 180) -> bool:
-<<<<<<< HEAD
-         return pixel is not None and all(channel >= threshold for channel in pixel) or (150 <= pixel[0] <= 195 and 40 <= pixel[1] <= 60 and 40 <= pixel[2] <= 60)
-=======
         return (pixel is not None and all(channel >= threshold for channel in pixel)) or (
             150 <= pixel[0] <= 195 and 40 <= pixel[1] <= 60 and 40 <= pixel[2] <= 60
         )
->>>>>>> 464919d3 (format)
 
     def is_scoreboard_purple(pixel: list[int] | None) -> bool:
         if pixel is None:
