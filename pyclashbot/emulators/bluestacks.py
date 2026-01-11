@@ -667,6 +667,65 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return False  # if this makes issues big problems
             interruptible_sleep(1)
 
+        # Wait for Android to fully boot before checking for apps
+        boot_timeout = 120
+        boot_wait_start_time = time.time()
+        boot_complete = False
+
+        # Expected system packages that should be present on a booted Android system
+        expected_system_packages = [
+            "com.android.systemui",
+            "com.android.launcher",
+            "com.android.settings",
+            "com.google.android.gms",
+        ]
+
+        while time.time() - boot_wait_start_time < boot_timeout:
+            try:
+                # Check if Android has finished booting
+                res = self.adb("shell getprop sys.boot_completed")
+                if res.stdout and res.stdout.strip() == "1":
+                    # Also wait for package manager to be ready and return non-empty results
+                    res = self.adb("shell pm list packages")
+                    if res.returncode == 0 and res.stdout and len(res.stdout.strip()) > 0:
+                        package_lines = [
+                            line.strip()
+                            for line in res.stdout.strip().split("\n")
+                            if line.strip().startswith("package:")
+                        ]
+                        package_count = len(package_lines)
+
+                        # Check that we have a reasonable number of packages
+                        # and that critical system packages are present
+                        if package_count > 0:
+                            # Extract package names (remove "package:" prefix)
+                            installed_packages = {
+                                line.replace("package:", "") for line in package_lines
+                            }
+
+                            # Check for at least some expected system packages
+                            found_system_packages = [
+                                pkg for pkg in expected_system_packages if pkg in installed_packages
+                            ]
+
+                            # Consider boot complete if we have packages AND at least some system packages
+                            # This ensures the system is fully initialized, not just responding
+                            if found_system_packages:
+                                self.logger.change_status("Android boot complete, checking for Clash Royale...")
+                                boot_complete = True
+                                break
+            except (AttributeError, ValueError, KeyError) as e:
+                # Only catch specific errors from string operations and attribute access
+                # These can occur if ADB output is malformed or unexpected
+                # Log in debug mode but continue retrying
+                if DEBUG:
+                    print(f"[DEBUG] Boot check error (will retry): {e}")
+                pass
+            interruptible_sleep(2)
+
+        if not boot_complete:
+            self.logger.log("Warning: Android boot timeout, but continuing anyway...")
+
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
         self.logger.change_status("Launching Clash Royale...")
@@ -685,16 +744,39 @@ class BlueStacksEmulatorController(AdbBasedController):
 
         interruptible_sleep(5)
 
-        # Wait for main menu
+        # Wait for main menu with retry logic
         self.logger.change_status("Waiting for Clash Royale main menu...")
         deadline = time.time() + 240
+        last_launch_attempt = time.time()
+        launch_retry_interval = 15  # Retry launching every 15 seconds if main menu not detected
+        max_launch_retries = 3
+        launch_retry_count = 0
+
         while time.time() < deadline:
             if check_if_on_clash_main_menu(self):
                 self.logger.change_status("Clash Royale main menu detected")
                 dur = f"{time.time() - start_ts:.1f}s"
                 self.logger.log(f"BlueStacks 5 restart completed in {dur}")
                 return True
+
+            # Check if we should retry launching the app
+            time_since_last_launch = time.time() - last_launch_attempt
+            if time_since_last_launch >= launch_retry_interval and launch_retry_count < max_launch_retries:
+                # Main menu not detected after interval, retry launch
+                launch_retry_count += 1
+                self.logger.log(
+                    f"Main menu not detected after {launch_retry_interval}s, retrying launch (attempt {launch_retry_count}/{max_launch_retries})..."
+                )
+                self.logger.change_status(
+                    f"Retrying Clash Royale launch ({launch_retry_count}/{max_launch_retries})..."
+                )
+                self.start_app(clash_pkg)
+                last_launch_attempt = time.time()
+                interruptible_sleep(3)  # Give it a moment after launching
+                continue  # Skip the click below, check for main menu first
+
             self.click(35, 405)  # Use inherited click
+            interruptible_sleep(2)
 
         self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
         return False

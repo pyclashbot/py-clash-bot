@@ -444,7 +444,8 @@ def find_post_battle_button(emulator):
 def get_to_main_after_fight(emulator, logger):
     timeout = 120  # s
     start_time = time.time()
-    clicked_ok_or_exit = False
+    last_button_attempt_time = 0
+    button_retry_interval = 5  # Retry clicking button every 5 seconds if still on post-battle screen
 
     logger.change_status("Returning to clash main after the fight...")
 
@@ -470,14 +471,21 @@ def get_to_main_after_fight(emulator, logger):
             interruptible_sleep(3)
             continue
 
-        # check for post-battle button (OK/exit)
-        if not clicked_ok_or_exit:
+        # check for post-battle button (OK/exit) - retry periodically
+        time_since_last_button_attempt = time.time() - last_button_attempt_time
+        if time_since_last_button_attempt >= button_retry_interval:
             button_coord = find_post_battle_button(emulator)
             if button_coord is not None:
-                print("Found post-battle button, clicking it.")
+                print(
+                    f"Found post-battle button, clicking it (retry attempt after {time_since_last_button_attempt:.1f}s)."
+                )
                 emulator.click(button_coord[0], button_coord[1])
-                clicked_ok_or_exit = True
+                last_button_attempt_time = time.time()
+                interruptible_sleep(2)  # Give it a moment after clicking
                 continue
+            else:
+                # Button not found, update last attempt time to avoid checking too frequently
+                last_button_attempt_time = time.time()
 
         interruptible_sleep(1)
         print("Clicking on deadspace to close potential pop-up windows.")
