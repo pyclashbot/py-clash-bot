@@ -39,7 +39,7 @@ from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
-from pyclashbot.utils.platform import is_linux, is_macos, is_windows
+from pyclashbot.utils.platform import is_macos
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -219,10 +219,10 @@ def open_recordings_folder() -> None:
 
 def open_logs_folder() -> None:
     import sys
-    
+
     folder_path = log_dir
     os.makedirs(folder_path, exist_ok=True)
-    
+
     try:
         if sys.platform == "win32":
             os.startfile(folder_path)
