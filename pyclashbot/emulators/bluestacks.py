@@ -668,11 +668,19 @@ class BlueStacksEmulatorController(AdbBasedController):
             interruptible_sleep(1)
 
         # Wait for Android to fully boot before checking for apps
-        self.logger.change_status("Waiting for Android to finish booting...")
         boot_timeout = 120
-        t2 = time.time()
+        boot_wait_start_time = time.time()
         boot_complete = False
-        while time.time() - t2 < boot_timeout:
+
+        # Expected system packages that should be present on a booted Android system
+        expected_system_packages = [
+            "com.android.systemui",
+            "com.android.launcher",
+            "com.android.settings",
+            "com.google.android.gms",
+        ]
+
+        while time.time() - boot_wait_start_time < boot_timeout:
             try:
                 # Check if Android has finished booting
                 res = self.adb("shell getprop sys.boot_completed")
@@ -680,16 +688,38 @@ class BlueStacksEmulatorController(AdbBasedController):
                     # Also wait for package manager to be ready and return non-empty results
                     res = self.adb("shell pm list packages")
                     if res.returncode == 0 and res.stdout and len(res.stdout.strip()) > 0:
-                        # Check that we have at least a few packages (not just empty/minimal output)
-                        # This ensures BlueStacks has fully initialized, not just that pm responds
-                        package_count = len(
-                            [line for line in res.stdout.strip().split("\n") if line.strip().startswith("package:")]
-                        )
-                        if package_count >= 5:  # Reasonable minimum for a booted Android system
-                            self.logger.change_status("Android boot complete, checking for Clash Royale...")
-                            boot_complete = True
-                            break
-            except Exception:
+                        package_lines = [
+                            line.strip()
+                            for line in res.stdout.strip().split("\n")
+                            if line.strip().startswith("package:")
+                        ]
+                        package_count = len(package_lines)
+
+                        # Check that we have a reasonable number of packages
+                        # and that critical system packages are present
+                        if package_count > 0:
+                            # Extract package names (remove "package:" prefix)
+                            installed_packages = {
+                                line.replace("package:", "") for line in package_lines
+                            }
+
+                            # Check for at least some expected system packages
+                            found_system_packages = [
+                                pkg for pkg in expected_system_packages if pkg in installed_packages
+                            ]
+
+                            # Consider boot complete if we have packages AND at least some system packages
+                            # This ensures the system is fully initialized, not just responding
+                            if found_system_packages:
+                                self.logger.change_status("Android boot complete, checking for Clash Royale...")
+                                boot_complete = True
+                                break
+            except (AttributeError, ValueError, KeyError) as e:
+                # Only catch specific errors from string operations and attribute access
+                # These can occur if ADB output is malformed or unexpected
+                # Log in debug mode but continue retrying
+                if DEBUG:
+                    print(f"[DEBUG] Boot check error (will retry): {e}")
                 pass
             interruptible_sleep(2)
 
