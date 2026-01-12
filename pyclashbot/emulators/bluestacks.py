@@ -699,9 +699,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                         # and that critical system packages are present
                         if package_count > 0:
                             # Extract package names (remove "package:" prefix)
-                            installed_packages = {
-                                line.replace("package:", "") for line in package_lines
-                            }
+                            installed_packages = {line.replace("package:", "") for line in package_lines}
 
                             # Check for at least some expected system packages
                             found_system_packages = [
