@@ -828,8 +828,9 @@ class PyClashBotUI(ttk.Window):
         try:
             self._style.theme_use(selected)
         except tk.TclError:
-            # Handle ttkbootstrap combobox popdown errors during theme changes
-            # This is a known issue with ttkbootstrap and doesn't affect functionality
+            # Widgets may not be fully initialized yet, especially combobox popdowns
+            # This can happen during initialization when loading settings
+            # The theme will be applied correctly once widgets are fully created
             pass
         self._refresh_theme_colours()
 
