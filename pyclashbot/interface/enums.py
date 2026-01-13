@@ -39,7 +39,6 @@ class UIField(StrEnum):
     CYCLE_DECKS_USER_TOGGLE = "cycle_decks_user_toggle"
     MAX_DECK_SELECTION = "max_deck_selection"
     RANDOM_PLAYS_USER_TOGGLE = "random_plays_user_toggle"
-    BRIDGE_SPAM_USER_TOGGLE = "bridge_spam_user_toggle"
     DISABLE_WIN_TRACK_TOGGLE = "disable_win_track_toggle"
     RECORD_FIGHTS_TOGGLE = "record_fights_toggle"
     OPENGL_TOGGLE = "opengl_toggle"
