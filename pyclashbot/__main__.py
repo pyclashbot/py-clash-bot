@@ -212,8 +212,6 @@ def open_recordings_folder() -> None:
         os.startfile(folder_path)
     except AttributeError:
         # Non-Windows fallback
-        import subprocess
-
         subprocess.Popen(["xdg-open", folder_path])
 
 
