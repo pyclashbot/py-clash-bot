@@ -55,16 +55,34 @@ def initalize_pylogging() -> None:
         print(f"[DEBUG] Log directory already exists")
     
     print(f"[DEBUG] Log file exists before basicConfig: {exists(log_name)}")
+    print(f"[DEBUG] Logging already configured: {len(logging.root.handlers) > 0}")
+    print(f"[DEBUG] Existing handlers before config: {logging.root.handlers}")
     
+    # Clear existing handlers if logging was already configured
+    # This ensures we can properly set up file logging
+    if len(logging.root.handlers) > 0:
+        print(f"[DEBUG] Clearing {len(logging.root.handlers)} existing handlers")
+        logging.root.handlers.clear()
+    
+    # Force reconfiguration if logging was already set up (e.g., by another module)
+    # Use force=True (Python 3.8+) to override existing configuration
     logging.basicConfig(
         filename=log_name,
         encoding="utf-8",
         level=logging.DEBUG,
         format="%(levelname)s:%(asctime)s %(message)s",
+        force=True,  # Force reconfiguration even if logging was already configured
     )
     
     print(f"[DEBUG] Log file exists after basicConfig: {exists(log_name)}")
-    print(f"[DEBUG] Logging handlers: {logging.root.handlers}")
+    print(f"[DEBUG] Logging handlers after config: {logging.root.handlers}")
+    print(f"[DEBUG] Handler types: {[type(h).__name__ for h in logging.root.handlers]}")
+    
+    # Verify we have a FileHandler
+    file_handlers = [h for h in logging.root.handlers if isinstance(h, logging.FileHandler)]
+    print(f"[DEBUG] FileHandler count: {len(file_handlers)}")
+    if len(file_handlers) > 0:
+        print(f"[DEBUG] FileHandler baseFilename: {file_handlers[0].baseFilename}")
     
     logging.info("Logging initialized for %s", __version__)
     print(f"[DEBUG] After first logging.info(), log file exists: {exists(log_name)}")
