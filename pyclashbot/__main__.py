@@ -6,6 +6,7 @@ import locale
 import multiprocessing as mp
 import os
 import subprocess
+import sys
 from multiprocessing import Event, Queue
 from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
@@ -220,12 +221,18 @@ def open_recordings_folder() -> None:
 def open_logs_folder() -> None:
     folder_path = log_dir
     os.makedirs(folder_path, exist_ok=True)
-    try:
-        os.startfile(folder_path)
-    except AttributeError:
-        import subprocess
 
-        subprocess.Popen(["xdg-open", folder_path])
+    try:
+        if sys.platform == "win32":
+            os.startfile(folder_path)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", folder_path])
+        else:
+            # Linux and other Unix-like systems
+            subprocess.Popen(["xdg-open", folder_path])
+    except Exception as e:
+        # Log error but don't crash - user can manually navigate to the folder
+        print(f"Failed to open logs folder: {e}")
 
 
 class BotApplication:
