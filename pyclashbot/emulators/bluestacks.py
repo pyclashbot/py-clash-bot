@@ -667,6 +667,31 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return False  # if this makes issues big problems
             interruptible_sleep(1)
 
+        # Wait for Android to fully boot before checking for apps
+        boot_wait_start_time = time.time()
+        boot_timeout = 120
+        self.logger.change_status("Waiting for Android to finish booting...")
+        while time.time() - boot_wait_start_time < boot_timeout:
+            # Check if boot is complete
+            boot_result = self.adb("shell getprop sys.boot_completed")
+            if boot_result.returncode == 0 and boot_result.stdout and boot_result.stdout.strip() == "1":
+                # Verify pm list packages works and returns non-empty output
+                pm_result = self.adb("shell pm list packages")
+                if pm_result.returncode == 0 and pm_result.stdout:
+                    # Check for critical system packages to ensure full initialization
+                    packages_output = pm_result.stdout
+                    critical_packages = [
+                        "com.android.systemui",
+                        "com.android.launcher",
+                        "com.android.settings",
+                    ]
+                    if any(pkg in packages_output for pkg in critical_packages):
+                        self.logger.change_status("Android boot complete")
+                        break
+            interruptible_sleep(1)
+        else:
+            self.logger.change_status("Warning: Android boot check timeout, continuing anyway...")
+
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
         self.logger.change_status("Launching Clash Royale...")
