@@ -398,6 +398,7 @@ def state_tree(
             return state_order.next_state(state)
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
+        bridge_spam_flag = job_list.get(UIField.BRIDGE_SPAM_USER_TOGGLE, False)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
@@ -408,6 +409,7 @@ def state_tree(
                 mode_used_in_1v1,
                 False,
                 recording_flag,
+                bridge_spam_mode=bridge_spam_flag,
             )
             is False
         ):
@@ -424,6 +426,7 @@ def state_tree(
             return state_order.next_state(state)
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
+        bridge_spam_flag = job_list.get(UIField.BRIDGE_SPAM_USER_TOGGLE, False)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
@@ -432,6 +435,7 @@ def state_tree(
                 logger,
                 random_plays_flag,
                 recording_flag,
+                bridge_spam_mode=bridge_spam_flag,
             )
             is False
         ):

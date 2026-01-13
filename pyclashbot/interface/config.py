@@ -102,6 +102,7 @@ JOBS = [
         },
     ),
     JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "Random plays", default=False),
+    JobConfig(UIField.BRIDGE_SPAM_USER_TOGGLE, "Bridge spam", default=False),
     JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "Skip win/loss check", default=False),
     JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "Card Masteries", default=False),
     JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", default=False),

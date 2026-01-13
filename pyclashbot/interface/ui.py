@@ -361,12 +361,25 @@ class PyClashBotUI(ttk.Window):
             bootstyle: str,
         ) -> None:
             var = ttk.BooleanVar(value=job_defaults.get(field, False))
+
+            # Create callback with mutual exclusivity logic
+            def on_checkbox_change():
+                # Mutual exclusivity: if random plays is checked, uncheck bridge spam
+                if field == UIField.RANDOM_PLAYS_USER_TOGGLE and var.get():
+                    if UIField.BRIDGE_SPAM_USER_TOGGLE in self.jobs_vars:
+                        self.jobs_vars[UIField.BRIDGE_SPAM_USER_TOGGLE].set(False)
+                # Mutual exclusivity: if bridge spam is checked, uncheck random plays
+                elif field == UIField.BRIDGE_SPAM_USER_TOGGLE and var.get():
+                    if UIField.RANDOM_PLAYS_USER_TOGGLE in self.jobs_vars:
+                        self.jobs_vars[UIField.RANDOM_PLAYS_USER_TOGGLE].set(False)
+                self._notify_config_change()
+
             checkbox = ttk.Checkbutton(
                 frame,
                 text=text,
                 variable=var,
                 bootstyle=bootstyle,
-                command=self._notify_config_change,
+                command=on_checkbox_change,
                 width=checkbox_width,
             )
             checkbox.grid(row=row_index, column=0, sticky="w", pady=2)
@@ -461,9 +474,10 @@ class PyClashBotUI(ttk.Window):
         self._register_config_widget(UIField.MAX_DECK_SELECTION.value, self.max_deck_spin)
 
         add_job_checkbox(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random plays", 5, secondary_bootstyle)
-        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss check", 6, secondary_bootstyle)
-        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Masteries", 7, secondary_bootstyle)
-        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade Cards", 8, secondary_bootstyle)
+        add_job_checkbox(UIField.BRIDGE_SPAM_USER_TOGGLE, "🌉 Bridge spam", 6, secondary_bootstyle)
+        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss check", 7, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Masteries", 8, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade Cards", 9, secondary_bootstyle)
 
     def _create_emulator_tab(self) -> None:
         # Main container frame for the tab
@@ -811,7 +825,12 @@ class PyClashBotUI(ttk.Window):
                 self.theme_var.set(selected)
             finally:
                 self._suspend_traces -= 1
-        self._style.theme_use(selected)
+        try:
+            self._style.theme_use(selected)
+        except tk.TclError:
+            # Handle ttkbootstrap combobox popdown errors during theme changes
+            # This is a known issue with ttkbootstrap and doesn't affect functionality
+            pass
         self._refresh_theme_colours()
 
     def _label_foreground(self) -> str:

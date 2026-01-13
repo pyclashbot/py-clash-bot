@@ -80,6 +80,7 @@ def do_fight_state(
     fight_mode_choosed,
     called_from_launching=False,
     recording_flag: bool = False,
+    bridge_spam_mode: bool = False,
 ) -> bool:
     """Handle the entirety of a battle state (start fight, do fight, end fight)."""
 
@@ -96,13 +97,18 @@ def do_fight_state(
     logger.change_status("Starting fight loop")
     logger.log(f'This is the fight mode: "{fight_mode_choosed}"')
 
-    # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
-        logger.change_status("Failure in fight loop")
-        return False
-
+    # Run bridge spam fight loop if bridge spam mode is enabled
+    if bridge_spam_mode:
+        if _bridge_spam_fight_loop(emulator, logger, recording_flag) is False:
+            logger.change_status("Failure in bridge spam fight loop")
+            return False
     # Run random fight loop if random mode toggled
-    if random_fight_mode and _random_fight_loop(emulator, logger) is False:
+    elif random_fight_mode:
+        if _random_fight_loop(emulator, logger) is False:
+            logger.change_status("Failure in fight loop")
+            return False
+    # Run regular fight loop otherwise
+    elif _fight_loop(emulator, logger, recording_flag) is False:
         logger.change_status("Failure in fight loop")
         return False
 
@@ -129,6 +135,7 @@ def do_2v2_fight_state(
     logger: Logger,
     random_fight_mode,
     recording_flag: bool = False,
+    bridge_spam_mode: bool = False,
 ) -> bool:
     """Handle the entirety of the 2v2 battle state (start fight, do fight, end fight)."""
     # Use the same fight logic as 1v1, just with 2v2 mode
@@ -139,6 +146,7 @@ def do_2v2_fight_state(
         "Classic 2v2",
         called_from_launching=False,
         recording_flag=recording_flag,
+        bridge_spam_mode=bridge_spam_mode,
     )
 
 
@@ -740,6 +748,108 @@ def _random_fight_loop(emulator, logger) -> bool:
         interruptible_sleep(8)
 
     logger.change_status("Finished with battle with random plays...")
+    return True
+
+
+def _bridge_spam_fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
+    """Method for handling dynamically timed fight with bridge spam strategy.
+    
+    Uses the same card selection and elixir logic as normal fights,
+    but always plays cards at the bridge coordinates.
+    """
+    global last_three_cards
+    create_default_bridge_iar(emulator)
+    prev_cards_played = logger.get_cards_played()
+
+    # Initialize battle strategy and start timing
+    battle_strategy = BattleStrategy()
+    battle_strategy.start_battle()
+
+    # Bridge coordinates based on hog card grouping coordinates
+    # Left bridge: center around (113, 283) with variation
+    # Right bridge: center around (300, 283) with variation
+    BRIDGE_COORDS = {
+        "left": [(77, 281), (113, 283), (154, 283)],
+        "right": [(257, 283), (300, 283), (353, 283)],
+    }
+
+    while check_for_in_battle_with_delay(emulator):
+        # Get elixir amount and thresholds based on current battle phase
+        elixir_amount = battle_strategy.select_elixir_amount()
+        wait_threshold, play_threshold = battle_strategy.get_thresholds()
+
+        wait_output = wait_for_elixer(
+            emulator,
+            logger,
+            elixir_amount,
+            wait_threshold,
+            play_threshold,
+            recording_flag,
+        )
+
+        if wait_output == "restart":
+            logger.change_status("Failure while waiting for elixer")
+            return False
+
+        if wait_output == "no battle":
+            logger.change_status("Not in battle anymore!")
+            break
+
+        if not check_if_in_battle(emulator):
+            logger.change_status("Not in a battle anymore")
+            break
+
+        # Check which cards are available (same logic as normal play)
+        logger.change_status("Looking at which cards are available")
+        card_indicies = check_which_cards_are_available(emulator, False, True)
+
+        if not card_indicies:
+            logger.change_status("No cards ready yet...")
+            interruptible_sleep(1)
+            continue
+
+        # Select card using same logic as normal play
+        card_index = select_card_index(card_indicies, last_three_cards)
+        if card_index not in last_three_cards:
+            last_three_cards.append(card_index)
+        logger.change_status(f"Choosing card index: {card_index} for bridge spam")
+
+        # Determine which side to play on
+        _, play_side = switch_side()
+        bridge_coords = BRIDGE_COORDS.get(play_side, BRIDGE_COORDS["left"])
+        play_coord = random.choice(bridge_coords)
+
+        logger.change_status(f"Playing at bridge ({play_side} side): {play_coord}")
+
+        # Click the card
+        if None in [HAND_CARDS_COORDS, card_index]:
+            logger.change_status("[!] Non fatal error: card_index is None")
+            interruptible_sleep(1)
+            continue
+
+        emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
+        interruptible_sleep(0.1)
+
+        # Click the bridge coordinate
+        emulator.click(play_coord[0], play_coord[1])
+        if recording_flag:
+            save_play(play_coord, card_index)
+
+        logger.change_status("Played card at bridge")
+        logger.add_card_played()
+
+        if random.randint(0, 9) == 1:
+            send_emote(emulator, logger)
+
+        play_start_time = time.time()
+        logger.change_status(
+            f"Made a bridge spam play in {str(time.time() - play_start_time)[:4]}s",
+        )
+
+    logger.change_status("End of the bridge spam fight!")
+    interruptible_sleep(2.13)
+    cards_played = logger.get_cards_played()
+    logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
     return True
 
 
