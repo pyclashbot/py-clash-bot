@@ -42,26 +42,12 @@ def compress_logs() -> None:
 
 def initalize_pylogging() -> None:
     """Method to be called once to initalize python logging"""
-    # DEBUG: Track log directory and file paths
-    print(f"[DEBUG] Log directory: {log_dir}")
-    print(f"[DEBUG] Log file path: {log_name}")
-    print(f"[DEBUG] Log directory exists before creation: {exists(log_dir)}")
-    
     if not exists(log_dir):
-        print(f"[DEBUG] Creating log directory: {log_dir}")
         makedirs(log_dir)
-        print(f"[DEBUG] Log directory created successfully: {exists(log_dir)}")
-    else:
-        print(f"[DEBUG] Log directory already exists")
-    
-    print(f"[DEBUG] Log file exists before basicConfig: {exists(log_name)}")
-    print(f"[DEBUG] Logging already configured: {len(logging.root.handlers) > 0}")
-    print(f"[DEBUG] Existing handlers before config: {logging.root.handlers}")
     
     # Clear existing handlers if logging was already configured
     # This ensures we can properly set up file logging
     if len(logging.root.handlers) > 0:
-        print(f"[DEBUG] Clearing {len(logging.root.handlers)} existing handlers")
         logging.root.handlers.clear()
     
     # Force reconfiguration if logging was already set up (e.g., by another module)
@@ -74,33 +60,7 @@ def initalize_pylogging() -> None:
         force=True,  # Force reconfiguration even if logging was already configured
     )
     
-    print(f"[DEBUG] Log file exists after basicConfig: {exists(log_name)}")
-    print(f"[DEBUG] Logging handlers after config: {logging.root.handlers}")
-    print(f"[DEBUG] Handler types: {[type(h).__name__ for h in logging.root.handlers]}")
-    
-    # Verify we have a FileHandler
-    file_handlers = [h for h in logging.root.handlers if isinstance(h, logging.FileHandler)]
-    print(f"[DEBUG] FileHandler count: {len(file_handlers)}")
-    if len(file_handlers) > 0:
-        print(f"[DEBUG] FileHandler baseFilename: {file_handlers[0].baseFilename}")
-    
     logging.info("Logging initialized for %s", __version__)
-    print(f"[DEBUG] After first logging.info(), log file exists: {exists(log_name)}")
-    
-    # DEBUG: Force flush handlers to ensure file is written
-    for handler in logging.root.handlers:
-        if hasattr(handler, 'flush'):
-            handler.flush()
-    
-    print(f"[DEBUG] After flushing handlers, log file exists: {exists(log_name)}")
-    if exists(log_name):
-        try:
-            with open(log_name, "r", encoding="utf-8") as f:
-                content = f.read()
-                print(f"[DEBUG] Log file size: {len(content)} bytes")
-                print(f"[DEBUG] Log file first 200 chars: {content[:200]}")
-        except Exception as e:
-            print(f"[DEBUG] Error reading log file after init: {e}")
     logging.info(
         """
  ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
@@ -258,24 +218,7 @@ class Logger:
     def log(self, message) -> None:
         """Log something to file and print to console with time and stats"""
         log_message = f"[{self.current_state}] {message}"
-        # DEBUG: Track logging calls
-        print(f"[DEBUG] Logger.log() called with message: {message[:50]}...")
-        print(f"[DEBUG] Log file exists before logging.info(): {exists(log_name)}")
-        print(f"[DEBUG] Logging handlers count: {len(logging.root.handlers)}")
-        
         logging.info(log_message)
-        
-        print(f"[DEBUG] After logging.info(), log file exists: {exists(log_name)}")
-        if exists(log_name):
-            try:
-                with open(log_name, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                    print(f"[DEBUG] Log file has {len(lines)} lines")
-                    if len(lines) > 0:
-                        print(f"[DEBUG] Last log line: {lines[-1][:100]}")
-            except Exception as e:
-                print(f"[DEBUG] Error reading log file: {e}")
-        
         time_string = self.calc_time_since_start()
         print(f"[{self.current_state}] [{time_string}] {message}")
 

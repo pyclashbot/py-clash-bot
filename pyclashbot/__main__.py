@@ -220,21 +220,7 @@ def open_recordings_folder() -> None:
 
 def open_logs_folder() -> None:
     folder_path = log_dir
-    # DEBUG: Track folder opening
-    print(f"[DEBUG] open_logs_folder() called")
-    print(f"[DEBUG] Opening folder path: {folder_path}")
-    print(f"[DEBUG] Folder exists: {os.path.exists(folder_path)}")
-    
     os.makedirs(folder_path, exist_ok=True)
-    print(f"[DEBUG] After makedirs, folder exists: {os.path.exists(folder_path)}")
-    
-    # DEBUG: List files in folder
-    if os.path.exists(folder_path):
-        try:
-            files = os.listdir(folder_path)
-            print(f"[DEBUG] Files in log folder ({len(files)}): {files}")
-        except Exception as e:
-            print(f"[DEBUG] Error listing files: {e}")
 
     try:
         if sys.platform == "win32":
@@ -244,11 +230,9 @@ def open_logs_folder() -> None:
         else:
             # Linux and other Unix-like systems
             subprocess.Popen(["xdg-open", folder_path])
-        print(f"[DEBUG] Successfully opened folder")
     except Exception as e:
         # Log error but don't crash - user can manually navigate to the folder
         print(f"Failed to open logs folder: {e}")
-        print(f"[DEBUG] Exception details: {type(e).__name__}: {e}")
 
 
 class BotApplication:
