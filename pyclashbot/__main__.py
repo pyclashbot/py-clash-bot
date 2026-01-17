@@ -34,6 +34,7 @@ except locale.Error:
 from pyclashbot.bot.worker import WorkerProcess
 from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
+from pyclashbot.emulators.adb_base import validate_device_serial
 from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
@@ -104,9 +105,14 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     else:
         job_dictionary["emulator"] = EmulatorType.MEMU
 
-    job_dictionary[UIField.ADB_SERIAL.value] = values.get(UIField.ADB_SERIAL.value)
-    job_dictionary[UIField.GP_DEVICE_SERIAL.value] = values.get(UIField.GP_DEVICE_SERIAL.value)
-    job_dictionary[UIField.BS_DEVICE_SERIAL.value] = values.get(UIField.BS_DEVICE_SERIAL.value)
+    adb_serial = values.get(UIField.ADB_SERIAL.value)
+    job_dictionary[UIField.ADB_SERIAL.value] = adb_serial.strip() if adb_serial else None
+
+    gp_serial = values.get(UIField.GP_DEVICE_SERIAL.value)
+    job_dictionary[UIField.GP_DEVICE_SERIAL.value] = gp_serial.strip() if gp_serial else None
+
+    bs_serial = values.get(UIField.BS_DEVICE_SERIAL.value)
+    job_dictionary[UIField.BS_DEVICE_SERIAL.value] = bs_serial.strip() if bs_serial else None
 
     return job_dictionary
 
@@ -152,6 +158,22 @@ def start_button_event(
         if not device_serial or device_serial not in connected_devices:
             logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
             return None
+
+    if job_dictionary.get("emulator") == EmulatorType.GOOGLE_PLAY:
+        device_serial = job_dictionary.get(UIField.GP_DEVICE_SERIAL.value)
+        if device_serial:
+            connected_devices = AdbController.discover_system_devices()
+            if device_serial not in connected_devices:
+                logger.change_status(f"Start cancelled: Device '{device_serial}' not connected.")
+                return None
+
+    if job_dictionary.get("emulator") == EmulatorType.BLUESTACKS:
+        device_serial = job_dictionary.get(UIField.BS_DEVICE_SERIAL.value)
+        if device_serial:
+            connected_devices = AdbController.discover_system_devices()
+            if device_serial not in connected_devices:
+                logger.change_status(f"Start cancelled: Device '{device_serial}' not connected.")
+                return None
 
     logger.log("Start Button Event")
     logger.change_status("Starting the bot!")
@@ -395,6 +417,10 @@ class BotApplication:
             self.logger.change_status("Please select a device serial first.")
             return
 
+        if not validate_device_serial(serial):
+            self.logger.change_status(f"Invalid device serial format: {serial}")
+            return
+
         full_command = f"adb -s {serial} {command}"
         self.logger.change_status(f"Running ADB command: {full_command}")
         try:
@@ -433,21 +459,24 @@ class BotApplication:
         except Exception as e:
             self.logger.change_status(f"Error refreshing ADB devices: {e}")
 
-    def _refresh_gp_devices(self) -> None:
-        """Refresh device list for Google Play dropdown (called on open)."""
+    def _refresh_device_dropdown(self, combo_widget, emulator_name: str) -> None:
+        """Refresh device list for a dropdown (called on open)."""
         try:
             devices = AdbController.discover_system_devices()
-            self.ui.gp_device_serial_combo.configure(values=devices)
+            combo_widget.configure(values=devices)
+            if not devices:
+                self.logger.change_status(f"No ADB devices found for {emulator_name}")
         except Exception:
-            logging.exception("Failed to refresh Google Play device list")
+            logging.exception(f"Failed to refresh {emulator_name} device list")
+            self.logger.change_status(f"Failed to discover devices for {emulator_name}")
+
+    def _refresh_gp_devices(self) -> None:
+        """Refresh device list for Google Play dropdown (called on open)."""
+        self._refresh_device_dropdown(self.ui.gp_device_serial_combo, "Google Play")
 
     def _refresh_bs_devices(self) -> None:
         """Refresh device list for BlueStacks dropdown (called on open)."""
-        try:
-            devices = AdbController.discover_system_devices()
-            self.ui.bs_device_serial_combo.configure(values=devices)
-        except Exception:
-            logging.exception("Failed to refresh BlueStacks device list")
+        self._refresh_device_dropdown(self.ui.bs_device_serial_combo, "BlueStacks")
 
     def _on_adb_connect(self) -> None:
         device_address = self.ui.adb_serial_var.get()

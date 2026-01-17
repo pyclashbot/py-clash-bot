@@ -3,7 +3,7 @@ import subprocess
 import time
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -160,6 +160,10 @@ class AdbController(AdbBasedController):
         """Connects to a device via ADB over network or confirms a USB connection."""
         if not device_address:
             logger.change_status("Device address cannot be empty.")
+            return False
+
+        if not validate_device_serial(device_address):
+            logger.change_status(f"Invalid device address format: {device_address}")
             return False
 
         # If device is already in the list (e.g., USB connected), no need to connect.

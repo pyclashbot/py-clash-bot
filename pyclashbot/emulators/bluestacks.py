@@ -491,12 +491,15 @@ class BlueStacksEmulatorController(AdbBasedController):
             self.adb("kill-server")  # Cause ADB loves to randomly fuck around
 
     def _refresh_instance_port(self):
-        """Re-read the instance port from config."""
+        """Re-read the instance port from config and update device_serial."""
         if not self.internal_name:
             return
         new_port = self._read_instance_adb_port(self.bs_conf_path, self.internal_name)
         if new_port:
             self.instance_port = new_port
+            # Update device_serial if not user-specified
+            if not self._user_device_serial:
+                self.device_serial = f"127.0.0.1:{self.instance_port}"
 
     def _connect(self) -> bool:
         """Connect to the configured device."""
