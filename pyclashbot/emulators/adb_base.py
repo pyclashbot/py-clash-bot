@@ -7,6 +7,7 @@ from abc import ABC
 import cv2
 import numpy as np
 
+from pyclashbot.emulators import ActionCallback
 from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import is_linux
@@ -60,6 +61,8 @@ class AdbBasedController(BaseEmulatorController, ABC):
     adb_path: str = "adb"
     adb_server_port: int | None = None
     adb_env: dict | None = None
+
+    _action_callback: ActionCallback | None = None
 
     def _is_server_command(self, command: str) -> bool:
         """Check if command targets ADB server rather than a specific device.
@@ -260,8 +263,8 @@ class AdbBasedController(BaseEmulatorController, ABC):
         self.current_package_name = package_name
         logger.warning("App %s not installed - waiting for user to install", package_name)
 
-        if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
-            self.logger.show_temporary_action(
+        if self._action_callback:
+            self._action_callback(
                 message=f"{package_name} not installed - please install it and complete tutorial",
                 action_text="Retry",
                 callback=self._retry_installation_check,
@@ -288,8 +291,8 @@ class AdbBasedController(BaseEmulatorController, ABC):
             logger.info("App %s now installed", package_name)
         else:
             logger.warning("App %s still not installed", package_name)
-            if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
-                self.logger.show_temporary_action(
+            if self._action_callback:
+                self._action_callback(
                     message=f"{package_name} still not found - please install it and complete tutorial",
                     action_text="Retry",
                     callback=self._retry_installation_check,
