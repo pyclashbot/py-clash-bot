@@ -47,9 +47,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-initalize_pylogging()
-
-
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     """Create a dictionary of job toggles and increments based on UI values."""
 
@@ -536,4 +533,5 @@ if __name__ == "__main__":
     except RuntimeError:
         pass  # Already set
     cli_args = arg_parser()
+    initalize_pylogging(debug=cli_args.debug)
     main_gui(start_on_run=cli_args.start)
