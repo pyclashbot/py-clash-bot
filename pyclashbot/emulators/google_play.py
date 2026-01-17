@@ -170,28 +170,6 @@ class GooglePlayEmulatorController(AdbBasedController):
         print("Cant call self here so idk what to do.")
         print("Someone 10x try to clear google play processes here")
 
-    def list_devices(self) -> list[tuple[str, str]]:
-        """
-        List all ADB devices with their status.
-
-        Returns:
-            list of (serial, status) tuples, e.g., [("localhost:6520", "device"), ("emulator-5554", "offline")]
-        """
-        result = self.adb("devices")
-        devices = []
-        if result.stdout:
-            lines = result.stdout.strip().splitlines()
-            for line in lines[1:]:  # Skip "List of devices attached" header
-                parts = line.split()
-                if len(parts) >= 2:
-                    serial, status = parts[0], parts[1]
-                    devices.append((serial, status))
-        return devices
-
-    def list_online_devices(self) -> list[str]:
-        """List all online (status='device') ADB devices."""
-        return [serial for serial, status in self.list_devices() if status == "device"]
-
     def _connect(self):
         if DEBUG:
             print("[CONNECT DEBUG] Starting connection process...")
@@ -278,56 +256,6 @@ class GooglePlayEmulatorController(AdbBasedController):
             return adb_path
 
         raise FileNotFoundError(f"adb.exe not found at expected location: {adb_path}")
-
-    def _is_server_command(self, command: str) -> bool:
-        """
-        Check if command targets the ADB server rather than a specific device.
-        Server commands should not use the -s flag.
-        """
-        first_word = command.strip().split()[0] if command.strip() else ""
-        return first_word in {"connect", "disconnect", "devices", "start-server", "kill-server", "version", "help"}
-
-    def adb(self, command, binary_output=False):
-        """
-        Runs an adb command using the located adb.exe path.
-        This is the abstract method implementation for AdbBasedController.
-        Uses -s flag to target specific device unless it's a server-level command.
-        """
-        if self._is_server_command(command):
-            full_command = f'"{self.adb_path}" {command}'
-        else:
-            full_command = f'"{self.adb_path}" -s {self.device_serial} {command}'
-        if DEBUG:
-            print(f"[ADB DEBUG] Executing: {full_command}")
-            print(f"[ADB DEBUG] ADB path exists: {os.path.exists(self.adb_path)}")
-            print(f"[ADB DEBUG] Binary output mode: {binary_output}")
-
-        result = subprocess.run(
-            full_command,
-            shell=True,
-            capture_output=True,
-            text=not binary_output,
-            check=False,
-        )
-
-        if DEBUG:
-            print(f"[ADB DEBUG] Return code: {result.returncode}")
-            if binary_output:
-                print(f"[ADB DEBUG] Stdout type: {type(result.stdout)}")
-                print(f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}")
-            else:
-                print(f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}...")
-            print(f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}...")
-
-        return result
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if an app is installed using the emulator's bundled ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        result = self.adb("shell pm list packages")
-        return result.stdout is not None and package_name in result.stdout
 
     def create(self):
         """

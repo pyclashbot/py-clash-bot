@@ -148,7 +148,7 @@ def start_button_event(
 
     if job_dictionary.get("emulator") == EmulatorType.ADB:
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
-        connected_devices = AdbController.list_devices()
+        connected_devices = AdbController.discover_system_devices()
         if not device_serial or device_serial not in connected_devices:
             logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
             return None
@@ -420,7 +420,7 @@ class BotApplication:
     def _on_adb_refresh(self) -> None:
         self.logger.change_status("Refreshing ADB devices list...")
         try:
-            devices = AdbController.list_devices()
+            devices = AdbController.discover_system_devices()
             self.ui.adb_serial_combo.configure(values=devices)
             if devices:
                 current_selection = self.ui.adb_serial_var.get()
@@ -436,7 +436,7 @@ class BotApplication:
     def _refresh_gp_devices(self) -> None:
         """Refresh device list for Google Play dropdown (called on open)."""
         try:
-            devices = AdbController.list_devices()
+            devices = AdbController.discover_system_devices()
             self.ui.gp_device_serial_combo.configure(values=devices)
         except Exception:
             logging.exception("Failed to refresh Google Play device list")
@@ -444,7 +444,7 @@ class BotApplication:
     def _refresh_bs_devices(self) -> None:
         """Refresh device list for BlueStacks dropdown (called on open)."""
         try:
-            devices = AdbController.list_devices()
+            devices = AdbController.discover_system_devices()
             self.ui.bs_device_serial_combo.configure(values=devices)
         except Exception:
             logging.exception("Failed to refresh BlueStacks device list")

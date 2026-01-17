@@ -1,11 +1,16 @@
+import logging
+import os
 import subprocess
-from abc import ABC, abstractmethod
+from abc import ABC
 
 import cv2
 import numpy as np
 
 from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.utils.cancellation import interruptible_sleep
+from pyclashbot.utils.platform import is_linux
+
+logger = logging.getLogger(__name__)
 
 
 class AdbBasedController(BaseEmulatorController, ABC):
@@ -13,28 +18,50 @@ class AdbBasedController(BaseEmulatorController, ABC):
     Abstract base class for emulator controllers that use ADB.
 
     This class provides concrete implementations for common ADB operations
-    (click, swipe, screenshot, start_app, installation waiting)
-    by leveraging an abstract `adb` method that subclasses must implement.
+    (click, swipe, screenshot, start_app, installation waiting, device listing)
+    with configurable ADB path, server port, and environment.
 
-    Subclasses must implement:
-    - adb(command, binary_output) -> subprocess.CompletedProcess
-    - _check_app_installed(package_name) -> bool
-
-    Subclasses must set before __init__ returns:
+    Subclasses must set before using ADB methods:
     - device_serial: str (the ADB device serial to target)
+
+    Subclasses may override these properties for custom ADB configuration:
+    - adb_path: str (default: "adb" for system ADB)
+    - adb_server_port: int | None (default: None, no custom port)
+    - adb_env: dict | None (default: None, inherit environment)
     """
 
     device_serial: str
 
-    # === Abstract methods (must be implemented by subclasses) ===
+    adb_path: str = "adb"
+    adb_server_port: int | None = None
+    adb_env: dict | None = None
 
-    @abstractmethod
+    def _is_server_command(self, command: str) -> bool:
+        """Check if command targets ADB server rather than a specific device.
+
+        Server commands should not have -s device_serial added.
+        """
+        c = command.strip()
+        if c.startswith("-s "):
+            return True  # Already device-scoped
+        first = c.split()[0] if c else ""
+        return first in {
+            "connect",
+            "disconnect",
+            "devices",
+            "start-server",
+            "kill-server",
+            "version",
+            "help",
+            "keys",
+        }
+
     def adb(self, command: str, binary_output: bool = False) -> subprocess.CompletedProcess:
         """
-        Execute an ADB command.
+        Execute an ADB command with automatic device scoping.
 
-        Implementation varies by emulator (e.g., system ADB, bundled ADB,
-        private server) and must be provided by the subclass.
+        Builds the command with the configured ADB path, optional server port,
+        and device serial (unless it's a server-level command).
 
         Args:
             command (str): The ADB command to execute (e.g., "shell input tap 1 2").
@@ -44,12 +71,52 @@ class AdbBasedController(BaseEmulatorController, ABC):
         Returns:
             subprocess.CompletedProcess: The result of the ADB command.
         """
-        raise NotImplementedError
+        parts = [f'"{self.adb_path}"']
 
-    @abstractmethod
+        if self.adb_server_port:
+            parts.append(f"-P {self.adb_server_port}")
+
+        if not self._is_server_command(command) and self.device_serial:
+            parts.append(f"-s {self.device_serial}")
+
+        parts.append(command)
+        full_command = " ".join(parts)
+
+        logger.debug("Executing ADB: %s", full_command)
+
+        kwargs: dict = {
+            "shell": True,
+            "capture_output": True,
+            "text": not binary_output,
+        }
+
+        if self.adb_env:
+            kwargs["env"] = self.adb_env
+
+        if is_linux():
+            kwargs["preexec_fn"] = os.setsid
+
+        result = subprocess.run(full_command, check=False, **kwargs)
+
+        if binary_output:
+            logger.debug("ADB result: rc=%d, stdout=%d bytes", result.returncode, len(result.stdout or b""))
+        else:
+            stdout_preview = (result.stdout or "")[:200]
+            logger.debug("ADB result: rc=%d, stdout=%r", result.returncode, stdout_preview)
+
+        if result.returncode != 0 and result.stderr:
+            stderr_msg = (
+                result.stderr.strip()
+                if isinstance(result.stderr, str)
+                else result.stderr.decode("utf-8", "ignore").strip()
+            )
+            if stderr_msg:
+                logger.warning("ADB command failed (rc=%d): %s", result.returncode, stderr_msg)
+
+        return result
+
     def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if an app is installed using the emulator's specific ADB mechanism.
+        """Check if an app is installed via ADB.
 
         Args:
             package_name (str): The package name to check (e.g., "com.supercell.clashroyale").
@@ -57,9 +124,42 @@ class AdbBasedController(BaseEmulatorController, ABC):
         Returns:
             bool: True if the app is installed, False otherwise.
         """
-        raise NotImplementedError
+        logger.debug("Checking if app is installed: %s", package_name)
+        result = self.adb("shell pm list packages")
+        installed = result.stdout is not None and package_name in result.stdout
+        if installed:
+            logger.info("App %s is installed", package_name)
+        else:
+            logger.info("App %s is NOT installed", package_name)
+        return installed
 
-    # === Concrete shared methods (inherited by all subclasses) ===
+    def list_devices(self) -> list[tuple[str, str]]:
+        """List all ADB devices with their status.
+
+        Returns:
+            list of (serial, status) tuples, e.g., [("localhost:6520", "device"), ("emulator-5554", "offline")]
+        """
+        result = self.adb("devices")
+        devices = []
+        if result.stdout:
+            for line in result.stdout.strip().splitlines()[1:]:
+                parts = line.split()
+                if len(parts) >= 2:
+                    devices.append((parts[0], parts[1]))
+
+        logger.info("Found %d ADB device(s): %s", len(devices), devices)
+
+        for serial, status in devices:
+            if status == "offline":
+                logger.warning("Device %s is offline - may need reconnection", serial)
+            elif status == "unauthorized":
+                logger.warning("Device %s is unauthorized - check USB debugging authorization on device", serial)
+
+        return devices
+
+    def list_online_devices(self) -> list[str]:
+        """List serials of online (status='device') devices only."""
+        return [serial for serial, status in self.list_devices() if status == "device"]
 
     def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
         """Click on the screen using ADB input tap."""
@@ -87,14 +187,18 @@ class AdbBasedController(BaseEmulatorController, ABC):
 
         if result.returncode != 0 or not result.stdout:
             err = result.stderr if result.stderr else b"Unknown ADB error"
-            raise RuntimeError(f"ADB screencap failed: {err.decode('utf-8', 'ignore')}")
+            error_msg = err.decode("utf-8", "ignore")
+            logger.error("Screenshot capture failed: %s", error_msg)
+            raise RuntimeError(f"ADB screencap failed: {error_msg}")
 
         img_array = np.frombuffer(result.stdout, dtype=np.uint8)
         img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
 
         if img is None:
+            logger.error("Failed to decode screenshot data (%d bytes)", len(result.stdout))
             raise ValueError("Failed to decode screenshot. Image data may be corrupt or empty.")
 
+        logger.debug("Screenshot captured: %dx%d", img.shape[1], img.shape[0])
         return img
 
     def start_app(self, package_name: str):
@@ -112,53 +216,50 @@ class AdbBasedController(BaseEmulatorController, ABC):
             wait was successfully initiated and completed.
         """
         if not self._check_app_installed(package_name):
-            # App not found, trigger the user installation prompt
             return self._wait_for_clash_installation(package_name)
 
-        # App is installed, launch it
+        logger.info("Launching app: %s", package_name)
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
         return True
 
     def _wait_for_clash_installation(self, package_name: str):
         """
-        Private method to show a UI prompt and wait for the user to install
-        the specified app.
+        Show a UI prompt and wait for the user to install the specified app.
         """
         self.current_package_name = package_name
-        self.logger.show_temporary_action(
-            message=f"{package_name} not installed - please install it and complete tutorial",
-            action_text="Retry",
-            callback=self._retry_installation_check,
-        )
+        logger.warning("App %s not installed - waiting for user to install", package_name)
 
-        self.logger.log(f"[!] {package_name} not installed.")
+        if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
+            self.logger.show_temporary_action(
+                message=f"{package_name} not installed - please install it and complete tutorial",
+                action_text="Retry",
+                callback=self._retry_installation_check,
+            )
+
         self.installation_waiting = True
 
         while self.installation_waiting:
             interruptible_sleep(0.5)
 
-        # This loop breaks when _retry_installation_check sets
-        # self.installation_waiting = False
-        self.logger.log("[+] Installation confirmed, continuing...")
+        logger.info("App %s installation confirmed", package_name)
         return True
 
     def _retry_installation_check(self):
         """
-        Callback method for the 'Retry' button. Checks if the app
-        has been installed.
+        Callback method for the 'Retry' button. Checks if the app has been installed.
         """
-        self.logger.change_status("Checking for app installation...")
+        logger.debug("Retry clicked - checking for app installation")
 
         package_name = getattr(self, "current_package_name", "com.supercell.clashroyale")
 
         if self._check_app_installed(package_name):
             self.installation_waiting = False
-            self.logger.change_status("Installation complete - continuing...")
+            logger.info("App %s now installed", package_name)
         else:
-            # App still not found, show the prompt again
-            self.logger.show_temporary_action(
-                message=f"{package_name} still not found - please install it and complete tutorial",
-                action_text="Retry",
-                callback=self._retry_installation_check,
-            )
-            self.logger.log(f"[!] {package_name} still not installed. Please try again.")
+            logger.warning("App %s still not installed", package_name)
+            if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
+                self.logger.show_temporary_action(
+                    message=f"{package_name} still not found - please install it and complete tutorial",
+                    action_text="Retry",
+                    callback=self._retry_installation_check,
+                )
