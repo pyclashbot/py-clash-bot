@@ -26,6 +26,16 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
+    @staticmethod
+    def find_adb() -> str | None:
+        """Find bundled HD-Adb path, or None if not found."""
+        try:
+            install = BlueStacksEmulatorController._find_install_location()
+            adb = os.path.join(install, "hd-adb" if is_macos() else "HD-Adb.exe")
+            return adb if os.path.isfile(adb) else None
+        except Exception:
+            return None
+
     def __init__(self, logger, render_settings: dict | None = None, device_serial: str | None = None):
         self.logger = logger
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
@@ -108,7 +118,8 @@ class BlueStacksEmulatorController(AdbBasedController):
             print("[BlueStacks 5] Restart failed, retrying...")
             interruptible_sleep(2)
 
-    def _find_install_location(self) -> str:
+    @staticmethod
+    def _find_install_location() -> str:
         """Locate BlueStacks 5 installation folder."""
         if is_macos():
             # macOS: Check standard app location
@@ -120,7 +131,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             raise FileNotFoundError("BlueStacks.app not found in /Applications")
 
         # Windows: Registry lookup
-        install_dir = self._get_bluestacks_registry_value("InstallDir")
+        install_dir = BlueStacksEmulatorController._get_bluestacks_registry_value("InstallDir")
         if not install_dir:
             raise FileNotFoundError("BlueStacks 5 installation not found (InstallDir missing).")
         base = normpath(str(install_dir))
@@ -148,7 +159,8 @@ class BlueStacksEmulatorController(AdbBasedController):
         mim_meta = os.path.join(dd, "UserData", "MimMetaData.json")
         return bs_conf, mim_meta
 
-    def _get_bluestacks_registry_value(self, value_name: str) -> str | None:
+    @staticmethod
+    def _get_bluestacks_registry_value(value_name: str) -> str | None:
         """Read a BlueStacks_nxt registry value from HKLM."""
         import winreg
 
@@ -491,12 +503,15 @@ class BlueStacksEmulatorController(AdbBasedController):
             self.adb("kill-server")  # Cause ADB loves to randomly fuck around
 
     def _refresh_instance_port(self):
-        """Re-read the instance port from config."""
+        """Re-read the instance port from config and update device_serial."""
         if not self.internal_name:
             return
         new_port = self._read_instance_adb_port(self.bs_conf_path, self.internal_name)
         if new_port:
             self.instance_port = new_port
+            # Update device_serial if not user-specified
+            if not self._user_device_serial:
+                self.device_serial = f"127.0.0.1:{self.instance_port}"
 
     def _connect(self) -> bool:
         """Connect to the configured device."""

@@ -21,6 +21,16 @@ class GooglePlayEmulatorController(AdbBasedController):
     # Default device serial for Google Play Games emulator
     DEFAULT_DEVICE_SERIAL = "localhost:6520"
 
+    @staticmethod
+    def find_adb() -> str | None:
+        """Find bundled adb.exe path, or None if not found."""
+        try:
+            install = GooglePlayEmulatorController._find_install_location()
+            adb = os.path.join(install, "current", "emulator", "adb.exe")
+            return adb if os.path.isfile(adb) else None
+        except Exception:
+            return None
+
     def __init__(self, logger, render_settings: dict = {}, device_serial: str | None = None):
         self.logger = logger
         # clear existing stuff
@@ -216,7 +226,8 @@ class GooglePlayEmulatorController(AdbBasedController):
             print("[CONNECT DEBUG] Connection failed - device not found or not ready")
         return False
 
-    def _find_install_location(self):
+    @staticmethod
+    def _find_install_location() -> str:
         """
         Locate the installation path of Google Play Games Developer Emulator using the Windows Registry.
 

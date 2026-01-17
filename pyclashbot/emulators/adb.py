@@ -3,7 +3,7 @@ import subprocess
 import time
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -131,39 +131,18 @@ class AdbController(AdbBasedController):
             self.adb(f"shell wm density {self.original_density}")
 
     @staticmethod
-    def discover_system_devices():
-        """Lists all connected ADB devices (static, for pre-instantiation discovery).
-
-        Use this for device discovery before creating a controller instance.
-        For runtime device listing, use the inherited list_devices() method instead.
-        """
-        result = subprocess.run(
-            "adb devices",
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            return []
-
-        lines = result.stdout.strip().splitlines()
-        devices = []
-        for line in lines[1:]:  # Skip the "List of devices attached" header
-            if "\tdevice" in line:
-                serial = line.split("\t")[0]
-                devices.append(serial)
-        return devices
-
-    @staticmethod
     def connect_device(logger, device_address: str) -> bool:
         """Connects to a device via ADB over network or confirms a USB connection."""
         if not device_address:
             logger.change_status("Device address cannot be empty.")
             return False
 
+        if not validate_device_serial(device_address):
+            logger.change_status(f"Invalid device address format: {device_address}")
+            return False
+
         # If device is already in the list (e.g., USB connected), no need to connect.
-        if device_address in AdbController.discover_system_devices():
+        if device_address in AdbController.discover_devices():
             logger.change_status(f"Device {device_address} is already connected.")
             return True
 
@@ -192,7 +171,7 @@ class AdbController(AdbBasedController):
     def _discover_device(self):
         """Discovers a single connected device if no serial is provided."""
         self.logger.log("No device serial provided, attempting to auto-discover...")
-        devices = self.discover_system_devices()
+        devices = self.discover_devices()
 
         if not devices:
             raise ConnectionError("No ADB devices found. Check your connection and USB debugging settings.")

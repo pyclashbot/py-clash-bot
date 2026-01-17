@@ -4,6 +4,7 @@ from typing import Any
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
+from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.cancellation import CancellationToken
 from pyclashbot.utils.logger import ProcessLogger
 from pyclashbot.utils.platform import is_macos
@@ -42,7 +43,7 @@ class WorkerProcess(Process):
         try:
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
-                gp_device_serial = jobs.get("gp_device_serial") or None
+                gp_device_serial = jobs.get(UIField.GP_DEVICE_SERIAL.value) or None
                 return controller_class(logger=logger, device_serial=gp_device_serial)
 
             elif emulator_selection == EmulatorType.BLUESTACKS:
@@ -51,7 +52,7 @@ class WorkerProcess(Process):
                 default_mode = "vlcn" if is_macos() else "gl"
                 bs_mode = jobs.get("bluestacks_render_mode", default_mode)
                 render_settings = {"graphics_renderer": bs_mode}
-                bs_device_serial = jobs.get("bs_device_serial") or None
+                bs_device_serial = jobs.get(UIField.BS_DEVICE_SERIAL.value) or None
                 return controller_class(logger=logger, render_settings=render_settings, device_serial=bs_device_serial)
 
             elif emulator_selection == EmulatorType.MEMU:
@@ -66,7 +67,7 @@ class WorkerProcess(Process):
 
             elif emulator_selection == EmulatorType.ADB:
                 print("Creating ADB Device controller")
-                adb_serial = jobs.get("adb_serial", None)
+                adb_serial = jobs.get(UIField.ADB_SERIAL.value) or None
                 return controller_class(logger=logger, device_serial=adb_serial)
 
         except Exception as e:

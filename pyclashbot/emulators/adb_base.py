@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import subprocess
 from abc import ABC
 
@@ -12,6 +13,30 @@ from pyclashbot.utils.platform import is_linux
 
 logger = logging.getLogger(__name__)
 
+# Valid device serial patterns to prevent command injection
+_DEVICE_SERIAL_PATTERNS = [
+    re.compile(r"^localhost:\d{1,5}$"),  # localhost:6520
+    re.compile(r"^127\.0\.0\.1:\d{1,5}$"),  # 127.0.0.1:5567
+    re.compile(r"^(\d{1,3}\.){3}\d{1,3}:\d{1,5}$"),  # Any IP:port
+    re.compile(r"^[a-zA-Z0-9._-]+:\d{1,5}$"),  # hostname:port
+    re.compile(r"^emulator-\d+$"),  # emulator-5554
+    re.compile(r"^[A-Za-z0-9]{6,}$"),  # USB serial (hex/alphanum)
+]
+
+
+def validate_device_serial(serial: str | None) -> bool:
+    """Validate device serial format to prevent command injection.
+
+    Returns True if serial is None (will use auto-discovery) or matches
+    a known safe pattern.
+    """
+    if serial is None:
+        return True
+    serial = serial.strip()
+    if not serial:
+        return True  # Empty treated as None
+    return any(pattern.match(serial) for pattern in _DEVICE_SERIAL_PATTERNS)
+
 
 class AdbBasedController(BaseEmulatorController, ABC):
     """
@@ -22,7 +47,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
     with configurable ADB path, server port, and environment.
 
     Subclasses must set before using ADB methods:
-    - device_serial: str (the ADB device serial to target)
+    - device_serial: str | None (the ADB device serial to target)
 
     Subclasses may override these properties for custom ADB configuration:
     - adb_path: str (default: "adb" for system ADB)
@@ -30,11 +55,45 @@ class AdbBasedController(BaseEmulatorController, ABC):
     - adb_env: dict | None (default: None, inherit environment)
     """
 
-    device_serial: str
+    device_serial: str | None = None
 
     adb_path: str = "adb"
     adb_server_port: int | None = None
     adb_env: dict | None = None
+
+    @classmethod
+    def find_adb(cls) -> str | None:
+        """Find ADB executable. Override in subclasses for bundled ADB."""
+        return None  # Default: use system adb
+
+    @classmethod
+    def discover_devices(cls) -> list[str]:
+        """List connected ADB device serials using this controller's ADB."""
+        adb_path = cls.find_adb() or "adb"
+        try:
+            result = subprocess.run(
+                f'"{adb_path}" devices',
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError:
+            return []  # ADB not available
+        if result.returncode != 0:
+            return []
+        devices = []
+        for line in result.stdout.strip().splitlines()[1:]:
+            if "\tdevice" in line:
+                devices.append(line.split("\t")[0])
+        return devices
+
+    @classmethod
+    def is_device_connected(cls, device_serial: str | None) -> bool:
+        """Check if a device serial is in the connected devices list."""
+        if not device_serial:
+            return False
+        return device_serial in cls.discover_devices()
 
     def _is_server_command(self, command: str) -> bool:
         """Check if command targets ADB server rather than a specific device.
@@ -42,7 +101,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         Server commands should not have -s device_serial added.
         """
         c = command.strip()
-        if c.startswith("-s "):
+        if re.search(r"-s\s+\S+", c):
             return True  # Already device-scoped
         first = c.split()[0] if c else ""
         return first in {
@@ -70,7 +129,13 @@ class AdbBasedController(BaseEmulatorController, ABC):
 
         Returns:
             subprocess.CompletedProcess: The result of the ADB command.
+
+        Raises:
+            ValueError: If device_serial contains invalid characters.
         """
+        if self.device_serial and not validate_device_serial(self.device_serial):
+            raise ValueError(f"Invalid device serial format: {self.device_serial}")
+
         parts = [f'"{self.adb_path}"']
 
         if self.adb_server_port:
