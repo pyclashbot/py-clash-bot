@@ -34,7 +34,7 @@ class AdbController(AdbBasedController):
                                            find a single connected device.
         """
         self.logger = logger
-        self.device_serial = device_serial
+        self.device_serial: str | None = device_serial
         self._auto_stop_on_del = False  # No process to stop
 
         # For storing original screen settings

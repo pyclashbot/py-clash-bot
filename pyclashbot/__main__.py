@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import locale
+import logging
 import multiprocessing as mp
 import os
 import subprocess
@@ -104,6 +105,8 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         job_dictionary["emulator"] = EmulatorType.MEMU
 
     job_dictionary[UIField.ADB_SERIAL.value] = values.get(UIField.ADB_SERIAL.value)
+    job_dictionary[UIField.GP_DEVICE_SERIAL.value] = values.get(UIField.GP_DEVICE_SERIAL.value)
+    job_dictionary[UIField.BS_DEVICE_SERIAL.value] = values.get(UIField.BS_DEVICE_SERIAL.value)
 
     return job_dictionary
 
@@ -242,6 +245,9 @@ class BotApplication:
         self.ui.adb_restart_btn.configure(command=self._on_adb_restart)
         self.ui.adb_set_size_btn.configure(command=self._on_adb_set_size)
         self.ui.adb_reset_size_btn.configure(command=self._on_adb_reset_size)
+        # Auto-refresh device lists when dropdown opens
+        self.ui.gp_device_serial_combo.configure(postcommand=self._refresh_gp_devices)
+        self.ui.bs_device_serial_combo.configure(postcommand=self._refresh_bs_devices)
 
         # Multiprocessing primitives
         self.process: WorkerProcess | None = None
@@ -426,6 +432,22 @@ class BotApplication:
                 self.logger.change_status("No ADB devices found.")
         except Exception as e:
             self.logger.change_status(f"Error refreshing ADB devices: {e}")
+
+    def _refresh_gp_devices(self) -> None:
+        """Refresh device list for Google Play dropdown (called on open)."""
+        try:
+            devices = AdbController.list_devices()
+            self.ui.gp_device_serial_combo.configure(values=devices)
+        except Exception:
+            logging.exception("Failed to refresh Google Play device list")
+
+    def _refresh_bs_devices(self) -> None:
+        """Refresh device list for BlueStacks dropdown (called on open)."""
+        try:
+            devices = AdbController.list_devices()
+            self.ui.bs_device_serial_combo.configure(values=devices)
+        except Exception:
+            logging.exception("Failed to refresh BlueStacks device list")
 
     def _on_adb_connect(self) -> None:
         device_address = self.ui.adb_serial_var.get()

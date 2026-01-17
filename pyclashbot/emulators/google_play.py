@@ -18,7 +18,10 @@ from pyclashbot.utils.platform import Platform
 class GooglePlayEmulatorController(AdbBasedController):
     supported_platforms = [Platform.WINDOWS]
 
-    def __init__(self, logger, render_settings: dict = {}):
+    # Default device serial for Google Play Games emulator
+    DEFAULT_DEVICE_SERIAL = "localhost:6520"
+
+    def __init__(self, logger, render_settings: dict = {}, device_serial: str | None = None):
         self.logger = logger
         # clear existing stuff
         self.stop()
@@ -53,6 +56,11 @@ class GooglePlayEmulatorController(AdbBasedController):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
             elif DEBUG:
                 print(f"[INIT DEBUG] Path verified: {path}")
+
+        # Set device serial - use provided value or default
+        self.device_serial: str = device_serial if device_serial else self.DEFAULT_DEVICE_SERIAL
+        if DEBUG:
+            print(f"[INIT DEBUG] Device serial set to: {self.device_serial}")
 
         # configure the emulator via file
         self._configure_settings(render_settings)
@@ -162,19 +170,41 @@ class GooglePlayEmulatorController(AdbBasedController):
         print("Cant call self here so idk what to do.")
         print("Someone 10x try to clear google play processes here")
 
+    def list_devices(self) -> list[tuple[str, str]]:
+        """
+        List all ADB devices with their status.
+
+        Returns:
+            list of (serial, status) tuples, e.g., [("localhost:6520", "device"), ("emulator-5554", "offline")]
+        """
+        result = self.adb("devices")
+        devices = []
+        if result.stdout:
+            lines = result.stdout.strip().splitlines()
+            for line in lines[1:]:  # Skip "List of devices attached" header
+                parts = line.split()
+                if len(parts) >= 2:
+                    serial, status = parts[0], parts[1]
+                    devices.append((serial, status))
+        return devices
+
+    def list_online_devices(self) -> list[str]:
+        """List all online (status='device') ADB devices."""
+        return [serial for serial, status in self.list_devices() if status == "device"]
+
     def _connect(self):
         if DEBUG:
             print("[CONNECT DEBUG] Starting connection process...")
 
         if DEBUG:
             print("[CONNECT DEBUG] Disconnecting any existing connections...")
-        disconnect_result = self.adb("disconnect localhost:6520")
+        disconnect_result = self.adb(f"disconnect {self.device_serial}")
         if DEBUG:
             print(f"[CONNECT DEBUG] Disconnect result: {disconnect_result.stdout}")
 
         if DEBUG:
-            print("[CONNECT DEBUG] Attempting to connect to localhost:6520...")
-        connect_result = self.adb("connect localhost:6520")
+            print(f"[CONNECT DEBUG] Attempting to connect to {self.device_serial}...")
+        connect_result = self.adb(f"connect {self.device_serial}")
         if DEBUG:
             print(f"[CONNECT DEBUG] Connect result: {connect_result.stdout}")
             print(f"[CONNECT DEBUG] Connect return code: {connect_result.returncode}")
@@ -193,13 +223,16 @@ class GooglePlayEmulatorController(AdbBasedController):
                 print("[CONNECT DEBUG] Devices command returned None stdout")
             return False
 
-        if "offline" in result.stdout:
-            self.logger.log("[!] Emulator is offline. Please check the connection.")
-            return False
-
-        elif "localhost:6520" in result.stdout and "device" in result.stdout:
-            self.logger.log("Connected to emulator at localhost:6520")
-            return True
+        # Check if our specific device is online
+        devices = self.list_devices()
+        for serial, status in devices:
+            if serial == self.device_serial:
+                if status == "device":
+                    self.logger.log(f"Connected to emulator at {self.device_serial}")
+                    return True
+                elif status == "offline":
+                    self.logger.log(f"[!] Device {self.device_serial} is offline. Please check the connection.")
+                    return False
 
         if DEBUG:
             print("[CONNECT DEBUG] Connection failed - device not found or not ready")
@@ -246,12 +279,24 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         raise FileNotFoundError(f"adb.exe not found at expected location: {adb_path}")
 
+    def _is_server_command(self, command: str) -> bool:
+        """
+        Check if command targets the ADB server rather than a specific device.
+        Server commands should not use the -s flag.
+        """
+        first_word = command.strip().split()[0] if command.strip() else ""
+        return first_word in {"connect", "disconnect", "devices", "start-server", "kill-server", "version", "help"}
+
     def adb(self, command, binary_output=False):
         """
         Runs an adb command using the located adb.exe path.
         This is the abstract method implementation for AdbBasedController.
+        Uses -s flag to target specific device unless it's a server-level command.
         """
-        full_command = f'"{self.adb_path}" {command}'
+        if self._is_server_command(command):
+            full_command = f'"{self.adb_path}" {command}'
+        else:
+            full_command = f'"{self.adb_path}" -s {self.device_serial} {command}'
         if DEBUG:
             print(f"[ADB DEBUG] Executing: {full_command}")
             print(f"[ADB DEBUG] ADB path exists: {os.path.exists(self.adb_path)}")
@@ -322,7 +367,7 @@ class GooglePlayEmulatorController(AdbBasedController):
             result = self.adb("devices")
             if result.stdout:
                 for line in result.stdout.strip().splitlines():
-                    if "localhost:6520" in line and "device" in line:
+                    if self.device_serial in line and "device" in line:
                         return True
             self._connect()
             interruptible_sleep(3)
@@ -334,7 +379,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         for line in result.stdout.strip().splitlines():
             if DEBUG:
                 print(line)
-            if "localhost:6520" in line and "device" in line:
+            if self.device_serial in line and "device" in line:
                 return True
         return False
 

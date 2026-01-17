@@ -19,7 +19,12 @@ class AdbBasedController(BaseEmulatorController, ABC):
     Subclasses must implement:
     - adb(command, binary_output) -> subprocess.CompletedProcess
     - _check_app_installed(package_name) -> bool
+
+    Subclasses must set before __init__ returns:
+    - device_serial: str (the ADB device serial to target)
     """
+
+    device_serial: str
 
     # === Abstract methods (must be implemented by subclasses) ===
 

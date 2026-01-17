@@ -42,7 +42,8 @@ class WorkerProcess(Process):
         try:
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
-                return controller_class(logger=logger)
+                gp_device_serial = jobs.get("gp_device_serial") or None
+                return controller_class(logger=logger, device_serial=gp_device_serial)
 
             elif emulator_selection == EmulatorType.BLUESTACKS:
                 print("Creating BlueStacks 5 emulator")
@@ -50,7 +51,8 @@ class WorkerProcess(Process):
                 default_mode = "vlcn" if is_macos() else "gl"
                 bs_mode = jobs.get("bluestacks_render_mode", default_mode)
                 render_settings = {"graphics_renderer": bs_mode}
-                return controller_class(logger=logger, render_settings=render_settings)
+                bs_device_serial = jobs.get("bs_device_serial") or None
+                return controller_class(logger=logger, render_settings=render_settings, device_serial=bs_device_serial)
 
             elif emulator_selection == EmulatorType.MEMU:
                 print("Creating MEmu emulator")
