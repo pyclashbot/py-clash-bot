@@ -1,3 +1,4 @@
+import csv
 import io
 import json
 import os
@@ -27,8 +28,12 @@ def list_bluestacks_instances() -> list[str]:
         else:
             import winreg
 
-            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\BlueStacks_nxt") as key:
-                data_dir, _ = winreg.QueryValueEx(key, "DataDir")
+            try:
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\BlueStacks_nxt") as key:
+                    data_dir, _ = winreg.QueryValueEx(key, "DataDir")
+            except (OSError, FileNotFoundError):
+                # BlueStacks not installed or registry key not accessible
+                return []
             dd = normpath(str(data_dir))
             bs_conf = os.path.join(os.path.dirname(dd), "bluestacks.conf")
 
