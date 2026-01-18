@@ -61,6 +61,11 @@ class UIField(StrEnum):
     ADB_TOGGLE = "adb_toggle"
     ADB_SERIAL = "adb_serial"
     BLUESTACKS_INSTANCE = "bluestacks_instance"
+    SCHEDULER_ENABLED = "scheduler_enabled"
+    SCHEDULER_START_HOUR = "scheduler_start_hour"
+    SCHEDULER_START_MINUTE = "scheduler_start_minute"
+    SCHEDULER_END_HOUR = "scheduler_end_hour"
+    SCHEDULER_END_MINUTE = "scheduler_end_minute"
 
 
 BATTLE_STAT_LABELS: dict[StatField, str] = {

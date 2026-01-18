@@ -56,6 +56,11 @@ class PyClashBotUI(ttk.Window):
         self.theme_var = ttk.StringVar(value=current_theme)
         self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
+        self.scheduler_enabled_var = ttk.BooleanVar(value=False)
+        self.scheduler_start_hour_var = ttk.StringVar(value="08")
+        self.scheduler_start_minute_var = ttk.StringVar(value="00")
+        self.scheduler_end_hour_var = ttk.StringVar(value="22")
+        self.scheduler_end_minute_var = ttk.StringVar(value="00")
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
         self._bluestacks_refresh_callback: Callable[[], list[str]] | None = None
@@ -80,7 +85,7 @@ class PyClashBotUI(ttk.Window):
 
     def register_bluestacks_refresh_callback(self, callback: Callable[[], list[str]]) -> None:
         """Register a callback to get available BlueStacks instances.
-        
+
         The callback should return a list of available instance names.
         """
         self._bluestacks_refresh_callback = callback
@@ -115,6 +120,11 @@ class PyClashBotUI(ttk.Window):
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
+        values[UIField.SCHEDULER_ENABLED.value] = bool(self.scheduler_enabled_var.get())
+        values[UIField.SCHEDULER_START_HOUR.value] = self._safe_int(self.scheduler_start_hour_var.get(), 8)
+        values[UIField.SCHEDULER_START_MINUTE.value] = self._safe_int(self.scheduler_start_minute_var.get(), 0)
+        values[UIField.SCHEDULER_END_HOUR.value] = self._safe_int(self.scheduler_end_hour_var.get(), 22)
+        values[UIField.SCHEDULER_END_MINUTE.value] = self._safe_int(self.scheduler_end_minute_var.get(), 0)
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -181,6 +191,17 @@ class PyClashBotUI(ttk.Window):
 
             if UIField.ADB_SERIAL.value in values:
                 self.adb_serial_var.set(str(values[UIField.ADB_SERIAL.value]))
+
+            if UIField.SCHEDULER_ENABLED.value in values:
+                self.scheduler_enabled_var.set(bool(values[UIField.SCHEDULER_ENABLED.value]))
+            if UIField.SCHEDULER_START_HOUR.value in values:
+                self.scheduler_start_hour_var.set(str(values[UIField.SCHEDULER_START_HOUR.value]).zfill(2))
+            if UIField.SCHEDULER_START_MINUTE.value in values:
+                self.scheduler_start_minute_var.set(str(values[UIField.SCHEDULER_START_MINUTE.value]).zfill(2))
+            if UIField.SCHEDULER_END_HOUR.value in values:
+                self.scheduler_end_hour_var.set(str(values[UIField.SCHEDULER_END_HOUR.value]).zfill(2))
+            if UIField.SCHEDULER_END_MINUTE.value in values:
+                self.scheduler_end_minute_var.set(str(values[UIField.SCHEDULER_END_MINUTE.value]).zfill(2))
 
             self._update_google_play_comboboxes()
 
@@ -790,6 +811,66 @@ class PyClashBotUI(ttk.Window):
             command=self._on_open_logs_clicked,
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
+
+        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        scheduler_frame = ttk.Labelframe(self.misc_tab, text="Scheduler", padding=10)
+        scheduler_frame.pack(fill="x", padx=10, pady=10)
+
+        scheduler_checkbox = ttk.Checkbutton(
+            scheduler_frame,
+            text="Enable Schedule",
+            variable=self.scheduler_enabled_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        scheduler_checkbox.pack(anchor="w", pady=(0, 8))
+        self._trace_variable(self.scheduler_enabled_var)
+
+        time_frame = ttk.Frame(scheduler_frame)
+        time_frame.pack(fill="x")
+
+        ttk.Label(time_frame, text="Start Time:").grid(row=0, column=0, sticky="w", padx=(0, 5))
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=23,
+            width=3,
+            textvariable=self.scheduler_start_hour_var,
+            command=self._notify_config_change,
+        ).grid(row=0, column=1, padx=2)
+        ttk.Label(time_frame, text=":").grid(row=0, column=2)
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=59,
+            width=3,
+            textvariable=self.scheduler_start_minute_var,
+            command=self._notify_config_change,
+        ).grid(row=0, column=3, padx=2)
+
+        ttk.Label(time_frame, text="End Time:").grid(row=1, column=0, sticky="w", padx=(0, 5), pady=(6, 0))
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=23,
+            width=3,
+            textvariable=self.scheduler_end_hour_var,
+            command=self._notify_config_change,
+        ).grid(row=1, column=1, padx=2, pady=(6, 0))
+        ttk.Label(time_frame, text=":").grid(row=1, column=2, pady=(6, 0))
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=59,
+            width=3,
+            textvariable=self.scheduler_end_minute_var,
+            command=self._notify_config_change,
+        ).grid(row=1, column=3, padx=2, pady=(6, 0))
+
+        self._trace_variable(self.scheduler_start_hour_var)
+        self._trace_variable(self.scheduler_start_minute_var)
+        self._trace_variable(self.scheduler_end_hour_var)
+        self._trace_variable(self.scheduler_end_minute_var)
 
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
         display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
