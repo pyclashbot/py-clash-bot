@@ -1,5 +1,6 @@
 """Colored logging utilities for the bot."""
 
+import re
 from enum import Enum
 
 
@@ -11,6 +12,8 @@ class LogLevel(Enum):
     WARNING = ("\033[93m", "WARNING")  # Yellow
     ERROR = ("\033[91m", "ERROR")  # Red
     DEBUG = ("\033[96m", "DEBUG")  # Cyan
+    NOTICE = ("\033[95m", "NOTICE")  # Magenta
+    IDLE = ("\033[90m", "IDLE")  # Gray
     RESET = ("\033[0m", "RESET")  # Reset color
 
     @property
@@ -73,6 +76,30 @@ class ColoredFormatter:
 class LogColorMap:
     """Maps message patterns to colors for automatic coloring."""
 
+    COLOR_CODES = {
+        "yellow": "\033[93m",
+        "gray": "\033[90m",
+        "cyan": "\033[96m",
+        "blue": "\033[94m",
+        "green": "\033[92m",
+        "magenta": "\033[95m",
+        "orange": "\033[38;5;208m",
+        "light_blue": "\033[96m",
+        "red": "\033[91m",
+    }
+
+    COLOR_HEX = {
+        "yellow": "#f1c40f",
+        "gray": "#95a5a6",
+        "cyan": "#00bcd4",
+        "blue": "#3498db",
+        "green": "#2ecc71",
+        "magenta": "#9b59b6",
+        "orange": "#e67e22",
+        "light_blue": "#5dade2",
+        "red": "#e74c3c",
+    }
+
     # Pattern matching rules
     SUCCESS_KEYWORDS = [
         "success",
@@ -93,6 +120,15 @@ class LogColorMap:
         "suspended",
         "paused",
     ]
+    STOP_KEYWORDS = [
+        "stopping",
+        "stopped",
+        "outside",
+    ]
+    IDLE_KEYWORDS = [
+        "waiting",
+        "idle",
+    ]
     ERROR_KEYWORDS = [
         "error",
         "failed",
@@ -101,6 +137,35 @@ class LogColorMap:
         "fatal",
         "critical",
         "refused",
+    ]
+    DEBUG_KEYWORDS = [
+        "debug",
+    ]
+    INFO_KEYWORDS = [
+        "info",
+        "status",
+        "running",
+    ]
+
+    HIGHLIGHT_PATTERNS = [
+        (r"returning to clash main", "magenta"),
+        (r"back to main", "magenta"),
+        (r"calculated play", "cyan"),
+        (r"identified card", "blue"),
+        (r"\bunknown\b", "yellow"),
+        (r"\bunidentified\b", "yellow"),
+        (r"\bwaiting\b", "gray"),
+        (r"\belixer\b", "gray"),
+        (r"\bplay\b", "cyan"),
+        (r"\bcard\b", "blue"),
+        (r"\bselecting\b|\bchosen\b|\bchoosing\b", "light_blue"),
+        (r"\bdetected\b|\bfound\b", "green"),
+        (r"\bretrying\b|\bfailed\b|\berror\b", "red"),
+        (r"\bstart(?:ing|ed)?\b", "green"),
+        (r"\bstopping\b|\bstopped\b|\boutside\b", "magenta"),
+        (r"\bbattle\b|\bfight\b|\bmatch\b|\barena\b", "orange"),
+        (r"\bcannon\b", "green"),
+        (r"\b[a-z]+_[a-z_]+\b", "green"),
     ]
 
     @staticmethod
@@ -127,6 +192,22 @@ class LogColorMap:
             if keyword in lower_msg:
                 return LogLevel.SUCCESS
 
+        for keyword in LogColorMap.STOP_KEYWORDS:
+            if keyword in lower_msg:
+                return LogLevel.NOTICE
+
+        for keyword in LogColorMap.IDLE_KEYWORDS:
+            if keyword in lower_msg:
+                return LogLevel.IDLE
+
+        for keyword in LogColorMap.DEBUG_KEYWORDS:
+            if keyword in lower_msg:
+                return LogLevel.DEBUG
+
+        for keyword in LogColorMap.INFO_KEYWORDS:
+            if keyword in lower_msg:
+                return LogLevel.INFO
+
         return LogLevel.INFO
 
     @staticmethod
@@ -140,4 +221,17 @@ class LogColorMap:
             Formatted message with appropriate color
         """
         level = LogColorMap.detect_level(message)
-        return ColoredFormatter.format_message(level, message)
+        highlighted = LogColorMap._apply_highlights(message)
+        return ColoredFormatter.format_message(level, highlighted)
+
+    @staticmethod
+    def _apply_highlights(message: str) -> str:
+        for pattern, color_name in LogColorMap.HIGHLIGHT_PATTERNS:
+            color = LogColorMap.COLOR_CODES[color_name]
+            message = re.sub(
+                pattern,
+                lambda match: f"{color}{match.group(0)}{LogLevel.RESET.color}",
+                message,
+                flags=re.IGNORECASE,
+            )
+        return message

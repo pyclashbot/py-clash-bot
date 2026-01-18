@@ -77,29 +77,57 @@ class WorkerProcess(Process):
 
     def _check_scheduler(self, jobs: dict[str, Any], logger: ProcessLogger) -> bool:
         """Check if bot should stop based on scheduler settings.
-        
+
         Returns:
             True if bot should continue, False if it should stop
         """
+        import datetime
         from pyclashbot.utils.scheduler import ScheduleConfig
-        
-        scheduler_enabled = jobs.get("scheduler_enabled", False)
+
+        def _parse_bool(value: object) -> bool:
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, (int, float)):
+                return value != 0
+            if isinstance(value, str):
+                return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+            return bool(value)
+
+        scheduler_enabled = _parse_bool(jobs.get("scheduler_enabled", False))
         if not scheduler_enabled:
             return True
-        
+
         config = ScheduleConfig(
             enabled=True,
-            start_hour=jobs.get("scheduler_start_hour", 8),
-            start_minute=jobs.get("scheduler_start_minute", 0),
-            end_hour=jobs.get("scheduler_end_hour", 22),
-            end_minute=jobs.get("scheduler_end_minute", 0),
+            start_hour=int(jobs.get("scheduler_start_hour", 8)),
+            start_minute=int(jobs.get("scheduler_start_minute", 0)),
+            end_hour=int(jobs.get("scheduler_end_hour", 22)),
+            end_minute=int(jobs.get("scheduler_end_minute", 0)),
         )
-        
-        if not config.is_within_schedule():
+
+        now = datetime.datetime.now().time()
+        start_time = config.start_time
+        end_time = config.end_time
+
+        if start_time <= end_time:
+            is_within = start_time <= now <= end_time
+        else:
+            # Do not allow overnight windows when start time is later than end time
+            is_within = False
+
+        logger.log(
+            "Scheduler check: "
+            f"now={now.strftime('%H:%M')} window={start_time.strftime('%H:%M')}-{end_time.strftime('%H:%M')} "
+            f"within={is_within}"
+        )
+
+        if not is_within:
             logger.change_status("Outside scheduled hours - stopping bot")
-            logger.log(f"Schedule: {config.start_hour:02d}:{config.start_minute:02d} - {config.end_hour:02d}:{config.end_minute:02d}")
+            logger.log(
+                f"Schedule window {config.start_hour:02d}:{config.start_minute:02d} - {config.end_hour:02d}:{config.end_minute:02d}, current time outside"
+            )
             return False
-        
+
         return True
 
     def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
@@ -112,12 +140,12 @@ class WorkerProcess(Process):
 
         while not self.shutdown_event.is_set():
             try:
-                # Check scheduler after completing a battle cycle
+                new_state = state_tree(emulator, logger, state, jobs, state_history, state_order)
+
+                # Check scheduler after completing a battle cycle (after end_fight state executes)
                 if state == "end_fight":
                     if not self._check_scheduler(jobs, logger):
                         break
-                
-                new_state = state_tree(emulator, logger, state, jobs, state_history, state_order)
 
                 # Check for restart loops
                 if new_state == "restart":

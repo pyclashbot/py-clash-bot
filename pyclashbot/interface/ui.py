@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import re
 import tkinter as tk
 from collections.abc import Callable
+from datetime import datetime
 from tkinter import messagebox
 from typing import TYPE_CHECKING
 
@@ -30,6 +32,7 @@ from pyclashbot.interface.enums import (
     UIField,
 )
 from pyclashbot.interface.widgets import DualRingGauge
+from pyclashbot.utils.colored_logging import LogColorMap
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -57,8 +60,11 @@ class PyClashBotUI(ttk.Window):
         self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self.scheduler_enabled_var = ttk.BooleanVar(value=False)
-        self.scheduler_start_hour_var = ttk.StringVar(value="08")
-        self.scheduler_start_minute_var = ttk.StringVar(value="00")
+
+        # Set start time to current time by default
+        now = datetime.now()
+        self.scheduler_start_hour_var = ttk.StringVar(value=f"{now.hour:02d}")
+        self.scheduler_start_minute_var = ttk.StringVar(value=f"{now.minute:02d}")
         self.scheduler_end_hour_var = ttk.StringVar(value="22")
         self.scheduler_end_minute_var = ttk.StringVar(value="00")
         self._config_callback: Callable[[dict[str, object]], None] | None = None
@@ -194,10 +200,9 @@ class PyClashBotUI(ttk.Window):
 
             if UIField.SCHEDULER_ENABLED.value in values:
                 self.scheduler_enabled_var.set(bool(values[UIField.SCHEDULER_ENABLED.value]))
-            if UIField.SCHEDULER_START_HOUR.value in values:
-                self.scheduler_start_hour_var.set(str(values[UIField.SCHEDULER_START_HOUR.value]).zfill(2))
-            if UIField.SCHEDULER_START_MINUTE.value in values:
-                self.scheduler_start_minute_var.set(str(values[UIField.SCHEDULER_START_MINUTE.value]).zfill(2))
+
+            # Start time always shows current PC time (not saved value)
+            # Only load end time from saved config
             if UIField.SCHEDULER_END_HOUR.value in values:
                 self.scheduler_end_hour_var.set(str(values[UIField.SCHEDULER_END_HOUR.value]).zfill(2))
             if UIField.SCHEDULER_END_MINUTE.value in values:
@@ -283,9 +288,26 @@ class PyClashBotUI(ttk.Window):
     def append_log(self, message: str) -> None:
         self.event_log.configure(state="normal")
         self.event_log.delete("1.0", "end")
-        self.event_log.insert("end", message)
+        clean_message = self._strip_ansi(message)
+        self.event_log.insert("end", clean_message)
+        self._apply_log_tags(clean_message)
         self.event_log.configure(state="disabled")
         self.event_log.see("end")
+
+    def _init_log_tags(self) -> None:
+        for color_name, hex_code in LogColorMap.COLOR_HEX.items():
+            self.event_log.tag_configure(color_name, foreground=hex_code)
+
+    @staticmethod
+    def _strip_ansi(message: str) -> str:
+        return re.sub(r"\x1b\[[0-9;]*m", "", message)
+
+    def _apply_log_tags(self, message: str) -> None:
+        for pattern, color_name in LogColorMap.HIGHLIGHT_PATTERNS:
+            for match in re.finditer(pattern, message, flags=re.IGNORECASE):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.event_log.tag_add(color_name, start, end)
 
     def set_status(self, text: str) -> None:
         self._status_text = text
@@ -360,6 +382,7 @@ class PyClashBotUI(ttk.Window):
         self.event_log = tk.Text(bottom, height=3, wrap="word")
         self.event_log.grid(row=0, column=0, sticky="nsew")
         self.event_log.configure(state="disabled")
+        self._init_log_tags()
         self._status_text = "Idle"
 
         # Single unified button below log

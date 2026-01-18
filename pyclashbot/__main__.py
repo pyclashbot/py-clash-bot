@@ -72,6 +72,11 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
+        UIField.SCHEDULER_ENABLED.value: as_bool(UIField.SCHEDULER_ENABLED),
+        UIField.SCHEDULER_START_HOUR.value: as_int(UIField.SCHEDULER_START_HOUR, 8),
+        UIField.SCHEDULER_START_MINUTE.value: as_int(UIField.SCHEDULER_START_MINUTE, 0),
+        UIField.SCHEDULER_END_HOUR.value: as_int(UIField.SCHEDULER_END_HOUR, 22),
+        UIField.SCHEDULER_END_MINUTE.value: as_int(UIField.SCHEDULER_END_MINUTE, 0),
     }
 
     job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
