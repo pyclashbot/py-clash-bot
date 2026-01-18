@@ -381,7 +381,7 @@ class AdbController(AdbBasedController):
                 return True
 
             # Click in a safe area to dismiss potential pop-ups
-            self.click(5, 350)
+            self.click(35, 405)
             interruptible_sleep(2)
 
         self.logger.change_status("Timeout waiting for Clash Royale main menu. Please check the device.")
