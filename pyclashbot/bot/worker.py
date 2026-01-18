@@ -75,6 +75,33 @@ class WorkerProcess(Process):
 
         return None
 
+    def _check_scheduler(self, jobs: dict[str, Any], logger: ProcessLogger) -> bool:
+        """Check if bot should stop based on scheduler settings.
+        
+        Returns:
+            True if bot should continue, False if it should stop
+        """
+        from pyclashbot.utils.scheduler import ScheduleConfig
+        
+        scheduler_enabled = jobs.get("scheduler_enabled", False)
+        if not scheduler_enabled:
+            return True
+        
+        config = ScheduleConfig(
+            enabled=True,
+            start_hour=jobs.get("scheduler_start_hour", 8),
+            start_minute=jobs.get("scheduler_start_minute", 0),
+            end_hour=jobs.get("scheduler_end_hour", 22),
+            end_minute=jobs.get("scheduler_end_minute", 0),
+        )
+        
+        if not config.is_within_schedule():
+            logger.change_status("Outside scheduled hours - stopping bot")
+            logger.log(f"Schedule: {config.start_hour:02d}:{config.start_minute:02d} - {config.end_hour:02d}:{config.end_minute:02d}")
+            return False
+        
+        return True
+
     def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
         """Run the main bot state loop."""
         state = "start"
@@ -85,6 +112,11 @@ class WorkerProcess(Process):
 
         while not self.shutdown_event.is_set():
             try:
+                # Check scheduler after completing a battle cycle
+                if state == "end_fight":
+                    if not self._check_scheduler(jobs, logger):
+                        break
+                
                 new_state = state_tree(emulator, logger, state, jobs, state_history, state_order)
 
                 # Check for restart loops
