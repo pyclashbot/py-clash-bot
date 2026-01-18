@@ -817,7 +817,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 dur = f"{time.time() - start_ts:.1f}s"
                 self.logger.log(f"BlueStacks 5 restart completed in {dur}")
                 return True
-            self.click(5, 350)  # Use inherited click
+            self.click(35, 405)  # Use inherited click
 
         self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
         return False

@@ -512,5 +512,12 @@ def main_gui(start_on_run: bool = False, settings: dict[str, Any] | None = None)
 
 
 if __name__ == "__main__":
+    from multiprocessing import freeze_support, set_start_method
+
+    freeze_support()
+    try:
+        set_start_method("spawn")
+    except RuntimeError:
+        pass  # Already set
     cli_args = arg_parser()
     main_gui(start_on_run=cli_args.start)
