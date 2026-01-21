@@ -1,16 +1,15 @@
-import os
+import logging
 import re
 import subprocess
 import time
 
-# Assuming these are in the correct path
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators import ActionCallback
+from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.utils.cancellation import interruptible_sleep
-from pyclashbot.utils.platform import Platform, is_linux
+from pyclashbot.utils.platform import Platform
 
-# Set to True for verbose ADB command logging
-DEBUG = False
+logger = logging.getLogger(__name__)
 
 
 class AdbController(AdbBasedController):
@@ -24,29 +23,33 @@ class AdbController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS, Platform.LINUX]
 
-    def __init__(self, logger, device_serial: str | None = None):
+    def __init__(
+        self,
+        device_serial: str | None = None,
+        action_callback: ActionCallback | None = None,
+    ):
         """
         Initializes the controller and connects to the adb device.
         Args:
-            logger: The logger instance for status updates.
             device_serial (str, optional): The specific serial number of the device
                                            to connect to. If None, it will try to
                                            find a single connected device.
+            action_callback: Optional callback for UI action prompts.
         """
-        self.logger = logger
-        self.device_serial = device_serial
+        self.device_serial: str | None = device_serial
+        self._action_callback = action_callback
         self._auto_stop_on_del = False  # No process to stop
 
         # For storing original screen settings
         self.original_size = None
         self.original_density = None
 
-        self.logger.change_status("Connecting to ADB device...")
+        logger.info("Connecting to ADB device...")
 
         if self.device_serial is None:
             self._discover_device()
 
-        self.logger.log(f"Targeting device with serial: {self.device_serial}")
+        logger.info("Targeting device with serial: %s", self.device_serial)
 
         # Verify connection
         if not self._is_connected():
@@ -55,7 +58,7 @@ class AdbController(AdbBasedController):
                 "Ensure USB debugging is enabled and the device is authorized."
             )
 
-        self.logger.log(f"Successfully connected to {self.device_serial}.")
+        logger.info("Successfully connected to %s.", self.device_serial)
 
         # automatically handle screen size and density
         self.handle_screen_size_and_density()
@@ -93,7 +96,7 @@ class AdbController(AdbBasedController):
         Checks the current screen size and density, sets them to the required values if they are not already set,
         and stores the original values for later restoration.
         """
-        self.logger.log("Checking screen size and density...")
+        logger.info("Checking screen size and density...")
         current_size, current_density = self.get_screen_props()
 
         required_size = "419x633"
@@ -102,39 +105,41 @@ class AdbController(AdbBasedController):
         # Store original values if they haven't been stored yet
         if self.original_size is None and current_size is not None:
             self.original_size = current_size
-            self.logger.log(f"Stored original screen size: {self.original_size}")
+            logger.info("Stored original screen size: %s", self.original_size)
         if self.original_density is None and current_density is not None:
             self.original_density = current_density
-            self.logger.log(f"Stored original screen density: {self.original_density}")
+            logger.info("Stored original screen density: %s", self.original_density)
 
         # Check and set size
         if current_size != required_size:
-            self.logger.log(f"Current size {current_size} is not the required {required_size}. Setting it now.")
+            logger.info("Current size %s is not the required %s. Setting it now.", current_size, required_size)
             self.set_screen_size(419, 633)
         else:
-            self.logger.log("Screen size is already correct.")
+            logger.info("Screen size is already correct.")
 
         # Check and set density
         if current_density != required_density:
-            self.logger.log(
-                f"Current density {current_density} is not the required {required_density}. Setting it now."
-            )
+            logger.info("Current density %s is not the required %s. Setting it now.", current_density, required_density)
             self.set_screen_density(required_density)
         else:
-            self.logger.log("Screen density is already correct.")
+            logger.info("Screen density is already correct.")
 
     def restore_original_screen_props(self):
         """Restores the original screen size and density."""
         if self.original_size:
-            self.logger.log(f"Restoring original screen size: {self.original_size}")
+            logger.info("Restoring original screen size: %s", self.original_size)
             self.adb(f"shell wm size {self.original_size}")
         if self.original_density:
-            self.logger.log(f"Restoring original screen density: {self.original_density}")
+            logger.info("Restoring original screen density: %s", self.original_density)
             self.adb(f"shell wm density {self.original_density}")
 
     @staticmethod
-    def list_devices():
-        """Lists all connected ADB devices."""
+    def discover_system_devices():
+        """Lists all connected ADB devices (static, for pre-instantiation discovery).
+
+        Use this for device discovery before creating a controller instance.
+        For runtime device listing, use the inherited list_devices() method instead.
+        """
         result = subprocess.run(
             "adb devices",
             shell=True,
@@ -154,15 +159,19 @@ class AdbController(AdbBasedController):
         return devices
 
     @staticmethod
-    def connect_device(logger, device_address: str) -> bool:
+    def connect_device(device_address: str) -> bool:
         """Connects to a device via ADB over network or confirms a USB connection."""
         if not device_address:
-            logger.change_status("Device address cannot be empty.")
+            logger.warning("Device address cannot be empty.")
+            return False
+
+        if not validate_device_serial(device_address):
+            logger.warning("Invalid device address format: %s", device_address)
             return False
 
         # If device is already in the list (e.g., USB connected), no need to connect.
-        if device_address in AdbController.list_devices():
-            logger.change_status(f"Device {device_address} is already connected.")
+        if device_address in AdbController.discover_system_devices():
+            logger.info("Device %s is already connected.", device_address)
             return True
 
         command = f"adb connect {device_address}"
@@ -175,22 +184,22 @@ class AdbController(AdbBasedController):
                 check=False,
             )
             output = process.stdout.strip()
-            logger.change_status(output)
+            logger.info("%s", output)
             if "connected" in output or "already connected" in output:
                 return True
-            logger.change_status(f"Failed to connect: {process.stderr.strip()}")
+            logger.warning("Failed to connect: %s", process.stderr.strip())
             return False
         except FileNotFoundError:
-            logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")
+            logger.error("ADB command not found. Make sure ADB is installed and in your PATH.")
             return False
         except subprocess.CalledProcessError as e:
-            logger.change_status(f"Error connecting to {device_address}: {e.stderr.strip()}")
+            logger.error("Error connecting to %s: %s", device_address, e.stderr.strip())
             return False
 
     def _discover_device(self):
         """Discovers a single connected device if no serial is provided."""
-        self.logger.log("No device serial provided, attempting to auto-discover...")
-        devices = self.list_devices()
+        logger.info("No device serial provided, attempting to auto-discover...")
+        devices = self.discover_system_devices()
 
         if not devices:
             raise ConnectionError("No ADB devices found. Check your connection and USB debugging settings.")
@@ -201,46 +210,17 @@ class AdbController(AdbBasedController):
             )
 
         self.device_serial = devices[0]
-        self.logger.log(f"Auto-discovered device: {self.device_serial}")
+        logger.info("Auto-discovered device: %s", self.device_serial)
 
     def _is_connected(self) -> bool:
         """Checks if the target device is connected and in 'device' state."""
         state = self.adb("get-state").stdout.strip()
         return state == "device"
 
-    def adb(self, command: str, binary_output: bool = False, use_serial: bool = True) -> subprocess.CompletedProcess:
-        """
-        Runs an ADB command targeting the specified device.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        if use_serial and self.device_serial:
-            full_command = f"adb -s {self.device_serial} {command}"
-        else:
-            full_command = f"adb {command}"
-
-        if DEBUG:
-            print(f"[Android/ADB] {full_command}")
-
-        # Linux optimization: Use process groups for better signal handling
-        if is_linux():
-            return subprocess.run(
-                full_command, shell=True, capture_output=True, text=not binary_output, check=False, preexec_fn=os.setsid
-            )
-        else:
-            return subprocess.run(full_command, shell=True, capture_output=True, text=not binary_output, check=False)
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if an app is installed using system ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        result = self.adb("shell pm list packages")
-        return result.stdout is not None and package_name in result.stdout
-
     @staticmethod
-    def restart_adb(logger):
+    def restart_adb():
         """Restarts the ADB server."""
-        logger.change_status("Restarting ADB server...")
+        logger.info("Restarting ADB server...")
         try:
             # Kill the server
             kill_result = subprocess.run(
@@ -251,9 +231,9 @@ class AdbController(AdbBasedController):
                 check=False,
             )
             if kill_result.returncode == 0:
-                logger.log("ADB server killed successfully.")
+                logger.info("ADB server killed successfully.")
             else:
-                logger.log(f"Failed to kill ADB server: {kill_result.stderr.strip()}")
+                logger.warning("Failed to kill ADB server: %s", kill_result.stderr.strip())
 
             interruptible_sleep(1)
 
@@ -266,77 +246,73 @@ class AdbController(AdbBasedController):
                 check=False,
             )
             if start_result.returncode == 0:
-                logger.change_status("ADB server started successfully.")
+                logger.info("ADB server started successfully.")
                 return True
-            logger.change_status(f"Failed to start ADB server: {start_result.stderr.strip()}")
+            logger.warning("Failed to start ADB server: %s", start_result.stderr.strip())
             return False
         except FileNotFoundError:
-            logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")
+            logger.error("ADB command not found. Make sure ADB is installed and in your PATH.")
             return False
         except subprocess.CalledProcessError as e:
-            logger.change_status(f"Error restarting ADB server: {e.stderr.strip()}")
+            logger.error("Error restarting ADB server: %s", e.stderr.strip())
             return False
 
     def set_screen_size(self, width: int, height: int):
         """Sets the screen size of the device."""
-        self.logger.log(f"Setting screen size to {width}x{height}")
+        logger.info("Setting screen size to %dx%d", width, height)
         result = self.adb(f"shell wm size {width}x{height}")
         if result.returncode == 0:
-            self.logger.log("Screen size set successfully.")
+            logger.info("Screen size set successfully.")
         else:
-            self.logger.log(f"Failed to set screen size: {result.stderr}")
+            logger.warning("Failed to set screen size: %s", result.stderr)
 
     def set_screen_density(self, density: int):
         """Sets the screen density of the device."""
-        self.logger.log(f"Setting screen density to {density}")
+        logger.info("Setting screen density to %d", density)
         result = self.adb(f"shell wm density {density}")
         if result.returncode == 0:
-            self.logger.log("Screen density set successfully.")
+            logger.info("Screen density set successfully.")
         else:
-            self.logger.log(f"Failed to set screen density: {result.stderr}")
+            logger.warning("Failed to set screen density: %s", result.stderr)
 
     def reset_screen_size(self):
         """Resets the screen size of the device to its default."""
-        self.logger.log("Resetting screen size.")
+        logger.info("Resetting screen size.")
         result = self.adb("shell wm size reset")
         if result.returncode == 0:
-            self.logger.log("Screen size reset successfully.")
+            logger.info("Screen size reset successfully.")
         else:
-            self.logger.log(f"Failed to reset screen size: {result.stderr}")
+            logger.warning("Failed to reset screen size: %s", result.stderr)
 
     def reset_screen_density(self):
         """Resets the screen density of the device to its default."""
-        self.logger.log("Resetting screen density.")
+        logger.info("Resetting screen density.")
         result = self.adb("shell wm density reset")
         if result.returncode == 0:
-            self.logger.log("Screen density reset successfully.")
+            logger.info("Screen density reset successfully.")
         else:
-            self.logger.log(f"Failed to reset screen density: {result.stderr}")
+            logger.warning("Failed to reset screen density: %s", result.stderr)
 
     ## No-Op Methods (Not applicable to physical devices) ##
 
     def create(self):
         """Not applicable for a real device. Does nothing."""
-        self.logger.log("Create method is not applicable for a physical device.")
-        pass
+        logger.debug("Create method is not applicable for a physical device.")
 
     def configure(self):
         """Not applicable for a real device. Does nothing."""
-        self.logger.log("Configure method is not applicable for a physical device.")
-        pass
+        logger.debug("Configure method is not applicable for a physical device.")
 
     def start(self):
         """Not applicable for a real device. Assumes the device is already on."""
-        self.logger.log("Start method is not applicable for a physical device.")
-        pass
+        logger.debug("Start method is not applicable for a physical device.")
 
     def stop(self):
         """
         Restores the original screen properties when the bot stops.
         """
-        self.logger.log("Stop method called. Restoring original screen properties.")
+        logger.info("Stop method called. Restoring original screen properties.")
         self.restore_original_screen_props()
-        pass
 
     ## Implemented Methods ##
 
@@ -351,40 +327,40 @@ class AdbController(AdbBasedController):
             bool: True if the app was successfully restarted and the main menu is found, False otherwise.
         """
         start_ts = time.time()
-        self.logger.change_status("Restarting Clash Royale on device...")
+        logger.info("Restarting Clash Royale on device...")
 
         clash_pkg = "com.supercell.clashroyale"
 
         # 1. Force stop the app
-        self.logger.change_status(f"Force-stopping {clash_pkg}...")
+        logger.info("Force-stopping %s...", clash_pkg)
         self.adb(f"shell am force-stop {clash_pkg}")
         interruptible_sleep(3)
 
         # 2. Start the app using the inherited method
-        self.logger.change_status("Launching Clash Royale...")
+        logger.info("Launching Clash Royale...")
         if not self.start_app(clash_pkg):
             # This means the app isn't installed and the user is being prompted.
             # We can't proceed with the restart.
-            self.logger.log("App not installed. Restart cannot complete.")
+            logger.warning("App not installed. Restart cannot complete.")
             return False
 
         interruptible_sleep(5)  # Give the app some time to load initially
 
         # 3. Wait for main menu
-        self.logger.change_status("Waiting for Clash Royale main menu...")
+        logger.info("Waiting for Clash Royale main menu...")
         deadline = time.time() + 240  # 4-minute timeout
         while time.time() < deadline:
             if check_if_on_clash_main_menu(self):
-                self.logger.change_status("Clash Royale main menu detected.")
+                logger.info("Clash Royale main menu detected.")
                 dur = f"{time.time() - start_ts:.1f}s"
-                self.logger.log(f"App restart completed in {dur}")
+                logger.info("App restart completed in %s", dur)
                 return True
 
             # Click in a safe area to dismiss potential pop-ups
             self.click(35, 405)
             interruptible_sleep(2)
 
-        self.logger.change_status("Timeout waiting for Clash Royale main menu. Please check the device.")
+        logger.warning("Timeout waiting for Clash Royale main menu. Please check the device.")
         return False
 
     # click() is now inherited from AdbBasedController

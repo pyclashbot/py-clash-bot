@@ -19,4 +19,11 @@ def arg_parser() -> Namespace:
         action="store_true",
         help="Start the bot when the program opens",
     )
+    parser.add_argument(
+        "--debug",
+        "-d",
+        dest="debug",
+        action="store_true",
+        help="Enable debug-level logging",
+    )
     return parser.parse_args()

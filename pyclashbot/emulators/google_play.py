@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import time
@@ -7,19 +8,22 @@ from os.path import normpath
 
 import psutil
 
-DEBUG = False
-
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
+logger = logging.getLogger(__name__)
+
 
 class GooglePlayEmulatorController(AdbBasedController):
     supported_platforms = [Platform.WINDOWS]
 
-    def __init__(self, logger, render_settings: dict = {}):
-        self.logger = logger
+    # Default device serial for Google Play Games emulator
+    DEFAULT_DEVICE_SERIAL = "localhost:6520"
+
+    def __init__(self, render_settings: dict | None = None, device_serial: str | None = None):
+        render_settings = render_settings or {}
         # clear existing stuff
         self.stop()
         while self._is_emulator_running():
@@ -39,8 +43,7 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         # locate the adb executable
         self.adb_path = self._find_adb_path()
-        if DEBUG:
-            print(f"[INIT DEBUG] ADB path found: {self.adb_path}")
+        logger.debug("ADB path found: %s", self.adb_path)
 
         # verify all those paths exist
         for path in [
@@ -51,8 +54,12 @@ class GooglePlayEmulatorController(AdbBasedController):
         ]:
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
-            elif DEBUG:
-                print(f"[INIT DEBUG] Path verified: {path}")
+            else:
+                logger.debug("Path verified: %s", path)
+
+        # Set device serial - use provided value or default
+        self.device_serial: str = device_serial if device_serial else self.DEFAULT_DEVICE_SERIAL
+        logger.debug("Device serial set to: %s", self.device_serial)
 
         # configure the emulator via file
         self._configure_settings(render_settings)
@@ -153,9 +160,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         new_value = ",".join(f"{k}={v}" for k, v in config_dict.items())
         setting_node.text = new_value
         tree.write(self.service_config_path, encoding="utf-8", xml_declaration=True)
-
-        if DEBUG:
-            print(f"[OK] Updated EmulatorGpuGuestAngle settings:\n{new_value}")
+        logger.debug("Updated EmulatorGpuGuestAngle settings: %s", new_value)
 
     def __del__(self):
         print("Cleaning up google emulator controller object...")
@@ -163,46 +168,39 @@ class GooglePlayEmulatorController(AdbBasedController):
         print("Someone 10x try to clear google play processes here")
 
     def _connect(self):
-        if DEBUG:
-            print("[CONNECT DEBUG] Starting connection process...")
+        logger.debug("Starting connection process...")
+        logger.debug("Disconnecting any existing connections...")
+        disconnect_result = self.adb(f"disconnect {self.device_serial}")
+        logger.debug("Disconnect result: %s", disconnect_result.stdout)
 
-        if DEBUG:
-            print("[CONNECT DEBUG] Disconnecting any existing connections...")
-        disconnect_result = self.adb("disconnect localhost:6520")
-        if DEBUG:
-            print(f"[CONNECT DEBUG] Disconnect result: {disconnect_result.stdout}")
-
-        if DEBUG:
-            print("[CONNECT DEBUG] Attempting to connect to localhost:6520...")
-        connect_result = self.adb("connect localhost:6520")
-        if DEBUG:
-            print(f"[CONNECT DEBUG] Connect result: {connect_result.stdout}")
-            print(f"[CONNECT DEBUG] Connect return code: {connect_result.returncode}")
+        logger.debug("Attempting to connect to %s...", self.device_serial)
+        connect_result = self.adb(f"connect {self.device_serial}")
+        logger.debug("Connect result: %s", connect_result.stdout)
+        logger.debug("Connect return code: %s", connect_result.returncode)
 
         interruptible_sleep(1)
 
-        if DEBUG:
-            print("[CONNECT DEBUG] Checking device list...")
+        logger.debug("Checking device list...")
         result = self.adb("devices")
-        if DEBUG:
-            print(f"[CONNECT DEBUG] Devices output: {result.stdout}")
-            print(f"[CONNECT DEBUG] Devices return code: {result.returncode}")
+        logger.debug("Devices output: %s", result.stdout)
+        logger.debug("Devices return code: %s", result.returncode)
 
         if result.stdout is None:
-            if DEBUG:
-                print("[CONNECT DEBUG] Devices command returned None stdout")
+            logger.debug("Devices command returned None stdout")
             return False
 
-        if "offline" in result.stdout:
-            self.logger.log("[!] Emulator is offline. Please check the connection.")
-            return False
+        # Check if our specific device is online
+        devices = self.list_devices()
+        for serial, status in devices:
+            if serial == self.device_serial:
+                if status == "device":
+                    logger.info("Connected to emulator at %s", self.device_serial)
+                    return True
+                elif status == "offline":
+                    logger.warning("Device %s is offline. Please check the connection.", self.device_serial)
+                    return False
 
-        elif "localhost:6520" in result.stdout and "device" in result.stdout:
-            self.logger.log("Connected to emulator at localhost:6520")
-            return True
-
-        if DEBUG:
-            print("[CONNECT DEBUG] Connection failed - device not found or not ready")
+        logger.debug("Connection failed - device not found or not ready")
         return False
 
     def _find_install_location(self):
@@ -246,44 +244,6 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         raise FileNotFoundError(f"adb.exe not found at expected location: {adb_path}")
 
-    def adb(self, command, binary_output=False):
-        """
-        Runs an adb command using the located adb.exe path.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        full_command = f'"{self.adb_path}" {command}'
-        if DEBUG:
-            print(f"[ADB DEBUG] Executing: {full_command}")
-            print(f"[ADB DEBUG] ADB path exists: {os.path.exists(self.adb_path)}")
-            print(f"[ADB DEBUG] Binary output mode: {binary_output}")
-
-        result = subprocess.run(
-            full_command,
-            shell=True,
-            capture_output=True,
-            text=not binary_output,
-            check=False,
-        )
-
-        if DEBUG:
-            print(f"[ADB DEBUG] Return code: {result.returncode}")
-            if binary_output:
-                print(f"[ADB DEBUG] Stdout type: {type(result.stdout)}")
-                print(f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}")
-            else:
-                print(f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}...")
-            print(f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}...")
-
-        return result
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if an app is installed using the emulator's bundled ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        result = self.adb("shell pm list packages")
-        return result.stdout is not None and package_name in result.stdout
-
     def create(self):
         """
         This method is used to create the emulator.
@@ -322,7 +282,7 @@ class GooglePlayEmulatorController(AdbBasedController):
             result = self.adb("devices")
             if result.stdout:
                 for line in result.stdout.strip().splitlines():
-                    if "localhost:6520" in line and "device" in line:
+                    if self.device_serial in line and "device" in line:
                         return True
             self._connect()
             interruptible_sleep(3)
@@ -332,21 +292,18 @@ class GooglePlayEmulatorController(AdbBasedController):
         """Returns True if emulator is connected and not offline."""
         result = self.adb("devices")
         for line in result.stdout.strip().splitlines():
-            if DEBUG:
-                print(line)
-            if "localhost:6520" in line and "device" in line:
+            logger.debug("Device line: %s", line)
+            if self.device_serial in line and "device" in line:
                 return True
         return False
 
     def _valid_screen_size(self, expected_dims: tuple):
         # reverse expected_dims just because that's how cv2 works
-        if DEBUG:
-            print("Validating screen size...")
+        logger.debug("Validating screen size...")
         expected_dims = (expected_dims[1], expected_dims[0])
         image = self.screenshot()
         dims = image.shape[:2]
-        if DEBUG:
-            print(f"Image of size {dims} received, expected {expected_dims}")
+        logger.debug("Image of size %s received, expected %s", dims, expected_dims)
         if dims != expected_dims:
             return False
 
@@ -358,17 +315,17 @@ class GooglePlayEmulatorController(AdbBasedController):
     def restart(self):
         restart_start_time = time.time()
 
-        self.logger.change_status("Starting Google Play emulator restart process...")
+        logger.info("Starting Google Play emulator restart process...")
 
         # close emulator
-        self.logger.change_status("Shutting down Google Play emulator processes...")
+        logger.info("Shutting down Google Play emulator processes...")
         print("Restarting emulator...")
         print("Closing emulator...")
         while self._is_emulator_running():
             self.stop()
 
         # boot emulator
-        self.logger.change_status("Starting Google Play emulator...")
+        logger.info("Starting Google Play emulator...")
         print("Starting emulator...")
         while not self._is_emulator_running():
             self.start()
@@ -377,24 +334,24 @@ class GooglePlayEmulatorController(AdbBasedController):
             interruptible_sleep(0.3)
 
         # wait for adb readiness (locale-agnostic) once the VM process is up
-        self.logger.change_status("Waiting for Google Play emulator to finish starting...")
+        logger.info("Waiting for Google Play emulator to finish starting...")
         if not self._wait_for_adb_ready(timeout=120):
-            self.logger.change_status("Timed out waiting for Google Play emulator ADB to become ready.")
+            logger.warning("Timed out waiting for Google Play emulator ADB to become ready.")
             return False
 
         # Allow emulator services/UI to settle before manipulating display or launching the app.
         interruptible_sleep(5)
 
-        self.logger.change_status(f"Setting emulator screen size to {self.expected_dims}...")
+        logger.info("Setting emulator screen size to %s...", self.expected_dims)
         for i in range(3):
             print(f"Setting adb screen size to {self.expected_dims}")
             self._set_screen_size(*self.expected_dims)
             interruptible_sleep(1)
 
         # validate image size
-        self.logger.change_status("Validating Google Play emulator screen dimensions...")
+        logger.info("Validating Google Play emulator screen dimensions...")
         if not self._valid_screen_size(self.expected_dims):
-            self.logger.change_status(f"Invalid screen size - expected {self.expected_dims}")
+            logger.warning("Invalid screen size - expected %s", self.expected_dims)
             print(
                 f"[!] Fatal error: Emulator screen size is not {self.expected_dims}. "
                 "Please check the emulator settings."
@@ -402,43 +359,43 @@ class GooglePlayEmulatorController(AdbBasedController):
             return False
 
         # boot clash
-        self.logger.change_status("Launching Clash Royale application...")
+        logger.info("Launching Clash Royale application...")
         interruptible_sleep(10)
         clash_royale_name = "com.supercell.clashroyale"
         start_app_count = 3
         for i in range(start_app_count):
-            self.logger.change_status(f"Starting Clash Royale (attempt {i + 1}/{start_app_count})...")
+            logger.info("Starting Clash Royale (attempt %d/%d)...", i + 1, start_app_count)
             print(f"Starting clash app (attempt {i + 1}/{start_app_count})...")
             if not self.start_app(clash_royale_name) and i == 0:
                 # App not installed, start_app triggered the wait.
                 # We just wait for it to return, then the loop will retry.
-                self.logger.log("App not installed. Waiting for user...")
+                logger.info("App not installed. Waiting for user...")
             interruptible_sleep(1)
 
         # wait for clash main to appear
-        self.logger.change_status("Waiting for Clash Royale main menu to load...")
+        logger.info("Waiting for Clash Royale main menu to load...")
         print("Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
         interruptible_sleep(12)
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
-                self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
-                self.logger.log("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
+                logger.warning("Timeout waiting for Clash Royale main menu - restarting...")
+                logger.warning("Timeout reached while waiting for clash main menu to appear.")
                 return self.restart()
 
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:
-                self.logger.change_status("Clash Royale main menu detected successfully!")
-                self.logger.log("Detected clash main!")
+                logger.info("Clash Royale main menu detected successfully!")
+                logger.info("Detected clash main!")
                 break
 
             # click deadspace
             self.click(35, 405)
 
         restart_duration = str(time.time() - restart_start_time)[:5]
-        self.logger.change_status(f"Google Play emulator restart completed successfully in {restart_duration}s")
-        self.logger.log("Emulator restarted and configured successfully.")
+        logger.info("Google Play emulator restart completed successfully in %ss", restart_duration)
+        logger.info("Emulator restarted and configured successfully.")
         return True
 
     def start(self):

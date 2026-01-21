@@ -1,12 +1,32 @@
 """Emulator controllers for different platforms."""
 
+from collections.abc import Callable
 from enum import StrEnum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 from pyclashbot.utils.platform import is_windows
 
 if TYPE_CHECKING:
     from pyclashbot.emulators.base import BaseEmulatorController
+
+
+class ActionCallback(Protocol):
+    """Protocol for UI action prompts (e.g., 'Install app and click Retry')."""
+
+    def __call__(
+        self,
+        message: str,
+        action_text: str = "Retry",
+        callback: Callable[[], None] | None = None,
+    ) -> None:
+        """Display a temporary action button to the user.
+
+        Args:
+            message: The message to display to the user
+            action_text: Text for the action button (default: "Retry")
+            callback: Function to call when user clicks the button
+        """
+        ...
 
 
 class EmulatorType(StrEnum):
