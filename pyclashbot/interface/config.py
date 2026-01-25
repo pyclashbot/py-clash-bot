@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.interface.enums import (
     BATTLE_STAT_FIELDS,
     BATTLE_STAT_LABELS,
@@ -138,6 +139,20 @@ GOOGLE_PLAY_SETTINGS = [
     ComboConfig(UIField.GP_WSI, "wsi", ["vk", "glx"]),
 ]
 
+# Device Serial Configuration (for ADB device targeting)
+GOOGLE_PLAY_DEVICE_CONFIG = ComboConfig(
+    UIField.GP_DEVICE_SERIAL,
+    "Device",
+    [],
+    default=GooglePlayEmulatorController.DEFAULT_DEVICE_SERIAL,
+    size=(15, 1),
+    label_size=(6, 1),
+)
+
+BLUESTACKS_DEVICE_CONFIG = ComboConfig(
+    UIField.BS_DEVICE_SERIAL, "Device", [], default="", size=(15, 1), label_size=(6, 1)
+)
+
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
     [job.key.value for job in JOBS]
@@ -149,6 +164,7 @@ USER_CONFIG_KEYS = (
         UIField.MAX_DECK_SELECTION.value,
         UIField.CYCLE_DECKS_USER_TOGGLE.value,
     ]
+    + [UIField.GP_DEVICE_SERIAL.value, UIField.BS_DEVICE_SERIAL.value]  # Device serial settings
 )
 
 # Keys to disable when bot is running
