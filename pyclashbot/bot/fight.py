@@ -14,6 +14,7 @@ from pyclashbot.bot.card_detection import (
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
     check_for_trophy_reward_menu,
+    check_if_battle_has_ended,
     check_if_in_battle,
     check_if_on_clash_main_menu,
     get_to_activity_log,
@@ -233,6 +234,7 @@ def wait_for_elixer(
 ) -> Literal["restart", "no battle"] | bool:
     """Method to wait for 4 elixer during a battle"""
     start_time = time.time()
+    battle_detection_lost_count = 0
 
     while not count_elixer(emulator, random_elixer_wait):
         # debug screenshot saving removed from production
@@ -256,8 +258,24 @@ def wait_for_elixer(
             return "restart"
 
         if not check_for_in_battle_with_delay(emulator):
-            logger.change_status(status="Not in battle, stopping waiting for elixer.")
-            return "no battle"
+            if check_if_battle_has_ended(emulator):
+                logger.change_status(status="Not in battle anymore (confirmed), stopping waiting for elixer.")
+                return "no battle"
+
+            battle_detection_lost_count += 1
+            logger.change_status(
+                status="Lost battle detection while waiting for elixer; assuming still in battle.",
+            )
+            if battle_detection_lost_count >= 4:
+                logger.change_status(
+                    status="Lost battle detection repeatedly while waiting for elixer; assuming battle ended.",
+                )
+                return "no battle"
+
+            interruptible_sleep(0.5)
+            continue
+
+        battle_detection_lost_count = 0
 
     logger.change_status(
         f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer.",
@@ -672,12 +690,34 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)
     prev_cards_played = logger.get_cards_played()
+    battle_detection_lost_count = 0
 
     # Initialize battle strategy and start timing
     battle_strategy = BattleStrategy()
     battle_strategy.start_battle()
 
-    while check_for_in_battle_with_delay(emulator):
+    while True:
+        if not check_for_in_battle_with_delay(emulator):
+            if check_if_battle_has_ended(emulator):
+                break
+
+            battle_detection_lost_count += 1
+            logger.change_status(
+                f"Lost battle detection mid-fight ({battle_detection_lost_count}); waiting it out.",
+            )
+
+            # If we've lost detection several times in a row, assume the battle
+            # ended even if we couldn't confirm it (prevents infinite loops if UI changes).
+            if battle_detection_lost_count >= 4:
+                logger.change_status(
+                    "Lost battle detection repeatedly; assuming battle ended.",
+                )
+                break
+
+            interruptible_sleep(1)
+            continue
+
+        battle_detection_lost_count = 0
         # debug screenshot saving removed from production
 
         # Get elixir amount and thresholds based on current battle phase
@@ -702,8 +742,12 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
             break
 
         if not check_if_in_battle(emulator):
-            logger.change_status("Not in a battle anymore")
-            break
+            if check_if_battle_has_ended(emulator):
+                logger.change_status("Not in a battle anymore (confirmed)")
+                break
+
+            logger.change_status("Lost battle detection; continuing fight loop.")
+            continue
 
         play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:
@@ -726,9 +770,29 @@ def _random_fight_loop(emulator, logger) -> bool:
     logger.change_status(status="Starting battle with random plays")
     fight_timeout = 5 * 60  # 5 minutes
     start_time = time.time()
+    battle_detection_lost_count = 0
 
     # while in battle:
-    while check_if_in_battle(emulator):
+    while True:
+        if not check_for_in_battle_with_delay(emulator):
+            if check_if_battle_has_ended(emulator):
+                break
+
+            battle_detection_lost_count += 1
+            logger.change_status(
+                f"Lost battle detection mid-fight ({battle_detection_lost_count}); waiting it out.",
+            )
+
+            if battle_detection_lost_count >= 4:
+                logger.change_status(
+                    "Lost battle detection repeatedly; assuming battle ended.",
+                )
+                break
+
+            interruptible_sleep(1)
+            continue
+
+        battle_detection_lost_count = 0
         if time.time() - start_time > fight_timeout:
             logger.change_status("_random_fight_loop() timed out. Breaking")
             return False
