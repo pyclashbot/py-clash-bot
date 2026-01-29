@@ -93,23 +93,16 @@ def check_if_in_battle(emulator):
     def is_bright(pixel: list[int] | None, threshold: int = 180) -> bool:
         if pixel is None:
             return False
+        return all(channel >= threshold for channel in pixel) or (
+            150 <= pixel[0] <= 195 and 40 <= pixel[1] <= 60 and 40 <= pixel[2] <= 60
+        )
 
+    def is_filled_crown(pixel: list[int] | None) -> bool:
+        """Check if pixel is a gold/yellow filled crown or UI accent."""
+        if pixel is None:
+            return False
         r, g, b = pixel
-
-        # Classic "bright" (close to white)
-        if all(channel >= threshold for channel in (r, g, b)):
-            return True
-
-        # When the emote is closed these pixels are not considered bright:
-        # (533, 80) RGB=[157, 44, 44] and (532, 77) RGB=[187, 55, 55]
-        if 150 <= r <= 195 and 40 <= g <= 60 and 40 <= b <= 60:
-            return True
-
-        # Filled crowns / UI accents can be gold/yellow instead of white.
-        if r >= 170 and g >= 130 and b <= 140:
-            return True
-
-        return False
+        return r >= 170 and g >= 130 and b <= 140
 
     def is_scoreboard_purple(pixel: list[int] | None) -> bool:
         if pixel is None:
@@ -122,7 +115,7 @@ def check_if_in_battle(emulator):
         # Allow one of the "bright" UI pixels to change (crowns filling, overlays,
         # small rendering differences) while still requiring the purple scoreboard.
         bright_required = max(1, len(coords) - 2)
-        bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel))
+        bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel) or is_filled_crown(pixel))
         return bright_count >= bright_required and is_scoreboard_purple(pixels[-1])
 
     # When the emote is closed these pixels are not considered bright:
