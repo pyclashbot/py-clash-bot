@@ -73,6 +73,7 @@ def check_for_in_battle_with_delay(emulator) -> bool:
         battle_result = check_if_in_battle(emulator)
         if battle_result:  # True for any battle type ("1v1", "2v2")
             return True
+        interruptible_sleep(0.1)
     return False
 
 
@@ -90,9 +91,18 @@ def check_if_in_battle(emulator):
         return iar[y][x].tolist()
 
     def is_bright(pixel: list[int] | None, threshold: int = 180) -> bool:
-        return (pixel is not None and all(channel >= threshold for channel in pixel)) or (
+        if pixel is None:
+            return False
+        return all(channel >= threshold for channel in pixel) or (
             150 <= pixel[0] <= 195 and 40 <= pixel[1] <= 60 and 40 <= pixel[2] <= 60
         )
+
+    def is_filled_crown(pixel: list[int] | None) -> bool:
+        """Check if pixel is a gold/yellow filled crown or UI accent."""
+        if pixel is None:
+            return False
+        r, g, b = pixel
+        return r >= 170 and g >= 130 and b <= 140
 
     def is_scoreboard_purple(pixel: list[int] | None) -> bool:
         if pixel is None:
@@ -102,8 +112,10 @@ def check_if_in_battle(emulator):
 
     def check_mode(coords: list[tuple[int, int]]) -> bool:
         pixels = [get_pixel(y, x) for y, x in coords]
-        bright_required = len(coords) - 1
-        bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel))
+        # Allow one of the "bright" UI pixels to change (crowns filling, overlays,
+        # small rendering differences) while still requiring the purple scoreboard.
+        bright_required = max(1, len(coords) - 2)
+        bright_count = sum(1 for pixel in pixels[:-1] if is_bright(pixel) or is_filled_crown(pixel))
         return bright_count >= bright_required and is_scoreboard_purple(pixels[-1])
 
     # When the emote is closed these pixels are not considered bright:
@@ -114,6 +126,35 @@ def check_if_in_battle(emulator):
     if check_mode(coords_1v1):
         return True
     if check_mode(coords_2v2):
+        return True
+
+    return False
+
+
+def check_for_post_battle_button(emulator) -> bool:
+    """Checks for the post-battle OK/Exit buttons (battle-end screen)."""
+    image = emulator.screenshot()
+    if image is None:
+        return False
+
+    if find_image(image, "ok_post_battle_button", tolerance=0.85) is not None:
+        return True
+
+    if find_image(image, "exit_battle_button", tolerance=0.9) is not None:
+        return True
+
+    return False
+
+
+def check_if_battle_has_ended(emulator) -> bool:
+    """Best-effort confirmation that a battle ended (avoid false positives mid-fight)."""
+    if check_if_on_clash_main_menu(emulator):
+        return True
+
+    if check_for_trophy_reward_menu(emulator):
+        return True
+
+    if check_for_post_battle_button(emulator):
         return True
 
     return False
