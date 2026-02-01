@@ -11,7 +11,9 @@ from ttkbootstrap.tooltip import ToolTip
 
 from pyclashbot.emulators import EmulatorType, get_available_emulators
 from pyclashbot.interface.config import (
+    BLUESTACKS_DEVICE_CONFIG,
     BLUESTACKS_SETTINGS,
+    GOOGLE_PLAY_DEVICE_CONFIG,
     GOOGLE_PLAY_SETTINGS,
     JOBS,
     MEMU_SETTINGS,
@@ -104,6 +106,8 @@ class PyClashBotUI(ttk.Window):
             values[field.value] = var.get()
 
         values[UIField.ADB_SERIAL.value] = self.adb_serial_var.get()
+        values[UIField.GP_DEVICE_SERIAL.value] = self.gp_device_serial_var.get()
+        values[UIField.BS_DEVICE_SERIAL.value] = self.bs_device_serial_var.get()
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
@@ -169,6 +173,10 @@ class PyClashBotUI(ttk.Window):
 
             if UIField.ADB_SERIAL.value in values:
                 self.adb_serial_var.set(str(values[UIField.ADB_SERIAL.value]))
+            if UIField.GP_DEVICE_SERIAL.value in values:
+                self.gp_device_serial_var.set(str(values[UIField.GP_DEVICE_SERIAL.value]))
+            if UIField.BS_DEVICE_SERIAL.value in values:
+                self.bs_device_serial_var.set(str(values[UIField.BS_DEVICE_SERIAL.value]))
 
             self._update_google_play_comboboxes()
 
@@ -527,7 +535,29 @@ class PyClashBotUI(ttk.Window):
         self._update_advanced_settings_visibility(self.emulator_var.get())
 
     def _create_google_play_settings(self, parent_frame: ttk.Frame) -> None:
-        frame = ttk.Labelframe(parent_frame, text="Google Play Options", padding=10)
+        # Device Settings Frame
+        device_frame = ttk.Labelframe(parent_frame, text="Device Settings", padding=10)
+        device_frame.pack(fill="x", padx=5, pady=5)
+
+        # Device serial row
+        device_row = ttk.Frame(device_frame)
+        device_row.pack(fill="x", pady=(0, 5))
+        device_row.columnconfigure(1, weight=1)
+
+        ttk.Label(device_row, text="Device:").grid(row=0, column=0, padx=(0, 5), sticky="w")
+
+        self.gp_device_serial_var = ttk.StringVar(value=GOOGLE_PLAY_DEVICE_CONFIG.default)
+        self.gp_device_serial_combo = ttk.Combobox(
+            device_row,
+            textvariable=self.gp_device_serial_var,
+            state=tk.NORMAL,
+        )
+        self.gp_device_serial_combo.grid(row=0, column=1, padx=5, sticky="ew")
+        self._register_config_widget(UIField.GP_DEVICE_SERIAL.value, self.gp_device_serial_combo)
+        self._trace_variable(self.gp_device_serial_var)
+
+        # Render Options Frame
+        frame = ttk.Labelframe(parent_frame, text="Render Options", padding=10)
         frame.pack(fill="x", padx=5, pady=5)
 
         left_keys = GOOGLE_PLAY_SETTINGS[:4]
@@ -557,6 +587,37 @@ class PyClashBotUI(ttk.Window):
             self._register_config_widget(config.key.value, rb)
 
     def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
+        # Device Settings Frame
+        device_frame = ttk.Labelframe(parent_frame, text="Device Settings", padding=10)
+        device_frame.pack(fill="x", padx=5, pady=5)
+
+        # Device serial row
+        device_row = ttk.Frame(device_frame)
+        device_row.pack(fill="x", pady=(0, 5))
+        device_row.columnconfigure(1, weight=1)
+
+        ttk.Label(device_row, text="Device:").grid(row=0, column=0, padx=(0, 5), sticky="w")
+
+        self.bs_device_serial_var = ttk.StringVar(value=BLUESTACKS_DEVICE_CONFIG.default)
+        self.bs_device_serial_combo = ttk.Combobox(
+            device_row,
+            textvariable=self.bs_device_serial_var,
+            state=tk.NORMAL,
+        )
+        self.bs_device_serial_combo.grid(row=0, column=1, padx=5, sticky="ew")
+        self._register_config_widget(UIField.BS_DEVICE_SERIAL.value, self.bs_device_serial_combo)
+        self._trace_variable(self.bs_device_serial_var)
+
+        # Note about auto-discovery
+        note_label = ttk.Label(
+            device_frame,
+            text="Leave empty to auto-detect from BlueStacks config",
+            font=("TkDefaultFont", 8),
+            foreground="gray",
+        )
+        note_label.pack(anchor="w")
+
+        # Render Mode Frame (advanced settings)
         self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
         self.bluestacks_advanced_frame.pack_forget()
 

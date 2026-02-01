@@ -18,7 +18,20 @@ from pyclashbot.utils.platform import Platform
 class GooglePlayEmulatorController(AdbBasedController):
     supported_platforms = [Platform.WINDOWS]
 
-    def __init__(self, logger, render_settings: dict = {}):
+    # Default device serial for Google Play Games emulator
+    DEFAULT_DEVICE_SERIAL = "localhost:6520"
+
+    @staticmethod
+    def find_adb() -> str | None:
+        """Find bundled adb.exe path, or None if not found."""
+        try:
+            install = GooglePlayEmulatorController._find_install_location()
+            adb = os.path.join(install, "current", "emulator", "adb.exe")
+            return adb if os.path.isfile(adb) else None
+        except Exception:
+            return None
+
+    def __init__(self, logger, render_settings: dict = {}, device_serial: str | None = None):
         self.logger = logger
         # clear existing stuff
         self.stop()
@@ -53,6 +66,11 @@ class GooglePlayEmulatorController(AdbBasedController):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
             elif DEBUG:
                 print(f"[INIT DEBUG] Path verified: {path}")
+
+        # Set device serial - use provided value or default
+        self.device_serial: str = device_serial if device_serial else self.DEFAULT_DEVICE_SERIAL
+        if DEBUG:
+            print(f"[INIT DEBUG] Device serial set to: {self.device_serial}")
 
         # configure the emulator via file
         self._configure_settings(render_settings)
@@ -168,13 +186,13 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         if DEBUG:
             print("[CONNECT DEBUG] Disconnecting any existing connections...")
-        disconnect_result = self.adb("disconnect localhost:6520")
+        disconnect_result = self.adb(f"disconnect {self.device_serial}")
         if DEBUG:
             print(f"[CONNECT DEBUG] Disconnect result: {disconnect_result.stdout}")
 
         if DEBUG:
-            print("[CONNECT DEBUG] Attempting to connect to localhost:6520...")
-        connect_result = self.adb("connect localhost:6520")
+            print(f"[CONNECT DEBUG] Attempting to connect to {self.device_serial}...")
+        connect_result = self.adb(f"connect {self.device_serial}")
         if DEBUG:
             print(f"[CONNECT DEBUG] Connect result: {connect_result.stdout}")
             print(f"[CONNECT DEBUG] Connect return code: {connect_result.returncode}")
@@ -193,19 +211,23 @@ class GooglePlayEmulatorController(AdbBasedController):
                 print("[CONNECT DEBUG] Devices command returned None stdout")
             return False
 
-        if "offline" in result.stdout:
-            self.logger.log("[!] Emulator is offline. Please check the connection.")
-            return False
-
-        elif "localhost:6520" in result.stdout and "device" in result.stdout:
-            self.logger.log("Connected to emulator at localhost:6520")
-            return True
+        # Check if our specific device is online
+        devices = self.list_devices()
+        for serial, status in devices:
+            if serial == self.device_serial:
+                if status == "device":
+                    self.logger.log(f"Connected to emulator at {self.device_serial}")
+                    return True
+                elif status == "offline":
+                    self.logger.log(f"[!] Device {self.device_serial} is offline. Please check the connection.")
+                    return False
 
         if DEBUG:
             print("[CONNECT DEBUG] Connection failed - device not found or not ready")
         return False
 
-    def _find_install_location(self):
+    @staticmethod
+    def _find_install_location() -> str:
         """
         Locate the installation path of Google Play Games Developer Emulator using the Windows Registry.
 
@@ -246,44 +268,6 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         raise FileNotFoundError(f"adb.exe not found at expected location: {adb_path}")
 
-    def adb(self, command, binary_output=False):
-        """
-        Runs an adb command using the located adb.exe path.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        full_command = f'"{self.adb_path}" {command}'
-        if DEBUG:
-            print(f"[ADB DEBUG] Executing: {full_command}")
-            print(f"[ADB DEBUG] ADB path exists: {os.path.exists(self.adb_path)}")
-            print(f"[ADB DEBUG] Binary output mode: {binary_output}")
-
-        result = subprocess.run(
-            full_command,
-            shell=True,
-            capture_output=True,
-            text=not binary_output,
-            check=False,
-        )
-
-        if DEBUG:
-            print(f"[ADB DEBUG] Return code: {result.returncode}")
-            if binary_output:
-                print(f"[ADB DEBUG] Stdout type: {type(result.stdout)}")
-                print(f"[ADB DEBUG] Stdout length: {len(result.stdout) if result.stdout else 'None'}")
-            else:
-                print(f"[ADB DEBUG] Stdout: {result.stdout[:200] if result.stdout else 'None'}...")
-            print(f"[ADB DEBUG] Stderr: {result.stderr[:200] if result.stderr else 'None'}...")
-
-        return result
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if an app is installed using the emulator's bundled ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        result = self.adb("shell pm list packages")
-        return result.stdout is not None and package_name in result.stdout
-
     def create(self):
         """
         This method is used to create the emulator.
@@ -322,7 +306,7 @@ class GooglePlayEmulatorController(AdbBasedController):
             result = self.adb("devices")
             if result.stdout:
                 for line in result.stdout.strip().splitlines():
-                    if "localhost:6520" in line and "device" in line:
+                    if self.device_serial in line and "device" in line:
                         return True
             self._connect()
             interruptible_sleep(3)
@@ -334,7 +318,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         for line in result.stdout.strip().splitlines():
             if DEBUG:
                 print(line)
-            if "localhost:6520" in line and "device" in line:
+            if self.device_serial in line and "device" in line:
                 return True
         return False
 
