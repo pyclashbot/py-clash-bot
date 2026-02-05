@@ -97,13 +97,13 @@ def do_fight_state(
     logger.change_status("Starting fight loop")
     logger.log(f'This is the fight mode: "{fight_mode_choosed}"')
 
-    # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
+    # Run random fight loop if random mode toggled
+    if random_fight_mode and _random_fight_loop(emulator, logger) is False:
         logger.change_status("Failure in fight loop")
         return False
 
-    # Run random fight loop if random mode toggled
-    if random_fight_mode and _random_fight_loop(emulator, logger) is False:
+    # Run regular fight loop if random mode not toggled
+    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
         logger.change_status("Failure in fight loop")
         return False
 

@@ -361,12 +361,16 @@ class PyClashBotUI(ttk.Window):
             bootstyle: str,
         ) -> None:
             var = ttk.BooleanVar(value=job_defaults.get(field, False))
+
+            def on_checkbox_change():
+                self._notify_config_change()
+
             checkbox = ttk.Checkbutton(
                 frame,
                 text=text,
                 variable=var,
                 bootstyle=bootstyle,
-                command=self._notify_config_change,
+                command=on_checkbox_change,
                 width=checkbox_width,
             )
             checkbox.grid(row=row_index, column=0, sticky="w", pady=2)
@@ -811,7 +815,13 @@ class PyClashBotUI(ttk.Window):
                 self.theme_var.set(selected)
             finally:
                 self._suspend_traces -= 1
-        self._style.theme_use(selected)
+        try:
+            self._style.theme_use(selected)
+        except tk.TclError:
+            # Widgets may not be fully initialized yet, especially combobox popdowns
+            # This can happen during initialization when loading settings
+            # The theme will be applied correctly once widgets are fully created
+            pass
         self._refresh_theme_colours()
 
     def _label_foreground(self) -> str:
