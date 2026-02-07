@@ -10,6 +10,7 @@ from functools import wraps
 from os import listdir, makedirs, remove
 from os.path import exists, getmtime, join
 
+from pyclashbot.utils.colored_logging import LogColorMap
 from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.platform import get_log_dir
 from pyclashbot.utils.versioning import __version__
@@ -209,7 +210,9 @@ class Logger:
         log_message = f"[{self.current_state}] {message}"
         logging.info(log_message)
         time_string = self.calc_time_since_start()
-        print(f"[{self.current_state}] [{time_string}] {message}")
+        console_message = f"[{self.current_state}] [{time_string}] {message}"
+        colored_message = LogColorMap.auto_format(console_message)
+        print(colored_message)
 
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
@@ -348,9 +351,9 @@ class Logger:
         self.errored = True
         logging.error(message)
 
-    @_updates_gui
-    def add_card_mastery_reward_collection(self) -> None:
-        """Increment logger's card mastery reward collection counter by 1"""
+        # Print colored error to console
+        error_message = f"[ERROR] {message}"
+        colored_message = LogColorMap.auto_format(error_message)
         self.card_mastery_reward_collections += 1
 
     @_updates_gui

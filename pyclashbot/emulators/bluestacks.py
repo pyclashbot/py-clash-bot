@@ -16,6 +16,46 @@ from pyclashbot.utils.platform import Platform, is_macos
 DEBUG = False
 
 
+def list_bluestacks_instances() -> list[str]:
+    """Return display names of available BlueStacks instances without side effects.
+
+    Reads registry and bluestacks.conf directly to avoid launching/stopping instances.
+    """
+    try:
+        if is_macos():
+            base = "/Users/Shared/Library/Application Support/BlueStacks"
+            bs_conf = os.path.join(base, "bluestacks.conf")
+        else:
+            import winreg
+
+            try:
+                with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\BlueStacks_nxt") as key:
+                    data_dir, _ = winreg.QueryValueEx(key, "DataDir")
+            except (OSError, FileNotFoundError):
+                # BlueStacks not installed or registry key not accessible
+                return []
+            dd = normpath(str(data_dir))
+            bs_conf = os.path.join(os.path.dirname(dd), "bluestacks.conf")
+
+        if not os.path.isfile(bs_conf):
+            return []
+        with open(bs_conf, "r", encoding="utf-8", errors="ignore") as f:
+            text = f.read()
+        names: list[str] = []
+        for m in re.finditer(r'^bst\.instance\.([^.=]+)\.display_name="([^"]+)"\s*$', text, flags=re.M):
+            names.append(m.group(2))
+        # Deduplicate preserving order
+        seen = set()
+        ordered = []
+        for n in names:
+            if n not in seen:
+                seen.add(n)
+                ordered.append(n)
+        return ordered
+    except Exception:
+        return []
+
+
 class BlueStacksEmulatorController(AdbBasedController):
     """BlueStacks 5 controller using HD-Adb.
 
@@ -26,11 +66,11 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
-    def __init__(self, logger, render_settings: dict | None = None):
+    def __init__(self, logger, render_settings: dict | None = None, instance_name: str | None = None):
         self.logger = logger
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
-        self.instance_name = "pyclashbot-96"
+        self.instance_name = instance_name or "pyclashbot-96"
         self.internal_name: str | None = None
         self.instance_port: int | None = None
         self.device_serial: str | None = None  # "127.0.0.1:<port>"
@@ -345,6 +385,35 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return internal
         return None
 
+    def get_available_instances(self) -> list[str]:
+        """Get list of all available BlueStacks instances with their display names.
+        
+        Returns a list of display names of all BlueStacks instances.
+        If no instances are found, returns an empty list.
+        """
+        try:
+            conf = self._read_text(self.bs_conf_path)
+            if not conf:
+                return []
+            
+            instance_list = self._list_instance_internals(conf)
+            if not instance_list:
+                return []
+            
+            # Get display names for each internal instance
+            display_names = []
+            for internal in instance_list:
+                display_name = self._get_conf_value(conf, f"bst.instance.{internal}.display_name")
+                if display_name:
+                    display_names.append(display_name)
+                else:
+                    # Fallback to internal name if no display name is set
+                    display_names.append(internal)
+            
+            return display_names
+        except Exception:
+            return []
+
     def _ensure_managed_instance(self):
         # If display entry exists
         if self._display_name_exists(self.bs_conf_path, self.instance_name):
@@ -534,6 +603,42 @@ class BlueStacksEmulatorController(AdbBasedController):
             if DEBUG:
                 print(f"[Bluestacks 5] Refreshed instance port -> {self.device_serial}")
 
+    def _ensure_target_instance(self) -> bool:
+        """Resolve internal name/port for the selected display name; fallback to first instance."""
+        # Already resolved
+        if self.internal_name and self.instance_port and self.device_serial:
+            return True
+
+        conf_text = self._read_text(self.bs_conf_path) or ""
+        internal: str | None = None
+
+        # 1) Try matching display name from MimMetaData or conf
+        if self.instance_name:
+            internal = self._find_internal_by_display_name(self.mim_meta_path, self.instance_name) or \
+                self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
+
+        # 2) Fallback: pick the first instance present
+        if not internal:
+            internals = self._list_instance_internals(conf_text)
+            if internals:
+                internal = internals[0]
+                fallback_display = self._get_conf_value(conf_text, f"bst.instance.{internal}.display_name") or internal
+                self.logger.log(
+                    f"[BlueStacks 5] Requested instance '{self.instance_name}' not found. "
+                    f"Using '{fallback_display}' instead."
+                )
+                # Update outward-facing name so window-title checks align
+                self.instance_name = fallback_display
+
+        if not internal:
+            self.logger.change_status("No BlueStacks instance found in configuration.")
+            return False
+
+        self.internal_name = internal
+        self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
+        self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
+        return self.instance_port is not None
+
     def _connect(self) -> bool:
         """Connect only to this instance's port."""
         if not self.device_serial:
@@ -570,7 +675,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return False
 
         # Windows: tasklist CSV parsing
-        title = self.instance_name
+        title = (self.instance_name or "").strip().lower()
         try:
             res = subprocess.run(
                 'tasklist /v /fi "IMAGENAME eq HD-Player.exe" /fo csv',
@@ -583,13 +688,23 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return False
             reader = csv.reader(io.StringIO(res.stdout))
             next(reader, None)  # skip header
+            any_player = False
             for row in reader:
                 if not row:
                     continue
                 image = (row[0] if len(row) > 0 else "").strip().lower()
                 window_title = (row[-1] if len(row) > 0 else "").strip()
-                if image == "hd-player.exe" and window_title == title:
-                    return True  # yes, I parsed CSV from tasklist. no, I'm not proud of it
+                window_title_lower = window_title.lower()
+
+                if image == "hd-player.exe":
+                    any_player = True
+                    # Accept exact, contains, or empty title (fallback to any player)
+                    if not title or window_title_lower == title or title in window_title_lower:
+                        return True  # yes, I parsed CSV from tasklist. no, I'm not proud of it
+
+            # Fallback: if any BlueStacks player is running, assume ours to avoid hanging
+            if any_player:
+                return True
         except Exception:
             return False
         return False
@@ -637,17 +752,25 @@ class BlueStacksEmulatorController(AdbBasedController):
         start_ts = time.time()
         self.logger.change_status("Starting BlueStacks 5 emulator restart process...")
 
+        if not self._ensure_target_instance():
+            return False
+
         self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
 
-        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-96)...")
+        self.logger.change_status(f"Launching BlueStacks 5 ({self.instance_name})...")
         self.start()
 
         # Wait for only our instance
         boot_timeout = 180
+        soft_wait = 15  # after this, proceed even if window title not matched
         t0 = time.time()
         while not self._is_this_instance_running():
-            if time.time() - t0 > boot_timeout:
+            elapsed = time.time() - t0
+            if elapsed > soft_wait:
+                self.logger.log("[BlueStacks 5] Proceeding without window title match; assuming launched.")
+                break
+            if elapsed > boot_timeout:
                 self.logger.change_status("Timeout waiting for pyclashbot instance to start - retrying...")
                 return False
             interruptible_sleep(0.5)

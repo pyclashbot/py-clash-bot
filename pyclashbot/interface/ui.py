@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import re
 import tkinter as tk
 from collections.abc import Callable
+from datetime import datetime
 from tkinter import messagebox
 from typing import TYPE_CHECKING
 
@@ -30,6 +32,7 @@ from pyclashbot.interface.enums import (
     UIField,
 )
 from pyclashbot.interface.widgets import DualRingGauge
+from pyclashbot.utils.colored_logging import LogColorMap
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -56,8 +59,17 @@ class PyClashBotUI(ttk.Window):
         self.theme_var = ttk.StringVar(value=current_theme)
         self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
+        self.scheduler_enabled_var = ttk.BooleanVar(value=False)
+
+        # Set start time to current time by default
+        now = datetime.now()
+        self.scheduler_start_hour_var = ttk.StringVar(value=f"{now.hour:02d}")
+        self.scheduler_start_minute_var = ttk.StringVar(value=f"{now.minute:02d}")
+        self.scheduler_end_hour_var = ttk.StringVar(value="22")
+        self.scheduler_end_minute_var = ttk.StringVar(value="00")
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
+        self._bluestacks_refresh_callback: Callable[[], list[str]] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
@@ -77,6 +89,12 @@ class PyClashBotUI(ttk.Window):
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
 
+    def register_bluestacks_refresh_callback(self, callback: Callable[[], list[str]]) -> None:
+        """Register a callback to get available BlueStacks instances.
+
+        The callback should return a list of available instance names.
+        """
+        self._bluestacks_refresh_callback = callback
     def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
         for field, var in self.jobs_vars.items():
@@ -99,6 +117,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.BS_RENDERER_DX.value] = bs_render == "DirectX"
         values[UIField.BS_RENDERER_GL.value] = bs_render == "OpenGL"
         values[UIField.BS_RENDERER_VK.value] = bs_render == "Vulkan"
+        values[UIField.BLUESTACKS_INSTANCE.value] = self.bs_instance_var.get()
 
         for field, var in self.gp_vars.items():
             values[field.value] = var.get()
@@ -107,6 +126,11 @@ class PyClashBotUI(ttk.Window):
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
+        values[UIField.SCHEDULER_ENABLED.value] = bool(self.scheduler_enabled_var.get())
+        values[UIField.SCHEDULER_START_HOUR.value] = self._safe_int(self.scheduler_start_hour_var.get(), 8)
+        values[UIField.SCHEDULER_START_MINUTE.value] = self._safe_int(self.scheduler_start_minute_var.get(), 0)
+        values[UIField.SCHEDULER_END_HOUR.value] = self._safe_int(self.scheduler_end_hour_var.get(), 22)
+        values[UIField.SCHEDULER_END_MINUTE.value] = self._safe_int(self.scheduler_end_minute_var.get(), 0)
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -160,6 +184,10 @@ class PyClashBotUI(ttk.Window):
             elif values.get(UIField.BS_RENDERER_GL.value):
                 self.bs_render_var.set("OpenGL")
 
+            if UIField.BLUESTACKS_INSTANCE.value in values:
+                instance = str(values[UIField.BLUESTACKS_INSTANCE.value])
+                self.bs_instance_var.set(instance)
+
             for field, var in self.gp_vars.items():
                 config = next((c for c in GOOGLE_PLAY_SETTINGS if c.key == field), None)
                 if field.value in values and values[field.value] is not None:
@@ -169,6 +197,16 @@ class PyClashBotUI(ttk.Window):
 
             if UIField.ADB_SERIAL.value in values:
                 self.adb_serial_var.set(str(values[UIField.ADB_SERIAL.value]))
+
+            if UIField.SCHEDULER_ENABLED.value in values:
+                self.scheduler_enabled_var.set(bool(values[UIField.SCHEDULER_ENABLED.value]))
+
+            # Start time always shows current PC time (not saved value)
+            # Only load end time from saved config
+            if UIField.SCHEDULER_END_HOUR.value in values:
+                self.scheduler_end_hour_var.set(str(values[UIField.SCHEDULER_END_HOUR.value]).zfill(2))
+            if UIField.SCHEDULER_END_MINUTE.value in values:
+                self.scheduler_end_minute_var.set(str(values[UIField.SCHEDULER_END_MINUTE.value]).zfill(2))
 
             self._update_google_play_comboboxes()
 
@@ -250,9 +288,26 @@ class PyClashBotUI(ttk.Window):
     def append_log(self, message: str) -> None:
         self.event_log.configure(state="normal")
         self.event_log.delete("1.0", "end")
-        self.event_log.insert("end", message)
+        clean_message = self._strip_ansi(message)
+        self.event_log.insert("end", clean_message)
+        self._apply_log_tags(clean_message)
         self.event_log.configure(state="disabled")
         self.event_log.see("end")
+
+    def _init_log_tags(self) -> None:
+        for color_name, hex_code in LogColorMap.COLOR_HEX.items():
+            self.event_log.tag_configure(color_name, foreground=hex_code)
+
+    @staticmethod
+    def _strip_ansi(message: str) -> str:
+        return re.sub(r"\x1b\[[0-9;]*m", "", message)
+
+    def _apply_log_tags(self, message: str) -> None:
+        for pattern, color_name in LogColorMap.HIGHLIGHT_PATTERNS:
+            for match in re.finditer(pattern, message, flags=re.IGNORECASE):
+                start = f"1.0+{match.start()}c"
+                end = f"1.0+{match.end()}c"
+                self.event_log.tag_add(color_name, start, end)
 
     def set_status(self, text: str) -> None:
         self._status_text = text
@@ -327,6 +382,7 @@ class PyClashBotUI(ttk.Window):
         self.event_log = tk.Text(bottom, height=3, wrap="word")
         self.event_log.grid(row=0, column=0, sticky="nsew")
         self.event_log.configure(state="disabled")
+        self._init_log_tags()
         self._status_text = "Idle"
 
         # Single unified button below log
@@ -557,6 +613,36 @@ class PyClashBotUI(ttk.Window):
             self._register_config_widget(config.key.value, rb)
 
     def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
+        # Instance Selection Frame
+        instance_frame = ttk.Labelframe(parent_frame, text="Instance Selection", padding=10)
+        instance_frame.pack(fill="x", padx=5, pady=5)
+        instance_frame.columnconfigure(1, weight=1)
+
+        ttk.Label(instance_frame, text="BlueStacks Instance:").grid(row=0, column=0, padx=(0, 5), sticky="w")
+
+        self.bs_instance_var = ttk.StringVar(value="pyclashbot-96")
+        self.bs_instance_combo = ttk.Combobox(
+            instance_frame,
+            textvariable=self.bs_instance_var,
+            state=READONLY,
+            width=25,
+        )
+        self.bs_instance_combo.grid(row=0, column=1, padx=5, sticky="ew")
+        self._register_config_widget(UIField.BLUESTACKS_INSTANCE.value, self.bs_instance_combo)
+        self._trace_variable(self.bs_instance_var)
+
+        self.bs_refresh_btn = ttk.Button(
+            instance_frame,
+            text="Refresh",
+            command=self._on_bluestacks_refresh,
+        )
+        self.bs_refresh_btn.grid(row=0, column=2, padx=(5, 0), sticky="ew")
+        self._register_config_widget("bs_refresh_btn", self.bs_refresh_btn)
+
+        # Load available instances
+        self._update_bluestacks_instances()
+
+        # Render Mode Frame (Advanced)
         self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
         self.bluestacks_advanced_frame.pack_forget()
 
@@ -750,6 +836,66 @@ class PyClashBotUI(ttk.Window):
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
 
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
+        scheduler_frame = ttk.Labelframe(self.misc_tab, text="Scheduler", padding=10)
+        scheduler_frame.pack(fill="x", padx=10, pady=10)
+
+        scheduler_checkbox = ttk.Checkbutton(
+            scheduler_frame,
+            text="Enable Schedule",
+            variable=self.scheduler_enabled_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        scheduler_checkbox.pack(anchor="w", pady=(0, 8))
+        self._trace_variable(self.scheduler_enabled_var)
+
+        time_frame = ttk.Frame(scheduler_frame)
+        time_frame.pack(fill="x")
+
+        ttk.Label(time_frame, text="Start Time:").grid(row=0, column=0, sticky="w", padx=(0, 5))
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=23,
+            width=3,
+            textvariable=self.scheduler_start_hour_var,
+            command=self._notify_config_change,
+        ).grid(row=0, column=1, padx=2)
+        ttk.Label(time_frame, text=":").grid(row=0, column=2)
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=59,
+            width=3,
+            textvariable=self.scheduler_start_minute_var,
+            command=self._notify_config_change,
+        ).grid(row=0, column=3, padx=2)
+
+        ttk.Label(time_frame, text="End Time:").grid(row=1, column=0, sticky="w", padx=(0, 5), pady=(6, 0))
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=23,
+            width=3,
+            textvariable=self.scheduler_end_hour_var,
+            command=self._notify_config_change,
+        ).grid(row=1, column=1, padx=2, pady=(6, 0))
+        ttk.Label(time_frame, text=":").grid(row=1, column=2, pady=(6, 0))
+        ttk.Spinbox(
+            time_frame,
+            from_=0,
+            to=59,
+            width=3,
+            textvariable=self.scheduler_end_minute_var,
+            command=self._notify_config_change,
+        ).grid(row=1, column=3, padx=2, pady=(6, 0))
+
+        self._trace_variable(self.scheduler_start_hour_var)
+        self._trace_variable(self.scheduler_start_minute_var)
+        self._trace_variable(self.scheduler_end_hour_var)
+        self._trace_variable(self.scheduler_end_minute_var)
+
+        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
         display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
         display_frame.pack(fill="x", padx=10, pady=10)
 
@@ -857,7 +1003,9 @@ class PyClashBotUI(ttk.Window):
         # Show the selected frame
         frame_to_show = self.emulator_settings_frames.get(selected_emulator)
         should_show = True
-        if selected_emulator in {EmulatorType.MEMU, EmulatorType.BLUESTACKS, EmulatorType.GOOGLE_PLAY}:
+        # Show MEmu/Google Play settings only when Advanced is enabled.
+        # BlueStacks settings (instance selector) are always visible; its render mode stays in Advanced.
+        if selected_emulator in {EmulatorType.MEMU, EmulatorType.GOOGLE_PLAY}:
             should_show = show_advanced
         if frame_to_show and should_show:
             frame_to_show.pack(fill=BOTH, expand=YES)
@@ -898,6 +1046,31 @@ class PyClashBotUI(ttk.Window):
     def _on_advanced_settings_toggled(self) -> None:
         # Re-evaluate which emulator settings should be visible when the toggle changes
         self._show_current_emulator_settings()
+
+    def _update_bluestacks_instances(self) -> None:
+        """Update the list of available BlueStacks instances in the combobox."""
+        if self._bluestacks_refresh_callback:
+            try:
+                instances = self._bluestacks_refresh_callback()
+                if instances:
+                    self.bs_instance_combo.configure(values=instances)
+                    # Set to the first instance if current value is not in the list
+                    current = self.bs_instance_var.get()
+                    if current not in instances:
+                        self.bs_instance_var.set(instances[0])
+            except Exception:
+                # If callback fails, just keep current values
+                pass
+        else:
+            # If no callback is registered, try to populate with default
+            current = self.bs_instance_var.get()
+            if current:
+                self.bs_instance_combo.configure(values=[current])
+
+    def _on_bluestacks_refresh(self) -> None:
+        """Handle the BlueStacks refresh button click."""
+        self._update_bluestacks_instances()
+
 
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:
