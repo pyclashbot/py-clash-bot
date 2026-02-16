@@ -20,7 +20,8 @@ ES_TRANSLATIONS = {
     "Data Settings": "Configuración de Datos",
     "Display Settings": "Configuración de Pantalla",
     "Open Logs Folder": "Abrir Carpeta de Registros",
-    "Discord Rich Presence": "Presencia Rica en Discord",
+    "Open Logs Folder": "Abrir Carpeta de Registros",
+    # "Discord Rich Presence": "Presencia Rica en Discord", # Requested to leave as is
     
     # Jobs
     "⚔️ Classic 1v1 battles": "⚔️ Batallas Clásicas 1v1",
@@ -29,7 +30,7 @@ ES_TRANSLATIONS = {
     "🎲 Randomize Deck": "🎲 Mazo Aleatorio",
     "♻️ Cycle decks": "♻️ Ciclar Mazos",
     "❔ Random plays": "❔ Jugadas Aleatorias",
-    "⏭️ Skip win/loss check": "⏭️ Omitir chequeo ganar/perder",
+    "⏭️ Skip win/loss check": "⏭️ Omitir chequeo win/loss",
     "🎯 Card Masteries": "🎯 Maestrías de Cartas",
     "⬆️ Upgrade Cards": "⬆️ Mejorar Cartas",
     "Deck Number to use for Randomization": "Número de Mazo para Aleatorizar",
@@ -47,6 +48,8 @@ ES_TRANSLATIONS = {
     "Restart ADB": "Reiniciar ADB",
     "Set Size & Density": "Fijar Tamaño y Densidad",
     "Reset Size & Density": "Restablecer Tamaño y Densidad",
+    "Sets screen to 419x633 and density to 160": "Ajusta pantalla a 419x633 y densidad a 160",
+    "Resets screen size and density to device defaults": "Restablece tamaño y densidad a val. de fábrica",
     
     # Stats
     "Win Rate": "Tasa de Victoria",

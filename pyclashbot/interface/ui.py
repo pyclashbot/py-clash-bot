@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+import sys
 from collections.abc import Callable
 from tkinter import messagebox
 from typing import TYPE_CHECKING
@@ -419,7 +420,7 @@ class PyClashBotUI(ttk.Window):
 
         deck_info = ttk.Label(frame, text="ⓘ", bootstyle="info")
         deck_info.grid(row=3, column=2, sticky="e", padx=(0, 2))
-        ToolTip(deck_info, "Deck Number to use for Randomization")
+        ToolTip(deck_info, tr("Deck Number to use for Randomization"))
         self.deck_var = ttk.StringVar(value=str(deck_config.default))
         self.deck_spin = ttk.Spinbox(
             frame,
@@ -451,7 +452,7 @@ class PyClashBotUI(ttk.Window):
 
         max_deck_info = ttk.Label(frame, text="ⓘ", bootstyle="info")
         max_deck_info.grid(row=4, column=2, sticky="e", padx=(0, 2))
-        ToolTip(max_deck_info, "Number of decks to cycle through")
+        ToolTip(max_deck_info, tr("Number of decks to cycle through"))
         self.max_deck_var = ttk.StringVar(value=str(max_config.default))
         self.max_deck_spin = ttk.Spinbox(
             frame,
@@ -636,8 +637,8 @@ class PyClashBotUI(ttk.Window):
         self.adb_reset_size_btn.pack(fill=X, pady=(3, 0))
         self._register_config_widget("adb_reset_size_btn", self.adb_reset_size_btn)
 
-        ToolTip(self.adb_set_size_btn, "Sets screen to 419x633 and density to 160")
-        ToolTip(self.adb_reset_size_btn, "Resets screen size and density to device defaults")
+        ToolTip(self.adb_set_size_btn, tr("Sets screen to 419x633 and density to 160"))
+        ToolTip(self.adb_reset_size_btn, tr("Resets screen size and density to device defaults"))
 
     def _create_stats_tab(self) -> None:
         container = ttk.Frame(self.stats_tab, padding=10)
@@ -782,8 +783,9 @@ class PyClashBotUI(ttk.Window):
         self.after_idle(lambda: self._config_callback(self.get_all_values()))
 
     def _on_language_change(self, _event: object) -> None:
-        messagebox.showinfo(tr("Restart Required"), tr("Please restart the application for language changes to take effect."))
         self._notify_config_change()
+        if messagebox.askyesno(tr("Restart Required"), tr("Please restart the application for language changes to take effect.\nRestart now?")):
+             sys.exit(0)
 
     def _trace_variable(self, var: tk.Variable) -> None:
         trace_id = var.trace_add("write", self._notify_config_change)
