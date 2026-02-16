@@ -232,6 +232,20 @@ class BotApplication:
     """Main application class for the ttkbootstrap GUI."""
 
     def __init__(self, settings: dict[str, Any] | None = None) -> None:
+        # Pre-load language so UI is built with correct strings
+        from pyclashbot.interface import i18n
+        
+        pre_loaded = settings
+        if not pre_loaded and USER_SETTINGS_CACHE.exists():
+            pre_loaded = USER_SETTINGS_CACHE.load_data()
+            
+        if pre_loaded and UIField.LANGUAGE.value in pre_loaded:
+             # Map full name back to code if necessary, or just use the value if we store 'es'/'en'
+             # Config stores "Spanish" or "English".
+             lang_map = {"Spanish": "es", "English": "en"}
+             val = pre_loaded[UIField.LANGUAGE.value]
+             i18n.set_language(lang_map.get(val, "en"))
+
         self.ui = PyClashBotUI()
         self.ui.main_btn.configure(command=self._on_main_button)
         self.ui.register_config_callback(self._on_config_change)
