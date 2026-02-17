@@ -39,7 +39,9 @@ from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
 from pyclashbot.utils.platform import is_macos
+from pyclashbot.interface.i18n import tr
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -140,18 +142,18 @@ def start_button_event(
 
     if has_no_jobs_selected(job_dictionary):
         no_jobs_popup()
-        logger.log("No jobs are selected!")
+        logger.log(tr("No jobs are selected!"))
         return None
 
     if job_dictionary.get("emulator") == EmulatorType.ADB:
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
         connected_devices = AdbController.list_devices()
         if not device_serial or device_serial not in connected_devices:
-            logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
+            logger.change_status(tr("Start cancelled: ADB device '{}' not connected.").format(device_serial))
             return None
 
     logger.log("Start Button Event")
-    logger.change_status("Starting the bot!")
+    logger.change_status(tr("Starting the bot!"))
     save_current_settings(values)
     logger.log_job_dictionary(job_dictionary)
 
@@ -164,7 +166,7 @@ def start_button_event(
 
 def stop_button_event(logger: Logger, shutdown_event: Event) -> None:
     """Signal the worker process to stop gracefully."""
-    logger.change_status("Stopping")
+    logger.change_status(tr("Stopping"))
     shutdown_event.set()
 
 
@@ -232,6 +234,20 @@ class BotApplication:
     """Main application class for the ttkbootstrap GUI."""
 
     def __init__(self, settings: dict[str, Any] | None = None) -> None:
+        # Pre-load language so UI is built with correct strings
+        from pyclashbot.interface import i18n
+        
+        pre_loaded = settings
+        if not pre_loaded and USER_SETTINGS_CACHE.exists():
+            pre_loaded = USER_SETTINGS_CACHE.load_data()
+            
+        if pre_loaded and UIField.LANGUAGE.value in pre_loaded:
+             # Map full name back to code if necessary, or just use the value if we store 'es'/'en'
+             # Config stores "Spanish" or "English".
+             lang_map = {"Spanish": "es", "English": "en"}
+             val = pre_loaded[UIField.LANGUAGE.value]
+             i18n.set_language(lang_map.get(val, "en"))
+
         self.ui = PyClashBotUI()
         self.ui.main_btn.configure(command=self._on_main_button)
         self.ui.register_config_callback(self._on_config_change)
@@ -312,7 +328,7 @@ class BotApplication:
             if self.process.is_alive():
                 self.process.kill()  # SIGKILL
             self.process = None
-            self.logger.change_status("Idle")
+            self.logger.change_status(tr("Idle"))
             self.ui.set_button_state("idle")
 
     def _on_config_change(self, values: dict[str, Any]) -> None:
@@ -386,7 +402,7 @@ class BotApplication:
     def _run_adb_command(self, serial: str, command: str):
         """Helper to run a single ADB command and log the output."""
         if not serial:
-            self.logger.change_status("Please select a device serial first.")
+            self.logger.change_status(tr("Please select a device serial first."))
             return
 
         full_command = f"adb -s {serial} {command}"
@@ -412,7 +428,7 @@ class BotApplication:
             self.logger.change_status(f"Failed to execute ADB command: {e}")
 
     def _on_adb_refresh(self) -> None:
-        self.logger.change_status("Refreshing ADB devices list...")
+        self.logger.change_status(tr("Refreshing ADB devices list..."))
         try:
             devices = AdbController.list_devices()
             self.ui.adb_serial_combo.configure(values=devices)
@@ -423,7 +439,7 @@ class BotApplication:
                 self.logger.change_status(f"Found devices: {', '.join(devices)}")
             else:
                 self.ui.adb_serial_var.set("")
-                self.logger.change_status("No ADB devices found.")
+                self.logger.change_status(tr("No ADB devices found."))
         except Exception as e:
             self.logger.change_status(f"Error refreshing ADB devices: {e}")
 
