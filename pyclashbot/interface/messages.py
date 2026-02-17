@@ -1,7 +1,7 @@
 """
 Translation messages for Py-Clash-Bot.
 This file contains the dictionary mappings for supported languages.
-PRO TIP for Contributors:
+
 - To add a new language, create a new dictionary (e.g. FR_TRANSLATIONS) and add it to the 'translations' map in i18n.py (or logic).
 - Keys are the original English strings found in the UI.
 """
@@ -22,7 +22,6 @@ ES_TRANSLATIONS = {
     "Data Settings": "Configuración de Datos",
     "Display Settings": "Configuración de Pantalla",
     "Open Logs Folder": "Abrir Carpeta de Registros",
-    # "Discord Rich Presence": "Presencia Rica en Discord", # Requested to leave as is
     
     # Jobs
     "⚔️ Classic 1v1 battles": "⚔️ Batallas Clásicas 1v1",
