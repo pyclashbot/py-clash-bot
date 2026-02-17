@@ -798,7 +798,7 @@ class PyClashBotUI(ttk.Window):
         column_offset: int,
         config: ComboConfig,
     ) -> None:
-        ttk.Label(frame, text=config.label).grid(row=row, column=column_offset, sticky="w", padx=5, pady=2)
+        ttk.Label(frame, text=tr(config.label)).grid(row=row, column=column_offset, sticky="w", padx=5, pady=2)
         var = ttk.StringVar(value=str(config.default))
         combo = ttk.Combobox(
             frame,
