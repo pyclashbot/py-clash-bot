@@ -14,3 +14,4 @@ recordings
 .claude/settings.local.json
 .DS_Store
 *.egg-info
+.vscode/settings.json
