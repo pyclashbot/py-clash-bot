@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import logging
 import os
 import re
 import subprocess
@@ -9,11 +10,12 @@ from contextlib import suppress
 from os.path import normpath
 
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.emulators import ActionCallback
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
 
-DEBUG = False
+logger = logging.getLogger(__name__)
 
 
 class BlueStacksEmulatorController(AdbBasedController):
@@ -26,14 +28,19 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
-    def __init__(self, logger, render_settings: dict | None = None):
-        self.logger = logger
+    def __init__(
+        self,
+        render_settings: dict | None = None,
+        device_serial: str | None = None,
+        action_callback: ActionCallback | None = None,
+    ):
+        self._action_callback = action_callback
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
         self.instance_name = "pyclashbot-96"
         self.internal_name: str | None = None
         self.instance_port: int | None = None
-        self.device_serial: str | None = None  # "127.0.0.1:<port>"
+        self._user_device_serial = device_serial
 
         self.adb_server_port: int = 5041
         self.adb_env = os.environ.copy()
@@ -53,8 +60,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Discover install
         install_base = self._find_install_location()
         self.base_folder = install_base
-        if DEBUG:
-            print(f"[Bluestacks 5] InstallDir: {install_base}")
+        logger.debug("InstallDir: %s", install_base)
 
         # Platform-aware executable names
         if is_macos():
@@ -63,9 +69,8 @@ class BlueStacksEmulatorController(AdbBasedController):
         else:
             self.emulator_executable_path = os.path.join(install_base, "HD-Player.exe")
             self.adb_path = os.path.join(install_base, "HD-Adb.exe")
-        if DEBUG:
-            print(f"[Bluestacks 5] HD-Player: {self.emulator_executable_path}")
-            print(f"[Bluestacks 5] HD-Adb: {self.adb_path}")
+        logger.debug("HD-Player: %s", self.emulator_executable_path)
+        logger.debug("HD-Adb: %s", self.adb_path)
         for path in [install_base, self.emulator_executable_path, self.adb_path]:
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Required file or directory not found: {path}")
@@ -85,15 +90,19 @@ class BlueStacksEmulatorController(AdbBasedController):
                 interruptible_sleep(0.5)
             else:
                 raise FileNotFoundError("[Bluestacks 5] MimMetaData.json not created within 10 seconds.")
-        if DEBUG:
-            print(f"[Bluestacks 5] bs_conf_path: {self.bs_conf_path}")
-            print(f"[Bluestacks 5] mim_meta_path: {self.mim_meta_path}")
+        logger.debug("bs_conf_path: %s", self.bs_conf_path)
+        logger.debug("mim_meta_path: %s", self.mim_meta_path)
 
         # Resolve instance and its ADB port
         self._ensure_managed_instance()
         if not self.instance_port:
             raise RuntimeError("No ADB port found for the target instance in bluestacks.conf.")
-        self.device_serial = f"127.0.0.1:{self.instance_port}"
+
+        if self._user_device_serial:
+            self.device_serial: str = self._user_device_serial
+            logger.info("[BlueStacks 5] Using user-specified device: %s", self.device_serial)
+        else:
+            self.device_serial: str = f"127.0.0.1:{self.instance_port}"
 
         # Reset our private adb server
         self._reset_adb_server()
@@ -248,8 +257,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Default to Vulkan on macOS (DirectX not available), DirectX on Windows
         default = "vlcn" if is_macos() else "dx"
         code = alias.get(s, default)
-        if DEBUG:
-            print(f"[Bluestacks 5] Renderer requested='{s}' normalized='{code}'")
+        logger.debug("Renderer requested='%s' normalized='%s'", s, code)
         return code
 
     def _ensure_custom_resolution(self, conf_text: str, token: str = "418 x 633") -> str:
@@ -321,10 +329,9 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Cache internals
         self.internal_name = internal
         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
-        self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
 
-        self.logger.log(
-            f"[BlueStacks 5] Reused instance '{internal}' as '{self.instance_name}'. Port={self.instance_port}"
+        logger.info(
+            "[BlueStacks 5] Reused instance '%s' as '%s'. Port=%s", internal, self.instance_name, self.instance_port
         )
         with suppress(Exception):
             self._close_multi_instance_manager()
@@ -363,12 +370,13 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Open Multi-Instance Manager and prompt user to create a clean instance.
         while True:
             self._request_instance_retry = False
-            self.logger.show_temporary_action(
-                message="Open BlueStacks Multi-Instance Manager and create a fresh instance without logging into any Google accounts, then click Retry.",
-                action_text="Retry",
-                callback=self._request_instance_creation_retry,
-            )
-            self.logger.log("[BlueStacks 5] No clean instance found. Opening Multi-Instance Manager...")
+            if self._action_callback:
+                self._action_callback(
+                    message="Open BlueStacks Multi-Instance Manager and create a fresh instance without logging into any Google accounts, then click Retry.",
+                    action_text="Retry",
+                    callback=self._request_instance_creation_retry,
+                )
+            logger.info("[BlueStacks 5] No clean instance found. Opening Multi-Instance Manager...")
             self._open_multi_instance_manager()
 
             # Wait for user action via Retry callback
@@ -386,22 +394,21 @@ class BlueStacksEmulatorController(AdbBasedController):
                     if internal:
                         self.internal_name = internal
                         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
-                        self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
                         with suppress(Exception):
                             self._close_multi_instance_manager()
-                        self.logger.change_status("Clean instance detected - continuing...")
+                        logger.info("Clean instance detected - continuing...")
                         return
 
                 # Otherwise try to reuse an unlinked instance
                 internal = self._pick_unlinked_instance()
                 if internal and self._reuse_and_rename_internal(internal):
-                    self.logger.change_status("Prepared clean instance - continuing...")
+                    logger.info("Prepared clean instance - continuing...")
                     return
 
-                self.logger.log("[BlueStacks 5] Still no clean instance found. Please try again.")
+                logger.info("[BlueStacks 5] Still no clean instance found. Please try again.")
 
     def _request_instance_creation_retry(self):
-        self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean instance")
+        logger.info("[BlueStacks 5] Retry clicked - rechecking for clean instance")
         self._request_instance_retry = True
         self.instance_creation_waiting = False
 
@@ -421,7 +428,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             with suppress(Exception):
                 with open(self.bs_conf_path, "w", encoding="utf-8") as f:
                     f.write(new_conf)
-                self.logger.log(f"[BlueStacks 5] graphics_renderer set to {desired_code} for {internal}")
+                logger.info("[BlueStacks 5] graphics_renderer set to %s for %s", desired_code, internal)
 
     def _compose_instance_conf(self, conf: str, internal: str, ensure_display: bool = True) -> tuple[str, bool]:
         """Return (new_conf, changed) with required BlueStacks settings applied, including renderer."""
@@ -481,78 +488,31 @@ class BlueStacksEmulatorController(AdbBasedController):
             with suppress(Exception):
                 with open(self.bs_conf_path, "w", encoding="utf-8") as f:
                     f.write(conf)
-                self.logger.log(f"[BlueStacks 5] Enforced VM config for '{internal}'")
-
-    def _cmd_is_server_scoped(self, command: str) -> bool:
-        c = command.strip()
-        if c.startswith("-s "):
-            return True
-        first = c.split()[0] if c else ""
-        return first in {"connect", "disconnect", "devices", "start-server", "kill-server", "version", "help", "keys"}
-
-    def adb(self, command: str, binary_output: bool = False) -> subprocess.CompletedProcess:
-        """
-        Run an adb command via our private server. Device-scoped by default unless server-scoped.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        base = f'"{self.adb_path}" -P {self.adb_server_port} '
-        if not self._cmd_is_server_scoped(command) and self.device_serial:
-            base += f"-s {self.device_serial} "
-        full = base + command
-        if DEBUG:
-            print(f"[Bluestacks 5/ADB] {full}")
-        return subprocess.run(
-            full, shell=True, capture_output=True, text=not binary_output, check=False, env=self.adb_env
-        )
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if app is installed via ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        res = self.adb("shell pm list packages")
-        return res.stdout is not None and package_name in res.stdout
-
-    def adb_server(self, command: str) -> subprocess.CompletedProcess:
-        full = f'"{self.adb_path}" -P {self.adb_server_port} {command}'
-        if DEBUG:
-            print(f"[Bluestacks 5/ADB-SRV] {full}")
-        return subprocess.run(full, shell=True, capture_output=True, text=True, check=False, env=self.adb_env)
+                logger.info("[BlueStacks 5] Enforced VM config for '%s'", internal)
 
     def _reset_adb_server(self) -> None:
         with suppress(Exception):
-            self.adb_server("kill-server")  # Cause ADB loves to randomly fuck around
+            self.adb("kill-server")  # Cause ADB loves to randomly fuck around
 
     def _refresh_instance_port(self):
-        """Re-read the instance port and update device_serial."""
+        """Re-read the instance port from config and update device_serial."""
         if not self.internal_name:
             return
         new_port = self._read_instance_adb_port(self.bs_conf_path, self.internal_name)
-        if new_port and new_port != self.instance_port:
+        if new_port:
             self.instance_port = new_port
-            self.device_serial = f"127.0.0.1:{self.instance_port}"
-            if DEBUG:
-                print(f"[Bluestacks 5] Refreshed instance port -> {self.device_serial}")
+            # Update device_serial if not user-specified
+            if not self._user_device_serial:
+                self.device_serial = f"127.0.0.1:{self.instance_port}"
 
     def _connect(self) -> bool:
-        """Connect only to this instance's port."""
-        if not self.device_serial:
-            return False
+        """Connect to the configured device."""
         self._reset_adb_server()
-        self.adb_server(f"disconnect {self.device_serial}")
+        self.adb(f"disconnect {self.device_serial}")
         interruptible_sleep(0.2)
-        self.adb_server(f"connect {self.device_serial}")
+        self.adb(f"connect {self.device_serial}")
         state = self.adb("get-state")
-        ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
-        if not ok:
-            self._refresh_instance_port()
-            if self.device_serial:
-                self.adb_server(f"disconnect {self.device_serial}")
-                interruptible_sleep(0.2)
-                self.adb_server(f"connect {self.device_serial}")
-                state = self.adb("get-state")
-                ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
-        return ok  # False means ADB is in a mood again
+        return (state.returncode == 0) and (state.stdout and "device" in state.stdout)
 
     def _is_this_instance_running(self) -> bool:
         if is_macos():
@@ -635,12 +595,12 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     def restart(self) -> bool:
         start_ts = time.time()
-        self.logger.change_status("Starting BlueStacks 5 emulator restart process...")
+        logger.info("Starting BlueStacks 5 emulator restart process...")
 
-        self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
+        logger.info("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
 
-        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-96)...")
+        logger.info("Launching BlueStacks 5 (pyclashbot-96)...")
         self.start()
 
         # Wait for only our instance
@@ -648,28 +608,28 @@ class BlueStacksEmulatorController(AdbBasedController):
         t0 = time.time()
         while not self._is_this_instance_running():
             if time.time() - t0 > boot_timeout:
-                self.logger.change_status("Timeout waiting for pyclashbot instance to start - retrying...")
+                logger.warning("Timeout waiting for pyclashbot instance to start - retrying...")
                 return False
             interruptible_sleep(0.5)
 
         # Refresh port after boot
         self._refresh_instance_port()
         if not self.device_serial:
-            self.logger.change_status("No ADB port resolved for this instance.")
+            logger.warning("No ADB port resolved for this instance.")
             return False
 
         # Connect ADB scoped to our device
-        self.logger.change_status(f"Connecting ADB to {self.device_serial} ...")
+        logger.info("Connecting ADB to %s ...", self.device_serial)
         t1 = time.time()
         while not self._connect():
             if time.time() - t1 > 60:
-                self.logger.change_status("Failed to connect ADB to BlueStacks 5 - retrying...")
+                logger.warning("Failed to connect ADB to BlueStacks 5 - retrying...")
                 return False  # if this makes issues big problems
             interruptible_sleep(1)
 
         # Launch Clash Royale
         clash_pkg = "com.supercell.clashroyale"
-        self.logger.change_status("Launching Clash Royale...")
+        logger.info("Launching Clash Royale...")
 
         # Use inherited start_app which handles installation check
         if not self.start_app(clash_pkg):
@@ -677,7 +637,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             # We must wait for the installation loop (handled by base class) to finish
             # The base class's _wait_for_clash_installation will block until
             # the user clicks 'Retry' and the app is found.
-            self.logger.log("Waiting for app installation...")
+            logger.info("Waiting for app installation...")
 
             # After _wait_for_clash_installation returns True, we need to manually
             # re-trigger the app start, because the original call failed.
@@ -686,17 +646,17 @@ class BlueStacksEmulatorController(AdbBasedController):
         interruptible_sleep(5)
 
         # Wait for main menu
-        self.logger.change_status("Waiting for Clash Royale main menu...")
+        logger.info("Waiting for Clash Royale main menu...")
         deadline = time.time() + 240
         while time.time() < deadline:
             if check_if_on_clash_main_menu(self):
-                self.logger.change_status("Clash Royale main menu detected")
+                logger.info("Clash Royale main menu detected")
                 dur = f"{time.time() - start_ts:.1f}s"
-                self.logger.log(f"BlueStacks 5 restart completed in {dur}")
+                logger.info("BlueStacks 5 restart completed in %s", dur)
                 return True
             self.click(35, 405)  # Use inherited click
 
-        self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
+        logger.warning("Timeout waiting for Clash main menu - retrying...")
         return False
 
     # click() is now inherited from AdbBasedController

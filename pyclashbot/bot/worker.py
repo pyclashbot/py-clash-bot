@@ -4,6 +4,7 @@ from typing import Any
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
+from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.cancellation import CancellationToken
 from pyclashbot.utils.logger import ProcessLogger
 from pyclashbot.utils.platform import is_macos
@@ -42,7 +43,8 @@ class WorkerProcess(Process):
         try:
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
-                return controller_class(logger=logger)
+                gp_device_serial = jobs.get(UIField.GP_DEVICE_SERIAL.value) or None
+                return controller_class(device_serial=gp_device_serial)
 
             elif emulator_selection == EmulatorType.BLUESTACKS:
                 print("Creating BlueStacks 5 emulator")
@@ -50,7 +52,12 @@ class WorkerProcess(Process):
                 default_mode = "vlcn" if is_macos() else "gl"
                 bs_mode = jobs.get("bluestacks_render_mode", default_mode)
                 render_settings = {"graphics_renderer": bs_mode}
-                return controller_class(logger=logger, render_settings=render_settings)
+                bs_device_serial = jobs.get(UIField.BS_DEVICE_SERIAL.value) or None
+                return controller_class(
+                    render_settings=render_settings,
+                    device_serial=bs_device_serial,
+                    action_callback=logger.show_temporary_action,
+                )
 
             elif emulator_selection == EmulatorType.MEMU:
                 print("Creating MEmu emulator")
@@ -60,12 +67,18 @@ class WorkerProcess(Process):
                     logger.change_status("MEmu is not installed! Please install it to use MEmu Emulator Mode")
                     return None
                 render_mode = jobs.get("memu_render_mode", "opengl")
-                return controller_class(logger, render_mode)
+                return controller_class(
+                    render_mode=render_mode,
+                    action_callback=logger.show_temporary_action,
+                )
 
             elif emulator_selection == EmulatorType.ADB:
                 print("Creating ADB Device controller")
-                adb_serial = jobs.get("adb_serial", None)
-                return controller_class(logger=logger, device_serial=adb_serial)
+                adb_serial = jobs.get(UIField.ADB_SERIAL.value) or None
+                return controller_class(
+                    device_serial=adb_serial,
+                    action_callback=logger.show_temporary_action,
+                )
 
         except Exception as e:
             print(f"Failed to create {emulator_selection} emulator: {e}")

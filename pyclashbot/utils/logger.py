@@ -1,6 +1,7 @@
 """import logging for file logging"""
 
 import logging
+import os
 import pprint
 import random
 import threading
@@ -39,15 +40,24 @@ def compress_logs() -> None:
                 remove(log)
 
 
-def initalize_pylogging() -> None:
-    """Method to be called once to initalize python logging"""
+def initalize_pylogging(debug: bool = False) -> None:
+    """Method to be called once to initalize python logging.
+
+    Args:
+        debug: If True, use DEBUG level. Otherwise use INFO level.
+               Can also be enabled via PYCLASHBOT_DEBUG=1 environment variable.
+    """
+    debug = debug or os.environ.get("PYCLASHBOT_DEBUG", "").lower() in ("1", "true")
+    level = logging.DEBUG if debug else logging.INFO
+
     if not exists(log_dir):
         makedirs(log_dir)
     logging.basicConfig(
         filename=log_name,
         encoding="utf-8",
-        level=logging.DEBUG,
+        level=level,
         format="%(levelname)s:%(asctime)s %(message)s",
+        force=True,
     )
     logging.info("Logging initialized for %s", __version__)
     logging.info(
