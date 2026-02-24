@@ -7,6 +7,7 @@ import threading
 import time
 import zipfile
 from functools import wraps
+import os
 from os import listdir, makedirs, remove
 from os.path import exists, getmtime, join
 
@@ -43,12 +44,22 @@ def initalize_pylogging() -> None:
     """Method to be called once to initalize python logging"""
     if not exists(log_dir):
         makedirs(log_dir)
+    
+    # Clear existing handlers if logging was already configured
+    # This ensures we can properly set up file logging
+    if len(logging.root.handlers) > 0:
+        logging.root.handlers.clear()
+    
+    # Force reconfiguration if logging was already set up (e.g., by another module)
+    # Use force=True (Python 3.8+) to override existing configuration
     logging.basicConfig(
         filename=log_name,
         encoding="utf-8",
         level=logging.DEBUG,
         format="%(levelname)s:%(asctime)s %(message)s",
+        force=True,  # Force reconfiguration even if logging was already configured
     )
+    
     logging.info("Logging initialized for %s", __version__)
     logging.info(
         """
