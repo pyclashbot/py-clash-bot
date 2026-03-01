@@ -40,7 +40,7 @@ build = [
     "packaging>=24.2",
     "requests>=2.32.4",
 ]
-dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.15"]
+dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.16"]
 
 [tool.ruff.lint]
 select = [
