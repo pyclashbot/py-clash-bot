@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import locale
 import multiprocessing as mp
-import os
 import subprocess
 from multiprocessing import Event, Queue
 from os.path import expandvars, join
@@ -39,6 +38,7 @@ from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
 
 if TYPE_CHECKING:
@@ -207,25 +207,12 @@ def handle_process_finished(
 
 def open_recordings_folder() -> None:
     folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
-    os.makedirs(folder_path, exist_ok=True)
-    try:
-        os.startfile(folder_path)
-    except AttributeError:
-        # Non-Windows fallback
-        import subprocess
-
-        subprocess.Popen(["xdg-open", folder_path])
+    open_folder(folder_path)
 
 
 def open_logs_folder() -> None:
     folder_path = log_dir
-    os.makedirs(folder_path, exist_ok=True)
-    try:
-        os.startfile(folder_path)
-    except AttributeError:
-        import subprocess
-
-        subprocess.Popen(["xdg-open", folder_path])
+    open_folder(folder_path)
 
 
 class BotApplication:
