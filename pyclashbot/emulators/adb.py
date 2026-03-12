@@ -1,13 +1,11 @@
-import os
 import re
 import subprocess
 import time
 
-# Assuming these are in the correct path
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.utils.cancellation import interruptible_sleep
-from pyclashbot.utils.platform import Platform, is_linux
+from pyclashbot.utils.platform import Platform
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -34,7 +32,7 @@ class AdbController(AdbBasedController):
                                            find a single connected device.
         """
         self.logger = logger
-        self.device_serial = device_serial
+        self.device_serial: str | None = device_serial
         self._auto_stop_on_del = False  # No process to stop
 
         # For storing original screen settings
@@ -133,35 +131,18 @@ class AdbController(AdbBasedController):
             self.adb(f"shell wm density {self.original_density}")
 
     @staticmethod
-    def list_devices():
-        """Lists all connected ADB devices."""
-        result = subprocess.run(
-            "adb devices",
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            return []
-
-        lines = result.stdout.strip().splitlines()
-        devices = []
-        for line in lines[1:]:  # Skip the "List of devices attached" header
-            if "\tdevice" in line:
-                serial = line.split("\t")[0]
-                devices.append(serial)
-        return devices
-
-    @staticmethod
     def connect_device(logger, device_address: str) -> bool:
         """Connects to a device via ADB over network or confirms a USB connection."""
         if not device_address:
             logger.change_status("Device address cannot be empty.")
             return False
 
+        if not validate_device_serial(device_address):
+            logger.change_status(f"Invalid device address format: {device_address}")
+            return False
+
         # If device is already in the list (e.g., USB connected), no need to connect.
-        if device_address in AdbController.list_devices():
+        if device_address in AdbController.discover_devices():
             logger.change_status(f"Device {device_address} is already connected.")
             return True
 
@@ -190,7 +171,7 @@ class AdbController(AdbBasedController):
     def _discover_device(self):
         """Discovers a single connected device if no serial is provided."""
         self.logger.log("No device serial provided, attempting to auto-discover...")
-        devices = self.list_devices()
+        devices = self.discover_devices()
 
         if not devices:
             raise ConnectionError("No ADB devices found. Check your connection and USB debugging settings.")
@@ -207,35 +188,6 @@ class AdbController(AdbBasedController):
         """Checks if the target device is connected and in 'device' state."""
         state = self.adb("get-state").stdout.strip()
         return state == "device"
-
-    def adb(self, command: str, binary_output: bool = False, use_serial: bool = True) -> subprocess.CompletedProcess:
-        """
-        Runs an ADB command targeting the specified device.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        if use_serial and self.device_serial:
-            full_command = f"adb -s {self.device_serial} {command}"
-        else:
-            full_command = f"adb {command}"
-
-        if DEBUG:
-            print(f"[Android/ADB] {full_command}")
-
-        # Linux optimization: Use process groups for better signal handling
-        if is_linux():
-            return subprocess.run(
-                full_command, shell=True, capture_output=True, text=not binary_output, check=False, preexec_fn=os.setsid
-            )
-        else:
-            return subprocess.run(full_command, shell=True, capture_output=True, text=not binary_output, check=False)
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if an app is installed using system ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        result = self.adb("shell pm list packages")
-        return result.stdout is not None and package_name in result.stdout
 
     @staticmethod
     def restart_adb(logger):
