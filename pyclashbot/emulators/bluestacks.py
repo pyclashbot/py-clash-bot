@@ -30,7 +30,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.logger = logger
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
-        self.instance_name = "pyclashbot-96"
+        self.instance_name = "pyclashbot-136"
         self.internal_name: str | None = None
         self.instance_port: int | None = None
         self.device_serial: str | None = None  # "127.0.0.1:<port>"
@@ -364,11 +364,11 @@ class BlueStacksEmulatorController(AdbBasedController):
         while True:
             self._request_instance_retry = False
             self.logger.show_temporary_action(
-                message="Open BlueStacks Multi-Instance Manager and create a fresh instance without logging into any Google accounts, then click Retry.",
+                message="No Android 13 instance found. Open BlueStacks Multi-Instance Manager and create a fresh Android 13 (Tiramisu 64-bit) instance without logging into any Google accounts, then click Retry.",
                 action_text="Retry",
                 callback=self._request_instance_creation_retry,
             )
-            self.logger.log("[BlueStacks 5] No clean instance found. Opening Multi-Instance Manager...")
+            self.logger.log("[BlueStacks 5] No clean Android 13 instance found. Opening Multi-Instance Manager...")
             self._open_multi_instance_manager()
 
             # Wait for user action via Retry callback
@@ -398,7 +398,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                     self.logger.change_status("Prepared clean instance - continuing...")
                     return
 
-                self.logger.log("[BlueStacks 5] Still no clean instance found. Please try again.")
+                self.logger.log("[BlueStacks 5] Still no clean Android 13 instance found. Please try again.")
 
     def _request_instance_creation_retry(self):
         self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean instance")
@@ -640,7 +640,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
 
-        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-96)...")
+        self.logger.change_status(f"Launching BlueStacks 5 ({self.instance_name})...")
         self.start()
 
         # Wait for only our instance
