@@ -58,7 +58,7 @@ EMOTE_ICON_COORDS = [
     (243, 469),
     (308, 470),
 ]
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD
 ELIXIR_COORDS = [
     [613, 149],
     [613, 165],
