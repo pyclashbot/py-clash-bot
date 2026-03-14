@@ -49,7 +49,6 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
 mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
 
-from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD
 
 
 def get_next_fight_mode(job_list):

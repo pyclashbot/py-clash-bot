@@ -11,6 +11,7 @@ from pyclashbot.bot.card_detection import (
     get_play_coords_for_card,
     switch_side,
 )
+from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
     check_for_trophy_reward_menu,
@@ -58,7 +59,6 @@ EMOTE_ICON_COORDS = [
     (243, 469),
     (308, 470),
 ]
-from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD
 ELIXIR_COORDS = [
     [613, 149],
     [613, 165],
