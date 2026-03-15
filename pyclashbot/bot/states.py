@@ -50,7 +50,6 @@ mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
 
 
-
 def get_next_fight_mode(job_list):
     """Get the next fight mode to use, cycling through enabled modes."""
     global fight_mode_cycle_index
