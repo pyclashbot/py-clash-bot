@@ -7,6 +7,8 @@ import numpy as np
 from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.utils.cancellation import interruptible_sleep
 
+android_x_start, android_y_start = 0, 0
+
 
 class AdbBasedController(BaseEmulatorController, ABC):
     """
@@ -58,6 +60,8 @@ class AdbBasedController(BaseEmulatorController, ABC):
 
     def click(self, x_coord: int, y_coord: int, clicks: int = 1, interval: float = 0.0):
         """Click on the screen using ADB input tap."""
+        x_coord += android_x_start
+        y_coord += android_y_start
         for _ in range(max(1, clicks)):
             self.adb(f"shell input tap {x_coord} {y_coord}")
             if clicks > 1:
@@ -65,6 +69,10 @@ class AdbBasedController(BaseEmulatorController, ABC):
 
     def swipe(self, x_coord1: int, y_coord1: int, x_coord2: int, y_coord2: int):
         """Swipe on the screen using ADB input swipe."""
+        x_coord1 += android_x_start
+        y_coord1 += android_y_start
+        x_coord2 += android_x_start
+        y_coord2 += android_y_start
         self.adb(f"shell input swipe {x_coord1} {y_coord1} {x_coord2} {y_coord2}")
 
     def screenshot(self) -> np.ndarray:
@@ -89,6 +97,8 @@ class AdbBasedController(BaseEmulatorController, ABC):
 
         if img is None:
             raise ValueError("Failed to decode screenshot. Image data may be corrupt or empty.")
+        else:
+            img = img[android_y_start:, android_x_start:]
 
         return img
 

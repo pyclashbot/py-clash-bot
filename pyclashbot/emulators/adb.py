@@ -8,6 +8,7 @@ from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_linux
+from pyclashbot.emulators import adb_base
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -68,6 +69,7 @@ class AdbController(AdbBasedController):
         """Gets the current screen size and density of the device."""
         size_result = self.adb("shell wm size")
         density_result = self.adb("shell wm density")
+        mstable_result = self.adb("shell dumpsys window")
 
         size = None
         density = None
@@ -86,6 +88,14 @@ class AdbController(AdbBasedController):
             if match:
                 density = int(match.group(1))
 
+        if mstable_result.returncode == 0:
+            output = mstable_result.stdout.strip()
+            # mStable=[0,80]
+            match = re.search(r"mStable=\[(\d+),(\d+)\]", output)
+            if match:
+                adb_base.android_x_start = int(match.group(1))
+                adb_base.android_y_start = int(match.group(2))
+
         return size, density
 
     def handle_screen_size_and_density(self):
@@ -96,7 +106,7 @@ class AdbController(AdbBasedController):
         self.logger.log("Checking screen size and density...")
         current_size, current_density = self.get_screen_props()
 
-        required_size = "419x633"
+        required_size = f"{419 + adb_base.android_x_start}x{633 + adb_base.android_y_start}"
         required_density = 160
 
         # Store original values if they haven't been stored yet
@@ -110,7 +120,7 @@ class AdbController(AdbBasedController):
         # Check and set size
         if current_size != required_size:
             self.logger.log(f"Current size {current_size} is not the required {required_size}. Setting it now.")
-            self.set_screen_size(419, 633)
+            self.set_screen_size(419 + adb_base.android_x_start, 633 + adb_base.android_y_start)
         else:
             self.logger.log("Screen size is already correct.")
 
