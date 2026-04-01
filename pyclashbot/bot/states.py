@@ -53,14 +53,6 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
 
 mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
-MENU_RECOVERY_STATES = {
-    "upgrade",
-    "card_mastery",
-    "select_battle_mode",
-    "randomize_deck",
-    "cycle_deck",
-    "start_fight",
-}
 
 
 def get_next_fight_mode(job_list):
@@ -263,18 +255,24 @@ def state_tree(
         logger.add_restart_after_failure()
         raise RuntimeError("State machine entered fail state - unrecoverable error")
 
-    # preflight recovery for menu-driven states:
-    # if an unexpected popup blocks main-menu recognition, close it before running state-specific logic.
-    if state in MENU_RECOVERY_STATES and not check_if_on_clash_main_menu(emulator):
-        logger.log(f"Preflight popup recovery before '{state}' state")
-        try_close_bottom_center_popup(emulator, logger)
-        interruptible_sleep(0.5)
-
     if state == "start":
+        # if not on clash main, try to recover
+        if not check_if_on_clash_main_menu(emulator):
+            logger.log("Not on clash main, trying to recover")
+            try_close_bottom_center_popup(emulator, logger)
+            interruptible_sleep(0.5)
+
         return state_order.next_state(state)
 
     if state == "restart":
         emulator.restart()
+
+        # if not on clash main, try to recover
+        if not check_if_on_clash_main_menu(emulator):
+            logger.log("Not on clash main, trying to recover")
+            try_close_bottom_center_popup(emulator, logger)
+            interruptible_sleep(0.5)
+
         return state_order.next_state(state)
 
     if state == "randomize_deck":

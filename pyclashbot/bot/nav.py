@@ -19,20 +19,12 @@ OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
 
-def try_close_bottom_center_popup(
-    emulator,
-    logger: Logger | None = None,
-    printmode: bool = False,
-) -> bool:
+def try_close_bottom_center_popup(emulator, logger: Logger) -> bool:
     """Pressing close button for generic rewards/promo windows.
 
     Uses the same coordinate as trophy-road OK button.
     """
-    if logger is not None:
-        if printmode:
-            logger.change_status("Trying bottom-center popup close")
-        else:
-            logger.log("Trying bottom-center popup close")
+    logger.log("Trying bottom-center popup close")
 
     emulator.click(
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
@@ -684,7 +676,7 @@ def select_mode(emulator, mode: str):
         print(f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
         return False
 
-    # Must be on clash main. Popup recovery is handled in state_tree preflight
+    # must be on clash main
     if not check_if_on_clash_main_menu(emulator):
         print("[!] Not on clash main menu, cannot select a fight mode")
         return False
