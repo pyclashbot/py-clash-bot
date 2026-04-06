@@ -2,6 +2,7 @@ import random
 import time
 from typing import Literal
 
+from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
 from pyclashbot.detection.image_rec import (
     all_pixels_are_equal,
     find_image,
@@ -15,7 +16,6 @@ BATTLE_LOG_BUTTON = (241, 43)
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
-CLASH_MAIN_MENU_DEADSPACE_COORD = (32, 520)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
 

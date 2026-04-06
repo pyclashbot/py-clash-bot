@@ -7,12 +7,12 @@ from os.path import normpath
 
 import psutil
 
-DEBUG = False
-
 from pyclashbot.bot.nav import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
+
+DEBUG = False
 
 
 class GooglePlayEmulatorController(AdbBasedController):
