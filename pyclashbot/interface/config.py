@@ -138,6 +138,15 @@ GOOGLE_PLAY_SETTINGS = [
     ComboConfig(UIField.GP_WSI, "wsi", ["vk", "glx"]),
 ]
 
+LANGUAGE_CONFIG = ComboConfig(
+    UIField.LANGUAGE,
+    "Language",
+    ["English", "Spanish"],
+    "English",
+    size=(15, 1),
+    label_size=(10, 1),
+)
+
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
     [job.key.value for job in JOBS]
@@ -148,6 +157,7 @@ USER_CONFIG_KEYS = (
         UIField.DECK_NUMBER_SELECTION.value,
         UIField.MAX_DECK_SELECTION.value,
         UIField.CYCLE_DECKS_USER_TOGGLE.value,
+        UIField.LANGUAGE.value,
     ]
 )
 

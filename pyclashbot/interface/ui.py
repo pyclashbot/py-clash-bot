@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+import sys
 from collections.abc import Callable
 from tkinter import messagebox
 from typing import TYPE_CHECKING
@@ -16,7 +17,9 @@ from pyclashbot.interface.config import (
     JOBS,
     MEMU_SETTINGS,
     ComboConfig,
+    LANGUAGE_CONFIG,
 )
+from pyclashbot.interface.i18n import tr
 from pyclashbot.interface.enums import (
     BATTLE_STAT_FIELDS,
     BATTLE_STAT_LABELS,
@@ -36,7 +39,7 @@ if TYPE_CHECKING:
 
 
 def no_jobs_popup() -> None:
-    messagebox.showerror("Critical Error!", "You must select at least one job!")
+    messagebox.showerror(tr("Critical Error!"), tr("You must select at least one job!"))
 
 
 class PyClashBotUI(ttk.Window):
@@ -44,7 +47,7 @@ class PyClashBotUI(ttk.Window):
 
     def __init__(self) -> None:
         super().__init__(themename=self.DEFAULT_THEME)
-        self.title("py-clash-bot")
+        self.title(tr("py-clash-bot"))
         self.geometry("490x550")
         self.resizable(True, True)
         self.minsize(490, 450)
@@ -107,6 +110,7 @@ class PyClashBotUI(ttk.Window):
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
+        values[UIField.LANGUAGE.value] = self.lang_var.get()
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -181,17 +185,20 @@ class PyClashBotUI(ttk.Window):
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
 
+        if UIField.LANGUAGE.value in values:
+             self.lang_var.set(str(values[UIField.LANGUAGE.value]))
+
         self._show_current_emulator_settings()
 
     def set_button_state(self, state: str) -> None:
         """Set the main button state: 'idle', 'running', or 'stopping'."""
         self._button_state = state
         if state == "idle":
-            self.main_btn.configure(text="Start", bootstyle="success", state=tk.NORMAL)
+            self.main_btn.configure(text=tr("Start"), bootstyle="success", state=tk.NORMAL)
         elif state == "running":
-            self.main_btn.configure(text="Stop", bootstyle="danger", state=tk.NORMAL)
+            self.main_btn.configure(text=tr("Stop"), bootstyle="danger", state=tk.NORMAL)
         elif state == "stopping":
-            self.main_btn.configure(text="Force Stop", bootstyle="warning", state=tk.NORMAL)
+            self.main_btn.configure(text=tr("Force Stop"), bootstyle="warning", state=tk.NORMAL)
 
         # Disable/enable config widgets based on running state
         running = state in ("running", "stopping")
@@ -307,10 +314,10 @@ class PyClashBotUI(ttk.Window):
         self.stats_tab = ttk.Frame(self.notebook)
         self.misc_tab = ttk.Frame(self.notebook)
 
-        self.notebook.add(self.jobs_tab, text="Jobs")
-        self.notebook.add(self.emulator_tab, text="Emulator")
-        self.notebook.add(self.stats_tab, text="Stats")
-        self.notebook.add(self.misc_tab, text="Misc")
+        self.notebook.add(self.jobs_tab, text=tr("Jobs"))
+        self.notebook.add(self.emulator_tab, text=tr("Emulator"))
+        self.notebook.add(self.stats_tab, text=tr("Stats"))
+        self.notebook.add(self.misc_tab, text=tr("Misc"))
 
         self._create_jobs_tab()
         self._create_emulator_tab()
@@ -330,13 +337,13 @@ class PyClashBotUI(ttk.Window):
         self._status_text = "Idle"
 
         # Single unified button below log
-        self.main_btn = ttk.Button(bottom, text="Start", bootstyle="success")
+        self.main_btn = ttk.Button(bottom, text=tr("Start"), bootstyle="success")
         self.main_btn.grid(row=1, column=0, sticky="ew", pady=(8, 0), ipady=8)
         self._register_config_widget("main_btn", self.main_btn)
         self._button_state = "idle"  # Track: idle, running, stopping
 
         # Action button (for retry etc.) - hidden by default
-        self.action_btn = ttk.Button(bottom, text="Retry")
+        self.action_btn = ttk.Button(bottom, text=tr("Retry"))
         self.action_btn.grid(row=1, column=0, sticky="ew", pady=(8, 0))
         self.action_btn.grid_remove()
         self._action_callback: Callable[[], None] | None = None
@@ -379,19 +386,19 @@ class PyClashBotUI(ttk.Window):
 
         add_job_checkbox(
             UIField.CLASSIC_1V1_USER_TOGGLE,
-            "⚔️ Classic 1v1 battles",
+            tr("⚔️ Classic 1v1 battles"),
             0,
             primary_bootstyle,
         )
         add_job_checkbox(
             UIField.CLASSIC_2V2_USER_TOGGLE,
-            "👥 Classic 2v2 battles",
+            tr("👥 Classic 2v2 battles"),
             1,
             primary_bootstyle,
         )
         add_job_checkbox(
             UIField.TROPHY_ROAD_USER_TOGGLE,
-            "🏆 Trophy Road battles",
+            tr("🏆 Trophy Road battles"),
             2,
             primary_bootstyle,
         )
@@ -401,7 +408,7 @@ class PyClashBotUI(ttk.Window):
         self.jobs_vars[UIField.RANDOM_DECKS_USER_TOGGLE] = ttk.BooleanVar(value=random_job.default)
         random_checkbox = ttk.Checkbutton(
             frame,
-            text="🎲 Randomize Deck",
+            text=tr("🎲 Randomize Deck"),
             variable=self.jobs_vars[UIField.RANDOM_DECKS_USER_TOGGLE],
             bootstyle=secondary_bootstyle,
             command=self._notify_config_change,
@@ -413,7 +420,7 @@ class PyClashBotUI(ttk.Window):
 
         deck_info = ttk.Label(frame, text="ⓘ", bootstyle="info")
         deck_info.grid(row=3, column=2, sticky="e", padx=(0, 2))
-        ToolTip(deck_info, "Deck Number to use for Randomization")
+        ToolTip(deck_info, tr("Deck Number to use for Randomization"))
         self.deck_var = ttk.StringVar(value=str(deck_config.default))
         self.deck_spin = ttk.Spinbox(
             frame,
@@ -433,7 +440,7 @@ class PyClashBotUI(ttk.Window):
         self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE] = ttk.BooleanVar(value=cycle_job.default)
         cycle_checkbox = ttk.Checkbutton(
             frame,
-            text="♻️ Cycle decks",
+            text=tr("♻️ Cycle decks"),
             variable=self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE],
             bootstyle=secondary_bootstyle,
             command=self._notify_config_change,
@@ -445,7 +452,7 @@ class PyClashBotUI(ttk.Window):
 
         max_deck_info = ttk.Label(frame, text="ⓘ", bootstyle="info")
         max_deck_info.grid(row=4, column=2, sticky="e", padx=(0, 2))
-        ToolTip(max_deck_info, "Number of decks to cycle through")
+        ToolTip(max_deck_info, tr("Number of decks to cycle through"))
         self.max_deck_var = ttk.StringVar(value=str(max_config.default))
         self.max_deck_spin = ttk.Spinbox(
             frame,
@@ -460,10 +467,10 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.max_deck_var)
         self._register_config_widget(UIField.MAX_DECK_SELECTION.value, self.max_deck_spin)
 
-        add_job_checkbox(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random plays", 5, secondary_bootstyle)
-        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss check", 6, secondary_bootstyle)
-        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Masteries", 7, secondary_bootstyle)
-        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade Cards", 8, secondary_bootstyle)
+        add_job_checkbox(UIField.RANDOM_PLAYS_USER_TOGGLE, tr("❔ Random plays"), 5, secondary_bootstyle)
+        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, tr("⏭️ Skip win/loss check"), 6, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, tr("🎯 Card Masteries"), 7, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, tr("⬆️ Upgrade Cards"), 8, secondary_bootstyle)
 
     def _create_emulator_tab(self) -> None:
         # Main container frame for the tab
@@ -473,7 +480,7 @@ class PyClashBotUI(ttk.Window):
         # Emulator Selection Dropdown
         selection_frame = ttk.Frame(container)
         selection_frame.pack(fill=X, pady=(0, 10))
-        ttk.Label(selection_frame, text="Select Emulator:").pack(side=LEFT, padx=(0, 5))
+        ttk.Label(selection_frame, text=tr("Select Emulator:")).pack(side=LEFT, padx=(0, 5))
 
         available_emulators = get_available_emulators()
         default_emulator = available_emulators[0] if available_emulators else EmulatorType.ADB
@@ -492,7 +499,7 @@ class PyClashBotUI(ttk.Window):
 
         ttk.Checkbutton(
             selection_frame,
-            text="Show advanced settings",
+            text=tr("Show advanced settings"),
             variable=self.advanced_settings_var,
             command=self._on_advanced_settings_toggled,
         ).pack(side=LEFT, padx=(8, 0))
@@ -527,7 +534,7 @@ class PyClashBotUI(ttk.Window):
         self._update_advanced_settings_visibility(self.emulator_var.get())
 
     def _create_google_play_settings(self, parent_frame: ttk.Frame) -> None:
-        frame = ttk.Labelframe(parent_frame, text="Google Play Options", padding=10)
+        frame = ttk.Labelframe(parent_frame, text=tr("Google Play Options"), padding=10)
         frame.pack(fill="x", padx=5, pady=5)
 
         left_keys = GOOGLE_PLAY_SETTINGS[:4]
@@ -540,7 +547,7 @@ class PyClashBotUI(ttk.Window):
             self._add_google_play_row(frame, row, 3, config)
 
     def _create_memu_settings(self, parent_frame: ttk.Frame) -> None:
-        self.memu_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
+        self.memu_advanced_frame = ttk.Labelframe(parent_frame, text=tr("Render Mode"), padding=10)
         self.memu_advanced_frame.pack_forget()
 
         self.memu_render_var = ttk.StringVar(value="DirectX")
@@ -557,7 +564,7 @@ class PyClashBotUI(ttk.Window):
             self._register_config_widget(config.key.value, rb)
 
     def _create_bluestacks_settings(self, parent_frame: ttk.Frame) -> None:
-        self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text="Render Mode", padding=10)
+        self.bluestacks_advanced_frame = ttk.Labelframe(parent_frame, text=tr("Render Mode"), padding=10)
         self.bluestacks_advanced_frame.pack_forget()
 
         self.bs_render_var = ttk.StringVar(value="DirectX")
@@ -580,7 +587,7 @@ class PyClashBotUI(ttk.Window):
 
     def _create_adb_tab(self, parent_frame: ttk.Frame) -> None:
         """Create the widgets for the ADB Device settings tab."""
-        frame = ttk.Labelframe(parent_frame, text="Device Settings", padding=10)
+        frame = ttk.Labelframe(parent_frame, text=tr("Device Settings"), padding=10)
         frame.pack(fill="x", padx=5, pady=5)
 
         # --- Row 1: Serial Input ---
@@ -588,7 +595,7 @@ class PyClashBotUI(ttk.Window):
         row1.pack(fill="x", pady=(0, 5))
         row1.columnconfigure(1, weight=1)
 
-        ttk.Label(row1, text="Device Serial:").grid(row=0, column=0, padx=(0, 5), sticky="w")
+        ttk.Label(row1, text=tr("Device Serial:")).grid(row=0, column=0, padx=(0, 5), sticky="w")
 
         self.adb_serial_var = ttk.StringVar(value="")
         self.adb_serial_combo = ttk.Combobox(
@@ -606,11 +613,11 @@ class PyClashBotUI(ttk.Window):
         row_buttons_connect.columnconfigure(0, weight=1)
         row_buttons_connect.columnconfigure(1, weight=1)
 
-        self.adb_connect_btn = ttk.Button(row_buttons_connect, text="Connect", style="success.TButton")
+        self.adb_connect_btn = ttk.Button(row_buttons_connect, text=tr("Connect"), style="success.TButton")
         self.adb_connect_btn.grid(row=0, column=0, padx=(0, 3), sticky="ew")
         self._register_config_widget("adb_connect_btn", self.adb_connect_btn)
 
-        self.adb_refresh_btn = ttk.Button(row_buttons_connect, text="Refresh")
+        self.adb_refresh_btn = ttk.Button(row_buttons_connect, text=tr("Refresh"))
         self.adb_refresh_btn.grid(row=0, column=1, padx=(3, 0), sticky="ew")
         self._register_config_widget("adb_refresh_btn", self.adb_refresh_btn)
 
@@ -618,20 +625,20 @@ class PyClashBotUI(ttk.Window):
         row_buttons_action = ttk.Frame(frame)
         row_buttons_action.pack(fill="x")
 
-        self.adb_restart_btn = ttk.Button(row_buttons_action, text="Restart ADB")
+        self.adb_restart_btn = ttk.Button(row_buttons_action, text=tr("Restart ADB"))
         self.adb_restart_btn.pack(fill=X, pady=(0, 3))
         self._register_config_widget("adb_restart_btn", self.adb_restart_btn)
 
-        self.adb_set_size_btn = ttk.Button(row_buttons_action, text="Set Size & Density")
+        self.adb_set_size_btn = ttk.Button(row_buttons_action, text=tr("Set Size & Density"))
         self.adb_set_size_btn.pack(fill=X, pady=3)
         self._register_config_widget("adb_set_size_btn", self.adb_set_size_btn)
 
-        self.adb_reset_size_btn = ttk.Button(row_buttons_action, text="Reset Size & Density")
+        self.adb_reset_size_btn = ttk.Button(row_buttons_action, text=tr("Reset Size & Density"))
         self.adb_reset_size_btn.pack(fill=X, pady=(3, 0))
         self._register_config_widget("adb_reset_size_btn", self.adb_reset_size_btn)
 
-        ToolTip(self.adb_set_size_btn, "Sets screen to 419x633 and density to 160")
-        ToolTip(self.adb_reset_size_btn, "Resets screen size and density to device defaults")
+        ToolTip(self.adb_set_size_btn, tr("Sets screen to 419x633 and density to 160"))
+        ToolTip(self.adb_reset_size_btn, tr("Resets screen size and density to device defaults"))
 
     def _create_stats_tab(self) -> None:
         container = ttk.Frame(self.stats_tab, padding=10)
@@ -644,12 +651,12 @@ class PyClashBotUI(ttk.Window):
         left.columnconfigure(0, weight=1)
         left.rowconfigure(1, weight=1)
 
-        gauge_frame = ttk.Labelframe(left, text="Win Rate", padding=10)
+        gauge_frame = ttk.Labelframe(left, text=tr("Win Rate"), padding=10)
         gauge_frame.pack(fill=X)
         self.win_gauge = DualRingGauge(gauge_frame, diameter=120, thickness=12, text_color="#00aaff")
         self.win_gauge.pack(anchor="center")
 
-        battle_frame = ttk.Labelframe(left, text="Battle Stats", padding=10)
+        battle_frame = ttk.Labelframe(left, text=tr("Battle Stats"), padding=10)
         battle_frame.pack(fill=BOTH, expand=YES, pady=(8, 0))
         self.stat_labels: dict[StatField, ttk.StringVar] = {}
         for row, field in enumerate(BATTLE_STAT_FIELDS):
@@ -666,12 +673,12 @@ class PyClashBotUI(ttk.Window):
             row=len(BATTLE_STAT_FIELDS), column=0, columnspan=2, sticky="ew", pady=(8, 4)
         )
         streak_row = len(BATTLE_STAT_FIELDS) + 1
-        ttk.Label(battle_frame, text="Current Streak:").grid(row=streak_row, column=0, sticky="w")
+        ttk.Label(battle_frame, text=tr("Current Streak:")).grid(row=streak_row, column=0, sticky="w")
         self.current_streak_var = ttk.StringVar(value="0")
         ttk.Label(battle_frame, textvariable=self.current_streak_var, foreground="#00aaff").grid(
             row=streak_row, column=1, sticky="e"
         )
-        ttk.Label(battle_frame, text="Best Streak:").grid(row=streak_row + 1, column=0, sticky="w")
+        ttk.Label(battle_frame, text=tr("Best Streak:")).grid(row=streak_row + 1, column=0, sticky="w")
         self.best_streak_var = ttk.StringVar(value="0")
         ttk.Label(battle_frame, textvariable=self.best_streak_var, foreground="#00aaff").grid(
             row=streak_row + 1, column=1, sticky="e"
@@ -682,7 +689,7 @@ class PyClashBotUI(ttk.Window):
         right.columnconfigure(0, weight=1)
         right.rowconfigure(1, weight=1)
 
-        collection_frame = ttk.Labelframe(right, text="Collection Stats", padding=10)
+        collection_frame = ttk.Labelframe(right, text=tr("Collection Stats"), padding=10)
         collection_frame.pack(fill=X)
         for row, field in enumerate(COLLECTION_STAT_FIELDS):
             title = COLLECTION_STAT_LABELS[field]
@@ -693,7 +700,7 @@ class PyClashBotUI(ttk.Window):
             ttk.Label(collection_frame, textvariable=var, foreground="#00aaff").grid(row=row, column=1, sticky="e")
             self.stat_labels[field] = var
 
-        bot_frame = ttk.Labelframe(right, text="Bot Stats", padding=10)
+        bot_frame = ttk.Labelframe(right, text=tr("Bot Stats"), padding=10)
         bot_frame.pack(fill=BOTH, expand=YES, pady=(8, 0))
         self.bot_labels = {
             BotStatField.RESTARTS_AFTER_FAILURE: ttk.StringVar(value="0"),
@@ -711,10 +718,10 @@ class PyClashBotUI(ttk.Window):
             ).grid(row=row, column=1, sticky="e")
 
     def _create_misc_tab(self) -> None:
-        appearance = ttk.Labelframe(self.misc_tab, text="Appearance", padding=10)
+        appearance = ttk.Labelframe(self.misc_tab, text=tr("Appearance"), padding=10)
         appearance.pack(padx=10, pady=10, anchor="n", fill="x")
 
-        ttk.Label(appearance, text="Select Theme:").pack(anchor="w", pady=(0, 4))
+        ttk.Label(appearance, text=tr("Select Theme:")).pack(anchor="w", pady=(0, 4))
         self.theme_combo = ttk.Combobox(
             appearance,
             values=self._style.theme_names(),
@@ -727,13 +734,27 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.theme_var)
         self._register_config_widget(UIField.THEME_NAME.value, self.theme_combo)
 
+        ttk.Label(appearance, text=tr(LANGUAGE_CONFIG.label)).pack(anchor="w", pady=(0, 4))
+        self.lang_var = ttk.StringVar(value=LANGUAGE_CONFIG.default)
+        self.lang_combo = ttk.Combobox(
+            appearance,
+            values=[str(v) for v in LANGUAGE_CONFIG.values],
+            width=LANGUAGE_CONFIG.size[0],
+            state=READONLY,
+            textvariable=self.lang_var,
+        )
+        self.lang_combo.pack(anchor="w")
+        self.lang_combo.bind("<<ComboboxSelected>>", self._on_language_change)
+        self._trace_variable(self.lang_var)
+        self._register_config_widget(UIField.LANGUAGE.value, self.lang_combo)
+
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
-        data_frame = ttk.Labelframe(self.misc_tab, text="Data Settings", padding=10)
+        data_frame = ttk.Labelframe(self.misc_tab, text=tr("Data Settings"), padding=10)
         data_frame.pack(fill="x", padx=10, pady=10)
 
         discord_checkbox = ttk.Checkbutton(
             data_frame,
-            text="Discord Rich Presence",
+            text=tr("Discord Rich Presence"),
             variable=self.discord_rpc_var,
             bootstyle="round-toggle",
             command=self._notify_config_change,
@@ -744,13 +765,13 @@ class PyClashBotUI(ttk.Window):
 
         self.open_logs_btn = ttk.Button(
             data_frame,
-            text="Open Logs Folder",
+            text=tr("Open Logs Folder"),
             command=self._on_open_logs_clicked,
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
 
         ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
-        display_frame = ttk.Labelframe(self.misc_tab, text="Display Settings", padding=10)
+        display_frame = ttk.Labelframe(self.misc_tab, text=tr("Display Settings"), padding=10)
         display_frame.pack(fill="x", padx=10, pady=10)
 
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
@@ -760,6 +781,11 @@ class PyClashBotUI(ttk.Window):
         if self._suspend_traces > 0 or self._config_callback is None:
             return
         self.after_idle(lambda: self._config_callback(self.get_all_values()))
+
+    def _on_language_change(self, _event: object) -> None:
+        self._notify_config_change()
+        if messagebox.askyesno(tr("Restart Required"), tr("Please restart the application for language changes to take effect.\nRestart now?")):
+             sys.exit(0)
 
     def _trace_variable(self, var: tk.Variable) -> None:
         trace_id = var.trace_add("write", self._notify_config_change)
@@ -772,7 +798,7 @@ class PyClashBotUI(ttk.Window):
         column_offset: int,
         config: ComboConfig,
     ) -> None:
-        ttk.Label(frame, text=config.label).grid(row=row, column=column_offset, sticky="w", padx=5, pady=2)
+        ttk.Label(frame, text=tr(config.label)).grid(row=row, column=column_offset, sticky="w", padx=5, pady=2)
         var = ttk.StringVar(value=str(config.default))
         combo = ttk.Combobox(
             frame,

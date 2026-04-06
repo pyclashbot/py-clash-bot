@@ -14,3 +14,5 @@ recordings
 .claude/settings.local.json
 .DS_Store
 *.egg-info
+.agent/
+missing_translations.txt
