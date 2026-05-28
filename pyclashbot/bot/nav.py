@@ -282,6 +282,17 @@ def check_if_on_clash_main_menu(emulator) -> bool:
         [155, 120, 81],
     ]
 
+    # post Clash Royale app update colors
+    colors_3 = [
+        [57, 151, 206],
+        [21, 148, 42],
+        [36, 17, 1],
+        [231, 190, 123],
+        [140, 105, 74],
+        [140, 105, 74],
+        [156, 121, 82],
+    ]
+
     # print("{:^15} | {:^15} | {:^15}".format("Seen", "Google", "Memu"))
     # for seen_pixel, google_play_color, memu_color in zip(pixels, colors_1, colors_2):
     #     seen_pixel =str(seen_pixel[0])+ ' '+ str(seen_pixel[1])+ ' '+ str(seen_pixel[2])
@@ -295,7 +306,7 @@ def check_if_on_clash_main_menu(emulator) -> bool:
     #         "{:^15} | {:^15} | {:^15}".format(seen_pixel, google_play_color, memu_color)
     #     )
 
-    for colors in [colors_1, colors_2]:
+    for colors in [colors_1, colors_2, colors_3]:
         if all_pixels_are_equal(
             pixels,
             colors,
