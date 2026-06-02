@@ -13,20 +13,17 @@ from pyclashbot.bot.card_detection import (
 )
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
-    check_for_trophy_reward_menu,
     check_if_battle_has_ended,
     check_if_in_battle,
     check_if_on_clash_main_menu,
     get_to_activity_log,
     get_to_main_after_fight,
-    handle_trophy_reward_menu,
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
 from pyclashbot.bot.recorder import save_play, save_win_loss
 from pyclashbot.detection.image_rec import (
     check_line_for_color,
-    find_image,
     pixel_is_equal,
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
