@@ -34,8 +34,7 @@ def test_reaches_main_menu_after_launch() -> None:
     # Precondition: VM must already be running. start_app on a stopped VM hangs.
     vm = next((v for v in emu.pmc.list_vm_info() if v["index"] == emu.vm_index), None)
     assert vm is not None and vm["running"], (
-        f"precondition failed: VM idx={emu.vm_index} is not running. "
-        "boot the MEmu VM before running this test."
+        f"precondition failed: VM idx={emu.vm_index} is not running. " "boot the MEmu VM before running this test."
     )
 
     print(f"[+] starting {CLASH_ROYALE_PACKAGE} on VM idx={emu.vm_index}")

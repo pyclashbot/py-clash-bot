@@ -46,23 +46,18 @@ def test_find_emulator_both_conditions() -> None:
 
     target_idx = _get_target_index(pmc, EMULATOR_NAME)
     assert target_idx is not None, (
-        f"precondition failed: no VM titled '{EMULATOR_NAME}' exists. "
-        "create or rename one before running this test."
+        f"precondition failed: no VM titled '{EMULATOR_NAME}' exists. " "create or rename one before running this test."
     )
 
     try:
         # 1) positive case
-        assert find_clashbot_vm(pmc) is True, (
-            f"detection should return True when VM '{EMULATOR_NAME}' exists"
-        )
+        assert find_clashbot_vm(pmc) is True, f"detection should return True when VM '{EMULATOR_NAME}' exists"
         print(f"[+] positive: detected '{EMULATOR_NAME}' at idx={target_idx}")
 
         # 2) negative case — rename away
         pmc.rename_vm(vm_index=target_idx, new_name=TEMP_RENAME)
         print(f"[+] renamed idx={target_idx} -> '{TEMP_RENAME}'")
-        assert find_clashbot_vm(pmc) is False, (
-            f"detection should return False after renaming VM to '{TEMP_RENAME}'"
-        )
+        assert find_clashbot_vm(pmc) is False, f"detection should return False after renaming VM to '{TEMP_RENAME}'"
         print("[+] negative: not detected after rename")
 
     finally:

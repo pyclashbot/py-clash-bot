@@ -59,10 +59,7 @@ def assert_only_on(emu, expected_page: str) -> None:
             for page in MAIN_PAGE_CHECKS
             if actual[page] != expected[page]
         ]
-        raise AssertionError(
-            f"expected to be only on {expected_page!r}, but page-check mismatch: "
-            + "; ".join(diffs)
-        )
+        raise AssertionError(f"expected to be only on {expected_page!r}, but page-check mismatch: " + "; ".join(diffs))
 
 
 def test_navigate_all_main_page_permutations() -> None:
@@ -76,9 +73,9 @@ def test_navigate_all_main_page_permutations() -> None:
     try:
         circuit = compute_eulerian_circuit(list(NAV_CLICKS.keys()), start=PAGE_MAIN)
         edges_to_walk = len(circuit) - 1
-        assert edges_to_walk == len(NAV_CLICKS), (
-            f"eulerian circuit should cover all {len(NAV_CLICKS)} edges, got {edges_to_walk}"
-        )
+        assert edges_to_walk == len(
+            NAV_CLICKS
+        ), f"eulerian circuit should cover all {len(NAV_CLICKS)} edges, got {edges_to_walk}"
         print(f"[+] eulerian circuit: {edges_to_walk} edges across {len(circuit)} stops")
 
         for i in range(edges_to_walk):
@@ -89,9 +86,7 @@ def test_navigate_all_main_page_permutations() -> None:
             assert ok, f"navigate_main_page({start!r}, {end!r}) returned False"
             assert_only_on(emu, end)
 
-        assert circuit[-1] == PAGE_MAIN, (
-            f"circuit should end on {PAGE_MAIN!r}, ended on {circuit[-1]!r}"
-        )
+        assert circuit[-1] == PAGE_MAIN, f"circuit should end on {PAGE_MAIN!r}, ended on {circuit[-1]!r}"
         assert_only_on(emu, PAGE_MAIN)
         print(f"[+] finished on {PAGE_MAIN}")
 

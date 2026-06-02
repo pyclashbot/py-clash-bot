@@ -820,25 +820,25 @@ MAIN_PAGE_CHECKS = {
 
 
 NAV_CLICKS: dict[tuple[str, str], list[tuple[int, int]]] = {
-    (PAGE_MAIN, PAGE_CARD):        [(100, 606)],
-    (PAGE_MAIN, PAGE_SHOP):        [(30, 600)],
-    (PAGE_MAIN, PAGE_SOCIAL):      [(315, 600)],
-    (PAGE_MAIN, PAGE_CLAN_CHAT):   [(315, 600), (280, 600)],
-    (PAGE_CARD, PAGE_MAIN):        [(250, 600)],
-    (PAGE_CARD, PAGE_SHOP):        [(30, 600)],
-    (PAGE_CARD, PAGE_SOCIAL):      [(309, 600)],
-    (PAGE_CARD, PAGE_CLAN_CHAT):   [(309, 600), (280, 600)],
-    (PAGE_SHOP, PAGE_MAIN):        [(240, 600)],
-    (PAGE_SHOP, PAGE_CARD):        [(170, 600)],
-    (PAGE_SHOP, PAGE_SOCIAL):      [(310, 600)],
-    (PAGE_SHOP, PAGE_CLAN_CHAT):   [(310, 600), (280, 600)],
-    (PAGE_SOCIAL, PAGE_MAIN):      [(170, 600)],
-    (PAGE_SOCIAL, PAGE_CARD):      [(100, 600)],
-    (PAGE_SOCIAL, PAGE_SHOP):      [(30, 600)],
+    (PAGE_MAIN, PAGE_CARD): [(100, 606)],
+    (PAGE_MAIN, PAGE_SHOP): [(30, 600)],
+    (PAGE_MAIN, PAGE_SOCIAL): [(315, 600)],
+    (PAGE_MAIN, PAGE_CLAN_CHAT): [(315, 600), (280, 600)],
+    (PAGE_CARD, PAGE_MAIN): [(250, 600)],
+    (PAGE_CARD, PAGE_SHOP): [(30, 600)],
+    (PAGE_CARD, PAGE_SOCIAL): [(309, 600)],
+    (PAGE_CARD, PAGE_CLAN_CHAT): [(309, 600), (280, 600)],
+    (PAGE_SHOP, PAGE_MAIN): [(240, 600)],
+    (PAGE_SHOP, PAGE_CARD): [(170, 600)],
+    (PAGE_SHOP, PAGE_SOCIAL): [(310, 600)],
+    (PAGE_SHOP, PAGE_CLAN_CHAT): [(310, 600), (280, 600)],
+    (PAGE_SOCIAL, PAGE_MAIN): [(170, 600)],
+    (PAGE_SOCIAL, PAGE_CARD): [(100, 600)],
+    (PAGE_SOCIAL, PAGE_SHOP): [(30, 600)],
     (PAGE_SOCIAL, PAGE_CLAN_CHAT): [(280, 600)],
-    (PAGE_CLAN_CHAT, PAGE_MAIN):   [(200, 600), (170, 600)],
-    (PAGE_CLAN_CHAT, PAGE_CARD):   [(200, 600), (100, 600)],
-    (PAGE_CLAN_CHAT, PAGE_SHOP):   [(200, 600), (30, 600)],
+    (PAGE_CLAN_CHAT, PAGE_MAIN): [(200, 600), (170, 600)],
+    (PAGE_CLAN_CHAT, PAGE_CARD): [(200, 600), (100, 600)],
+    (PAGE_CLAN_CHAT, PAGE_SHOP): [(200, 600), (30, 600)],
     (PAGE_CLAN_CHAT, PAGE_SOCIAL): [(219, 605)],
 }
 
@@ -895,6 +895,7 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
 
 
 # ===== Post-battle navigation =========================================
+
 
 def find_post_battle_button(emulator):
     """Find and return coordinates for post-battle exit/OK button.

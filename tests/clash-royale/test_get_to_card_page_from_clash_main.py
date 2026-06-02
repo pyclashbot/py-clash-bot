@@ -34,9 +34,7 @@ def test_get_to_card_page_from_clash_main() -> None:
         print(f"[+] get_to_card_page_from_clash_main returned: {result!r}")
         assert result == "good", f"expected 'good', got {result!r}"
 
-        assert check_if_on_card_page(emu) is True, (
-            "after navigation, check_if_on_card_page should be True"
-        )
+        assert check_if_on_card_page(emu) is True, "after navigation, check_if_on_card_page should be True"
         print("[+] confirmed on card page")
 
     finally:

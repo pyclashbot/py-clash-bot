@@ -32,9 +32,7 @@ def test_check_if_on_card_page_both_branches() -> None:
 
     try:
         # negative
-        assert check_if_on_card_page(emu) is False, (
-            "check_if_on_card_page should be False when on main menu"
-        )
+        assert check_if_on_card_page(emu) is False, "check_if_on_card_page should be False when on main menu"
         print("[+] negative: not detected on main")
 
         # navigate
@@ -42,9 +40,7 @@ def test_check_if_on_card_page_both_branches() -> None:
         assert result == "good", f"failed to reach card page (got {result!r})"
 
         # positive
-        assert check_if_on_card_page(emu) is True, (
-            "check_if_on_card_page should be True when on card page"
-        )
+        assert check_if_on_card_page(emu) is True, "check_if_on_card_page should be True when on card page"
         print("[+] positive: detected on card page")
 
     finally:

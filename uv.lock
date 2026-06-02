@@ -307,7 +307,7 @@ requires-dist = [
     { name = "psutil", specifier = ">=6.1.0,<8" },
     { name = "pymemuc", specifier = ">=0.6.0,<0.7" },
     { name = "pypresence", specifier = ">=4.3.0,<5" },
-    { name = "ttkbootstrap", specifier = ">=1.12.1,<1.20" },
+    { name = "ttkbootstrap", specifier = ">=1.12.1,<1.21" },
 ]
 
 [package.metadata.requires-dev]
@@ -319,7 +319,7 @@ build = [
 ]
 dev = [
     { name = "pre-commit", specifier = ">=4.0.1,<5" },
-    { name = "ruff", specifier = ">=0.7.4,<0.15" },
+    { name = "ruff", specifier = ">=0.7.4,<0.16" },
 ]
 
 [[package]]
