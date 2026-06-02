@@ -5,22 +5,20 @@ Deck cycling and selection methods for py-clash-bot.
 import time
 
 from pyclashbot.bot.deck_utils import (
-    DECK_TABS_REGION,
     is_deck_full,
     is_single_deck_layout_by_pixel,
     randomize_and_check_deck,
-    return_to_clash_main_from_card_page,
-    switch_deck_page,
 )
 from pyclashbot.bot.nav import (
+    DECK_TABS_REGION,
+    _navigate_to_deck_selection,
     check_if_on_clash_main_menu,
-    get_to_card_page_from_clash_main,
+    return_to_clash_main_from_card_page,
+    switch_deck_page,
 )
 from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
-
-DECKS_PAGE_BUTTON_COORDS = (125, 60)
 
 
 def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tuple[bool, int | None]:
@@ -94,16 +92,6 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
 
     logger.error("Could not find any usable decks after checking all available pages.")
     return False, None
-
-
-def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
-    logger.change_status("Navigating to the deck selection page...")
-    if not get_to_card_page_from_clash_main(emulator, logger):
-        logger.change_status("Failed to get to card page from main.")
-        return False
-    emulator.click(*DECKS_PAGE_BUTTON_COORDS)
-    interruptible_sleep(0.1)
-    return True
 
 
 def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:

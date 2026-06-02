@@ -11,7 +11,6 @@ from pyclashbot.bot.card_detection import (
     get_play_coords_for_card,
     switch_side,
 )
-from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
     check_for_trophy_reward_menu,
@@ -19,6 +18,7 @@ from pyclashbot.bot.nav import (
     check_if_in_battle,
     check_if_on_clash_main_menu,
     get_to_activity_log,
+    get_to_main_after_fight,
     handle_trophy_reward_menu,
     wait_for_battle_start,
     wait_for_clash_main_menu,
@@ -408,100 +408,6 @@ def check_pixels_for_win_in_battle_log(emulator) -> bool:
     if line1 and line2 and line3:
         return False
     return True
-
-
-def find_post_battle_button(emulator):
-    """Find and return coordinates for post-battle exit/OK button.
-
-    Tries multiple detection methods in order:
-    1. Pixel-based detection (fastest)
-    2. Image recognition for OK button
-    3. Image recognition for exit button
-
-    Returns:
-        tuple[int, int] | None: Button coordinates (x, y) or None if not found
-    """
-    iar = emulator.screenshot()
-
-    # Method 1: Fast pixel-based detection
-    pixels = [
-        iar[545][178],
-        iar[547][239],
-        iar[553][214],
-        iar[554][201],
-    ]
-    colors = [
-        [255, 187, 104],
-        [255, 187, 104],
-        [255, 255, 255],
-        [255, 255, 255],
-    ]
-
-    pixel_match = True
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=20):
-            pixel_match = False
-            break
-
-    if pixel_match:
-        return (200, 550)
-
-    # Method 2: Image recognition for OK button
-    coord = find_image(iar, "ok_post_battle_button", tolerance=0.85)
-    if coord is not None:
-        return coord
-
-    # Method 3: Image recognition for exit button
-    coord = find_image(iar, "exit_battle_button", tolerance=0.9)
-    if coord is not None:
-        return coord
-
-    return None
-
-
-def get_to_main_after_fight(emulator, logger):
-    timeout = 120  # s
-    start_time = time.time()
-    clicked_ok_or_exit = False
-
-    logger.change_status("Returning to clash main after the fight...")
-
-    while time.time() - start_time < timeout:
-        # if on clash main
-        if check_if_on_clash_main_menu(emulator) is True:
-            # wait 3 seconds for the trophy road page to maybe appear bc of UI lag
-            interruptible_sleep(3)
-
-            # if that trophy road page appears, handle it, then return True
-            if check_for_trophy_reward_menu(emulator):
-                print("Found trophy reward menu")
-                handle_trophy_reward_menu(emulator, logger, printmode=False)
-                interruptible_sleep(2)
-
-            print("Made it to clash main after a fight")
-            return True
-
-        # check for trophy reward screen
-        if check_for_trophy_reward_menu(emulator):
-            print("Found trophy reward menu!\nHandling Trophy Reward Menu")
-            handle_trophy_reward_menu(emulator, logger, printmode=False)
-            interruptible_sleep(3)
-            continue
-
-        # check for post-battle button (OK/exit)
-        if not clicked_ok_or_exit:
-            button_coord = find_post_battle_button(emulator)
-            if button_coord is not None:
-                print("Found post-battle button, clicking it.")
-                emulator.click(button_coord[0], button_coord[1])
-                clicked_ok_or_exit = True
-                continue
-
-        interruptible_sleep(1)
-        print("Clicking on deadspace to close potential pop-up windows.")
-        emulator.click(CLASH_MAIN_DEADSPACE_COORD[0], CLASH_MAIN_DEADSPACE_COORD[1])
-
-    return False
 
 
 # main fight loops
