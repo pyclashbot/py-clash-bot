@@ -15,6 +15,7 @@ CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
 BATTLE_LOG_BUTTON = (241, 43)
 CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
 CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
+CARD_PAGE_EXIT_BUTTON_COORDS = (248, 603)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
@@ -405,6 +406,17 @@ def check_if_on_card_page(emulator) -> bool:
     return False
 
 
+def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
+    """Click the card page exit button and verify the bot is on the main menu."""
+    logger.change_status("Returning to clash main...")
+    emulator.click(*CARD_PAGE_EXIT_BUTTON_COORDS)
+    interruptible_sleep(1)
+    if not check_if_on_clash_main_menu(emulator):
+        logger.change_status("Failed to return to clash main from the card page.")
+        return False
+    return True
+
+
 def get_to_activity_log(
     emulator,
     logger: Logger,
@@ -717,6 +729,256 @@ def select_mode(emulator, mode: str):
             return True
 
         scroll_down_in_fight_mode_panel(emulator)
+
+    return False
+
+
+# ===== Main-page navigation system =====================================
+
+PAGE_MAIN = "main"
+PAGE_CARD = "card_page"
+PAGE_SHOP = "shop"
+PAGE_SOCIAL = "social"
+PAGE_CLAN_CHAT = "clan-chat"
+
+
+def check_if_on_shop(emulator) -> bool:
+    iar = emulator.screenshot()
+    pixels = [
+        iar[589][16],
+        iar[609][19],
+        iar[14][212],
+        iar[15][331],
+        iar[600][128],
+    ]
+    colors = [
+        [140, 107, 73],
+        [151, 116, 77],
+        [57, 160, 214],
+        [22, 186, 59],
+        [255, 225, 137],
+    ]
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+def check_if_on_social(emulator) -> bool:
+    iar = emulator.screenshot()
+    pixels = [
+        iar[601][218],
+        iar[577][342],
+        iar[620][299],
+    ]
+    colors = [
+        [255, 226, 138],
+        [142, 108, 75],
+        [155, 120, 82],
+    ]
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+def check_if_on_clan_chat(emulator) -> bool:
+    iar = emulator.screenshot()
+    pixels = [
+        iar[5][5],
+        iar[628][415],
+        iar[612][177],
+        iar[44][322],
+        iar[19][321],
+        iar[620][254],
+        iar[612][161],
+        iar[584][204],
+    ]
+    colors = [
+        [141, 85, 69],
+        [105, 85, 71],
+        [255, 175, 78],
+        [237, 215, 201],
+        [245, 231, 222],
+        [107, 86, 72],
+        [109, 87, 73],
+        [160, 128, 108],
+    ]
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+MAIN_PAGE_CHECKS = {
+    PAGE_MAIN: check_if_on_clash_main_menu,
+    PAGE_CARD: check_if_on_card_page,
+    PAGE_SHOP: check_if_on_shop,
+    PAGE_SOCIAL: check_if_on_social,
+    PAGE_CLAN_CHAT: check_if_on_clan_chat,
+}
+
+
+NAV_CLICKS: dict[tuple[str, str], list[tuple[int, int]]] = {
+    (PAGE_MAIN, PAGE_CARD): [(100, 606)],
+    (PAGE_MAIN, PAGE_SHOP): [(30, 600)],
+    (PAGE_MAIN, PAGE_SOCIAL): [(315, 600)],
+    (PAGE_MAIN, PAGE_CLAN_CHAT): [(315, 600), (280, 600)],
+    (PAGE_CARD, PAGE_MAIN): [(250, 600)],
+    (PAGE_CARD, PAGE_SHOP): [(30, 600)],
+    (PAGE_CARD, PAGE_SOCIAL): [(309, 600)],
+    (PAGE_CARD, PAGE_CLAN_CHAT): [(309, 600), (280, 600)],
+    (PAGE_SHOP, PAGE_MAIN): [(240, 600)],
+    (PAGE_SHOP, PAGE_CARD): [(170, 600)],
+    (PAGE_SHOP, PAGE_SOCIAL): [(310, 600)],
+    (PAGE_SHOP, PAGE_CLAN_CHAT): [(310, 600), (280, 600)],
+    (PAGE_SOCIAL, PAGE_MAIN): [(170, 600)],
+    (PAGE_SOCIAL, PAGE_CARD): [(100, 600)],
+    (PAGE_SOCIAL, PAGE_SHOP): [(30, 600)],
+    (PAGE_SOCIAL, PAGE_CLAN_CHAT): [(280, 600)],
+    (PAGE_CLAN_CHAT, PAGE_MAIN): [(200, 600), (170, 600)],
+    (PAGE_CLAN_CHAT, PAGE_CARD): [(200, 600), (100, 600)],
+    (PAGE_CLAN_CHAT, PAGE_SHOP): [(200, 600), (30, 600)],
+    (PAGE_CLAN_CHAT, PAGE_SOCIAL): [(219, 605)],
+}
+
+
+def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str) -> bool:
+    """Navigate from start_page to end_page using the recorded click sequence.
+
+    Caller must ensure the bot is on start_page before calling. Sleeps 2 s after
+    every click (between clicks AND between the last click and the destination
+    check). Returns True iff check_if_on_<end_page>(emulator) is True.
+    """
+    if start_page == end_page:
+        return MAIN_PAGE_CHECKS[end_page](emulator)
+
+    clicks = NAV_CLICKS.get((start_page, end_page))
+    if clicks is None:
+        raise ValueError(f"no recorded navigation for {start_page!r} -> {end_page!r}")
+
+    logger.log(f"navigate_main_page: {start_page} -> {end_page} via {len(clicks)} click(s)")
+    for x, y in clicks:
+        emulator.click(x, y)
+        interruptible_sleep(2)
+
+    return MAIN_PAGE_CHECKS[end_page](emulator)
+
+
+# ===== Card-page / deck-page navigation primitives ===================
+
+DECK_TABS_REGION = (0, 80, 416, 146)
+DECKS_PAGE_BUTTON_COORDS = (125, 60)
+
+
+def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
+    logger.change_status("Navigating to the deck selection page...")
+    if not get_to_card_page_from_clash_main(emulator, logger):
+        logger.change_status("Failed to get to card page from main.")
+        return False
+    emulator.click(*DECKS_PAGE_BUTTON_COORDS)
+    interruptible_sleep(0.1)
+    return True
+
+
+def switch_deck_page(emulator, logger: Logger) -> bool:
+    logger.change_status("Switching deck page...")
+    switch_button_coord = find_image(
+        emulator.screenshot(), "deck_tabs/switch_deck", subcrop=DECK_TABS_REGION, tolerance=0.98
+    )
+    if switch_button_coord is not None:
+        emulator.click(*switch_button_coord)
+        interruptible_sleep(1)
+        return True
+    logger.change_status("Could not find switch deck page button.")
+    return False
+
+
+# ===== Post-battle navigation =========================================
+
+
+def find_post_battle_button(emulator):
+    """Find and return coordinates for post-battle exit/OK button.
+
+    Tries multiple detection methods in order:
+    1. Pixel-based detection (fastest)
+    2. Image recognition for OK button
+    3. Image recognition for exit button
+
+    Returns:
+        tuple[int, int] | None: Button coordinates (x, y) or None if not found
+    """
+    iar = emulator.screenshot()
+
+    pixels = [
+        iar[545][178],
+        iar[547][239],
+        iar[553][214],
+        iar[554][201],
+    ]
+    colors = [
+        [255, 187, 104],
+        [255, 187, 104],
+        [255, 255, 255],
+        [255, 255, 255],
+    ]
+
+    pixel_match = True
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=20):
+            pixel_match = False
+            break
+
+    if pixel_match:
+        return (200, 550)
+
+    coord = find_image(iar, "ok_post_battle_button", tolerance=0.85)
+    if coord is not None:
+        return coord
+
+    coord = find_image(iar, "exit_battle_button", tolerance=0.9)
+    if coord is not None:
+        return coord
+
+    return None
+
+
+def get_to_main_after_fight(emulator, logger):
+    timeout = 120  # s
+    start_time = time.time()
+    clicked_ok_or_exit = False
+
+    logger.change_status("Returning to clash main after the fight...")
+
+    while time.time() - start_time < timeout:
+        if check_if_on_clash_main_menu(emulator) is True:
+            interruptible_sleep(3)
+
+            if check_for_trophy_reward_menu(emulator):
+                print("Found trophy reward menu")
+                handle_trophy_reward_menu(emulator, logger, printmode=False)
+                interruptible_sleep(2)
+
+            print("Made it to clash main after a fight")
+            return True
+
+        if check_for_trophy_reward_menu(emulator):
+            print("Found trophy reward menu!\nHandling Trophy Reward Menu")
+            handle_trophy_reward_menu(emulator, logger, printmode=False)
+            interruptible_sleep(3)
+            continue
+
+        if not clicked_ok_or_exit:
+            button_coord = find_post_battle_button(emulator)
+            if button_coord is not None:
+                print("Found post-battle button, clicking it.")
+                emulator.click(button_coord[0], button_coord[1])
+                clicked_ok_or_exit = True
+                continue
+
+        interruptible_sleep(1)
+        print("Clicking on deadspace to close potential pop-up windows.")
+        emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
 
     return False
 

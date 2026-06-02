@@ -1,13 +1,10 @@
 import numpy
 
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
-from pyclashbot.detection.image_rec import find_image, pixel_is_equal
+from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 # --- Constants for UI element locations ---
-DECK_TABS_REGION = (0, 80, 416, 146)
-CARD_PAGE_EXIT_BUTTON_COORDS = (248, 603)
 DECK_OPTIONS_BUTTON_COORDS = (53, 106)
 RANDOMIZE_DECK_BUTTON_COORDS = (125, 188)
 RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS = (280, 390)
@@ -48,19 +45,6 @@ def is_single_deck_layout_by_pixel(emulator) -> bool:
     )
 
 
-def switch_deck_page(emulator, logger: Logger) -> bool:
-    logger.change_status("Switching deck page...")
-    switch_button_coord = find_image(
-        emulator.screenshot(), "deck_tabs/switch_deck", subcrop=DECK_TABS_REGION, tolerance=0.98
-    )
-    if switch_button_coord is not None:
-        emulator.click(*switch_button_coord)
-        interruptible_sleep(1)
-        return True
-    logger.change_status("Could not find switch deck page button.")
-    return False
-
-
 def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -> bool:
     """
     Randomizes the selected deck and verifies that it becomes full.
@@ -95,17 +79,4 @@ def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -
         return False
 
     logger.change_status(f"Deck #{deck_to_randomize} successfully randomized.")
-    return True
-
-
-def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
-    """
-    Clicks the exit button on the card page and verifies the bot is on the main menu.
-    """
-    logger.change_status("Returning to clash main...")
-    emulator.click(*CARD_PAGE_EXIT_BUTTON_COORDS)
-    interruptible_sleep(1)
-    if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Failed to return to clash main from the card page.")
-        return False
     return True

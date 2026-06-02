@@ -8,6 +8,9 @@ dev:
 lint:
 	uvx pre-commit run --all-files
 
+test:
+	uv run python scripts/run_tests.py $(if $(EMULATOR),--emulator $(EMULATOR),)
+
 build-msi:
 	uv run --group build .\scripts\setup_msi.py bdist_msi
 

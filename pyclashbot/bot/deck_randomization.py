@@ -5,15 +5,15 @@ Deck randomization methods for py-clash-bot.
 import time
 
 from pyclashbot.bot.deck_utils import (
-    DECK_TABS_REGION,
     is_single_deck_layout_by_pixel,
     randomize_and_check_deck,
-    return_to_clash_main_from_card_page,
-    switch_deck_page,
 )
 from pyclashbot.bot.nav import (
+    DECK_TABS_REGION,
     check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
+    return_to_clash_main_from_card_page,
+    switch_deck_page,
 )
 from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.cancellation import interruptible_sleep
