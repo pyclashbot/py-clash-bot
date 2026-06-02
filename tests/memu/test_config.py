@@ -64,8 +64,7 @@ def test_config_drift_and_restore() -> None:
         valid_after, mismatches_after = is_config_valid(emu)
         print(f"[+] after configure():  valid={valid_after}   mismatches={mismatches_after}")
         assert valid_after is True, (
-            "is_config_valid should return True after configure(), "
-            f"but returned False (mismatches={mismatches_after})"
+            f"is_config_valid should return True after configure(), but returned False (mismatches={mismatches_after})"
         )
 
     finally:

@@ -73,9 +73,9 @@ def test_navigate_all_main_page_permutations() -> None:
     try:
         circuit = compute_eulerian_circuit(list(NAV_CLICKS.keys()), start=PAGE_MAIN)
         edges_to_walk = len(circuit) - 1
-        assert edges_to_walk == len(
-            NAV_CLICKS
-        ), f"eulerian circuit should cover all {len(NAV_CLICKS)} edges, got {edges_to_walk}"
+        assert edges_to_walk == len(NAV_CLICKS), (
+            f"eulerian circuit should cover all {len(NAV_CLICKS)} edges, got {edges_to_walk}"
+        )
         print(f"[+] eulerian circuit: {edges_to_walk} edges across {len(circuit)} stops")
 
         for i in range(edges_to_walk):

@@ -46,7 +46,7 @@ def test_find_emulator_both_conditions() -> None:
 
     target_idx = _get_target_index(pmc, EMULATOR_NAME)
     assert target_idx is not None, (
-        f"precondition failed: no VM titled '{EMULATOR_NAME}' exists. " "create or rename one before running this test."
+        f"precondition failed: no VM titled '{EMULATOR_NAME}' exists. create or rename one before running this test."
     )
 
     try:

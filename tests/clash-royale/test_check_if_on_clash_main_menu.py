@@ -41,9 +41,9 @@ def test_check_if_on_clash_main_menu_both_branches() -> None:
         assert result == "good", f"failed to reach card page (got {result!r})"
 
         # negative
-        assert (
-            check_if_on_clash_main_menu(emu) is False
-        ), "check_if_on_clash_main_menu should be False when on card page"
+        assert check_if_on_clash_main_menu(emu) is False, (
+            "check_if_on_clash_main_menu should be False when on card page"
+        )
         print("[+] negative: not detected on card page")
 
     finally:
