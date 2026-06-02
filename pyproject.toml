@@ -35,7 +35,7 @@ homepage = "https://pyclashbot.app"
 
 [dependency-groups]
 build = [
-    "cx-freeze>=8.3.0,<9; sys_platform == 'win32'",
+    "cx-freeze>=8.6.4,<9; sys_platform == 'win32'",
     "pyinstaller>=6.0.0,<7; sys_platform == 'darwin'",
     "packaging>=24.2",
     "requests>=2.32.4",
