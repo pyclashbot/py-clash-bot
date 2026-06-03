@@ -6,7 +6,7 @@
 
 - Call a `check_if_on_*` detection before acting; loop on `interruptible_sleep()` with an explicit timeout (e.g. `wait_for_clash_main_menu()` waits up to 240s and clears reward popups mid-wait). Handle async popups before proceeding.
 - Navigation is consolidated in `nav.py` (post nav-refactor): use `navigate_main_page(emulator, logger, start, end)` and the `NAV_CLICKS` table rather than ad-hoc click sequences. Deck pages use image matching on `DECK_TABS_REGION`.
-- New coordinates go in `constants.py` as named constants — see the resolution warning in the root `AGENTS.md`.
+- New coordinates go in `coords.py` as named constants — see the resolution warning in the root `AGENTS.md`.
 
 ## Gotchas
 
