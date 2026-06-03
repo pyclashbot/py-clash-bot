@@ -62,6 +62,7 @@ class PyClashBotUI(ttk.Window):
         self._open_logs_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._clan_sub_checkbuttons: dict[UIField, ttk.Checkbutton] = {}
+        self._job_extra_spinboxes: dict[UIField, ttk.Spinbox] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
         self._suspend_traces = 0
@@ -190,6 +191,8 @@ class PyClashBotUI(ttk.Window):
 
         if self._clan_sub_checkbuttons:
             self._sync_clan_sub_job_widgets_state()
+        if self._job_extra_spinboxes:
+            self._sync_job_extra_spinboxes()
 
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
@@ -220,6 +223,8 @@ class PyClashBotUI(ttk.Window):
                     else:
                         widget.configure(state=tk.DISABLED if running else READONLY)
                 elif isinstance(widget, ttk.Spinbox):
+                    if widget in self._job_extra_spinboxes.values():
+                        continue
                     widget.configure(state=tk.DISABLED if running else READONLY)
                 elif isinstance(widget, ttk.Radiobutton) and key in [
                     UIField.DIRECTX_TOGGLE.value,
@@ -244,6 +249,7 @@ class PyClashBotUI(ttk.Window):
 
             except tk.TclError:
                 continue
+        self._sync_job_extra_spinboxes()
         if running:
             self._hide_action_button()
 
@@ -445,6 +451,7 @@ class PyClashBotUI(ttk.Window):
                     text=job.title,
                     row_index=grid_row,
                     bootstyle=bootstyle,
+                    command=lambda j=job.key: self._on_job_with_extra_toggle(j),
                 )
 
                 info_label = ttk.Label(frame, text="ⓘ", bootstyle="info")
@@ -465,6 +472,7 @@ class PyClashBotUI(ttk.Window):
                 spinbox.grid(row=grid_row, column=col_spin, sticky="e")
                 self._trace_variable(spin_var)
                 self._register_config_widget(combo_field.value, spinbox)
+                self._job_extra_spinboxes[job.key] = spinbox
 
                 if combo_field == UIField.DECK_NUMBER_SELECTION:
                     self.deck_var = spin_var
@@ -472,6 +480,7 @@ class PyClashBotUI(ttk.Window):
                     self.max_deck_var = spin_var
                 elif combo_field == UIField.MAX_ACCOUNT_SELECTION:
                     self.max_account_var = spin_var
+                self._sync_job_extra_spinboxes()
                 grid_row += 1
             else:
                 place_job_button(
@@ -486,6 +495,19 @@ class PyClashBotUI(ttk.Window):
     def _on_clan_chat_master_toggle(self) -> None:
         self._sync_clan_sub_job_widgets_state()
         self._notify_config_change()
+
+    def _on_job_with_extra_toggle(self, job_key: UIField) -> None:
+        self._sync_job_extra_spinboxes()
+        self._notify_config_change()
+
+    def _sync_job_extra_spinboxes(self) -> None:
+        bot_running = self._button_state in ("running", "stopping")
+        for job_key, spinbox in self._job_extra_spinboxes.items():
+            job_on = bool(self.jobs_vars[job_key].get())
+            if bot_running or not job_on:
+                spinbox.configure(state=tk.DISABLED)
+            else:
+                spinbox.configure(state=READONLY)
 
     def _sync_clan_sub_job_widgets_state(self) -> None:
         master_on = bool(self.jobs_vars[UIField.CLAN_CHAT_USER_TOGGLE].get())
