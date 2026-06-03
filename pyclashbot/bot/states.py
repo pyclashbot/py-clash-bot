@@ -6,7 +6,6 @@ import time
 from pyclashbot.bot.card_mastery_state import card_mastery_state
 from pyclashbot.bot.deck import randomize_deck_state, select_deck_state
 from pyclashbot.bot.fight import (
-    do_2v2_fight_state,
     do_fight_state,
     end_fight_state,
     start_fight,
@@ -425,15 +424,17 @@ def state_tree(
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
-            do_2v2_fight_state(
+            do_fight_state(
                 emulator,
                 logger,
                 random_plays_flag,
-                recording_flag,
+                "Classic 2v2",
+                called_from_launching=False,
+                recording_flag=recording_flag,
             )
             is False
         ):
-            return handle_state_failure(logger, "2v2_fight", "do_2v2_fight_state", "2v2 fight failed")
+            return handle_state_failure(logger, "2v2_fight", "do_fight_state", "2v2 fight failed")
 
         return state_order.next_state(state)
 

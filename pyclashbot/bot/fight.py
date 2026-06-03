@@ -109,24 +109,6 @@ def do_fight_state(
     return True
 
 
-def do_2v2_fight_state(
-    emulator,
-    logger: Logger,
-    random_fight_mode,
-    recording_flag: bool = False,
-) -> bool:
-    """Handle the entirety of the 2v2 battle state (start fight, do fight, end fight)."""
-    # Use the same fight logic as 1v1, just with 2v2 mode
-    return do_fight_state(
-        emulator,
-        logger,
-        random_fight_mode,
-        "Classic 2v2",
-        called_from_launching=False,
-        recording_flag=recording_flag,
-    )
-
-
 def start_fight(emulator, logger, mode) -> bool:
     """Start a fight with the specified mode.
 
