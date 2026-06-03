@@ -106,32 +106,6 @@ PLAY_COORDS = {
 }
 
 
-def sort_cards_by_family(cards: list[str]) -> list[str]:
-    """Group base, evo_, and hero_ variants together (base first, then evo, then hero)."""
-
-    def family_root(card: str) -> str:
-        if card.startswith("evo_"):
-            return card[4:]
-        if card.startswith("hero_"):
-            return card[5:]
-        return card
-
-    def variant_rank(card: str) -> int:
-        if card.startswith("evo_"):
-            return 1
-        if card.startswith("hero_"):
-            return 2
-        return 0
-
-    families: dict[str, list[str]] = {}
-    for card in cards:
-        root = family_root(card)
-        families.setdefault(root, []).append(card)
-    for root, family_cards in families.items():
-        family_cards.sort(key=lambda c: (variant_rank(c), c))
-    return [card for root in sorted(families) for card in families[root]]
-
-
 CARD_GROUPS: dict[str, list[str]] = {
     "long_range": [
         "archer_queen",
@@ -333,8 +307,6 @@ CARD_GROUPS: dict[str, list[str]] = {
         "zappies",
     ],
 }
-
-CARD_GROUPS = {group: sort_cards_by_family(cards) for group, cards in CARD_GROUPS.items()}
 
 # card classification data used for potential future filtering/analytics; currently informational only
 CARD_ATTRIBUTES: dict[str, dict[str, str]] = {
