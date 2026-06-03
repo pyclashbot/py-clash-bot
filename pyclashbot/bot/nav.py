@@ -4,7 +4,6 @@ from typing import Literal
 
 from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
 from pyclashbot.bot.state_detect import (
-    check_for_post_battle_button,
     check_for_trophy_reward_menu,
     check_if_battle_mode_is_selected,
     check_if_in_battle,

@@ -18,6 +18,7 @@ from pyclashbot.bot.nav import (
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.recorder import save_play, save_win_loss
 from pyclashbot.bot.state_detect import (
     check_if_battle_has_ended,
     check_if_in_battle,
@@ -25,7 +26,6 @@ from pyclashbot.bot.state_detect import (
     check_pixels_for_win_in_battle_log,
     count_elixer,
 )
-from pyclashbot.bot.recorder import save_play, save_win_loss
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
@@ -56,6 +56,8 @@ EMOTE_ICON_COORDS = [
     (243, 469),
     (308, 470),
 ]
+
+
 def do_fight_state(
     emulator,
     logger: Logger,
