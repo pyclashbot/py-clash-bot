@@ -15,11 +15,11 @@ from __future__ import annotations
 import sys
 
 from pyclashbot.bot.nav import (
-    check_if_on_card_page,
     get_to_card_page_from_clash_main,
     return_to_clash_main_from_card_page,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.state_detect import check_if_on_card_page
 from pyclashbot.emulators.memu import MemuEmulatorController
 from pyclashbot.utils.logger import Logger
 

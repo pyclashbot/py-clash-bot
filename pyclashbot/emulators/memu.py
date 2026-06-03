@@ -14,7 +14,7 @@ import numpy as np
 import psutil
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform

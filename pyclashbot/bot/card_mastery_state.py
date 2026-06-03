@@ -1,18 +1,17 @@
 import time
 
 from pyclashbot.bot.nav import (
-    check_if_on_card_page,
-    check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
     wait_for_clash_main_menu,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.bot.state_detect import (
+    card_mastery_rewards_exist,
+    check_for_inventory_full_popup,
+    check_if_on_card_page,
+    check_if_on_clash_main_menu,
+)
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
-
-CARD_MASTERY_COORD = (340, 440)
-CARD_MASTERY_BGR = (95, 214, 251)
-PIXEL_TOLERANCE = 15
 
 
 def card_mastery_state(emulator, logger):
@@ -112,47 +111,6 @@ def card_mastery_rewards_exist_with_delay(emulator):
             return True
 
     return False
-
-
-def card_mastery_rewards_exist(emulator):
-    screenshot = emulator.screenshot()
-
-    x, y = CARD_MASTERY_COORD
-    pixel = screenshot[y][x]
-
-    return pixel_is_equal(pixel, CARD_MASTERY_BGR, PIXEL_TOLERANCE)
-
-
-def check_for_inventory_full_popup(emulator):
-    iar = emulator.screenshot()
-    pixels = [
-        iar[410][220],
-        iar[420][225],
-        iar[416][225],
-        iar[418][230],
-        iar[420][240],
-        iar[430][250],
-        iar[435][260],
-        iar[427][270],
-        iar[429][280],
-        iar[435][290],
-    ]
-    colors = [
-        [255, 187, 105],
-        [255, 187, 105],
-        [255, 187, 105],
-        [244, 233, 220],
-        [60, 52, 43],
-        [255, 175, 78],
-        [255, 175, 78],
-        [255, 255, 255],
-        [241, 165, 74],
-        [255, 175, 78],
-    ]
-    for i, c in enumerate(colors):
-        if not pixel_is_equal(c, pixels[i], tol=15):
-            return False
-    return True
 
 
 if __name__ == "__main__":

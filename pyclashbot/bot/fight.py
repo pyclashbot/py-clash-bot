@@ -13,19 +13,19 @@ from pyclashbot.bot.card_detection import (
 )
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
-    check_if_battle_has_ended,
-    check_if_in_battle,
-    check_if_on_clash_main_menu,
     get_to_activity_log,
     get_to_main_after_fight,
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.recorder import save_play, save_win_loss
-from pyclashbot.detection.image_rec import (
-    check_line_for_color,
-    pixel_is_equal,
+from pyclashbot.bot.state_detect import (
+    check_if_battle_has_ended,
+    check_if_in_battle,
+    check_if_on_clash_main_menu,
+    check_pixels_for_win_in_battle_log,
+    count_elixer,
 )
+from pyclashbot.bot.recorder import save_play, save_win_loss
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
@@ -56,21 +56,6 @@ EMOTE_ICON_COORDS = [
     (243, 469),
     (308, 470),
 ]
-ELIXIR_COORDS = [
-    [613, 149],
-    [613, 165],
-    [613, 188],
-    [613, 212],
-    [613, 240],
-    [613, 262],
-    [613, 287],
-    [613, 314],
-    [613, 339],
-    [613, 364],
-]
-ELIXIR_COLOR = [240, 137, 244]
-
-
 def do_fight_state(
     emulator,
     logger: Logger,
@@ -281,19 +266,6 @@ def wait_for_elixer(
     return True
 
 
-def count_elixer(emulator, elixer_count) -> bool:
-    """Method to check for 4 elixer during a battle"""
-    iar = emulator.screenshot()
-
-    if pixel_is_equal(
-        iar[ELIXIR_COORDS[elixer_count - 1][0], ELIXIR_COORDS[elixer_count - 1][1]],
-        ELIXIR_COLOR,
-        tol=65,
-    ):
-        return True
-    return False
-
-
 def end_fight_state(
     emulator,
     logger: Logger,
@@ -371,40 +343,6 @@ def check_if_previous_game_was_win(
     interruptible_sleep(2)
 
     return is_a_win
-
-
-def check_pixels_for_win_in_battle_log(emulator) -> bool:
-    """Method to check pixels that appear in the battle
-    log to determing if the previous game was a win
-    """
-    line1 = check_line_for_color(
-        emulator,
-        x_1=47,
-        y_1=135,
-        x_2=109,
-        y_2=154,
-        color=(255, 51, 102),
-    )
-    line2 = check_line_for_color(
-        emulator,
-        x_1=46,
-        y_1=152,
-        x_2=115,
-        y_2=137,
-        color=(255, 51, 102),
-    )
-    line3 = check_line_for_color(
-        emulator,
-        x_1=47,
-        y_1=144,
-        x_2=110,
-        y_2=147,
-        color=(255, 51, 102),
-    )
-
-    if line1 and line2 and line3:
-        return False
-    return True
 
 
 # main fight loops

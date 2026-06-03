@@ -1,11 +1,11 @@
 import time
 
 from pyclashbot.bot.nav import (
-    check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
     select_mode,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger

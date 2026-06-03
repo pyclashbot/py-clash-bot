@@ -4,7 +4,7 @@ import subprocess
 import time
 
 # Assuming these are in the correct path
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_linux
