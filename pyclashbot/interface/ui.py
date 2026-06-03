@@ -607,7 +607,7 @@ class PyClashBotUI(ttk.Window):
         left.rowconfigure(0, weight=0)
         left.rowconfigure(1, weight=1)
 
-        gauge_frame = ttk.Labelframe(left, text="Win rate", padding=8)
+        gauge_frame = ttk.Labelframe(left, text="Win Rate", padding=8)
         gauge_frame.grid(row=0, column=0, sticky="ew")
         gauge_frame.columnconfigure(0, weight=1)
 
@@ -626,7 +626,7 @@ class PyClashBotUI(ttk.Window):
             ttk.Label(win_loss_frame, textvariable=var, foreground="#00aaff").grid(row=row, column=1, sticky="e")
             self.stat_labels[field] = var
 
-        battle_frame = ttk.Labelframe(left, text="Battle stats", padding=(10, 4, 10, 10))
+        battle_frame = ttk.Labelframe(left, text="Battle Stats", padding=(10, 4, 10, 10))
         battle_frame.grid(row=1, column=0, sticky="nsew", pady=(8, 0))
         battle_frame.columnconfigure(0, weight=1)
         battle_frame.rowconfigure(0, weight=1)
@@ -666,7 +666,7 @@ class PyClashBotUI(ttk.Window):
         right.rowconfigure(0, weight=0)
         right.rowconfigure(1, weight=1)
 
-        collection_frame = ttk.Labelframe(right, text="Collection stats", padding=10)
+        collection_frame = ttk.Labelframe(right, text="Collection Stats", padding=10)
         collection_frame.grid(row=0, column=0, sticky="ew")
         collection_frame.columnconfigure(1, weight=1)
         for row, field in enumerate(COLLECTION_STAT_FIELDS):
@@ -678,7 +678,7 @@ class PyClashBotUI(ttk.Window):
             ttk.Label(collection_frame, textvariable=var, foreground="#00aaff").grid(row=row, column=1, sticky="e")
             self.stat_labels[field] = var
 
-        bot_frame = ttk.Labelframe(right, text="Bot stats", padding=10)
+        bot_frame = ttk.Labelframe(right, text="Bot Stats", padding=10)
         bot_frame.grid(row=1, column=0, sticky="nsew", pady=(8, 0))
         bot_frame.columnconfigure(1, weight=1)
         self.bot_labels = {
@@ -719,7 +719,7 @@ class PyClashBotUI(ttk.Window):
 
         discord_checkbox = ttk.Checkbutton(
             data_frame,
-            text="Discord rich presence",
+            text="Discord Rich Presence",
             variable=self.discord_rpc_var,
             bootstyle="round-toggle",
             command=self._notify_config_change,
