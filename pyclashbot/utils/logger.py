@@ -205,6 +205,7 @@ class Logger:
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
                 "cards_donated": self.donates,
                 "card_requests": self.requests,
+                "clan_gifts_claimed": self.clan_gift_claims,
                 "account_switches": self.account_switches,
                 # card stats
                 "upgrades": self.cards_upgraded,

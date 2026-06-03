@@ -17,6 +17,7 @@ class StatField(StrEnum):
     WAR_CHEST_COLLECTS = "war_chest_collects"
     CARDS_DONATED = "cards_donated"
     CARD_REQUESTS = "card_requests"
+    CLAN_GIFTS_CLAIMED = "clan_gifts_claimed"
     ACCOUNT_SWITCHES = "account_switches"
 
 
@@ -95,6 +96,7 @@ COLLECTION_STAT_LABELS: dict[StatField, str] = {
     StatField.WAR_CHEST_COLLECTS: "War Chests",
     StatField.CARDS_DONATED: "Cards donated",
     StatField.CARD_REQUESTS: "Card requests",
+    StatField.CLAN_GIFTS_CLAIMED: "Gifts claimed",
     StatField.ACCOUNT_SWITCHES: "Account switches",
 }
 
