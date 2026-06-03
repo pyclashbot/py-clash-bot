@@ -16,6 +16,9 @@ from pyclashbot.bot.coords import (
     EMOTE_BUTTON_COORD,
     EMOTE_ICON_COORDS,
     HAND_CARDS_COORDS,
+    MAG_DUMP_CARD_COORDS,
+    QUICKMATCH_POPUP_BUTTON_COORD,
+    START_FIGHT_BUTTON_COORD,
 )
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
@@ -120,16 +123,15 @@ def start_fight(emulator, logger, mode) -> bool:
 
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
-    emulator.click(203, 487)
-    logger.log("Clicked Start button at (203, 487)")
+    emulator.click(START_FIGHT_BUTTON_COORD[0], START_FIGHT_BUTTON_COORD[1])
+    logger.log(f"Clicked Start button at {START_FIGHT_BUTTON_COORD}")
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
         logger.change_status("Its 2v2 mode so we gotta click the quickmatch popup option!")
         interruptible_sleep(3)
-        quick_match_button_coord = [280, 350]
-        emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
-        logger.log(f"Clicked Quickmatch button at {quick_match_button_coord}")
+        emulator.click(QUICKMATCH_POPUP_BUTTON_COORD[0], QUICKMATCH_POPUP_BUTTON_COORD[1])
+        logger.log(f"Clicked Quickmatch button at {QUICKMATCH_POPUP_BUTTON_COORD}")
 
     return True
 
@@ -147,18 +149,11 @@ def send_emote(emulator, logger: Logger):
 
 
 def mag_dump(emulator, logger):
-    card_coords = [
-        (137, 559),
-        (206, 559),
-        (274, 599),
-        (336, 555),
-    ]
-
     logger.log("Mag dumping...")
     for index in range(3):
         logger.change_status(f"mag dump play {index}")
         card_index = random.randint(0, 3)
-        card_coord = card_coords[card_index]
+        card_coord = MAG_DUMP_CARD_COORDS[card_index]
         play_coord = (random.randint(101, 440), random.randint(50, 526))
 
         # record play here

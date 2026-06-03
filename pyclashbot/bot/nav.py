@@ -4,6 +4,7 @@ from typing import Literal
 
 from pyclashbot.bot.coords import (
     BATTLE_LOG_BUTTON,
+    BATTLE_WAIT_DEADSPACE_COORD,
     CARD_PAGE_EXIT_BUTTON_COORDS,
     CARD_PAGE_ICON_FROM_CARD_PAGE,
     CARD_PAGE_ICON_FROM_CLASH_MAIN,
@@ -65,7 +66,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
             logger.change_status("Detected an ongoing battle!")
             return True
 
-        emulator.click(x_coord=20, y_coord=200)
+        emulator.click(x_coord=BATTLE_WAIT_DEADSPACE_COORD[0], y_coord=BATTLE_WAIT_DEADSPACE_COORD[1])
 
     return False
 

@@ -11,6 +11,8 @@ from pyclashbot.bot.coords import (
     SECOND_UPGRADE_BUTTON_COORD,
     UPGRADE_PIXEL_TOLERANCE,
     UPGRADE_POINTS,
+    UPGRADE_RETURN_TO_MAIN_COORD_1,
+    UPGRADE_RETURN_TO_MAIN_COORD_2,
 )
 from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
@@ -178,9 +180,9 @@ def upgrade_cards_state(emulator, logger: Logger):
     # Return main menu
     logger.change_status(status="Done upgrading cards")
 
-    emulator.click(211, 607)
+    emulator.click(UPGRADE_RETURN_TO_MAIN_COORD_1[0], UPGRADE_RETURN_TO_MAIN_COORD_1[1])
     interruptible_sleep(1)
-    emulator.click(243, 600)
+    emulator.click(UPGRADE_RETURN_TO_MAIN_COORD_2[0], UPGRADE_RETURN_TO_MAIN_COORD_2[1])
     interruptible_sleep(2)
 
     if not wait_for_clash_main_menu(emulator, logger, deadspace_click=False):

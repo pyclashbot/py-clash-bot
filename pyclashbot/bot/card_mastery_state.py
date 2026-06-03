@@ -1,5 +1,11 @@
 import time
 
+from pyclashbot.bot.coords import (
+    CARD_MASTERY_COLLECT_COORD,
+    CARD_MASTERY_OPTIONS_COORD,
+    CARD_MASTERY_RETURN_TO_MAIN_COORD,
+    CARD_MASTERY_TAB_COORD,
+)
 from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
     wait_for_clash_main_menu,
@@ -58,7 +64,7 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
 
     # get to clash main
     logger.change_status("Returning to clash main menu")
-    emulator.click(243, 600)
+    emulator.click(CARD_MASTERY_RETURN_TO_MAIN_COORD[0], CARD_MASTERY_RETURN_TO_MAIN_COORD[1])
 
     # wait for main to appear
     if wait_for_clash_main_menu(emulator, logger) is False:
@@ -72,11 +78,11 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
 
 def collect_first_mastery_reward(emulator):
     # click the card mastery reward icon
-    emulator.click(362, 444)
+    emulator.click(CARD_MASTERY_OPTIONS_COORD[0], CARD_MASTERY_OPTIONS_COORD[1])
     interruptible_sleep(0.5)
 
     # click first card
-    emulator.click(99, 166)
+    emulator.click(CARD_MASTERY_TAB_COORD[0], CARD_MASTERY_TAB_COORD[1])
     interruptible_sleep(0.5)
 
     # click rewards at specific Y positions
@@ -86,7 +92,7 @@ def collect_first_mastery_reward(emulator):
         interruptible_sleep(1)
         if check_for_inventory_full_popup(emulator):
             print("Inventory full popup detected!\nClicking it")
-            emulator.click(260, 420)
+            emulator.click(CARD_MASTERY_COLLECT_COORD[0], CARD_MASTERY_COLLECT_COORD[1])
             interruptible_sleep(1)
 
     # click deadspace
