@@ -381,6 +381,40 @@ def check_if_on_card_page(emulator) -> bool:
     return False
 
 
+def check_if_on_account_picker_by_pixels(emulator) -> bool:
+    """Strict pixel match for the Supercell ID list. May fail on some emulators/renderers."""
+    iar = emulator.screenshot()
+    pixels = [
+        iar[110][209],
+        iar[125][209],
+        iar[55][380],
+        iar[200][100],
+    ]
+    colors = [
+        [255, 255, 255],
+        [31, 84, 158],
+        [9, 41, 104],
+        [60, 137, 195],
+    ]
+    for pixel, color in zip(pixels, colors, strict=True):
+        if not pixel_is_equal(pixel, color, tol=35):
+            return False
+    return True
+
+
+def check_if_on_account_picker(emulator) -> bool:
+    """True when the Supercell ID account list is open.
+
+    Uses pixels when they match; otherwise treats "burger menu closed" as the list
+    (main menu may still match under the overlay on some renderers, e.g. BlueStacks).
+    """
+    if check_if_on_clash_main_burger_button_options_menu(emulator):
+        return False
+    if check_if_on_account_picker_by_pixels(emulator):
+        return True
+    return not check_if_on_clash_main_burger_button_options_menu(emulator)
+
+
 def check_if_on_battle_log_page(emulator) -> bool:
     iar = emulator.screenshot()
 

@@ -85,6 +85,10 @@ class PyClashBotUI(ttk.Window):
         values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
+        values[UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value] = bool(
+            self.jobs_vars[UIField.SWITCH_ACCOUNTS_USER_TOGGLE].get()
+        )
+        values[UIField.MAX_ACCOUNT_SELECTION.value] = self._safe_int(self.max_account_var.get(), fallback=2)
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.MEMU
         values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.GOOGLE_PLAY
@@ -121,6 +125,8 @@ class PyClashBotUI(ttk.Window):
                 self.deck_var.set(str(values[UIField.DECK_NUMBER_SELECTION.value]))
             if UIField.MAX_DECK_SELECTION.value in values:
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
+            if UIField.MAX_ACCOUNT_SELECTION.value in values:
+                self.max_account_var.set(str(values[UIField.MAX_ACCOUNT_SELECTION.value]))
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
@@ -176,7 +182,8 @@ class PyClashBotUI(ttk.Window):
             self._suspend_traces -= 1
 
         if theme_value is not None:
-            self._apply_theme(theme_value)
+            # Defer until widgets exist; avoids macOS ttkbootstrap combobox popdown errors at startup.
+            self.after_idle(lambda t=theme_value: self._apply_theme(t))
 
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
@@ -460,10 +467,46 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.max_deck_var)
         self._register_config_widget(UIField.MAX_DECK_SELECTION.value, self.max_deck_spin)
 
-        add_job_checkbox(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random plays", 5, secondary_bootstyle)
-        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss check", 6, secondary_bootstyle)
-        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Masteries", 7, secondary_bootstyle)
-        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade Cards", 8, secondary_bootstyle)
+        account_job = jobs_by_key[UIField.SWITCH_ACCOUNTS_USER_TOGGLE]
+        account_config: ComboConfig = account_job.extras[UIField.MAX_ACCOUNT_SELECTION]
+        self.jobs_vars[UIField.SWITCH_ACCOUNTS_USER_TOGGLE] = ttk.BooleanVar(value=account_job.default)
+        account_checkbox = ttk.Checkbutton(
+            frame,
+            text="🔀 Switch accounts",
+            variable=self.jobs_vars[UIField.SWITCH_ACCOUNTS_USER_TOGGLE],
+            bootstyle=secondary_bootstyle,
+            command=self._notify_config_change,
+            width=checkbox_width,
+        )
+        account_checkbox.grid(row=5, column=0, sticky="w", pady=2)
+        self._trace_variable(self.jobs_vars[UIField.SWITCH_ACCOUNTS_USER_TOGGLE])
+        self._register_config_widget(UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value, account_checkbox)
+
+        account_info = ttk.Label(frame, text="ⓘ", bootstyle="info")
+        account_info.grid(row=5, column=2, sticky="e", padx=(0, 2))
+        ToolTip(
+            account_info,
+            "How many linked Supercell accounts to swap between each bot loop (2-3). "
+            "Accounts are picked in the order you signed into them on this device.",
+        )
+        self.max_account_var = ttk.StringVar(value=str(account_config.default))
+        self.max_account_spin = ttk.Spinbox(
+            frame,
+            from_=min(account_config.values),
+            to=max(account_config.values),
+            width=6,
+            textvariable=self.max_account_var,
+            command=self._notify_config_change,
+            state=READONLY,
+        )
+        self.max_account_spin.grid(row=5, column=3, sticky="e")
+        self._trace_variable(self.max_account_var)
+        self._register_config_widget(UIField.MAX_ACCOUNT_SELECTION.value, self.max_account_spin)
+
+        add_job_checkbox(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random plays", 6, secondary_bootstyle)
+        add_job_checkbox(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss check", 7, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Masteries", 8, secondary_bootstyle)
+        add_job_checkbox(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade Cards", 9, secondary_bootstyle)
 
     def _create_emulator_tab(self) -> None:
         # Main container frame for the tab
@@ -811,7 +854,11 @@ class PyClashBotUI(ttk.Window):
                 self.theme_var.set(selected)
             finally:
                 self._suspend_traces -= 1
-        self._style.theme_use(selected)
+        try:
+            self._style.theme_use(selected)
+        except tk.TclError:
+            # Stale combobox popdown during theme refresh; safe to ignore until next interaction.
+            return
         self._refresh_theme_colours()
 
     def _label_foreground(self) -> str:

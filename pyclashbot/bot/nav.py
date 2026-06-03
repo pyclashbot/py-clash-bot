@@ -106,14 +106,20 @@ def handle_trophy_reward_menu(
     return "good"
 
 
-def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> bool:
+def wait_for_clash_main_menu(
+    emulator,
+    logger: Logger,
+    deadspace_click=True,
+    timeout: float | None = None,
+) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
     """
+    wait_timeout = CLASH_MAIN_WAIT_TIMEOUT if timeout is None else timeout
     start_time: float = time.time()
     while check_if_on_clash_main_menu(emulator) is not True:
         # timeout check
-        if time.time() - start_time > CLASH_MAIN_WAIT_TIMEOUT:
+        if time.time() - start_time > wait_timeout:
             logger.change_status("Timed out waiting for clash main")
             break
 
@@ -183,6 +189,26 @@ def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
     return True
 
 
+def open_clash_main_options_menu(emulator, logger: Logger, printmode: bool = False) -> bool:
+    """Open the burger menu from the Clash main screen. Returns False if not on main or menu never opens."""
+    if check_if_on_clash_main_menu(emulator) is not True:
+        logger.change_status(status="Not on clash main menu")
+        return False
+
+    if printmode:
+        logger.change_status(status="Opening clash main options menu")
+    else:
+        logger.log("Opening clash main options menu")
+    emulator.click(
+        CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
+        CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
+    )
+    if wait_for_clash_main_burger_button_options_menu(emulator, logger, printmode) == "restart":
+        logger.change_status(status="Timed out waiting for clash main options menu")
+        return False
+    return True
+
+
 def get_to_activity_log(
     emulator,
     logger: Logger,
@@ -193,26 +219,7 @@ def get_to_activity_log(
     else:
         logger.log("Getting to activity log")
 
-    # if not on main return restart
-    if check_if_on_clash_main_menu(emulator) is not True:
-        logger.change_status(
-            status="Eror 08752389 Not on clash main menu, restarting vm",
-        )
-        return "restart"
-
-    # click clash main burger options button
-    if printmode:
-        logger.change_status(status="Opening clash main options menu")
-    else:
-        logger.log("Opening clash main options menu")
-    emulator.click(
-        CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
-        CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
-    )
-    if wait_for_clash_main_burger_button_options_menu(emulator, logger) == "restart":
-        logger.change_status(
-            status="Error 99993 Waited too long for clash main options menu, restarting vm",
-        )
+    if not open_clash_main_options_menu(emulator, logger, printmode):
         return "restart"
 
     # click battle log button

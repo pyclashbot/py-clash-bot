@@ -3,6 +3,7 @@
 import random
 import time
 
+from pyclashbot.bot.account_switch import switch_account_state
 from pyclashbot.bot.card_mastery_state import card_mastery_state
 from pyclashbot.bot.deck import randomize_deck_state, select_deck_state
 from pyclashbot.bot.fight import (
@@ -194,6 +195,7 @@ class StateHistory:
 class StateOrder:
     def __init__(self):
         self.states = [
+            "switch_account",
             "upgrade",
             "card_mastery",
             "select_battle_mode",
@@ -256,6 +258,23 @@ def state_tree(
         emulator.restart()
         return state_order.next_state(state)
 
+    if state == "switch_account":
+        if not job_list.get(UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value):
+            logger.log("Account switching isn't toggled. Skipping this state")
+            return state_order.next_state(state)
+
+        account_count = job_list.get(UIField.MAX_ACCOUNT_SELECTION.value, 2)
+        # get_next_account returns 0-based index; game list uses slots 1..N.
+        target_index = logger.get_next_account(account_count)
+        target_slot = target_index + 1
+
+        if switch_account_state(emulator, logger, target_slot):
+            logger.current_account = target_index
+            logger.add_account_to_account_history(target_index)
+            return state_order.next_state(state)
+
+        return handle_state_failure(logger, "switch_account", "switch_account_state")
+
     if state == "randomize_deck":
         # if randomize deck isn't toggled, return next state
         if not job_list[UIField.RANDOM_DECKS_USER_TOGGLE]:
@@ -288,7 +307,8 @@ def state_tree(
             logger.log("No battle mode selected, skipping deck cycling.")
             return state_order.next_state(state)
 
-        deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1)
+        account_index = max(0, int(logger.current_account))
+        deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1, account_index)
 
         deck_count = job_list.get(UIField.MAX_DECK_SELECTION.value, 10)
 
@@ -299,7 +319,7 @@ def state_tree(
 
         next_deck = selected_deck_number + 1 if selected_deck_number < deck_count else 1
 
-        set_deck_number_for_battle_mode(mode_used_in_1v1, next_deck)
+        set_deck_number_for_battle_mode(mode_used_in_1v1, next_deck, account_index)
 
         return state_order.next_state(state)
 

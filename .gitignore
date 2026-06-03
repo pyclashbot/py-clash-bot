@@ -10,6 +10,7 @@ dist
 __version__
 __pycache__
 recordings
+scripts/capture_output/
 .claude/
 .claude/settings.local.json
 .DS_Store
