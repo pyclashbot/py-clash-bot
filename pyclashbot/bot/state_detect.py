@@ -567,3 +567,11 @@ def is_single_deck_layout_by_pixel(emulator) -> bool:
         for (x, y), expected in zip(pixel_coords, expected_colors)
         for actual in [iar[y][x]]
     )
+
+
+# ===== Upgrade ========================================================
+
+
+def pixel_indicates_upgradable(bgr):
+    b, g, r = bgr
+    return g >= 240 and b <= 120 and r <= 40

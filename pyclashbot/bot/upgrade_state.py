@@ -5,17 +5,10 @@ from pyclashbot.bot.nav import (
     select_mode,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu, pixel_indicates_upgradable
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
-
-
-# Pixel criteria to detect upgrade emoji
-def pixel_indicates_upgradable(bgr):
-    b, g, r = bgr
-    return g >= 240 and b <= 120 and r <= 40
-
 
 # This indicates the green upgrade emoji. If we click it twice, the card upgrade menu will be opened.
 UPGRADE_POINTS = [
