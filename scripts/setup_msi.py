@@ -17,7 +17,6 @@ GUI = True
 UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
 
 
-# Read --target-version and drop it from argv; cx_Freeze 8.4+ errors if bdist_msi sees it.
 try:
     _version_idx = sys.argv.index("--target-version")
     VERSION = sys.argv[_version_idx + 1]
