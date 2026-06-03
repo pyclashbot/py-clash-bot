@@ -5,7 +5,6 @@ from typing import Literal
 from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
 from pyclashbot.bot.state_detect import (
     check_for_trophy_reward_menu,
-    check_if_battle_mode_is_selected,
     check_if_in_battle,
     check_if_on_battle_log_page,
     check_if_on_card_page,
@@ -21,20 +20,6 @@ from pyclashbot.detection.image_rec import (
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
-
-# Re-export moved detectors so existing `from pyclashbot.bot.nav import check_if_*`
-# call sites keep working. New code should import from pyclashbot.bot.state_detect.
-__all__ = [
-    "check_if_battle_mode_is_selected",
-    "check_if_in_battle",
-    "check_if_on_battle_log_page",
-    "check_if_on_card_page",
-    "check_if_on_clan_chat",
-    "check_if_on_clash_main_burger_button_options_menu",
-    "check_if_on_clash_main_menu",
-    "check_if_on_shop",
-    "check_if_on_social",
-]
 
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
 BATTLE_LOG_BUTTON = (241, 43)
