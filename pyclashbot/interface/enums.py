@@ -40,6 +40,9 @@ class UIField(StrEnum):
     MAX_DECK_SELECTION = "max_deck_selection"
     SWITCH_ACCOUNTS_USER_TOGGLE = "switch_accounts_user_toggle"
     MAX_ACCOUNT_SELECTION = "max_account_selection"
+    CLAN_DONATE_USER_TOGGLE = "clan_donate_user_toggle"
+    CLAN_CLAIM_GIFTS_USER_TOGGLE = "clan_claim_gifts_user_toggle"
+    CLAN_REQUEST_CARDS_USER_TOGGLE = "clan_request_cards_user_toggle"
     RANDOM_PLAYS_USER_TOGGLE = "random_plays_user_toggle"
     DISABLE_WIN_TRACK_TOGGLE = "disable_win_track_toggle"
     RECORD_FIGHTS_TOGGLE = "record_fights_toggle"
@@ -103,4 +106,7 @@ PRIMARY_JOB_TOGGLES: tuple[UIField, ...] = (
     UIField.CLASSIC_2V2_USER_TOGGLE,
     UIField.TROPHY_ROAD_USER_TOGGLE,
     UIField.CARD_UPGRADE_USER_TOGGLE,
+    UIField.CLAN_DONATE_USER_TOGGLE,
+    UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+    UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
 )

@@ -145,6 +145,7 @@ class Logger:
         self.daily_rewards = 0
         self.donates = 0
         self.requests = 0
+        self.clan_gift_claims = 0
         self.shop_offer_collections = 0
         self.war_chest_collects = 0
         self.level_up_chest_collects = 0
@@ -455,6 +456,11 @@ class Logger:
     def add_donate(self) -> None:
         """Add donate to log"""
         self.donates += 1
+
+    @_updates_gui
+    def add_clan_gift_claim(self) -> None:
+        """Add Pass Royale / clan gift claim to log"""
+        self.clan_gift_claims += 1
 
     @_updates_gui
     def add_daily_reward(self) -> None:
