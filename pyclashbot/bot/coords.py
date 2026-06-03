@@ -10,3 +10,25 @@ CARD_PAGE_EXIT_BUTTON_COORDS = (248, 603)
 OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 DECK_TABS_REGION = (0, 80, 416, 146)
 DECKS_PAGE_BUTTON_COORDS = (125, 60)
+
+# --- Fight ---
+CLOSE_BATTLE_LOG_BUTTON = (365, 72)
+HAND_CARDS_COORDS = [
+    (142, 561),
+    (210, 563),
+    (272, 561),
+    (341, 563),
+]
+CLOSE_THIS_CHALLENGE_PAGE_BUTTON = (27, 22)
+QUICKMATCH_BUTTON_COORD = (274, 353)  # coord of the quickmatch button after you click the battle button
+EMOTE_BUTTON_COORD = (67, 521)
+EMOTE_ICON_COORDS = [
+    (124, 419),
+    (182, 420),
+    (255, 411),
+    (312, 423),
+    (133, 471),
+    (188, 472),
+    (243, 469),
+    (308, 470),
+]

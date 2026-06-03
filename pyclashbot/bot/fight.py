@@ -11,6 +11,12 @@ from pyclashbot.bot.card_detection import (
     get_play_coords_for_card,
     switch_side,
 )
+from pyclashbot.bot.coords import (
+    CLOSE_BATTLE_LOG_BUTTON,
+    EMOTE_BUTTON_COORD,
+    EMOTE_ICON_COORDS,
+    HAND_CARDS_COORDS,
+)
 from pyclashbot.bot.nav import (
     check_for_in_battle_with_delay,
     get_to_activity_log,
@@ -29,33 +35,7 @@ from pyclashbot.bot.state_detect import (
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
-CLOSE_BATTLE_LOG_BUTTON: tuple[Literal[365], Literal[72]] = (365, 72)
-# coords of the cards in the hand
-HAND_CARDS_COORDS = [
-    (142, 561),
-    (210, 563),
-    (272, 561),
-    (341, 563),
-]
-CLOSE_THIS_CHALLENGE_PAGE_BUTTON = (27, 22)
-
-QUICKMATCH_BUTTON_COORD = (
-    274,
-    353,
-)  # coord of the quickmatch button after you click the battle button
 ELIXER_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
-
-EMOTE_BUTTON_COORD = (67, 521)
-EMOTE_ICON_COORDS = [
-    (124, 419),
-    (182, 420),
-    (255, 411),
-    (312, 423),
-    (133, 471),
-    (188, 472),
-    (243, 469),
-    (308, 470),
-]
 
 
 def do_fight_state(
