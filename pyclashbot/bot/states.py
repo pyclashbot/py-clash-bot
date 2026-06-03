@@ -378,7 +378,7 @@ def state_tree(
             logger.log("No clan chat jobs toggled. Skipping this state")
             if not any_fight_mode_enabled(job_list):
                 logger.log("No fight modes enabled, skipping fight chain")
-                return "upgrade"
+                return state_order.next_state("end_fight")
             return state_order.next_state(state)
 
         if clan_chat_state(
@@ -390,7 +390,7 @@ def state_tree(
         ):
             if not any_fight_mode_enabled(job_list):
                 logger.log("No fight modes enabled, skipping fight chain")
-                return "upgrade"
+                return state_order.next_state("end_fight")
             return state_order.next_state(state)
 
         return handle_state_failure(logger, "clan_chat", "clan_chat_state")
@@ -407,7 +407,7 @@ def state_tree(
 
         if not enabled_modes:
             logger.log("No fight modes enabled, skipping fight chain")
-            return "upgrade"
+            return state_order.next_state("end_fight")
 
         # if more than one mode is selected, just cycle through them
         if len(enabled_modes) > 1:
