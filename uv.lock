@@ -143,12 +143,12 @@ wheels = [
 
 [[package]]
 name = "lief"
-version = "0.16.5"
+version = "0.17.2"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/68/c7df68afe1c37be667f1adb74544b06316fd1338dd577fd0c1289817d2d1/lief-0.16.5-cp312-cp312-win32.whl", hash = "sha256:768f91db886432c4b257fb88365a2c6842f26190b73964cf9274c276bc17b490", size = 3049882, upload-time = "2025-04-19T16:51:53.584Z" },
-    { url = "https://files.pythonhosted.org/packages/08/8b/0fdc6b420e24df7c8cc02be595c425e821f2d4eb1be98eb16a7cf4e87fd0/lief-0.16.5-cp312-cp312-win_amd64.whl", hash = "sha256:587225fd6e1ec424a1a776928beb67095894254c51148b78903844d62faa1a2d", size = 3178830, upload-time = "2025-04-19T16:51:55.254Z" },
-    { url = "https://files.pythonhosted.org/packages/e5/a6/f751d12b88527b591f26a7c4a2b896806c065d9bdfb49eaabec9e6aead41/lief-0.16.5-cp312-cp312-win_arm64.whl", hash = "sha256:ef043c1796d221f128597dc32819fa6bb31da26d2a9b911a32d4a5cdfb566f85", size = 3066592, upload-time = "2025-04-19T16:51:57.86Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/ac/1fba8e09c6fe1251ee29dbc90641a8636f9fd19c63c6cc62683ba72ba389/lief-0.17.2-cp312-cp312-win32.whl", hash = "sha256:aa267a4950f9aa721e431c25a4032275b4e879ff9d265465d42db43ba8fefaaa", size = 3460382, upload-time = "2026-01-03T17:00:44.958Z" },
+    { url = "https://files.pythonhosted.org/packages/63/a2/54754a402aa50c51e82e16e17223358f56f9608de5505e1520da91d33515/lief-0.17.2-cp312-cp312-win_amd64.whl", hash = "sha256:594ab820b46ad1e411ff476ad8e87bb2f453a0011d16c936912e4774d40891bb", size = 3639558, upload-time = "2026-01-03T17:00:47.075Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/60/ccd8b1de1bc5324f795acf47bc791760cde404b198da9652ac6e2fe18bc1/lief-0.17.2-cp312-cp312-win_arm64.whl", hash = "sha256:c0c0332b4c20a0aee9712cf19b2b51188f75755a86431d29a9724fcb2d8a8106", size = 3473393, upload-time = "2026-01-03T17:00:48.823Z" },
 ]
 
 [[package]]
