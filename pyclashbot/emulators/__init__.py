@@ -13,7 +13,7 @@ class EmulatorType(StrEnum):
     """Available emulator types with display names."""
 
     MEMU = "MEmu"
-    GOOGLE_PLAY = "Google Play"
+    GOOGLE_PLAY = "Google Play Games"
     BLUESTACKS = "BlueStacks 5"
     ADB = "ADB Device"
 
