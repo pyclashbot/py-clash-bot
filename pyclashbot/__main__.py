@@ -48,8 +48,24 @@ if TYPE_CHECKING:
 initalize_pylogging()
 
 
+def migrate_clan_job_settings(values: dict[str, Any]) -> None:
+    """Map legacy per-action clan toggles to the master Clan chat job toggle."""
+    if values.get(UIField.CLAN_CHAT_USER_TOGGLE.value):
+        return
+    if any(
+        values.get(field.value)
+        for field in (
+            UIField.CLAN_DONATE_USER_TOGGLE,
+            UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+            UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
+        )
+    ):
+        values[UIField.CLAN_CHAT_USER_TOGGLE.value] = True
+
+
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     """Create a dictionary of job toggles and increments based on UI values."""
+    migrate_clan_job_settings(values)
 
     def as_bool(field: UIField) -> bool:
         return bool(values.get(field.value, False))
@@ -71,6 +87,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.MAX_DECK_SELECTION.value: as_int(UIField.MAX_DECK_SELECTION, 2),
         UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value: as_bool(UIField.SWITCH_ACCOUNTS_USER_TOGGLE),
         UIField.MAX_ACCOUNT_SELECTION.value: as_int(UIField.MAX_ACCOUNT_SELECTION, 2),
+        UIField.CLAN_CHAT_USER_TOGGLE.value: as_bool(UIField.CLAN_CHAT_USER_TOGGLE),
         UIField.CLAN_DONATE_USER_TOGGLE.value: as_bool(UIField.CLAN_DONATE_USER_TOGGLE),
         UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value: as_bool(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE),
         UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value: as_bool(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE),
@@ -129,6 +146,7 @@ def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str
     if not loaded and USER_SETTINGS_CACHE.exists():
         loaded = USER_SETTINGS_CACHE.load_data()
     if loaded:
+        migrate_clan_job_settings(loaded)
         ui.set_all_values(loaded)
     return loaded
 

@@ -15,6 +15,9 @@ class StatField(StrEnum):
     CARD_MASTERY_REWARD_COLLECTIONS = "card_mastery_reward_collections"
     UPGRADES = "upgrades"
     WAR_CHEST_COLLECTS = "war_chest_collects"
+    CARDS_DONATED = "cards_donated"
+    CARD_REQUESTS = "card_requests"
+    ACCOUNT_SWITCHES = "account_switches"
 
 
 class DerivedStatField(StrEnum):
@@ -40,6 +43,7 @@ class UIField(StrEnum):
     MAX_DECK_SELECTION = "max_deck_selection"
     SWITCH_ACCOUNTS_USER_TOGGLE = "switch_accounts_user_toggle"
     MAX_ACCOUNT_SELECTION = "max_account_selection"
+    CLAN_CHAT_USER_TOGGLE = "clan_chat_user_toggle"
     CLAN_DONATE_USER_TOGGLE = "clan_donate_user_toggle"
     CLAN_CLAIM_GIFTS_USER_TOGGLE = "clan_claim_gifts_user_toggle"
     CLAN_REQUEST_CARDS_USER_TOGGLE = "clan_request_cards_user_toggle"
@@ -89,6 +93,9 @@ COLLECTION_STAT_LABELS: dict[StatField, str] = {
     StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Card Mastery rewards",
     StatField.UPGRADES: "Card upgrades",
     StatField.WAR_CHEST_COLLECTS: "War Chests",
+    StatField.CARDS_DONATED: "Cards donated",
+    StatField.CARD_REQUESTS: "Card requests",
+    StatField.ACCOUNT_SWITCHES: "Account switches",
 }
 
 COLLECTION_STAT_FIELDS: tuple[StatField, ...] = tuple(COLLECTION_STAT_LABELS.keys())
@@ -101,12 +108,11 @@ BOT_STAT_LABELS: dict[BotStatField, str] = {
 BOT_STAT_FIELDS: tuple[BotStatField, ...] = tuple(BOT_STAT_LABELS.keys())
 
 PRIMARY_JOB_TOGGLES: tuple[UIField, ...] = (
+    UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
+    UIField.CARD_UPGRADE_USER_TOGGLE,
     UIField.CARD_MASTERY_USER_TOGGLE,
+    UIField.CLAN_CHAT_USER_TOGGLE,
     UIField.CLASSIC_1V1_USER_TOGGLE,
     UIField.CLASSIC_2V2_USER_TOGGLE,
     UIField.TROPHY_ROAD_USER_TOGGLE,
-    UIField.CARD_UPGRADE_USER_TOGGLE,
-    UIField.CLAN_DONATE_USER_TOGGLE,
-    UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
-    UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
 )

@@ -61,6 +61,7 @@ class PyClashBotUI(ttk.Window):
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
+        self._clan_sub_checkbuttons: dict[UIField, ttk.Checkbutton] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
         self._suspend_traces = 0
@@ -186,6 +187,9 @@ class PyClashBotUI(ttk.Window):
         if theme_value is not None:
             # Defer theme apply so combobox popdown widgets exist (avoids TclError on macOS).
             self.after_idle(lambda t=theme_value: self._apply_theme(t))
+
+        if self._clan_sub_checkbuttons:
+            self._sync_clan_sub_job_widgets_state()
 
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
@@ -388,7 +392,39 @@ class PyClashBotUI(ttk.Window):
         for row_index, job in enumerate(JOBS):
             bootstyle = primary_bootstyle if job.primary else secondary_bootstyle
 
-            if job.extras:
+            if job.sub_jobs:
+                self.jobs_vars[job.key] = ttk.BooleanVar(value=job.default)
+                checkbox = ttk.Checkbutton(
+                    frame,
+                    text=job.title,
+                    variable=self.jobs_vars[job.key],
+                    bootstyle=bootstyle,
+                    command=self._on_clan_chat_master_toggle,
+                    width=checkbox_width,
+                )
+                checkbox.grid(row=row_index, column=0, sticky="w", pady=2)
+                self._trace_variable(self.jobs_vars[job.key])
+                self._register_config_widget(job.key.value, checkbox)
+
+                sub_frame = ttk.Frame(frame)
+                sub_frame.grid(row=row_index, column=1, columnspan=3, sticky="w", padx=(8, 0))
+                for col, sub in enumerate(job.sub_jobs):
+                    sub_var = ttk.BooleanVar(value=sub.default)
+                    sub_checkbox = ttk.Checkbutton(
+                        sub_frame,
+                        text=sub.title,
+                        variable=sub_var,
+                        bootstyle=secondary_bootstyle,
+                        command=self._notify_config_change,
+                    )
+                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 10))
+                    self.jobs_vars[sub.key] = sub_var
+                    self._clan_sub_checkbuttons[sub.key] = sub_checkbox
+                    self._trace_variable(sub_var)
+                    self._register_config_widget(sub.key.value, sub_checkbox)
+                self._sync_clan_sub_job_widgets_state()
+
+            elif job.extras:
                 combo_config = next(iter(job.extras.values()))
                 combo_field = combo_config.key
                 self.jobs_vars[job.key] = ttk.BooleanVar(value=job.default)
@@ -431,6 +467,16 @@ class PyClashBotUI(ttk.Window):
                     self.max_account_var = spin_var
             else:
                 add_job_checkbox(job.key, job.title, row_index, bootstyle)
+
+    def _on_clan_chat_master_toggle(self) -> None:
+        self._sync_clan_sub_job_widgets_state()
+        self._notify_config_change()
+
+    def _sync_clan_sub_job_widgets_state(self) -> None:
+        master_on = bool(self.jobs_vars[UIField.CLAN_CHAT_USER_TOGGLE].get())
+        state = tk.NORMAL if master_on else tk.DISABLED
+        for checkbox in self._clan_sub_checkbuttons.values():
+            checkbox.configure(state=state)
 
     def _create_emulator_tab(self) -> None:
         # Main container frame for the tab
