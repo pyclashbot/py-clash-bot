@@ -24,10 +24,10 @@ from pyclashbot.bot.nav import (
     MAIN_PAGE_CHECKS,
     NAV_CLICKS,
     PAGE_MAIN,
-    check_if_on_clash_main_menu,
     navigate_main_page,
     wait_for_clash_main_menu,
 )
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.memu import MemuEmulatorController
 from pyclashbot.utils.logger import Logger
 

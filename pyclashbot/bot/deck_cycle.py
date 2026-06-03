@@ -4,17 +4,17 @@ Deck cycling and selection methods for py-clash-bot.
 
 import time
 
-from pyclashbot.bot.deck_utils import (
-    is_deck_full,
-    is_single_deck_layout_by_pixel,
-    randomize_and_check_deck,
-)
+from pyclashbot.bot.deck_utils import randomize_and_check_deck
 from pyclashbot.bot.nav import (
     DECK_TABS_REGION,
     _navigate_to_deck_selection,
-    check_if_on_clash_main_menu,
     return_to_clash_main_from_card_page,
     switch_deck_page,
+)
+from pyclashbot.bot.state_detect import (
+    check_if_on_clash_main_menu,
+    is_deck_full,
+    is_single_deck_layout_by_pixel,
 )
 from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.cancellation import interruptible_sleep

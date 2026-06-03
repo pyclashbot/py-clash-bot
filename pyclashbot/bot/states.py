@@ -12,7 +12,8 @@ from pyclashbot.bot.fight import (
     end_fight_state,
     start_fight,
 )
-from pyclashbot.bot.nav import check_if_battle_mode_is_selected, select_mode
+from pyclashbot.bot.nav import select_mode
+from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.caching import (
