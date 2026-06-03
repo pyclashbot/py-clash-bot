@@ -62,29 +62,34 @@ class UIField(StrEnum):
     ADB_SERIAL = "adb_serial"
 
 
+WIN_RATE_STAT_LABELS: dict[StatField, str] = {
+    StatField.WINS: "Wins",
+    StatField.LOSSES: "Losses",
+}
+
+WIN_RATE_STAT_FIELDS: tuple[StatField, ...] = tuple(WIN_RATE_STAT_LABELS.keys())
+
 BATTLE_STAT_LABELS: dict[StatField, str] = {
-    StatField.WINS: "Win",
-    StatField.LOSSES: "Loss",
-    StatField.CARDS_PLAYED: "Moves",
-    StatField.CLASSIC_1V1_FIGHTS: "Classic 1v1s",
-    StatField.CLASSIC_2V2_FIGHTS: "Classic 2v2s",
-    StatField.TROPHY_ROAD_1V1_FIGHTS: "Trophy Road 1v1s",
-    StatField.CARD_RANDOMIZATIONS: "Decks Randomized",
-    StatField.CARD_CYCLES: "Decks Cycled",
+    StatField.CARDS_PLAYED: "Cards played",
+    StatField.CLASSIC_1V1_FIGHTS: "Classic 1v1",
+    StatField.CLASSIC_2V2_FIGHTS: "Classic 2v2",
+    StatField.TROPHY_ROAD_1V1_FIGHTS: "Trophy Road",
+    StatField.CARD_RANDOMIZATIONS: "Decks randomized",
+    StatField.CARD_CYCLES: "Decks cycled",
 }
 
 BATTLE_STAT_FIELDS: tuple[StatField, ...] = tuple(BATTLE_STAT_LABELS.keys())
 
 COLLECTION_STAT_LABELS: dict[StatField, str] = {
-    StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Masteries",
-    StatField.UPGRADES: "Upgrades",
-    StatField.WAR_CHEST_COLLECTS: "War Chests",
+    StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Mastery rewards",
+    StatField.UPGRADES: "Card upgrades",
+    StatField.WAR_CHEST_COLLECTS: "War chests",
 }
 
 COLLECTION_STAT_FIELDS: tuple[StatField, ...] = tuple(COLLECTION_STAT_LABELS.keys())
 
 BOT_STAT_LABELS: dict[BotStatField, str] = {
-    BotStatField.RESTARTS_AFTER_FAILURE: "Bot Failures",
+    BotStatField.RESTARTS_AFTER_FAILURE: "Recovery restarts",
     BotStatField.TIME_SINCE_START: "Runtime",
 }
 
