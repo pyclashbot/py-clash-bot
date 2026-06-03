@@ -368,7 +368,8 @@ class PyClashBotUI(ttk.Window):
 
         job_defaults = {job.key: job.default for job in JOBS}
         self.jobs_vars: dict[UIField, ttk.BooleanVar] = {}
-        job_btn_width = min(24, max(len(job.title) for job in JOBS))
+        # Uniform narrow toolbuttons; long labels shortened in config.py.
+        job_btn_width = 14
 
         primary_bootstyle = "warning-outline-toolbutton"
         secondary_bootstyle = "info-outline-toolbutton"
@@ -397,7 +398,8 @@ class PyClashBotUI(ttk.Window):
             self._register_config_widget(field.value, checkbox)
             return checkbox
 
-        for row_index, job in enumerate(JOBS):
+        grid_row = 0
+        for job in JOBS:
             bootstyle = primary_bootstyle if job.primary else secondary_bootstyle
 
             if job.sub_jobs:
@@ -405,13 +407,20 @@ class PyClashBotUI(ttk.Window):
                     frame,
                     field=job.key,
                     text=job.title,
-                    row_index=row_index,
+                    row_index=grid_row,
                     bootstyle=bootstyle,
                     command=self._on_clan_chat_master_toggle,
                 )
 
                 sub_frame = ttk.Frame(frame)
-                sub_frame.grid(row=row_index, column=col_inline, sticky="w", padx=(4, 0))
+                sub_frame.grid(
+                    row=grid_row + 1,
+                    column=col_job,
+                    columnspan=3,
+                    sticky="w",
+                    padx=(18, 0),
+                    pady=(0, 4),
+                )
                 for col, sub in enumerate(job.sub_jobs):
                     sub_var = ttk.BooleanVar(value=sub.default)
                     sub_checkbox = ttk.Checkbutton(
@@ -420,12 +429,13 @@ class PyClashBotUI(ttk.Window):
                         variable=sub_var,
                         command=self._notify_config_change,
                     )
-                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 10))
+                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 12))
                     self.jobs_vars[sub.key] = sub_var
                     self._clan_sub_checkbuttons[sub.key] = sub_checkbox
                     self._trace_variable(sub_var)
                     self._register_config_widget(sub.key.value, sub_checkbox)
                 self._sync_clan_sub_job_widgets_state()
+                grid_row += 2
 
             elif job.extras:
                 combo_config = next(iter(job.extras.values()))
@@ -434,12 +444,12 @@ class PyClashBotUI(ttk.Window):
                     frame,
                     field=job.key,
                     text=job.title,
-                    row_index=row_index,
+                    row_index=grid_row,
                     bootstyle=bootstyle,
                 )
 
                 info_label = ttk.Label(frame, text="ⓘ", bootstyle="info")
-                info_label.grid(row=row_index, column=col_info, sticky="e", padx=(0, 2))
+                info_label.grid(row=grid_row, column=col_info, sticky="e", padx=(0, 2))
                 if combo_config.tooltip:
                     ToolTip(info_label, combo_config.tooltip)
 
@@ -448,12 +458,12 @@ class PyClashBotUI(ttk.Window):
                     frame,
                     from_=min(combo_config.values),
                     to=max(combo_config.values),
-                    width=4,
+                    width=3,
                     textvariable=spin_var,
                     command=self._notify_config_change,
                     state=READONLY,
                 )
-                spinbox.grid(row=row_index, column=col_spin, sticky="e")
+                spinbox.grid(row=grid_row, column=col_spin, sticky="e")
                 self._trace_variable(spin_var)
                 self._register_config_widget(combo_field.value, spinbox)
 
@@ -463,14 +473,16 @@ class PyClashBotUI(ttk.Window):
                     self.max_deck_var = spin_var
                 elif combo_field == UIField.MAX_ACCOUNT_SELECTION:
                     self.max_account_var = spin_var
+                grid_row += 1
             else:
                 place_job_button(
                     frame,
                     field=job.key,
                     text=job.title,
-                    row_index=row_index,
+                    row_index=grid_row,
                     bootstyle=bootstyle,
                 )
+                grid_row += 1
 
     def _on_clan_chat_master_toggle(self) -> None:
         self._sync_clan_sub_job_widgets_state()

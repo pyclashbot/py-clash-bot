@@ -88,7 +88,7 @@ BOT_STATS = [
 JOBS = [
     JobConfig(
         UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
-        "🔀 Switch accounts",
+        "🔀 Accounts",
         default=False,
         extras={
             UIField.MAX_ACCOUNT_SELECTION: ComboConfig(
@@ -149,8 +149,8 @@ JOBS = [
             )
         },
     ),
-    JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random card plays", default=False),
-    JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss tracking", default=False),
+    JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random plays", default=False),
+    JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss", default=False),
 ]
 
 # Emulator Settings Configuration
