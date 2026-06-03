@@ -66,6 +66,7 @@ class PyClashBotUI(ttk.Window):
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
         self._suspend_traces = 0
+        self._button_state = "idle"
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=3)  # Tabs get more space
@@ -352,7 +353,6 @@ class PyClashBotUI(ttk.Window):
         self.main_btn = ttk.Button(bottom, text="Start", bootstyle="success")
         self.main_btn.grid(row=1, column=0, sticky="ew", pady=(8, 0), ipady=8)
         self._register_config_widget("main_btn", self.main_btn)
-        self._button_state = "idle"  # Track: idle, running, stopping
 
         # Action button (for retry etc.) - hidden by default
         self.action_btn = ttk.Button(bottom, text="Retry")
