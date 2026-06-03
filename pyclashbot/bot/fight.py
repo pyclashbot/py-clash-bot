@@ -43,7 +43,7 @@ QUICKMATCH_BUTTON_COORD = (
     274,
     353,
 )  # coord of the quickmatch button after you click the battle button
-ELIXER_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
+ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
 
 EMOTE_BUTTON_COORD = (67, 521)
 EMOTE_ICON_COORDS = [
@@ -75,7 +75,7 @@ def do_fight_state(
     emulator,
     logger: Logger,
     random_fight_mode,
-    fight_mode_choosed,
+    fight_mode_chosen,
     called_from_launching=False,
     recording_flag: bool = False,
 ) -> bool:
@@ -92,7 +92,7 @@ def do_fight_state(
         return False
 
     logger.change_status("Starting fight loop")
-    logger.log(f'This is the fight mode: "{fight_mode_choosed}"')
+    logger.log(f'This is the fight mode: "{fight_mode_chosen}"')
 
     # Run regular fight loop if random mode not toggled
     if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
@@ -106,16 +106,16 @@ def do_fight_state(
 
     # Only log the fight if not called from the start
     if not called_from_launching:
-        if fight_mode_choosed in ["Classic 1v1", "Trophy Road"]:
+        if fight_mode_chosen in ["Classic 1v1", "Trophy Road"]:
             logger.add_1v1_fight()
-        elif fight_mode_choosed == "Classic 2v2":
+        elif fight_mode_chosen == "Classic 2v2":
             logger.increment_2v2_fights()
 
-        if fight_mode_choosed == "Trophy Road":
+        if fight_mode_chosen == "Trophy Road":
             logger.increment_trophy_road_fights()
-        elif fight_mode_choosed == "Classic 1v1":
+        elif fight_mode_chosen == "Classic 1v1":
             logger.increment_classic_1v1_fights()
-        elif fight_mode_choosed == "Classic 2v2":
+        elif fight_mode_chosen == "Classic 2v2":
             logger.increment_classic_2v2_fights()
 
     interruptible_sleep(10)
@@ -176,7 +176,7 @@ def start_fight(emulator, logger, mode) -> bool:
 
     # if its 2v2 mode, we gotta click that second popup
     if mode == "Classic 2v2":
-        logger.change_status("Its 2v2 mode so we gotta click the quickmatch popup option!")
+        logger.change_status("It's 2v2 mode — clicking the Quick Match popup")
         interruptible_sleep(3)
         quick_match_button_coord = [280, 350]
         emulator.click(quick_match_button_coord[0], quick_match_button_coord[1])
@@ -221,23 +221,23 @@ def mag_dump(emulator, logger):
         interruptible_sleep(0.1)
 
 
-def wait_for_elixer(
+def wait_for_elixir(
     emulator,
     logger,
-    random_elixer_wait,
+    random_elixir_wait,
     WAIT_THRESHOLD=5000,  # noqa: N803
     PLAY_THRESHOLD=10000,  # noqa: N803
     recording_flag: bool = False,
 ) -> Literal["restart", "no battle"] | bool:
-    """Method to wait for 4 elixer during a battle"""
+    """Wait until the given Elixir amount is available during a battle."""
     start_time = time.time()
     battle_detection_lost_count = 0
 
-    while not count_elixer(emulator, random_elixer_wait):
+    while not count_elixir(emulator, random_elixir_wait):
         # debug screenshot saving removed from production
         wait_time = time.time() - start_time
         logger.change_status(
-            f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
+            f"Waiting for {random_elixir_wait} Elixir for {str(wait_time)[:4]}s...",
         )
 
         card_inhand = len(check_which_cards_are_available(emulator, True, False))
@@ -250,22 +250,22 @@ def wait_for_elixer(
             logger.change_status("All cards are available!")
             return True
 
-        if wait_time > ELIXER_WAIT_TIMEOUT:
-            logger.change_status(status="Waited too long for elixer")
+        if wait_time > ELIXIR_WAIT_TIMEOUT:
+            logger.change_status(status="Waited too long for Elixir")
             return "restart"
 
         if not check_for_in_battle_with_delay(emulator):
             if check_if_battle_has_ended(emulator):
-                logger.change_status(status="Not in battle anymore (confirmed), stopping waiting for elixer.")
+                logger.change_status(status="Not in battle anymore (confirmed), stopping Elixir wait.")
                 return "no battle"
 
             battle_detection_lost_count += 1
             logger.change_status(
-                status="Lost battle detection while waiting for elixer; assuming still in battle.",
+                status="Lost battle detection while waiting for Elixir; assuming still in battle.",
             )
             if battle_detection_lost_count >= 4:
                 logger.change_status(
-                    status="Lost battle detection repeatedly while waiting for elixer; assuming battle ended.",
+                    status="Lost battle detection repeatedly while waiting for Elixir; assuming battle ended.",
                 )
                 return "no battle"
 
@@ -275,18 +275,18 @@ def wait_for_elixer(
         battle_detection_lost_count = 0
 
     logger.change_status(
-        f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer.",
+        f"Took {str(time.time() - start_time)[:4]}s to reach {random_elixir_wait} Elixir.",
     )
 
     return True
 
 
-def count_elixer(emulator, elixer_count) -> bool:
-    """Method to check for 4 elixer during a battle"""
+def count_elixir(emulator, elixir_count) -> bool:
+    """Return True when the given Elixir bar segment is filled."""
     iar = emulator.screenshot()
 
     if pixel_is_equal(
-        iar[ELIXIR_COORDS[elixer_count - 1][0], ELIXIR_COORDS[elixer_count - 1][1]],
+        iar[ELIXIR_COORDS[elixir_count - 1][0], ELIXIR_COORDS[elixir_count - 1][1]],
         ELIXIR_COLOR,
         tol=65,
     ):
@@ -441,9 +441,9 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     # check which cards are available
     logger.change_status("Looking at which cards are available")
     available_card_check_start_time = time.time()
-    card_indicies = check_which_cards_are_available(emulator, False, True)
+    card_indices = check_which_cards_are_available(emulator, False, True)
 
-    if not card_indicies:
+    if not card_indices:
         logger.change_status("No cards ready yet...")
         return False
 
@@ -452,10 +452,10 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     )[:3]
 
     logger.change_status(
-        f"These cards are available: {card_indicies} ({available_card_check_time_taken}s)",
+        f"These cards are available: {card_indices} ({available_card_check_time_taken}s)",
     )
 
-    card_index = select_card_index(card_indicies, last_three_cards)
+    card_index = select_card_index(card_indices, last_three_cards)
     if card_index not in last_three_cards:
         last_three_cards.append(card_index)
     logger.change_status(f"Choosing this card index: {card_index}")
@@ -474,14 +474,14 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     # click the card index
     click_and_play_card_start_time = time.time()
     if None in [HAND_CARDS_COORDS, card_index]:
-        logger.change_status("[!] Non fatal error: card_index is None")
+        logger.change_status("[!] Non-fatal error: card_index is None")
         return False
 
     emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
 
     # click the play coord
     if play_coord is None:
-        logger.change_status("[!] Non fatal error: play_coord is None")
+        logger.change_status("[!] Non-fatal error: play_coord is None")
         return False
 
     emulator.click(play_coord[0], play_coord[1])
@@ -627,7 +627,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
         elixir_amount = battle_strategy.select_elixir_amount()
         wait_threshold, play_threshold = battle_strategy.get_thresholds()
 
-        wait_output = wait_for_elixer(
+        wait_output = wait_for_elixir(
             emulator,
             logger,
             elixir_amount,
@@ -637,7 +637,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
         )
 
         if wait_output == "restart":
-            logger.change_status("Failure while waiting for elixer")
+            logger.change_status("Failure while waiting for Elixir")
             return False
 
         if wait_output == "no battle":
