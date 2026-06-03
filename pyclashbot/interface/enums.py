@@ -81,9 +81,9 @@ BATTLE_STAT_LABELS: dict[StatField, str] = {
 BATTLE_STAT_FIELDS: tuple[StatField, ...] = tuple(BATTLE_STAT_LABELS.keys())
 
 COLLECTION_STAT_LABELS: dict[StatField, str] = {
-    StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Mastery rewards",
+    StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Card Mastery rewards",
     StatField.UPGRADES: "Card upgrades",
-    StatField.WAR_CHEST_COLLECTS: "War chests",
+    StatField.WAR_CHEST_COLLECTS: "War Chests",
 }
 
 COLLECTION_STAT_FIELDS: tuple[StatField, ...] = tuple(COLLECTION_STAT_LABELS.keys())

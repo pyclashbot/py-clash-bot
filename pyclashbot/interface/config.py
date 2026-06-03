@@ -111,7 +111,7 @@ JOBS = [
     ),
     JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random card plays", default=False),
     JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss tracking", default=False),
-    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card mastery", default=False),
+    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
     JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade cards", default=False),
 ]
 
