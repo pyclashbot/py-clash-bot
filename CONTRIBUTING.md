@@ -64,6 +64,28 @@ Before submitting changes, ensure your code works correctly:
 2. **Test your specific changes** thoroughly
 3. **Check for any linting issues** (the project uses ruff for code formatting)
 
+### Standalone test scripts
+
+Tests are **not** pytest. Each `tests/**/test_*.py` file is a standalone script that exits `0` on success and `1` on failure. Run one file:
+
+```bash
+uv run python tests/unit/test_platform.py
+```
+
+Run every test under `tests/`:
+
+```bash
+make test
+```
+
+Emulator integration tests live under `tests/memu/` and `tests/clash-royale/` and require a live VM; unit tests under `tests/unit/` have no emulator dependency.
+
+### macOS notes
+
+- **Logs**: `~/Library/Logs/py-clash-bot/`
+- **User settings**: `~/Library/Application Support/py-clash-bot/`
+- **Build a local app bundle**: `make build-dmg`
+
 ## Submitting Changes
 
 ### 1. Create a Feature Branch
