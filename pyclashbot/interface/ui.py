@@ -368,8 +368,7 @@ class PyClashBotUI(ttk.Window):
 
         job_defaults = {job.key: job.default for job in JOBS}
         self.jobs_vars: dict[UIField, ttk.BooleanVar] = {}
-        # Uniform narrow toolbuttons; long labels shortened in config.py.
-        job_btn_width = 14
+        job_btn_width = min(24, max(len(job.title) for job in JOBS))
 
         primary_bootstyle = "warning-outline-toolbutton"
         secondary_bootstyle = "info-outline-toolbutton"
