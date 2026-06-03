@@ -407,17 +407,17 @@ class PyClashBotUI(ttk.Window):
                 self._register_config_widget(job.key.value, checkbox)
 
                 sub_frame = ttk.Frame(frame)
-                sub_frame.grid(row=row_index, column=1, columnspan=3, sticky="w", padx=(8, 0))
+                sub_frame.grid(row=row_index, column=1, columnspan=3, sticky="w", padx=(12, 0))
                 for col, sub in enumerate(job.sub_jobs):
                     sub_var = ttk.BooleanVar(value=sub.default)
+                    # Plain checkboxes (no toolbutton bootstyle) — compact beside the main job row.
                     sub_checkbox = ttk.Checkbutton(
                         sub_frame,
                         text=sub.title,
                         variable=sub_var,
-                        bootstyle=secondary_bootstyle,
                         command=self._notify_config_change,
                     )
-                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 10))
+                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 8))
                     self.jobs_vars[sub.key] = sub_var
                     self._clan_sub_checkbuttons[sub.key] = sub_checkbox
                     self._trace_variable(sub_var)
