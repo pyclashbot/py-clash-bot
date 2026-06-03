@@ -109,6 +109,24 @@ JOBS = [
             )
         },
     ),
+    JobConfig(
+        UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
+        "🔀 Switch accounts",
+        default=False,
+        extras={
+            UIField.MAX_ACCOUNT_SELECTION: ComboConfig(
+                key=UIField.MAX_ACCOUNT_SELECTION,
+                label="Accounts to cycle",
+                values=[2, 3],
+                default=2,
+                label_size=(15, 1),
+                tooltip=(
+                    "How many linked Supercell accounts to swap between each bot loop (2-3). "
+                    "Accounts are picked in the order you signed into them on this device."
+                ),
+            )
+        },
+    ),
     JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random card plays", default=False),
     JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss tracking", default=False),
     JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
@@ -156,6 +174,8 @@ USER_CONFIG_KEYS = (
         UIField.DECK_NUMBER_SELECTION.value,
         UIField.MAX_DECK_SELECTION.value,
         UIField.CYCLE_DECKS_USER_TOGGLE.value,
+        UIField.MAX_ACCOUNT_SELECTION.value,
+        UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value,
     ]
 )
 

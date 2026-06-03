@@ -87,6 +87,10 @@ class PyClashBotUI(ttk.Window):
         values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
         values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
+        values[UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value] = bool(
+            self.jobs_vars[UIField.SWITCH_ACCOUNTS_USER_TOGGLE].get()
+        )
+        values[UIField.MAX_ACCOUNT_SELECTION.value] = self._safe_int(self.max_account_var.get(), fallback=2)
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.MEMU
         values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.GOOGLE_PLAY
@@ -123,6 +127,8 @@ class PyClashBotUI(ttk.Window):
                 self.deck_var.set(str(values[UIField.DECK_NUMBER_SELECTION.value]))
             if UIField.MAX_DECK_SELECTION.value in values:
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
+            if UIField.MAX_ACCOUNT_SELECTION.value in values:
+                self.max_account_var.set(str(values[UIField.MAX_ACCOUNT_SELECTION.value]))
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
 
@@ -421,6 +427,8 @@ class PyClashBotUI(ttk.Window):
                     self.deck_var = spin_var
                 elif combo_field == UIField.MAX_DECK_SELECTION:
                     self.max_deck_var = spin_var
+                elif combo_field == UIField.MAX_ACCOUNT_SELECTION:
+                    self.max_account_var = spin_var
             else:
                 add_job_checkbox(job.key, job.title, row_index, bootstyle)
 

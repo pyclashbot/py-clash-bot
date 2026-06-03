@@ -69,6 +69,8 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.DECK_NUMBER_SELECTION.value: as_int(UIField.DECK_NUMBER_SELECTION, 2),
         UIField.CYCLE_DECKS_USER_TOGGLE.value: as_bool(UIField.CYCLE_DECKS_USER_TOGGLE),
         UIField.MAX_DECK_SELECTION.value: as_int(UIField.MAX_DECK_SELECTION, 2),
+        UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value: as_bool(UIField.SWITCH_ACCOUNTS_USER_TOGGLE),
+        UIField.MAX_ACCOUNT_SELECTION.value: as_int(UIField.MAX_ACCOUNT_SELECTION, 2),
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
