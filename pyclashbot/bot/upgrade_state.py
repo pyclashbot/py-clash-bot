@@ -1,5 +1,17 @@
 import time
 
+from pyclashbot.bot.coords import (
+    CARD_UPGRADE_MENU_BGR,
+    CARD_UPGRADE_MENU_COORD,
+    CLOSE_CARD_PAGE_COORD,
+    COIN_INSUFFICIENT_BGR,
+    COIN_INSUFFICIENT_COORD,
+    DEADSPACE_COORD,
+    FIRST_UPGRADE_BUTTON_COORD,
+    SECOND_UPGRADE_BUTTON_COORD,
+    UPGRADE_PIXEL_TOLERANCE,
+    UPGRADE_POINTS,
+)
 from pyclashbot.bot.nav import (
     get_to_card_page_from_clash_main,
     select_mode,
@@ -9,31 +21,6 @@ from pyclashbot.bot.state_detect import check_if_on_clash_main_menu, pixel_indic
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
-
-# This indicates the green upgrade emoji. If we click it twice, the card upgrade menu will be opened.
-UPGRADE_POINTS = [
-    (53, 263),  # 1
-    (140, 263),  # 2
-    (225, 263),  # 3
-    (312, 263),  # 4
-    (52, 403),  # 5
-    (139, 402),  # 6
-    (225, 402),  # 7
-    (311, 402),  # 8
-]
-
-FIRST_UPGRADE_BUTTON_COORD = (241, 542)
-SECOND_UPGRADE_BUTTON_COORD = (241, 478)
-DEADSPACE_COORD = (10, 323)
-CLOSE_CARD_PAGE_COORD = (355, 238)
-
-PIXEL_TOLERANCE = 30  # tol
-
-COIN_INSUFFICIENT_COORD = (359, 210)  #  Cord of the close button of gold popup
-COIN_INSUFFICIENT_BGR = (49, 53, 254)
-
-CARD_UPGRADE_MENU_COORD = (346, 185)  #  Cord of the close button of card upgrade menu
-CARD_UPGRADE_MENU_BGR = (69, 69, 253)
 
 
 def detect_upgradable_cards(emulator):
@@ -97,7 +84,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
 
         img = emulator.screenshot()
         pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
-        if not pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, PIXEL_TOLERANCE):
+        if not pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, UPGRADE_PIXEL_TOLERANCE):
             logger.log("Card upgrade menu did not open, skipping to next card")
             logger.change_status(status="Clicking deadspace after attemping upgrading this card")
 
@@ -118,7 +105,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         # COIN check
         img = emulator.screenshot()
         pixel = img[COIN_INSUFFICIENT_COORD[1]][COIN_INSUFFICIENT_COORD[0]]
-        if pixel_is_equal(pixel, COIN_INSUFFICIENT_BGR, PIXEL_TOLERANCE):
+        if pixel_is_equal(pixel, COIN_INSUFFICIENT_BGR, UPGRADE_PIXEL_TOLERANCE):
             logger.log("Cannot upgrade this card: not enough coins")
             logger.change_status(status="Not enough coins passing")
 
@@ -142,7 +129,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         # Check for card upgrade menu close button
         img = emulator.screenshot()
         pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
-        if pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, PIXEL_TOLERANCE):
+        if pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, UPGRADE_PIXEL_TOLERANCE):
             emulator.click(CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
             interruptible_sleep(2)
 
