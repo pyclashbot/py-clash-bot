@@ -29,10 +29,10 @@ CLOSE_CARD_PAGE_COORD = (355, 238)
 
 PIXEL_TOLERANCE = 30  # tol
 
-COIN_INSUFFICIENT_COORD = (359, 210)  #  Cord of the close button of gold popup
+COIN_INSUFFICIENT_COORD = (359, 210)  # Coord of the close button of gold popup
 COIN_INSUFFICIENT_BGR = (49, 53, 254)
 
-CARD_UPGRADE_MENU_COORD = (346, 185)  #  Cord of the close button of card upgrade menu
+CARD_UPGRADE_MENU_COORD = (346, 185)  # Coord of the close button of card upgrade menu
 CARD_UPGRADE_MENU_BGR = (69, 69, 253)
 
 
@@ -99,7 +99,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
         if not pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, PIXEL_TOLERANCE):
             logger.log("Card upgrade menu did not open, skipping to next card")
-            logger.change_status(status="Clicking deadspace after attemping upgrading this card")
+            logger.change_status(status="Clicking deadspace after attempting to upgrade this card")
 
             # just reduced iteration count
             for i in range(3):
@@ -150,7 +150,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         # just reduced iteration count
         for i in range(3):
             emulator.click(DEADSPACE_COORD[0], DEADSPACE_COORD[1])
-            logger.change_status(status="Clicking deadspace after attemping upgrading this card")
+            logger.change_status(status="Clicking deadspace after attempting to upgrade this card")
             interruptible_sleep(1)
 
     return upgraded_a_card

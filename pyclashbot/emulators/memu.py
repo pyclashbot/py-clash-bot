@@ -1409,7 +1409,7 @@ class MemuEmulatorController(BaseEmulatorController):
         while self._check_for_emulator_running() is True:
             if time.time() - start_time > timeout:
                 self.logger.log(
-                    f"[!] Non fatal error: Timeout of {timeout} seconds reached while stopping the emulator.\n"
+                    f"[!] Non-fatal error: Timeout of {timeout} seconds reached while stopping the emulator.\n"
                 )
                 return False
 
