@@ -122,7 +122,7 @@ BLUESTACKS_SETTINGS = [
 ]
 
 EMULATOR_CHOICE = [
-    RadioConfig(UIField.MEMU_EMULATOR_TOGGLE, "Memu", "emulator_type_radio", default=True),
+    RadioConfig(UIField.MEMU_EMULATOR_TOGGLE, "MEmu", "emulator_type_radio", default=True),
     RadioConfig(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE, "Google Play", "emulator_type_radio"),
     RadioConfig(UIField.BLUESTACKS_EMULATOR_TOGGLE, "BlueStacks 5", "emulator_type_radio"),
 ]
