@@ -32,9 +32,12 @@ import argparse
 import importlib.util
 import inspect
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from types import ModuleType
-from typing import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 TestFn = Callable[[object, object], tuple[bool, str]]
 
