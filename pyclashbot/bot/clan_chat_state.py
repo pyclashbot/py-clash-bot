@@ -15,6 +15,7 @@ from pyclashbot.bot.coords import (
     CLAN_CHAT_FOOTER_SUBCROP,
     CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET,
     CLAN_CHAT_REQUEST_PICKER_SUBCROP,
+    REVEAL_MORE_CLAN_CHAT_CARD_OPTIONS_BUTTON_COORD,
 )
 from pyclashbot.bot.nav import (
     PAGE_CLAN_CHAT,
@@ -24,6 +25,7 @@ from pyclashbot.bot.nav import (
     navigate_main_page,
 )
 from pyclashbot.bot.state_detect import (
+    check_for_more_clan_chat_card_options,
     check_for_trophy_reward_menu,
     check_if_on_clan_chat,
     check_if_on_clash_main_menu,
@@ -158,6 +160,64 @@ def _click_active_templates(
         if not clicked:
             break
     return clicks
+
+
+MAX_REVEAL_MORE_PASSES = 5
+
+
+def _donate_visible_pass(emulator, logger, starting_count: int) -> int:
+    """One pass: scan, click any green donate button, count, repeat until none visible.
+
+    Returns updated running total of donations after this pass.
+    """
+    tw, th = _template_size("clan_chat/donate_active")
+    donations = starting_count
+
+    for _ in range(MAX_FEED_ACTIONS):
+        image = emulator.screenshot()
+
+        target = None
+        for x, y in _find_all_template_coords(
+            image,
+            "clan_chat/donate_active",
+            subcrop=CLAN_CHAT_FEED_SUBCROP,
+            tolerance=TEMPLATE_TOLERANCE,
+        ):
+            if _region_passes_color_check(image, x, y, tw, th, clan_button_pixel_is_active_green):
+                target = (x, y)
+                break
+
+        if target is None:
+            break
+
+        x, y = target
+        emulator.click(x + tw // 2, y + th // 2)
+        donations += 1
+        logger.add_donate()
+        logger.change_status(f"Donating ({donations})")
+        interruptible_sleep(1.5)
+
+    return donations
+
+
+def _donate_in_clan_chat(emulator, logger) -> int:
+    """Donate to every visible request, then scroll up for more, repeat.
+
+    Each successful click (template match + green pixel check) counts as one
+    donation. A rare/epic request that Clash splits across N card-icon clicks
+    therefore counts as N; making one whole request count once would require
+    grouping icons by chat-row and is a separate follow-up.
+    """
+    donations = _donate_visible_pass(emulator, logger, 0)
+
+    for _ in range(MAX_REVEAL_MORE_PASSES):
+        if not check_for_more_clan_chat_card_options(emulator):
+            break
+        emulator.click(*REVEAL_MORE_CLAN_CHAT_CARD_OPTIONS_BUTTON_COORD)
+        interruptible_sleep(1.5)
+        donations = _donate_visible_pass(emulator, logger, donations)
+
+    return donations
 
 
 def _open_request_picker(emulator, logger) -> bool:
@@ -375,15 +435,7 @@ def clan_chat_state(
             logger.change_status("No claimable clan gifts visible")
 
     if donate_enabled:
-        count = _click_active_templates(
-            emulator,
-            logger,
-            "clan_chat/donate_active",
-            subcrop=CLAN_CHAT_FEED_SUBCROP,
-            color_check=clan_button_pixel_is_active_green,
-            action_label="Donating",
-            on_success=logger.add_donate,
-        )
+        count = _donate_in_clan_chat(emulator, logger)
         if count == 0:
             logger.change_status("No active donate buttons visible")
         if not _recover_clan_chat_from_social(emulator, logger):

@@ -4,11 +4,13 @@ Every function here follows the same shape: take a screenshot, run a pixel or
 image comparison, return a bool. No clicks, no waits, no orchestration — those
 live in nav.py or the per-state modules that import from here.
 
-This module is a leaf: it must not import from any other pyclashbot.bot module.
+This module is a leaf: the only pyclashbot.bot module it imports from is
+`coords` (itself a leaf — pure data, no imports). No nav, fight, deck, etc.
 """
 
 import numpy
 
+from pyclashbot.bot.coords import MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP
 from pyclashbot.detection.image_rec import (
     all_pixels_are_equal,
     check_line_for_color,
@@ -465,6 +467,17 @@ def clan_button_pixel_is_active_yellow(pixel) -> bool:
     """Active Request footer / confirm buttons (BGR)."""
     b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])
     return r > 160 and g > 120 and r > b + 40 and g > b + 20
+
+
+def check_for_more_clan_chat_card_options(emulator) -> bool:
+    """True if the 'scroll up for more requests' indicator is visible above the chat feed."""
+    coord = find_image(
+        emulator.screenshot(),
+        "more_clan_chat_card_options",
+        tolerance=0.9,
+        subcrop=MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP,
+    )
+    return coord is not None
 
 
 def check_if_on_clan_chat(emulator) -> bool:
