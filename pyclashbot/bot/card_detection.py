@@ -10874,7 +10874,10 @@ def get_corner_pixels(x_range, y_range, iar):
 
 
 def _screenshot_rgb(emulator) -> numpy.ndarray:
-    """Emulator screenshots are BGR (OpenCV); fingerprints use RGB captures."""
+    """Emulator screenshots are BGR (OpenCV); fingerprints use RGB captures.
+
+    Do not bypass this for battle_iar / bridge_iar. Regression: tests/test_card_fingerprint_rgb.py
+    """
     iar = emulator.screenshot()
     if iar.ndim == 3 and iar.shape[2] == 3:
         return iar[..., ::-1]

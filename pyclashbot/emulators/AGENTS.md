@@ -9,7 +9,7 @@
 
 ## Gotchas
 
-- Screenshots are `screencap -p` → `cv2.imdecode` → **BGR** numpy, expected ~**419×633**; a size mismatch triggers retry/recovery.
+- Screenshots are `screencap -p` → `cv2.imdecode` → **BGR** numpy, expected ~**419×633**; a size mismatch triggers retry/recovery. Template matching (`find_image`) is grayscale; **color** logic (fingerprints, many `state_detect` pixel checks) must convert to **RGB** at use site — see `card_detection._screenshot_rgb()` and `state_detect`’s `[..., ::-1]`.
 - Platform-locked: MEmu & Google Play are **Windows-only**; BlueStacks is Win+macOS. Gate paths with `is_windows()`/`is_macos()` from `utils.platform`.
 - Render modes differ per emulator and are written to that emulator's config file then require stop→edit→restart (MEmu int 0/1; BlueStacks `dx`/`gl`/`vlcn`, macOS defaults `vlcn`; Google Play XML).
 - BlueStacks uses a private ADB server (port 5041) and a dynamic per-instance device serial read from `bluestacks.conf`; instance reuse/creation goes through the Multi-Instance Manager — close it after renaming metadata.
