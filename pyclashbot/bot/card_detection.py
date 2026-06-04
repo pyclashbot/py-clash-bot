@@ -7,6 +7,7 @@ import numpy
 # Placement profiles: where on screen to tap (left/right), not card role in battle.
 # Shared arena zones use zone_* keys; card-named keys stay when only that card (or its evo) uses the region.
 # CARD_GROUPS maps card ids → key below (see #674 for full id list including pre-fingerprint evo/hero).
+# Visual map: docs/placement-zones.md
 PLAY_COORDS = {
     # Troops: bridge line (tanks + heavy win conditions share coords until a follow-up retune).
     "bridge_line": {
