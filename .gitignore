@@ -11,8 +11,6 @@ __version__
 __pycache__
 recordings
 scripts/capture_output/
-# Local battle capture for regenerating placement maps (see docs/placement-zones.md)
-docs/reference/battle-screenshot.png
 .claude/
 .claude/settings.local.json
 .DS_Store
