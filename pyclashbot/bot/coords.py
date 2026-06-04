@@ -85,3 +85,25 @@ ACCOUNT_SLOT_CLICK_COORDS: dict[int, tuple[int, int]] = {
     2: (251, 476),
     3: (252, 572),
 }
+
+# --- Bottom nav (tap targets in the y≈600 bar) ---
+BOTTOM_NAV_SHOP_TAB_COORD = (30, 600)
+BOTTOM_NAV_CARD_TAB_COORD = (100, 600)
+BOTTOM_NAV_CARD_TAB_FROM_MAIN_COORD = (100, 606)  # slightly lower y on the main-page card click
+BOTTOM_NAV_BATTLE_TAB_COORD = (170, 600)
+BOTTOM_NAV_MAIN_TAB_FROM_SHOP_COORD = (240, 600)
+BOTTOM_NAV_MAIN_TAB_FROM_CARD_COORD = (250, 600)
+BOTTOM_NAV_CLAN_CHAT_TAB_COORD = (280, 600)
+BOTTOM_NAV_SOCIAL_TAB_COORD = (310, 600)  # consolidated from 309/310/315 — see PR body
+# In-clan-chat: exit deadspace + tap-target for re-opening Social from inside clan chat.
+CLAN_CHAT_EXIT_DEADSPACE_COORD = (200, 600)
+CLAN_CHAT_TO_SOCIAL_COORD = (219, 605)
+
+# --- Clan chat ---
+CLAN_CHAT_FEED_SUBCROP = (0, 60, 419, 500)
+CLAN_CHAT_FOOTER_SUBCROP = (0, 470, 280, 600)
+CLAN_CHAT_REQUEST_PICKER_SUBCROP = (0, 70, 419, 600)
+CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET = (48, -40)
+
+# --- Fight: champion ability ---
+CHAMPION_ABILITY_DISMISS_COORD = (330, 460)
