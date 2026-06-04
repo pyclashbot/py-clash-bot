@@ -455,6 +455,18 @@ def check_if_on_social(emulator) -> bool:
     return True
 
 
+def clan_button_pixel_is_active_green(pixel) -> bool:
+    """Active Claim/Donate buttons (BGR). Grayscale templates still need a color gate."""
+    b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])
+    return g > 100 and g > r + 15 and g > b + 15
+
+
+def clan_button_pixel_is_active_yellow(pixel) -> bool:
+    """Active Request footer / confirm buttons (BGR)."""
+    b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])
+    return r > 160 and g > 120 and r > b + 40 and g > b + 20
+
+
 def check_if_on_clan_chat(emulator) -> bool:
     iar = emulator.screenshot()
     pixels = [

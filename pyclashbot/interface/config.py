@@ -28,6 +28,15 @@ class StatConfig:
     size: tuple[int, int] = (6, 1)
 
 
+@dataclass(frozen=True)
+class SubJobToggle:
+    """Secondary toggle shown beside a parent job (e.g. clan chat actions)."""
+
+    key: UIField
+    title: str
+    default: bool = True
+
+
 @dataclass
 class JobConfig:
     """Configuration for a job checkbox element."""
@@ -36,6 +45,7 @@ class JobConfig:
     title: str
     default: bool = False
     extras: dict[UIField, ComboConfig] | None = None
+    sub_jobs: tuple[SubJobToggle, ...] = ()
     primary: bool = False
 
 
@@ -74,8 +84,38 @@ BOT_STATS = [
     StatConfig(BotStatField.TIME_SINCE_START, BOT_STAT_LABELS[BotStatField.TIME_SINCE_START], size=(8, 1)),
 ]
 
-# Job Configuration
+# Job Configuration (order matches bot state machine: switch_account → upgrade → …)
 JOBS = [
+    JobConfig(
+        UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
+        "🔀 Switch accounts",
+        default=False,
+        extras={
+            UIField.MAX_ACCOUNT_SELECTION: ComboConfig(
+                key=UIField.MAX_ACCOUNT_SELECTION,
+                label="Accounts to cycle",
+                values=[2, 3],
+                default=2,
+                label_size=(15, 1),
+                tooltip=(
+                    "How many linked Supercell accounts to swap between each bot loop (2-3). "
+                    "Accounts are picked in the order you signed into them on this device."
+                ),
+            )
+        },
+    ),
+    JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade cards", default=False),
+    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
+    JobConfig(
+        UIField.CLAN_CHAT_USER_TOGGLE,
+        "💬 Clan chat",
+        default=False,
+        sub_jobs=(
+            SubJobToggle(UIField.CLAN_DONATE_USER_TOGGLE, "Donate"),
+            SubJobToggle(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE, "Request"),
+            SubJobToggle(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE, "Claim gift"),
+        ),
+    ),
     JobConfig(UIField.CLASSIC_1V1_USER_TOGGLE, "⚔️ Classic 1v1", default=False, primary=True),
     JobConfig(UIField.CLASSIC_2V2_USER_TOGGLE, "👥 Classic 2v2", default=False, primary=True),
     JobConfig(UIField.TROPHY_ROAD_USER_TOGGLE, "🏆 Trophy Road", default=True, primary=True),
@@ -109,28 +149,8 @@ JOBS = [
             )
         },
     ),
-    JobConfig(
-        UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
-        "🔀 Switch accounts",
-        default=False,
-        extras={
-            UIField.MAX_ACCOUNT_SELECTION: ComboConfig(
-                key=UIField.MAX_ACCOUNT_SELECTION,
-                label="Accounts to cycle",
-                values=[2, 3],
-                default=2,
-                label_size=(15, 1),
-                tooltip=(
-                    "How many linked Supercell accounts to swap between each bot loop (2-3). "
-                    "Accounts are picked in the order you signed into them on this device."
-                ),
-            )
-        },
-    ),
     JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random card plays", default=False),
     JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss tracking", default=False),
-    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
-    JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade cards", default=False),
 ]
 
 # Emulator Settings Configuration
@@ -164,19 +184,24 @@ GOOGLE_PLAY_SETTINGS = [
     ComboConfig(UIField.GP_WSI, "wsi", ["vk", "glx"]),
 ]
 
+
+def _job_setting_keys() -> list[str]:
+    keys: list[str] = []
+    for job in JOBS:
+        keys.append(job.key.value)
+        for sub in job.sub_jobs:
+            keys.append(sub.key.value)
+        if job.extras:
+            keys.extend(extra.value for extra in job.extras)
+    return keys
+
+
 # All user configuration keys (auto-generated from configs)
 USER_CONFIG_KEYS = (
-    [job.key.value for job in JOBS]
+    _job_setting_keys()
     + [radio.key.value for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key.value for combo in GOOGLE_PLAY_SETTINGS]
     + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value]  # Data settings
-    + [
-        UIField.DECK_NUMBER_SELECTION.value,
-        UIField.MAX_DECK_SELECTION.value,
-        UIField.CYCLE_DECKS_USER_TOGGLE.value,
-        UIField.MAX_ACCOUNT_SELECTION.value,
-        UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value,
-    ]
 )
 
 # Keys to disable when bot is running

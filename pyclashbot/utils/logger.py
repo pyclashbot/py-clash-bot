@@ -145,6 +145,8 @@ class Logger:
         self.daily_rewards = 0
         self.donates = 0
         self.requests = 0
+        self.clan_gift_claims = 0
+        self.account_switches = 0
         self.shop_offer_collections = 0
         self.war_chest_collects = 0
         self.level_up_chest_collects = 0
@@ -201,6 +203,10 @@ class Logger:
                 # collection stats
                 "war_chest_collects": self.war_chest_collects,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
+                "cards_donated": self.donates,
+                "card_requests": self.requests,
+                "clan_gifts_claimed": self.clan_gift_claims,
+                "account_switches": self.account_switches,
                 # card stats
                 "upgrades": self.cards_upgraded,
                 "cards_played": self.cards_played,
@@ -455,6 +461,16 @@ class Logger:
     def add_donate(self) -> None:
         """Add donate to log"""
         self.donates += 1
+
+    @_updates_gui
+    def add_clan_gift_claim(self) -> None:
+        """Add Pass Royale / clan gift claim to log"""
+        self.clan_gift_claims += 1
+
+    @_updates_gui
+    def add_account_switch(self) -> None:
+        """Count a successful linked-account switch."""
+        self.account_switches += 1
 
     @_updates_gui
     def add_daily_reward(self) -> None:

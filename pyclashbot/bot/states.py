@@ -5,6 +5,7 @@ import time
 
 from pyclashbot.bot.account_switch import switch_account_state
 from pyclashbot.bot.card_mastery_state import card_mastery_state
+from pyclashbot.bot.clan_chat_state import clan_chat_state
 from pyclashbot.bot.deck import randomize_deck_state, select_deck_state
 from pyclashbot.bot.fight import (
     do_fight_state,
@@ -48,6 +49,17 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
 
 mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
+
+
+def any_fight_mode_enabled(job_list) -> bool:
+    return any(
+        job_list.get(field.value, False)
+        for field in (
+            UIField.CLASSIC_1V1_USER_TOGGLE,
+            UIField.CLASSIC_2V2_USER_TOGGLE,
+            UIField.TROPHY_ROAD_USER_TOGGLE,
+        )
+    )
 
 
 def get_next_fight_mode(job_list):
@@ -198,6 +210,7 @@ class StateOrder:
             "switch_account",
             "upgrade",
             "card_mastery",
+            "clan_chat",
             "select_battle_mode",
             "randomize_deck",
             "cycle_deck",
@@ -271,6 +284,7 @@ def state_tree(
         if switch_account_state(emulator, logger, target_slot):
             logger.current_account = target_index
             logger.add_account_to_account_history(target_index)
+            logger.add_account_switch()
             return state_order.next_state(state)
 
         return handle_state_failure(logger, "switch_account", "switch_account_state")
@@ -357,6 +371,38 @@ def state_tree(
 
         return state_order.next_state(state)
 
+    if state == "clan_chat":
+        if not job_list.get(UIField.CLAN_CHAT_USER_TOGGLE.value, False):
+            logger.log("Clan chat job isn't toggled. Skipping this state")
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        donate = job_list.get(UIField.CLAN_DONATE_USER_TOGGLE.value, False)
+        claim = job_list.get(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value, False)
+        request = job_list.get(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value, False)
+        if not donate and not claim and not request:
+            logger.log("No clan chat actions selected. Skipping this state")
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        if clan_chat_state(
+            emulator,
+            logger,
+            donate_enabled=donate,
+            claim_enabled=claim,
+            request_enabled=request,
+        ):
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        return handle_state_failure(logger, "clan_chat", "clan_chat_state")
+
     if state == "select_battle_mode":
         # Get all enabled fight modes
         enabled_modes = []
@@ -368,8 +414,8 @@ def state_tree(
             enabled_modes.append("Trophy Road")
 
         if not enabled_modes:
-            print("No fight modes are enabled. Skipping this state")
-            return state_order.next_state(state)
+            logger.log("No fight modes enabled, skipping fight chain")
+            return state_order.next_state("end_fight")
 
         # if more than one mode is selected, just cycle through them
         if len(enabled_modes) > 1:
@@ -459,6 +505,10 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "end_fight":
+        if not any_fight_mode_enabled(job_list):
+            logger.log("No fight modes enabled, skipping end_fight")
+            return state_order.next_state(state)
+
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
             end_fight_state(

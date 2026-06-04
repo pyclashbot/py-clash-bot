@@ -61,9 +61,12 @@ class PyClashBotUI(ttk.Window):
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
+        self._clan_sub_checkbuttons: dict[UIField, ttk.Checkbutton] = {}
+        self._job_extra_spinboxes: dict[UIField, ttk.Spinbox] = {}
         self._theme_labels: list[tk.Widget] = []
         self._traces: list[tuple[tk.Variable, str]] = []
         self._suspend_traces = 0
+        self._button_state = "idle"
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=3)  # Tabs get more space
@@ -187,6 +190,11 @@ class PyClashBotUI(ttk.Window):
             # Defer theme apply so combobox popdown widgets exist (avoids TclError on macOS).
             self.after_idle(lambda t=theme_value: self._apply_theme(t))
 
+        if self._clan_sub_checkbuttons:
+            self._sync_clan_sub_job_widgets_state()
+        if self._job_extra_spinboxes:
+            self._sync_job_extra_spinboxes()
+
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
 
@@ -216,6 +224,8 @@ class PyClashBotUI(ttk.Window):
                     else:
                         widget.configure(state=tk.DISABLED if running else READONLY)
                 elif isinstance(widget, ttk.Spinbox):
+                    if widget in self._job_extra_spinboxes.values():
+                        continue
                     widget.configure(state=tk.DISABLED if running else READONLY)
                 elif isinstance(widget, ttk.Radiobutton) and key in [
                     UIField.DIRECTX_TOGGLE.value,
@@ -240,6 +250,7 @@ class PyClashBotUI(ttk.Window):
 
             except tk.TclError:
                 continue
+        self._sync_job_extra_spinboxes()
         if running:
             self._hide_action_button()
 
@@ -342,7 +353,6 @@ class PyClashBotUI(ttk.Window):
         self.main_btn = ttk.Button(bottom, text="Start", bootstyle="success")
         self.main_btn.grid(row=1, column=0, sticky="ew", pady=(8, 0), ipady=8)
         self._register_config_widget("main_btn", self.main_btn)
-        self._button_state = "idle"  # Track: idle, running, stopping
 
         # Action button (for retry etc.) - hidden by default
         self.action_btn = ttk.Button(bottom, text="Retry")
@@ -355,57 +365,97 @@ class PyClashBotUI(ttk.Window):
         frame = ttk.Labelframe(self.jobs_tab, text="Jobs", padding=10)
         frame.pack(padx=10, pady=10, anchor="n", fill="x")
 
-        frame.columnconfigure(1, weight=1)
+        # Fixed columns: job button | inline extras (clan subs) | (i) | spinbox
+        col_job, col_inline, col_info, col_spin = 0, 1, 2, 3
+        frame.columnconfigure(col_job, weight=0)
+        frame.columnconfigure(col_inline, weight=1)
+        frame.columnconfigure(col_info, weight=0)
+        frame.columnconfigure(col_spin, weight=0)
 
         job_defaults = {job.key: job.default for job in JOBS}
         self.jobs_vars: dict[UIField, ttk.BooleanVar] = {}
-
-        checkbox_width = 25
-
-        def add_job_checkbox(
-            field: UIField,
-            text: str,
-            row_index: int,
-            bootstyle: str,
-        ) -> None:
-            var = ttk.BooleanVar(value=job_defaults.get(field, False))
-            checkbox = ttk.Checkbutton(
-                frame,
-                text=text,
-                variable=var,
-                bootstyle=bootstyle,
-                command=self._notify_config_change,
-                width=checkbox_width,
-            )
-            checkbox.grid(row=row_index, column=0, sticky="w", pady=2)
-            self.jobs_vars[field] = var
-            self._trace_variable(var)
-            self._register_config_widget(field.value, checkbox)
+        job_btn_width = min(24, max(len(job.title) for job in JOBS))
 
         primary_bootstyle = "warning-outline-toolbutton"
         secondary_bootstyle = "info-outline-toolbutton"
 
-        for row_index, job in enumerate(JOBS):
+        def place_job_button(
+            parent: tk.Misc,
+            *,
+            field: UIField,
+            text: str,
+            row_index: int,
+            bootstyle: str,
+            command: Callable[[], None] | None = None,
+        ) -> ttk.Checkbutton:
+            var = ttk.BooleanVar(value=job_defaults.get(field, False))
+            checkbox = ttk.Checkbutton(
+                parent,
+                text=text,
+                variable=var,
+                bootstyle=bootstyle,
+                command=command or self._notify_config_change,
+                width=job_btn_width,
+            )
+            checkbox.grid(row=row_index, column=col_job, sticky="w", pady=2)
+            self.jobs_vars[field] = var
+            self._trace_variable(var)
+            self._register_config_widget(field.value, checkbox)
+            return checkbox
+
+        grid_row = 0
+        for job in JOBS:
             bootstyle = primary_bootstyle if job.primary else secondary_bootstyle
 
-            if job.extras:
+            if job.sub_jobs:
+                place_job_button(
+                    frame,
+                    field=job.key,
+                    text=job.title,
+                    row_index=grid_row,
+                    bootstyle=bootstyle,
+                    command=self._on_clan_chat_master_toggle,
+                )
+
+                sub_frame = ttk.Frame(frame)
+                sub_frame.grid(
+                    row=grid_row + 1,
+                    column=col_job,
+                    columnspan=3,
+                    sticky="w",
+                    padx=(18, 0),
+                    pady=(0, 4),
+                )
+                for col, sub in enumerate(job.sub_jobs):
+                    sub_var = ttk.BooleanVar(value=sub.default)
+                    sub_checkbox = ttk.Checkbutton(
+                        sub_frame,
+                        text=sub.title,
+                        variable=sub_var,
+                        command=self._notify_config_change,
+                    )
+                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 12))
+                    self.jobs_vars[sub.key] = sub_var
+                    self._clan_sub_checkbuttons[sub.key] = sub_checkbox
+                    self._trace_variable(sub_var)
+                    self._register_config_widget(sub.key.value, sub_checkbox)
+                self._sync_clan_sub_job_widgets_state()
+                grid_row += 2
+
+            elif job.extras:
                 combo_config = next(iter(job.extras.values()))
                 combo_field = combo_config.key
-                self.jobs_vars[job.key] = ttk.BooleanVar(value=job.default)
-                checkbox = ttk.Checkbutton(
+                place_job_button(
                     frame,
+                    field=job.key,
                     text=job.title,
-                    variable=self.jobs_vars[job.key],
+                    row_index=grid_row,
                     bootstyle=bootstyle,
-                    command=self._notify_config_change,
-                    width=checkbox_width,
+                    command=lambda j=job.key: self._on_job_with_extra_toggle(j),
                 )
-                checkbox.grid(row=row_index, column=0, sticky="w", pady=2)
-                self._trace_variable(self.jobs_vars[job.key])
-                self._register_config_widget(job.key.value, checkbox)
 
                 info_label = ttk.Label(frame, text="ⓘ", bootstyle="info")
-                info_label.grid(row=row_index, column=2, sticky="e", padx=(0, 2))
+                info_label.grid(row=grid_row, column=col_info, sticky="e", padx=(0, 2))
                 if combo_config.tooltip:
                     ToolTip(info_label, combo_config.tooltip)
 
@@ -414,14 +464,15 @@ class PyClashBotUI(ttk.Window):
                     frame,
                     from_=min(combo_config.values),
                     to=max(combo_config.values),
-                    width=6,
+                    width=3,
                     textvariable=spin_var,
                     command=self._notify_config_change,
                     state=READONLY,
                 )
-                spinbox.grid(row=row_index, column=3, sticky="e")
+                spinbox.grid(row=grid_row, column=col_spin, sticky="e")
                 self._trace_variable(spin_var)
                 self._register_config_widget(combo_field.value, spinbox)
+                self._job_extra_spinboxes[job.key] = spinbox
 
                 if combo_field == UIField.DECK_NUMBER_SELECTION:
                     self.deck_var = spin_var
@@ -429,8 +480,40 @@ class PyClashBotUI(ttk.Window):
                     self.max_deck_var = spin_var
                 elif combo_field == UIField.MAX_ACCOUNT_SELECTION:
                     self.max_account_var = spin_var
+                self._sync_job_extra_spinboxes()
+                grid_row += 1
             else:
-                add_job_checkbox(job.key, job.title, row_index, bootstyle)
+                place_job_button(
+                    frame,
+                    field=job.key,
+                    text=job.title,
+                    row_index=grid_row,
+                    bootstyle=bootstyle,
+                )
+                grid_row += 1
+
+    def _on_clan_chat_master_toggle(self) -> None:
+        self._sync_clan_sub_job_widgets_state()
+        self._notify_config_change()
+
+    def _on_job_with_extra_toggle(self, job_key: UIField) -> None:
+        self._sync_job_extra_spinboxes()
+        self._notify_config_change()
+
+    def _sync_job_extra_spinboxes(self) -> None:
+        bot_running = self._button_state in ("running", "stopping")
+        for job_key, spinbox in self._job_extra_spinboxes.items():
+            job_on = bool(self.jobs_vars[job_key].get())
+            if bot_running or not job_on:
+                spinbox.configure(state=tk.DISABLED)
+            else:
+                spinbox.configure(state=READONLY)
+
+    def _sync_clan_sub_job_widgets_state(self) -> None:
+        master_on = bool(self.jobs_vars[UIField.CLAN_CHAT_USER_TOGGLE].get())
+        state = tk.NORMAL if master_on else tk.DISABLED
+        for checkbox in self._clan_sub_checkbuttons.values():
+            checkbox.configure(state=state)
 
     def _create_emulator_tab(self) -> None:
         # Main container frame for the tab
