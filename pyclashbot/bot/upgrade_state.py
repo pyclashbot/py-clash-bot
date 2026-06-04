@@ -88,7 +88,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
         if not pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, UPGRADE_PIXEL_TOLERANCE):
             logger.log("Card upgrade menu did not open, skipping to next card")
-            logger.change_status(status="Clicking deadspace after attemping upgrading this card")
+            logger.change_status(status="Clicking deadspace after attempting to upgrade this card")
 
             # just reduced iteration count
             for i in range(3):
@@ -139,7 +139,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         # just reduced iteration count
         for i in range(3):
             emulator.click(DEADSPACE_COORD[0], DEADSPACE_COORD[1])
-            logger.change_status(status="Clicking deadspace after attemping upgrading this card")
+            logger.change_status(status="Clicking deadspace after attempting to upgrade this card")
             interruptible_sleep(1)
 
     return upgraded_a_card
