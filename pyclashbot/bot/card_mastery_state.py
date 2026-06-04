@@ -21,7 +21,7 @@ from pyclashbot.utils.logger import Logger
 
 
 def card_mastery_state(emulator, logger):
-    logger.change_status("Going to collect card mastery rewards")
+    logger.change_status("Going to collect Card Mastery rewards")
 
     if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(
@@ -40,7 +40,7 @@ def card_mastery_state(emulator, logger):
 
 def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
     # get to card page
-    logger.change_status("Collecting card mastery rewards...")
+    logger.change_status("Collecting Card Mastery rewards...")
     if get_to_card_page_from_clash_main(emulator, logger) == "restart":
         logger.change_status(
             "Failed to get to card page to collect mastery rewards! Returning false",
@@ -49,16 +49,16 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
     interruptible_sleep(3)
 
     if not card_mastery_rewards_exist_with_delay(emulator):
-        logger.change_status("No card mastery rewards to collect.")
+        logger.change_status("No Card Mastery rewards to collect.")
         interruptible_sleep(1)
 
     else:
         # while card mastery icon exists:
         while card_mastery_rewards_exist_with_delay(emulator):
-            logger.change_status("Detected card mastery rewards")
+            logger.change_status("Detected Card Mastery rewards")
             #   click card mastery icon
             collect_first_mastery_reward(emulator)
-            logger.change_status("Collected a card mastery reward!")
+            logger.change_status("Collected a Card Mastery reward!")
             logger.add_card_mastery_reward_collection()
             interruptible_sleep(2)
 
