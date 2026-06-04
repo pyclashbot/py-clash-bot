@@ -10,6 +10,8 @@ from pyclashbot.interface.enums import (
     BOT_STAT_LABELS,
     COLLECTION_STAT_FIELDS,
     COLLECTION_STAT_LABELS,
+    WIN_RATE_STAT_FIELDS,
+    WIN_RATE_STAT_LABELS,
     BotStatField,
     StatField,
     UIField,
@@ -34,6 +36,7 @@ class JobConfig:
     title: str
     default: bool = False
     extras: dict[UIField, ComboConfig] | None = None
+    primary: bool = False
 
 
 @dataclass
@@ -56,9 +59,12 @@ class ComboConfig:
     default: str | int = ""
     size: tuple[int, int] = (5, 1)
     label_size: tuple[int, int] = (6, 1)
+    tooltip: str = ""
 
 
 # Statistics Configuration
+WIN_RATE_STATS = [StatConfig(field, WIN_RATE_STAT_LABELS[field]) for field in WIN_RATE_STAT_FIELDS]
+
 BATTLE_STATS = [StatConfig(field, BATTLE_STAT_LABELS[field]) for field in BATTLE_STAT_FIELDS]
 
 COLLECTION_STATS = [StatConfig(field, COLLECTION_STAT_LABELS[field]) for field in COLLECTION_STAT_FIELDS]
@@ -70,41 +76,43 @@ BOT_STATS = [
 
 # Job Configuration
 JOBS = [
-    JobConfig(UIField.CLASSIC_1V1_USER_TOGGLE, "Classic 1v1 battles", default=False),
-    JobConfig(UIField.CLASSIC_2V2_USER_TOGGLE, "Classic 2v2 battles", default=False),
-    JobConfig(UIField.TROPHY_ROAD_USER_TOGGLE, "Trophy Road battles", default=True),
+    JobConfig(UIField.CLASSIC_1V1_USER_TOGGLE, "⚔️ Classic 1v1", default=False, primary=True),
+    JobConfig(UIField.CLASSIC_2V2_USER_TOGGLE, "👥 Classic 2v2", default=False, primary=True),
+    JobConfig(UIField.TROPHY_ROAD_USER_TOGGLE, "🏆 Trophy Road", default=True, primary=True),
     JobConfig(
         UIField.RANDOM_DECKS_USER_TOGGLE,
-        "Random decks",
+        "🎲 Randomize deck",
         default=False,
         extras={
             UIField.DECK_NUMBER_SELECTION: ComboConfig(
                 key=UIField.DECK_NUMBER_SELECTION,
-                label="Deck #",
+                label="Deck slot",
                 values=[1, 2, 3, 4, 5],
                 default=2,
                 label_size=(10, 1),
+                tooltip="Deck slot (1-5) to use when randomizing",
             )
         },
     ),
     JobConfig(
         UIField.CYCLE_DECKS_USER_TOGGLE,
-        "Cycle decks",
+        "♻️ Cycle decks",
         default=False,
         extras={
             UIField.MAX_DECK_SELECTION: ComboConfig(
                 key=UIField.MAX_DECK_SELECTION,
-                label="Decks to Cycle:",
+                label="Decks to cycle",
                 values=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 default=2,
                 label_size=(15, 1),
+                tooltip="Number of deck slots to rotate through",
             )
         },
     ),
-    JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "Random plays", default=False),
-    JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "Skip win/loss check", default=False),
-    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "Card Masteries", default=False),
-    JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "Upgrade Cards", default=False),
+    JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random card plays", default=False),
+    JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss tracking", default=False),
+    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
+    JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade cards", default=False),
 ]
 
 # Emulator Settings Configuration
@@ -123,7 +131,7 @@ BLUESTACKS_SETTINGS = [
 
 EMULATOR_CHOICE = [
     RadioConfig(UIField.MEMU_EMULATOR_TOGGLE, "MEmu", "emulator_type_radio", default=True),
-    RadioConfig(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE, "Google Play", "emulator_type_radio"),
+    RadioConfig(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE, "Google Play Games", "emulator_type_radio"),
     RadioConfig(UIField.BLUESTACKS_EMULATOR_TOGGLE, "BlueStacks 5", "emulator_type_radio"),
 ]
 

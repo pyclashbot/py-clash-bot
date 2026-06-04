@@ -323,7 +323,7 @@ def state_tree(
     if state == "card_mastery":
         # if job not selected, return next state
         if not job_list[UIField.CARD_MASTERY_USER_TOGGLE]:
-            logger.log("Card mastery job isn't toggled. Skipping this state")
+            logger.log("Card Mastery job isn't toggled. Skipping this state")
             return state_order.next_state(state)
 
         # if job not ready, go next state
