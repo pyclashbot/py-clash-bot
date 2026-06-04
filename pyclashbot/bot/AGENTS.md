@@ -15,3 +15,4 @@
 - `states.py` carries **module-level globals** (`mode_used_in_1v1`, `fight_mode_cycle_index`) set in one state and read in later ones; if `mode_used_in_1v1` is `None`, fight/cycle states silently skip.
 - `StateHistory` throttles expensive states (upgrade, card_mastery) by randomized time increments — a manually-triggered state won't re-run until its increment elapses.
 - Card availability and deck tabs use **image recognition** (`card_detection.py`, `find_image`); elixir/battle/upgrade checks use **single-pixel** sampling — an off-by-one Y breaks them.
+- **Card color fingerprints are BGR.** `battle_iar` is raw `emulator.screenshot()` (OpenCV BGR). Regression: `tests/test_card_fingerprint_bgr.py`.

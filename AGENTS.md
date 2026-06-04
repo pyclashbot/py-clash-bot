@@ -22,6 +22,7 @@ Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`b
 - **Pixel/state predicates live in `pyclashbot/bot/state_detect.py`.** `check_if_on_*(emulator) → bool` and small `pixel_indicates_*(bgr) → bool` helpers all live here.
 - **Main-page navigation goes through `nav.py`'s `navigate_main_page(emulator, logger, start, end)`** + the `NAV_CLICKS` table. Don't re-implement bottom-nav clicks in feature modules; extend `NAV_CLICKS` instead.
 - Detection keeps multiple color palettes (with tolerance) to absorb emulator/app-version drift; add fallbacks, don't tighten thresholds.
+- **`emulator.screenshot()` is BGR; card fingerprints must match that channel order.** Regression: `tests/test_card_fingerprint_bgr.py`.
 - Always verify screen state (a `check_if_on_*` / detection call) **before** clicking. Never hardcode a raw click — use named coordinate constants or nav helpers.
 - Persistent user settings go through `USER_SETTINGS_CACHE` (`pyclashbot.utils.caching`), keyed by `UIField.value` strings. Logging/stats go through `pyclashbot.utils.logger`; OS checks through `pyclashbot.utils.platform` (`is_windows()`/`is_macos()`).
 - Version is a `v0.0.0` placeholder in `pyproject.toml`; the real version is injected from the git tag at build time and read at runtime from `pyclashbot/__version__` via `utils/versioning.py`.
