@@ -3,6 +3,7 @@ import io
 import json
 import os
 import re
+import shlex
 import subprocess
 import time
 from contextlib import suppress
@@ -35,9 +36,12 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.instance_port: int | None = None
         self.device_serial: str | None = None  # "127.0.0.1:<port>"
 
-        self.adb_server_port: int = 5041
+        # On macOS, using a non-default ADB server port can leave `hd-adb` unresponsive.
+        # Prefer the default port so ADB commands don't hang.
+        self.adb_server_port: int = 5037 if is_macos() else 5041
         self.adb_env = os.environ.copy()
-        self.adb_env["ADB_SERVER_PORT"] = str(self.adb_server_port)
+        if not is_macos():
+            self.adb_env["ADB_SERVER_PORT"] = str(self.adb_server_port)
 
         # Do not auto-close BlueStacks 5 when controller is GC'd
         self._auto_stop_on_del = False  # yes it leaks, no I don't want to talk about it
@@ -495,6 +499,31 @@ class BlueStacksEmulatorController(AdbBasedController):
         Run an adb command via our private server. Device-scoped by default unless server-scoped.
         This is the abstract method implementation for AdbBasedController.
         """
+        if is_macos():
+            args: list[str] = [self.adb_path, "-P", str(self.adb_server_port)]
+            if not self._cmd_is_server_scoped(command) and self.device_serial:
+                args.extend(["-s", self.device_serial])
+            args.extend(shlex.split(command))
+            if DEBUG:
+                print(f"[Bluestacks 5/ADB] {args}")
+            try:
+                return subprocess.run(
+                    args,
+                    shell=False,
+                    capture_output=True,
+                    text=not binary_output,
+                    check=False,
+                    env=self.adb_env,
+                    timeout=30,
+                )
+            except subprocess.TimeoutExpired:
+                return subprocess.CompletedProcess(
+                    args=args,
+                    returncode=124,
+                    stdout="" if not binary_output else b"",
+                    stderr="timeout",
+                )
+
         base = f'"{self.adb_path}" -P {self.adb_server_port} '
         if not self._cmd_is_server_scoped(command) and self.device_serial:
             base += f"-s {self.device_serial} "
@@ -514,6 +543,23 @@ class BlueStacksEmulatorController(AdbBasedController):
         return res.stdout is not None and package_name in res.stdout
 
     def adb_server(self, command: str) -> subprocess.CompletedProcess:
+        if is_macos():
+            args = [self.adb_path, "-P", str(self.adb_server_port), *shlex.split(command)]
+            if DEBUG:
+                print(f"[Bluestacks 5/ADB-SRV] {args}")
+            try:
+                return subprocess.run(
+                    args,
+                    shell=False,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    env=self.adb_env,
+                    timeout=15,
+                )
+            except subprocess.TimeoutExpired:
+                return subprocess.CompletedProcess(args=args, returncode=124, stdout="", stderr="timeout")
+
         full = f'"{self.adb_path}" -P {self.adb_server_port} {command}'
         if DEBUG:
             print(f"[Bluestacks 5/ADB-SRV] {full}")
@@ -521,7 +567,10 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     def _reset_adb_server(self) -> None:
         with suppress(Exception):
-            self.adb_server("kill-server")  # Cause ADB loves to randomly fuck around
+            if is_macos():
+                self.adb_server("start-server")
+            else:
+                self.adb_server("kill-server")  # Cause ADB loves to randomly fuck around
 
     def _refresh_instance_port(self):
         """Re-read the instance port and update device_serial."""
@@ -538,12 +587,19 @@ class BlueStacksEmulatorController(AdbBasedController):
         """Connect only to this instance's port."""
         if not self.device_serial:
             return False
-        self._reset_adb_server()
-        self.adb_server(f"disconnect {self.device_serial}")
-        interruptible_sleep(0.2)
-        self.adb_server(f"connect {self.device_serial}")
-        state = self.adb("get-state")
-        ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
+        try:
+            self._reset_adb_server()
+
+            self.adb_server(f"disconnect {self.device_serial}")
+            interruptible_sleep(0.2)
+
+            self.adb_server(f"connect {self.device_serial}")
+            state = self.adb("get-state")
+
+            ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
+        except Exception:
+            return False
+
         if not ok:
             self._refresh_instance_port()
             if self.device_serial:
