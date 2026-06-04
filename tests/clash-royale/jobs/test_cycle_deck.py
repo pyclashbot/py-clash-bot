@@ -26,7 +26,10 @@ def run_test(emulator, logger) -> tuple[bool, str]:
     if not success or selected_deck_number is None:
         return (False, f"Failed during select_deck_state(index={DECK_CYCLE_INDEX}, count={DECK_COUNT})")
     if not (1 <= selected_deck_number <= DECK_COUNT):
-        return (False, f"Failed during select_deck_state: selected_deck_number={selected_deck_number} out of range 1..{DECK_COUNT}")
+        return (
+            False,
+            f"Failed during select_deck_state: selected_deck_number={selected_deck_number} out of range 1..{DECK_COUNT}",
+        )
 
     if not wait_for_clash_main_menu(emulator, logger):
         return (False, "Didn't end on clash main")
