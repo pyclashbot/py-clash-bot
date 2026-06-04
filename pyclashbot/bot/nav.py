@@ -14,6 +14,7 @@ from pyclashbot.bot.coords import (
     OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE,
 )
 from pyclashbot.bot.coords import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
+from pyclashbot.bot.find import find_fight_mode_icon, find_post_battle_button
 from pyclashbot.bot.state_detect import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -25,10 +26,7 @@ from pyclashbot.bot.state_detect import (
     check_if_on_shop,
     check_if_on_social,
 )
-from pyclashbot.detection.image_rec import (
-    find_image,
-    pixel_is_equal,
-)
+from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
@@ -302,35 +300,6 @@ def wait_for_clash_main_burger_button_options_menu(
     return "good"
 
 
-def find_fight_mode_icon(emulator, mode: str):
-    expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
-
-    # Check if the mode is valid
-    if mode not in expected_mode_types:
-        print(f'[!] Fatal error: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
-        return None
-
-    mode2folder = {
-        "Classic 1v1": "fight_mode_1v1",
-        "Classic 2v2": "fight_mode_2v2",
-        "Trophy Road": "fight_mode_trophy_road",
-    }
-
-    look_folder = mode2folder[mode]
-
-    image = emulator.screenshot()
-
-    fight_mode_1v1_button_location = find_image(
-        image,
-        look_folder,
-        tolerance=0.9,
-        show_image=False,
-    )
-    if fight_mode_1v1_button_location is not None:
-        return fight_mode_1v1_button_location
-    return None
-
-
 def select_mode(emulator, mode: str):
     # Check if the mode is valid
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
@@ -484,52 +453,6 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
 
 
 # ===== Post-battle navigation =========================================
-
-
-def find_post_battle_button(emulator):
-    """Find and return coordinates for post-battle exit/OK button.
-
-    Tries multiple detection methods in order:
-    1. Pixel-based detection (fastest)
-    2. Image recognition for OK button
-    3. Image recognition for exit button
-
-    Returns:
-        tuple[int, int] | None: Button coordinates (x, y) or None if not found
-    """
-    iar = emulator.screenshot()
-
-    pixels = [
-        iar[545][178],
-        iar[547][239],
-        iar[553][214],
-        iar[554][201],
-    ]
-    colors = [
-        [255, 187, 104],
-        [255, 187, 104],
-        [255, 255, 255],
-        [255, 255, 255],
-    ]
-
-    pixel_match = True
-    for i, p in enumerate(pixels):
-        if not pixel_is_equal(p, colors[i], tol=20):
-            pixel_match = False
-            break
-
-    if pixel_match:
-        return (200, 550)
-
-    coord = find_image(iar, "ok_post_battle_button", tolerance=0.85)
-    if coord is not None:
-        return coord
-
-    coord = find_image(iar, "exit_battle_button", tolerance=0.9)
-    if coord is not None:
-        return coord
-
-    return None
 
 
 def get_to_main_after_fight(emulator, logger):
