@@ -4,6 +4,8 @@ from collections import Counter
 
 import numpy
 
+from pyclashbot.bot.coords import CHAMPION_ABILITY_DISMISS_COORD
+
 # Placement profiles: where on screen to tap (left/right), not card role in battle.
 # Shared arena zones use zone_* keys; card-named keys stay when only that card (or its evo) uses the region.
 # CARD_GROUPS maps card ids → key below (see #674 for full id list including pre-fingerprint evo/hero).
@@ -6266,7 +6268,7 @@ def check_which_cards_are_available(emulator, check_champion=False, check_side=F
             battle_iar[462][336],
         )
     ):
-        emulator.click(330, 460)
+        emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
 
     if check_side:
         global play_side

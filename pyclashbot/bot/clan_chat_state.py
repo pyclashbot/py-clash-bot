@@ -9,6 +9,13 @@ from os.path import abspath, dirname, join
 import cv2
 import numpy as np
 
+from pyclashbot.bot.coords import (
+    BOTTOM_NAV_BATTLE_TAB_COORD,
+    CLAN_CHAT_FEED_SUBCROP,
+    CLAN_CHAT_FOOTER_SUBCROP,
+    CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET,
+    CLAN_CHAT_REQUEST_PICKER_SUBCROP,
+)
 from pyclashbot.bot.nav import (
     PAGE_CLAN_CHAT,
     PAGE_MAIN,
@@ -29,16 +36,9 @@ from pyclashbot.utils.cancellation import interruptible_sleep
 
 REFERENCE_ROOT = abspath(join(dirname(__file__), "..", "detection", "reference_images"))
 
-# Visible clan chat feed (no scrolling in v1). Keep above bottom nav (~y=600).
-CHAT_FEED_SUBCROP = (0, 60, 419, 500)
-CLAN_FOOTER_SUBCROP = (0, 470, 280, 600)
-REQUEST_PICKER_SUBCROP = (0, 70, 419, 600)
-
 MAX_FEED_ACTIONS = 10
 TEMPLATE_TOLERANCE = 0.88
 PICKER_OPEN_TIMEOUT = 8.0
-# Blue request arrow sits on the left of a card tile; click the card body.
-REQUEST_CARD_CLICK_OFFSET = (48, -40)
 
 
 def _load_template(folder: str) -> np.ndarray | None:
@@ -167,7 +167,7 @@ def _open_request_picker(emulator, logger) -> bool:
     for x, y in _find_all_template_coords(
         image,
         "clan_chat/request_footer_text",
-        subcrop=CLAN_FOOTER_SUBCROP,
+        subcrop=CLAN_CHAT_FOOTER_SUBCROP,
         tolerance=TEMPLATE_TOLERANCE,
     ):
         if _region_passes_color_check(image, x, y, tw, th, clan_button_pixel_is_active_yellow):
@@ -178,7 +178,7 @@ def _open_request_picker(emulator, logger) -> bool:
         if _find_all_template_coords(
             image,
             "clan_chat/request_footer_text",
-            subcrop=CLAN_FOOTER_SUBCROP,
+            subcrop=CLAN_CHAT_FOOTER_SUBCROP,
             tolerance=TEMPLATE_TOLERANCE,
         ):
             logger.change_status("Request Cards on cooldown")
@@ -198,7 +198,7 @@ def _open_request_picker(emulator, logger) -> bool:
                 emulator.screenshot(),
                 "clan_chat/request_arrow",
                 tolerance=0.85,
-                subcrop=REQUEST_PICKER_SUBCROP,
+                subcrop=CLAN_CHAT_REQUEST_PICKER_SUBCROP,
             )
             is not None
         ):
@@ -215,14 +215,14 @@ def _request_cards_from_picker(emulator, logger) -> bool:
         image,
         "clan_chat/request_arrow",
         tolerance=0.85,
-        subcrop=REQUEST_PICKER_SUBCROP,
+        subcrop=CLAN_CHAT_REQUEST_PICKER_SUBCROP,
     )
     if arrow is None:
         logger.change_status("No requestable card (blue arrow) on screen")
         return False
 
     ax, ay = arrow
-    emulator.click(ax + REQUEST_CARD_CLICK_OFFSET[0], ay + REQUEST_CARD_CLICK_OFFSET[1])
+    emulator.click(ax + CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET[0], ay + CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET[1])
     interruptible_sleep(1)
 
     image = emulator.screenshot()
@@ -231,7 +231,7 @@ def _request_cards_from_picker(emulator, logger) -> bool:
     for x, y in _find_all_template_coords(
         image,
         "clan_chat/request_confirm",
-        subcrop=REQUEST_PICKER_SUBCROP,
+        subcrop=CLAN_CHAT_REQUEST_PICKER_SUBCROP,
         tolerance=TEMPLATE_TOLERANCE,
     ):
         if _region_passes_color_check(image, x, y, tw, th, clan_button_pixel_is_active_yellow):
@@ -266,17 +266,15 @@ def _ensure_clan_chat(emulator, logger) -> bool:
 def _tap_battle_tab(emulator, logger) -> None:
     """Center/battle bottom-nav tab — returns to main from Social hub or clan chat."""
     logger.change_status("Tapping battle tab to reach main menu...")
-    emulator.click(170, 600)
+    emulator.click(*BOTTOM_NAV_BATTLE_TAB_COORD)
     interruptible_sleep(2)
 
 
 def _open_clan_chat_via_bottom_nav(emulator, logger) -> bool:
-    """Social tab then clan chat sub-tab (matches main -> clan-chat nav clicks)."""
+    """Social tab then clan chat sub-tab — fallback when navigate_main_page can't determine the current page."""
     logger.change_status("Opening clan chat via bottom nav...")
-    emulator.click(315, 600)
-    interruptible_sleep(1.5)
-    emulator.click(280, 600)
-    interruptible_sleep(2)
+    if not navigate_main_page(emulator, logger, PAGE_MAIN, PAGE_CLAN_CHAT):
+        return False
     return check_if_on_clan_chat(emulator)
 
 
@@ -368,7 +366,7 @@ def clan_chat_state(
             emulator,
             logger,
             "clan_chat/claim_active",
-            subcrop=CHAT_FEED_SUBCROP,
+            subcrop=CLAN_CHAT_FEED_SUBCROP,
             color_check=clan_button_pixel_is_active_green,
             action_label="Claiming clan gift",
             on_success=logger.add_clan_gift_claim,
@@ -381,7 +379,7 @@ def clan_chat_state(
             emulator,
             logger,
             "clan_chat/donate_active",
-            subcrop=CHAT_FEED_SUBCROP,
+            subcrop=CLAN_CHAT_FEED_SUBCROP,
             color_check=clan_button_pixel_is_active_green,
             action_label="Donating",
             on_success=logger.add_donate,
