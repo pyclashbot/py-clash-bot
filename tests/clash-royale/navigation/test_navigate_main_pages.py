@@ -17,7 +17,6 @@ Run directly:
 
 from __future__ import annotations
 
-import sys
 from collections import defaultdict
 
 from pyclashbot.bot.nav import (
@@ -28,8 +27,6 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
-from pyclashbot.emulators.memu import MemuEmulatorController
-from pyclashbot.utils.logger import Logger
 
 
 def compute_eulerian_circuit(edges: list[tuple[str, str]], start: str) -> list[str]:
@@ -49,64 +46,64 @@ def compute_eulerian_circuit(edges: list[tuple[str, str]], start: str) -> list[s
     return list(reversed(circuit))
 
 
-def assert_only_on(emu, expected_page: str) -> None:
-    """Assert check_if_on_<expected> is True and every other page check is False."""
+def _only_on(emu, expected_page: str) -> tuple[bool, str]:
     actual = {page: bool(check(emu)) for page, check in MAIN_PAGE_CHECKS.items()}
     expected = {page: (page == expected_page) for page in MAIN_PAGE_CHECKS}
-    if actual != expected:
-        diffs = [
-            f"{page}: expected={expected[page]} actual={actual[page]}"
-            for page in MAIN_PAGE_CHECKS
-            if actual[page] != expected[page]
-        ]
-        raise AssertionError(f"expected to be only on {expected_page!r}, but page-check mismatch: " + "; ".join(diffs))
+    if actual == expected:
+        return (True, "")
+    diffs = [
+        f"{page}: expected={expected[page]} actual={actual[page]}"
+        for page in MAIN_PAGE_CHECKS
+        if actual[page] != expected[page]
+    ]
+    return (False, f"expected only on {expected_page!r}, page-check mismatch: " + "; ".join(diffs))
 
 
-def test_navigate_all_main_page_permutations() -> None:
-    logger = Logger()
-    emu = MemuEmulatorController(logger, debug_mode=True)
+def run_test(emulator, logger) -> tuple[bool, str]:
+    if not wait_for_clash_main_menu(emulator, logger):
+        return (False, "Didn't begin on clash main")
 
-    assert wait_for_clash_main_menu(emu, logger), "precondition: not on main menu at start"
-    assert_only_on(emu, PAGE_MAIN)
+    ok, msg = _only_on(emulator, PAGE_MAIN)
+    if not ok:
+        return (False, f"Failed during precondition page-check: {msg}")
     print(f"[+] precondition: on {PAGE_MAIN}")
 
     try:
         circuit = compute_eulerian_circuit(list(NAV_CLICKS.keys()), start=PAGE_MAIN)
         edges_to_walk = len(circuit) - 1
-        assert edges_to_walk == len(NAV_CLICKS), (
-            f"eulerian circuit should cover all {len(NAV_CLICKS)} edges, got {edges_to_walk}"
-        )
+        if edges_to_walk != len(NAV_CLICKS):
+            return (
+                False,
+                f"Failed during eulerian-circuit construction: expected {len(NAV_CLICKS)} edges, got {edges_to_walk}",
+            )
         print(f"[+] eulerian circuit: {edges_to_walk} edges across {len(circuit)} stops")
 
         for i in range(edges_to_walk):
             start = circuit[i]
             end = circuit[i + 1]
             print(f"[{i + 1:>2}/{edges_to_walk}] {start} -> {end}")
-            ok = navigate_main_page(emu, logger, start, end)
-            assert ok, f"navigate_main_page({start!r}, {end!r}) returned False"
-            assert_only_on(emu, end)
+            if not navigate_main_page(emulator, logger, start, end):
+                return (False, f"Failed during navigate_main_page({start!r} -> {end!r})")
+            ok, msg = _only_on(emulator, end)
+            if not ok:
+                return (False, f"Failed during page-check after {start!r} -> {end!r}: {msg}")
 
-        assert circuit[-1] == PAGE_MAIN, f"circuit should end on {PAGE_MAIN!r}, ended on {circuit[-1]!r}"
-        assert_only_on(emu, PAGE_MAIN)
-        print(f"[+] finished on {PAGE_MAIN}")
+        if circuit[-1] != PAGE_MAIN:
+            return (False, f"Failed during circuit termination: ended on {circuit[-1]!r}, expected {PAGE_MAIN!r}")
 
     finally:
         # Best-effort recovery: if we're not on main, try to find where we are
         # and navigate back so the next test starts in a known state.
-        if not check_if_on_clash_main_menu(emu):
+        if not check_if_on_clash_main_menu(emulator):
             for page, check in MAIN_PAGE_CHECKS.items():
                 if page == PAGE_MAIN:
                     continue
-                if check(emu):
+                if check(emulator):
                     print(f"[!] cleanup: navigating from {page} back to main")
-                    navigate_main_page(emu, logger, page, PAGE_MAIN)
+                    navigate_main_page(emulator, logger, page, PAGE_MAIN)
                     break
 
+    if not wait_for_clash_main_menu(emulator, logger):
+        return (False, "Didn't end on clash main")
 
-if __name__ == "__main__":
-    try:
-        test_navigate_all_main_page_permutations()
-    except AssertionError as e:
-        print(f"FAIL: {e}", file=sys.stderr)
-        sys.exit(1)
-    print("PASS")
+    return (True, "")
