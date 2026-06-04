@@ -106,6 +106,7 @@ JOBS = [
     ),
     JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade cards", default=False),
     JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
+    JobConfig(UIField.SHOP_DAILY_OFFER_USER_TOGGLE, "🛒 Shop daily free offer", default=False),
     JobConfig(
         UIField.CLAN_CHAT_USER_TOGGLE,
         "💬 Clan chat",

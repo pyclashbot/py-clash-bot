@@ -86,6 +86,15 @@ def find_post_battle_button(emulator):
     return None
 
 
+def locate_free_shop_offer_icon(emulator) -> tuple[int, int] | None:
+    """Find the free daily shop offer icon anywhere on the current screen.
+
+    Returns (x, y) of the match, or None if not found.
+    """
+    image = emulator.screenshot()
+    return find_image(image, "daily_free_shop_offer_icon", tolerance=0.9)
+
+
 def detect_upgradable_cards(emulator):
     img = emulator.screenshot()
     upgradable = []

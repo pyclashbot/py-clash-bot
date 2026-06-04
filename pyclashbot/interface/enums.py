@@ -34,6 +34,7 @@ class BotStatField(StrEnum):
 
 class UIField(StrEnum):
     CARD_MASTERY_USER_TOGGLE = "card_mastery_user_toggle"
+    SHOP_DAILY_OFFER_USER_TOGGLE = "shop_daily_offer_user_toggle"
     CLASSIC_1V1_USER_TOGGLE = "classic_1v1_user_toggle"
     CLASSIC_2V2_USER_TOGGLE = "classic_2v2_user_toggle"
     TROPHY_ROAD_USER_TOGGLE = "trophy_road_user_toggle"
@@ -113,6 +114,7 @@ PRIMARY_JOB_TOGGLES: tuple[UIField, ...] = (
     UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
     UIField.CARD_UPGRADE_USER_TOGGLE,
     UIField.CARD_MASTERY_USER_TOGGLE,
+    UIField.SHOP_DAILY_OFFER_USER_TOGGLE,
     UIField.CLAN_CHAT_USER_TOGGLE,
     UIField.CLASSIC_1V1_USER_TOGGLE,
     UIField.CLASSIC_2V2_USER_TOGGLE,
