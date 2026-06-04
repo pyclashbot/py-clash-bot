@@ -79,6 +79,11 @@ PLAY_COORDS = {
         "left": [(118, 185)],
         "right": [(295, 185)],
     },
+    # 1-elixir spirit troops: reactive center lane (same coords as zap at first).
+    "spirit": {
+        "left": [(118, 185)],
+        "right": [(295, 185)],
+    },
     "rocket": {
         "left": [(127, 161)],
         "right": [(282, 162)],
@@ -175,7 +180,6 @@ CARD_GROUPS: dict[str, list[str]] = {
         "hero_barb_barrel",
         "clone",
         "heal",
-        "heal_spirit",
         "mirror",
         "rage",
         "royal_delivery",
@@ -187,12 +191,15 @@ CARD_GROUPS: dict[str, list[str]] = {
     "poison": ["poison"],
     "arrows": ["arrows"],
     "snowball": ["snowball", "evo_snowball"],
-    "zap": [
+    "spirit": [
         "electro_spirit",
         "fire_spirit",
-        "gob_curse",
+        "heal_spirit",
         "ice_spirit",
         "evo_ice_spirit",
+    ],
+    "zap": [
+        "gob_curse",
         "void",
         "zap",
         "evo_zap",
