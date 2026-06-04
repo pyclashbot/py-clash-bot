@@ -2,24 +2,18 @@
 
 import time
 
-from pyclashbot.bot.nav import (
+from pyclashbot.bot.coords import (
+    ACCOUNT_SLOT_CLICK_COORDS,
     CLASH_MAIN_OPTIONS_BURGER_BUTTON,
-    wait_for_clash_main_menu,
+    SWITCH_ACCOUNT_BUTTON_COORD,
 )
+from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_burger_button_options_menu,
     check_if_on_clash_main_menu,
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
-
-# 419x633 emulator resolution (same as CLASH_MAIN_OPTIONS_BURGER_BUTTON in nav.py).
-SWITCH_ACCOUNT_BUTTON_COORD = (221, 468)
-ACCOUNT_SLOT_CLICK_COORDS: dict[int, tuple[int, int]] = {
-    1: (253, 380),
-    2: (251, 476),
-    3: (252, 572),
-}
 
 ACCOUNT_SWITCH_MAIN_WAIT_TIMEOUT = 180
 ACCOUNT_PICKER_WAIT_TIMEOUT = 40

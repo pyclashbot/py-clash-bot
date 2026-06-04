@@ -77,3 +77,11 @@ MAG_DUMP_CARD_COORDS = [
     (336, 555),
 ]
 BATTLE_WAIT_DEADSPACE_COORD = (20, 200)
+
+# --- Account switch ---
+SWITCH_ACCOUNT_BUTTON_COORD = (221, 468)
+ACCOUNT_SLOT_CLICK_COORDS: dict[int, tuple[int, int]] = {
+    1: (253, 380),
+    2: (251, 476),
+    3: (252, 572),
+}

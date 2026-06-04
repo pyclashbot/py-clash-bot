@@ -83,7 +83,15 @@ def _deck_cache_key(account_index: int, battle_mode: str) -> str:
 def get_deck_number_for_battle_mode(battle_mode: str, account_index: int = 0) -> int:
     """Get the deck number for a battle mode on the given account (thread-local cache)."""
     cache = _get_deck_cache()
-    return cache.get(_deck_cache_key(account_index, battle_mode), 1)
+    key = _deck_cache_key(account_index, battle_mode)
+    if key in cache:
+        return cache[key]
+    # Legacy: deck index was keyed by battle mode only (pre account-switch).
+    legacy = cache.get(battle_mode)
+    if legacy is not None and account_index == 0:
+        cache[key] = legacy
+        return legacy
+    return 1
 
 
 def set_deck_number_for_battle_mode(battle_mode: str, deck_number: int, account_index: int = 0):
