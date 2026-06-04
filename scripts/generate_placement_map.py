@@ -8,9 +8,8 @@ Usage:
   uv run python scripts/generate_placement_map.py
   uv run python scripts/generate_placement_map.py --background path/to.png
 
-Outputs:
+Output:
   docs/placement-zones-overlay.png  (screenshot + dots + legend)
-  docs/placement-zones-map.png      (schematic fallback if no screenshot)
 """
 
 from __future__ import annotations
@@ -26,7 +25,6 @@ ROOT = Path(__file__).resolve().parents[1]
 CARD_DETECTION = ROOT / "pyclashbot" / "bot" / "card_detection.py"
 DEFAULT_BACKGROUND = ROOT / "docs" / "reference" / "battle-screenshot.png"
 OUT_OVERLAY = ROOT / "docs" / "placement-zones-overlay.png"
-OUT_SCHEMATIC = ROOT / "docs" / "placement-zones-map.png"
 
 WIDTH, HEIGHT = 419, 633
 
@@ -222,25 +220,6 @@ def build_legend(height: int, play_coords: dict, scale: int = 1) -> Image.Image:
     return legend
 
 
-def render_schematic(play_coords: dict, out: Path) -> None:
-    """Simple green arena fallback when no battle screenshot is available."""
-    img = Image.new("RGB", (WIDTH, HEIGHT), (40, 100, 50))
-    draw = ImageDraw.Draw(img)
-    draw.rectangle((0, 248, WIDTH, 368), fill=(50, 110, 160))
-    for x0, x1 in ((55, 165), (254, 364)):
-        draw.rectangle((x0, 268, x1, 348), fill=(150, 120, 80))
-    base_rgba = img.convert("RGBA")
-    composed = draw_points(base_rgba, play_coords, show_labels=False)
-    legend = build_legend(200, play_coords)
-    legend_rgb = legend.convert("RGB")
-    out_img = Image.new("RGB", (WIDTH, HEIGHT + legend_rgb.height), (30, 30, 30))
-    out_img.paste(composed.convert("RGB"), (0, 0))
-    out_img.paste(legend_rgb, (0, HEIGHT))
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out_img.save(out)
-    print(f"Wrote schematic fallback: {out}")
-
-
 def render_overlay(background: Path, play_coords: dict, out: Path, show_labels: bool) -> None:
     base = load_background(background)
     composed = draw_points(base, play_coords, show_labels=show_labels)
@@ -275,14 +254,9 @@ def main() -> None:
         help=f"Battle screenshot at {WIDTH}x{HEIGHT} (default: {DEFAULT_BACKGROUND})",
     )
     parser.add_argument("--labels", action="store_true", help="Short profile labels on left-side points")
-    parser.add_argument("--schematic-only", action="store_true", help="Only write schematic fallback")
     args = parser.parse_args()
 
     play_coords = load_play_coords()
-
-    if args.schematic_only:
-        render_schematic(play_coords, OUT_SCHEMATIC)
-        return
 
     try:
         render_overlay(args.background, play_coords, OUT_OVERLAY, show_labels=args.labels)
@@ -290,11 +264,7 @@ def main() -> None:
         print(f"No screenshot at {args.background}")
         print("Save a mid-battle 419x633 PNG there, or pass --background /path/to.png")
         print("See docs/reference/README.md for capture steps.")
-        render_schematic(play_coords, OUT_SCHEMATIC)
-        return
-
-    # Also refresh schematic for comparison
-    render_schematic(play_coords, OUT_SCHEMATIC)
+        raise SystemExit(1) from None
 
 
 if __name__ == "__main__":

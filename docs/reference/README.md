@@ -28,7 +28,7 @@ See [../placement-zones.md](../placement-zones.md) for the committed overlay map
 | **ADB** | `adb exec-out screencap -p > docs/reference/battle-screenshot.png` then verify size is 419×633. |
 | **Manual** | Screenshot the emulator window; crop to the game field only if the image is exactly 419×633. |
 
-If the file is missing, the script still writes a green **schematic** at `docs/placement-zones-map.png` and prints instructions.
+If the file is missing, the script prints capture instructions and exits without updating the overlay.
 
 ### Tips
 

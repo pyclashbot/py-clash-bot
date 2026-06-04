@@ -10,8 +10,6 @@ The bot picks a **play group** for each detected card, then taps a random point 
 - **Shape + color** = play group (see legend at the bottom of the image).
 - Example: yellow **stars** = `center_spell`; red **circles** = `bridge_line`; pink **squares** = `spirit` (uses building coords on your side).
 
-A green **schematic** (no battle screenshot required) is at [placement-zones-map.png](placement-zones-map.png).
-
 ## Play groups (summary)
 
 | Group | Arena area |
@@ -42,7 +40,7 @@ After changing `PLAY_COORDS` or `CARD_GROUPS`:
    uv run python scripts/generate_placement_map.py
    ```
 
-   Writes `docs/placement-zones-overlay.png` (and updates the schematic).
+   Writes `docs/placement-zones-overlay.png`.
 
 **BlueStacks (macOS):**
 
