@@ -39,7 +39,7 @@ PLAY_COORDS = {
         "left": [(122, 311), (125, 312)],
         "right": [(292, 311), (298, 312)],
     },
-    "spawner": {
+    "back_lane": {
         "left": [(69, 442), (158, 444), (166, 394), (102, 451)],
         "right": [(247, 396), (264, 440), (343, 442), (312, 456)],
     },
@@ -251,7 +251,7 @@ CARD_GROUPS: dict[str, list[str]] = {
         "evo_mortar",
         "xbow",
     ],
-    "spawner": [
+    "back_lane": [
         "archers",
         "evo_archers",
         "baby_dragon",
