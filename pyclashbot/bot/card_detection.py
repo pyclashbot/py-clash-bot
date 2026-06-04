@@ -4,120 +4,110 @@ from collections import Counter
 
 import numpy
 
-# play coord data
+# Placement profiles: where on screen to tap (left/right), not card role in battle.
+# Shared arena zones use zone_* keys; card-named keys stay when only that card (or its evo) uses the region.
+# CARD_GROUPS maps card ids → key below (see #674 for full id list including pre-fingerprint evo/hero).
 PLAY_COORDS = {
-    # done
-    "spell": {
-        "left": [(116, 160)],
-        "right": [(302, 160)],
-    },
-    "big_win_con": {
+    # Troops: bridge line (tanks + heavy win conditions share coords until a follow-up retune).
+    "bridge_line": {
         "left": [(115, 332)],
         "right": [(295, 336)],
     },
-    "bigboi": {
-        "left": [(115, 332)],
-        "right": [(295, 336)],
-    },
-    "hog": {
+    # Troops: bridge rush (Hog, Ram, Wall Breakers, …).
+    "bridge_rush": {
         "left": [(77, 281), (113, 286), (154, 283)],
         "right": [(257, 283), (300, 284), (353, 283)],
     },
-    "turret": {
-        "left": [(224, 320), (191, 351), (182, 362), (202, 339)],
-        "right": [(224, 320), (224, 334), (214, 360), (211, 381)],
-    },
-    "miner": {
-        "left": [(86, 156), (90, 104), (143, 113), (142, 153)],
-        "right": [(274, 152), (276, 111), (339, 111), (323, 157)],
-    },
-    "goblin_barrel": {
-        "left": [(115, 161), (116, 161), (117, 161)],
-        "right": [(300, 161), (302, 161), (301, 161)],
-    },
-    "xbow": {
-        "left": [(122, 311), (125, 312)],
-        "right": [(292, 311), (298, 312)],
-    },
-    "back_lane": {
+    # Troops/buildings: back field support (swarms, spawners, ranged support).
+    "back_support": {
         "left": [(69, 442), (158, 444), (166, 394), (102, 451)],
         "right": [(247, 396), (264, 440), (343, 442), (312, 456)],
     },
-    "long_range": {
+    # Troops: king-tower lane (Witch, Archer Queen, …).
+    "king_lane": {
         "left": [(70, 463), (184, 398), (166, 394), (191, 473)],
         "right": [(247, 396), (264, 440), (343, 463), (211, 471)],
     },
+    # Princess (+ evo): deep lane, tuned separately from king_lane.
     "princess": {
         "left": [(70, 463), (240, 400), (191, 471), (220, 402)],
         "right": [(343, 463), (184, 398), (211, 473), (166, 394)],
     },
-    "earthquake": {
+    # Buildings: defensive structures in the back field.
+    "defense_building": {
+        "left": [(224, 320), (191, 351), (182, 362), (202, 339)],
+        "right": [(224, 320), (224, 334), (214, 360), (211, 381)],
+    },
+    # Buildings: siege (Mortar, X-Bow).
+    "siege_building": {
+        "left": [(122, 311), (125, 312)],
+        "right": [(292, 311), (298, 312)],
+    },
+    # Spells: center field behind bridge (Rage, Clone, Mirror, Barb Barrel, Royal Delivery).
+    "center_spell": {
+        "left": [(116, 160)],
+        "right": [(302, 160)],
+    },
+    # Spells: standard lane target (Fireball, Poison, Log, …).
+    "lane_spell": {
         "left": [(118, 185)],
         "right": [(295, 185)],
     },
-    "fireball": {
+    # Spells: small reactive (Zap, Void, Goblin Curse).
+    "reactive_spell": {
         "left": [(118, 185)],
         "right": [(295, 185)],
     },
-    "freeze": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    "poison": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    "arrows": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    "snowball": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    "zap": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    # 1-elixir spirit troops: reactive center lane (same coords as zap at first).
+    # Troops: 1-elixir spirits (played on your side).
+    # Same coords as defense_building until spirit lane is tuned.
     "spirit": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    "rocket": {
-        "left": [(127, 161)],
-        "right": [(282, 162)],
-    },
-    "lightning": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
-    },
-    "log": {
-        "left": [(118, 185)],
-        "right": [(295, 185)],
+        "left": [(224, 320), (191, 351), (182, 362), (202, 339)],
+        "right": [(224, 320), (224, 334), (214, 360), (211, 381)],
     },
     "tornado": {
         "left": [(50, 182)],
         "right": [(355, 178)],
     },
-    "goblin_drill": {
-        "left": [(91, 149), (122, 183)],
-        "right": [(305, 177), (334, 154)],
+    "rocket": {
+        "left": [(127, 161)],
+        "right": [(282, 162)],
+    },
+    "goblin_barrel": {
+        "left": [(115, 161), (116, 161), (117, 161)],
+        "right": [(300, 161), (302, 161), (301, 161)],
     },
     "graveyard": {
         "left": [(88, 157)],
         "right": [(325, 156)],
     },
+    "miner": {
+        "left": [(86, 156), (90, 104), (143, 113), (142, 153)],
+        "right": [(274, 152), (276, 111), (339, 111), (323, 157)],
+    },
+    "goblin_drill": {
+        "left": [(91, 149), (122, 183)],
+        "right": [(305, 177), (334, 154)],
+    },
 }
 
 
+# Maps card ids → arena zone profile → PLAY_COORDS (see #674).
+# Includes base, Evolution, and Hero ids even before card_color_data fingerprints exist so
+# new detection work automatically picks up tuned clicks instead of the No group fallback.
 CARD_GROUPS: dict[str, list[str]] = {
-    "long_range": [
+    "king_lane": [
         "archer_queen",
+        "electro_dragon",
+        "evo_electro_dragon",
         "goblin_demolisher",
         "little_prince",
+        "mega_minion",
+        "hero_mega_minion",
         "mother_witch",
         "night_witch",
+        "royal_recruits",
+        "evo_royal_recruits",
+        "three_musketeers",
         "witch",
         "evo_witch",
     ],
@@ -125,7 +115,7 @@ CARD_GROUPS: dict[str, list[str]] = {
         "princess",
         "evo_princess",
     ],
-    "big_win_con": [
+    "bridge_line": [
         "balloon",
         "hero_balloon",
         "electro_giant",
@@ -141,8 +131,6 @@ CARD_GROUPS: dict[str, list[str]] = {
         "evo_royal_giant",
         "rune_giant",
         "sparky",
-    ],
-    "bigboi": [
         "bandit",
         "barbarians",
         "evo_barbarians",
@@ -174,23 +162,28 @@ CARD_GROUPS: dict[str, list[str]] = {
         "skeleton_king",
         "valkyrie",
         "evo_valkyrie",
+        "berserker",
+        "spirit_empress",
     ],
-    "spell": [
+    "center_spell": [
         "barb_barrel",
         "hero_barb_barrel",
         "clone",
-        "heal",
         "mirror",
         "rage",
         "royal_delivery",
-        "vines",
     ],
-    "earthquake": ["earthquake"],
-    "fireball": ["fireball"],
-    "freeze": ["freeze"],
-    "poison": ["poison"],
-    "arrows": ["arrows"],
-    "snowball": ["snowball", "evo_snowball"],
+    "lane_spell": [
+        "arrows",
+        "earthquake",
+        "fireball",
+        "freeze",
+        "lightning",
+        "log",
+        "poison",
+        "snowball",
+        "evo_snowball",
+    ],
     "spirit": [
         "electro_spirit",
         "fire_spirit",
@@ -198,24 +191,23 @@ CARD_GROUPS: dict[str, list[str]] = {
         "ice_spirit",
         "evo_ice_spirit",
     ],
-    "zap": [
+    "reactive_spell": [
         "gob_curse",
+        "heal",
         "void",
+        "vines",
         "zap",
         "evo_zap",
     ],
     "rocket": ["rocket"],
-    "lightning": ["lightning"],
-    "log": ["log"],
     "tornado": ["tornado"],
     "goblin_drill": ["goblin_drill", "evo_goblin_drill"],
     "graveyard": ["graveyard"],
-    "turret": [
+    "defense_building": [
         "bomb_tower",
         "cannon",
         "evo_cannon",
         "cannon_cart",
-        "elixir_collector",
         "goblin_cage",
         "evo_goblin_cage",
         "goblinstein",
@@ -223,10 +215,9 @@ CARD_GROUPS: dict[str, list[str]] = {
         "tesla",
         "evo_tesla",
     ],
-    "hog": [
+    "bridge_rush": [
         "battle_ram",
         "evo_battle_ram",
-        "berserker",
         "hog",
         "lumberjack",
         "evo_lumberjack",
@@ -246,12 +237,12 @@ CARD_GROUPS: dict[str, list[str]] = {
         "goblin_barrel",
         "evo_goblin_barrel",
     ],
-    "xbow": [
+    "siege_building": [
         "mortar",
         "evo_mortar",
         "xbow",
     ],
-    "back_lane": [
+    "back_support": [
         "archers",
         "evo_archers",
         "baby_dragon",
@@ -264,9 +255,8 @@ CARD_GROUPS: dict[str, list[str]] = {
         "evo_bomber",
         "dart_goblin",
         "evo_dart_goblin",
-        "electro_dragon",
-        "evo_electro_dragon",
         "electro_wizard",
+        "elixir_collector",
         "executioner",
         "evo_executioner",
         "fire_cracker",
@@ -286,8 +276,6 @@ CARD_GROUPS: dict[str, list[str]] = {
         "evo_inferno_dragon",
         "magic_archer",
         "hero_magic_archer",
-        "mega_minion",
-        "hero_mega_minion",
         "minion_horde",
         "evo_minion_horde",
         "minions",
@@ -296,16 +284,12 @@ CARD_GROUPS: dict[str, list[str]] = {
         "hero_musketeer",
         "phoenix",
         "rascals",
-        "royal_recruits",
-        "evo_royal_recruits",
         "skeleton_army",
         "evo_skeleton_army",
         "skeleton_dragons",
         "skeletons",
         "evo_skeletons",
         "spear_goblins",
-        "spirit_empress",
-        "three_musketeers",
         "tombstone",
         "hero_tombstone",
         "wizard",
