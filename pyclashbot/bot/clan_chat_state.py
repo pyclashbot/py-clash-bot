@@ -9,10 +9,17 @@ from os.path import abspath, dirname, join
 import cv2
 import numpy as np
 
-from pyclashbot.bot.nav import PAGE_CLAN_CHAT, PAGE_MAIN, navigate_main_page, wait_for_clash_main_menu
+from pyclashbot.bot.nav import (
+    PAGE_CLAN_CHAT,
+    PAGE_MAIN,
+    PAGE_SOCIAL,
+    navigate_main_page,
+    wait_for_clash_main_menu,
+)
 from pyclashbot.bot.state_detect import (
     check_if_on_clan_chat,
     check_if_on_clash_main_menu,
+    check_if_on_social,
     clan_button_pixel_is_active_green,
     clan_button_pixel_is_active_yellow,
 )
@@ -21,8 +28,8 @@ from pyclashbot.utils.cancellation import interruptible_sleep
 
 REFERENCE_ROOT = abspath(join(dirname(__file__), "..", "detection", "reference_images"))
 
-# Visible clan chat feed (no scrolling in v1).
-CHAT_FEED_SUBCROP = (0, 60, 419, 520)
+# Visible clan chat feed (no scrolling in v1). Keep above bottom nav (~y=600).
+CHAT_FEED_SUBCROP = (0, 60, 419, 500)
 CLAN_FOOTER_SUBCROP = (0, 470, 280, 600)
 REQUEST_PICKER_SUBCROP = (0, 70, 419, 600)
 
@@ -255,13 +262,36 @@ def _ensure_clan_chat(emulator, logger) -> bool:
     return check_if_on_clan_chat(emulator)
 
 
+def _recover_clan_chat_from_social(emulator, logger) -> bool:
+    """Clan chat lives under the Social bottom-nav tab; mis-clicks can land here without chat open."""
+    if check_if_on_clan_chat(emulator):
+        return True
+    if not check_if_on_social(emulator):
+        return False
+    logger.change_status("On Social tab — reopening clan chat...")
+    if not navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_CLAN_CHAT):
+        return False
+    interruptible_sleep(1)
+    return check_if_on_clan_chat(emulator)
+
+
 def _return_to_main(emulator, logger) -> bool:
     if check_if_on_clash_main_menu(emulator):
         return True
+
     if check_if_on_clan_chat(emulator):
         if navigate_main_page(emulator, logger, PAGE_CLAN_CHAT, PAGE_MAIN):
             interruptible_sleep(1)
-            return check_if_on_clash_main_menu(emulator)
+            if check_if_on_clash_main_menu(emulator):
+                return True
+
+    if check_if_on_social(emulator):
+        logger.change_status("On Social tab — returning to main menu...")
+        if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_MAIN):
+            interruptible_sleep(1)
+            if check_if_on_clash_main_menu(emulator):
+                return True
+
     return wait_for_clash_main_menu(emulator, logger, deadspace_click=True, timeout=60)
 
 
@@ -305,6 +335,8 @@ def clan_chat_state(
         )
         if count == 0:
             logger.change_status("No active donate buttons visible")
+        if not _recover_clan_chat_from_social(emulator, logger):
+            return _return_to_main(emulator, logger)
 
     if request_enabled:
         if _open_request_picker(emulator, logger):
