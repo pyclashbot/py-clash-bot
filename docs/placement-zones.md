@@ -23,8 +23,8 @@ The bot picks a **play group** for each detected card, then taps a random point 
 | `siege_building` | Mortar / X-Bow |
 | `center_spell` | Center behind river |
 | `lane_spell` | Standard spell lane |
-| `reactive_spell` | Reactive spells (Zap, Heal, Vines, …) |
+| `reactive_spell` | Reactive spells (Zap, Void, Vines, …) |
 | `spirit` | Spirits (your side; coords match `defense_building` for now) |
 | `rocket`, `tornado`, `goblin_barrel`, `graveyard`, `miner`, `goblin_drill` | Card-specific |
 
-Full card → group list lives in `CARD_GROUPS` in `card_detection.py` (177 ids including pre-fingerprint evo/hero variants).
+Full card → group list lives in `CARD_GROUPS` in `card_detection.py` (176 ids including pre-fingerprint evo/hero variants).
