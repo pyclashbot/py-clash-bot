@@ -10873,6 +10873,14 @@ def get_corner_pixels(x_range, y_range, iar):
     return make_pixel_dict_from_color_list(colors)
 
 
+def _screenshot_rgb(emulator) -> numpy.ndarray:
+    """Emulator screenshots are BGR (OpenCV); fingerprints use RGB captures."""
+    iar = emulator.screenshot()
+    if iar.ndim == 3 and iar.shape[2] == 3:
+        return iar[..., ::-1]
+    return iar
+
+
 def get_all_pixel_data(emulator, chosen_card_index):
     topleft = toplefts[chosen_card_index]
 
@@ -10925,7 +10933,7 @@ play_side = "left"
 
 def check_which_cards_are_available(emulator, check_champion=False, check_side=False):
     global battle_iar
-    battle_iar = emulator.screenshot()
+    battle_iar = _screenshot_rgb(emulator)
     card_exists_list = []
 
     if check_champion and (
@@ -11031,7 +11039,7 @@ bridge_iar = 0
 
 def create_default_bridge_iar(emulator):
     global bridge_iar
-    bridge_iar = emulator.screenshot()
+    bridge_iar = _screenshot_rgb(emulator)
 
 
 bridge_pixel = [[100, 200], [275, 200]]
