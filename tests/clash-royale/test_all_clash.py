@@ -211,6 +211,14 @@ def main() -> int:
         choices=choices,
         help="Which emulator backend to attach to. Must already be running on the CR main menu.",
     )
+    parser.add_argument(
+        "--only",
+        default=None,
+        help=(
+            "Comma-separated substring(s) to filter which tests to run. Case-insensitive. "
+            "Examples: --only select_battle_mode  |  --only clan_chat  |  --only 1v1,2v2"
+        ),
+    )
     args = parser.parse_args()
 
     from pyclashbot.utils.logger import Logger
@@ -229,6 +237,13 @@ def main() -> int:
     print(f"[+] preconditions OK ({args.emulator}): emulator exists, is open, on Clash main menu.\n")
 
     suite = _suite()
+    if args.only:
+        needles = [s.strip().lower() for s in args.only.split(",") if s.strip()]
+        suite = [entry for entry in suite if any(n in entry[0].lower() for n in needles)]
+        if not suite:
+            print(f"ERROR: --only {args.only!r} matched no tests.", file=sys.stderr)
+            return 1
+        print(f"[+] --only filter: running {len(suite)} test(s)")
     results: list[tuple[str, bool, str]] = []
     failed = False
 
