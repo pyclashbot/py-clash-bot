@@ -2,7 +2,18 @@ import random
 import time
 from typing import Literal
 
-from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
+from pyclashbot.bot.coords import (
+    BATTLE_LOG_BUTTON,
+    BATTLE_WAIT_DEADSPACE_COORD,
+    CARD_PAGE_EXIT_BUTTON_COORDS,
+    CARD_PAGE_ICON_FROM_CARD_PAGE,
+    CARD_PAGE_ICON_FROM_CLASH_MAIN,
+    CLASH_MAIN_OPTIONS_BURGER_BUTTON,
+    DECK_TABS_REGION,
+    DECKS_PAGE_BUTTON_COORDS,
+    OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE,
+)
+from pyclashbot.bot.coords import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
 from pyclashbot.bot.state_detect import (
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -21,12 +32,6 @@ from pyclashbot.detection.image_rec import (
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
-CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
-BATTLE_LOG_BUTTON = (241, 43)
-CARD_PAGE_ICON_FROM_CLASH_MAIN = (108, 598)
-CARD_PAGE_ICON_FROM_CARD_PAGE = (147, 598)
-CARD_PAGE_EXIT_BUTTON_COORDS = (248, 603)
-OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE = (209, 599)
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
 
 
@@ -61,7 +66,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
             logger.change_status("Detected an ongoing battle!")
             return True
 
-        emulator.click(x_coord=20, y_coord=200)
+        emulator.click(x_coord=BATTLE_WAIT_DEADSPACE_COORD[0], y_coord=BATTLE_WAIT_DEADSPACE_COORD[1])
 
     return False
 
@@ -453,9 +458,6 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
 
 
 # ===== Card-page / deck-page navigation primitives ===================
-
-DECK_TABS_REGION = (0, 80, 416, 146)
-DECKS_PAGE_BUTTON_COORDS = (125, 60)
 
 
 def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
