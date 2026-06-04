@@ -13,10 +13,11 @@ from pyclashbot.bot.nav import (
     PAGE_CLAN_CHAT,
     PAGE_MAIN,
     PAGE_SOCIAL,
+    handle_trophy_reward_menu,
     navigate_main_page,
-    wait_for_clash_main_menu,
 )
 from pyclashbot.bot.state_detect import (
+    check_for_trophy_reward_menu,
     check_if_on_clan_chat,
     check_if_on_clash_main_menu,
     check_if_on_social,
@@ -262,17 +263,65 @@ def _ensure_clan_chat(emulator, logger) -> bool:
     return check_if_on_clan_chat(emulator)
 
 
+def _tap_battle_tab(emulator, logger) -> None:
+    """Center/battle bottom-nav tab — returns to main from Social hub or clan chat."""
+    logger.change_status("Tapping battle tab to reach main menu...")
+    emulator.click(170, 600)
+    interruptible_sleep(2)
+
+
+def _open_clan_chat_via_bottom_nav(emulator, logger) -> bool:
+    """Social tab then clan chat sub-tab (matches main -> clan-chat nav clicks)."""
+    logger.change_status("Opening clan chat via bottom nav...")
+    emulator.click(315, 600)
+    interruptible_sleep(1.5)
+    emulator.click(280, 600)
+    interruptible_sleep(2)
+    return check_if_on_clan_chat(emulator)
+
+
 def _recover_clan_chat_from_social(emulator, logger) -> bool:
     """Clan chat lives under the Social bottom-nav tab; mis-clicks can land here without chat open."""
     if check_if_on_clan_chat(emulator):
         return True
-    if not check_if_on_social(emulator):
-        return False
-    logger.change_status("On Social tab — reopening clan chat...")
-    if not navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_CLAN_CHAT):
-        return False
-    interruptible_sleep(1)
-    return check_if_on_clan_chat(emulator)
+    if check_if_on_social(emulator):
+        logger.change_status("On Social tab — reopening clan chat...")
+        if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_CLAN_CHAT):
+            interruptible_sleep(1)
+            return check_if_on_clan_chat(emulator)
+    return _open_clan_chat_via_bottom_nav(emulator, logger)
+
+
+def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
+    """Return to main from clan/social without generic wait (trophy check false-positives there)."""
+    start = time.time()
+    while time.time() - start < timeout:
+        if check_if_on_clash_main_menu(emulator):
+            return True
+
+        if check_if_on_clan_chat(emulator):
+            if navigate_main_page(emulator, logger, PAGE_CLAN_CHAT, PAGE_MAIN):
+                interruptible_sleep(1)
+            continue
+
+        if check_if_on_social(emulator):
+            logger.change_status("On Social tab — returning to main menu...")
+            if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_MAIN):
+                interruptible_sleep(1)
+            continue
+
+        if (
+            not check_if_on_social(emulator)
+            and not check_if_on_clan_chat(emulator)
+            and check_for_trophy_reward_menu(emulator)
+        ):
+            handle_trophy_reward_menu(emulator, logger)
+            interruptible_sleep(1)
+            continue
+
+        _tap_battle_tab(emulator, logger)
+
+    return check_if_on_clash_main_menu(emulator)
 
 
 def _return_to_main(emulator, logger) -> bool:
@@ -292,7 +341,11 @@ def _return_to_main(emulator, logger) -> bool:
             if check_if_on_clash_main_menu(emulator):
                 return True
 
-    return wait_for_clash_main_menu(emulator, logger, deadspace_click=True, timeout=60)
+    _tap_battle_tab(emulator, logger)
+    if check_if_on_clash_main_menu(emulator):
+        return True
+
+    return _wait_for_main_after_clan(emulator, logger)
 
 
 def clan_chat_state(
