@@ -6,6 +6,8 @@ confirm the collect, dismiss, then return to main.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from pyclashbot.bot.coords import (
     CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS,
     PAGINATE_SHOP_PAGE_BUTTON,
@@ -22,7 +24,9 @@ from pyclashbot.bot.state_detect import (
     check_if_on_shop,
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
-from pyclashbot.utils.logger import Logger
+
+if TYPE_CHECKING:
+    from pyclashbot.utils.logger import Logger
 
 MAX_PAGINATE_ITERATIONS = 8
 
