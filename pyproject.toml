@@ -22,7 +22,7 @@ dependencies = [
     "pymemuc>=0.6.0,<0.7",
     "psutil>=6.1.0,<8",
     "pypresence>=4.3.0,<5",
-    "pillow (>=11.3.0,<13.0.0)",
+    "pillow>=12.2.0,<13.0.0",
     "ttkbootstrap>=1.12.1,<1.21",
 ]
 
@@ -38,7 +38,7 @@ build = [
     "cx-freeze>=8.6.4,<9; sys_platform == 'win32'",
     "pyinstaller>=6.0.0,<7; sys_platform == 'darwin'",
     "packaging>=24.2",
-    "requests>=2.32.4",
+    "requests>=2.33.0",
 ]
 dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.16"]
 
