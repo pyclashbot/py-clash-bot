@@ -8,20 +8,18 @@ The single existing VM is renamed away and back during the test; nothing is
 created or deleted. A try/finally guarantees the original name is restored
 even if an assertion fails.
 
-Run directly:
-    py tests/memu/test_find_emulator.py
-
-Or via pytest:
-    pytest tests/memu/test_find_emulator.py
+Run via pytest (needs a live MEmu VM):
+    pytest -m emulator tests/memu/test_find_emulator.py --emulator memu
 """
 
 from __future__ import annotations
 
-import sys
-
+import pytest
 from pymemuc import PyMemuc
 
 from pyclashbot.emulators.memu import EMULATOR_NAME
+
+pytestmark = pytest.mark.emulator
 
 TEMP_RENAME = "not-the-clashbot-vm"
 
@@ -66,12 +64,3 @@ def test_find_emulator_both_conditions() -> None:
         if restore_idx is not None:
             pmc.rename_vm(vm_index=restore_idx, new_name=EMULATOR_NAME)
             print(f"[+] restored idx={restore_idx} -> '{EMULATOR_NAME}'")
-
-
-if __name__ == "__main__":
-    try:
-        test_find_emulator_both_conditions()
-    except AssertionError as e:
-        print(f"FAIL: {e}", file=sys.stderr)
-        sys.exit(1)
-    print("PASS")

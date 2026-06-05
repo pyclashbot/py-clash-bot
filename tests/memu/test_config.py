@@ -8,19 +8,18 @@ Flow:
 
 Requires an existing MEmu VM titled `pyclashbot-136`. VM may be stopped.
 
-Run directly:
-    py tests/memu/test_config.py
-
-Or via pytest:
-    pytest tests/memu/test_config.py
+Run via pytest (needs a live MEmu VM):
+    pytest -m emulator tests/memu/test_config.py --emulator memu
 """
 
 from __future__ import annotations
 
-import sys
+import pytest
 
 from pyclashbot.emulators.memu import MemuEmulatorController
 from pyclashbot.utils.logger import Logger
+
+pytestmark = pytest.mark.emulator
 
 DRIFT_VALUES = {"cpucap": "99", "fps": "99"}
 
@@ -74,12 +73,3 @@ def test_config_drift_and_restore() -> None:
         if not valid_now:
             print("[!] final state invalid — running configure() to clean up")
             emu.configure()
-
-
-if __name__ == "__main__":
-    try:
-        test_config_drift_and_restore()
-    except AssertionError as e:
-        print(f"FAIL: {e}", file=sys.stderr)
-        sys.exit(1)
-    print("PASS")

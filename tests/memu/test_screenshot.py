@@ -1,22 +1,20 @@
 """Module-level smoke test: MEmu screenshot capture returns a non-black frame.
 
-Run directly:
-    py tests/memu/test_screenshot.py
-
-Or via pytest:
-    pytest tests/memu/test_screenshot.py
+Run via pytest (needs a live MEmu VM):
+    pytest -m emulator tests/memu/test_screenshot.py --emulator memu
 
 Requires MEmu to be installed and a clashbot VM reachable.
 """
 
 from __future__ import annotations
 
-import sys
-
 import numpy as np
+import pytest
 
 from pyclashbot.emulators.memu import MemuEmulatorController
 from pyclashbot.utils.logger import Logger
+
+pytestmark = pytest.mark.emulator
 
 BLACK_THRESHOLD = 15.0
 
@@ -37,12 +35,3 @@ def test_screenshot_not_black() -> None:
         f"frame is near-black (mean={mean_intensity:.2f} <= {BLACK_THRESHOLD}); "
         "emulator may be off, locked, or showing a black screen"
     )
-
-
-if __name__ == "__main__":
-    try:
-        test_screenshot_not_black()
-    except AssertionError as e:
-        print(f"FAIL: {e}", file=sys.stderr)
-        sys.exit(1)
-    print("PASS")

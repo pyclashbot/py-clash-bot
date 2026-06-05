@@ -5,8 +5,9 @@ A Clash Royale automation bot: drives an Android emulator via ADB and acts on th
 ## Commands
 
 Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`build-dmg`, all via `uv`); `CONTRIBUTING.md` has dev setup. Non-obvious bits those don't tell you:
-- Tests are **not** pytest — each `tests/**/test_*.py` runs as a standalone script (exit 0 = pass); `EMULATOR=memu make test` filters to `tests/<name>/`.
-- `tests/clash-royale/` are integration tests needing a live MEmu VM and **do not run in CI**. CI only builds artifacts + runs pre-commit.
+- Tests are **pytest**. Emulator/integration tests carry `@pytest.mark.emulator`; the default selection excludes them (`addopts = -m "not emulator"`), so `make test` (bare `pytest`) runs only offline tests and is safe everywhere. `make test-emulator EMULATOR=memu` runs the hardware suite (`-m emulator -x --emulator <backend>`).
+- The clash suite is one parametrized test: `tests/clash_royale/test_jobs.py` drives `run_test(emulator, logger)` fns from `jobs/`/`navigation/` over an ordered `SUITE` list (the source of truth). Use `-k <substr>` to select, `-x` to stop at the first failure. Add a job by importing its `run_test` and appending to `SUITE`. The shared emulator + precondition gate live in `tests/conftest.py` (`emulator`/`logger` fixtures).
+- `tests/clash_royale/` and `tests/memu/` need a live emulator and **do not run in CI**. CI only builds artifacts + runs pre-commit. Offline tests (e.g. `tests/test_card_fingerprint_bgr.py`) are CI-ready via `pytest -m "not emulator"`, but the workflows don't run them yet.
 - MSI build = cx-freeze, DMG = pyinstaller; both inject the real version (see Cross-cutting rules).
 
 ## Architecture
