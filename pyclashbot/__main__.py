@@ -82,6 +82,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
 
     job_dictionary: dict[str, Any] = {
         UIField.CARD_MASTERY_USER_TOGGLE.value: as_bool(UIField.CARD_MASTERY_USER_TOGGLE),
+        UIField.SHOP_DAILY_OFFER_USER_TOGGLE.value: as_bool(UIField.SHOP_DAILY_OFFER_USER_TOGGLE),
         UIField.CLASSIC_1V1_USER_TOGGLE.value: as_bool(UIField.CLASSIC_1V1_USER_TOGGLE),
         UIField.CLASSIC_2V2_USER_TOGGLE.value: as_bool(UIField.CLASSIC_2V2_USER_TOGGLE),
         UIField.TROPHY_ROAD_USER_TOGGLE.value: as_bool(UIField.TROPHY_ROAD_USER_TOGGLE),
