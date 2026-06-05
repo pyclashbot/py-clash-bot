@@ -73,18 +73,11 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Platform-aware config paths
         self.bs_conf_path, self.mim_meta_path = self._find_config_paths()
         if not os.path.isfile(self.mim_meta_path):
+            # Cold installs / BlueStacks Air haven't run the MIM yet; synthesize from bluestacks.conf.
             print(
-                f"[Bluestacks 5] MimMetaData.json not found at {self.mim_meta_path}. Launching Multi-Instance Manager to create it..."
+                f"[Bluestacks 5] MimMetaData.json not found at {self.mim_meta_path}. Synthesizing from bluestacks.conf..."
             )
-            self._open_multi_instance_manager()
-            deadline = time.time() + 10
-            while time.time() < deadline:
-                if os.path.isfile(self.mim_meta_path):
-                    print("[Bluestacks 5] MimMetaData.json detected.")
-                    break
-                interruptible_sleep(0.5)
-            else:
-                raise FileNotFoundError("[Bluestacks 5] MimMetaData.json not created within 10 seconds.")
+            self._synthesize_mim_meta()
         if DEBUG:
             print(f"[Bluestacks 5] bs_conf_path: {self.bs_conf_path}")
             print(f"[Bluestacks 5] mim_meta_path: {self.mim_meta_path}")
@@ -284,6 +277,28 @@ class BlueStacksEmulatorController(AdbBasedController):
                 break
         with open(mim_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
+
+    def _synthesize_mim_meta(self) -> None:
+        """Build a minimal MimMetaData.json from bluestacks.conf's internal<->display mapping."""
+        conf = self._read_text(self.bs_conf_path) or ""
+        org = []
+        for idx, internal in enumerate(self._list_instance_internals(conf)):
+            display = self._get_conf_value(conf, f"bst.instance.{internal}.display_name") or internal
+            org.append(
+                {
+                    "ID": idx,
+                    "Name": display,
+                    "IsFolder": False,
+                    "ParentFolder": -1,
+                    "IsOpen": False,
+                    "IsVisible": True,
+                    "InstanceName": internal,
+                }
+            )
+        os.makedirs(os.path.dirname(self.mim_meta_path), exist_ok=True)
+        with open(self.mim_meta_path, "w", encoding="utf-8") as f:
+            json.dump({"Organization": org}, f, indent=4)
+        print(f"[Bluestacks 5] Synthesized MimMetaData.json with {len(org)} instance(s).")
 
     def _close_multi_instance_manager(self) -> None:
         """Close BlueStacks Multi-Instance Manager if it's open after renaming to update instance name in it."""
