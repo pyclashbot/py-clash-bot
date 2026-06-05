@@ -2,7 +2,7 @@
 
 An open-source automation tool for Clash Royale on Windows and macOS. Uses Android emulation and image recognition to automate card leveling, pass progression, and daily gameplay tasks.
 
-[Join our Discord](https://discord.gg/nqKRkyq2UU) for support and updates.
+[Join our Discord](https://pyclashbot.app/discord/invite) for support and updates.
 
 ## Features
 
@@ -86,7 +86,7 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) | [Discord](https://discord.gg/nqKRkyq2UU) | [Issues](https://github.com/pyclashbot/py-clash-bot/issues)
+See [CONTRIBUTING.md](CONTRIBUTING.md) | [Discord](https://pyclashbot.app/discord/invite) | [Issues](https://github.com/pyclashbot/py-clash-bot/issues)
 
 ## License
 
