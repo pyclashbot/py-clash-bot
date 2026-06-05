@@ -70,6 +70,8 @@ class UIField(StrEnum):
     GP_WSI = "gp_wsi"
     ADB_TOGGLE = "adb_toggle"
     ADB_SERIAL = "adb_serial"
+    GP_DEVICE_SERIAL = "gp_device_serial"
+    BS_DEVICE_SERIAL = "bs_device_serial"
 
 
 WIN_RATE_STAT_LABELS: dict[StatField, str] = {

@@ -26,16 +26,29 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
-    def __init__(self, logger, render_settings: dict | None = None):
+    # BlueStacks runs a private ADB server on a fixed port; declared at class scope
+    # so classmethods (e.g. discover_devices) can route to the right server.
+    adb_server_port: int = 5041
+
+    @staticmethod
+    def find_adb() -> str | None:
+        """Find bundled HD-Adb path, or None if not found."""
+        try:
+            install = BlueStacksEmulatorController._find_install_location()
+            adb = os.path.join(install, "hd-adb" if is_macos() else "HD-Adb.exe")
+            return adb if os.path.isfile(adb) else None
+        except Exception:
+            return None
+
+    def __init__(self, logger, render_settings: dict | None = None, device_serial: str | None = None):
         self.logger = logger
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
         self.instance_name = "pyclashbot-136"
         self.internal_name: str | None = None
         self.instance_port: int | None = None
-        self.device_serial: str | None = None  # "127.0.0.1:<port>"
+        self._user_device_serial = device_serial
 
-        self.adb_server_port: int = 5041
         self.adb_env = os.environ.copy()
         self.adb_env["ADB_SERVER_PORT"] = str(self.adb_server_port)
 
@@ -86,7 +99,12 @@ class BlueStacksEmulatorController(AdbBasedController):
         self._ensure_managed_instance()
         if not self.instance_port:
             raise RuntimeError("No ADB port found for the target instance in bluestacks.conf.")
-        self.device_serial = f"127.0.0.1:{self.instance_port}"
+
+        if self._user_device_serial:
+            self.device_serial: str = self._user_device_serial
+            self.logger.log(f"[BlueStacks 5] Using user-specified device: {self.device_serial}")
+        else:
+            self.device_serial: str = f"127.0.0.1:{self.instance_port}"
 
         # Reset our private adb server
         self._reset_adb_server()
@@ -96,7 +114,8 @@ class BlueStacksEmulatorController(AdbBasedController):
             print("[BlueStacks 5] Restart failed, retrying...")
             interruptible_sleep(2)
 
-    def _find_install_location(self) -> str:
+    @staticmethod
+    def _find_install_location() -> str:
         """Locate BlueStacks 5 installation folder."""
         if is_macos():
             # macOS: Check standard app location
@@ -108,7 +127,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             raise FileNotFoundError("BlueStacks.app not found in /Applications")
 
         # Windows: Registry lookup
-        install_dir = self._get_bluestacks_registry_value("InstallDir")
+        install_dir = BlueStacksEmulatorController._get_bluestacks_registry_value("InstallDir")
         if not install_dir:
             raise FileNotFoundError("BlueStacks 5 installation not found (InstallDir missing).")
         base = normpath(str(install_dir))
@@ -136,7 +155,8 @@ class BlueStacksEmulatorController(AdbBasedController):
         mim_meta = os.path.join(dd, "UserData", "MimMetaData.json")
         return bs_conf, mim_meta
 
-    def _get_bluestacks_registry_value(self, value_name: str) -> str | None:
+    @staticmethod
+    def _get_bluestacks_registry_value(value_name: str) -> str | None:
         """Read a BlueStacks_nxt registry value from HKLM."""
         import winreg
 
@@ -336,7 +356,6 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Cache internals
         self.internal_name = internal
         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
-        self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
 
         self.logger.log(
             f"[BlueStacks 5] Reused instance '{internal}' as '{self.instance_name}'. Port={self.instance_port}"
@@ -401,7 +420,6 @@ class BlueStacksEmulatorController(AdbBasedController):
                     if internal:
                         self.internal_name = internal
                         self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
-                        self.device_serial = f"127.0.0.1:{self.instance_port}" if self.instance_port else None
                         with suppress(Exception):
                             self._close_multi_instance_manager()
                         self.logger.change_status("Clean instance detected - continuing...")
@@ -498,76 +516,39 @@ class BlueStacksEmulatorController(AdbBasedController):
                     f.write(conf)
                 self.logger.log(f"[BlueStacks 5] Enforced VM config for '{internal}'")
 
-    def _cmd_is_server_scoped(self, command: str) -> bool:
-        c = command.strip()
-        if c.startswith("-s "):
-            return True
-        first = c.split()[0] if c else ""
-        return first in {"connect", "disconnect", "devices", "start-server", "kill-server", "version", "help", "keys"}
-
-    def adb(self, command: str, binary_output: bool = False) -> subprocess.CompletedProcess:
-        """
-        Run an adb command via our private server. Device-scoped by default unless server-scoped.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        base = f'"{self.adb_path}" -P {self.adb_server_port} '
-        if not self._cmd_is_server_scoped(command) and self.device_serial:
-            base += f"-s {self.device_serial} "
-        full = base + command
-        if DEBUG:
-            print(f"[Bluestacks 5/ADB] {full}")
-        return subprocess.run(
-            full, shell=True, capture_output=True, text=not binary_output, check=False, env=self.adb_env
-        )
-
-    def _check_app_installed(self, package_name: str) -> bool:
-        """
-        Check if app is installed via ADB.
-        This is the abstract method implementation for AdbBasedController.
-        """
-        res = self.adb("shell pm list packages")
-        return res.stdout is not None and package_name in res.stdout
-
-    def adb_server(self, command: str) -> subprocess.CompletedProcess:
-        full = f'"{self.adb_path}" -P {self.adb_server_port} {command}'
-        if DEBUG:
-            print(f"[Bluestacks 5/ADB-SRV] {full}")
-        return subprocess.run(full, shell=True, capture_output=True, text=True, check=False, env=self.adb_env)
-
     def _reset_adb_server(self) -> None:
         with suppress(Exception):
-            self.adb_server("kill-server")  # Cause ADB loves to randomly fuck around
+            self.adb("kill-server")  # Cause ADB loves to randomly fuck around
 
     def _refresh_instance_port(self):
-        """Re-read the instance port and update device_serial."""
+        """Re-read the instance port from config and update device_serial."""
         if not self.internal_name:
             return
         new_port = self._read_instance_adb_port(self.bs_conf_path, self.internal_name)
-        if new_port and new_port != self.instance_port:
+        if new_port:
             self.instance_port = new_port
-            self.device_serial = f"127.0.0.1:{self.instance_port}"
-            if DEBUG:
-                print(f"[Bluestacks 5] Refreshed instance port -> {self.device_serial}")
+            # Update device_serial if not user-specified
+            if not self._user_device_serial:
+                self.device_serial = f"127.0.0.1:{self.instance_port}"
 
     def _connect(self) -> bool:
-        """Connect only to this instance's port."""
-        if not self.device_serial:
-            return False
+        """Connect to the configured device, refreshing the instance port on failure."""
         self._reset_adb_server()
-        self.adb_server(f"disconnect {self.device_serial}")
+        self.adb(f"disconnect {self.device_serial}")
         interruptible_sleep(0.2)
-        self.adb_server(f"connect {self.device_serial}")
+        self.adb(f"connect {self.device_serial}")
         state = self.adb("get-state")
         ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
         if not ok:
+            # BlueStacks may reassign the instance ADB port across launches; re-read
+            # bluestacks.conf and retry (honors a user-pinned device_serial).
             self._refresh_instance_port()
-            if self.device_serial:
-                self.adb_server(f"disconnect {self.device_serial}")
-                interruptible_sleep(0.2)
-                self.adb_server(f"connect {self.device_serial}")
-                state = self.adb("get-state")
-                ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
-        return ok  # False means ADB is in a mood again
+            self.adb(f"disconnect {self.device_serial}")
+            interruptible_sleep(0.2)
+            self.adb(f"connect {self.device_serial}")
+            state = self.adb("get-state")
+            ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
+        return ok
 
     def _is_this_instance_running(self) -> bool:
         if is_macos():
