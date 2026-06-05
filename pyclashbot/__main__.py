@@ -221,8 +221,6 @@ def handle_process_finished(
     """Check if the worker process has finished and reset UI state if so."""
     if process is not None and not process.is_alive():
         ui.set_button_state("idle")
-        # Reset to a fresh logger for the next run
-        logger = Logger(timed=False)
         logger.change_status("Idle")
         process = None
     return process, logger
