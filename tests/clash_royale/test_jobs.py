@@ -21,6 +21,7 @@ from .jobs.test_randomize_deck import run_test as randomize_deck
 from .jobs.test_select_battle_mode import run_test as select_battle_mode
 from .jobs.test_switch_account import run_test as switch_account
 from .jobs.test_upgrade import run_test as upgrade
+from .jobs.test_war import run_test as war
 from .navigation.test_navigate_main_pages import run_test as nav_main_pages
 
 # Fixed order — cheap/safe jobs first, the fight chain last. switch_account is a
@@ -33,6 +34,7 @@ SUITE = [
     ("clan_chat_claim", clan_chat_claim),
     ("clan_chat_donate", clan_chat_donate),
     ("clan_chat_request", clan_chat_request),
+    ("war", war),
     ("select_battle_mode", select_battle_mode),
     ("randomize_deck", randomize_deck),
     ("cycle_deck", cycle_deck),

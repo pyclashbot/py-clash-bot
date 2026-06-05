@@ -457,6 +457,107 @@ def check_if_on_social(emulator) -> bool:
     return True
 
 
+def check_if_on_war(emulator) -> bool:
+    iar = emulator.screenshot()
+    pixels = [
+        iar[18][146],
+        iar[598][177],
+        iar[613][237],
+        iar[605][396],
+        iar[604][26],
+        iar[22][270],
+        iar[609][24],
+        iar[619][406],
+        iar[9][260],
+        iar[33][280],
+    ]
+    colors = [
+        [253, 90, 182],
+        [255, 187, 104],
+        [255, 175, 78],
+        [110, 88, 74],
+        [110, 88, 74],
+        [243, 78, 170],
+        [109, 88, 74],
+        [107, 86, 73],
+        [255, 160, 212],
+        [227, 61, 154],
+    ]
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+_WAR_DECK_INDICATOR_TOL = 15
+
+# Indicator pixels for each war-deck slot (r, g, b, x, y). When ALL 4 pixels for a
+# slot match the empty-slot fingerprint, that slot is unused. Any diverging pixel
+# means the deck exists.
+_WAR_DECK_INDICATORS: dict[int, tuple[tuple[int, int, int, int, int], ...]] = {
+    1: (
+        (0, 94, 207, 68, 540),
+        (0, 108, 211, 64, 502),
+        (255, 255, 255, 78, 519),
+        (0, 93, 207, 89, 540),
+    ),
+    2: (
+        (0, 108, 211, 153, 502),
+        (255, 255, 255, 167, 518),
+        (0, 109, 211, 180, 500),
+        (0, 101, 209, 151, 520),
+    ),
+    3: (
+        (0, 109, 211, 241, 502),
+        (255, 255, 255, 254, 518),
+        (0, 94, 207, 267, 537),
+        (0, 109, 211, 268, 501),
+    ),
+    4: (
+        (0, 109, 211, 329, 500),
+        (255, 255, 255, 343, 520),
+        (0, 94, 207, 352, 538),
+        (0, 109, 211, 354, 501),
+    ),
+}
+
+
+def which_war_decks_exist(emulator) -> dict[str, bool]:
+    """Return {"deck1": bool, ..., "deck4": bool}.
+
+    Each deck has 4 indicator pixels. If ALL 4 match (the empty/placeholder look),
+    the deck slot is unused → False. If any pixel diverges, the deck exists → True.
+    """
+    iar = emulator.screenshot()
+    result: dict[str, bool] = {}
+    for di in sorted(_WAR_DECK_INDICATORS.keys()):
+        all_match = True
+        for r, g, b, x, y in _WAR_DECK_INDICATORS[di]:
+            bgr = iar[y][x]
+            actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+            if not pixel_is_equal(actual, [r, g, b], tol=_WAR_DECK_INDICATOR_TOL):
+                all_match = False
+                break
+        result[f"deck{di}"] = not all_match
+    return result
+
+
+def check_if_can_war_battle(emulator) -> bool:
+    """False when the 'Start War Battle' button shows the greyed-out (no battles left) look."""
+    iar = emulator.screenshot()
+    pixels = [
+        (iar[400][230], (202, 202, 202)),
+        (iar[401][302], (202, 202, 202)),
+        (iar[432][306], (193, 193, 193)),
+        (iar[430][229], (193, 193, 193)),
+    ]
+    for bgr, (r, g, b) in pixels:
+        actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+        if not pixel_is_equal(actual, [r, g, b], tol=15):
+            return True
+    return False
+
+
 def clan_button_pixel_is_active_green(pixel) -> bool:
     """Active Claim/Donate buttons (BGR). Grayscale templates still need a color gate."""
     b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])

@@ -16,6 +16,7 @@ from pyclashbot.bot.nav import select_mode
 from pyclashbot.bot.shop_daily_state import shop_daily_state
 from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
+from pyclashbot.bot.war import war_state
 from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.caching import (
     get_deck_number_for_battle_mode,
@@ -213,6 +214,7 @@ class StateOrder:
             "card_mastery",
             "shop_daily",
             "clan_chat",
+            "war",
             "select_battle_mode",
             "randomize_deck",
             "cycle_deck",
@@ -270,6 +272,7 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "restart":
+        logger.add_restart_after_failure()
         emulator.restart()
         return state_order.next_state(state)
 
@@ -414,6 +417,21 @@ def state_tree(
             return state_order.next_state(state)
 
         return handle_state_failure(logger, "clan_chat", "clan_chat_state")
+
+    if state == "war":
+        if not job_list.get(UIField.WAR_USER_TOGGLE.value, False):
+            logger.log("War job isn't toggled. Skipping this state")
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        if war_state(emulator, logger):
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+        return handle_state_failure(logger, "war", "war_state")
 
     if state == "select_battle_mode":
         # Get all enabled fight modes
