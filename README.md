@@ -1,24 +1,30 @@
 # py-clash-bot
 
-An open-source automation tool for Clash Royale on Windows and macOS. Uses Android emulation and image recognition to automate card leveling, pass progression, and daily gameplay tasks.
+An open-source automation tool for Clash Royale on Windows and macOS. Uses Android emulation and image recognition to automate battles, card upgrades, clan tasks, and other daily gameplay.
 
-[Join our Discord](https://discord.gg/nqKRkyq2UU) for support and updates.
+[Join our Discord](https://pyclashbot.app/discord/invite) for support and updates.
 
 ## Features
 
 **Battle Automation**
-- Trophy Road 1v1, Path of Legends, and 2v2 battles
-- Random deck selection
-- Smart chest management
+- Trophy Road, Classic 1v1, and Classic 2v2 battles
+- Randomize or cycle decks
+- Optional random card plays
 
-**Progression**
+**Progression & Clan**
 - Card mastery reward collection
 - Automatic card upgrades
-- Real-time win/loss tracking
+- Clan donate, card requests, and Pass gift claiming
+- Real-time win/loss tracking and session stats
+
+**Accounts & Extras**
+- Rotate between linked Supercell accounts (2–3)
+- Discord Rich Presence
+- Custom UI themes
 
 **Emulator Support**
-- MEmu, BlueStacks 5, Google Play Games
-- OpenGL, DirectX, and Vulkan render modes
+- MEmu, BlueStacks 5, Google Play Games, and ADB devices
+- OpenGL, DirectX, and Vulkan render modes (where supported)
 
 ## Setup
 
@@ -52,13 +58,13 @@ Choose one:
 4. Install Clash Royale on the emulator via Google Play Store
 5. Open Clash Royale, complete the tutorial, set language to English
 6. Close the emulator completely
-7. Click **Start** again to begin automation
+7. Enable the jobs you want on the **Jobs** tab, then click **Start** again to begin automation
 
 Default settings work for most users. Only enable "Show advanced settings" to change render mode if troubleshooting.
 
 ## Demo
 
-<img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.gif?raw=true" width="50%" alt="Game Demo"/><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.gif?raw=true" width="50%" alt="GUI Demo"/>
+<img src="assets/demo-game.gif" width="49%" alt="Game Demo"/><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>
 
 ## Troubleshooting
 
@@ -86,7 +92,7 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) | [Discord](https://discord.gg/nqKRkyq2UU) | [Issues](https://github.com/pyclashbot/py-clash-bot/issues)
+See [CONTRIBUTING.md](CONTRIBUTING.md) | [Discord](https://pyclashbot.app/discord/invite) | [Issues](https://github.com/pyclashbot/py-clash-bot/issues)
 
 ## License
 
