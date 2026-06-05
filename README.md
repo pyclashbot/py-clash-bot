@@ -64,7 +64,7 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 ## Demo
 
-<video src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-game.mp4?raw=true" width="49%" autoplay loop muted playsinline></video><img src="https://github.com/pyclashbot/py-clash-bot/blob/master/assets/demo-gui.png?raw=true" width="49%" alt="GUI Demo"/>
+<video src="assets/demo-game.mp4" width="49%" autoplay loop muted playsinline></video><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>
 
 ## Troubleshooting
 
