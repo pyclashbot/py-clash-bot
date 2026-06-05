@@ -295,10 +295,12 @@ class PyClashBotUI(ttk.Window):
         for field, var in self.stat_labels.items():
             var.set(as_string(field))
 
-        for field in BOT_STAT_FIELDS:
-            value = stats.get(field.value)
-            if value is not None:
-                self.bot_labels[field].set(str(value))
+        runtime = stats.get(BotStatField.TIME_SINCE_START.value)
+        if runtime is not None:
+            self.bot_labels[BotStatField.TIME_SINCE_START].set(str(runtime))
+        failures = stats.get(BotStatField.RESTARTS_AFTER_FAILURE.value)
+        if failures is not None:
+            self.bot_labels[BotStatField.RESTARTS_AFTER_FAILURE].set(str(failures))
 
         winrate_raw = stats.get(DerivedStatField.WINRATE.value)
         wins = as_int(StatField.WINS)
@@ -770,8 +772,10 @@ class PyClashBotUI(ttk.Window):
         bot_frame = ttk.Labelframe(right, text="Bot Stats", padding=10)
         bot_frame.grid(row=1, column=0, sticky="nsew", pady=(8, 0))
         bot_frame.columnconfigure(1, weight=1)
-        self.bot_labels = {field: ttk.StringVar(value="0") for field in BOT_STAT_FIELDS}
-        self.bot_labels[BotStatField.TIME_SINCE_START].set("00:00:00")
+        self.bot_labels = {
+            BotStatField.RESTARTS_AFTER_FAILURE: ttk.StringVar(value="0"),
+            BotStatField.TIME_SINCE_START: ttk.StringVar(value="00:00:00"),
+        }
         for row, field in enumerate(BOT_STAT_FIELDS):
             title = BOT_STAT_LABELS[field]
             label = ttk.Label(bot_frame, text=title)

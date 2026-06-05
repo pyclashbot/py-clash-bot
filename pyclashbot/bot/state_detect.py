@@ -104,32 +104,7 @@ def check_for_post_battle_button(emulator) -> bool:
     return False
 
 
-def check_if_on_social_hub(emulator) -> bool:
-    """Social hub (any top tab, including war). Strict ``check_if_on_social`` can fail on war tab."""
-    if check_if_on_social(emulator) or check_if_on_war(emulator):
-        return True
-    if check_if_on_clash_main_menu(emulator):
-        return False
-    iar = emulator.screenshot()
-    if pixel_is_equal(iar[601][218], [255, 226, 138], tol=35) and pixel_is_equal(iar[620][299], [155, 120, 82], tol=35):
-        return True
-    war_header_hits = sum(
-        1
-        for y, x, color in (
-            (18, 146, [253, 90, 182]),
-            (22, 270, [243, 78, 170]),
-            (9, 260, [255, 160, 212]),
-        )
-        if pixel_is_equal(iar[y][x], color, tol=35)
-    )
-    return war_header_hits >= 2
-
-
 def check_for_trophy_reward_menu(emulator) -> bool:
-    # Social hub bottom bar shares gold tones with trophy road — avoid false positives.
-    if check_if_on_social_hub(emulator):
-        return False
-
     iar = emulator.screenshot()
 
     pixels = [
@@ -482,10 +457,6 @@ def check_if_on_social(emulator) -> bool:
     return True
 
 
-def _war_page_pixels_match(pixels: list, colors: list, tol: float) -> bool:
-    return all(pixel_is_equal(p, c, tol=tol) for p, c in zip(pixels, colors))
-
-
 def check_if_on_war(emulator) -> bool:
     iar = emulator.screenshot()
     pixels = [
@@ -512,30 +483,10 @@ def check_if_on_war(emulator) -> bool:
         [255, 160, 212],
         [227, 61, 154],
     ]
-    if _war_page_pixels_match(pixels, colors, tol=25):
-        return True
-
-    # Fallback for renderer drift (e.g. BlueStacks): pink war header + bottom-nav browns.
-    header_checks = [
-        (pixels[0], colors[0]),
-        (pixels[5], colors[5]),
-        (pixels[8], colors[8]),
-        (pixels[9], colors[9]),
-    ]
-    header_matches = sum(1 for p, c in header_checks if pixel_is_equal(p, c, tol=35))
-    if header_matches < 3:
-        return False
-
-    bottom_checks = [
-        (pixels[1], colors[1]),
-        (pixels[2], colors[2]),
-        (pixels[3], colors[3]),
-        (pixels[4], colors[4]),
-        (pixels[6], colors[6]),
-        (pixels[7], colors[7]),
-    ]
-    bottom_matches = sum(1 for p, c in bottom_checks if pixel_is_equal(p, c, tol=35))
-    return bottom_matches >= 2
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
 
 
 _WAR_DECK_INDICATOR_TOL = 15

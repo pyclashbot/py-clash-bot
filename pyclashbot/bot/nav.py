@@ -41,7 +41,6 @@ from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_menu,
     check_if_on_shop,
     check_if_on_social,
-    check_if_on_social_hub,
     check_if_on_war,
 )
 from pyclashbot.detection.image_rec import find_image
@@ -143,12 +142,6 @@ def wait_for_clash_main_menu(
         if time.time() - start_time > wait_timeout:
             logger.change_status("Timed out waiting for clash main")
             break
-
-        # Stuck on social hub (e.g. war nav) — leave via battle tab, not trophy-road handler.
-        if check_if_on_social_hub(emulator):
-            emulator.click(BOTTOM_NAV_BATTLE_TAB_COORD[0], BOTTOM_NAV_BATTLE_TAB_COORD[1])
-            interruptible_sleep(2)
-            continue
 
         # handle geting stuck on trophy road screen
         if check_for_trophy_reward_menu(emulator):
