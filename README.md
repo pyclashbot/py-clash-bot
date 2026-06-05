@@ -64,7 +64,7 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 ## Demo
 
-<video src="assets/demo-game.mp4" width="49%" autoplay loop muted playsinline></video><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>
+<img src="assets/demo-game.gif" width="49%" alt="Game Demo"/><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>
 
 ## Troubleshooting
 
