@@ -1,19 +1,9 @@
-"""The Clash Royale job suite as a single ordered, parametrized pytest test.
+"""The Clash Royale job suite as one ordered, parametrized test.
 
-Each job test still lives in its own module under `jobs/` / `navigation/` and
-exposes `run_test(emulator, logger) -> tuple[bool, str]`. This module imports
-them into one ordered `SUITE` list and drives them through a single parametrized
-test, so:
-
-  - `SUITE` order is the single source of truth (pytest preserves parametrize
-    order). Earlier entries double as setup for later ones (e.g.
-    `select_battle_mode` leaves a mode selected that the fight tests rely on),
-    so run with `-x` to stop at the first failure.
-  - selection works out of the box: `-k clan_chat`, `-k "1v1 or 2v2"`, or the
-    node id `test_jobs.py::test_clash_job[select_battle_mode]`.
-
-Requires a live emulator (see tests/clash-royale/readme.md); marked `emulator`
-so a default `pytest` run skips it.
+Each job/nav module exposes `run_test(emulator, logger) -> (bool, str)`; the
+`SUITE` list below is the order (pytest preserves it). Run with `-x` — entries
+double as setup for later ones (select_battle_mode leaves a mode the fight tests
+need).
 """
 
 from __future__ import annotations

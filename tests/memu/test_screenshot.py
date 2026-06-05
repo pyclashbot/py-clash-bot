@@ -1,8 +1,5 @@
 """Module-level smoke test: MEmu screenshot capture returns a non-black frame.
 
-Run via pytest (needs a live MEmu VM):
-    pytest -m emulator tests/memu/test_screenshot.py --emulator memu
-
 Requires MEmu to be installed and a clashbot VM reachable.
 """
 

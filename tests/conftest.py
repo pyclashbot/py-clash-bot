@@ -1,10 +1,4 @@
-"""pytest fixtures shared by the integration suites (clash-royale + memu).
-
-Offline tests never touch these fixtures, so a bare `pytest` run (the default
-`-m "not emulator"`) never attaches to hardware. Only `@pytest.mark.emulator`
-tests request the `emulator` fixture, which attaches to an already-running
-emulator and aborts the whole session if it isn't parked on the Clash main menu.
-"""
+"""Shared fixtures for the emulator integration suites."""
 
 from __future__ import annotations
 
@@ -12,8 +6,7 @@ import pytest
 
 from tests._emulator_support import attach_emulator, available_cli_choices, check_preconditions
 
-# Default backend when an emulator test runs and no --emulator was passed.
-# Preserves the old `EMULATOR=memu make test` ergonomics.
+# Preserves the old `EMULATOR=memu make test` default.
 _DEFAULT_EMULATOR = "memu"
 
 
@@ -47,12 +40,8 @@ def logger():
 
 @pytest.fixture(scope="session")
 def emulator(request: pytest.FixtureRequest, logger):
-    """Attach to a live emulator and verify it's on the Clash main menu.
-
-    Hard-aborts the session (pytest.exit) on a failed precondition — a
-    misconfigured emulator is an operator setup error, and continuing would
-    chain false negatives across the ordered suite.
-    """
+    # Hard-abort (pytest.exit, not skip) on a bad precondition — continuing
+    # would chain false negatives across the ordered suite.
     cli_alias = request.config.getoption("--emulator") or _DEFAULT_EMULATOR
 
     emu = attach_emulator(cli_alias, logger)

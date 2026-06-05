@@ -7,9 +7,6 @@ Verifies both branches of `_get_clashbot_vm_index` behavior:
 The single existing VM is renamed away and back during the test; nothing is
 created or deleted. A try/finally guarantees the original name is restored
 even if an assertion fails.
-
-Run via pytest (needs a live MEmu VM):
-    pytest -m emulator tests/memu/test_find_emulator.py --emulator memu
 """
 
 from __future__ import annotations

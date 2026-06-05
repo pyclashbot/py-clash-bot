@@ -7,9 +7,6 @@ Flow:
   4. Assert is_config_valid() == True.
 
 Requires an existing MEmu VM titled `pyclashbot-136`. VM may be stopped.
-
-Run via pytest (needs a live MEmu VM):
-    pytest -m emulator tests/memu/test_config.py --emulator memu
 """
 
 from __future__ import annotations

@@ -1,12 +1,7 @@
-"""Shared helpers for attaching to a live emulator in the integration tests.
+"""Helpers behind the `emulator` fixture (conftest.py). Not a test module.
 
-NOT a test module (no `test_*` prefix, so pytest won't collect it). The
-clash-royale / memu integration tests reach a real, already-running emulator
-through the `emulator` fixture in `tests/conftest.py`, which delegates here.
-
-The runner is deliberately non-destructive: it attaches to an emulator the user
-launched by hand and verifies it is parked on the Clash Royale main menu. It
-never boots, configures, restarts, or signs in to anything.
+Non-destructive: attaches to an already-running emulator and verifies it's on
+the Clash main menu; never boots, configures, or signs in.
 """
 
 from __future__ import annotations
@@ -28,7 +23,6 @@ CLI_ALIASES = {
 
 
 def available_cli_choices() -> list[str]:
-    """Return the CLI aliases for emulators supported on this platform."""
     from pyclashbot.emulators import EmulatorType, get_available_emulators
 
     available = set(get_available_emulators())
@@ -36,13 +30,9 @@ def available_cli_choices() -> list[str]:
 
 
 def attach_emulator(cli_alias: str, logger: Logger):
-    """Attach to an already-running emulator of the given type.
+    """Attach to an already-running emulator; return the controller or None (printing why).
 
-    Returns the controller or None on failure (and prints the reason).
-
-    The constructor is called with `debug_mode=True` if the controller's
-    __init__ accepts it (MEmu uses this to skip configure+restart). For
-    controllers that don't expose `debug_mode`, we just pass the logger.
+    Passes debug_mode=True if the controller's __init__ accepts it (skips configure+restart).
     """
     from pyclashbot.emulators import EmulatorType, get_emulator_registry
 

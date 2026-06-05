@@ -17,7 +17,6 @@ test:
 test-emulator:
 	uv run pytest -m emulator -x --emulator $(or $(EMULATOR),memu)
 
-# Offline tests, then the emulator suite.
 test-all: test test-emulator
 
 build-msi:

@@ -1,8 +1,4 @@
-"""Regression: fingerprints and bot both use BGR emulator screenshots.
-
-Offline test (static fixture image + a fake emulator), so it runs in the default
-`pytest` selection. Run: uv run pytest tests/test_card_fingerprint_bgr.py
-"""
+"""Regression: fingerprints and bot both use BGR emulator screenshots."""
 
 from __future__ import annotations
 
