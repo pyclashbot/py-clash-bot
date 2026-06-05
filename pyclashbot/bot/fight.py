@@ -33,12 +33,12 @@ from pyclashbot.bot.state_detect import (
     check_if_in_battle,
     check_if_on_clash_main_menu,
     check_pixels_for_win_in_battle_log,
-    count_elixer,
+    count_elixir,
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
-ELIXER_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
+ELIXIR_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
 
 
 def do_fight_state(
@@ -165,23 +165,23 @@ def mag_dump(emulator, logger):
         interruptible_sleep(0.1)
 
 
-def wait_for_elixer(
+def wait_for_elixir(
     emulator,
     logger,
-    random_elixer_wait,
+    elixir_wait_amount,
     WAIT_THRESHOLD=5000,  # noqa: N803
     PLAY_THRESHOLD=10000,  # noqa: N803
     recording_flag: bool = False,
 ) -> Literal["restart", "no battle"] | bool:
-    """Method to wait for 4 elixer during a battle"""
+    """Method to wait for 4 elixir during a battle"""
     start_time = time.time()
     battle_detection_lost_count = 0
 
-    while not count_elixer(emulator, random_elixer_wait):
+    while not count_elixir(emulator, elixir_wait_amount):
         # debug screenshot saving removed from production
         wait_time = time.time() - start_time
         logger.change_status(
-            f"Waiting for {random_elixer_wait} elixer for {str(wait_time)[:4]}s...",
+            f"Waiting for {elixir_wait_amount} elixir for {str(wait_time)[:4]}s...",
         )
 
         card_inhand = len(check_which_cards_are_available(emulator, True, False))
@@ -194,22 +194,22 @@ def wait_for_elixer(
             logger.change_status("All cards are available!")
             return True
 
-        if wait_time > ELIXER_WAIT_TIMEOUT:
-            logger.change_status(status="Waited too long for elixer")
+        if wait_time > ELIXIR_WAIT_TIMEOUT:
+            logger.change_status(status="Waited too long for elixir")
             return "restart"
 
         if not check_for_in_battle_with_delay(emulator):
             if check_if_battle_has_ended(emulator):
-                logger.change_status(status="Not in battle anymore (confirmed), stopping waiting for elixer.")
+                logger.change_status(status="Not in battle anymore (confirmed), stopping waiting for elixir.")
                 return "no battle"
 
             battle_detection_lost_count += 1
             logger.change_status(
-                status="Lost battle detection while waiting for elixer; assuming still in battle.",
+                status="Lost battle detection while waiting for elixir; assuming still in battle.",
             )
             if battle_detection_lost_count >= 4:
                 logger.change_status(
-                    status="Lost battle detection repeatedly while waiting for elixer; assuming battle ended.",
+                    status="Lost battle detection repeatedly while waiting for elixir; assuming battle ended.",
                 )
                 return "no battle"
 
@@ -219,7 +219,7 @@ def wait_for_elixer(
         battle_detection_lost_count = 0
 
     logger.change_status(
-        f"Took {str(time.time() - start_time)[:4]}s for {random_elixer_wait} elixer.",
+        f"Took {str(time.time() - start_time)[:4]}s for {elixir_wait_amount} elixir.",
     )
 
     return True
@@ -524,7 +524,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
         elixir_amount = battle_strategy.select_elixir_amount()
         wait_threshold, play_threshold = battle_strategy.get_thresholds()
 
-        wait_output = wait_for_elixer(
+        wait_output = wait_for_elixir(
             emulator,
             logger,
             elixir_amount,
@@ -534,7 +534,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
         )
 
         if wait_output == "restart":
-            logger.change_status("Failure while waiting for elixer")
+            logger.change_status("Failure while waiting for elixir")
             return False
 
         if wait_output == "no battle":
