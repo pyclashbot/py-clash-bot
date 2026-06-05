@@ -126,6 +126,11 @@ WAR_BATTLE_PLAYFIELD_LTRB = (55, 256, 360, 470)
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
 WAR_DEADSPACE_COORD = (20, 330)
 
+# --- Shop / daily free offer ---
+CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS = (210, 440)
+SHOP_PAGE_DEADSPACE_COORD = (10, 280)
+PAGINATE_SHOP_PAGE_BUTTON = (65, 600)
+
 # --- Clan chat ---
 CLAN_CHAT_FEED_SUBCROP = (0, 60, 419, 500)
 CLAN_CHAT_FOOTER_SUBCROP = (0, 470, 280, 600)

@@ -82,6 +82,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
 
     job_dictionary: dict[str, Any] = {
         UIField.CARD_MASTERY_USER_TOGGLE.value: as_bool(UIField.CARD_MASTERY_USER_TOGGLE),
+        UIField.SHOP_DAILY_OFFER_USER_TOGGLE.value: as_bool(UIField.SHOP_DAILY_OFFER_USER_TOGGLE),
         UIField.CLASSIC_1V1_USER_TOGGLE.value: as_bool(UIField.CLASSIC_1V1_USER_TOGGLE),
         UIField.CLASSIC_2V2_USER_TOGGLE.value: as_bool(UIField.CLASSIC_2V2_USER_TOGGLE),
         UIField.TROPHY_ROAD_USER_TOGGLE.value: as_bool(UIField.TROPHY_ROAD_USER_TOGGLE),
@@ -217,12 +218,19 @@ def stop_button_event(logger: Logger, shutdown_event: Event) -> None:
     shutdown_event.set()
 
 
-def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
+def update_layout(
+    ui: PyClashBotUI,
+    logger: Logger,
+    stats: dict[str, Any] | None = None,
+) -> None:
     """Update UI widgets from the logger's statistics."""
-    stats = logger.get_stats()
+    if stats is None:
+        stats = logger.get_stats()
+    if stats is None:
+        return
     ui.update_stats(stats)
     status_text = logger.current_status
-    if stats and "current_status" in stats:
+    if "current_status" in stats:
         status_text = str(stats["current_status"])
     ui.set_status(status_text)
     ui.append_log(status_text)
@@ -247,7 +255,6 @@ def handle_process_finished(
     """Check if the worker process has finished and reset UI state if so."""
     if process is not None and not process.is_alive():
         ui.set_button_state("idle")
-        # Reset to a fresh logger for the next run
         logger = Logger(timed=False)
         logger.change_status("Idle")
         process = None
@@ -350,6 +357,7 @@ class BotApplication:
             self.process.join(timeout=1)
             if self.process.is_alive():
                 self.process.kill()  # SIGKILL
+            self._snapshot_session_stats()
             self.process = None
             self.logger.change_status("Idle")
             self.ui.set_button_state("idle")
@@ -373,6 +381,33 @@ class BotApplication:
         if not self._suppress_persist:
             save_current_settings(values)
 
+    def _snapshot_session_stats(self) -> None:
+        """Freeze the current session stats for display while idle."""
+        # Counters live in the worker and arrive via the stats queue. The UI
+        # logger's change_status() can rebuild logger.stats from zeroed instance
+        # fields, so prefer the latest queue snapshot and only borrow runtime
+        # from get_stats().
+        frozen = dict(self.last_stats) if self.last_stats else {}
+        live_stats = self.logger.get_stats()
+        if live_stats:
+            if not frozen:
+                frozen = dict(live_stats)
+            else:
+                frozen["time_since_start"] = live_stats["time_since_start"]
+        if frozen:
+            self.last_stats = frozen
+
+    def _get_display_stats(self) -> dict[str, Any] | None:
+        """Return stats for the UI: frozen session totals when idle, live stats while running."""
+        if self.process is None and self.last_stats:
+            stats = self.last_stats.copy()
+            stats["current_status"] = self.logger.current_status
+            return stats
+        return self.logger.get_stats()
+
+    def _update_ui_from_stats(self) -> None:
+        update_layout(self.ui, self.logger, self._get_display_stats())
+
     def _dispatch_action(self) -> None:
         callback: Callable[[], None] | None = getattr(self.logger, "action_callback", None)
         if callable(callback):
@@ -395,17 +430,22 @@ class BotApplication:
             try:
                 while True:
                     stats = self.stats_queue.get_nowait()
-                    self.last_stats = stats
-                    # Update local logger with stats from worker process
-                    if "current_status" in stats:
-                        self.logger.current_status = stats["current_status"]
-                    self.logger.stats.update(stats)
+                    if self.process is not None:
+                        self.last_stats = stats
+                        # Update local logger with stats from worker process
+                        if "current_status" in stats:
+                            self.logger.current_status = stats["current_status"]
+                        if self.logger.stats is not None:
+                            self.logger.stats.update(stats)
             except Exception:
                 pass  # Queue empty
 
+        if self.process is not None and not self.process.is_alive():
+            self._snapshot_session_stats()
+
         self.process, self.logger = handle_process_finished(self.ui, self.process, self.logger)
-        update_layout(self.ui, self.logger)
-        self.discord_rpc.sync(self.discord_rpc_enabled, self.logger.get_stats())
+        self._update_ui_from_stats()
+        self.discord_rpc.sync(self.discord_rpc_enabled, self._get_display_stats())
         if hasattr(self.logger, "action_needed") and self.logger.action_needed:
             action_text = getattr(self.logger, "action_text", "Continue")
             self.ui.show_action_button(action_text, self._dispatch_action)

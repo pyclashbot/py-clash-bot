@@ -13,6 +13,7 @@ from pyclashbot.bot.fight import (
     start_fight,
 )
 from pyclashbot.bot.nav import select_mode
+from pyclashbot.bot.shop_daily_state import shop_daily_state
 from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war import war_state
@@ -211,6 +212,7 @@ class StateOrder:
             "switch_account",
             "upgrade",
             "card_mastery",
+            "shop_daily",
             "clan_chat",
             "war",
             "select_battle_mode",
@@ -371,6 +373,16 @@ def state_tree(
         # return output of this state
         if card_mastery_state(emulator, logger) is False:
             return handle_state_failure(logger, "card_mastery", "card_mastery_state")
+
+        return state_order.next_state(state)
+
+    if state == "shop_daily":
+        if not job_list.get(UIField.SHOP_DAILY_OFFER_USER_TOGGLE.value, False):
+            logger.log("Shop daily offer job isn't toggled. Skipping this state")
+            return state_order.next_state(state)
+
+        if shop_daily_state(emulator, logger) is False:
+            return handle_state_failure(logger, "shop_daily", "shop_daily_state")
 
         return state_order.next_state(state)
 
