@@ -8,9 +8,6 @@ This module is a leaf: the only pyclashbot.bot module it imports from is
 `coords` (itself a leaf — pure data, no imports). No nav, fight, deck, etc.
 """
 
-import csv
-from os.path import abspath, dirname, join
-
 import numpy
 
 from pyclashbot.bot.coords import MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP
@@ -492,38 +489,50 @@ def check_if_on_war(emulator) -> bool:
     return True
 
 
-_WAR_DECKS_CSV = abspath(
-    join(dirname(__file__), "..", "..", "docs", "war-decks-indicators-data.csv"),
-)
 _WAR_DECK_INDICATOR_TOL = 15
 
-
-def _load_war_deck_indicators() -> dict[int, list[tuple[int, int, int, int, int]]]:
-    """Parse CSV → {deck_index: [(r, g, b, x, y), ...]}."""
-    decks: dict[int, list[tuple[int, int, int, int, int]]] = {}
-    with open(_WAR_DECKS_CSV, newline="") as f:
-        for row in csv.DictReader(f):
-            if not row.get("deck-index"):
-                continue
-            di = int(row["deck-index"])
-            decks.setdefault(di, []).append(
-                (int(row["r"]), int(row["g"]), int(row["b"]), int(row["x"]), int(row["y"])),
-            )
-    return decks
+# Indicator pixels for each war-deck slot (r, g, b, x, y). When ALL 4 pixels for a
+# slot match the empty-slot fingerprint, that slot is unused. Any diverging pixel
+# means the deck exists.
+_WAR_DECK_INDICATORS: dict[int, tuple[tuple[int, int, int, int, int], ...]] = {
+    1: (
+        (0, 94, 207, 68, 540),
+        (0, 108, 211, 64, 502),
+        (255, 255, 255, 78, 519),
+        (0, 93, 207, 89, 540),
+    ),
+    2: (
+        (0, 108, 211, 153, 502),
+        (255, 255, 255, 167, 518),
+        (0, 109, 211, 180, 500),
+        (0, 101, 209, 151, 520),
+    ),
+    3: (
+        (0, 109, 211, 241, 502),
+        (255, 255, 255, 254, 518),
+        (0, 94, 207, 267, 537),
+        (0, 109, 211, 268, 501),
+    ),
+    4: (
+        (0, 109, 211, 329, 500),
+        (255, 255, 255, 343, 520),
+        (0, 94, 207, 352, 538),
+        (0, 109, 211, 354, 501),
+    ),
+}
 
 
 def which_war_decks_exist(emulator) -> dict[str, bool]:
     """Return {"deck1": bool, ..., "deck4": bool}.
 
-    Each deck has 4 indicator pixels in the CSV. If ALL 4 match (the empty/placeholder
-    look), the deck slot is unused → False. If any pixel diverges, the deck exists → True.
+    Each deck has 4 indicator pixels. If ALL 4 match (the empty/placeholder look),
+    the deck slot is unused → False. If any pixel diverges, the deck exists → True.
     """
     iar = emulator.screenshot()
-    decks = _load_war_deck_indicators()
     result: dict[str, bool] = {}
-    for di in sorted(decks.keys()):
+    for di in sorted(_WAR_DECK_INDICATORS.keys()):
         all_match = True
-        for r, g, b, x, y in decks[di]:
+        for r, g, b, x, y in _WAR_DECK_INDICATORS[di]:
             bgr = iar[y][x]
             actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
             if not pixel_is_equal(actual, [r, g, b], tol=_WAR_DECK_INDICATOR_TOL):
