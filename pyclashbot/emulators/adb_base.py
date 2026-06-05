@@ -15,12 +15,9 @@ logger = logging.getLogger(__name__)
 
 # Valid device serial patterns to prevent command injection
 _DEVICE_SERIAL_PATTERNS = [
-    re.compile(r"^localhost:\d{1,5}$"),  # localhost:6520
-    re.compile(r"^127\.0\.0\.1:\d{1,5}$"),  # 127.0.0.1:5567
-    re.compile(r"^(\d{1,3}\.){3}\d{1,3}:\d{1,5}$"),  # Any IP:port
-    re.compile(r"^[a-zA-Z0-9._-]+:\d{1,5}$"),  # hostname:port
+    re.compile(r"^[a-zA-Z0-9._-]+:\d{1,5}$"),  # host:port (localhost, IP, hostname)
     re.compile(r"^emulator-\d+$"),  # emulator-5554
-    re.compile(r"^[A-Za-z0-9]{6,}$"),  # USB serial (hex/alphanum)
+    re.compile(r"^[A-Za-z0-9]{6,}$"),  # USB serial
 ]
 
 
