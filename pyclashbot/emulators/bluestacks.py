@@ -8,7 +8,7 @@ import time
 from contextlib import suppress
 from os.path import normpath
 
-from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
+from pyclashbot.bot.nav import wait_for_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
@@ -685,16 +685,12 @@ class BlueStacksEmulatorController(AdbBasedController):
 
         interruptible_sleep(5)
 
-        # Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")
-        deadline = time.time() + 240
-        while time.time() < deadline:
-            if check_if_on_clash_main_menu(self):
-                self.logger.change_status("Clash Royale main menu detected")
-                dur = f"{time.time() - start_ts:.1f}s"
-                self.logger.log(f"BlueStacks 5 restart completed in {dur}")
-                return True
-            self.click(35, 405)  # Use inherited click
+        if wait_for_clash_main_menu(self, self.logger, deadspace_click=True):
+            self.logger.change_status("Clash Royale main menu detected")
+            dur = f"{time.time() - start_ts:.1f}s"
+            self.logger.log(f"BlueStacks 5 restart completed in {dur}")
+            return True
 
         self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
         return False
