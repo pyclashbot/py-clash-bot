@@ -156,7 +156,7 @@ class MemuEmulatorController(BaseEmulatorController):
         self.screenshotter = MemuScreenCapture(self.pmc)
 
         # get a valid vm to use
-        self._initalize_valid_vm()
+        self._initialize_valid_vm()
 
         self.logger.log(f"Initializing MemuEmulatorController took {str(time.time() - init_start_time)[:5]} seconds")
         if self.debug_mode:
@@ -165,9 +165,9 @@ class MemuEmulatorController(BaseEmulatorController):
     def __del__(self):
         self.logger.log("Need to clear residual memu processes here")
 
-    def _initalize_valid_vm(self):
+    def _initialize_valid_vm(self):
         # no timeout here bc if this fails, then something fatal is wrong
-        self.logger.log("Initalizing memu vm...")
+        self.logger.log("Initializing MEmu VM...")
         vm_index = -1
         while 1:
             # check for a valid vm

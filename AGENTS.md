@@ -5,8 +5,9 @@ A Clash Royale automation bot: drives an Android emulator via ADB and acts on th
 ## Commands
 
 Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`build-dmg`, all via `uv`); `CONTRIBUTING.md` has dev setup. Non-obvious bits those don't tell you:
-- Tests are **not** pytest — each `tests/**/test_*.py` runs as a standalone script (exit 0 = pass); `EMULATOR=memu make test` filters to `tests/<name>/`.
-- `tests/clash-royale/` are integration tests needing a live MEmu VM and **do not run in CI**. CI only builds artifacts + runs pre-commit.
+- Tests are **pytest**, offline by default (`addopts = -m "not emulator"`). Hardware tests carry `@pytest.mark.emulator`: `make test` runs only offline tests; `make test-emulator EMULATOR=memu` runs the live-emulator suite (`-m emulator -x`).
+- The clash suite is one parametrized test (`tests/clash_royale/test_jobs.py`) over an ordered `SUITE` list — add a job by appending its `run_test` to `SUITE`. Shared emulator + precondition gate live in `tests/conftest.py`. Select with `-k`, stop at first failure with `-x`.
+- `tests/clash_royale/` and `tests/memu/` need a live emulator and **do not run in CI** (CI only builds artifacts + runs pre-commit).
 - MSI build = cx-freeze, DMG = pyinstaller; both inject the real version (see Cross-cutting rules).
 
 ## Architecture
@@ -22,6 +23,7 @@ Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`b
 - **Pixel/state predicates live in `pyclashbot/bot/state_detect.py`.** `check_if_on_*(emulator) → bool` and small `pixel_indicates_*(bgr) → bool` helpers all live here.
 - **Main-page navigation goes through `nav.py`'s `navigate_main_page(emulator, logger, start, end)`** + the `NAV_CLICKS` table. Don't re-implement bottom-nav clicks in feature modules; extend `NAV_CLICKS` instead.
 - Detection keeps multiple color palettes (with tolerance) to absorb emulator/app-version drift; add fallbacks, don't tighten thresholds.
+- **`emulator.screenshot()` is BGR; card fingerprints must match that channel order.** Regression: `tests/test_card_fingerprint_bgr.py`.
 - Always verify screen state (a `check_if_on_*` / detection call) **before** clicking. Never hardcode a raw click — use named coordinate constants or nav helpers.
 - Persistent user settings go through `USER_SETTINGS_CACHE` (`pyclashbot.utils.caching`), keyed by `UIField.value` strings. Logging/stats go through `pyclashbot.utils.logger`; OS checks through `pyclashbot.utils.platform` (`is_windows()`/`is_macos()`).
 - Version is a `v0.0.0` placeholder in `pyproject.toml`; the real version is injected from the git tag at build time and read at runtime from `pyclashbot/__version__` via `utils/versioning.py`.

@@ -8,8 +8,8 @@ def show_clash_royale_setup_gui() -> None:
     root = tk.Tk()
     root.withdraw()
     messagebox.showerror(
-        "Clash Royale Not Setup!",
-        "Clash Royale is not installed or setup.\n"
+        "Clash Royale Not Set Up!",
+        "Clash Royale is not installed or set up.\n"
         "Please install Clash Royale, finish the in-game tutorial,\n"
         "and log in before using this bot.",
     )
