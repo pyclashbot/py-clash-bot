@@ -353,9 +353,19 @@ class BotApplication:
 
     def _snapshot_session_stats(self) -> None:
         """Freeze the current session stats for display while idle."""
-        session_stats = self.logger.get_stats()
-        if session_stats:
-            self.last_stats = dict(session_stats)
+        # Counters live in the worker and arrive via the stats queue. The UI
+        # logger's change_status() can rebuild logger.stats from zeroed instance
+        # fields, so prefer the latest queue snapshot and only borrow runtime
+        # from get_stats().
+        frozen = dict(self.last_stats) if self.last_stats else {}
+        live_stats = self.logger.get_stats()
+        if live_stats:
+            if not frozen:
+                frozen = dict(live_stats)
+            else:
+                frozen["time_since_start"] = live_stats["time_since_start"]
+        if frozen:
+            self.last_stats = frozen
 
     def _get_display_stats(self) -> dict[str, Any] | None:
         """Return stats for the UI: frozen session totals when idle, live stats while running."""
@@ -390,11 +400,13 @@ class BotApplication:
             try:
                 while True:
                     stats = self.stats_queue.get_nowait()
-                    self.last_stats = stats
-                    # Update local logger with stats from worker process
-                    if "current_status" in stats:
-                        self.logger.current_status = stats["current_status"]
-                    self.logger.stats.update(stats)
+                    if self.process is not None:
+                        self.last_stats = stats
+                        # Update local logger with stats from worker process
+                        if "current_status" in stats:
+                            self.logger.current_status = stats["current_status"]
+                        if self.logger.stats is not None:
+                            self.logger.stats.update(stats)
             except Exception:
                 pass  # Queue empty
 
