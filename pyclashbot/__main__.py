@@ -191,12 +191,19 @@ def stop_button_event(logger: Logger, shutdown_event: Event) -> None:
     shutdown_event.set()
 
 
-def update_layout(ui: PyClashBotUI, logger: Logger) -> None:
+def update_layout(
+    ui: PyClashBotUI,
+    logger: Logger,
+    stats: dict[str, Any] | None = None,
+) -> None:
     """Update UI widgets from the logger's statistics."""
-    stats = logger.get_stats()
+    if stats is None:
+        stats = logger.get_stats()
+    if stats is None:
+        return
     ui.update_stats(stats)
     status_text = logger.current_status
-    if stats and "current_status" in stats:
+    if "current_status" in stats:
         status_text = str(stats["current_status"])
     ui.set_status(status_text)
     ui.append_log(status_text)
@@ -221,6 +228,7 @@ def handle_process_finished(
     """Check if the worker process has finished and reset UI state if so."""
     if process is not None and not process.is_alive():
         ui.set_button_state("idle")
+        logger = Logger(timed=False)
         logger.change_status("Idle")
         process = None
     return process, logger
@@ -319,6 +327,7 @@ class BotApplication:
             self.process.join(timeout=1)
             if self.process.is_alive():
                 self.process.kill()  # SIGKILL
+            self._snapshot_session_stats()
             self.process = None
             self.logger.change_status("Idle")
             self.ui.set_button_state("idle")
@@ -341,6 +350,23 @@ class BotApplication:
         self.discord_rpc_enabled = bool(values.get(UIField.DISCORD_RPC_TOGGLE.value, False))
         if not self._suppress_persist:
             save_current_settings(values)
+
+    def _snapshot_session_stats(self) -> None:
+        """Freeze the current session stats for display while idle."""
+        session_stats = self.logger.get_stats()
+        if session_stats:
+            self.last_stats = dict(session_stats)
+
+    def _get_display_stats(self) -> dict[str, Any] | None:
+        """Return stats for the UI: frozen session totals when idle, live stats while running."""
+        if self.process is None and self.last_stats:
+            stats = self.last_stats.copy()
+            stats["current_status"] = self.logger.current_status
+            return stats
+        return self.logger.get_stats()
+
+    def _update_ui_from_stats(self) -> None:
+        update_layout(self.ui, self.logger, self._get_display_stats())
 
     def _dispatch_action(self) -> None:
         callback: Callable[[], None] | None = getattr(self.logger, "action_callback", None)
@@ -372,9 +398,12 @@ class BotApplication:
             except Exception:
                 pass  # Queue empty
 
+        if self.process is not None and not self.process.is_alive():
+            self._snapshot_session_stats()
+
         self.process, self.logger = handle_process_finished(self.ui, self.process, self.logger)
-        update_layout(self.ui, self.logger)
-        self.discord_rpc.sync(self.discord_rpc_enabled, self.logger.get_stats())
+        self._update_ui_from_stats()
+        self.discord_rpc.sync(self.discord_rpc_enabled, self._get_display_stats())
         if hasattr(self.logger, "action_needed") and self.logger.action_needed:
             action_text = getattr(self.logger, "action_text", "Continue")
             self.ui.show_action_button(action_text, self._dispatch_action)
