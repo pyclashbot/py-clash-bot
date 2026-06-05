@@ -169,7 +169,7 @@ def count_elixir(emulator, elixir_count) -> bool:
 
 def check_pixels_for_win_in_battle_log(emulator) -> bool:
     """Method to check pixels that appear in the battle
-    log to determing if the previous game was a win
+    log to determine if the previous game was a win
     """
     line1 = check_line_for_color(
         emulator,

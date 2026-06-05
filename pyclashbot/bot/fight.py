@@ -38,14 +38,14 @@ from pyclashbot.bot.state_detect import (
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
-ELIXIR_WAIT_TIMEOUT = 40  # way to high but someone got errors with that so idk
+ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
 
 
 def do_fight_state(
     emulator,
     logger: Logger,
     random_fight_mode,
-    fight_mode_choosed,
+    fight_mode_chosen,
     called_from_launching=False,
     recording_flag: bool = False,
 ) -> bool:
@@ -62,7 +62,7 @@ def do_fight_state(
         return False
 
     logger.change_status("Starting fight loop")
-    logger.log(f'This is the fight mode: "{fight_mode_choosed}"')
+    logger.log(f'This is the fight mode: "{fight_mode_chosen}"')
 
     # Run regular fight loop if random mode not toggled
     if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
@@ -76,16 +76,16 @@ def do_fight_state(
 
     # Only log the fight if not called from the start
     if not called_from_launching:
-        if fight_mode_choosed in ["Classic 1v1", "Trophy Road"]:
+        if fight_mode_chosen in ["Classic 1v1", "Trophy Road"]:
             logger.add_1v1_fight()
-        elif fight_mode_choosed == "Classic 2v2":
+        elif fight_mode_chosen == "Classic 2v2":
             logger.increment_2v2_fights()
 
-        if fight_mode_choosed == "Trophy Road":
+        if fight_mode_chosen == "Trophy Road":
             logger.increment_trophy_road_fights()
-        elif fight_mode_choosed == "Classic 1v1":
+        elif fight_mode_chosen == "Classic 1v1":
             logger.increment_classic_1v1_fights()
-        elif fight_mode_choosed == "Classic 2v2":
+        elif fight_mode_chosen == "Classic 2v2":
             logger.increment_classic_2v2_fights()
 
     interruptible_sleep(10)
@@ -126,9 +126,9 @@ def start_fight(emulator, logger, mode) -> bool:
     emulator.click(START_FIGHT_BUTTON_COORD[0], START_FIGHT_BUTTON_COORD[1])
     logger.log(f"Clicked Start button at {START_FIGHT_BUTTON_COORD}")
 
-    # if its 2v2 mode, we gotta click that second popup
+    # 2v2 needs a second popup after Start
     if mode == "Classic 2v2":
-        logger.change_status("Its 2v2 mode so we gotta click the quickmatch popup option!")
+        logger.change_status("2v2 mode — clicking the quickmatch popup...")
         interruptible_sleep(3)
         emulator.click(QUICKMATCH_POPUP_BUTTON_COORD[0], QUICKMATCH_POPUP_BUTTON_COORD[1])
         logger.log(f"Clicked Quickmatch button at {QUICKMATCH_POPUP_BUTTON_COORD}")
@@ -338,9 +338,9 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     # check which cards are available
     logger.change_status("Looking at which cards are available")
     available_card_check_start_time = time.time()
-    card_indicies = check_which_cards_are_available(emulator, False, True)
+    card_indices = check_which_cards_are_available(emulator, False, True)
 
-    if not card_indicies:
+    if not card_indices:
         logger.change_status("No cards ready yet...")
         return False
 
@@ -349,10 +349,10 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     )[:3]
 
     logger.change_status(
-        f"These cards are available: {card_indicies} ({available_card_check_time_taken}s)",
+        f"These cards are available: {card_indices} ({available_card_check_time_taken}s)",
     )
 
-    card_index = select_card_index(card_indicies, last_three_cards)
+    card_index = select_card_index(card_indices, last_three_cards)
     if card_index not in last_three_cards:
         last_three_cards.append(card_index)
     logger.change_status(f"Choosing this card index: {card_index}")
