@@ -11,6 +11,15 @@ from pyclashbot.bot.state_detect import pixel_indicates_upgradable
 from pyclashbot.detection.image_rec import find_image, pixel_is_equal
 
 
+def find_war_battle_icon(emulator):
+    """Find the war battle icon on the clan war page.
+
+    Returns (x, y) of the icon, or None if not found.
+    """
+    image = emulator.screenshot()
+    return find_image(image, "war_battle_icon", tolerance=0.9, show_image=False)
+
+
 def find_fight_mode_icon(emulator, mode: str):
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
 

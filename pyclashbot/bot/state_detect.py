@@ -8,6 +8,9 @@ This module is a leaf: the only pyclashbot.bot module it imports from is
 `coords` (itself a leaf — pure data, no imports). No nav, fight, deck, etc.
 """
 
+import csv
+from os.path import abspath, dirname, join
+
 import numpy
 
 from pyclashbot.bot.coords import MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP
@@ -455,6 +458,95 @@ def check_if_on_social(emulator) -> bool:
         if not pixel_is_equal(p, colors[i], tol=25):
             return False
     return True
+
+
+def check_if_on_war(emulator) -> bool:
+    iar = emulator.screenshot()
+    pixels = [
+        iar[18][146],
+        iar[598][177],
+        iar[613][237],
+        iar[605][396],
+        iar[604][26],
+        iar[22][270],
+        iar[609][24],
+        iar[619][406],
+        iar[9][260],
+        iar[33][280],
+    ]
+    colors = [
+        [253, 90, 182],
+        [255, 187, 104],
+        [255, 175, 78],
+        [110, 88, 74],
+        [110, 88, 74],
+        [243, 78, 170],
+        [109, 88, 74],
+        [107, 86, 73],
+        [255, 160, 212],
+        [227, 61, 154],
+    ]
+    for i, p in enumerate(pixels):
+        if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+_WAR_DECKS_CSV = abspath(
+    join(dirname(__file__), "..", "..", "docs", "war-decks-indicators-data.csv"),
+)
+_WAR_DECK_INDICATOR_TOL = 15
+
+
+def _load_war_deck_indicators() -> dict[int, list[tuple[int, int, int, int, int]]]:
+    """Parse CSV → {deck_index: [(r, g, b, x, y), ...]}."""
+    decks: dict[int, list[tuple[int, int, int, int, int]]] = {}
+    with open(_WAR_DECKS_CSV, newline="") as f:
+        for row in csv.DictReader(f):
+            if not row.get("deck-index"):
+                continue
+            di = int(row["deck-index"])
+            decks.setdefault(di, []).append(
+                (int(row["r"]), int(row["g"]), int(row["b"]), int(row["x"]), int(row["y"])),
+            )
+    return decks
+
+
+def which_war_decks_exist(emulator) -> dict[str, bool]:
+    """Return {"deck1": bool, ..., "deck4": bool}.
+
+    Each deck has 4 indicator pixels in the CSV. If ALL 4 match (the empty/placeholder
+    look), the deck slot is unused → False. If any pixel diverges, the deck exists → True.
+    """
+    iar = emulator.screenshot()
+    decks = _load_war_deck_indicators()
+    result: dict[str, bool] = {}
+    for di in sorted(decks.keys()):
+        all_match = True
+        for r, g, b, x, y in decks[di]:
+            bgr = iar[y][x]
+            actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+            if not pixel_is_equal(actual, [r, g, b], tol=_WAR_DECK_INDICATOR_TOL):
+                all_match = False
+                break
+        result[f"deck{di}"] = not all_match
+    return result
+
+
+def check_if_can_war_battle(emulator) -> bool:
+    """False when the 'Start War Battle' button shows the greyed-out (no battles left) look."""
+    iar = emulator.screenshot()
+    pixels = [
+        (iar[400][230], (202, 202, 202)),
+        (iar[401][302], (202, 202, 202)),
+        (iar[432][306], (193, 193, 193)),
+        (iar[430][229], (193, 193, 193)),
+    ]
+    for bgr, (r, g, b) in pixels:
+        actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+        if not pixel_is_equal(actual, [r, g, b], tol=15):
+            return True
+    return False
 
 
 def clan_button_pixel_is_active_green(pixel) -> bool:

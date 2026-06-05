@@ -116,6 +116,7 @@ JOBS = [
             SubJobToggle(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE, "Claim gift"),
         ),
     ),
+    JobConfig(UIField.WAR_USER_TOGGLE, "⚔️ Clan war", default=False),
     JobConfig(UIField.CLASSIC_1V1_USER_TOGGLE, "⚔️ Classic 1v1", default=False, primary=True),
     JobConfig(UIField.CLASSIC_2V2_USER_TOGGLE, "👥 Classic 2v2", default=False, primary=True),
     JobConfig(UIField.TROPHY_ROAD_USER_TOGGLE, "🏆 Trophy Road", default=True, primary=True),

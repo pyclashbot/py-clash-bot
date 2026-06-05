@@ -91,6 +91,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.CLAN_DONATE_USER_TOGGLE.value: as_bool(UIField.CLAN_DONATE_USER_TOGGLE),
         UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value: as_bool(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE),
         UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value: as_bool(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE),
+        UIField.WAR_USER_TOGGLE.value: as_bool(UIField.WAR_USER_TOGGLE),
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),

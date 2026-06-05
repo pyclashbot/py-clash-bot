@@ -99,6 +99,33 @@ BOTTOM_NAV_SOCIAL_TAB_COORD = (310, 600)  # consolidated from 309/310/315 — se
 CLAN_CHAT_EXIT_DEADSPACE_COORD = (200, 600)
 CLAN_CHAT_TO_SOCIAL_COORD = (219, 605)
 
+# --- War page ---
+# War sits as a tab inside the Social hub (top row, x=210 y=105).
+WAR_TAB_FROM_SOCIAL_COORD = (210, 105)
+# When leaving war page, the bottom-nav row has shifted positions vs. main —
+# tap deadspace first, then the war-page bottom-nav tap target.
+WAR_EXIT_DEADSPACE_COORD = (210, 600)
+BOTTOM_NAV_MAIN_TAB_FROM_WAR_COORD = (180, 600)
+BOTTOM_NAV_CARD_TAB_FROM_WAR_COORD = (110, 600)
+BOTTOM_NAV_SHOP_TAB_FROM_WAR_COORD = (35, 600)
+BOTTOM_NAV_CLAN_CHAT_TAB_FROM_WAR_COORD = (265, 600)
+
+# Make-war-deck flow: click the empty deck slot, then "Random Deck", then exit.
+MAKE_WAR_DECK_1 = (80, 520)
+MAKE_WAR_DECK_2 = (165, 520)
+MAKE_WAR_DECK_3 = (250, 520)
+MAKE_WAR_DECK_4 = (240, 520)
+MAKE_RANDOM_WAR_DECK_BUTTON = (265, 490)
+EXIT_MAKE_WAR_DECK_PAGE = (205, 40)
+
+# War battle start + post-battle OK
+START_WAR_BATTLE_BUTTON_COORDS = (280, 415)
+OK_AFTER_WAR_BATTLE_COMPLETE_BUTTON_COORD = (205, 570)
+# Playfield drop region during a war battle (LTRB → (left, top, right, bottom))
+WAR_BATTLE_PLAYFIELD_LTRB = (55, 256, 360, 470)
+# Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
+WAR_DEADSPACE_COORD = (20, 330)
+
 # --- Clan chat ---
 CLAN_CHAT_FEED_SUBCROP = (0, 60, 419, 500)
 CLAN_CHAT_FOOTER_SUBCROP = (0, 470, 280, 600)
