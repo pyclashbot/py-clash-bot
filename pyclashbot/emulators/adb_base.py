@@ -106,7 +106,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         Server commands should not have -s device_serial added.
         """
         c = command.strip()
-        if c.startswith("-s "):
+        if re.match(r"-s\s+\S+", c):
             return True  # Already device-scoped
         first = c.split()[0] if c else ""
         return first in {
