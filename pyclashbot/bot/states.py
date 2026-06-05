@@ -270,6 +270,7 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "restart":
+        logger.add_restart_after_failure()
         emulator.restart()
         return state_order.next_state(state)
 
