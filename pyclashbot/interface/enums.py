@@ -15,6 +15,10 @@ class StatField(StrEnum):
     CARD_MASTERY_REWARD_COLLECTIONS = "card_mastery_reward_collections"
     UPGRADES = "upgrades"
     WAR_CHEST_COLLECTS = "war_chest_collects"
+    CARDS_DONATED = "cards_donated"
+    CARD_REQUESTS = "card_requests"
+    CLAN_GIFTS_CLAIMED = "clan_gifts_claimed"
+    ACCOUNT_SWITCHES = "account_switches"
 
 
 class DerivedStatField(StrEnum):
@@ -38,6 +42,12 @@ class UIField(StrEnum):
     DECK_NUMBER_SELECTION = "deck_number_selection"
     CYCLE_DECKS_USER_TOGGLE = "cycle_decks_user_toggle"
     MAX_DECK_SELECTION = "max_deck_selection"
+    SWITCH_ACCOUNTS_USER_TOGGLE = "switch_accounts_user_toggle"
+    MAX_ACCOUNT_SELECTION = "max_account_selection"
+    CLAN_CHAT_USER_TOGGLE = "clan_chat_user_toggle"
+    CLAN_DONATE_USER_TOGGLE = "clan_donate_user_toggle"
+    CLAN_CLAIM_GIFTS_USER_TOGGLE = "clan_claim_gifts_user_toggle"
+    CLAN_REQUEST_CARDS_USER_TOGGLE = "clan_request_cards_user_toggle"
     RANDOM_PLAYS_USER_TOGGLE = "random_plays_user_toggle"
     DISABLE_WIN_TRACK_TOGGLE = "disable_win_track_toggle"
     RECORD_FIGHTS_TOGGLE = "record_fights_toggle"
@@ -64,38 +74,49 @@ class UIField(StrEnum):
     BS_DEVICE_SERIAL = "bs_device_serial"
 
 
+WIN_RATE_STAT_LABELS: dict[StatField, str] = {
+    StatField.WINS: "Wins",
+    StatField.LOSSES: "Losses",
+}
+
+WIN_RATE_STAT_FIELDS: tuple[StatField, ...] = tuple(WIN_RATE_STAT_LABELS.keys())
+
 BATTLE_STAT_LABELS: dict[StatField, str] = {
-    StatField.WINS: "Win",
-    StatField.LOSSES: "Loss",
-    StatField.CARDS_PLAYED: "Moves",
-    StatField.CLASSIC_1V1_FIGHTS: "Classic 1v1s",
-    StatField.CLASSIC_2V2_FIGHTS: "Classic 2v2s",
-    StatField.TROPHY_ROAD_1V1_FIGHTS: "Trophy Road 1v1s",
-    StatField.CARD_RANDOMIZATIONS: "Decks Randomized",
-    StatField.CARD_CYCLES: "Decks Cycled",
+    StatField.CARDS_PLAYED: "Cards played",
+    StatField.CLASSIC_1V1_FIGHTS: "Classic 1v1",
+    StatField.CLASSIC_2V2_FIGHTS: "Classic 2v2",
+    StatField.TROPHY_ROAD_1V1_FIGHTS: "Trophy Road",
+    StatField.CARD_RANDOMIZATIONS: "Decks randomized",
+    StatField.CARD_CYCLES: "Decks cycled",
 }
 
 BATTLE_STAT_FIELDS: tuple[StatField, ...] = tuple(BATTLE_STAT_LABELS.keys())
 
 COLLECTION_STAT_LABELS: dict[StatField, str] = {
-    StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Masteries",
-    StatField.UPGRADES: "Upgrades",
+    StatField.CARD_MASTERY_REWARD_COLLECTIONS: "Card Mastery rewards",
+    StatField.UPGRADES: "Card upgrades",
     StatField.WAR_CHEST_COLLECTS: "War Chests",
+    StatField.CARDS_DONATED: "Cards donated",
+    StatField.CARD_REQUESTS: "Card requests",
+    StatField.CLAN_GIFTS_CLAIMED: "Gifts claimed",
+    StatField.ACCOUNT_SWITCHES: "Account switches",
 }
 
 COLLECTION_STAT_FIELDS: tuple[StatField, ...] = tuple(COLLECTION_STAT_LABELS.keys())
 
 BOT_STAT_LABELS: dict[BotStatField, str] = {
-    BotStatField.RESTARTS_AFTER_FAILURE: "Bot Failures",
+    BotStatField.RESTARTS_AFTER_FAILURE: "Recovery restarts",
     BotStatField.TIME_SINCE_START: "Runtime",
 }
 
 BOT_STAT_FIELDS: tuple[BotStatField, ...] = tuple(BOT_STAT_LABELS.keys())
 
 PRIMARY_JOB_TOGGLES: tuple[UIField, ...] = (
+    UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
+    UIField.CARD_UPGRADE_USER_TOGGLE,
     UIField.CARD_MASTERY_USER_TOGGLE,
+    UIField.CLAN_CHAT_USER_TOGGLE,
     UIField.CLASSIC_1V1_USER_TOGGLE,
     UIField.CLASSIC_2V2_USER_TOGGLE,
     UIField.TROPHY_ROAD_USER_TOGGLE,
-    UIField.CARD_UPGRADE_USER_TOGGLE,
 )

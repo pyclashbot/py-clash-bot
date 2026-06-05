@@ -18,7 +18,9 @@ UPGRADE_CODE = "{494bebef-6fc5-42e5-98c8-d0b2e339750e}"
 
 
 try:
-    VERSION = sys.argv[sys.argv.index("--target-version") + 1]
+    _version_idx = sys.argv.index("--target-version")
+    VERSION = sys.argv[_version_idx + 1]
+    del sys.argv[_version_idx : _version_idx + 2]
 except (ValueError, IndexError):
     VERSION = "v0.0.0"
 

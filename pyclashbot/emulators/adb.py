@@ -2,7 +2,7 @@ import re
 import subprocess
 import time
 
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform

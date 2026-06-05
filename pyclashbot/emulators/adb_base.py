@@ -70,9 +70,14 @@ class AdbBasedController(BaseEmulatorController, ABC):
     def discover_devices(cls) -> list[str]:
         """List connected ADB device serials using this controller's ADB."""
         adb_path = cls.find_adb() or "adb"
+        parts = [f'"{adb_path}"']
+        if cls.adb_server_port:
+            parts.append(f"-P {cls.adb_server_port}")
+        parts.append("devices")
+        full_command = " ".join(parts)
         try:
             result = subprocess.run(
-                f'"{adb_path}" devices',
+                full_command,
                 shell=True,
                 capture_output=True,
                 text=True,
@@ -101,7 +106,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         Server commands should not have -s device_serial added.
         """
         c = command.strip()
-        if re.search(r"-s\s+\S+", c):
+        if c.startswith("-s "):
             return True  # Already device-scoped
         first = c.split()[0] if c else ""
         return first in {

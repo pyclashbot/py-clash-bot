@@ -75,16 +75,29 @@ def _get_deck_cache():
     return _thread_local.deck_cache
 
 
-def get_deck_number_for_battle_mode(battle_mode: str) -> int:
-    """Get the deck number for a specific battle mode from the thread-local cache."""
-    cache = _get_deck_cache()
-    return cache.get(battle_mode, 1)
+def _deck_cache_key(account_index: int, battle_mode: str) -> str:
+    """Deck cycle index is tracked per account and per battle mode."""
+    return f"{account_index}:{battle_mode}"
 
 
-def set_deck_number_for_battle_mode(battle_mode: str, deck_number: int):
-    """Set the deck number for a specific battle mode in the thread-local cache."""
+def get_deck_number_for_battle_mode(battle_mode: str, account_index: int = 0) -> int:
+    """Get the deck number for a battle mode on the given account (thread-local cache)."""
     cache = _get_deck_cache()
-    cache[battle_mode] = deck_number
+    key = _deck_cache_key(account_index, battle_mode)
+    if key in cache:
+        return cache[key]
+    # Legacy: deck index was keyed by battle mode only (pre account-switch).
+    legacy = cache.get(battle_mode)
+    if legacy is not None and account_index == 0:
+        cache[key] = legacy
+        return legacy
+    return 1
+
+
+def set_deck_number_for_battle_mode(battle_mode: str, deck_number: int, account_index: int = 0):
+    """Set the deck number for a battle mode on the given account (thread-local cache)."""
+    cache = _get_deck_cache()
+    cache[_deck_cache_key(account_index, battle_mode)] = deck_number
 
 
 ### The following section is for supporting the old pickle format for user settings ###

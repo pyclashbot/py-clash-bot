@@ -5,7 +5,6 @@ from __future__ import annotations
 import locale
 import logging
 import multiprocessing as mp
-import os
 import subprocess
 from multiprocessing import Event, Queue
 from os.path import expandvars, join
@@ -42,18 +41,35 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
-from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir
+from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-initalize_pylogging()
+initialize_pylogging()
+
+
+def migrate_clan_job_settings(values: dict[str, Any]) -> None:
+    """Map legacy per-action clan toggles to the master Clan chat job toggle."""
+    if values.get(UIField.CLAN_CHAT_USER_TOGGLE.value):
+        return
+    if any(
+        values.get(field.value)
+        for field in (
+            UIField.CLAN_DONATE_USER_TOGGLE,
+            UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+            UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
+        )
+    ):
+        values[UIField.CLAN_CHAT_USER_TOGGLE.value] = True
 
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     """Create a dictionary of job toggles and increments based on UI values."""
+    migrate_clan_job_settings(values)
 
     def as_bool(field: UIField) -> bool:
         return bool(values.get(field.value, False))
@@ -73,6 +89,12 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.DECK_NUMBER_SELECTION.value: as_int(UIField.DECK_NUMBER_SELECTION, 2),
         UIField.CYCLE_DECKS_USER_TOGGLE.value: as_bool(UIField.CYCLE_DECKS_USER_TOGGLE),
         UIField.MAX_DECK_SELECTION.value: as_int(UIField.MAX_DECK_SELECTION, 2),
+        UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value: as_bool(UIField.SWITCH_ACCOUNTS_USER_TOGGLE),
+        UIField.MAX_ACCOUNT_SELECTION.value: as_int(UIField.MAX_ACCOUNT_SELECTION, 2),
+        UIField.CLAN_CHAT_USER_TOGGLE.value: as_bool(UIField.CLAN_CHAT_USER_TOGGLE),
+        UIField.CLAN_DONATE_USER_TOGGLE.value: as_bool(UIField.CLAN_DONATE_USER_TOGGLE),
+        UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value: as_bool(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE),
+        UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value: as_bool(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE),
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
@@ -135,6 +157,7 @@ def load_settings(settings: dict[str, Any] | None, ui: PyClashBotUI) -> dict[str
     if not loaded and USER_SETTINGS_CACHE.exists():
         loaded = USER_SETTINGS_CACHE.load_data()
     if loaded:
+        migrate_clan_job_settings(loaded)
         ui.set_all_values(loaded)
     return loaded
 
@@ -161,18 +184,18 @@ def start_button_event(
             logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
             return None
 
-    # Google Play - serial optional
+    # Google Play - serial optional; validate format only, worker boots and connects.
     if job_dictionary.get("emulator") == EmulatorType.GOOGLE_PLAY:
         device_serial = job_dictionary.get(UIField.GP_DEVICE_SERIAL.value)
-        if device_serial and not GooglePlayEmulatorController.is_device_connected(device_serial):
-            logger.change_status(f"Start cancelled: Device '{device_serial}' not connected.")
+        if device_serial and not validate_device_serial(device_serial):
+            logger.change_status(f"Start cancelled: invalid device serial '{device_serial}'.")
             return None
 
-    # BlueStacks - serial optional
+    # BlueStacks - serial optional; validate format only, worker boots and connects.
     if job_dictionary.get("emulator") == EmulatorType.BLUESTACKS:
         device_serial = job_dictionary.get(UIField.BS_DEVICE_SERIAL.value)
-        if device_serial and not BlueStacksEmulatorController.is_device_connected(device_serial):
-            logger.change_status(f"Start cancelled: Device '{device_serial}' not connected.")
+        if device_serial and not validate_device_serial(device_serial):
+            logger.change_status(f"Start cancelled: invalid device serial '{device_serial}'.")
             return None
 
     logger.log("Start Button Event")
@@ -232,25 +255,12 @@ def handle_process_finished(
 
 def open_recordings_folder() -> None:
     folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
-    os.makedirs(folder_path, exist_ok=True)
-    try:
-        os.startfile(folder_path)
-    except AttributeError:
-        # Non-Windows fallback
-        import subprocess
-
-        subprocess.Popen(["xdg-open", folder_path])
+    open_folder(folder_path)
 
 
 def open_logs_folder() -> None:
     folder_path = log_dir
-    os.makedirs(folder_path, exist_ok=True)
-    try:
-        os.startfile(folder_path)
-    except AttributeError:
-        import subprocess
-
-        subprocess.Popen(["xdg-open", folder_path])
+    open_folder(folder_path)
 
 
 class BotApplication:

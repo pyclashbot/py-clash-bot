@@ -14,7 +14,7 @@ import numpy as np
 import psutil
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.base import BaseEmulatorController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
@@ -31,7 +31,7 @@ DEBUG_CONFIGURATION = {
     "clash_startup": False,  # Enable verbose logging for Clash Royale startup
 }
 
-ANDROID_VERSION = "126"  # android 12, 64 bit
+ANDROID_VERSION = "136"  # android 13, 64 bit
 EMULATOR_NAME = f"pyclashbot-{ANDROID_VERSION}"
 
 # Default Memu configuration - matches the working example
@@ -156,7 +156,7 @@ class MemuEmulatorController(BaseEmulatorController):
         self.screenshotter = MemuScreenCapture(self.pmc)
 
         # get a valid vm to use
-        self._initalize_valid_vm()
+        self._initialize_valid_vm()
 
         self.logger.log(f"Initializing MemuEmulatorController took {str(time.time() - init_start_time)[:5]} seconds")
         if self.debug_mode:
@@ -165,24 +165,24 @@ class MemuEmulatorController(BaseEmulatorController):
     def __del__(self):
         self.logger.log("Need to clear residual memu processes here")
 
-    def _initalize_valid_vm(self):
+    def _initialize_valid_vm(self):
         # no timeout here bc if this fails, then something fatal is wrong
-        self.logger.log("Initalizing memu vm...")
+        self.logger.log("Initializing MEmu VM...")
         vm_index = -1
         while 1:
             # check for a valid vm
             self.logger.log("Checking for an existing valid vm...")
             vm_index = self._get_clashbot_vm_index()
             if vm_index is not False:
-                self.logger.log(f"[+] Found a valid vm: {vm_index}")
+                self.logger.log(f"[+] Found {EMULATOR_NAME} VM: {vm_index}")
                 self.vm_index = vm_index
                 break
 
             # if none found, create a new one
-            self.logger.log("No existing valid vm!")
+            self.logger.log(f"No existing {EMULATOR_NAME} (Android 13) VM found, creating one...")
             vm_index = self.create()
             if vm_index != -1:
-                self._rename_vm("pyclashbot-126")
+                self._rename_vm(EMULATOR_NAME)
                 self.logger.log(f"[+] Created a new vm: {vm_index}")
                 break
 
@@ -207,7 +207,7 @@ class MemuEmulatorController(BaseEmulatorController):
 
         for vm in vms:
             title = vm["title"]
-            if "pyclashbot-126" in title:
+            if EMULATOR_NAME in title:
                 self.vm_index = vm["index"]
                 return vm["index"]
 
@@ -1409,7 +1409,7 @@ class MemuEmulatorController(BaseEmulatorController):
         while self._check_for_emulator_running() is True:
             if time.time() - start_time > timeout:
                 self.logger.log(
-                    f"[!] Non fatal error: Timeout of {timeout} seconds reached while stopping the emulator.\n"
+                    f"[!] Non-fatal error: Timeout of {timeout} seconds reached while stopping the emulator.\n"
                 )
                 return False
 

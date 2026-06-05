@@ -1,22 +1,27 @@
 import time
 
+from pyclashbot.bot.coords import (
+    CARD_MASTERY_COLLECT_COORD,
+    CARD_MASTERY_OPTIONS_COORD,
+    CARD_MASTERY_RETURN_TO_MAIN_COORD,
+    CARD_MASTERY_TAB_COORD,
+)
 from pyclashbot.bot.nav import (
-    check_if_on_card_page,
-    check_if_on_clash_main_menu,
     get_to_card_page_from_clash_main,
     wait_for_clash_main_menu,
 )
-from pyclashbot.detection.image_rec import pixel_is_equal
+from pyclashbot.bot.state_detect import (
+    card_mastery_rewards_exist,
+    check_for_inventory_full_popup,
+    check_if_on_card_page,
+    check_if_on_clash_main_menu,
+)
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
-CARD_MASTERY_COORD = (340, 440)
-CARD_MASTERY_BGR = (95, 214, 251)
-PIXEL_TOLERANCE = 15
-
 
 def card_mastery_state(emulator, logger):
-    logger.change_status("Going to collect card mastery rewards")
+    logger.change_status("Going to collect Card Mastery rewards")
 
     if check_if_on_clash_main_menu(emulator) is not True:
         logger.change_status(
@@ -35,7 +40,7 @@ def card_mastery_state(emulator, logger):
 
 def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
     # get to card page
-    logger.change_status("Collecting card mastery rewards...")
+    logger.change_status("Collecting Card Mastery rewards...")
     if get_to_card_page_from_clash_main(emulator, logger) == "restart":
         logger.change_status(
             "Failed to get to card page to collect mastery rewards! Returning false",
@@ -44,22 +49,22 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
     interruptible_sleep(3)
 
     if not card_mastery_rewards_exist_with_delay(emulator):
-        logger.change_status("No card mastery rewards to collect.")
+        logger.change_status("No Card Mastery rewards to collect.")
         interruptible_sleep(1)
 
     else:
         # while card mastery icon exists:
         while card_mastery_rewards_exist_with_delay(emulator):
-            logger.change_status("Detected card mastery rewards")
+            logger.change_status("Detected Card Mastery rewards")
             #   click card mastery icon
             collect_first_mastery_reward(emulator)
-            logger.change_status("Collected a card mastery reward!")
+            logger.change_status("Collected a Card Mastery reward!")
             logger.add_card_mastery_reward_collection()
             interruptible_sleep(2)
 
     # get to clash main
     logger.change_status("Returning to clash main menu")
-    emulator.click(243, 600)
+    emulator.click(CARD_MASTERY_RETURN_TO_MAIN_COORD[0], CARD_MASTERY_RETURN_TO_MAIN_COORD[1])
 
     # wait for main to appear
     if wait_for_clash_main_menu(emulator, logger) is False:
@@ -73,11 +78,11 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
 
 def collect_first_mastery_reward(emulator):
     # click the card mastery reward icon
-    emulator.click(362, 444)
+    emulator.click(CARD_MASTERY_OPTIONS_COORD[0], CARD_MASTERY_OPTIONS_COORD[1])
     interruptible_sleep(0.5)
 
     # click first card
-    emulator.click(99, 166)
+    emulator.click(CARD_MASTERY_TAB_COORD[0], CARD_MASTERY_TAB_COORD[1])
     interruptible_sleep(0.5)
 
     # click rewards at specific Y positions
@@ -87,7 +92,7 @@ def collect_first_mastery_reward(emulator):
         interruptible_sleep(1)
         if check_for_inventory_full_popup(emulator):
             print("Inventory full popup detected!\nClicking it")
-            emulator.click(260, 420)
+            emulator.click(CARD_MASTERY_COLLECT_COORD[0], CARD_MASTERY_COLLECT_COORD[1])
             interruptible_sleep(1)
 
     # click deadspace
@@ -112,47 +117,6 @@ def card_mastery_rewards_exist_with_delay(emulator):
             return True
 
     return False
-
-
-def card_mastery_rewards_exist(emulator):
-    screenshot = emulator.screenshot()
-
-    x, y = CARD_MASTERY_COORD
-    pixel = screenshot[y][x]
-
-    return pixel_is_equal(pixel, CARD_MASTERY_BGR, PIXEL_TOLERANCE)
-
-
-def check_for_inventory_full_popup(emulator):
-    iar = emulator.screenshot()
-    pixels = [
-        iar[410][220],
-        iar[420][225],
-        iar[416][225],
-        iar[418][230],
-        iar[420][240],
-        iar[430][250],
-        iar[435][260],
-        iar[427][270],
-        iar[429][280],
-        iar[435][290],
-    ]
-    colors = [
-        [255, 187, 105],
-        [255, 187, 105],
-        [255, 187, 105],
-        [244, 233, 220],
-        [60, 52, 43],
-        [255, 175, 78],
-        [255, 175, 78],
-        [255, 255, 255],
-        [241, 165, 74],
-        [255, 175, 78],
-    ]
-    for i, c in enumerate(colors):
-        if not pixel_is_equal(c, pixels[i], tol=15):
-            return False
-    return True
 
 
 if __name__ == "__main__":

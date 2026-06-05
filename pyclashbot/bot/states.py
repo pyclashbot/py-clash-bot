@@ -3,16 +3,17 @@
 import random
 import time
 
+from pyclashbot.bot.account_switch import switch_account_state
 from pyclashbot.bot.card_mastery_state import card_mastery_state
-from pyclashbot.bot.deck_cycle import select_deck_state
-from pyclashbot.bot.deck_randomization import randomize_deck_state
+from pyclashbot.bot.clan_chat_state import clan_chat_state
+from pyclashbot.bot.deck import randomize_deck_state, select_deck_state
 from pyclashbot.bot.fight import (
-    do_2v2_fight_state,
     do_fight_state,
     end_fight_state,
     start_fight,
 )
-from pyclashbot.bot.nav import check_if_battle_mode_is_selected, select_mode
+from pyclashbot.bot.nav import select_mode
+from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.caching import (
@@ -49,7 +50,16 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
 mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
 
-CLASH_MAIN_DEADSPACE_COORD = (20, 520)
+
+def any_fight_mode_enabled(job_list) -> bool:
+    return any(
+        job_list.get(field.value, False)
+        for field in (
+            UIField.CLASSIC_1V1_USER_TOGGLE,
+            UIField.CLASSIC_2V2_USER_TOGGLE,
+            UIField.TROPHY_ROAD_USER_TOGGLE,
+        )
+    )
 
 
 def get_next_fight_mode(job_list):
@@ -197,8 +207,10 @@ class StateHistory:
 class StateOrder:
     def __init__(self):
         self.states = [
+            "switch_account",
             "upgrade",
             "card_mastery",
+            "clan_chat",
             "select_battle_mode",
             "randomize_deck",
             "cycle_deck",
@@ -259,6 +271,24 @@ def state_tree(
         emulator.restart()
         return state_order.next_state(state)
 
+    if state == "switch_account":
+        if not job_list.get(UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value):
+            logger.log("Account switching isn't toggled. Skipping this state")
+            return state_order.next_state(state)
+
+        account_count = job_list.get(UIField.MAX_ACCOUNT_SELECTION.value, 2)
+        # get_next_account returns 0-based index; game list uses slots 1..N.
+        target_index = logger.get_next_account(account_count)
+        target_slot = target_index + 1
+
+        if switch_account_state(emulator, logger, target_slot):
+            logger.current_account = target_index
+            logger.add_account_to_account_history(target_index)
+            logger.add_account_switch()
+            return state_order.next_state(state)
+
+        return handle_state_failure(logger, "switch_account", "switch_account_state")
+
     if state == "randomize_deck":
         # if randomize deck isn't toggled, return next state
         if not job_list[UIField.RANDOM_DECKS_USER_TOGGLE]:
@@ -291,7 +321,8 @@ def state_tree(
             logger.log("No battle mode selected, skipping deck cycling.")
             return state_order.next_state(state)
 
-        deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1)
+        account_index = max(0, int(logger.current_account))
+        deck_cycle_index = get_deck_number_for_battle_mode(mode_used_in_1v1, account_index)
 
         deck_count = job_list.get(UIField.MAX_DECK_SELECTION.value, 10)
 
@@ -302,7 +333,7 @@ def state_tree(
 
         next_deck = selected_deck_number + 1 if selected_deck_number < deck_count else 1
 
-        set_deck_number_for_battle_mode(mode_used_in_1v1, next_deck)
+        set_deck_number_for_battle_mode(mode_used_in_1v1, next_deck, account_index)
 
         return state_order.next_state(state)
 
@@ -326,7 +357,7 @@ def state_tree(
     if state == "card_mastery":
         # if job not selected, return next state
         if not job_list[UIField.CARD_MASTERY_USER_TOGGLE]:
-            logger.log("Card mastery job isn't toggled. Skipping this state")
+            logger.log("Card Mastery job isn't toggled. Skipping this state")
             return state_order.next_state(state)
 
         # if job not ready, go next state
@@ -340,6 +371,38 @@ def state_tree(
 
         return state_order.next_state(state)
 
+    if state == "clan_chat":
+        if not job_list.get(UIField.CLAN_CHAT_USER_TOGGLE.value, False):
+            logger.log("Clan chat job isn't toggled. Skipping this state")
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        donate = job_list.get(UIField.CLAN_DONATE_USER_TOGGLE.value, False)
+        claim = job_list.get(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value, False)
+        request = job_list.get(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value, False)
+        if not donate and not claim and not request:
+            logger.log("No clan chat actions selected. Skipping this state")
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        if clan_chat_state(
+            emulator,
+            logger,
+            donate_enabled=donate,
+            claim_enabled=claim,
+            request_enabled=request,
+        ):
+            if not any_fight_mode_enabled(job_list):
+                logger.log("No fight modes enabled, skipping fight chain")
+                return state_order.next_state("end_fight")
+            return state_order.next_state(state)
+
+        return handle_state_failure(logger, "clan_chat", "clan_chat_state")
+
     if state == "select_battle_mode":
         # Get all enabled fight modes
         enabled_modes = []
@@ -351,8 +414,8 @@ def state_tree(
             enabled_modes.append("Trophy Road")
 
         if not enabled_modes:
-            print("No fight modes are enabled. Skipping this state")
-            return state_order.next_state(state)
+            logger.log("No fight modes enabled, skipping fight chain")
+            return state_order.next_state("end_fight")
 
         # if more than one mode is selected, just cycle through them
         if len(enabled_modes) > 1:
@@ -427,19 +490,25 @@ def state_tree(
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
-            do_2v2_fight_state(
+            do_fight_state(
                 emulator,
                 logger,
                 random_plays_flag,
-                recording_flag,
+                "Classic 2v2",
+                called_from_launching=False,
+                recording_flag=recording_flag,
             )
             is False
         ):
-            return handle_state_failure(logger, "2v2_fight", "do_2v2_fight_state", "2v2 fight failed")
+            return handle_state_failure(logger, "2v2_fight", "do_fight_state", "2v2 fight failed")
 
         return state_order.next_state(state)
 
     if state == "end_fight":
+        if not any_fight_mode_enabled(job_list):
+            logger.log("No fight modes enabled, skipping end_fight")
+            return state_order.next_state(state)
+
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         if (
             end_fight_state(

@@ -7,12 +7,12 @@ from os.path import normpath
 
 import psutil
 
-DEBUG = False
-
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
+
+DEBUG = False
 
 
 class GooglePlayEmulatorController(AdbBasedController):
@@ -177,7 +177,7 @@ class GooglePlayEmulatorController(AdbBasedController):
 
     def __del__(self):
         print("Cleaning up google emulator controller object...")
-        print("Cant call self here so idk what to do.")
+        print("Can't call self here; cleanup is handled elsewhere.")
         print("Someone 10x try to clear google play processes here")
 
     def _connect(self):

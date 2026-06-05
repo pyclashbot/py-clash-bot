@@ -8,9 +8,8 @@ import time
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
-from os.path import exists, getmtime, join
+from os.path import basename, exists, getmtime, join
 
-from pyclashbot.utils.machine_info import MACHINE_INFO
 from pyclashbot.utils.platform import get_log_dir
 from pyclashbot.utils.versioning import __version__
 
@@ -35,21 +34,40 @@ def compress_logs() -> None:
             "a" if exists(archive_name) else "w",
         ) as archive:
             for log in logs[:-LOGS_TO_KEEP]:
-                archive.write(log, log.split("\\")[-1])
+                # Use basename so this works on all platforms (Windows, macOS, Linux)
+                archive.write(log, basename(log))
                 remove(log)
 
 
-def initalize_pylogging() -> None:
-    """Method to be called once to initalize python logging"""
+def initialize_pylogging() -> None:
+    """Method to be called once to initialize python logging"""
     if not exists(log_dir):
         makedirs(log_dir)
-    logging.basicConfig(
-        filename=log_name,
-        encoding="utf-8",
-        level=logging.DEBUG,
-        format="%(levelname)s:%(asctime)s %(message)s",
-    )
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+
+    # Ensure we always have a file handler, even if something logged earlier (which would
+    # make logging.basicConfig(...) a no-op).
+    already_has_log_file = False
+    for handler in root_logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            try:
+                if handler.baseFilename == log_name:
+                    already_has_log_file = True
+                    break
+            except Exception:
+                continue
+
+    if not already_has_log_file:
+        file_handler = logging.FileHandler(log_name, encoding="utf-8")
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(logging.Formatter("%(levelname)s:%(asctime)s %(message)s"))
+        root_logger.addHandler(file_handler)
+
     logging.info("Logging initialized for %s", __version__)
+    logging.info("Log directory: %s", log_dir)
+    logging.info("Current log file: %s", log_name)
     logging.info(
         """
  ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
@@ -60,10 +78,17 @@ def initalize_pylogging() -> None:
     )
     logging.info(
         "Machine Info: \n%s",
-        pprint.pformat(MACHINE_INFO, sort_dicts=False, indent=4),
+        pprint.pformat(_get_machine_info(), sort_dicts=False, indent=4),
     )
 
     compress_logs()
+
+
+def _get_machine_info() -> dict:
+    # Delayed import to avoid logging before handlers are installed.
+    from pyclashbot.utils.machine_info import MACHINE_INFO
+
+    return MACHINE_INFO
 
 
 class Logger:
@@ -120,6 +145,8 @@ class Logger:
         self.daily_rewards = 0
         self.donates = 0
         self.requests = 0
+        self.clan_gift_claims = 0
+        self.account_switches = 0
         self.shop_offer_collections = 0
         self.war_chest_collects = 0
         self.level_up_chest_collects = 0
@@ -176,6 +203,10 @@ class Logger:
                 # collection stats
                 "war_chest_collects": self.war_chest_collects,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
+                "cards_donated": self.donates,
+                "card_requests": self.requests,
+                "clan_gifts_claimed": self.clan_gift_claims,
+                "account_switches": self.account_switches,
                 # card stats
                 "upgrades": self.cards_upgraded,
                 "cards_played": self.cards_played,
@@ -213,7 +244,7 @@ class Logger:
 
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
-        stats and reutrn as string in hours:mins:seconds
+        stats and return as string in hours:mins:seconds
         """
         if self.start_time is not None:
             hours, remainder = divmod(time.time() - self.start_time, 3600)
@@ -430,6 +461,16 @@ class Logger:
     def add_donate(self) -> None:
         """Add donate to log"""
         self.donates += 1
+
+    @_updates_gui
+    def add_clan_gift_claim(self) -> None:
+        """Add Pass Royale / clan gift claim to log"""
+        self.clan_gift_claims += 1
+
+    @_updates_gui
+    def add_account_switch(self) -> None:
+        """Count a successful linked-account switch."""
+        self.account_switches += 1
 
     @_updates_gui
     def add_daily_reward(self) -> None:

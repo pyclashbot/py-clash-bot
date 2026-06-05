@@ -8,7 +8,7 @@ import time
 from contextlib import suppress
 from os.path import normpath
 
-from pyclashbot.bot.nav import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
@@ -26,6 +26,10 @@ class BlueStacksEmulatorController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS]
 
+    # BlueStacks runs a private ADB server on a fixed port; declared at class scope
+    # so classmethods (e.g. discover_devices) can route to the right server.
+    adb_server_port: int = 5041
+
     @staticmethod
     def find_adb() -> str | None:
         """Find bundled HD-Adb path, or None if not found."""
@@ -40,12 +44,11 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.logger = logger
         self.expected_dims = (419, 633)  # Bypassing bs5's stupid dim limits
 
-        self.instance_name = "pyclashbot-96"
+        self.instance_name = "pyclashbot-136"
         self.internal_name: str | None = None
         self.instance_port: int | None = None
         self._user_device_serial = device_serial
 
-        self.adb_server_port: int = 5041
         self.adb_env = os.environ.copy()
         self.adb_env["ADB_SERVER_PORT"] = str(self.adb_server_port)
 
@@ -380,11 +383,11 @@ class BlueStacksEmulatorController(AdbBasedController):
         while True:
             self._request_instance_retry = False
             self.logger.show_temporary_action(
-                message="Open BlueStacks Multi-Instance Manager and create a fresh instance without logging into any Google accounts, then click Retry.",
+                message="No Android 13 instance found. Open BlueStacks Multi-Instance Manager and create a fresh Android 13 (Tiramisu 64-bit) instance without logging into any Google accounts, then click Retry.",
                 action_text="Retry",
                 callback=self._request_instance_creation_retry,
             )
-            self.logger.log("[BlueStacks 5] No clean instance found. Opening Multi-Instance Manager...")
+            self.logger.log("[BlueStacks 5] No clean Android 13 instance found. Opening Multi-Instance Manager...")
             self._open_multi_instance_manager()
 
             # Wait for user action via Retry callback
@@ -413,7 +416,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                     self.logger.change_status("Prepared clean instance - continuing...")
                     return
 
-                self.logger.log("[BlueStacks 5] Still no clean instance found. Please try again.")
+                self.logger.log("[BlueStacks 5] Still no clean Android 13 instance found. Please try again.")
 
     def _request_instance_creation_retry(self):
         self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean instance")
@@ -514,13 +517,23 @@ class BlueStacksEmulatorController(AdbBasedController):
                 self.device_serial = f"127.0.0.1:{self.instance_port}"
 
     def _connect(self) -> bool:
-        """Connect to the configured device."""
+        """Connect to the configured device, refreshing the instance port on failure."""
         self._reset_adb_server()
         self.adb(f"disconnect {self.device_serial}")
         interruptible_sleep(0.2)
         self.adb(f"connect {self.device_serial}")
         state = self.adb("get-state")
-        return (state.returncode == 0) and (state.stdout and "device" in state.stdout)
+        ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
+        if not ok:
+            # BlueStacks may reassign the instance ADB port across launches; re-read
+            # bluestacks.conf and retry (honors a user-pinned device_serial).
+            self._refresh_instance_port()
+            self.adb(f"disconnect {self.device_serial}")
+            interruptible_sleep(0.2)
+            self.adb(f"connect {self.device_serial}")
+            state = self.adb("get-state")
+            ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
+        return ok
 
     def _is_this_instance_running(self) -> bool:
         if is_macos():
@@ -608,7 +621,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
 
-        self.logger.change_status("Launching BlueStacks 5 (pyclashbot-96)...")
+        self.logger.change_status(f"Launching BlueStacks 5 ({self.instance_name})...")
         self.start()
 
         # Wait for only our instance
