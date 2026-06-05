@@ -40,7 +40,17 @@ build = [
     "packaging>=24.2",
     "requests>=2.33.0",
 ]
-dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.16"]
+dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.16", "pytest>=8,<9"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+# Offline by default: bare `pytest` (and CI) skips emulator tests. A CLI
+# `-m emulator` overrides this (the last -m wins). `make test-emulator` does that.
+addopts = "--strict-markers -m 'not emulator'"
+markers = [
+    "emulator: requires a live emulator with Clash Royale parked on the main menu",
+]
 
 [tool.ruff.lint]
 select = [

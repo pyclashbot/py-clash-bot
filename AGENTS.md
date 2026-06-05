@@ -5,8 +5,9 @@ A Clash Royale automation bot: drives an Android emulator via ADB and acts on th
 ## Commands
 
 Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`build-dmg`, all via `uv`); `CONTRIBUTING.md` has dev setup. Non-obvious bits those don't tell you:
-- Tests are **not** pytest — each `tests/**/test_*.py` runs as a standalone script (exit 0 = pass); `EMULATOR=memu make test` filters to `tests/<name>/`.
-- `tests/clash-royale/` are integration tests needing a live MEmu VM and **do not run in CI**. CI only builds artifacts + runs pre-commit.
+- Tests are **pytest**, offline by default (`addopts = -m "not emulator"`). Hardware tests carry `@pytest.mark.emulator`: `make test` runs only offline tests; `make test-emulator EMULATOR=memu` runs the live-emulator suite (`-m emulator -x`).
+- The clash suite is one parametrized test (`tests/clash_royale/test_jobs.py`) over an ordered `SUITE` list — add a job by appending its `run_test` to `SUITE`. Shared emulator + precondition gate live in `tests/conftest.py`. Select with `-k`, stop at first failure with `-x`.
+- `tests/clash_royale/` and `tests/memu/` need a live emulator and **do not run in CI** (CI only builds artifacts + runs pre-commit).
 - MSI build = cx-freeze, DMG = pyinstaller; both inject the real version (see Cross-cutting rules).
 
 ## Architecture

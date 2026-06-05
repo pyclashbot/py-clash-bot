@@ -1,11 +1,7 @@
-"""Regression: fingerprints and bot both use BGR emulator screenshots.
-
-Run: uv run python tests/test_card_fingerprint_bgr.py
-"""
+"""Regression: fingerprints and bot both use BGR emulator screenshots."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import cv2
@@ -55,24 +51,3 @@ def test_bgr_path_identifies_hand() -> None:
         raw = cd.find_closest_card(corners)
         got = cd.CARD_DETECTION_ALIASES.get(raw, raw)
         assert got == expected, f"slot {slot}: expected {expected}, got {got} (raw {raw})"
-
-
-def main() -> int:
-    tests = [
-        test_bot_uses_raw_bgr_screenshot,
-        test_bgr_path_identifies_hand,
-    ]
-    for test in tests:
-        print(f"running {test.__name__}...")
-        test()
-        print("  PASS")
-    print(f"\n{len(tests)} passed")
-    return 0
-
-
-if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except AssertionError as err:
-        print(f"FAIL: {err}", file=sys.stderr)
-        raise SystemExit(1) from err
