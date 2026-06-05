@@ -39,8 +39,8 @@ def compress_logs() -> None:
                 remove(log)
 
 
-def initalize_pylogging() -> None:
-    """Method to be called once to initalize python logging"""
+def initialize_pylogging() -> None:
+    """Method to be called once to initialize python logging"""
     if not exists(log_dir):
         makedirs(log_dir)
 
@@ -244,7 +244,7 @@ class Logger:
 
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
-        stats and reutrn as string in hours:mins:seconds
+        stats and return as string in hours:mins:seconds
         """
         if self.start_time is not None:
             hours, remainder = divmod(time.time() - self.start_time, 3600)

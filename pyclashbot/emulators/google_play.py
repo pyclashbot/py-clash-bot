@@ -159,7 +159,7 @@ class GooglePlayEmulatorController(AdbBasedController):
 
     def __del__(self):
         print("Cleaning up google emulator controller object...")
-        print("Cant call self here so idk what to do.")
+        print("Can't call self here; cleanup is handled elsewhere.")
         print("Someone 10x try to clear google play processes here")
 
     def _connect(self):

@@ -37,7 +37,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
-from pyclashbot.utils.logger import Logger, initalize_pylogging, log_dir
+from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
 
@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-initalize_pylogging()
+initialize_pylogging()
 
 
 def migrate_clan_job_settings(values: dict[str, Any]) -> None:

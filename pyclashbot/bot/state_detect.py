@@ -154,12 +154,12 @@ ELIXIR_COORDS = [
 ELIXIR_COLOR = [240, 137, 244]
 
 
-def count_elixer(emulator, elixer_count) -> bool:
-    """Method to check for 4 elixer during a battle"""
+def count_elixir(emulator, elixir_count) -> bool:
+    """Method to check for 4 elixir during a battle"""
     iar = emulator.screenshot()
 
     if pixel_is_equal(
-        iar[ELIXIR_COORDS[elixer_count - 1][0], ELIXIR_COORDS[elixer_count - 1][1]],
+        iar[ELIXIR_COORDS[elixir_count - 1][0], ELIXIR_COORDS[elixir_count - 1][1]],
         ELIXIR_COLOR,
         tol=65,
     ):
@@ -169,7 +169,7 @@ def count_elixer(emulator, elixer_count) -> bool:
 
 def check_pixels_for_win_in_battle_log(emulator) -> bool:
     """Method to check pixels that appear in the battle
-    log to determing if the previous game was a win
+    log to determine if the previous game was a win
     """
     line1 = check_line_for_color(
         emulator,
