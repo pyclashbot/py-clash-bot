@@ -12,8 +12,8 @@ class DiscordRPCManager:
 
     APP_ID = "1181655703446888469"
     BUTTONS = [
-        {"label": "GitHub", "url": "https://github.com/pyclashbot/py-clash-bot"},
-        {"label": "Discord", "url": "https://discord.gg/X7YGaX76EH"},
+        {"label": "Website", "url": "https://pyclashbot.app"},
+        {"label": "Discord", "url": "https://pyclashbot.app/discord/invite?ref=client"},
     ]
 
     def __init__(self) -> None:
