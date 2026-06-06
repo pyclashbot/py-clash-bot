@@ -1,6 +1,6 @@
 # interface/ — ttkbootstrap GUI
 
-`ui.py` (`PyClashBotUI`) is a tabbed window that never talks to the worker directly: on any change it calls a `config_callback` (registered in `__main__.py`) with `get_all_values()` — a dict keyed by `UIField.value` strings. `__main__.py` persists that to `USER_SETTINGS_CACHE` and maps it to the worker config. `enums.py` names every field (`UIField`, `PRIMARY_JOB_TOGGLES`); `config.py` holds defaults/option lists; `widgets.py` holds custom widgets.
+`ui.py` (`PyClashBotUI`) is a tabbed window that never talks to the worker directly: on any change it calls a `config_callback` (registered in `__main__.py`) with `get_all_values()` — a dict keyed by `UIField.value` strings. `__main__.py` persists that to `USER_SETTINGS_CACHE` and maps it to the worker config. `enums.py` names every field (`UIField`, `START_JOB_GROUPS`); `config.py` holds defaults/option lists; `widgets.py` holds custom widgets.
 
 ## Adding a setting / toggle / job
 

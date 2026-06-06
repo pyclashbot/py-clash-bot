@@ -36,7 +36,7 @@ from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.adb_base import validate_device_serial
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
-from pyclashbot.interface.enums import PRIMARY_JOB_TOGGLES, UIField
+from pyclashbot.interface.enums import UIField, has_start_ready_job
 from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
@@ -53,18 +53,22 @@ initialize_pylogging()
 
 
 def migrate_clan_job_settings(values: dict[str, Any]) -> None:
-    """Map legacy per-action clan toggles to the master Clan chat job toggle."""
-    if values.get(UIField.CLAN_CHAT_USER_TOGGLE.value):
-        return
-    if any(
-        values.get(field.value)
-        for field in (
-            UIField.CLAN_DONATE_USER_TOGGLE,
-            UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
-            UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
-        )
-    ):
-        values[UIField.CLAN_CHAT_USER_TOGGLE.value] = True
+    """Map legacy clan settings to per-action toggles."""
+    clan_actions = (
+        UIField.CLAN_DONATE_USER_TOGGLE,
+        UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+        UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
+    )
+    if values.get(UIField.CLAN_CHAT_USER_TOGGLE.value) and not any(values.get(field.value) for field in clan_actions):
+        for field in clan_actions:
+            values[field.value] = True
+
+
+_CLAN_ACTION_TOGGLES = (
+    UIField.CLAN_DONATE_USER_TOGGLE,
+    UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+    UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
+)
 
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
@@ -92,10 +96,10 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.MAX_DECK_SELECTION.value: as_int(UIField.MAX_DECK_SELECTION, 2),
         UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value: as_bool(UIField.SWITCH_ACCOUNTS_USER_TOGGLE),
         UIField.MAX_ACCOUNT_SELECTION.value: as_int(UIField.MAX_ACCOUNT_SELECTION, 2),
-        UIField.CLAN_CHAT_USER_TOGGLE.value: as_bool(UIField.CLAN_CHAT_USER_TOGGLE),
         UIField.CLAN_DONATE_USER_TOGGLE.value: as_bool(UIField.CLAN_DONATE_USER_TOGGLE),
         UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value: as_bool(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE),
         UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value: as_bool(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE),
+        UIField.CLAN_CHAT_USER_TOGGLE.value: any(as_bool(field) for field in _CLAN_ACTION_TOGGLES),
         UIField.WAR_USER_TOGGLE.value: as_bool(UIField.WAR_USER_TOGGLE),
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
@@ -144,8 +148,8 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
 
 
 def has_no_jobs_selected(job_dict: dict[str, Any]) -> bool:
-    """Check if no jobs are selected in the job dictionary."""
-    return not any(job_dict.get(field.value, False) for field in PRIMARY_JOB_TOGGLES)
+    """Check if no start-ready jobs are selected."""
+    return not has_start_ready_job(job_dict)
 
 
 def save_current_settings(values: dict[str, Any]) -> None:
@@ -233,6 +237,8 @@ def update_layout(
     if "current_status" in stats:
         status_text = str(stats["current_status"])
     ui.set_status(status_text)
+    if ui.get_button_state() == "idle" and not ui.can_start():
+        return
     ui.append_log(status_text)
 
 
