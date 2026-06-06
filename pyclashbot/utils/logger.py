@@ -61,7 +61,7 @@ def _attach_log_file_handler(log_path: str) -> None:
                 continue
 
     file_handler = logging.FileHandler(log_path, encoding="utf-8")
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter("%(levelname)s:%(asctime)s %(message)s"))
     root_logger.addHandler(file_handler)
 
@@ -192,7 +192,6 @@ class Logger:
 
     def _update_log(self) -> None:
         self._update_stats()
-        logging.info(self.current_status)
 
     def _update_stats(self) -> None:
         """Updates the stats with a dictionary of mutable statistics"""
