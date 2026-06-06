@@ -256,13 +256,10 @@ def end_fight_state(
     """Method to handle the time after a fight and before the next state"""
     # count the crown score on this end-battle screen
 
-    # get to clash main after this fight
-    logger.log("Returning to main menu after fight")
     if get_to_main_after_fight(emulator, logger) is False:
-        logger.log("Failed to return to main menu after fight")
+        logger.change_status("Failed to return to main menu after fight")
         return False
 
-    logger.log("Returned to main menu after fight")
     interruptible_sleep(3)
 
     # check if the prev game was a win
@@ -270,7 +267,6 @@ def end_fight_state(
         win_check_return = check_if_previous_game_was_win(emulator, logger)
 
         if win_check_return == "restart":
-            logger.log("Failed while checking if previous game was a win")
             return False
 
         if win_check_return:
