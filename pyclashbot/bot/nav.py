@@ -64,11 +64,14 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         bool: True if battle started, False if timed out.
     """
     start_time = time.time()
+    last_logged_second = -1
     while time.time() - start_time < timeout:
-        time_taken = str(time.time() - start_time)[:4]
-        logger.change_status(
-            status=f"Waiting for battle to start for {time_taken}s",
-        )
+        elapsed_second = int(time.time() - start_time)
+        if elapsed_second != last_logged_second:
+            logger.change_status(
+                status=f"Waiting for battle to start for {elapsed_second}s",
+            )
+            last_logged_second = elapsed_second
 
         # NOTE: Debug screenshot saving was intentionally removed from
         # the production flow. If you need screenshots for debugging,
@@ -78,7 +81,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         battle_result = check_if_in_battle(emulator)
 
         if battle_result:  # True for any battle type
-            logger.change_status("Detected an ongoing battle!")
+            logger.change_status("Battle detected")
             return True
 
         emulator.click(x_coord=BATTLE_WAIT_DEADSPACE_COORD[0], y_coord=BATTLE_WAIT_DEADSPACE_COORD[1])
@@ -114,7 +117,7 @@ def handle_trophy_reward_menu(
     printmode=False,
 ) -> Literal["good"]:
     if printmode:
-        logger.change_status(status="Handling trophy reward menu")
+        logger.change_status(status="Handling trophy reward popup")
     else:
         logger.log("Handling trophy reward menu")
     emulator.click(
@@ -140,7 +143,7 @@ def wait_for_clash_main_menu(
     while check_if_on_clash_main_menu(emulator) is not True:
         # timeout check
         if time.time() - start_time > wait_timeout:
-            logger.change_status("Timed out waiting for clash main")
+            logger.change_status("Timed out waiting for main menu")
             break
 
         # handle geting stuck on trophy road screen
@@ -172,7 +175,7 @@ def get_to_card_page_from_clash_main(
 ) -> Literal["restart", "good"]:
     start_time = time.time()
 
-    logger.change_status(status="Getting to card page from clash main")
+    logger.change_status(status="Opening card page from main menu")
 
     # click card page icon
     emulator.click(
@@ -200,11 +203,11 @@ def get_to_card_page_from_clash_main(
 
 def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
     """Click the card page exit button and verify the bot is on the main menu."""
-    logger.change_status("Returning to clash main...")
+    logger.change_status("Returning to main menu...")
     emulator.click(*CARD_PAGE_EXIT_BUTTON_COORDS)
     interruptible_sleep(1)
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Failed to return to clash main from the card page.")
+        logger.change_status("Failed to return to main menu from card page")
         return False
     return True
 
@@ -212,19 +215,19 @@ def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
 def open_clash_main_options_menu(emulator, logger: Logger, printmode: bool = False) -> bool:
     """Open the burger menu from the Clash main screen. Returns False if not on main or menu never opens."""
     if check_if_on_clash_main_menu(emulator) is not True:
-        logger.change_status(status="Not on clash main menu")
+        logger.change_status(status="Not on main menu")
         return False
 
     if printmode:
-        logger.change_status(status="Opening clash main options menu")
+        logger.change_status(status="Opening burger menu")
     else:
-        logger.log("Opening clash main options menu")
+        logger.log("Opening burger menu")
     emulator.click(
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[0],
         CLASH_MAIN_OPTIONS_BURGER_BUTTON[1],
     )
     if wait_for_clash_main_burger_button_options_menu(emulator, logger, printmode) == "restart":
-        logger.change_status(status="Timed out waiting for clash main options menu")
+        logger.change_status(status="Timed out waiting for burger menu")
         return False
     return True
 
@@ -249,9 +252,7 @@ def get_to_activity_log(
         logger.log("Clicking activity log button")
     emulator.click(BATTLE_LOG_BUTTON[0], BATTLE_LOG_BUTTON[1])
     if wait_for_battle_log_page(emulator, logger, printmode) == "restart":
-        logger.change_status(
-            status="Error 923593 Waited too long for battle log page, restarting vm",
-        )
+        logger.change_status(status="Timed out waiting for battle log page")
         return "restart"
 
     return "good"
@@ -270,9 +271,7 @@ def wait_for_battle_log_page(
     while not check_if_on_battle_log_page(emulator):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(
-                status="Error 2457245645 Waiting too long for battle log page",
-            )
+            logger.change_status(status="Timed out waiting for battle log page")
             return "restart"
 
     if printmode:
@@ -305,47 +304,57 @@ def wait_for_clash_main_burger_button_options_menu(
     start_time = time.time()
 
     if printmode:
-        logger.change_status(status="Waiting for clash main options menu to appear")
+        logger.change_status(status="Waiting for burger menu to appear")
     else:
-        logger.log("Waiting for clash main options menu to appear")
+        logger.log("Waiting for burger menu to appear")
     while not check_if_on_clash_main_burger_button_options_menu(emulator):
         time_taken = time.time() - start_time
         if time_taken > 20:
-            logger.change_status(
-                status="Error 57245645362 Waiting too long for clash main options menu to appear",
-            )
+            logger.change_status(status="Timed out waiting for burger menu")
             return "restart"
     if printmode:
-        logger.change_status(
-            status="Done waiting for clash main options menu to appear",
-        )
+        logger.change_status(status="Burger menu open")
     else:
-        logger.log("Done waiting for clash main options menu to appear")
+        logger.log("Burger menu open")
     return "good"
 
 
-def select_mode(emulator, mode: str):
+def select_mode(emulator, mode: str, logger: Logger | None = None):
     # Check if the mode is valid
     expected_mode_types = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
     if type(mode) is not str:
-        print(f'[!] Warning: Mode "{mode}" is not a string. Expected a string.')
+        msg = f'[!] Warning: Mode "{mode}" is not a string. Expected a string.'
+        if logger is not None:
+            logger.change_status(msg)
+        else:
+            print(msg)
         return False
 
     # Check if the mode is valid
     if mode not in expected_mode_types:
-        print(f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.')
+        msg = f'[!] Warning: Mode "{mode}" is not a valid mode type. Expected one of {expected_mode_types}.'
+        if logger is not None:
+            logger.change_status(msg)
+        else:
+            print(msg)
         return False
 
     # must be on clash main
     if not check_if_on_clash_main_menu(emulator):
-        print("[!] Not on clash main menu, cannot select a fight mode")
+        msg = "Not on main menu — cannot select battle mode"
+        if logger is not None:
+            logger.change_status(msg)
+        else:
+            print(f"[!] {msg}")
         return False
+
+    if logger is not None:
+        logger.change_status(f"Selecting {mode}...")
 
     # open fight type selection menu
     game_mode_coord = [308, 485]
 
     # click select mode button
-    print("Clicking mode selection button")
     emulator.click(game_mode_coord[0], game_mode_coord[1])
     interruptible_sleep(2)
 
@@ -365,7 +374,6 @@ def select_mode(emulator, mode: str):
     while time.time() - start_time < search_timeout:
         coord = find_fight_mode_icon(emulator, mode)
         if coord is not None:
-            print(f'Located the "{mode}" button, clicking it.')
             emulator.click(*coord)
             interruptible_sleep(3)
 
@@ -379,10 +387,14 @@ def select_mode(emulator, mode: str):
                 # Don't fail if the click doesn't work; best-effort only.
                 pass
 
+            if logger is not None:
+                logger.change_status(f"Selected {mode}")
             return True
 
         scroll_down_in_fight_mode_panel(emulator)
 
+    if logger is not None:
+        logger.change_status(f"Failed to find {mode} in mode panel")
     return False
 
 
@@ -496,36 +508,33 @@ def get_to_main_after_fight(emulator, logger):
     start_time = time.time()
     clicked_ok_or_exit = False
 
-    logger.change_status("Returning to clash main after the fight...")
+    logger.change_status("Returning to main menu after fight...")
 
     while time.time() - start_time < timeout:
         if check_if_on_clash_main_menu(emulator) is True:
             interruptible_sleep(3)
 
             if check_for_trophy_reward_menu(emulator):
-                print("Found trophy reward menu")
-                handle_trophy_reward_menu(emulator, logger, printmode=False)
+                handle_trophy_reward_menu(emulator, logger, printmode=True)
                 interruptible_sleep(2)
 
-            print("Made it to clash main after a fight")
+            logger.change_status("Returned to main menu after fight")
             return True
 
         if check_for_trophy_reward_menu(emulator):
-            print("Found trophy reward menu!\nHandling Trophy Reward Menu")
-            handle_trophy_reward_menu(emulator, logger, printmode=False)
+            handle_trophy_reward_menu(emulator, logger, printmode=True)
             interruptible_sleep(3)
             continue
 
         if not clicked_ok_or_exit:
             button_coord = find_post_battle_button(emulator)
             if button_coord is not None:
-                print("Found post-battle button, clicking it.")
+                logger.change_status("Clicking post-battle button")
                 emulator.click(button_coord[0], button_coord[1])
                 clicked_ok_or_exit = True
                 continue
 
         interruptible_sleep(1)
-        print("Clicking on deadspace to close potential pop-up windows.")
         emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
 
     return False

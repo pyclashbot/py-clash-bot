@@ -24,15 +24,11 @@ def card_mastery_state(emulator, logger):
     logger.change_status("Going to collect Card Mastery rewards")
 
     if check_if_on_clash_main_menu(emulator) is not True:
-        logger.change_status(
-            'Not on clash main menu for card_mastery_state() returning "restart"',
-        )
+        logger.change_status("Not on main menu — cannot collect Card Mastery rewards")
         return False
 
     if collect_card_mastery_rewards(emulator, logger) is False:
-        logger.change_status(
-            'Failed somewhere in collect_card_mastery_rewards(), returning "restart"',
-        )
+        logger.change_status("Failed to collect Card Mastery rewards")
         return False
 
     return True
@@ -43,7 +39,7 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
     logger.change_status("Collecting Card Mastery rewards...")
     if get_to_card_page_from_clash_main(emulator, logger) == "restart":
         logger.change_status(
-            "Failed to get to card page to collect mastery rewards! Returning false",
+            "Failed to open card page for Card Mastery rewards",
         )
         return False
     interruptible_sleep(3)
@@ -63,13 +59,13 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
             interruptible_sleep(2)
 
     # get to clash main
-    logger.change_status("Returning to clash main menu")
+    logger.change_status("Returning to main menu")
     emulator.click(CARD_MASTERY_RETURN_TO_MAIN_COORD[0], CARD_MASTERY_RETURN_TO_MAIN_COORD[1])
 
     # wait for main to appear
     if wait_for_clash_main_menu(emulator, logger) is False:
         logger.change_status(
-            "Failed to get back to clash main menu from card page! Returning false",
+            "Timed out returning to main menu from card page",
         )
         return False
 

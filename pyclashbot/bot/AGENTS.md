@@ -10,6 +10,18 @@
 - Pure detection helpers (`(emulator) → coords | None`) go in `find.py`. Pixel predicates (`check_if_on_*`, `pixel_indicates_*`) go in `state_detect.py`. `find.py` is leaf-only: it never imports from `pyclashbot.bot.*` except `coords` and `state_detect`.
 - New feature jobs go in their own `<feature>_state.py` (see `clan_chat_state.py`, `account_switch.py`, `upgrade_state.py` for the shape). Wire into `states.py:state_tree()` last.
 
+## Status messages
+
+User-facing progress goes through `logger.change_status()` (updates the live status line and log). Use `logger.log()` for detail that should not replace the status line.
+
+- **main menu** — home screen; not "clash main".
+- **Clash Royale** — game/app name (especially emulator startup).
+- **burger menu** — main-menu options overlay.
+- Battle modes: **Classic 1v1**, **Classic 2v2**, **Trophy Road**, **Quick Match**.
+- Use an em dash (`—`) for breaks: `Not on main menu — cannot start fight`.
+- Sentence case; no function names or debug error codes in status text.
+- Throttle repetitive wait-loop messages to ~once per second (see `wait_for_battle_start`, `wait_for_elixir`).
+
 ## Gotchas
 
 - `states.py` carries **module-level globals** (`mode_used_in_1v1`, `fight_mode_cycle_index`) set in one state and read in later ones; if `mode_used_in_1v1` is `None`, fight/cycle states silently skip.

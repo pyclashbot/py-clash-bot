@@ -26,7 +26,7 @@ def run_test(emulator, logger) -> tuple[bool, str]:
         return (False, "Didn't begin on clash main")
 
     for mode in MODES:
-        if select_mode(emulator, mode) is False:
+        if select_mode(emulator, mode, logger) is False:
             return (False, f"Failed during select_mode({mode!r})")
         if not wait_for_clash_main_menu(emulator, logger):
             return (False, f"Didn't return to clash main after select_mode({mode!r})")

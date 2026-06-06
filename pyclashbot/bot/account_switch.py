@@ -43,7 +43,7 @@ def _open_burger_menu_with_retry(emulator, logger: Logger) -> bool:
         if check_if_on_clash_main_burger_button_options_menu(emulator):
             return True
         if not check_if_on_clash_main_menu(emulator):
-            logger.change_status("Not on Clash main menu — cannot open burger menu")
+            logger.change_status("Not on main menu — cannot open burger menu")
             return False
         logger.change_status(f"Opening burger menu (try {attempt}/{BURGER_OPEN_ATTEMPTS})...")
         emulator.click(*CLASH_MAIN_OPTIONS_BURGER_BUTTON)
@@ -105,7 +105,7 @@ def _click_account_slot(emulator, logger: Logger, slot: int) -> bool:
 def switch_account_state(emulator, logger: Logger, account_slot: int) -> bool:
     """Open the account picker and switch to `account_slot` (1-based). Returns True on main menu."""
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Not on Clash main menu — cannot switch accounts")
+        logger.change_status("Not on main menu — cannot switch accounts")
         return False
 
     _settle_main_menu_if_first_switch(logger)

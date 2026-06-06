@@ -692,7 +692,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return True
             self.click(35, 405)  # Use inherited click
 
-        self.logger.change_status("Timeout waiting for Clash main menu - retrying...")
+        self.logger.change_status("Timeout waiting for Clash Royale main menu — retrying...")
         return False
 
     # click() is now inherited from AdbBasedController

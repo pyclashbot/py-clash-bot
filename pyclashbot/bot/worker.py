@@ -6,7 +6,7 @@ from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
 from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.cancellation import CancellationToken
-from pyclashbot.utils.logger import ProcessLogger
+from pyclashbot.utils.logger import ProcessLogger, attach_worker_file_logging
 from pyclashbot.utils.platform import is_macos
 
 
@@ -22,11 +22,13 @@ class WorkerProcess(Process):
         jobs: dict[str, Any],
         stats_queue: Queue,
         shutdown_event: Event,
+        session_log_path: str,
     ) -> None:
         super().__init__(daemon=True)
         self.jobs = jobs
         self.stats_queue = stats_queue
         self.shutdown_event = shutdown_event
+        self.session_log_path = session_log_path
 
     def _setup_emulator(self, jobs: dict[str, Any], logger: ProcessLogger):
         """Set up the appropriate emulator based on job configuration."""
@@ -130,6 +132,7 @@ class WorkerProcess(Process):
     def run(self) -> None:
         """Main worker process execution."""
         print("WorkerProcess run()...")
+        attach_worker_file_logging(self.session_log_path)
 
         # Set up cancellation token for interruptible sleeps
         token = CancellationToken(self.shutdown_event)

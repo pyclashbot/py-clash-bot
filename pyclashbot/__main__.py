@@ -41,7 +41,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
-from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir
+from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
 
@@ -207,7 +207,7 @@ def start_button_event(
 
     ui.notebook.select(ui.stats_tab)
 
-    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event)
+    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event, log_name)
     process.start()
     return process
 

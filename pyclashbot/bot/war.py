@@ -57,7 +57,7 @@ _WAR_POST_BATTLE_DISMISS_TIMEOUT_S = 60.0
 def make_war_deck(emulator, logger, deck_index: int) -> bool:
     """Open empty war-deck slot `deck_index`, randomize it, exit. 1 <= index <= 4."""
     if deck_index not in _MAKE_WAR_DECK_COORDS:
-        logger.change_status(f"make_war_deck: invalid deck_index {deck_index}")
+        logger.change_status(f"Invalid war deck index: {deck_index}")
         return False
 
     logger.change_status(f"Making war deck #{deck_index}...")
@@ -84,10 +84,10 @@ def war_battle_loop(emulator, logger) -> bool:
 
             battle_detection_lost_count += 1
             logger.change_status(
-                f"Lost war battle detection ({battle_detection_lost_count}); waiting it out.",
+                f"Lost war battle detection ({battle_detection_lost_count}) — waiting it out",
             )
             if battle_detection_lost_count >= 4:
-                logger.change_status("Lost war battle detection repeatedly; assuming battle ended.")
+                logger.change_status("Lost war battle detection repeatedly — assuming battle ended")
                 break
 
             interruptible_sleep(1)
@@ -95,7 +95,7 @@ def war_battle_loop(emulator, logger) -> bool:
 
         battle_detection_lost_count = 0
         if time.time() - start_time > _WAR_BATTLE_LOOP_TIMEOUT_S:
-            logger.change_status("war_battle_loop: timed out after 5 minutes")
+            logger.change_status("War battle timed out after 5 minutes")
             return False
 
         card = random.choice(HAND_CARDS_COORDS)
@@ -203,7 +203,7 @@ def war_state(emulator, logger) -> bool:
         emulator.click(*WAR_DEADSPACE_COORD)
         interruptible_sleep(1)
         if not navigate_main_page(emulator, logger, PAGE_WAR, PAGE_MAIN):
-            logger.change_status("Failed to return to main from war")
+            logger.change_status("Failed to return to main menu from war")
             return False
         interruptible_sleep(1)
         return check_if_on_clash_main_menu(emulator)
@@ -224,7 +224,7 @@ def war_state(emulator, logger) -> bool:
             return False
 
     if not navigate_main_page(emulator, logger, PAGE_WAR, PAGE_MAIN):
-        logger.change_status("Failed to return to main from war")
+        logger.change_status("Failed to return to main menu from war")
         return False
     interruptible_sleep(1)
     return check_if_on_clash_main_menu(emulator)

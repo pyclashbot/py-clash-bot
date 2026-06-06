@@ -414,7 +414,7 @@ class GooglePlayEmulatorController(AdbBasedController):
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:
                 self.logger.change_status("Clash Royale main menu detected successfully!")
-                self.logger.log("Detected clash main!")
+                self.logger.log("Clash Royale main menu detected")
                 break
 
             # click deadspace

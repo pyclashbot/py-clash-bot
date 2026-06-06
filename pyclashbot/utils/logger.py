@@ -8,7 +8,7 @@ import time
 import zipfile
 from functools import wraps
 from os import listdir, makedirs, remove
-from os.path import basename, exists, getmtime, join
+from os.path import abspath, basename, exists, getmtime, join, normcase
 
 from pyclashbot.utils.platform import get_log_dir
 from pyclashbot.utils.versioning import __version__
@@ -39,31 +39,45 @@ def compress_logs() -> None:
                 remove(log)
 
 
-def initialize_pylogging() -> None:
-    """Method to be called once to initialize python logging"""
+def _normalized_log_path(path: str) -> str:
+    return normcase(abspath(path))
+
+
+def _attach_log_file_handler(log_path: str) -> None:
+    """Attach a log-file handler if this process does not already have one for log_path."""
     if not exists(log_dir):
         makedirs(log_dir)
 
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
 
-    # Ensure we always have a file handler, even if something logged earlier (which would
-    # make logging.basicConfig(...) a no-op).
-    already_has_log_file = False
+    target_log = _normalized_log_path(log_path)
     for handler in root_logger.handlers:
         if isinstance(handler, logging.FileHandler):
             try:
-                if handler.baseFilename == log_name:
-                    already_has_log_file = True
-                    break
+                if _normalized_log_path(handler.baseFilename) == target_log:
+                    return
             except Exception:
                 continue
 
-    if not already_has_log_file:
-        file_handler = logging.FileHandler(log_name, encoding="utf-8")
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(logging.Formatter("%(levelname)s:%(asctime)s %(message)s"))
-        root_logger.addHandler(file_handler)
+    file_handler = logging.FileHandler(log_path, encoding="utf-8")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter("%(levelname)s:%(asctime)s %(message)s"))
+    root_logger.addHandler(file_handler)
+
+
+def attach_worker_file_logging(session_log_path: str) -> None:
+    """Attach file logging in the bot worker subprocess.
+
+    macOS/Windows use spawn for multiprocessing, so the worker does not inherit
+    the GUI process's logging handlers.
+    """
+    _attach_log_file_handler(session_log_path)
+
+
+def initialize_pylogging() -> None:
+    """Method to be called once to initialize python logging"""
+    _attach_log_file_handler(log_name)
 
     logging.info("Logging initialized for %s", __version__)
     logging.info("Log directory: %s", log_dir)

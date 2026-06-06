@@ -99,7 +99,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         pixel = img[COIN_INSUFFICIENT_COORD[1]][COIN_INSUFFICIENT_COORD[0]]
         if pixel_is_equal(pixel, COIN_INSUFFICIENT_BGR, UPGRADE_PIXEL_TOLERANCE):
             logger.log("Cannot upgrade this card: not enough coins")
-            logger.change_status(status="Not enough coins passing")
+            logger.change_status(status="Not enough coins — skipping card")
 
         else:
             logger.log("Upgraded a card!")
@@ -136,18 +136,16 @@ def upgrade_card(emulator, upgradable, logger: Logger):
 
 
 def upgrade_cards_state(emulator, logger: Logger):
-    logger.change_status(status="Upgrade cards state")
+    logger.change_status(status="Upgrading cards")
 
     # if not on clash main, return restart
     print("Making sure on clash main before upgrading cards")
 
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Not on Clash main menu at start of upgrade_cards_state()")
+        logger.change_status("Not on main menu — cannot upgrade cards")
         return False
 
-    # select Trophy Road mode
-    logger.change_status(status="Selecting Trophy Road mode")
-    if not select_mode(emulator, "Trophy Road"):
+    if not select_mode(emulator, "Trophy Road", logger):
         logger.change_status("Failed to select Trophy Road mode")
         return False
 
@@ -155,7 +153,7 @@ def upgrade_cards_state(emulator, logger: Logger):
     logger.change_status(status="Getting to card page")
     if get_to_card_page_from_clash_main(emulator, logger) == "restart":
         logger.change_status(
-            status="Error 0751389: Failed to get to card page from Clash main in Upgrade State",
+            status="Failed to open card page from main menu",
         )
         return False
 
@@ -176,7 +174,7 @@ def upgrade_cards_state(emulator, logger: Logger):
     interruptible_sleep(2)
 
     if not wait_for_clash_main_menu(emulator, logger, deadspace_click=False):
-        logger.change_status("Failed to wait for Clash main menu after upgrading cards")
+        logger.change_status("Timed out waiting for main menu after upgrading cards")
         return False
 
     logger.update_time_of_last_card_upgrade(time.time())
