@@ -64,7 +64,7 @@ def do_fight_state(
     logger.log(f'This is the fight mode: "{fight_mode_chosen}"')
 
     # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
+    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag, fight_mode_chosen) is False:
         logger.change_status("Fight loop failed")
         return False
 
@@ -412,6 +412,28 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     return True
 
 
+_PHASE_STRATEGIES = {
+    "early": [0, 0, 0, 0, 0.3, 0.3, 0.4],  # 0-7s: Conservative, wait for more elixir
+    "single": [0.05, 0.05, 0.1, 0.15, 0.15, 0.3, 0.2],  # 7-90s: Balanced distribution
+    "double": [0.05, 0.05, 0.1, 0.15, 0.25, 0.3, 0.1],  # 90-200s: Favor 7-8 elixir
+    "triple": [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0],  # 200s+: Heavy favor 7-8, never 9
+}
+
+_PHASE_THRESHOLDS_1V1 = {
+    "early": (6000, 9000),
+    "single": (6000, 9000),
+    "double": (7000, 10000),
+    "triple": (8000, 11000),
+}
+
+_PHASE_THRESHOLDS_2V2 = {
+    "early": (7000, 13000),
+    "single": (7000, 14000),
+    "double": (8000, 15000),
+    "triple": (9000, 16000),
+}
+
+
 class BattleStrategy:
     """Manages battle timing and elixir selection strategy.
 
@@ -419,57 +441,13 @@ class BattleStrategy:
     based on battle phase, eliminating the need for global variables.
     """
 
-    def __init__(self):
+    def __init__(self, fight_mode: str = "Classic 1v1"):
         self.start_time = None
         self.elixir_amounts = [3, 4, 5, 6, 7, 8, 9]
 
-        # Strategy weights for each battle phase
-        self.phase_strategies = {
-            "early": [
-                0,
-                0,
-                0,
-                0,
-                0.3,
-                0.3,
-                0.4,
-            ],  # 0-7s: Conservative, wait for more elixir
-            "single": [
-                0.05,
-                0.05,
-                0.1,
-                0.15,
-                0.15,
-                0.3,
-                0.2,
-            ],  # 7-90s: Balanced distribution
-            "double": [
-                0.05,
-                0.05,
-                0.1,
-                0.15,
-                0.25,
-                0.3,
-                0.1,
-            ],  # 90-200s: Favor 7-8 elixir
-            "triple": [
-                0.05,
-                0.05,
-                0.1,
-                0.1,
-                0.3,
-                0.4,
-                0,
-            ],  # 200s+: Heavy favor 7-8, never 9
-        }
-
-        # Wait/play thresholds for each phase
-        self.phase_thresholds = {
-            "early": (6000, 9000),
-            "single": (6000, 9000),
-            "double": (7000, 10000),
-            "triple": (8000, 11000),
-        }
+        is_2v2 = fight_mode == "Classic 2v2"
+        self.phase_strategies = _PHASE_STRATEGIES
+        self.phase_thresholds = _PHASE_THRESHOLDS_2V2 if is_2v2 else _PHASE_THRESHOLDS_1V1
 
     def start_battle(self):
         """Call when battle begins to start timing."""
@@ -503,7 +481,7 @@ class BattleStrategy:
         return self.phase_thresholds[phase]
 
 
-def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
+def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str = "Classic 1v1") -> bool:
     """Method for handling dynamically timed fight"""
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)
@@ -511,7 +489,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     battle_detection_lost_count = 0
 
     # Initialize battle strategy and start timing
-    battle_strategy = BattleStrategy()
+    battle_strategy = BattleStrategy(fight_mode)
     battle_strategy.start_battle()
 
     while True:
