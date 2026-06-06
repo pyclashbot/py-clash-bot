@@ -241,9 +241,9 @@ def _open_request_picker(emulator, logger) -> bool:
             subcrop=CLAN_CHAT_FOOTER_SUBCROP,
             tolerance=TEMPLATE_TOLERANCE,
         ):
-            logger.change_status("Request Cards on cooldown")
+            logger.change_status("Request cards on cooldown")
         else:
-            logger.change_status("Request Cards button not found")
+            logger.change_status("Request cards button not found")
         return False
 
     fx, fy = footer

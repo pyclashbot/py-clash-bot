@@ -201,7 +201,6 @@ def start_button_event(
             logger.change_status(f"Start cancelled: invalid device serial '{device_serial}'.")
             return None
 
-    logger.log("Start Button Event")
     logger.change_status("Starting the bot!")
     save_current_settings(values)
     logger.log_job_dictionary(job_dictionary)

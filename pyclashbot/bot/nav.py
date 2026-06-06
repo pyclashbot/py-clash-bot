@@ -407,6 +407,19 @@ PAGE_SOCIAL = "social"
 PAGE_CLAN_CHAT = "clan-chat"
 PAGE_WAR = "war"
 
+NAV_PAGE_LABELS = {
+    PAGE_MAIN: "main menu",
+    PAGE_CARD: "card page",
+    PAGE_SHOP: "shop",
+    PAGE_SOCIAL: "social tab",
+    PAGE_CLAN_CHAT: "clan chat",
+    PAGE_WAR: "clan war",
+}
+
+
+def _nav_page_label(page: str) -> str:
+    return NAV_PAGE_LABELS.get(page, page)
+
 
 MAIN_PAGE_CHECKS = {
     PAGE_MAIN: check_if_on_clash_main_menu,
@@ -466,7 +479,9 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
     if clicks is None:
         raise ValueError(f"no recorded navigation for {start_page!r} -> {end_page!r}")
 
-    logger.log(f"navigate_main_page: {start_page} -> {end_page} via {len(clicks)} click(s)")
+    logger.change_status(
+        f"Navigating to {_nav_page_label(end_page)} from {_nav_page_label(start_page)}",
+    )
     for x, y in clicks:
         emulator.click(x, y)
         interruptible_sleep(2)

@@ -54,9 +54,6 @@ def do_fight_state(
 ) -> bool:
     """Handle the entirety of a battle state (start fight, do fight, end fight)."""
 
-    logger.change_status("Waiting for battle to start")
-
-    # Wait for battle start
     if wait_for_battle_start(emulator, logger) is False:
         logger.change_status("Timed out waiting for battle to start")
         return False
