@@ -46,7 +46,7 @@ PLAY_COORDS = {
         "left": [(122, 311), (125, 312)],
         "right": [(292, 311), (298, 312)],
     },
-    # Spells: center field behind bridge (Rage, Clone, Mirror, Barb Barrel, Royal Delivery).
+    # Spells: center field behind bridge (Mirror, Barb Barrel, Royal Delivery).
     "center_spell": {
         "left": [(116, 160)],
         "right": [(302, 160)],
@@ -56,7 +56,7 @@ PLAY_COORDS = {
         "left": [(118, 185)],
         "right": [(295, 185)],
     },
-    # Spells: small reactive (Zap, Void, Goblin Curse).
+    # Spells: small reactive (Zap, Void, Clone, Rage, Goblin Curse, …).
     "reactive_spell": {
         "left": [(118, 185)],
         "right": [(295, 185)],
@@ -171,9 +171,7 @@ CARD_GROUPS: dict[str, list[str]] = {
     "center_spell": [
         "barb_barrel",
         "hero_barb_barrel",
-        "clone",
         "mirror",
-        "rage",
         "royal_delivery",
     ],
     "lane_spell": [
@@ -195,7 +193,9 @@ CARD_GROUPS: dict[str, list[str]] = {
         "evo_ice_spirit",
     ],
     "reactive_spell": [
+        "clone",
         "gob_curse",
+        "rage",
         "void",
         "vines",
         "zap",

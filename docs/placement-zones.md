@@ -23,7 +23,7 @@ The bot picks a **play group** for each detected card, then taps a random point 
 | `siege_building` | Mortar / X-Bow |
 | `center_spell` | Center behind river |
 | `lane_spell` | Standard spell lane |
-| `reactive_spell` | Reactive spells (Zap, Void, Vines, …) |
+| `reactive_spell` | Reactive spells (Zap, Void, Clone, Rage, Vines, …) |
 | `spirit` | Spirits (your side; coords match `defense_building` for now) |
 | `rocket`, `tornado`, `goblin_barrel`, `graveyard`, `miner`, `goblin_drill` | Card-specific |
 
