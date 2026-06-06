@@ -990,12 +990,23 @@ class PyClashBotUI(ttk.Window):
         )
         self._style.map(
             "Purple.Outline.Toolbutton",
-            foreground=[("disabled", "#646464"), ("pressed", "!disabled", "#ffffff"),
-                        ("selected", "!disabled", "#ffffff"), ("hover", "!disabled", "#ffffff")],
-            background=[("pressed", "!disabled", purple), ("selected", "!disabled", purple),
-                        ("hover", "!disabled", purple)],
-            bordercolor=[("disabled", "#646464"), ("pressed", "!disabled", purple),
-                         ("selected", "!disabled", purple), ("hover", "!disabled", purple)],
+            foreground=[
+                ("disabled", "#646464"),
+                ("pressed", "!disabled", "#ffffff"),
+                ("selected", "!disabled", "#ffffff"),
+                ("hover", "!disabled", "#ffffff"),
+            ],
+            background=[
+                ("pressed", "!disabled", purple),
+                ("selected", "!disabled", purple),
+                ("hover", "!disabled", purple),
+            ],
+            bordercolor=[
+                ("disabled", "#646464"),
+                ("pressed", "!disabled", purple),
+                ("selected", "!disabled", purple),
+                ("hover", "!disabled", purple),
+            ],
         )
 
     def _on_theme_change(self, _event: object | None = None) -> None:
