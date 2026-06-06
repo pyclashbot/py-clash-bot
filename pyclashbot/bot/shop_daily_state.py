@@ -60,7 +60,7 @@ def shop_daily_state(emulator, logger: Logger) -> bool:
         _paginate_shop(emulator)
 
     if found is None:
-        logger.change_status("Daily free shop offer not found — returning to main")
+        logger.change_status("Daily free shop offer not found — returning to main menu")
         return navigate_main_page(emulator, logger, PAGE_SHOP, PAGE_MAIN)
 
     logger.change_status(f"Found daily free offer at {found}, claiming...")

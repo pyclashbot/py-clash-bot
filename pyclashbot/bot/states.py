@@ -43,7 +43,7 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
         full_msg += f": {error_msg}"
 
     logger.error(full_msg)
-    logger.change_status(f"Error in {state_name} - restarting")
+    logger.change_status(f"Error in {state_name} — restarting")
     print(f"[ERROR] {full_msg}")
 
     return "restart"
@@ -272,6 +272,7 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "restart":
+        logger.change_status("Restarting emulator...")
         logger.add_restart_after_failure()
         emulator.restart()
         return state_order.next_state(state)
@@ -450,9 +451,9 @@ def state_tree(
         # if more than one mode is selected, just cycle through them
         if len(enabled_modes) > 1:
             selected_mode = get_next_fight_mode(job_list)
-            print(f"Multiple modes enabled. Selected {selected_mode} as the next battle mode")
+            logger.change_status(f"Selected {selected_mode} as the next battle mode")
             mode_used_in_1v1 = selected_mode
-            if select_mode(emulator, selected_mode) is False:
+            if select_mode(emulator, selected_mode, logger) is False:
                 return handle_state_failure(
                     logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
                 )
@@ -460,15 +461,13 @@ def state_tree(
             # if only one mode is selected, check if it's already selected
             selected_mode = enabled_modes[0]
             mode_used_in_1v1 = selected_mode
-            print(f"Only one mode enabled: {selected_mode}. Checking if it's selected.")
             if not check_if_battle_mode_is_selected(emulator, selected_mode):
-                print(f"{selected_mode} is not selected. Selecting it now.")
-                if select_mode(emulator, selected_mode) is False:
+                if select_mode(emulator, selected_mode, logger) is False:
                     return handle_state_failure(
                         logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
                     )
             else:
-                print(f"{selected_mode} is already selected.")
+                logger.change_status(f"{selected_mode} is already selected")
 
         return state_order.next_state(state)
 

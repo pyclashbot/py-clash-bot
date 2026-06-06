@@ -1335,7 +1335,7 @@ class MemuEmulatorController(BaseEmulatorController):
                         self.logger.log(f"[RESTART] Total wait time: {elapsed_wait:.1f}s")
                         self.logger.log(f"[RESTART] Total restart time: {total_elapsed}s")
 
-                    self.logger.change_status("Clash main menu detected!")
+                    self.logger.change_status("Clash Royale main menu detected")
                     self.logger.log(f"Emulator restart completed in {total_elapsed}s")
 
                     if debug_restart:
@@ -1372,7 +1372,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Loop iterations: {loop_iteration}")
                 self.logger.log("[RESTART] INITIATING RECURSIVE RESTART DUE TO TIMEOUT")
 
-            self.logger.change_status("Timeout waiting for Clash main menu, restarting...")
+            self.logger.change_status("Timeout waiting for Clash Royale main menu — restarting...")
             return self.restart(open_clash=open_clash, start_time=start_time)
 
         # If not opening Clash, we're done

@@ -61,12 +61,12 @@ def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -
 
 def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tuple[bool, int | None]:
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Not on clash main for select_deck_state().")
+        logger.change_status("Not on main menu — cannot select deck")
         return False, None
     logger.change_status(f"Selecting deck #{deck_number}")
     success, selected_deck_number = select_deck(emulator, logger, deck_number, deck_count)
     if not success:
-        logger.change_status("Failed somewhere in select_deck().")
+        logger.change_status("Deck selection failed")
         return False, None
     return True, selected_deck_number
 
@@ -139,7 +139,7 @@ def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> 
 
     success, selected_deck_number = find_and_click_deck(emulator, logger, deck_number, deck_count)
     if not success:
-        logger.change_status("find_and_click_deck() failed.")
+        logger.change_status("Failed to find and select deck")
         return_to_clash_main_from_card_page(emulator, logger)
         return False, None
 
@@ -153,12 +153,12 @@ def select_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> 
 
 def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Not on clash main for randomize_deck_state().")
+        logger.change_status("Not on main menu — cannot randomize deck")
         return False
 
     logger.change_status(f"Starting deck randomization state for deck #{deck_number}")
     if not randomize_deck(emulator, logger, deck_number):
-        logger.change_status("Randomize_deck() failed.")
+        logger.change_status("Deck randomization failed")
         return False
 
     return True

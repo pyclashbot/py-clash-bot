@@ -10923,19 +10923,16 @@ global battle_iar  # noqa: PLW0604
 play_side = "left"
 
 
-def check_which_cards_are_available(emulator, check_champion=False, check_side=False):
+def check_which_cards_are_available(emulator, check_ability=False, check_side=False):
     global battle_iar
     battle_iar = emulator.screenshot()
     card_exists_list = []
 
-    if check_champion and (
-        check_for_champion_ability(
-            battle_iar[462][324],
-            battle_iar[453][334],
-            battle_iar[462][336],
-        )
-    ):
-        emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
+    ability_visible = check_ability and check_for_champion_ability(
+        battle_iar[462][324],
+        battle_iar[453][334],
+        battle_iar[462][336],
+    )
 
     if check_side:
         global play_side
@@ -10949,7 +10946,15 @@ def check_which_cards_are_available(emulator, check_champion=False, check_side=F
         if count >= 26:
             card_exists_list.append(i)
 
+    if check_ability:
+        return card_exists_list, ability_visible
+
     return card_exists_list
+
+
+def trigger_hero_champion_ability(emulator, logger) -> None:
+    emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
+    logger.change_status("Triggered Hero/Champion ability")
 
 
 def check_for_champion_ability(a, b, c):
