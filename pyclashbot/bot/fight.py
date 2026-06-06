@@ -549,10 +549,10 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
         play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:
             logger.change_status("Failed to play a card, retrying...")
-        # play_time_taken = str(time.time() - play_start_time)[:4]
-        logger.change_status(
-            f"Made a play in {str(time.time() - play_start_time)[:4]}s",
-        )
+        else:
+            logger.change_status(
+                f"Made a play in {str(time.time() - play_start_time)[:4]}s",
+            )
 
     logger.change_status("Fight complete")
     interruptible_sleep(2.13)

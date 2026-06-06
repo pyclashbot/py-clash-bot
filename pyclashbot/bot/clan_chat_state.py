@@ -314,8 +314,9 @@ def _ensure_clan_chat(emulator, logger) -> bool:
     if check_if_on_clan_chat(emulator):
         return True
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Not on main menu — cannot open clan chat")
-        return False
+        if not _return_to_main(emulator, logger):
+            logger.change_status("Not on main menu — cannot open clan chat")
+            return False
     if not navigate_main_page(emulator, logger, PAGE_MAIN, PAGE_CLAN_CHAT):
         logger.change_status("Failed to navigate to clan chat")
         return False

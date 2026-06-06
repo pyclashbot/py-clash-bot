@@ -506,7 +506,6 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
 def get_to_main_after_fight(emulator, logger):
     timeout = 120  # s
     start_time = time.time()
-    clicked_ok_or_exit = False
 
     logger.change_status("Returning to main menu after fight...")
 
@@ -526,13 +525,12 @@ def get_to_main_after_fight(emulator, logger):
             interruptible_sleep(3)
             continue
 
-        if not clicked_ok_or_exit:
-            button_coord = find_post_battle_button(emulator)
-            if button_coord is not None:
-                logger.change_status("Clicking post-battle button")
-                emulator.click(button_coord[0], button_coord[1])
-                clicked_ok_or_exit = True
-                continue
+        button_coord = find_post_battle_button(emulator)
+        if button_coord is not None:
+            logger.change_status("Clicking post-battle button")
+            emulator.click(button_coord[0], button_coord[1])
+            interruptible_sleep(2)
+            continue
 
         interruptible_sleep(1)
         emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
