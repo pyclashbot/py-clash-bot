@@ -374,8 +374,13 @@ class PyClashBotUI(ttk.Window):
         self.action_btn.configure(command=self._on_action_pressed)
 
     def _create_jobs_tab(self) -> None:
-        frame = ttk.Labelframe(self.jobs_tab, text="Jobs", padding=10)
-        frame.pack(padx=10, pady=10, anchor="n", fill="x")
+        from ttkbootstrap.scrolled import ScrolledFrame
+
+        scroller = ScrolledFrame(self.jobs_tab, autohide=False)
+        scroller.pack(padx=10, pady=10, fill="both", expand=True)
+        self.jobs_scroller = scroller
+        frame = ttk.Labelframe(scroller, text="Jobs", padding=10)
+        frame.pack(anchor="n", fill="x")
 
         # Fixed columns: job button | inline extras (clan subs) | (i) | spinbox
         col_job, col_inline, col_info, col_spin = 0, 1, 2, 3
@@ -429,30 +434,25 @@ class PyClashBotUI(ttk.Window):
                     command=self._on_clan_chat_master_toggle,
                 )
 
-                sub_frame = ttk.Frame(frame)
-                sub_frame.grid(
-                    row=grid_row + 1,
-                    column=col_job,
-                    columnspan=3,
-                    sticky="w",
-                    padx=(18, 0),
-                    pady=(0, 4),
-                )
-                for col, sub in enumerate(job.sub_jobs):
+                for sub in job.sub_jobs:
+                    grid_row += 1
                     sub_var = ttk.BooleanVar(value=sub.default)
                     sub_checkbox = ttk.Checkbutton(
-                        sub_frame,
+                        frame,
                         text=sub.title,
                         variable=sub_var,
                         command=self._notify_config_change,
+                        width=job_btn_width,
                     )
-                    sub_checkbox.grid(row=0, column=col, sticky="w", padx=(0, 12))
+                    # ttkbootstrap overrides `style=` at construction; reapply after init.
+                    sub_checkbox.configure(style="Purple.Outline.Toolbutton")
+                    sub_checkbox.grid(row=grid_row, column=col_job, sticky="w", pady=2)
                     self.jobs_vars[sub.key] = sub_var
                     self._clan_sub_checkbuttons[sub.key] = sub_checkbox
                     self._trace_variable(sub_var)
                     self._register_config_widget(sub.key.value, sub_checkbox)
                 self._sync_clan_sub_job_widgets_state()
-                grid_row += 2
+                grid_row += 1
 
             elif job.extras:
                 combo_config = next(iter(job.extras.values()))
@@ -481,7 +481,7 @@ class PyClashBotUI(ttk.Window):
                     command=self._notify_config_change,
                     state=READONLY,
                 )
-                spinbox.grid(row=grid_row, column=col_spin, sticky="e")
+                spinbox.grid(row=grid_row, column=col_spin, sticky="e", padx=(0, 4))
                 self._trace_variable(spin_var)
                 self._register_config_widget(combo_field.value, spinbox)
                 self._job_extra_spinboxes[job.key] = spinbox
@@ -767,7 +767,7 @@ class PyClashBotUI(ttk.Window):
         gauge_frame.grid(row=0, column=0, sticky="ew")
         gauge_frame.columnconfigure(0, weight=1)
 
-        self.win_gauge = DualRingGauge(gauge_frame, diameter=80, thickness=10, text_color="#00aaff")
+        self.win_gauge = DualRingGauge(gauge_frame, diameter=58, thickness=8, text_color="#00aaff")
         self.win_gauge.grid(row=0, column=0, pady=(0, 6))
 
         win_loss_frame = ttk.Frame(gauge_frame)
@@ -891,10 +891,6 @@ class PyClashBotUI(ttk.Window):
         )
         self.open_logs_btn.pack(fill="x", pady=(6, 0))
 
-        ttk.Separator(self.misc_tab, orient="horizontal").pack(fill="x", padx=10, pady=(6, 0))
-        display_frame = ttk.Labelframe(self.misc_tab, text="Display settings", padding=10)
-        display_frame.pack(fill="x", padx=10, pady=10)
-
     def _register_config_widget(self, key: str, widget: tk.Widget) -> None:
         self._config_widgets[key] = widget
 
@@ -977,6 +973,30 @@ class PyClashBotUI(ttk.Window):
         gauge_fg = getattr(self._style.colors, "success", "#2ecc71")
         gauge_bg = getattr(self._style.colors, "danger", "#e74c3c")
         self.win_gauge.set_colours(gauge_fg, gauge_bg, foreground)
+        purple = "#a371f7"
+        bg = self._style.lookup("TFrame", "background") or "#222222"
+        self._style.configure(
+            "Purple.Outline.Toolbutton",
+            anchor="center",
+            padding=[10, 5],
+            background=bg,
+            darkcolor=bg,
+            lightcolor=bg,
+            foreground=purple,
+            bordercolor=purple,
+            focuscolor=purple,
+            focusthickness=0,
+            relief="raised",
+        )
+        self._style.map(
+            "Purple.Outline.Toolbutton",
+            foreground=[("disabled", "#646464"), ("pressed", "!disabled", "#ffffff"),
+                        ("selected", "!disabled", "#ffffff"), ("hover", "!disabled", "#ffffff")],
+            background=[("pressed", "!disabled", purple), ("selected", "!disabled", purple),
+                        ("hover", "!disabled", purple)],
+            bordercolor=[("disabled", "#646464"), ("pressed", "!disabled", purple),
+                         ("selected", "!disabled", purple), ("hover", "!disabled", purple)],
+        )
 
     def _on_theme_change(self, _event: object | None = None) -> None:
         self._apply_theme(self.theme_var.get(), skip_variable_update=True)
