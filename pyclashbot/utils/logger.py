@@ -16,8 +16,21 @@ from pyclashbot.utils.versioning import __version__
 LOGS_TO_KEEP = 10
 
 log_dir = get_log_dir("py-clash-bot")
-log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
+log_name = ""
 archive_name: str = join(log_dir, "logs.zip")
+
+
+def session_log_basename(*, verbose: bool) -> str:
+    """Build a session log filename for the current local time."""
+    timestamp = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+    if verbose:
+        return f"{timestamp}_verbose.txt"
+    return f"{timestamp}.txt"
+
+
+def session_log_path(*, verbose: bool) -> str:
+    """Return the full path for a new bot-session log file."""
+    return join(log_dir, session_log_basename(verbose=verbose))
 
 
 def compress_logs() -> None:
@@ -43,7 +56,15 @@ def _normalized_log_path(path: str) -> str:
     return normcase(abspath(path))
 
 
-def _attach_log_file_handler(log_path: str) -> None:
+def _detach_log_file_handlers() -> None:
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers[:]:
+        if isinstance(handler, logging.FileHandler):
+            handler.close()
+            root_logger.removeHandler(handler)
+
+
+def _attach_log_file_handler(log_path: str, *, level: int = logging.INFO) -> None:
     """Attach a log-file handler if this process does not already have one for log_path."""
     if not exists(log_dir):
         makedirs(log_dir)
@@ -56,32 +77,25 @@ def _attach_log_file_handler(log_path: str) -> None:
         if isinstance(handler, logging.FileHandler):
             try:
                 if _normalized_log_path(handler.baseFilename) == target_log:
+                    handler.setLevel(level)
                     return
             except Exception:
                 continue
 
     file_handler = logging.FileHandler(log_path, encoding="utf-8")
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(level)
     file_handler.setFormatter(logging.Formatter("%(levelname)s:%(asctime)s %(message)s"))
     root_logger.addHandler(file_handler)
 
 
-def attach_worker_file_logging(session_log_path: str) -> None:
-    """Attach file logging in the bot worker subprocess.
-
-    macOS/Windows use spawn for multiprocessing, so the worker does not inherit
-    the GUI process's logging handlers.
-    """
-    _attach_log_file_handler(session_log_path)
-
-
-def initialize_pylogging() -> None:
-    """Method to be called once to initialize python logging"""
-    _attach_log_file_handler(log_name)
-
+def _write_session_log_header(*, verbose: bool) -> None:
     logging.info("Logging initialized for %s", __version__)
     logging.info("Log directory: %s", log_dir)
     logging.info("Current log file: %s", log_name)
+    logging.info(
+        "Session log mode: %s",
+        "verbose (DEBUG)" if verbose else "standard (INFO)",
+    )
     logging.info(
         """
  ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
@@ -95,6 +109,35 @@ def initialize_pylogging() -> None:
         pprint.pformat(_get_machine_info(), sort_dicts=False, indent=4),
     )
 
+
+def begin_session_file_logging(*, verbose: bool) -> str:
+    """Create a new session log file for a bot run and return its path."""
+    global log_name
+
+    _detach_log_file_handlers()
+    log_name = session_log_path(verbose=verbose)
+    level = logging.DEBUG if verbose else logging.INFO
+    _attach_log_file_handler(log_name, level=level)
+    _write_session_log_header(verbose=verbose)
+    return log_name
+
+
+def attach_worker_file_logging(session_log_path: str, *, verbose: bool = False) -> None:
+    """Attach file logging in the bot worker subprocess.
+
+    macOS/Windows use spawn for multiprocessing, so the worker does not inherit
+    the GUI process's logging handlers.
+    """
+    level = logging.DEBUG if verbose else logging.INFO
+    _attach_log_file_handler(session_log_path, level=level)
+
+
+def initialize_pylogging() -> None:
+    """Method to be called once to initialize python logging."""
+    if not exists(log_dir):
+        makedirs(log_dir)
+
+    logging.getLogger().setLevel(logging.DEBUG)
     compress_logs()
 
 

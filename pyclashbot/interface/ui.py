@@ -144,6 +144,7 @@ class PyClashBotUI(ttk.Window):
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
         self.discord_rpc_var = ttk.BooleanVar(value=False)
+        self.verbose_log_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
@@ -212,6 +213,7 @@ class PyClashBotUI(ttk.Window):
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
+        values[UIField.VERBOSE_LOG_TOGGLE.value] = bool(self.verbose_log_var.get())
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -302,6 +304,8 @@ class PyClashBotUI(ttk.Window):
 
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
+        if UIField.VERBOSE_LOG_TOGGLE.value in values:
+            self.verbose_log_var.set(bool(values[UIField.VERBOSE_LOG_TOGGLE.value]))
 
         self._show_current_emulator_settings()
 
@@ -1143,6 +1147,22 @@ class PyClashBotUI(ttk.Window):
         discord_checkbox.pack(anchor="w", pady=(0, 6))
         self._trace_variable(self.discord_rpc_var)
         self._register_config_widget(UIField.DISCORD_RPC_TOGGLE.value, discord_checkbox)
+
+        verbose_log_checkbox = ttk.Checkbutton(
+            data_frame,
+            text="Verbose session logs",
+            variable=self.verbose_log_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        verbose_log_checkbox.pack(anchor="w", pady=(0, 6))
+        ToolTip(
+            verbose_log_checkbox,
+            "Save detailed emulator debug to the session log file. "
+            "Uses a _verbose filename and can grow very large on long runs. Applies on Start.",
+        )
+        self._trace_variable(self.verbose_log_var)
+        self._register_config_widget(UIField.VERBOSE_LOG_TOGGLE.value, verbose_log_checkbox)
 
         (self.open_logs_btn,) = self._compact_action_button_row(
             data_frame,

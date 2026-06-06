@@ -41,7 +41,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
-from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
+from pyclashbot.utils.logger import Logger, begin_session_file_logging, initialize_pylogging, log_dir
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
 
@@ -100,6 +100,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
+        UIField.VERBOSE_LOG_TOGGLE.value: as_bool(UIField.VERBOSE_LOG_TOGGLE),
     }
 
     job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
@@ -207,7 +208,9 @@ def start_button_event(
 
     ui.notebook.select(ui.stats_tab)
 
-    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event, log_name)
+    verbose_logging = bool(job_dictionary.get(UIField.VERBOSE_LOG_TOGGLE.value, False))
+    session_log_path = begin_session_file_logging(verbose=verbose_logging)
+    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event, session_log_path)
     process.start()
     return process
 
