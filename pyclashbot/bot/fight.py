@@ -176,13 +176,18 @@ def wait_for_elixir(
     """Method to wait for 4 elixir during a battle"""
     start_time = time.time()
     battle_detection_lost_count = 0
+    last_logged_second = -1
+    last_lost_detection_log_second = -1
 
     while not count_elixir(emulator, elixir_wait_amount):
         # debug screenshot saving removed from production
         wait_time = time.time() - start_time
-        logger.change_status(
-            f"Waiting for {elixir_wait_amount} elixir for {str(wait_time)[:4]}s...",
-        )
+        elapsed_second = int(wait_time)
+        if elapsed_second != last_logged_second:
+            logger.change_status(
+                f"Waiting for {elixir_wait_amount} elixir for {elapsed_second}s...",
+            )
+            last_logged_second = elapsed_second
 
         card_inhand = len(check_which_cards_are_available(emulator, True, False))
         action_offset, _ = switch_side()
@@ -204,9 +209,12 @@ def wait_for_elixir(
                 return "no battle"
 
             battle_detection_lost_count += 1
-            logger.change_status(
-                status="Lost battle detection while waiting for elixir; assuming still in battle.",
-            )
+            lost_detection_second = int(time.time())
+            if lost_detection_second != last_lost_detection_log_second:
+                logger.change_status(
+                    status="Lost battle detection while waiting for elixir; assuming still in battle.",
+                )
+                last_lost_detection_log_second = lost_detection_second
             if battle_detection_lost_count >= 4:
                 logger.change_status(
                     status="Lost battle detection repeatedly while waiting for elixir; assuming battle ended.",
