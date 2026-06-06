@@ -252,12 +252,8 @@ def state_tree(
 ) -> str:
     """Method to handle and loop between the various states of the bot"""
     global mode_used_in_1v1, fight_mode_cycle_index  # noqa: PLW0602
-    logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
     interruptible_sleep(0.1)
-
-    # header in the log file to split the log by state loop iterations
-    logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
 
     if state is None:
         logger.error("Error! State is None!!")

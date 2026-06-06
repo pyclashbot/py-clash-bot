@@ -103,20 +103,13 @@ def start_fight(emulator, logger, mode) -> bool:
     Returns:
         bool: True if fight started successfully, False otherwise
     """
-    # Validate mode parameter
-    logger.log(f'Input mode type: "{type(mode)}"')
-    logger.log(f"Input mode value: {mode}")
     valid_modes = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
-    logger.log(f"Valid modes: {valid_modes}")
     if mode not in valid_modes:
-        logger.log(f"The valid modes for start_fight() are: {valid_modes}")
-        logger.log(f"But start_fight() got an invalid mode: '{mode}'")
+        logger.change_status(f"Invalid fight mode: {mode}")
         return False
 
     logger.change_status(f"Starting a {mode} fight")
 
-    # Check if on clash main menu
-    logger.log("Checking if on main menu before starting fight...")
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on main menu — cannot start fight")
         return False
@@ -124,14 +117,12 @@ def start_fight(emulator, logger, mode) -> bool:
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(START_FIGHT_BUTTON_COORD[0], START_FIGHT_BUTTON_COORD[1])
-    logger.log(f"Clicked Start button at {START_FIGHT_BUTTON_COORD}")
 
     # 2v2 needs a second popup after Start
     if mode == "Classic 2v2":
         logger.change_status("Classic 2v2 — clicking Quick Match popup...")
         interruptible_sleep(3)
         emulator.click(QUICKMATCH_POPUP_BUTTON_COORD[0], QUICKMATCH_POPUP_BUTTON_COORD[1])
-        logger.log(f"Clicked Quickmatch button at {QUICKMATCH_POPUP_BUTTON_COORD}")
 
     return True
 

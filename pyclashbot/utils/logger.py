@@ -311,6 +311,10 @@ class Logger:
         time_string = self.calc_time_since_start()
         print(f"[{self.current_state}] [{time_string}] {message}")
 
+    def log_to_file(self, message) -> None:
+        """Log detail to the session file without printing to the console."""
+        _emit_to_session_file(logging.INFO, f"[{self.current_state}] {message}")
+
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
         stats and return as string in hours:mins:seconds
@@ -612,26 +616,26 @@ class Logger:
             else:
                 user_toggle_keys_and_values.append((key, value))
 
-        self.log("-------------------------------")
-        self.log("------Job Dictionary:----------")
-        self.log("-------------------------------")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("------Job Dictionary:----------")
+        self.log_to_file("-------------------------------")
 
-        self.log("User Toggle Keys and Values:")
+        self.log_to_file("User Toggle Keys and Values:")
         for key, value in user_toggle_keys_and_values:
             while len(key) < 45:
                 key += " "  # noqa: PLW2901
-            self.log(f"     -{key}:           {value}")
+            self.log_to_file(f"     -{key}:           {value}")
 
-        self.log("-------------------------------")
-        self.log("Increment User Input Keys and Values:")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("Increment User Input Keys and Values:")
         for key, value in increment_user_input_keys_and_values:
             while len(key) < 45:
                 key += " "  # noqa: PLW2901
-            self.log(f"     -{key}:              [{value}]")
+            self.log_to_file(f"     -{key}:              [{value}]")
 
-        self.log("-------------------------------")
-        self.log("-------------------------------")
-        self.log("-------------------------------\n\n")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("-------------------------------\n\n")
 
 
 class ProcessLogger(Logger):
