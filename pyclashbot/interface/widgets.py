@@ -1,86 +1,6 @@
 from __future__ import annotations
 
-import sys
 import tkinter as tk
-
-import ttkbootstrap as ttk
-
-
-class ScrollableFrame(ttk.Frame):
-    """Vertical scroll area that shows a scrollbar only when content overflows."""
-
-    def __init__(self, master, **kwargs) -> None:
-        super().__init__(master, **kwargs)
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
-
-        self._canvas = tk.Canvas(self, highlightthickness=0, borderwidth=0)
-        self._scrollbar = ttk.Scrollbar(self, orient="vertical", command=self._canvas.yview)
-        self.inner = ttk.Frame(self._canvas)
-
-        self._inner_window = self._canvas.create_window((0, 0), window=self.inner, anchor="nw")
-        self._canvas.configure(yscrollcommand=self._scrollbar.set)
-
-        self._canvas.grid(row=0, column=0, sticky="nsew")
-        self._scrollbar.grid(row=0, column=1, sticky="ns")
-        self._scrollbar.grid_remove()
-
-        self.inner.bind("<Configure>", self._on_inner_configure)
-        self._canvas.bind("<Configure>", self._on_canvas_configure)
-        self._canvas.bind("<Enter>", self._bind_mousewheel)
-        self._canvas.bind("<Leave>", self._unbind_mousewheel)
-        self._mousewheel_bound = False
-
-    def _on_inner_configure(self, _event: tk.Event) -> None:
-        self._canvas.configure(scrollregion=self._canvas.bbox("all"))
-        self._update_scrollbar_visibility()
-
-    def _on_canvas_configure(self, event: tk.Event) -> None:
-        self._canvas.itemconfigure(self._inner_window, width=event.width)
-        self._update_scrollbar_visibility()
-
-    def _update_scrollbar_visibility(self) -> None:
-        self.update_idletasks()
-        canvas_height = self._canvas.winfo_height()
-        inner_height = self.inner.winfo_reqheight()
-        if inner_height > canvas_height:
-            self._scrollbar.grid(row=0, column=1, sticky="ns")
-        else:
-            self._scrollbar.grid_remove()
-            self._canvas.yview_moveto(0)
-
-    def _bind_mousewheel(self, _event: tk.Event) -> None:
-        if self._mousewheel_bound:
-            return
-        self._mousewheel_bound = True
-        if sys.platform == "darwin":
-            self._canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-        else:
-            self._canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-            self._canvas.bind_all("<Button-4>", self._on_mousewheel_linux_up)
-            self._canvas.bind_all("<Button-5>", self._on_mousewheel_linux_down)
-
-    def _unbind_mousewheel(self, _event: tk.Event) -> None:
-        if not self._mousewheel_bound:
-            return
-        self._mousewheel_bound = False
-        self._canvas.unbind_all("<MouseWheel>")
-        if sys.platform != "darwin":
-            self._canvas.unbind_all("<Button-4>")
-            self._canvas.unbind_all("<Button-5>")
-
-    def _on_mousewheel(self, event: tk.Event) -> None:
-        if sys.platform == "darwin":
-            delta = -1 * int(event.delta)
-        else:
-            delta = -1 * int(event.delta / 120)
-        self._canvas.yview_scroll(delta, "units")
-
-    def _on_mousewheel_linux_up(self, _event: tk.Event) -> None:
-        self._canvas.yview_scroll(-1, "units")
-
-    def _on_mousewheel_linux_down(self, _event: tk.Event) -> None:
-        self._canvas.yview_scroll(1, "units")
 
 
 class DualRingGauge(tk.Canvas):
@@ -93,6 +13,7 @@ class DualRingGauge(tk.Canvas):
         fg: str = "#2ecc71",
         bg: str = "#e74c3c",
         text_color: str = "#ffffff",
+        canvas_bg: str | None = None,
         **kwargs,
     ) -> None:
         size = diameter + thickness + 4
@@ -103,6 +24,8 @@ class DualRingGauge(tk.Canvas):
         self.foreground_colour = fg
         self.background_colour = bg
         self.text_colour = text_color
+        if canvas_bg:
+            self.configure(background=canvas_bg)
         self._value = 0.0
         self._arc_fg: int | None = None
         self._arc_bg: int | None = None
@@ -188,10 +111,12 @@ class DualRingGauge(tk.Canvas):
 
         step()
 
-    def set_colours(self, fg: str, bg: str, text: str) -> None:
+    def set_colours(self, fg: str, bg: str, text: str, *, canvas_bg: str | None = None) -> None:
         """Update the colours used by the gauge."""
         self.foreground_colour = fg
         self.background_colour = bg
         self.text_colour = text
+        if canvas_bg:
+            self.configure(background=canvas_bg)
         self._draw_static()
         self._draw_dynamic(self._value, f"{self._value:.0f}%", fg, text)

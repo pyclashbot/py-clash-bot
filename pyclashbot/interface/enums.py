@@ -113,14 +113,28 @@ BOT_STAT_LABELS: dict[BotStatField, str] = {
 
 BOT_STAT_FIELDS: tuple[BotStatField, ...] = tuple(BOT_STAT_LABELS.keys())
 
-PRIMARY_JOB_TOGGLES: tuple[UIField, ...] = (
-    UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
-    UIField.CARD_UPGRADE_USER_TOGGLE,
-    UIField.CARD_MASTERY_USER_TOGGLE,
-    UIField.SHOP_DAILY_OFFER_USER_TOGGLE,
-    UIField.CLAN_CHAT_USER_TOGGLE,
-    UIField.WAR_USER_TOGGLE,
-    UIField.CLASSIC_1V1_USER_TOGGLE,
-    UIField.CLASSIC_2V2_USER_TOGGLE,
-    UIField.TROPHY_ROAD_USER_TOGGLE,
+# Jobs that count toward starting the bot — must match the Battles, Clan chat, and
+# Collection sections on the Jobs tab (_JOB_TAB_COLUMNS in ui.py).
+START_JOB_GROUPS: tuple[tuple[UIField, ...], ...] = (
+    (
+        UIField.CLASSIC_1V1_USER_TOGGLE,
+        UIField.CLASSIC_2V2_USER_TOGGLE,
+        UIField.TROPHY_ROAD_USER_TOGGLE,
+        UIField.WAR_USER_TOGGLE,
+    ),
+    (
+        UIField.CLAN_DONATE_USER_TOGGLE,
+        UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
+        UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+    ),
+    (
+        UIField.CARD_UPGRADE_USER_TOGGLE,
+        UIField.CARD_MASTERY_USER_TOGGLE,
+        UIField.SHOP_DAILY_OFFER_USER_TOGGLE,
+    ),
 )
+
+
+def has_start_ready_job(values: dict[str, object]) -> bool:
+    """True when at least one Battles, Clan chat, or Collection job is enabled."""
+    return any(any(bool(values.get(field.value, False)) for field in group) for group in START_JOB_GROUPS)

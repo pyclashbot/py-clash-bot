@@ -29,15 +29,6 @@ class StatConfig:
     size: tuple[int, int] = (6, 1)
 
 
-@dataclass(frozen=True)
-class SubJobToggle:
-    """Secondary toggle shown beside a parent job (e.g. clan chat actions)."""
-
-    key: UIField
-    title: str
-    default: bool = True
-
-
 @dataclass
 class JobConfig:
     """Configuration for a job checkbox element."""
@@ -45,9 +36,8 @@ class JobConfig:
     key: UIField
     title: str
     default: bool = False
+    tooltip: str = ""
     extras: dict[UIField, ComboConfig] | None = None
-    sub_jobs: tuple[SubJobToggle, ...] = ()
-    primary: bool = False
 
 
 @dataclass
@@ -91,6 +81,7 @@ JOBS = [
         UIField.SWITCH_ACCOUNTS_USER_TOGGLE,
         "🔀 Switch accounts",
         default=False,
+        tooltip="Switch between linked Supercell accounts at the end of each bot loop.",
         extras={
             UIField.MAX_ACCOUNT_SELECTION: ComboConfig(
                 key=UIField.MAX_ACCOUNT_SELECTION,
@@ -98,34 +89,75 @@ JOBS = [
                 values=[2, 3],
                 default=2,
                 label_size=(15, 1),
-                tooltip=(
-                    "How many linked Supercell accounts to swap between each bot loop (2-3). "
-                    "Accounts are picked in the order you signed into them on this device."
-                ),
+                tooltip="Number of linked accounts to switch between (2-3).",
             )
         },
     ),
-    JobConfig(UIField.CARD_UPGRADE_USER_TOGGLE, "⬆️ Upgrade cards", default=False),
-    JobConfig(UIField.CARD_MASTERY_USER_TOGGLE, "🎯 Card Mastery", default=False),
-    JobConfig(UIField.SHOP_DAILY_OFFER_USER_TOGGLE, "🛒 Shop daily free offer", default=False),
     JobConfig(
-        UIField.CLAN_CHAT_USER_TOGGLE,
-        "💬 Clan chat",
+        UIField.CARD_UPGRADE_USER_TOGGLE,
+        "⬆️ Upgrade cards",
         default=False,
-        sub_jobs=(
-            SubJobToggle(UIField.CLAN_DONATE_USER_TOGGLE, "Donate"),
-            SubJobToggle(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE, "Request"),
-            SubJobToggle(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE, "Claim gift"),
-        ),
+        tooltip="Upgrade cards in your collection when enough gold is available.",
     ),
-    JobConfig(UIField.WAR_USER_TOGGLE, "⚔️ Clan war", default=False),
-    JobConfig(UIField.CLASSIC_1V1_USER_TOGGLE, "⚔️ Classic 1v1", default=False, primary=True),
-    JobConfig(UIField.CLASSIC_2V2_USER_TOGGLE, "👥 Classic 2v2", default=False, primary=True),
-    JobConfig(UIField.TROPHY_ROAD_USER_TOGGLE, "🏆 Trophy Road", default=True, primary=True),
+    JobConfig(
+        UIField.CARD_MASTERY_USER_TOGGLE,
+        "🎯 Card mastery rewards",
+        default=False,
+        tooltip="Collect Card Mastery rewards from the card menu when they are available.",
+    ),
+    JobConfig(
+        UIField.SHOP_DAILY_OFFER_USER_TOGGLE,
+        "🛒 Shop daily free offer",
+        default=False,
+        tooltip="Claim the free daily offer in the shop.",
+    ),
+    JobConfig(
+        UIField.CLAN_DONATE_USER_TOGGLE,
+        "📤 Donate cards",
+        default=False,
+        tooltip="Donate cards to clanmates from the clan chat screen.",
+    ),
+    JobConfig(
+        UIField.CLAN_REQUEST_CARDS_USER_TOGGLE,
+        "📥 Request cards",
+        default=False,
+        tooltip="Request cards from clanmates in clan chat.",
+    ),
+    JobConfig(
+        UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
+        "🎁 Claim gifts",
+        default=False,
+        tooltip="Claim Pass Royale gold gifts from clan chat.",
+    ),
+    JobConfig(
+        UIField.WAR_USER_TOGGLE,
+        "🛡️ Clan war",
+        default=False,
+        tooltip="Play clan war battles from the war page.",
+    ),
+    JobConfig(
+        UIField.CLASSIC_1V1_USER_TOGGLE,
+        "⚔️ Classic 1v1",
+        default=True,
+        tooltip="Play Classic 1v1 ladder battles.",
+    ),
+    JobConfig(
+        UIField.CLASSIC_2V2_USER_TOGGLE,
+        "👥 Classic 2v2",
+        default=False,
+        tooltip="Play Classic 2v2 battles.",
+    ),
+    JobConfig(
+        UIField.TROPHY_ROAD_USER_TOGGLE,
+        "🏆 Trophy Road",
+        default=False,
+        tooltip="Play Trophy Road 1v1 battles.",
+    ),
     JobConfig(
         UIField.RANDOM_DECKS_USER_TOGGLE,
         "🎲 Randomize deck",
         default=False,
+        tooltip="Shuffle card slots in one deck before each battle.",
         extras={
             UIField.DECK_NUMBER_SELECTION: ComboConfig(
                 key=UIField.DECK_NUMBER_SELECTION,
@@ -133,7 +165,7 @@ JOBS = [
                 values=[1, 2, 3, 4, 5],
                 default=2,
                 label_size=(10, 1),
-                tooltip="Deck slot (1-5) to use when randomizing",
+                tooltip="Deck slot (1-5) to shuffle before each battle.",
             )
         },
     ),
@@ -141,6 +173,7 @@ JOBS = [
         UIField.CYCLE_DECKS_USER_TOGGLE,
         "♻️ Cycle decks",
         default=False,
+        tooltip="Rotate through multiple deck slots between battles.",
         extras={
             UIField.MAX_DECK_SELECTION: ComboConfig(
                 key=UIField.MAX_DECK_SELECTION,
@@ -148,12 +181,22 @@ JOBS = [
                 values=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 default=2,
                 label_size=(15, 1),
-                tooltip="Number of deck slots to rotate through",
+                tooltip="Number of deck slots to rotate through (1-10).",
             )
         },
     ),
-    JobConfig(UIField.RANDOM_PLAYS_USER_TOGGLE, "❔ Random card plays", default=False),
-    JobConfig(UIField.DISABLE_WIN_TRACK_TOGGLE, "⏭️ Skip win/loss tracking", default=False),
+    JobConfig(
+        UIField.RANDOM_PLAYS_USER_TOGGLE,
+        "❔ Random card plays",
+        default=False,
+        tooltip="Play cards at random positions during battles instead of using the default strategy.",
+    ),
+    JobConfig(
+        UIField.DISABLE_WIN_TRACK_TOGGLE,
+        "📊 Win/loss tracking",
+        default=False,
+        tooltip="Track wins and losses on the Stats tab after each battle.",
+    ),
 ]
 
 # Emulator Settings Configuration
@@ -206,8 +249,6 @@ def _job_setting_keys() -> list[str]:
     keys: list[str] = []
     for job in JOBS:
         keys.append(job.key.value)
-        for sub in job.sub_jobs:
-            keys.append(sub.key.value)
         if job.extras:
             keys.extend(extra.value for extra in job.extras)
     return keys

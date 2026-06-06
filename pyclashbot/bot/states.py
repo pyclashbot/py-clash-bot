@@ -388,18 +388,11 @@ def state_tree(
         return state_order.next_state(state)
 
     if state == "clan_chat":
-        if not job_list.get(UIField.CLAN_CHAT_USER_TOGGLE.value, False):
-            logger.log("Clan chat job isn't toggled. Skipping this state")
-            if not any_fight_mode_enabled(job_list):
-                logger.log("No fight modes enabled, skipping fight chain")
-                return state_order.next_state("end_fight")
-            return state_order.next_state(state)
-
         donate = job_list.get(UIField.CLAN_DONATE_USER_TOGGLE.value, False)
         claim = job_list.get(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value, False)
         request = job_list.get(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value, False)
         if not donate and not claim and not request:
-            logger.log("No clan chat actions selected. Skipping this state")
+            logger.log("No clan actions selected. Skipping this state")
             if not any_fight_mode_enabled(job_list):
                 logger.log("No fight modes enabled, skipping fight chain")
                 return state_order.next_state("end_fight")
