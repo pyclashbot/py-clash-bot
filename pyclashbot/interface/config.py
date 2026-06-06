@@ -127,13 +127,13 @@ JOBS = [
         UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
         "🎁 Claim gifts",
         default=False,
-        tooltip="Claim gift boxes posted in clan chat.",
+        tooltip="Claim Pass Royale gold gifts from clan chat.",
     ),
     JobConfig(
         UIField.WAR_USER_TOGGLE,
         "🛡️ Clan war",
         default=False,
-        tooltip="Collect clan war rewards when a chest is ready.",
+        tooltip="Play clan war battles from the war page.",
     ),
     JobConfig(
         UIField.CLASSIC_1V1_USER_TOGGLE,
