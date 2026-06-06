@@ -56,6 +56,23 @@ def _normalized_log_path(path: str) -> str:
     return normcase(abspath(path))
 
 
+def _emit_to_session_file(level: int, message: str) -> None:
+    """Write to session log file handlers without echoing to the console."""
+    root_logger = logging.getLogger()
+    record = root_logger.makeRecord(
+        root_logger.name,
+        level,
+        "(pyclashbot)",
+        0,
+        message,
+        (),
+        None,
+    )
+    for handler in root_logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            handler.handle(record)
+
+
 def _detach_log_file_handlers() -> None:
     root_logger = logging.getLogger()
     for handler in root_logger.handlers[:]:
@@ -89,14 +106,15 @@ def _attach_log_file_handler(log_path: str, *, level: int = logging.INFO) -> Non
 
 
 def _write_session_log_header(*, verbose: bool) -> None:
-    logging.info("Logging initialized for %s", __version__)
-    logging.info("Log directory: %s", log_dir)
-    logging.info("Current log file: %s", log_name)
-    logging.info(
-        "Session log mode: %s",
-        "verbose (DEBUG)" if verbose else "standard (INFO)",
+    _emit_to_session_file(logging.INFO, f"Logging initialized for {__version__}")
+    _emit_to_session_file(logging.INFO, f"Log directory: {log_dir}")
+    _emit_to_session_file(logging.INFO, f"Current log file: {log_name}")
+    _emit_to_session_file(
+        logging.INFO,
+        f"Session log mode: {'verbose (DEBUG)' if verbose else 'standard (INFO)'}",
     )
-    logging.info(
+    _emit_to_session_file(
+        logging.INFO,
         """
  ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
 (  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
@@ -104,9 +122,9 @@ def _write_session_log_header(*, verbose: bool) -> None:
 (__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
 """,
     )
-    logging.info(
-        "Machine Info: \n%s",
-        pprint.pformat(_get_machine_info(), sort_dicts=False, indent=4),
+    _emit_to_session_file(
+        logging.INFO,
+        "Machine Info: \n" + pprint.pformat(_get_machine_info(), sort_dicts=False, indent=4),
     )
 
 
@@ -289,7 +307,7 @@ class Logger:
     def log(self, message) -> None:
         """Log something to file and print to console with time and stats"""
         log_message = f"[{self.current_state}] {message}"
-        logging.info(log_message)
+        _emit_to_session_file(logging.INFO, log_message)
         time_string = self.calc_time_since_start()
         print(f"[{self.current_state}] [{time_string}] {message}")
 
@@ -428,7 +446,8 @@ class Logger:
 
         """
         self.errored = True
-        logging.error(message)
+        _emit_to_session_file(logging.ERROR, message)
+        print(message)
 
     @_updates_gui
     def add_card_mastery_reward_collection(self) -> None:
