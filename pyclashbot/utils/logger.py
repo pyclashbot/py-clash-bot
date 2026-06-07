@@ -23,7 +23,7 @@ archive_name: str = join(log_dir, "logs.zip")
 def session_log_basename() -> str:
     """Build a session log filename for the current local time."""
     timestamp = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-    return f"{timestamp}_verbose.txt"
+    return f"{timestamp}.txt"
 
 
 def session_log_path() -> str:
@@ -109,7 +109,7 @@ def _write_session_log_header() -> None:
     _emit_to_session_file(logging.INFO, f"Current log file: {log_name}")
     _emit_to_session_file(
         logging.INFO,
-        "Session log mode: verbose (DEBUG)",
+        "Session log level: DEBUG",
     )
     _emit_to_session_file(
         logging.INFO,
