@@ -262,7 +262,6 @@ USER_CONFIG_KEYS = (
     + [
         UIField.THEME_NAME.value,
         UIField.RECORD_FIGHTS_TOGGLE.value,
-        UIField.VERBOSE_LOG_TOGGLE.value,
     ]  # Data settings
     + [UIField.GP_DEVICE_SERIAL.value, UIField.BS_DEVICE_SERIAL.value]  # Device serial settings
 )

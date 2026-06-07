@@ -143,8 +143,7 @@ class WorkerProcess(Process):
     def run(self) -> None:
         """Main worker process execution."""
         print("WorkerProcess run()...")
-        verbose_logging = bool(self.jobs.get(UIField.VERBOSE_LOG_TOGGLE.value, False))
-        attach_worker_file_logging(self.session_log_path, verbose=verbose_logging)
+        attach_worker_file_logging(self.session_log_path)
 
         # Set up cancellation token for interruptible sleeps
         token = CancellationToken(self.shutdown_event)

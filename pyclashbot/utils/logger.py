@@ -20,17 +20,15 @@ log_name = ""
 archive_name: str = join(log_dir, "logs.zip")
 
 
-def session_log_basename(*, verbose: bool) -> str:
+def session_log_basename() -> str:
     """Build a session log filename for the current local time."""
     timestamp = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-    if verbose:
-        return f"{timestamp}_verbose.txt"
-    return f"{timestamp}.txt"
+    return f"{timestamp}_verbose.txt"
 
 
-def session_log_path(*, verbose: bool) -> str:
+def session_log_path() -> str:
     """Return the full path for a new bot-session log file."""
-    return join(log_dir, session_log_basename(verbose=verbose))
+    return join(log_dir, session_log_basename())
 
 
 def compress_logs() -> None:
@@ -105,13 +103,13 @@ def _attach_log_file_handler(log_path: str, *, level: int = logging.INFO) -> Non
     root_logger.addHandler(file_handler)
 
 
-def _write_session_log_header(*, verbose: bool) -> None:
+def _write_session_log_header() -> None:
     _emit_to_session_file(logging.INFO, f"Logging initialized for {__version__}")
     _emit_to_session_file(logging.INFO, f"Log directory: {log_dir}")
     _emit_to_session_file(logging.INFO, f"Current log file: {log_name}")
     _emit_to_session_file(
         logging.INFO,
-        f"Session log mode: {'verbose (DEBUG)' if verbose else 'standard (INFO)'}",
+        "Session log mode: verbose (DEBUG)",
     )
     _emit_to_session_file(
         logging.INFO,
@@ -128,26 +126,24 @@ def _write_session_log_header(*, verbose: bool) -> None:
     )
 
 
-def begin_session_file_logging(*, verbose: bool) -> str:
+def begin_session_file_logging() -> str:
     """Create a new session log file for a bot run and return its path."""
     global log_name
 
     _detach_log_file_handlers()
-    log_name = session_log_path(verbose=verbose)
-    level = logging.DEBUG if verbose else logging.INFO
-    _attach_log_file_handler(log_name, level=level)
-    _write_session_log_header(verbose=verbose)
+    log_name = session_log_path()
+    _attach_log_file_handler(log_name, level=logging.DEBUG)
+    _write_session_log_header()
     return log_name
 
 
-def attach_worker_file_logging(session_log_path: str, *, verbose: bool = False) -> None:
+def attach_worker_file_logging(session_log_path: str) -> None:
     """Attach file logging in the bot worker subprocess.
 
     macOS/Windows use spawn for multiprocessing, so the worker does not inherit
     the GUI process's logging handlers.
     """
-    level = logging.DEBUG if verbose else logging.INFO
-    _attach_log_file_handler(session_log_path, level=level)
+    _attach_log_file_handler(session_log_path, level=logging.DEBUG)
 
 
 def initialize_pylogging() -> None:
