@@ -11665,11 +11665,20 @@ play_side = "left"
 
 def is_hero_champion_ability_visible(emulator) -> bool:
     iar = emulator.screenshot()
-    return check_for_champion_ability(
-        iar[462][324],
-        iar[453][334],
-        iar[462][336],
+    pixels = numpy.array([iar[462][324], iar[453][334], iar[462][336]])
+    colors = numpy.array(
+        [
+            [215, 28, 223],
+            [240, 39, 254],
+            [239, 40, 251],
+        ],
     )
+
+    for p in pixels:
+        if numpy.any(numpy.all(numpy.abs(colors - p) <= 30, axis=1)):
+            return True
+
+    return False
 
 
 def check_which_cards_are_available(emulator, check_side=False):
@@ -11695,23 +11704,6 @@ def check_which_cards_are_available(emulator, check_side=False):
 def trigger_hero_champion_ability(emulator, logger) -> None:
     emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
     logger.change_status("Triggered Hero/Champion ability")
-
-
-def check_for_champion_ability(a, b, c):
-    pixels = numpy.array([a, b, c])
-    colors = numpy.array(
-        [
-            [215, 28, 223],
-            [240, 39, 254],
-            [239, 40, 251],
-        ],
-    )
-
-    for p in pixels:
-        if numpy.any(numpy.all(numpy.abs(colors - p) <= 30, axis=1)):
-            return True
-
-    return False
 
 
 def identify_hand_cards(emulator, card_index):
