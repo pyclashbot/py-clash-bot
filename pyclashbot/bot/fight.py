@@ -312,16 +312,6 @@ def check_if_previous_game_was_win(
 # Initialize a deque with a maximum length of 3 to store the last three chosen cards
 last_three_cards = collections.deque(maxlen=3)
 
-_HAND_SLOT_LABELS = "ABCD"
-
-
-def _hand_slot_label(card_index: int) -> str:
-    return _HAND_SLOT_LABELS[card_index]
-
-
-def _hand_slot_labels(card_indices: list[int]) -> str:
-    return ", ".join(_hand_slot_label(i) for i in sorted(card_indices))
-
 
 def select_card_index(card_indices, last_three_cards):
     if not card_indices:
@@ -373,9 +363,10 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     if recording_flag:
         save_play(play_coord, card_index)
 
-    slot = _hand_slot_label(card_index)
+    slot = "ABCD"[card_index]
+    slot_labels = ", ".join("ABCD"[i] for i in sorted(card_indices))
     logger.log(
-        f"Ready slots: {_hand_slot_labels(card_indices)} | chose {slot} | group: {get_card_group(card_id)}",
+        f"Ready slots: {slot_labels} | chose {slot} | group: {get_card_group(card_id)}",
     )
     logger.change_status(f"Played {card_id} from slot {slot} at {play_coord}")
     logger.add_card_played()
