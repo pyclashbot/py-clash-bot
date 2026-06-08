@@ -9,7 +9,11 @@ CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
 
 class EmulatorNotReadyError(RuntimeError):
     """The emulator can't be made ready (app missing, signed out, no main menu)
-    and no human is available to fix it — raised instead of waiting forever."""
+    and no human is available to fix it — raised instead of waiting forever.
+
+    TRANSITIONAL: part of the is_noninteractive() scaffolding below; see that
+    docstring for the removal plan.
+    """
 
 
 def is_noninteractive() -> bool:
@@ -18,6 +22,16 @@ def is_noninteractive() -> bool:
     Controllers then raise EmulatorNotReadyError instead of looping on a "Retry"
     click that will never come. Production never sets this, so its behavior is
     unchanged.
+
+    TRANSITIONAL SCAFFOLDING — slated for full removal, env var and all. The retry
+    loops and human-in-the-loop "Retry" prompts currently embedded in the emulator
+    adapters are an application/domain concern, not an adapter concern. Once that
+    orchestration is lifted into an application-layer port (adapters become
+    "attempt once, return outcome / raise"; callers own the retry loop and decide
+    when to prompt), there is no in-adapter loop left to short-circuit:
+    PYCLASHBOT_NONINTERACTIVE, this function, and every `if is_noninteractive():`
+    guard (grep the TODO at the recursion sites) all delete themselves.
+    Do NOT build new permanent behavior on this flag.
     """
     return os.environ.get("PYCLASHBOT_NONINTERACTIVE") == "1"
 

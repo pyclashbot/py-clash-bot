@@ -412,6 +412,10 @@ class GooglePlayEmulatorController(AdbBasedController):
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
                 self.logger.log("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
+                # TODO: lift retry/prompt orchestration out of the adapter into an application-layer
+                # port so restart() becomes a single attempt and callers own the retry loop.
+                if is_noninteractive():
+                    raise EmulatorNotReadyError("restart() timed out waiting for the Clash Royale main menu")
                 return self.restart()
 
             # if found main in time, break

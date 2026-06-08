@@ -24,10 +24,12 @@ from tests._emulator_support import (
 )
 
 _BACKEND_KEY = pytest.StashKey[str]()
-_SERIAL_KEY = pytest.StashKey[object]()
+_SERIAL_KEY = pytest.StashKey[str | None]()
 
 
 def _emulator_choices() -> list[str]:
+    """Platform-available backend aliases, guarded so a failed registry probe
+    can't throw out of a pytest hook."""
     try:
         choices = available_cli_choices()
     except Exception:
@@ -48,7 +50,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--emulator",
         action="store",
         default=None,
-        choices=_emulator_choices(),
+        # No argparse `choices=`: resolve_backend() is the single, unit-tested
+        # validator (and gives a platform-aware error message).
         help="Emulator backend for the integration suite. One-off override (not persisted).",
     )
     parser.addoption(
@@ -94,14 +97,18 @@ def pytest_configure(config: pytest.Config) -> None:
     if not config.getoption("--integration"):
         return
 
-    # Flip the default deselection; read lazily at collection, so setting it here works.
+    # Flip the default deselection (read lazily at collection, so setting it here
+    # works). Intentionally overwrites any user-supplied `-m` under --integration.
     config.option.markexpr = "emulator"
 
     # No GUI/human here: controllers must fail fast on a not-ready emulator instead
-    # of waiting forever on a "Retry" prompt.
+    # of waiting forever on a "Retry" prompt. Left set for the process lifetime —
+    # this is a dedicated integration run, never unset. TRANSITIONAL: this whole
+    # flag goes away once retry/prompt orchestration moves out of the adapters —
+    # see is_noninteractive() in pyclashbot/emulators/base.py.
     os.environ["PYCLASHBOT_NONINTERACTIVE"] = "1"
 
-    choices = available_cli_choices()
+    choices = _emulator_choices()
     cache = read_cache()
 
     backend, persist_backend = resolve_backend(

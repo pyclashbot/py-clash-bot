@@ -35,10 +35,12 @@ and resolves a backend.
 ## Conventions
 
 - The session-scoped `emulator` fixture only constructs the controller; it
-  `pytest.exit`s the whole run if construction fails. Controllers boot + launch
-  Clash in construction, so a not-ready emulator (app missing, signed out, no main
-  menu) fails fast there with a clear `EmulatorNotReadyError`-based message rather
-  than hanging on a GUI prompt (`PYCLASHBOT_NONINTERACTIVE=1`, set in integration mode).
+  `pytest.exit`s the whole run if construction fails. Construction launches Clash
+  and reaches the main menu — MEmu/BlueStacks/Google Play boot the VM, while ADB
+  attaches to an already-running device and (re)launches Clash. Either way a
+  not-ready emulator (app missing, signed out, no main menu) fails fast there with
+  a clear `EmulatorNotReadyError`-based message rather than hanging on a GUI prompt
+  (`PYCLASHBOT_NONINTERACTIVE=1`, set in integration mode).
 - A clash entry is a `run_test(emulator, logger) -> (bool, str)`. Add one by
   appending its `run_test` to `SUITE` in `test_jobs.py`; entries run with `-x` and
   set up later ones, so order matters.
