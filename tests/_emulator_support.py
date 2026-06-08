@@ -1,16 +1,26 @@
-"""Helpers behind the `emulator` fixture (conftest.py). Not a test module.
+"""Backend selection and attachment behind the `emulator` fixture (conftest.py).
 
-Non-destructive: attaches to an already-running emulator and verifies it's on
-the Clash main menu; never boots, configures, or signs in.
+Not a test module. Resolves which emulator backend to drive (CLI arg > cached
+choice > committed default > interactive menu, all gated to the platform's
+available backends), persists interactive picks, and attaches to it.
 """
 
 from __future__ import annotations
 
 import inspect
+import json
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
+import pytest
+
+from pyclashbot.emulators.adb_base import validate_device_serial
+from pyclashbot.emulators.base import EmulatorNotReadyError
+
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from pyclashbot.utils.logger import Logger
 
 # CLI alias -> EmulatorType key. Lowercase, dash-separated for friendly CLI.
@@ -21,6 +31,8 @@ CLI_ALIASES = {
     "adb": "ADB Device",
 }
 
+_CACHE_PATH = Path(__file__).parent / ".pytest-emulator.json"
+
 
 def available_cli_choices() -> list[str]:
     from pyclashbot.emulators import EmulatorType, get_available_emulators
@@ -29,10 +41,84 @@ def available_cli_choices() -> list[str]:
     return [cli for cli, display in CLI_ALIASES.items() if EmulatorType(display) in available]
 
 
-def attach_emulator(cli_alias: str, logger: Logger):
-    """Attach to an already-running emulator; return the controller or None (printing why).
+def read_cache() -> dict:
+    try:
+        return json.loads(_CACHE_PATH.read_text())
+    except (OSError, ValueError):
+        return {}
 
-    Passes debug_mode=True if the controller's __init__ accepts it (skips configure+restart).
+
+def write_cache(updates: dict) -> None:
+    data = read_cache()
+    data.update(updates)
+    try:
+        _CACHE_PATH.write_text(json.dumps(data, indent=2) + "\n")
+    except OSError:
+        pass
+
+
+def prompt_backend_menu(choices: list[str]) -> str | None:
+    """Numbered stdin menu over the platform-available backends. None on abort."""
+    if not choices:
+        return None
+    print("\nSelect emulator backend:")
+    for i, choice in enumerate(choices, 1):
+        print(f"  {i}) {choice}")
+    try:
+        raw = input(f"Enter choice [1-{len(choices)}]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return None
+    if raw.isdigit() and 1 <= int(raw) <= len(choices):
+        return choices[int(raw) - 1]
+    return None
+
+
+def resolve_backend(
+    cli_opt: str | None,
+    cache: dict,
+    ini_default: str,
+    choices: list[str],
+    interactive_cb: Callable[[list[str]], str | None],
+) -> tuple[str, bool]:
+    """Resolve the backend alias against the platform-available `choices`.
+
+    Precedence: cli_opt > cache > ini_default > interactive menu. Returns
+    (backend, persist); persist is True only for an interactive pick. An explicit
+    cli_opt unsupported on this platform is a hard error, whereas a stale cache or
+    committed default is silently skipped so resolution falls through. `interactive_cb`
+    is invoked only when nothing else resolves, and returns None when it can't prompt
+    (non-tty) or the user aborts — so the cache/arg path never touches capture/stdin.
+    """
+    if cli_opt is not None:
+        if cli_opt in choices:
+            return (cli_opt, False)
+        raise pytest.UsageError(f"--emulator {cli_opt!r} is not available on this platform; choose from {choices}")
+
+    for candidate in (cache.get("emulator"), ini_default):
+        if candidate in choices:
+            return (candidate, False)
+
+    pick = interactive_cb(choices)
+    if pick is not None:
+        return (pick, True)
+
+    raise pytest.UsageError(f"could not resolve an emulator backend; pass --emulator (available: {choices})")
+
+
+def resolve_serial(cli_opt: str | None, cache: dict) -> tuple[str | None, bool]:
+    """Resolve the ADB serial. Precedence: --adb-serial arg > cache. Returns
+    (serial, persist); an explicit arg is sticky (persists)."""
+    if cli_opt is not None:
+        if not validate_device_serial(cli_opt):
+            raise pytest.UsageError(f"--adb-serial {cli_opt!r} is not a valid device serial")
+        return (cli_opt, True)
+    return (cache.get("adb_serial"), False)
+
+
+def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = None):
+    """Construct the controller for `cli_alias`; return it or None (printing why).
+
+    Passes debug_mode / device_serial only when the controller's __init__ accepts them.
     """
     from pyclashbot.emulators import EmulatorType, get_emulator_registry
 
@@ -61,56 +147,13 @@ def attach_emulator(cli_alias: str, logger: Logger):
     sig = inspect.signature(cls.__init__)
     if "debug_mode" in sig.parameters:
         kwargs["debug_mode"] = True
+    if device_serial is not None and "device_serial" in sig.parameters:
+        kwargs["device_serial"] = device_serial
 
     try:
         return cls(logger, **kwargs)
+    except EmulatorNotReadyError:
+        raise  # a real "not set up" signal — let the fixture report it, don't mask as None
     except Exception as e:
         print(f"ERROR: failed to attach to {cli_alias}: {type(e).__name__}: {e}", file=sys.stderr)
         return None
-
-
-def check_preconditions(emulator, cli_alias: str) -> tuple[bool, str]:
-    """Verify: emulator exists, is open (reachable), on the Clash Royale main menu."""
-    # 1. Reachability check — works across all emulator types.
-    try:
-        screenshot = emulator.screenshot()
-    except Exception as e:
-        return (
-            False,
-            f"can't test until the {cli_alias} emulator is open and reachable "
-            f"(screenshot raised {type(e).__name__}: {e})",
-        )
-    if screenshot is None or getattr(screenshot, "size", 0) == 0:
-        return (False, f"can't test until the {cli_alias} emulator is open (screenshot returned empty)")
-
-    # 2. MEmu-only deeper check: VM must be in the "running" state. Other
-    #    controllers don't have an equivalent introspection API; the
-    #    screenshot above is the best generic gate we have.
-    if cli_alias == "memu":
-        try:
-            vms = emulator.pmc.list_vm_info()
-            vm = next((v for v in vms if v["index"] == emulator.vm_index), None)
-            if vm is None:
-                return (False, f"can't test until the MEmu VM idx={emulator.vm_index} exists")
-            if not vm["running"]:
-                return (
-                    False,
-                    f"can't test until the MEmu VM {vm.get('title', emulator.vm_index)!r} is open "
-                    "(it's not currently running)",
-                )
-        except Exception:
-            # If the introspection API itself is broken, fall through — the
-            # screenshot check above already confirmed reachability.
-            pass
-
-    # 3. Screen-state check: must be on clash main menu, no popups, signed in.
-    from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
-
-    if not check_if_on_clash_main_menu(emulator):
-        return (
-            False,
-            f"can't test until you park the {cli_alias} emulator on the Clash Royale main menu "
-            "(launch the app, dismiss any popups, sign in to account slot 1)",
-        )
-
-    return (True, "")

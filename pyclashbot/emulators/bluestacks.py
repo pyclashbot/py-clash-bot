@@ -10,6 +10,7 @@ from os.path import normpath
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, is_noninteractive
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
 
@@ -111,6 +112,8 @@ class BlueStacksEmulatorController(AdbBasedController):
 
         # Boot flow
         while self.restart() is False:
+            if is_noninteractive():
+                raise EmulatorNotReadyError("restart() could not reach the Clash Royale main menu")
             print("[BlueStacks 5] Restart failed, retrying...")
             interruptible_sleep(2)
 
@@ -664,7 +667,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             interruptible_sleep(1)
 
         # Launch Clash Royale
-        clash_pkg = "com.supercell.clashroyale"
+        clash_pkg = CLASH_ROYALE_PACKAGE
         self.logger.change_status("Launching Clash Royale...")
 
         # Use inherited start_app which handles installation check

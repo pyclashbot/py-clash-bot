@@ -6,8 +6,6 @@ always runs against the same account, even if a switch happened mid-flow.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu,
 at least 2 accounts available, currently on slot 1.
-
-Run via tests/clash-royale/test_all_clash.py.
 """
 
 from __future__ import annotations

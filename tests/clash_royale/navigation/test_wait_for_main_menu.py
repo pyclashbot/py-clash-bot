@@ -1,30 +1,26 @@
 """Integration test: relaunch Clash Royale and wait for the main menu.
 
-Kills+relaunches the Clash Royale app via start_app(), then waits for the
-main menu to be detected. This is a sanity check for the launch flow.
+Relaunches the Clash Royale app via start_app(), then waits for the main menu
+to be detected. A sanity check for the launch flow on any backend.
 
-Note: NOT included in test_all_clash.py's default suite — the runner's
-precondition check already verifies the main menu is reached before any
-job test runs. This test exists for one-off "is the launch helper still
-working?" verification.
-
-Run via tests/clash-royale/test_all_clash.py (passed explicitly) or directly
-construct an emulator + call run_test().
+Note: NOT wired into test_jobs.py's SUITE — the SUITE's boot setup test already
+covers reaching the main menu. This exists for one-off "is the launch helper
+still working?" verification: construct an emulator + call run_test() directly,
+or temporarily append run_test to the SUITE in test_jobs.py.
 """
 
 from __future__ import annotations
 
 from pyclashbot.bot.nav import wait_for_clash_main_menu
-
-CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE
 
 
 def run_test(emulator, logger) -> tuple[bool, str]:
-    vm = next((v for v in emulator.pmc.list_vm_info() if v["index"] == emulator.vm_index), None)
-    if vm is None or not vm["running"]:
-        return (False, f"Failed during precondition: VM idx={emulator.vm_index} is not running")
+    reachable, reason = emulator.is_reachable()
+    if not reachable:
+        return (False, f"Failed during precondition: emulator not reachable ({reason})")
 
-    print(f"[+] starting {CLASH_ROYALE_PACKAGE} on VM idx={emulator.vm_index}")
+    print(f"[+] starting {CLASH_ROYALE_PACKAGE}")
     emulator.start_app(CLASH_ROYALE_PACKAGE)
 
     print("[+] waiting for clash main menu (timeout 240s)...")

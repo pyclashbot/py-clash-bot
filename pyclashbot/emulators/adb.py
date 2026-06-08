@@ -4,6 +4,7 @@ import time
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -305,7 +306,7 @@ class AdbController(AdbBasedController):
         start_ts = time.time()
         self.logger.change_status("Restarting Clash Royale on device...")
 
-        clash_pkg = "com.supercell.clashroyale"
+        clash_pkg = CLASH_ROYALE_PACKAGE
 
         # 1. Force stop the app
         self.logger.change_status(f"Force-stopping {clash_pkg}...")

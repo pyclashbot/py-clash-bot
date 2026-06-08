@@ -1,0 +1,46 @@
+# tests/ — pytest, two tiers
+
+Offline tests run in CI on a bare `pytest`. Emulator tests carry
+`@pytest.mark.emulator` and need a live emulator — they are skipped by default
+(`addopts = -m "not emulator"`) and **CI never runs them**. Turn them on with
+`--integration` (or `make test-emulator`), which flips the marker to `-m emulator`
+and resolves a backend.
+
+## Layout
+
+- `test_*.py` (top level) — offline unit/regression tests: pure functions +
+  committed fixtures, no emulator (e.g. `test_card_fingerprint_bgr.py`,
+  `test_emulator_resolution.py`).
+- `clash_royale/` — live end-to-end suite: one parametrized test
+  (`test_jobs.py`) over the ordered `SUITE`. The emulator is booted in fixture
+  construction; the first two entries are setup (app-installed check, screenshot
+  smoke) and the rest are jobs. See `clash_royale/readme.md`.
+- `_emulator_support.py` — not a test module: backend resolution, the choice
+  cache, and `attach_emulator()` behind the `emulator` fixture.
+- `fixtures/` — committed regression inputs (e.g. captured BGR screenshots).
+
+## Backend selection (`--integration`)
+
+- Resolution precedence: `--emulator <alias>` > cached pick
+  (`tests/.pytest-emulator.json`, gitignored) > `emulator_default` ini > interactive
+  menu. Every candidate is gated to the platform's available backends
+  (`available_cli_choices()`); an unsupported `--emulator` is a hard error, a stale
+  cache/ini value is skipped. The menu lists only backends available on this OS.
+- `--emulator` is a one-off override (not persisted); an interactive pick is. The
+  optional `--adb-serial host:port` is sticky (persisted) and follows the same
+  read precedence. Resolution runs in `conftest.py::pytest_configure` with capture
+  suspended so the menu can read stdin; a non-TTY with nothing resolvable raises
+  `pytest.UsageError` rather than hanging.
+
+## Conventions
+
+- The session-scoped `emulator` fixture only constructs the controller; it
+  `pytest.exit`s the whole run if construction fails. Controllers boot + launch
+  Clash in construction, so a not-ready emulator (app missing, signed out, no main
+  menu) fails fast there with a clear `EmulatorNotReadyError`-based message rather
+  than hanging on a GUI prompt (`PYCLASHBOT_NONINTERACTIVE=1`, set in integration mode).
+- A clash entry is a `run_test(emulator, logger) -> (bool, str)`. Add one by
+  appending its `run_test` to `SUITE` in `test_jobs.py`; entries run with `-x` and
+  set up later ones, so order matters.
+- Any test needing hardware must be marked `@pytest.mark.emulator` (or via SUITE
+  membership), or CI will try to run it.

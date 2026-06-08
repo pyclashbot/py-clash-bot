@@ -9,6 +9,7 @@ import psutil
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, is_noninteractive
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -83,6 +84,8 @@ class GooglePlayEmulatorController(AdbBasedController):
         # self.restart()
 
         while self.restart() is False:
+            if is_noninteractive():
+                raise EmulatorNotReadyError("restart() could not reach the Clash Royale main menu")
             print("Restart failed, trying again...")
             interruptible_sleep(2)
 
@@ -388,7 +391,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         # boot clash
         self.logger.change_status("Launching Clash Royale application...")
         interruptible_sleep(10)
-        clash_royale_name = "com.supercell.clashroyale"
+        clash_royale_name = CLASH_ROYALE_PACKAGE
         start_app_count = 3
         for i in range(start_app_count):
             self.logger.change_status(f"Starting Clash Royale (attempt {i + 1}/{start_app_count})...")

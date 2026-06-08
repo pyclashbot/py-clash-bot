@@ -4,9 +4,6 @@ Begins on main, runs clan_chat_state with only the request-cards flag enabled,
 ends on main. A no-op (request cooldown active) is still a pass.
 
 Precondition: MEmu VM running, signed in to Clash Royale, in a clan, on main.
-
-Run directly:
-    py tests/clash-royale/jobs/test_clan_chat_request.py
 """
 
 from __future__ import annotations

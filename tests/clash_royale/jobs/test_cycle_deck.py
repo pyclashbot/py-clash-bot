@@ -4,9 +4,6 @@ Begins on main, selects deck 1 of a 10-deck cycle, ends on main. Asserts the
 returned selected_deck_number is sane (in range 1..deck_count).
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
-
-Run directly:
-    py tests/clash-royale/jobs/test_cycle_deck.py
 """
 
 from __future__ import annotations

@@ -1,6 +1,25 @@
+import os
+
 import numpy as np
 
 from pyclashbot.utils.platform import CURRENT_PLATFORM, Platform
+
+CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
+
+
+class EmulatorNotReadyError(RuntimeError):
+    """The emulator can't be made ready (app missing, signed out, no main menu)
+    and no human is available to fix it — raised instead of waiting forever."""
+
+
+def is_noninteractive() -> bool:
+    """True when no GUI/human can resolve a setup prompt (e.g. the test harness).
+
+    Controllers then raise EmulatorNotReadyError instead of looping on a "Retry"
+    click that will never come. Production never sets this, so its behavior is
+    unchanged.
+    """
+    return os.environ.get("PYCLASHBOT_NONINTERACTIVE") == "1"
 
 
 class BaseEmulatorController:
@@ -40,10 +59,28 @@ class BaseEmulatorController:
         """
         raise NotImplementedError
 
-    def restart(self):
+    def restart(self) -> bool:
         """
-        This method is used to restart the emulator.
+        Full boot -> configure -> launch Clash -> reach main menu.
+
+        Returns True only when Clash Royale is left on a main menu detectable by
+        check_if_on_clash_main_menu(self); subclasses return False to trigger the
+        retry loop.
         """
+        raise NotImplementedError
+
+    def is_reachable(self) -> tuple[bool, str]:
+        """Return (ok, reason). Default: a screenshot decodes to a non-empty array."""
+        try:
+            screenshot = self.screenshot()
+        except Exception as e:
+            return (False, f"screenshot raised {type(e).__name__}: {e}")
+        if screenshot is None or getattr(screenshot, "size", 0) == 0:
+            return (False, "screenshot returned empty")
+        return (True, "")
+
+    def is_app_installed(self, package: str) -> bool:
+        """Return whether the given package is installed on the emulator."""
         raise NotImplementedError
 
     def start(self):
