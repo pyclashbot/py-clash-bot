@@ -297,8 +297,8 @@ class AdbController(AdbBasedController):
         1. Force-stop the app.
         2. Start the app (using the base class method).
         3. Wait for the main menu to appear.
-        Returns:
-            bool: True if the app was successfully restarted and the main menu is found, False otherwise.
+        Returns True once the main menu is reached; raises EmulatorNotReadyError
+        if Clash isn't installed or the main menu never appears.
         """
         start_ts = time.time()
         self.logger.change_status("Restarting Clash Royale on device...")

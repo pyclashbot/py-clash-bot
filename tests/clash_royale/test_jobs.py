@@ -28,9 +28,9 @@ from .navigation.test_navigate_main_pages import run_test as nav_main_pages
 
 # Fixed order — setup first (install check, then a screenshot smoke), cheap/safe
 # jobs next, the fight chain last. The emulator is already booted and on the main
-# menu by the time these run (controllers boot in construction; the fixture aborts
-# if that fails). switch_account is a round-trip (slot 1 -> 2 -> 1) so the rest of
-# the suite stays on slot 1.
+# menu by the time these run (the fixture constructs the controller then calls
+# restart() to boot, aborting the run if that fails). switch_account is a
+# round-trip (slot 1 -> 2 -> 1) so the rest of the suite stays on slot 1.
 SUITE = [
     ("app_installed", run_app_installed),
     ("screenshot_contract", screenshot_contract),

@@ -42,8 +42,7 @@ and resolves a backend.
   Clash and reaches the main menu — MEmu/BlueStacks/Google Play boot the VM, while
   ADB attaches to an already-running device and (re)launches Clash. Either way a
   not-ready emulator (app missing, signed out, no main menu) fails fast there with
-  a clear `EmulatorNotReadyError` rather than hanging on a GUI prompt
-  (`PYCLASHBOT_NONINTERACTIVE=1`, set in integration mode).
+  a clear `EmulatorNotReadyError` rather than hanging on a GUI prompt.
 - A clash entry is a `run_test(emulator, logger) -> (bool, str)`. Add one by
   appending its `run_test` to `SUITE` in `test_jobs.py`; entries run with `-x` and
   set up later ones, so order matters.
