@@ -17,10 +17,8 @@ from tests._emulator_support import (
     attach_emulator,
     available_cli_choices,
     prompt_backend_menu,
-    read_cache,
     resolve_backend,
     resolve_serial,
-    write_cache,
 )
 
 _BACKEND_KEY = pytest.StashKey[str]()
@@ -109,7 +107,13 @@ def pytest_configure(config: pytest.Config) -> None:
     os.environ["PYCLASHBOT_NONINTERACTIVE"] = "1"
 
     choices = _emulator_choices()
-    cache = read_cache()
+    # Prior picks persist across runs via pytest's own cache (.pytest_cache/);
+    # the resolvers stay pure by taking a plain dict, so they're unit-tested
+    # without a pytest Config. Inspect with `pytest --cache-show 'pyclashbot/*'`.
+    cache = {
+        "emulator": config.cache.get("pyclashbot/emulator", None),
+        "adb_serial": config.cache.get("pyclashbot/adb_serial", None),
+    }
 
     backend, persist_backend = resolve_backend(
         config.getoption("--emulator"),
@@ -120,13 +124,10 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     serial, persist_serial = resolve_serial(config.getoption("--adb-serial"), cache)
 
-    updates: dict = {}
     if persist_backend:
-        updates["emulator"] = backend
+        config.cache.set("pyclashbot/emulator", backend)
     if persist_serial:
-        updates["adb_serial"] = serial
-    if updates:
-        write_cache(updates)
+        config.cache.set("pyclashbot/adb_serial", serial)
 
     config.stash[_BACKEND_KEY] = backend
     config.stash[_SERIAL_KEY] = serial

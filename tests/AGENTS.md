@@ -15,14 +15,16 @@ and resolves a backend.
   (`test_jobs.py`) over the ordered `SUITE`. The emulator is booted in fixture
   construction; the first two entries are setup (app-installed check, screenshot
   smoke) and the rest are jobs. See `clash_royale/readme.md`.
-- `_emulator_support.py` — not a test module: backend resolution, the choice
-  cache, and `attach_emulator()` behind the `emulator` fixture.
+- `_emulator_support.py` — not a test module: backend resolution and
+  `attach_emulator()` behind the `emulator` fixture (cross-run persistence is
+  pytest's `config.cache`, wired in `conftest.py`).
 - `fixtures/` — committed regression inputs (e.g. captured BGR screenshots).
 
 ## Backend selection (`--integration`)
 
-- Resolution precedence: `--emulator <alias>` > cached pick
-  (`tests/.pytest-emulator.json`, gitignored) > `emulator_default` ini > interactive
+- Resolution precedence: `--emulator <alias>` > cached pick (pytest's own
+  `config.cache`, under `.pytest_cache/`; inspect with `pytest --cache-show
+  'pyclashbot/*'`, reset with `--cache-clear`) > `emulator_default` ini > interactive
   menu. Every candidate is gated to the platform's available backends
   (`available_cli_choices()`); an unsupported `--emulator` is a hard error, a stale
   cache/ini value is skipped. The menu lists only backends available on this OS.

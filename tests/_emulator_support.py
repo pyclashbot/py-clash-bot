@@ -8,9 +8,7 @@ available backends), persists interactive picks, and attaches to it.
 from __future__ import annotations
 
 import inspect
-import json
 import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -31,30 +29,12 @@ CLI_ALIASES = {
     "adb": "ADB Device",
 }
 
-_CACHE_PATH = Path(__file__).parent / ".pytest-emulator.json"
-
 
 def available_cli_choices() -> list[str]:
     from pyclashbot.emulators import EmulatorType, get_available_emulators
 
     available = set(get_available_emulators())
     return [cli for cli, display in CLI_ALIASES.items() if EmulatorType(display) in available]
-
-
-def read_cache() -> dict:
-    try:
-        return json.loads(_CACHE_PATH.read_text())
-    except (OSError, ValueError):
-        return {}
-
-
-def write_cache(updates: dict) -> None:
-    data = read_cache()
-    data.update(updates)
-    try:
-        _CACHE_PATH.write_text(json.dumps(data, indent=2) + "\n")
-    except OSError:
-        pass
 
 
 def prompt_backend_menu(choices: list[str]) -> str | None:
@@ -118,7 +98,7 @@ def resolve_serial(cli_opt: str | None, cache: dict) -> tuple[str | None, bool]:
 def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = None):
     """Construct the controller for `cli_alias`; return it or None (printing why).
 
-    Passes debug_mode / device_serial only when the controller's __init__ accepts them.
+    Passes device_serial only when the controller's __init__ accepts it.
     """
     from pyclashbot.emulators import EmulatorType, get_emulator_registry
 
@@ -145,8 +125,6 @@ def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = 
 
     kwargs: dict = {}
     sig = inspect.signature(cls.__init__)
-    if "debug_mode" in sig.parameters:
-        kwargs["debug_mode"] = True
     if device_serial is not None and "device_serial" in sig.parameters:
         kwargs["device_serial"] = device_serial
 

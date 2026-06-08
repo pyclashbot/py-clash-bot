@@ -11,7 +11,7 @@ __version__
 __pycache__
 recordings
 scripts/capture_output/
-tests/.pytest-emulator.json
+.pytest_cache/
 docs/reference/
 .claude/
 .claude/settings.local.json

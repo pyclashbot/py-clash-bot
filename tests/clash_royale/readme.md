@@ -31,8 +31,9 @@ uv run pytest -x --integration --emulator memu
 ```
 
 `--integration` flips the default marker and selects a backend; precedence is
-`--emulator` > cached pick (`tests/.pytest-emulator.json`) > `emulator_default`
-ini > interactive menu, all gated to backends available on this OS. `--emulator`
+`--emulator` > cached pick (pytest's `config.cache`, under `.pytest_cache/`) >
+`emulator_default` ini > interactive menu, all gated to backends available on this
+OS. `--emulator`
 is a one-off (not persisted); a menu pick and `--adb-serial` are sticky. `-x`
 stops at the first failure. Run one entry by its `SUITE` id with `-k` (e.g.
 `-k boot_and_reach_main_menu`, `-k 1v1_fight`).
