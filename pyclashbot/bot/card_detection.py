@@ -11663,42 +11663,9 @@ global battle_iar  # noqa: PLW0604
 play_side = "left"
 
 
-def check_which_cards_are_available(emulator, check_ability=False, check_side=False):
-    global battle_iar
-    battle_iar = emulator.screenshot()
-    card_exists_list = []
-
-    ability_visible = check_ability and check_for_champion_ability(
-        battle_iar[462][324],
-        battle_iar[453][334],
-        battle_iar[462][336],
-    )
-
-    if check_side:
-        global play_side
-        _, play_side = switch_side()
-
-    for i, coords in enumerate(card_coords):
-        x_coords, y_coords = coords
-        iar_pixels = battle_iar[numpy.ix_(y_coords, x_coords)]
-        purple_pixels = numpy.all(numpy.abs(iar_pixels - purple_color) <= 30, axis=-1)
-        count = numpy.sum(purple_pixels)
-        if count >= 26:
-            card_exists_list.append(i)
-
-    if check_ability:
-        return card_exists_list, ability_visible
-
-    return card_exists_list
-
-
-def trigger_hero_champion_ability(emulator, logger) -> None:
-    emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
-    logger.change_status("Triggered Hero/Champion ability")
-
-
-def check_for_champion_ability(a, b, c):
-    pixels = numpy.array([a, b, c])
+def is_hero_champion_ability_visible(emulator) -> bool:
+    iar = emulator.screenshot()
+    pixels = numpy.array([iar[462][324], iar[453][334], iar[462][336]])
     colors = numpy.array(
         [
             [215, 28, 223],
@@ -11712,6 +11679,31 @@ def check_for_champion_ability(a, b, c):
             return True
 
     return False
+
+
+def check_which_cards_are_available(emulator, check_side=False):
+    global battle_iar
+    battle_iar = emulator.screenshot()
+    card_exists_list = []
+
+    if check_side:
+        global play_side
+        _, play_side = switch_side()
+
+    for i, coords in enumerate(card_coords):
+        x_coords, y_coords = coords
+        iar_pixels = battle_iar[numpy.ix_(y_coords, x_coords)]
+        purple_pixels = numpy.all(numpy.abs(iar_pixels - purple_color) <= 30, axis=-1)
+        count = numpy.sum(purple_pixels)
+        if count >= 26:
+            card_exists_list.append(i)
+
+    return card_exists_list
+
+
+def trigger_hero_champion_ability(emulator, logger) -> None:
+    emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
+    logger.change_status("Triggered Hero/Champion ability")
 
 
 def identify_hand_cards(emulator, card_index):

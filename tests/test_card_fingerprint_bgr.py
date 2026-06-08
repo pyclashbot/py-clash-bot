@@ -45,7 +45,7 @@ def test_bot_uses_raw_bgr_screenshot() -> None:
 
 def test_bgr_path_identifies_hand() -> None:
     bgr = _load_bgr()
-    cd.check_which_cards_are_available(_BgrEmulator(bgr), False, False)
+    cd.check_which_cards_are_available(_BgrEmulator(bgr))
     for slot, expected in EXPECTED.items():
         corners = cd.get_all_pixel_data(None, slot)
         raw = cd.find_closest_card(corners)

@@ -9,6 +9,7 @@ from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
     get_play_coords_for_card,
+    is_hero_champion_ability_visible,
     switch_side,
     trigger_hero_champion_ability,
 )
@@ -189,8 +190,8 @@ def wait_for_elixir(
             )
             last_logged_second = elapsed_second
 
-        card_indices, ability_visible = check_which_cards_are_available(emulator, True, False)
-        if ability_visible:
+        card_indices = check_which_cards_are_available(emulator)
+        if is_hero_champion_ability_visible(emulator):
             if ability_available_since is None:
                 ability_available_since = time.time()
                 logger.change_status(
@@ -356,7 +357,7 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     # check which cards are available
     logger.change_status("Looking at which cards are available")
     available_card_check_start_time = time.time()
-    card_indices = check_which_cards_are_available(emulator, False, True)
+    card_indices = check_which_cards_are_available(emulator, check_side=True)
 
     if not card_indices:
         logger.change_status("No cards ready yet...")

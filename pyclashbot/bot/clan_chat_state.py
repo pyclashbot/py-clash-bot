@@ -353,7 +353,6 @@ def _recover_clan_chat_from_social(emulator, logger) -> bool:
 def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
     """Return to main from clan/social without generic wait (trophy check false-positives there)."""
     start = time.time()
-    last_social_tab_log_second = -1
     while time.time() - start < timeout:
         if check_if_on_clash_main_menu(emulator):
             return True
@@ -364,12 +363,9 @@ def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
             continue
 
         if check_if_on_social(emulator):
-            elapsed_second = int(time.time() - start)
-            if elapsed_second != last_social_tab_log_second:
-                logger.change_status("On Social tab — returning to main menu...")
-                last_social_tab_log_second = elapsed_second
             if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_MAIN):
-                interruptible_sleep(1)
+                logger.change_status("On Social tab — returning to main menu...")
+                interruptible_sleep(3)
             continue
 
         if (
