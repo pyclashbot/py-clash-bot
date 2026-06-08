@@ -465,6 +465,11 @@ class BlueStacksEmulatorController(AdbBasedController):
             conf = self._set_conf_value(conf, "bst.enable_adb_access", "1")
             changed = True
 
+        # Ensure balanced performance mode (0 = balanced)
+        if (self._get_conf_value(conf, "bst.mem_opt_mode") or "0") != "0":
+            conf = self._set_conf_value(conf, "bst.mem_opt_mode", "0")
+            changed = True
+
         # Ensure custom resolution entry exists
         new_conf = self._ensure_custom_resolution(conf, "418 x 633")
         if new_conf != conf:
@@ -479,6 +484,9 @@ class BlueStacksEmulatorController(AdbBasedController):
             f"bst.instance.{internal}.dpi": "160",
             f"bst.instance.{internal}.max_fps": "40",
             f"bst.instance.{internal}.custom_resolution_selected": "1",
+            f"bst.instance.{internal}.enable_high_fps": "0",
+            f"bst.instance.{internal}.enable_vsync": "0",
+            f"bst.instance.{internal}.enable_fps_display": "0",
         }
         if ensure_display:
             desired[f"bst.instance.{internal}.display_name"] = self.instance_name
