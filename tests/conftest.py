@@ -71,8 +71,7 @@ def _make_interactive_menu(config: pytest.Config):
 
     pytest swaps sys.stdin for a non-tty stub under capture, so the menu needs the
     real stdin briefly. We suspend global capture (in_=True) just around the prompt
-    and resume immediately — never on the cache/arg path, which avoids leaving
-    capture in a state that breaks pytest's own teardown reporting.
+    and resume immediately — never on the cache/arg path.
     """
 
     def menu(choices: list[str]) -> str | None:
@@ -99,11 +98,9 @@ def pytest_configure(config: pytest.Config) -> None:
     # works). Intentionally overwrites any user-supplied `-m` under --integration.
     config.option.markexpr = "emulator"
 
-    # No GUI/human here: controllers must fail fast on a not-ready emulator instead
-    # of waiting forever on a "Retry" prompt. Left set for the process lifetime —
-    # this is a dedicated integration run, never unset. TRANSITIONAL: this whole
-    # flag goes away once retry/prompt orchestration moves out of the adapters —
-    # see is_noninteractive() in pyclashbot/emulators/base.py.
+    # No GUI/human here: fail fast on a not-ready emulator instead of hanging on a
+    # "Retry" prompt. Set for the whole run (dedicated integration run, never unset).
+    # TRANSITIONAL — see is_noninteractive() in pyclashbot/emulators/base.py.
     os.environ["PYCLASHBOT_NONINTERACTIVE"] = "1"
 
     choices = _emulator_choices()

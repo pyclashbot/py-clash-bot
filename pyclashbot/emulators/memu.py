@@ -1206,8 +1206,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Calling self.restart(open_clash={open_clash}, start_time={start_time})")
 
             self.logger.change_status("Failed to skip ads, restarting...")
-            # TODO: lift retry/prompt orchestration out of the adapter into an application-layer
-            # port so restart() becomes a single attempt and callers own the retry loop.
+            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
             if is_noninteractive():
                 raise EmulatorNotReadyError("restart() failed to skip MEmu ads")
             return self.restart(open_clash=open_clash, start_time=start_time)
@@ -1240,8 +1239,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Calling self.restart(open_clash={open_clash}, start_time={start_time})")
 
             self.logger.change_status("VM size validation failed, restarting...")
-            # TODO: lift retry/prompt orchestration out of the adapter into an application-layer
-            # port so restart() becomes a single attempt and callers own the retry loop.
+            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
             if is_noninteractive():
                 raise EmulatorNotReadyError("restart() failed VM screen-size validation")
             return self.restart(open_clash=open_clash, start_time=start_time)
@@ -1379,8 +1377,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log("[RESTART] INITIATING RECURSIVE RESTART DUE TO TIMEOUT")
 
             self.logger.change_status("Timeout waiting for Clash Royale main menu — restarting...")
-            # TODO: lift retry/prompt orchestration out of the adapter into an application-layer
-            # port so restart() becomes a single attempt and callers own the retry loop.
+            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
             if is_noninteractive():
                 raise EmulatorNotReadyError("restart() timed out waiting for the Clash Royale main menu")
             return self.restart(open_clash=open_clash, start_time=start_time)

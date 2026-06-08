@@ -17,21 +17,15 @@ class EmulatorNotReadyError(RuntimeError):
 
 
 def is_noninteractive() -> bool:
-    """True when no GUI/human can resolve a setup prompt (e.g. the test harness).
+    """True when no GUI/human can resolve a setup prompt (e.g. the test harness);
+    controllers then raise EmulatorNotReadyError instead of looping on a "Retry"
+    click that never comes. Production never sets it, so its behavior is unchanged.
 
-    Controllers then raise EmulatorNotReadyError instead of looping on a "Retry"
-    click that will never come. Production never sets this, so its behavior is
-    unchanged.
-
-    TRANSITIONAL SCAFFOLDING — slated for full removal, env var and all. The retry
-    loops and human-in-the-loop "Retry" prompts currently embedded in the emulator
-    adapters are an application/domain concern, not an adapter concern. Once that
-    orchestration is lifted into an application-layer port (adapters become
-    "attempt once, return outcome / raise"; callers own the retry loop and decide
-    when to prompt), there is no in-adapter loop left to short-circuit:
-    PYCLASHBOT_NONINTERACTIVE, this function, and every `if is_noninteractive():`
-    guard (grep the TODO at the recursion sites) all delete themselves.
-    Do NOT build new permanent behavior on this flag.
+    TRANSITIONAL SCAFFOLDING — the env var, this function, and every
+    `if is_noninteractive():` guard (tagged `TODO(noninteractive)`) delete
+    themselves once retry/prompt orchestration is lifted out of the adapters into
+    an application-layer port (adapters become "attempt once, return outcome";
+    callers own the retry loop). Do NOT build new permanent behavior on this flag.
     """
     return os.environ.get("PYCLASHBOT_NONINTERACTIVE") == "1"
 

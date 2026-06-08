@@ -1,18 +1,22 @@
-"""Screenshot pipeline smoke: capture returns a valid, non-black frame.
+"""Screenshot smoke: capture returns a valid, non-black frame.
 
-The lone survivor of the old MEmu-specific suite, generalized to any backend via
-the shared emulator. A SUITE entry (not a standalone test) so it runs after the
-boot setup test rather than before it.
+A SUITE entry (not a standalone test) so it runs after boot/main-menu setup.
 """
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+if TYPE_CHECKING:
+    from pyclashbot.emulators.base import BaseEmulatorController
+    from pyclashbot.utils.logger import Logger
 
 _BLACK_THRESHOLD = 15.0
 
 
-def run_test(emulator, logger) -> tuple[bool, str]:
+def run_test(emulator: BaseEmulatorController, logger: Logger) -> tuple[bool, str]:
     frame = emulator.screenshot()
 
     if not isinstance(frame, np.ndarray):

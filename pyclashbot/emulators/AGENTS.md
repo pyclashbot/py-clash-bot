@@ -4,11 +4,14 @@
 
 ## Adding an emulator
 
-- Subclass `AdbBasedController` if ADB-based — then you only implement `adb(command, binary_output)` and `_check_app_installed(package)`; everything else is inherited (including the install-wait prompt loop). Otherwise subclass `BaseEmulatorController` and implement all abstract methods.
+- Subclass `AdbBasedController` if ADB-based — then you only implement `adb(command, binary_output)` and `_check_app_installed(package)`; everything else is inherited (including `is_app_installed`, the install-wait prompt loop, and the default `is_reachable()`). Otherwise subclass `BaseEmulatorController` and implement all abstract methods, including `is_app_installed(package) -> bool`.
+- `is_reachable() -> (ok, reason)` defaults to "a screenshot decodes to a non-empty array"; override it only if the backend exposes a truer liveness signal (MEmu checks VM running-state).
 - Take `logger` as the first `__init__` arg; set `supported_platforms`. `restart()` must leave Clash Royale on a main menu detectable by `check_if_on_clash_main_menu(self)`, else return `False` to trigger the retry loop.
 
 ## Gotchas
 
+- The Clash Royale package id lives in `base.py` as `CLASH_ROYALE_PACKAGE` — never re-inline the `"com.supercell.clashroyale"` string.
+- New boot/restart retry loops and install-wait prompts must honor `is_noninteractive()` (from `base.py`): when set, raise `EmulatorNotReadyError` instead of looping on a "Retry" no human will click — otherwise the test harness (`PYCLASHBOT_NONINTERACTIVE=1`) hangs. TRANSITIONAL scaffolding; don't build permanent behavior on it (see the `is_noninteractive()` docstring).
 - Screenshots are `screencap -p` → `cv2.imdecode` → **BGR** numpy, expected ~**419×633**; a size mismatch triggers retry/recovery. **Card fingerprints** use this BGR order as-is in `card_detection.py`. Some `state_detect` helpers flip to RGB via `[..., ::-1]` for pixel constants.
 - Platform-locked: MEmu & Google Play are **Windows-only**; BlueStacks is Win+macOS. Gate paths with `is_windows()`/`is_macos()` from `utils.platform`.
 - Render modes differ per emulator and are written to that emulator's config file then require stop→edit→restart (MEmu int 0/1; BlueStacks `dx`/`gl`/`vlcn`, macOS defaults `vlcn`; Google Play XML).
