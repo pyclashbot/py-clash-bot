@@ -362,21 +362,10 @@ class PyClashBotUI(ttk.Window):
         self._sync_job_extra_spinboxes()
         if self._job_toggle_checkbuttons:
             self._sync_all_job_toggle_appearances()
-        if running:
-            self._hide_action_button()
 
     def get_button_state(self) -> str:
         """Get the current button state: 'idle', 'running', or 'stopping'."""
         return self._button_state
-
-    def show_action_button(self, text: str, callback: Callable[[], None]) -> None:
-        self._action_callback = callback
-        self.action_btn.configure(text=text)
-        self.main_btn.grid_remove()
-        self.action_btn.grid()
-
-    def hide_action_button(self) -> None:
-        self._hide_action_button()
 
     def append_log(self, message: str) -> None:
         self.event_log.configure(state="normal")
@@ -587,12 +576,6 @@ class PyClashBotUI(ttk.Window):
         self.main_btn = ttk.Button(self._main_btn_row, text="Start", bootstyle="success")
         self.main_btn.grid(row=0, column=1, ipadx=ipadx, ipady=ipady)
         self._register_config_widget("main_btn", self.main_btn)
-
-        self.action_btn = ttk.Button(self._main_btn_row, text="Retry", bootstyle="secondary")
-        self.action_btn.grid(row=0, column=1, ipadx=ipadx, ipady=ipady)
-        self.action_btn.grid_remove()
-        self._action_callback: Callable[[], None] | None = None
-        self.action_btn.configure(command=self._on_action_pressed)
 
     def _create_jobs_tab(self) -> None:
         content = self._prepare_tab_page(self.jobs_tab)
@@ -1436,15 +1419,6 @@ class PyClashBotUI(ttk.Window):
 
         self._update_advanced_settings_visibility(selected_emulator)
         self.settings_container.update_idletasks()
-
-    def _hide_action_button(self) -> None:
-        self.action_btn.grid_remove()
-        self.main_btn.grid()
-
-    def _on_action_pressed(self) -> None:
-        if self._action_callback:
-            self._action_callback()
-        self._hide_action_button()
 
     def _on_open_logs_clicked(self) -> None:
         if self._open_logs_callback:

@@ -339,10 +339,3 @@ class AdbController(AdbBasedController):
 
         self.logger.change_status("Timeout waiting for Clash Royale main menu. Please check the device.")
         return False
-
-    # click() is now inherited from AdbBasedController
-    # swipe() is now inherited from AdbBasedController
-    # screenshot() is now inherited from AdbBasedController
-    # start_app() is now inherited from AdbBasedController
-    # _wait_for_clash_installation() is now inherited from AdbBasedController
-    # _retry_installation_check() is now inherited from AdbBasedController
