@@ -8,9 +8,6 @@ on exit (see backlog: "Fix select_mode end-on-main contract"), so this test
 adds its own wait between iterations.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
-
-Run directly:
-    py tests/clash-royale/jobs/test_select_battle_mode.py
 """
 
 from __future__ import annotations

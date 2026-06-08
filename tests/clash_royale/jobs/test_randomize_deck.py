@@ -3,9 +3,6 @@
 Begins on main, randomizes deck 2, ends on main.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
-
-Run directly:
-    py tests/clash-royale/jobs/test_randomize_deck.py
 """
 
 from __future__ import annotations

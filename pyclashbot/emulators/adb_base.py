@@ -7,7 +7,12 @@ from abc import ABC
 import cv2
 import numpy as np
 
-from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.emulators.base import (
+    CLASH_ROYALE_PACKAGE,
+    BaseEmulatorController,
+    EmulatorNotReadyError,
+    is_noninteractive,
+)
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import is_linux
 
@@ -182,6 +187,9 @@ class AdbBasedController(BaseEmulatorController, ABC):
 
         return result
 
+    def is_app_installed(self, package: str) -> bool:
+        return self._check_app_installed(package)
+
     def _check_app_installed(self, package_name: str) -> bool:
         """Check if an app is installed via ADB.
 
@@ -294,6 +302,9 @@ class AdbBasedController(BaseEmulatorController, ABC):
         Show a UI prompt and wait for the user to install the specified app.
         """
         self.current_package_name = package_name
+        if is_noninteractive():
+            raise EmulatorNotReadyError(f"{package_name} is not installed on the emulator")
+
         logger.warning("App %s not installed - waiting for user to install", package_name)
 
         if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
@@ -317,7 +328,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         """
         logger.debug("Retry clicked - checking for app installation")
 
-        package_name = getattr(self, "current_package_name", "com.supercell.clashroyale")
+        package_name = getattr(self, "current_package_name", CLASH_ROYALE_PACKAGE)
 
         if self._check_app_installed(package_name):
             self.installation_waiting = False

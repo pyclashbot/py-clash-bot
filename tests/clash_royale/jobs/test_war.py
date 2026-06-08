@@ -6,9 +6,6 @@ is a valid success path.
 
 Precondition: MEmu VM running, signed in to Clash Royale, in a clan that has the
 War tab visible, on main.
-
-Run directly:
-    py tests/clash_royale/jobs/test_war.py
 """
 
 from __future__ import annotations

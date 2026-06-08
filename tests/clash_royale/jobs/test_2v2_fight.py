@@ -5,9 +5,6 @@ end_fight_state) for Classic 2v2, ends on main.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
 Patience: a real 2v2 match takes minutes (and depends on matchmaking).
-
-Run directly:
-    py tests/clash-royale/jobs/test_2v2_fight.py
 """
 
 from __future__ import annotations

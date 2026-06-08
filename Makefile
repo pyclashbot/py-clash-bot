@@ -12,10 +12,12 @@ lint:
 test:
 	uv run pytest
 
-# Full emulator suite (clash jobs + memu infra), ordered, stop at first failure.
-# Needs a live emulator parked on the Clash main menu. EMULATOR defaults to memu.
+# Full live-emulator suite, ordered, stop at first failure. --integration flips the
+# default marker and selects a backend; the first SUITE tests boot the emulator and
+# launch Clash. Backend resolves from EMULATOR / a cached pick / interactive menu;
+# ADB_SERIAL is optional and sticky.
 test-emulator:
-	uv run pytest -m emulator -x --emulator $(or $(EMULATOR),memu)
+	uv run pytest -x -s --integration $(if $(EMULATOR),--emulator $(EMULATOR)) $(if $(ADB_SERIAL),--adb-serial $(ADB_SERIAL))
 
 test-all: test test-emulator
 

@@ -15,7 +15,12 @@ import psutil
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
-from pyclashbot.emulators.base import BaseEmulatorController
+from pyclashbot.emulators.base import (
+    CLASH_ROYALE_PACKAGE,
+    BaseEmulatorController,
+    EmulatorNotReadyError,
+    is_noninteractive,
+)
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -139,13 +144,12 @@ def verify_memu_installation():
 class MemuEmulatorController(BaseEmulatorController):
     supported_platforms = [Platform.WINDOWS]
 
-    def __init__(self, logger, render_mode: str = "directx", debug_mode=False):
+    def __init__(self, logger, render_mode: str = "directx"):
         """
         Initializes the MemuEmulatorController with a reference to PyMemuc and the selected VM index.
         Ensures only one VM with the given name exists.
         """
         self.logger = logger
-        self.debug_mode = debug_mode
         init_start_time = time.time()
         self.pmc = PyMemuc()
 
@@ -159,8 +163,6 @@ class MemuEmulatorController(BaseEmulatorController):
         self._initialize_valid_vm()
 
         self.logger.log(f"Initializing MemuEmulatorController took {str(time.time() - init_start_time)[:5]} seconds")
-        if self.debug_mode:
-            self.logger.log("You are using Debug MODE (NO RESTART, NO CONFIGURE)")
 
     def __del__(self):
         self.logger.log("Need to clear residual memu processes here")
@@ -188,13 +190,10 @@ class MemuEmulatorController(BaseEmulatorController):
 
         self.vm_index = vm_index
 
-        if not self.debug_mode:
-            self.logger.log("Configuring the vm...")
-            self.configure()
-            self.logger.log("Booting the vm...")
-            self.restart()
-        else:
-            self.logger.log("Debug mode enabled - skipping configure and restart")
+        self.logger.log("Configuring the vm...")
+        self.configure()
+        self.logger.log("Booting the vm...")
+        self.restart()
 
     def _set_screen_size(self, width, height):
         self.pmc.send_adb_command_vm(
@@ -1131,8 +1130,7 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("[RESTART] Logger status updated to: 'Configuring VM settings...'")
 
         config_start = time.time()
-        if not self.debug_mode:
-            self.configure()  # This will do its own verbose configuration
+        self.configure()  # This will do its own verbose configuration
         config_end = time.time()
 
         if debug_restart:
@@ -1208,6 +1206,9 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Calling self.restart(open_clash={open_clash}, start_time={start_time})")
 
             self.logger.change_status("Failed to skip ads, restarting...")
+            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
+            if is_noninteractive():
+                raise EmulatorNotReadyError("restart() failed to skip MEmu ads")
             return self.restart(open_clash=open_clash, start_time=start_time)
 
         if debug_restart:
@@ -1238,6 +1239,9 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Calling self.restart(open_clash={open_clash}, start_time={start_time})")
 
             self.logger.change_status("VM size validation failed, restarting...")
+            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
+            if is_noninteractive():
+                raise EmulatorNotReadyError("restart() failed VM screen-size validation")
             return self.restart(open_clash=open_clash, start_time=start_time)
 
         if debug_restart:
@@ -1254,11 +1258,11 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.change_status("Starting Clash Royale...")
             if debug_restart:
                 self.logger.log("[RESTART] Logger status updated to: 'Starting Clash Royale...'")
-                self.logger.log("[RESTART] About to call self.start_app('com.supercell.clashroyale')")
+                self.logger.log(f"[RESTART] About to call self.start_app({CLASH_ROYALE_PACKAGE!r})")
 
             clash_start_time = time.time()
             try:
-                app_start_result = self.start_app("com.supercell.clashroyale")
+                app_start_result = self.start_app(CLASH_ROYALE_PACKAGE)
                 clash_start_end = time.time()
 
                 if debug_clash:
@@ -1373,6 +1377,9 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log("[RESTART] INITIATING RECURSIVE RESTART DUE TO TIMEOUT")
 
             self.logger.change_status("Timeout waiting for Clash Royale main menu — restarting...")
+            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
+            if is_noninteractive():
+                raise EmulatorNotReadyError("restart() timed out waiting for the Clash Royale main menu")
             return self.restart(open_clash=open_clash, start_time=start_time)
 
         # If not opening Clash, we're done
@@ -1487,9 +1494,29 @@ class MemuEmulatorController(BaseEmulatorController):
         self.logger.log("Successfully initialized Clash app")
         return True
 
+    def is_reachable(self) -> tuple[bool, str]:
+        # MEmu exposes VM state directly, so check it rather than relying on a
+        # screenshot — a stopped VM still has a window that screenshots blank.
+        try:
+            vm = next((v for v in self.pmc.list_vm_info() if v["index"] == self.vm_index), None)
+        except Exception as e:
+            return (False, f"list_vm_info raised {type(e).__name__}: {e}")
+        if vm is None:
+            return (False, f"VM idx={self.vm_index} does not exist")
+        if not vm["running"]:
+            return (False, f"VM {vm.get('title', self.vm_index)!r} is not running")
+        return super().is_reachable()
+
+    def is_app_installed(self, package: str) -> bool:
+        installed_apps = self.pmc.get_app_info_list_vm(vm_index=self.vm_index)
+        return any(package in app for app in installed_apps)
+
     def _wait_for_clash_installation(self, package_name: str):
         """Wait for user to install Clash Royale using the logger action system"""
         self.current_package_name = package_name  # Store for retry logic
+        if is_noninteractive():
+            raise EmulatorNotReadyError(f"{package_name} is not installed on the emulator")
+
         self.logger.show_temporary_action(
             message=f"{package_name} not installed - please install it and complete tutorial",
             action_text="Retry",
@@ -1512,7 +1539,7 @@ class MemuEmulatorController(BaseEmulatorController):
         self.logger.change_status("Checking for Clash Royale installation...")
 
         # Check if app is now installed
-        package_name = getattr(self, "current_package_name", "com.supercell.clashroyale")
+        package_name = getattr(self, "current_package_name", CLASH_ROYALE_PACKAGE)
         installed_apps = self.pmc.get_app_info_list_vm(vm_index=self.vm_index)
         found = [app for app in installed_apps if package_name in app]
 

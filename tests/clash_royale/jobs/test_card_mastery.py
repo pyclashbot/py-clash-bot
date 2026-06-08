@@ -5,9 +5,6 @@ Begins on main, runs the card-mastery collection flow, ends on main. A no-op
 means it navigated cleanly.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
-
-Run directly:
-    py tests/clash-royale/jobs/test_card_mastery.py
 """
 
 from __future__ import annotations

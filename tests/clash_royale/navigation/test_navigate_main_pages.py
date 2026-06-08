@@ -10,9 +10,6 @@ Precondition: MEmu VM `pyclashbot-136` running, signed in to Clash Royale, and
 the user has parked the emulator on the main menu.
 
 Postcondition: ends on main menu (Eulerian circuit terminates at the start).
-
-Run directly:
-    py tests/clash-royale/test_navigate_main_pages.py
 """
 
 from __future__ import annotations

@@ -6,9 +6,6 @@ modules in tandem.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
 Patience: a real 1v1 match takes minutes.
-
-Run directly:
-    py tests/clash-royale/jobs/test_1v1_fight.py
 """
 
 from __future__ import annotations

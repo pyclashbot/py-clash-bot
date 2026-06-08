@@ -5,9 +5,6 @@ Begins on main, runs the upgrade-cards flow, ends on main. A no-op upgrade
 means it navigated cleanly.
 
 Precondition: MEmu VM running, signed in to Clash Royale, on the main menu.
-
-Run directly:
-    py tests/clash-royale/jobs/test_upgrade.py
 """
 
 from __future__ import annotations
