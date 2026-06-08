@@ -12,9 +12,9 @@ and resolves a backend.
   committed fixtures, no emulator (e.g. `test_card_fingerprint_bgr.py`,
   `test_emulator_resolution.py`).
 - `clash_royale/` — live end-to-end suite: one parametrized test
-  (`test_jobs.py`) over the ordered `SUITE`. The emulator is booted in fixture
-  construction; the first two entries are setup (app-installed check, screenshot
-  smoke) and the rest are jobs. See `clash_royale/readme.md`.
+  (`test_jobs.py`) over the ordered `SUITE`. The emulator is booted by `restart()`
+  in the fixture (via `attach_emulator`); the first two entries are setup
+  (app-installed check, screenshot smoke) and the rest are jobs. See `clash_royale/readme.md`.
 - `_emulator_support.py` — not a test module: backend resolution and
   `attach_emulator()` behind the `emulator` fixture (cross-run persistence is
   pytest's `config.cache`, wired in `conftest.py`).
@@ -36,12 +36,13 @@ and resolves a backend.
 
 ## Conventions
 
-- The session-scoped `emulator` fixture only constructs the controller; it
-  `pytest.exit`s the whole run if construction fails. Construction launches Clash
-  and reaches the main menu — MEmu/BlueStacks/Google Play boot the VM, while ADB
-  attaches to an already-running device and (re)launches Clash. Either way a
+- The session-scoped `emulator` fixture attaches via `attach_emulator`, which
+  constructs the controller (cheap discovery/config) then calls `restart()` to boot
+  it; it `pytest.exit`s the whole run if either step fails. `restart()` launches
+  Clash and reaches the main menu — MEmu/BlueStacks/Google Play boot the VM, while
+  ADB attaches to an already-running device and (re)launches Clash. Either way a
   not-ready emulator (app missing, signed out, no main menu) fails fast there with
-  a clear `EmulatorNotReadyError`-based message rather than hanging on a GUI prompt
+  a clear `EmulatorNotReadyError` rather than hanging on a GUI prompt
   (`PYCLASHBOT_NONINTERACTIVE=1`, set in integration mode).
 - A clash entry is a `run_test(emulator, logger) -> (bool, str)`. Add one by
   appending its `run_test` to `SUITE` in `test_jobs.py`; entries run with `-x` and

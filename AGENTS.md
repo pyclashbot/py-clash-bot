@@ -5,7 +5,7 @@ A Clash Royale automation bot: drives an Android emulator via ADB and acts on th
 ## Commands
 
 Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`build-dmg`, all via `uv`); `CONTRIBUTING.md` has dev setup. Non-obvious bits those don't tell you:
-- Tests are **pytest**, offline by default (`addopts = -m "not emulator"`). Hardware tests carry `@pytest.mark.emulator`: `make test` runs only offline tests; `make test-emulator` runs the live-emulator suite. `--integration` flips the marker and resolves a backend (`--emulator`/cache/menu, platform-gated); the first SUITE tests boot the emulator themselves. See `tests/AGENTS.md`.
+- Tests are **pytest**, offline by default (`addopts = -m "not emulator"`). Hardware tests carry `@pytest.mark.emulator`: `make test` runs only offline tests; `make test-emulator` runs the live-emulator suite. `--integration` flips the marker and resolves a backend (`--emulator`/cache/menu, platform-gated); the `emulator` fixture boots the emulator via `restart()`. See `tests/AGENTS.md`.
 - The clash suite is one parametrized test (`tests/clash_royale/test_jobs.py`) over an ordered `SUITE` list — add a job by appending its `run_test` to `SUITE`. Shared emulator + backend resolution live in `tests/conftest.py` + `tests/_emulator_support.py`. Select with `-k`, stop at first failure with `-x`.
 - `tests/clash_royale/` needs a live emulator and **does not run in CI** (CI only builds artifacts + runs pre-commit).
 - MSI build = cx-freeze, DMG = pyinstaller; both inject the real version (see Cross-cutting rules).

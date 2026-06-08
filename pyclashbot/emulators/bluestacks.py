@@ -10,7 +10,7 @@ from os.path import normpath
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
-from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, is_noninteractive
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
 
@@ -58,12 +58,6 @@ class BlueStacksEmulatorController(AdbBasedController):
 
         self.render_settings = render_settings or {}
 
-        # Clean up our target instance only
-        self.stop()
-        while self._is_this_instance_running():  # Because Windows: I'm closing, also Windows: isn't closing
-            self.stop()
-            interruptible_sleep(1)
-
         # Discover install
         install_base = self._find_install_location()
         self.base_folder = install_base
@@ -96,26 +90,16 @@ class BlueStacksEmulatorController(AdbBasedController):
             print(f"[Bluestacks 5] bs_conf_path: {self.bs_conf_path}")
             print(f"[Bluestacks 5] mim_meta_path: {self.mim_meta_path}")
 
-        # Resolve instance and its ADB port
+        # Resolve instance and its ADB port (discovery only — restart() does the booting)
         self._ensure_managed_instance()
         if not self.instance_port:
-            raise RuntimeError("No ADB port found for the target instance in bluestacks.conf.")
+            raise EmulatorNotReadyError("No ADB port found for the target instance in bluestacks.conf.")
 
         if self._user_device_serial:
             self.device_serial: str = self._user_device_serial
             self.logger.log(f"[BlueStacks 5] Using user-specified device: {self.device_serial}")
         else:
             self.device_serial: str = f"127.0.0.1:{self.instance_port}"
-
-        # Reset our private adb server
-        self._reset_adb_server()
-
-        # Boot flow
-        while self.restart() is False:
-            if is_noninteractive():
-                raise EmulatorNotReadyError("restart() could not reach the Clash Royale main menu")
-            print("[BlueStacks 5] Restart failed, retrying...")
-            interruptible_sleep(2)
 
     @staticmethod
     def _find_install_location() -> str:
@@ -610,8 +594,19 @@ class BlueStacksEmulatorController(AdbBasedController):
         start_ts = time.time()
         self.logger.change_status("Starting BlueStacks 5 emulator restart process...")
 
+        # Clean up our target instance only (Windows can be slow to actually close)
         self.logger.change_status("Stopping pyclashbot BlueStacks 5 instance...")
         self.stop()
+        stop_deadline = time.time() + 60
+        while self._is_this_instance_running():
+            if time.time() > stop_deadline:
+                self.logger.change_status("Timeout waiting for the pyclashbot instance to stop")
+                raise EmulatorNotReadyError("BlueStacks 5 restart() timed out waiting for the instance to stop")
+            self.stop()
+            interruptible_sleep(1)
+
+        # Reset our private adb server before launching
+        self._reset_adb_server()
 
         self.logger.change_status(f"Launching BlueStacks 5 ({self.instance_name})...")
         self.start()
@@ -621,40 +616,29 @@ class BlueStacksEmulatorController(AdbBasedController):
         t0 = time.time()
         while not self._is_this_instance_running():
             if time.time() - t0 > boot_timeout:
-                self.logger.change_status("Timeout waiting for pyclashbot instance to start - retrying...")
-                return False
+                self.logger.change_status("Timeout waiting for the pyclashbot instance to start")
+                raise EmulatorNotReadyError("BlueStacks 5 restart() timed out waiting for the instance to start")
             interruptible_sleep(0.5)
 
         # Refresh port after boot
         self._refresh_instance_port()
         if not self.device_serial:
             self.logger.change_status("No ADB port resolved for this instance.")
-            return False
+            raise EmulatorNotReadyError("BlueStacks 5 restart() could not resolve an ADB port for the instance")
 
         # Connect ADB scoped to our device
         self.logger.change_status(f"Connecting ADB to {self.device_serial} ...")
         t1 = time.time()
         while not self._connect():
             if time.time() - t1 > 60:
-                self.logger.change_status("Failed to connect ADB to BlueStacks 5 - retrying...")
-                return False  # if this makes issues big problems
+                self.logger.change_status("Failed to connect ADB to BlueStacks 5")
+                raise EmulatorNotReadyError("BlueStacks 5 restart() could not connect ADB to the instance")
             interruptible_sleep(1)
 
-        # Launch Clash Royale
+        # Launch Clash Royale (start_app raises EmulatorNotReadyError if it isn't installed)
         clash_pkg = CLASH_ROYALE_PACKAGE
         self.logger.change_status("Launching Clash Royale...")
-
-        # Use inherited start_app which handles installation check
-        if not self.start_app(clash_pkg):
-            # This means app is not installed and user is being prompted.
-            # We must wait for the installation loop (handled by base class) to finish
-            # The base class's _wait_for_clash_installation will block until
-            # the user clicks 'Retry' and the app is found.
-            self.logger.log("Waiting for app installation...")
-
-            # After _wait_for_clash_installation returns True, we need to manually
-            # re-trigger the app start, because the original call failed.
-            self.start_app(clash_pkg)
+        self.start_app(clash_pkg)
 
         interruptible_sleep(5)
 
@@ -669,8 +653,8 @@ class BlueStacksEmulatorController(AdbBasedController):
                 return True
             self.click(35, 405)  # Use inherited click
 
-        self.logger.change_status("Timeout waiting for Clash Royale main menu — retrying...")
-        return False
+        self.logger.change_status("Timeout waiting for Clash Royale main menu")
+        raise EmulatorNotReadyError("BlueStacks 5 restart() timed out waiting for the Clash Royale main menu")
 
 
 if __name__ == "__main__":

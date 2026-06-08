@@ -9,7 +9,7 @@ import psutil
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
-from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, is_noninteractive
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -32,12 +32,10 @@ class GooglePlayEmulatorController(AdbBasedController):
         except Exception:
             return None
 
-    def __init__(self, logger, render_settings: dict = {}, device_serial: str | None = None):
+    def __init__(self, logger, render_settings: dict | None = None, device_serial: str | None = None):
         self.logger = logger
-        # clear existing stuff
-        self.stop()
-        while self._is_emulator_running():
-            self.stop()
+        # Discovery/config only — no boot. restart() owns the boot sequence.
+        self.render_settings = render_settings or {}
 
         # search for base installation folder
         self.base_folder = self._find_install_location()
@@ -73,21 +71,9 @@ class GooglePlayEmulatorController(AdbBasedController):
         if DEBUG:
             print(f"[INIT DEBUG] Device serial set to: {self.device_serial}")
 
-        # configure the emulator via file
-        self._configure_settings(render_settings)
-
         # emulator config
         self.google_play_emulator_process_name = "Google Play Games on PC Emulator"
         self.expected_dims = (419, 633)
-
-        # boot the emulator
-        # self.restart()
-
-        while self.restart() is False:
-            if is_noninteractive():
-                raise EmulatorNotReadyError("restart() could not reach the Clash Royale main menu")
-            print("Restart failed, trying again...")
-            interruptible_sleep(2)
 
     def _get_settings_configuration(self):
         """
@@ -354,20 +340,26 @@ class GooglePlayEmulatorController(AdbBasedController):
         while self._is_emulator_running():
             self.stop()
 
+        # write render settings to the XML config while the emulator is stopped
+        self._configure_settings(self.render_settings)
+
         # boot emulator
         self.logger.change_status("Starting Google Play emulator...")
         print("Starting emulator...")
+        boot_deadline = time.time() + 120
         while not self._is_emulator_running():
+            if time.time() > boot_deadline:
+                self.logger.change_status("Timed out waiting for the Google Play emulator process to start.")
+                raise EmulatorNotReadyError("Google Play restart() timed out waiting for the emulator to start")
             self.start()
             print("Waiting for google play emulator to start...")
-            self.start()
             interruptible_sleep(0.3)
 
         # wait for adb readiness (locale-agnostic) once the VM process is up
         self.logger.change_status("Waiting for Google Play emulator to finish starting...")
         if not self._wait_for_adb_ready(timeout=120):
             self.logger.change_status("Timed out waiting for Google Play emulator ADB to become ready.")
-            return False
+            raise EmulatorNotReadyError("Google Play restart() timed out waiting for ADB to become ready")
 
         # Allow emulator services/UI to settle before manipulating display or launching the app.
         interruptible_sleep(5)
@@ -386,7 +378,7 @@ class GooglePlayEmulatorController(AdbBasedController):
                 f"[!] Fatal error: Emulator screen size is not {self.expected_dims}. "
                 "Please check the emulator settings."
             )
-            return False
+            raise EmulatorNotReadyError(f"Google Play restart() could not set screen size to {self.expected_dims}")
 
         # boot clash
         self.logger.change_status("Launching Clash Royale application...")
@@ -396,10 +388,8 @@ class GooglePlayEmulatorController(AdbBasedController):
         for i in range(start_app_count):
             self.logger.change_status(f"Starting Clash Royale (attempt {i + 1}/{start_app_count})...")
             print(f"Starting clash app (attempt {i + 1}/{start_app_count})...")
-            if not self.start_app(clash_royale_name) and i == 0:
-                # App not installed, start_app triggered the wait.
-                # We just wait for it to return, then the loop will retry.
-                self.logger.log("App not installed. Waiting for user...")
+            # start_app raises EmulatorNotReadyError if Clash Royale isn't installed
+            self.start_app(clash_royale_name)
             interruptible_sleep(1)
 
         # wait for clash main to appear
@@ -410,12 +400,9 @@ class GooglePlayEmulatorController(AdbBasedController):
         interruptible_sleep(12)
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
-                self.logger.change_status("Timeout waiting for Clash Royale main menu - restarting...")
+                self.logger.change_status("Timeout waiting for Clash Royale main menu")
                 self.logger.log("[!] Fatal error: Timeout reached while waiting for clash main menu to appear.")
-                # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
-                if is_noninteractive():
-                    raise EmulatorNotReadyError("restart() timed out waiting for the Clash Royale main menu")
-                return self.restart()
+                raise EmulatorNotReadyError("Google Play restart() timed out waiting for the Clash Royale main menu")
 
             # if found main in time, break
             if check_if_on_clash_main_menu(self) is True:

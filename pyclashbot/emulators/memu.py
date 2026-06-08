@@ -19,7 +19,6 @@ from pyclashbot.emulators.base import (
     CLASH_ROYALE_PACKAGE,
     BaseEmulatorController,
     EmulatorNotReadyError,
-    is_noninteractive,
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
@@ -168,32 +167,26 @@ class MemuEmulatorController(BaseEmulatorController):
         self.logger.log("Need to clear residual memu processes here")
 
     def _initialize_valid_vm(self):
-        # no timeout here bc if this fails, then something fatal is wrong
+        # Side-effect-light discovery: find-or-create the VM so self.vm_index is
+        # known. No configure/boot here — restart() owns the boot sequence.
         self.logger.log("Initializing MEmu VM...")
-        vm_index = -1
-        while 1:
-            # check for a valid vm
-            self.logger.log("Checking for an existing valid vm...")
-            vm_index = self._get_clashbot_vm_index()
-            if vm_index is not False:
-                self.logger.log(f"[+] Found {EMULATOR_NAME} VM: {vm_index}")
-                self.vm_index = vm_index
-                break
 
-            # if none found, create a new one
-            self.logger.log(f"No existing {EMULATOR_NAME} (Android 13) VM found, creating one...")
-            vm_index = self.create()
-            if vm_index != -1:
-                self._rename_vm(EMULATOR_NAME)
-                self.logger.log(f"[+] Created a new vm: {vm_index}")
-                break
+        # check for a valid vm
+        self.logger.log("Checking for an existing valid vm...")
+        vm_index = self._get_clashbot_vm_index()
+        if vm_index is not False:
+            self.logger.log(f"[+] Found {EMULATOR_NAME} VM: {vm_index}")
+            self.vm_index = vm_index
+            return
 
+        # if none found, create one (a single attempt — no infinite loop)
+        self.logger.log(f"No existing {EMULATOR_NAME} (Android 13) VM found, creating one...")
+        vm_index = self.create()
+        if vm_index == -1:
+            raise EmulatorNotReadyError(f"Failed to create a {EMULATOR_NAME} MEmu VM")
+        self._rename_vm(EMULATOR_NAME)
+        self.logger.log(f"[+] Created a new vm: {vm_index}")
         self.vm_index = vm_index
-
-        self.logger.log("Configuring the vm...")
-        self.configure()
-        self.logger.log("Booting the vm...")
-        self.restart()
 
     def _set_screen_size(self, width, height):
         self.pmc.send_adb_command_vm(
@@ -1025,15 +1018,11 @@ class MemuEmulatorController(BaseEmulatorController):
 
         return True
 
-    def restart(self, open_clash=True, start_time=None):
+    def restart(self) -> bool:
         """Restart the emulator with full configuration and app startup sequence.
 
-        Args:
-            open_clash (bool): Whether to start Clash Royale after emulator boot
-            start_time (float): Start time for timing calculations
-
-        Returns:
-            bool: True if restart successful, False otherwise
+        Returns True once Clash Royale is on the main menu; raises
+        EmulatorNotReadyError on any not-ready failure (never returns False).
         """
         debug_restart = DEBUG_CONFIGURATION.get("restart", False)
         debug_vm_ops = DEBUG_CONFIGURATION.get("vm_operations", False)
@@ -1043,20 +1032,12 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("[RESTART] =====================================================")
             self.logger.log("[RESTART] INITIALIZING RESTART METHOD")
             self.logger.log("[RESTART] =====================================================")
-            self.logger.log("[RESTART] Method parameters:")
-            self.logger.log(f"[RESTART]   open_clash: {open_clash} (type: {type(open_clash)})")
-            self.logger.log(f"[RESTART]   start_time: {start_time} (type: {type(start_time)})")
             self.logger.log("[RESTART] Debug flags active:")
             self.logger.log(f"[RESTART]   debug_restart: {debug_restart}")
             self.logger.log(f"[RESTART]   debug_vm_ops: {debug_vm_ops}")
             self.logger.log(f"[RESTART]   debug_clash: {debug_clash}")
 
-        if start_time is None:
-            start_time = time.time()
-            if debug_restart:
-                self.logger.log(f"[RESTART] start_time was None, set to current time: {start_time}")
-        elif debug_restart:
-            self.logger.log(f"[RESTART] Using provided start_time: {start_time}")
+        start_time = time.time()
 
         # Validate vm_index with extreme verbosity
         if debug_restart:
@@ -1074,9 +1055,7 @@ class MemuEmulatorController(BaseEmulatorController):
             error_msg = "[!] Fatal error: No valid vm_index in MemuEmulatorController.restart()"
             self.logger.change_status(error_msg)
             self.logger.log(error_msg)
-            if debug_restart:
-                self.logger.log("[RESTART] VM INDEX VALIDATION FAILED - RETURNING FALSE")
-            return False
+            raise EmulatorNotReadyError("MEmu restart() has no valid vm_index")
 
         if debug_restart:
             self.logger.log("[RESTART] ✓ VM INDEX VALIDATION PASSED")
@@ -1089,7 +1068,6 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log("[RESTART] Restart sequence parameters:")
             self.logger.log(f"[RESTART]   VM Index: {self.vm_index}")
             self.logger.log(f"[RESTART]   Render Mode: {self.render_mode}")
-            self.logger.log(f"[RESTART]   Open Clash: {open_clash}")
             self.logger.log(f"[RESTART]   Start Time: {start_time}")
             self.logger.log(f"[RESTART]   Current Time: {time.time()}")
 
@@ -1176,10 +1154,10 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Exception type: {type(e)}")
                 self.logger.log(f"[RESTART] Exception message: {e}")
                 self.logger.log(f"[RESTART] VM start attempt duration: {vm_start_end - vm_start_time:.3f}s")
-                self.logger.log("[RESTART] RETURNING FALSE DUE TO VM START FAILURE")
+                self.logger.log("[RESTART] RAISING DUE TO VM START FAILURE")
 
             self.logger.change_status(error_msg)
-            return False
+            raise EmulatorNotReadyError(f"MEmu restart() failed to start the VM: {e}") from e
 
         # Step 4: Skip ads with extreme verbosity
         if debug_restart or DEBUG_CONFIGURATION.get("ads", False):
@@ -1202,14 +1180,10 @@ class MemuEmulatorController(BaseEmulatorController):
 
         if not ads_result:
             if debug_restart:
-                self.logger.log("[RESTART] ✗ AD SKIP FAILED - INITIATING RECURSIVE RESTART")
-                self.logger.log(f"[RESTART] Calling self.restart(open_clash={open_clash}, start_time={start_time})")
+                self.logger.log("[RESTART] ✗ AD SKIP FAILED")
 
-            self.logger.change_status("Failed to skip ads, restarting...")
-            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
-            if is_noninteractive():
-                raise EmulatorNotReadyError("restart() failed to skip MEmu ads")
-            return self.restart(open_clash=open_clash, start_time=start_time)
+            self.logger.change_status("Failed to skip MEmu ads")
+            raise EmulatorNotReadyError("MEmu restart() failed to skip the startup ads")
 
         if debug_restart:
             self.logger.log("[RESTART] ✓ SUCCESSFULLY SKIPPED ADS")
@@ -1235,166 +1209,137 @@ class MemuEmulatorController(BaseEmulatorController):
 
         if not size_valid:
             if debug_restart:
-                self.logger.log("[RESTART] ✗ SCREEN SIZE VALIDATION FAILED - INITIATING RECURSIVE RESTART")
-                self.logger.log(f"[RESTART] Calling self.restart(open_clash={open_clash}, start_time={start_time})")
+                self.logger.log("[RESTART] ✗ SCREEN SIZE VALIDATION FAILED")
 
-            self.logger.change_status("VM size validation failed, restarting...")
-            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
-            if is_noninteractive():
-                raise EmulatorNotReadyError("restart() failed VM screen-size validation")
-            return self.restart(open_clash=open_clash, start_time=start_time)
+            self.logger.change_status("VM size validation failed")
+            raise EmulatorNotReadyError("MEmu restart() failed VM screen-size validation")
 
         if debug_restart:
             self.logger.log("[RESTART] ✓ SCREEN SIZE VALIDATION PASSED")
 
-        # Step 6: Start Clash Royale if requested with extreme verbosity
-        if open_clash:
-            if debug_restart or debug_clash:
-                self.logger.log("[RESTART] =====================================================")
-                self.logger.log("[RESTART] STEP 6: STARTING CLASH ROYALE")
-                self.logger.log("[RESTART] =====================================================")
-                self.logger.log("[RESTART] open_clash is True, proceeding with Clash Royale startup")
+        # Step 6: Start Clash Royale
+        if debug_restart or debug_clash:
+            self.logger.log("[RESTART] =====================================================")
+            self.logger.log("[RESTART] STEP 6: STARTING CLASH ROYALE")
+            self.logger.log("[RESTART] =====================================================")
 
-            self.logger.change_status("Starting Clash Royale...")
-            if debug_restart:
-                self.logger.log("[RESTART] Logger status updated to: 'Starting Clash Royale...'")
-                self.logger.log(f"[RESTART] About to call self.start_app({CLASH_ROYALE_PACKAGE!r})")
+        self.logger.change_status("Starting Clash Royale...")
+        if debug_restart:
+            self.logger.log("[RESTART] Logger status updated to: 'Starting Clash Royale...'")
+            self.logger.log(f"[RESTART] About to call self.start_app({CLASH_ROYALE_PACKAGE!r})")
 
-            clash_start_time = time.time()
-            try:
-                app_start_result = self.start_app(CLASH_ROYALE_PACKAGE)
-                clash_start_end = time.time()
-
-                if debug_clash:
-                    self.logger.log(f"[RESTART] self.start_app() returned: {app_start_result}")
-                    self.logger.log(f"[RESTART] Clash start duration: {clash_start_end - clash_start_time:.3f}s")
-
-                if not app_start_result:
-                    if debug_restart:
-                        self.logger.log("[RESTART] ✗ CLASH ROYALE START FAILED")
-                        self.logger.log("[RESTART] RETURNING FALSE DUE TO CLASH START FAILURE")
-                    return False
-
-                if debug_restart:
-                    self.logger.log("[RESTART] ✓ CLASH ROYALE STARTED SUCCESSFULLY")
-
-            except Exception as e:
-                clash_start_end = time.time()
-                if debug_restart:
-                    self.logger.log("[RESTART] ✗ EXCEPTION DURING CLASH ROYALE START")
-                    self.logger.log(f"[RESTART] Exception type: {type(e)}")
-                    self.logger.log(f"[RESTART] Exception message: {e}")
-                    self.logger.log(
-                        f"[RESTART] Clash start attempt duration: {clash_start_end - clash_start_time:.3f}s"
-                    )
-                return False
-
-            # Step 7: Wait for Clash main menu with extreme verbosity
-            if debug_restart or debug_clash:
-                self.logger.log("[RESTART] =====================================================")
-                self.logger.log("[RESTART] STEP 7: WAITING FOR CLASH ROYALE MAIN MENU")
-                self.logger.log("[RESTART] =====================================================")
-
-            self.logger.change_status("Waiting for Clash Royale main menu...")
-            if debug_restart:
-                self.logger.log("[RESTART] Logger status updated to: 'Waiting for Clash Royale main menu...'")
-
-            clash_main_wait_start_time = time.time()
-            clash_main_wait_timeout = 240  # seconds
+        clash_start_time = time.time()
+        try:
+            # start_app raises EmulatorNotReadyError if Clash Royale isn't installed
+            self.start_app(CLASH_ROYALE_PACKAGE)
+            clash_start_end = time.time()
 
             if debug_clash:
-                self.logger.log("[RESTART] Wait parameters:")
-                self.logger.log(f"[RESTART]   wait_start_time: {clash_main_wait_start_time}")
-                self.logger.log(f"[RESTART]   wait_timeout: {clash_main_wait_timeout}s")
-                self.logger.log(f"[RESTART]   wait_end_time: {clash_main_wait_start_time + clash_main_wait_timeout}")
-                self.logger.log("[RESTART] Initial 12-second wait before checking main menu...")
+                self.logger.log(f"[RESTART] Clash start duration: {clash_start_end - clash_start_time:.3f}s")
 
-            interruptible_sleep(12)  # Initial wait
+            if debug_restart:
+                self.logger.log("[RESTART] ✓ CLASH ROYALE STARTED SUCCESSFULLY")
+
+        except EmulatorNotReadyError:
+            raise
+        except Exception as e:
+            clash_start_end = time.time()
+            if debug_restart:
+                self.logger.log("[RESTART] ✗ EXCEPTION DURING CLASH ROYALE START")
+                self.logger.log(f"[RESTART] Exception type: {type(e)}")
+                self.logger.log(f"[RESTART] Exception message: {e}")
+                self.logger.log(f"[RESTART] Clash start attempt duration: {clash_start_end - clash_start_time:.3f}s")
+            raise EmulatorNotReadyError(f"MEmu restart() failed to start Clash Royale: {e}") from e
+
+        # Step 7: Wait for Clash main menu with extreme verbosity
+        if debug_restart or debug_clash:
+            self.logger.log("[RESTART] =====================================================")
+            self.logger.log("[RESTART] STEP 7: WAITING FOR CLASH ROYALE MAIN MENU")
+            self.logger.log("[RESTART] =====================================================")
+
+        self.logger.change_status("Waiting for Clash Royale main menu...")
+        if debug_restart:
+            self.logger.log("[RESTART] Logger status updated to: 'Waiting for Clash Royale main menu...'")
+
+        clash_main_wait_start_time = time.time()
+        clash_main_wait_timeout = 240  # seconds
+
+        if debug_clash:
+            self.logger.log("[RESTART] Wait parameters:")
+            self.logger.log(f"[RESTART]   wait_start_time: {clash_main_wait_start_time}")
+            self.logger.log(f"[RESTART]   wait_timeout: {clash_main_wait_timeout}s")
+            self.logger.log(f"[RESTART]   wait_end_time: {clash_main_wait_start_time + clash_main_wait_timeout}")
+            self.logger.log("[RESTART] Initial 12-second wait before checking main menu...")
+
+        interruptible_sleep(12)  # Initial wait
+
+        if debug_clash:
+            self.logger.log("[RESTART] Initial wait complete, starting main menu detection loop...")
+
+        loop_iteration = 0
+        while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
+            loop_iteration += 1
+            current_time = time.time()
+            elapsed_wait = current_time - clash_main_wait_start_time
+            remaining_time = clash_main_wait_timeout - elapsed_wait
 
             if debug_clash:
-                self.logger.log("[RESTART] Initial wait complete, starting main menu detection loop...")
+                self.logger.log(f"[RESTART] Main menu wait loop iteration {loop_iteration}")
+                self.logger.log(f"[RESTART]   Current time: {current_time}")
+                self.logger.log(f"[RESTART]   Elapsed wait: {elapsed_wait:.1f}s")
+                self.logger.log(f"[RESTART]   Remaining time: {remaining_time:.1f}s")
+                self.logger.log("[RESTART] Checking if on Clash main menu...")
 
-            loop_iteration = 0
-            while time.time() - clash_main_wait_start_time < clash_main_wait_timeout:
-                loop_iteration += 1
-                current_time = time.time()
-                elapsed_wait = current_time - clash_main_wait_start_time
-                remaining_time = clash_main_wait_timeout - elapsed_wait
-
-                if debug_clash:
-                    self.logger.log(f"[RESTART] Main menu wait loop iteration {loop_iteration}")
-                    self.logger.log(f"[RESTART]   Current time: {current_time}")
-                    self.logger.log(f"[RESTART]   Elapsed wait: {elapsed_wait:.1f}s")
-                    self.logger.log(f"[RESTART]   Remaining time: {remaining_time:.1f}s")
-                    self.logger.log("[RESTART] Checking if on Clash main menu...")
-
-                menu_check_start = time.time()
-                if check_if_on_clash_main_menu(self):
-                    menu_check_end = time.time()
-                    total_elapsed = str(time.time() - start_time)[:5]
-
-                    if debug_clash:
-                        self.logger.log("[RESTART] ✓ CLASH MAIN MENU DETECTED!")
-                        self.logger.log(f"[RESTART] Menu check duration: {menu_check_end - menu_check_start:.3f}s")
-                        self.logger.log(f"[RESTART] Total wait time: {elapsed_wait:.1f}s")
-                        self.logger.log(f"[RESTART] Total restart time: {total_elapsed}s")
-
-                    self.logger.change_status("Clash Royale main menu detected")
-                    self.logger.log(f"Emulator restart completed in {total_elapsed}s")
-
-                    if debug_restart:
-                        self.logger.log("[RESTART] =====================================================")
-                        self.logger.log("[RESTART] RESTART SEQUENCE COMPLETED SUCCESSFULLY")
-                        self.logger.log("[RESTART] =====================================================")
-
-                    return True
-
+            menu_check_start = time.time()
+            if check_if_on_clash_main_menu(self):
                 menu_check_end = time.time()
-                if debug_clash:
-                    self.logger.log(
-                        f"[RESTART] Main menu not detected (check took {menu_check_end - menu_check_start:.3f}s)"
-                    )
-                    self.logger.log("[RESTART] Clicking deadspace at (5, 350) to handle popups...")
-
-                # Click deadspace to handle any popups
-                click_start = time.time()
-                self.click(35, 405)
-                click_end = time.time()
+                total_elapsed = str(time.time() - start_time)[:5]
 
                 if debug_clash:
-                    self.logger.log(f"[RESTART] Deadspace click completed ({click_end - click_start:.3f}s)")
-                    self.logger.log("[RESTART] Sleeping for 1 second before next iteration...")
+                    self.logger.log("[RESTART] ✓ CLASH MAIN MENU DETECTED!")
+                    self.logger.log(f"[RESTART] Menu check duration: {menu_check_end - menu_check_start:.3f}s")
+                    self.logger.log(f"[RESTART] Total wait time: {elapsed_wait:.1f}s")
+                    self.logger.log(f"[RESTART] Total restart time: {total_elapsed}s")
 
-                interruptible_sleep(1)
+                self.logger.change_status("Clash Royale main menu detected")
+                self.logger.log(f"Emulator restart completed in {total_elapsed}s")
 
-            # Timeout waiting for main menu
-            final_elapsed_wait = time.time() - clash_main_wait_start_time
-            if debug_restart or debug_clash:
-                self.logger.log("[RESTART] ✗ TIMEOUT WAITING FOR CLASH MAIN MENU")
-                self.logger.log(f"[RESTART] Total wait time: {final_elapsed_wait:.1f}s")
-                self.logger.log(f"[RESTART] Timeout threshold: {clash_main_wait_timeout}s")
-                self.logger.log(f"[RESTART] Loop iterations: {loop_iteration}")
-                self.logger.log("[RESTART] INITIATING RECURSIVE RESTART DUE TO TIMEOUT")
+                if debug_restart:
+                    self.logger.log("[RESTART] =====================================================")
+                    self.logger.log("[RESTART] RESTART SEQUENCE COMPLETED SUCCESSFULLY")
+                    self.logger.log("[RESTART] =====================================================")
 
-            self.logger.change_status("Timeout waiting for Clash Royale main menu — restarting...")
-            # TODO(noninteractive): see is_noninteractive() in base.py for the removal plan.
-            if is_noninteractive():
-                raise EmulatorNotReadyError("restart() timed out waiting for the Clash Royale main menu")
-            return self.restart(open_clash=open_clash, start_time=start_time)
+                return True
 
-        # If not opening Clash, we're done
-        else:
-            total_elapsed = str(time.time() - start_time)[:5]
+            menu_check_end = time.time()
+            if debug_clash:
+                self.logger.log(
+                    f"[RESTART] Main menu not detected (check took {menu_check_end - menu_check_start:.3f}s)"
+                )
+                self.logger.log("[RESTART] Clicking deadspace at (5, 350) to handle popups...")
 
-            if debug_restart:
-                self.logger.log("[RESTART] =====================================================")
-                self.logger.log("[RESTART] RESTART SEQUENCE COMPLETED (NO CLASH)")
-                self.logger.log("[RESTART] =====================================================")
-                self.logger.log("[RESTART] open_clash was False, skipping Clash Royale startup")
-                self.logger.log(f"[RESTART] Total restart time: {total_elapsed}s")
+            # Click deadspace to handle any popups
+            click_start = time.time()
+            self.click(35, 405)
+            click_end = time.time()
 
-            self.logger.log(f"Emulator restart completed in {total_elapsed}s")
-            return True
+            if debug_clash:
+                self.logger.log(f"[RESTART] Deadspace click completed ({click_end - click_start:.3f}s)")
+                self.logger.log("[RESTART] Sleeping for 1 second before next iteration...")
+
+            interruptible_sleep(1)
+
+        # Timeout waiting for main menu
+        final_elapsed_wait = time.time() - clash_main_wait_start_time
+        if debug_restart or debug_clash:
+            self.logger.log("[RESTART] ✗ TIMEOUT WAITING FOR CLASH MAIN MENU")
+            self.logger.log(f"[RESTART] Total wait time: {final_elapsed_wait:.1f}s")
+            self.logger.log(f"[RESTART] Timeout threshold: {clash_main_wait_timeout}s")
+            self.logger.log(f"[RESTART] Loop iterations: {loop_iteration}")
+            self.logger.log("[RESTART] RAISING DUE TO MAIN-MENU TIMEOUT")
+
+        self.logger.change_status("Timeout waiting for Clash Royale main menu")
+        raise EmulatorNotReadyError("MEmu restart() timed out waiting for the Clash Royale main menu")
 
     def start(self):
         self.pmc.start_vm(vm_index=self.vm_index)
@@ -1517,6 +1462,7 @@ if __name__ == "__main__":
 
     test_logger = Logger()
     memu = MemuEmulatorController(test_logger, render_mode="directx")
+    memu.restart()  # construction is cheap now; restart() boots the VM + launches Clash
     while 1:
         test_logger.log("Running")
         interruptible_sleep(10)

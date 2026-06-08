@@ -4,6 +4,7 @@ from typing import Any
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
+from pyclashbot.emulators.base import EmulatorNotReadyError
 from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.cancellation import CancellationToken
 from pyclashbot.utils.logger import ProcessLogger, attach_worker_file_logging
@@ -46,7 +47,7 @@ class WorkerProcess(Process):
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
                 gp_device_serial = jobs.get(UIField.GP_DEVICE_SERIAL.value) or None
-                return controller_class(logger=logger, device_serial=gp_device_serial)
+                emu = controller_class(logger=logger, device_serial=gp_device_serial)
 
             elif emulator_selection == EmulatorType.BLUESTACKS:
                 print("Creating BlueStacks 5 emulator")
@@ -55,7 +56,7 @@ class WorkerProcess(Process):
                 bs_mode = jobs.get("bluestacks_render_mode", default_mode)
                 render_settings = {"graphics_renderer": bs_mode}
                 bs_device_serial = jobs.get(UIField.BS_DEVICE_SERIAL.value) or None
-                return controller_class(logger=logger, render_settings=render_settings, device_serial=bs_device_serial)
+                emu = controller_class(logger=logger, render_settings=render_settings, device_serial=bs_device_serial)
 
             elif emulator_selection == EmulatorType.MEMU:
                 print("Creating MEmu emulator")
@@ -65,19 +66,29 @@ class WorkerProcess(Process):
                     logger.change_status("MEmu is not installed! Please install it to use MEmu Emulator Mode")
                     return None
                 render_mode = jobs.get("memu_render_mode", "opengl")
-                return controller_class(logger, render_mode)
+                emu = controller_class(logger, render_mode)
 
             elif emulator_selection == EmulatorType.ADB:
                 print("Creating ADB Device controller")
                 adb_serial = jobs.get(UIField.ADB_SERIAL.value) or None
-                return controller_class(logger=logger, device_serial=adb_serial)
+                emu = controller_class(logger=logger, device_serial=adb_serial)
 
+            else:
+                return None
+
+            # Construction is cheap; restart() boots the emulator and launches Clash.
+            # First-boot failure stops the bot — there is no setup retry.
+            emu.restart()
+            return emu
+
+        except EmulatorNotReadyError as e:
+            print(f"{emulator_selection} emulator is not ready: {e}")
+            logger.change_status(f"{emulator_selection} is not ready — fix it and start the bot again.")
+            return None
         except Exception as e:
             print(f"Failed to create {emulator_selection} emulator: {e}")
             logger.change_status(f"Failed to start {emulator_selection}. Verify its installation!")
             return None
-
-        return None
 
     def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
         """Run the main bot state loop."""

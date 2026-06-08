@@ -4,7 +4,7 @@ import time
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
-from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
@@ -56,12 +56,9 @@ class AdbController(AdbBasedController):
 
         self.logger.log(f"Successfully connected to {self.device_serial}.")
 
-        # automatically handle screen size and density
+        # Screen size/density is idempotent and a physical device has no boot phase,
+        # so this stays in construction (documented exception). restart() launches Clash.
         self.handle_screen_size_and_density()
-
-        # In the context of a real device, the initial 'restart' is just to get the app running
-        if not self.restart():
-            raise RuntimeError("Initial restart of Clash Royale failed on the physical device.")
 
     def get_screen_props(self):
         """Gets the current screen size and density of the device."""
@@ -314,12 +311,9 @@ class AdbController(AdbBasedController):
         interruptible_sleep(3)
 
         # 2. Start the app using the inherited method
+        # start_app raises EmulatorNotReadyError if Clash Royale isn't installed.
         self.logger.change_status("Launching Clash Royale...")
-        if not self.start_app(clash_pkg):
-            # This means the app isn't installed and the user is being prompted.
-            # We can't proceed with the restart.
-            self.logger.log("App not installed. Restart cannot complete.")
-            return False
+        self.start_app(clash_pkg)
 
         interruptible_sleep(5)  # Give the app some time to load initially
 
@@ -338,4 +332,4 @@ class AdbController(AdbBasedController):
             interruptible_sleep(2)
 
         self.logger.change_status("Timeout waiting for Clash Royale main menu. Please check the device.")
-        return False
+        raise EmulatorNotReadyError("ADB device restart() timed out waiting for the Clash Royale main menu")
