@@ -8,8 +8,10 @@ import cv2
 import numpy as np
 
 from pyclashbot.emulators.base import (
+    CLASH_ROYALE_PACKAGE,
     BaseEmulatorController,
     EmulatorNotReadyError,
+    is_noninteractive,
 )
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import is_linux
@@ -278,18 +280,64 @@ class AdbBasedController(BaseEmulatorController, ABC):
         """
         Start an app using ADB monkey command.
 
+        If the app is not installed, it will trigger the
+        installation waiting mechanism.
+
         Args:
             package_name (str): The package name to start.
 
         Returns:
-            True if the app was launched.
-
-        Raises:
-            EmulatorNotReadyError: If the app is not installed.
+            True if the app was started or if the installation
+            wait was successfully initiated and completed.
         """
         if not self._check_app_installed(package_name):
-            raise EmulatorNotReadyError(f"{package_name} is not installed on the emulator")
+            return self._wait_for_clash_installation(package_name)
 
         logger.info("Launching app: %s", package_name)
         self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
         return True
+
+    def _wait_for_clash_installation(self, package_name: str):
+        """
+        Show a UI prompt and wait for the user to install the specified app.
+        """
+        self.current_package_name = package_name
+        if is_noninteractive():
+            raise EmulatorNotReadyError(f"{package_name} is not installed on the emulator")
+
+        logger.warning("App %s not installed - waiting for user to install", package_name)
+
+        if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
+            self.logger.show_temporary_action(
+                message=f"{package_name} not installed - please install it and complete tutorial",
+                action_text="Retry",
+                callback=self._retry_installation_check,
+            )
+
+        self.installation_waiting = True
+
+        while self.installation_waiting:
+            interruptible_sleep(0.5)
+
+        logger.info("App %s installation confirmed", package_name)
+        return True
+
+    def _retry_installation_check(self):
+        """
+        Callback method for the 'Retry' button. Checks if the app has been installed.
+        """
+        logger.debug("Retry clicked - checking for app installation")
+
+        package_name = getattr(self, "current_package_name", CLASH_ROYALE_PACKAGE)
+
+        if self._check_app_installed(package_name):
+            self.installation_waiting = False
+            logger.info("App %s now installed", package_name)
+        else:
+            logger.warning("App %s still not installed", package_name)
+            if hasattr(self, "logger") and hasattr(self.logger, "show_temporary_action"):
+                self.logger.show_temporary_action(
+                    message=f"{package_name} still not found - please install it and complete tutorial",
+                    action_text="Retry",
+                    callback=self._retry_installation_check,
+                )

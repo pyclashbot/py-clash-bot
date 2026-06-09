@@ -397,15 +397,49 @@ class BlueStacksEmulatorController(AdbBasedController):
         if internal and self._reuse_and_rename_internal(internal):
             return
 
-        # No clean instance to reuse and we won't create one unattended. Open the
-        # Multi-Instance Manager to help the user, but never let that mask the error.
-        with suppress(Exception):
+        # Open Multi-Instance Manager and prompt user to create a clean instance.
+        while True:
+            self._request_instance_retry = False
+            self.logger.show_temporary_action(
+                message="No Android 13 instance found. Open BlueStacks Multi-Instance Manager and create a fresh Android 13 (Tiramisu 64-bit) instance without logging into any Google accounts, then click Retry.",
+                action_text="Retry",
+                callback=self._request_instance_creation_retry,
+            )
+            self.logger.log("[BlueStacks 5] No clean Android 13 instance found. Opening Multi-Instance Manager...")
             self._open_multi_instance_manager()
-        raise EmulatorNotReadyError(
-            "No clean Android 13 instance found — create a fresh Android 13 (Tiramisu 64-bit) "
-            "instance in the BlueStacks Multi-Instance Manager without logging into any Google "
-            "accounts, then start the bot again."
-        )
+
+            # Wait for user action via Retry callback
+            self.instance_creation_waiting = True
+            while getattr(self, "instance_creation_waiting", False):
+                interruptible_sleep(0.5)
+
+            # User clicked Retry check again for a clean instance outside the callback
+            if getattr(self, "_request_instance_retry", False):
+                # If our display name exists, resolve internal and port
+                if self._display_name_exists(self.bs_conf_path, self.instance_name):
+                    internal = self._find_internal_by_display_name(
+                        self.mim_meta_path, self.instance_name
+                    ) or self._find_internal_in_conf_by_display(self.bs_conf_path, self.instance_name)
+                    if internal:
+                        self.internal_name = internal
+                        self.instance_port = self._read_instance_adb_port(self.bs_conf_path, internal)
+                        with suppress(Exception):
+                            self._close_multi_instance_manager()
+                        self.logger.change_status("Clean instance detected - continuing...")
+                        return
+
+                # Otherwise try to reuse an unlinked instance
+                internal = self._pick_unlinked_instance()
+                if internal and self._reuse_and_rename_internal(internal):
+                    self.logger.change_status("Prepared clean instance - continuing...")
+                    return
+
+                self.logger.log("[BlueStacks 5] Still no clean Android 13 instance found. Please try again.")
+
+    def _request_instance_creation_retry(self):
+        self.logger.log("[BlueStacks 5] Retry clicked - rechecking for clean instance")
+        self._request_instance_retry = True
+        self.instance_creation_waiting = False
 
     def _apply_renderer_setting(self) -> None:
         desired = self.render_settings["graphics_renderer"]
@@ -671,6 +705,13 @@ class BlueStacksEmulatorController(AdbBasedController):
 
         self.logger.change_status("Timeout waiting for Clash Royale main menu — retrying...")
         return False
+
+    # click() is now inherited from AdbBasedController
+    # swipe() is now inherited from AdbBasedController
+    # screenshot() is now inherited from AdbBasedController
+    # start_app() is now inherited from AdbBasedController
+    # _wait_for_clash_installation() is now inherited from AdbBasedController
+    # _retry_installation_check() is now inherited from AdbBasedController
 
 
 if __name__ == "__main__":

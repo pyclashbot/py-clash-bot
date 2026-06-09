@@ -79,7 +79,7 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 - Must use BlueStacks 5, not BlueStacks X/10
 - Expected install path: `C:\Program Files\BlueStacks_nxt`
-- Startup fails: open Multi-Instance Manager, create a fresh "Android 13 (Tiramisu 64-bit)" instance without signing into any Google account, leave other settings as default, then start the bot again
+- Startup fails: open Multi-Instance Manager, create fresh "Pie 64-bit" instance, leave other settings as default, click Retry in bot
 - Black screen: switch render mode in bot settings
 
 ### Google Play Games

@@ -8,7 +8,7 @@ import multiprocessing as mp
 import subprocess
 from multiprocessing import Event, Queue
 from os.path import expandvars, join
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 _original_setlocale = locale.setlocale
 
@@ -44,6 +44,10 @@ from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 
 initialize_pylogging()
 
@@ -410,6 +414,19 @@ class BotApplication:
     def _update_ui_from_stats(self) -> None:
         update_layout(self.ui, self.logger, self._get_display_stats())
 
+    def _dispatch_action(self) -> None:
+        callback: Callable[[], None] | None = getattr(self.logger, "action_callback", None)
+        if callable(callback):
+            try:
+                callback()
+            except Exception as exc:
+                self.logger.log(f"Error executing action callback: {exc}")
+        if hasattr(self.logger, "action_needed"):
+            self.logger.action_needed = False
+            self.logger.action_callback = None
+            self.logger.action_text = "Continue"
+        self.ui.hide_action_button()
+
     def _poll(self) -> None:
         if self._closing:
             return
@@ -435,6 +452,11 @@ class BotApplication:
         self.process, self.logger = handle_process_finished(self.ui, self.process, self.logger)
         self._update_ui_from_stats()
         self.discord_rpc.sync(self.discord_rpc_enabled, self._get_display_stats())
+        if hasattr(self.logger, "action_needed") and self.logger.action_needed:
+            action_text = getattr(self.logger, "action_text", "Continue")
+            self.ui.show_action_button(action_text, self._dispatch_action)
+        else:
+            self.ui.hide_action_button()
         self.ui.after(100, self._poll)
 
     def _on_open_logs_clicked(self) -> None:
