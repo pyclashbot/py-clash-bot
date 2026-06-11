@@ -1,5 +1,5 @@
 # --- Clash main / global ---
-CLASH_MAIN_DEADSPACE_COORD = (35, 500)
+CLASH_MAIN_DEADSPACE_COORD = (30, 490)
 
 # --- Nav ---
 CLASH_MAIN_OPTIONS_BURGER_BUTTON = (390, 62)
