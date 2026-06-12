@@ -56,6 +56,7 @@ PLAY_COORDS = {
         "left": [(118, 185)],
         "right": [(295, 185)],
     },
+    "large_spell": {"left": [(170, 196), (168, 194)], "right": [(249, 196), (248, 193)]},
     # Spells: small reactive (Zap, Void, Clone, Rage, Goblin Curse, …).
     "reactive_spell": {
         "left": [(118, 185)],
@@ -159,6 +160,7 @@ CARD_GROUPS: dict[str, list[str]] = {
         "monk",
         "pekka",
         "evo_pekka",
+        "clone",
         "prince",
         "royal_ghost",
         "evo_royal_ghost",
@@ -175,16 +177,12 @@ CARD_GROUPS: dict[str, list[str]] = {
         "royal_delivery",
     ],
     "lane_spell": [
-        "arrows",
-        "earthquake",
         "fireball",
-        "freeze",
-        "lightning",
         "log",
-        "poison",
         "snowball",
         "evo_snowball",
     ],
+    "large_spell": ["earthquake", "arrows", "freeze", "lightning", "poison"],
     "spirit": [
         "electro_spirit",
         "fire_spirit",
@@ -193,7 +191,6 @@ CARD_GROUPS: dict[str, list[str]] = {
         "evo_ice_spirit",
     ],
     "reactive_spell": [
-        "clone",
         "gob_curse",
         "rage",
         "void",
