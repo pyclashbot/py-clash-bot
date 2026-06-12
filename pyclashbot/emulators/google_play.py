@@ -462,19 +462,11 @@ class GooglePlayEmulatorController(AdbBasedController):
             elif "not found" not in result.stderr.lower():
                 print(f"[!] Failed to terminate {proc}")
 
-    # click() is now inherited from AdbBasedController
-    # swipe() is now inherited from AdbBasedController
-    # screenshot() is now inherited from AdbBasedController
-
     def install_apk(self, apk_path: str):
         """
         This method is used to install an APK on the emulator.
         """
         raise NotImplementedError
-
-    # start_app() is now inherited from AdbBasedController
-    # _wait_for_clash_installation() is now inherited from AdbBasedController
-    # _retry_installation_check() is now inherited from AdbBasedController
 
     def debug_adb_connectivity(self):
         """
