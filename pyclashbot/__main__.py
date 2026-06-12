@@ -6,22 +6,31 @@ import locale
 import logging
 import multiprocessing as mp
 import subprocess
-from multiprocessing import Event, Queue
+from multiprocessing import Queue
 from os.path import expandvars, join
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from multiprocessing.synchronize import Event
 
 _original_setlocale = locale.setlocale
+_LocaleError = locale.Error
 
 
-def _setlocale_safe(category: int, loc: str | None = None) -> str:
+# Parameter name must match the stdlib's (callers may pass locale= by keyword);
+# it shadows the locale module inside the body, hence the module-level aliases.
+def _setlocale_safe(category: int, locale: str | Iterable[str | None] | None = None) -> str:
     """Fallback to the C locale if the requested locale is unsupported."""
     try:
-        return _original_setlocale(category, loc)
-    except locale.Error:
+        return _original_setlocale(category, locale)
+    except _LocaleError:
         return _original_setlocale(category, "C")
 
 
-locale.setlocale = _setlocale_safe  # type: ignore[assignment]
+# Deliberate monkeypatch; ty rejects reassigning a module-level function even with
+# a matching signature, so suppress rather than launder the type.
+locale.setlocale = _setlocale_safe  # ty: ignore[invalid-assignment]
 
 try:
     # Force a portable locale so ttkbootstrap does not raise unsupported locale errors on non-English systems.

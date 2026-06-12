@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from pyclashbot.utils.platform import CURRENT_PLATFORM, Platform
+
+if TYPE_CHECKING:
+    from pyclashbot.utils.logger import Logger
 
 CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
 
@@ -15,6 +22,10 @@ class BaseEmulatorController:
     """
     Base class for emulator controllers.
     This class is used to define the interface for all emulator controllers.
+
+    All concrete subclasses must accept logger as the first positional argument
+    and may accept additional keyword arguments (render_settings, device_serial,
+    render_mode, etc.) depending on their needs.
     """
 
     supported_platforms: list[Platform] = []
@@ -24,7 +35,17 @@ class BaseEmulatorController:
         """Check if this emulator is supported on the current platform."""
         return CURRENT_PLATFORM in cls.supported_platforms
 
-    def __init__(self):
+    def __init__(self, logger: Logger, *args: object, **kwargs: object) -> None:
+        """Initialize emulator controller.
+
+        Args:
+            logger: Project Logger for status updates (subclasses take it first).
+            *args, **kwargs: Subclass-specific extras (render_settings,
+                device_serial, render_mode, ...).
+
+        Raises:
+            NotImplementedError: Always raised; this base class must be subclassed.
+        """
         raise NotImplementedError
 
     def __del__(self):

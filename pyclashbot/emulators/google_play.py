@@ -22,11 +22,11 @@ class GooglePlayEmulatorController(AdbBasedController):
     # Default device serial for Google Play Games emulator
     DEFAULT_DEVICE_SERIAL = "localhost:6520"
 
-    @staticmethod
-    def find_adb() -> str | None:
+    @classmethod
+    def find_adb(cls) -> str | None:
         """Find bundled adb.exe path, or None if not found."""
         try:
-            install = GooglePlayEmulatorController._find_install_location()
+            install = cls._find_install_location()
             adb = os.path.join(install, "current", "emulator", "adb.exe")
             return adb if os.path.isfile(adb) else None
         except Exception:
@@ -233,8 +233,12 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         for key in registry_keys:
             with suppress(FileNotFoundError):
-                with winreg.OpenKey(winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE), key) as reg_key:
-                    install_path = winreg.QueryValueEx(reg_key, "InstallLocation")[0]
+                with winreg.OpenKey(  # ty: ignore[unresolved-attribute]
+                    winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE),  # ty: ignore[unresolved-attribute]
+                    key,
+                ) as reg_key:
+                    value = winreg.QueryValueEx(reg_key, "InstallLocation")  # ty: ignore[unresolved-attribute]
+                    install_path = value[0]
                     folder_path = normpath(install_path)
                     if os.path.exists(folder_path) and os.path.isdir(folder_path):
                         return folder_path
@@ -422,7 +426,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         """
         Starts the emulator using the Windows shell to open the shortcut.
         """
-        os.startfile(self.emulator_executable_path)
+        os.startfile(self.emulator_executable_path)  # ty: ignore[unresolved-attribute]
         interruptible_sleep(5)
 
     def stop(self):

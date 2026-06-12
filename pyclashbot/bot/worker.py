@@ -1,5 +1,6 @@
 import traceback
-from multiprocessing import Event, Process, Queue
+from multiprocessing import Process, Queue
+from multiprocessing.synchronize import Event
 from typing import Any
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree

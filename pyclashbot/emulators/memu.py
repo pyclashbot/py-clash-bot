@@ -758,7 +758,10 @@ class MemuEmulatorController(BaseEmulatorController):
 
         console_path = join(self.pmc._get_memu_top_level(), "MEMuConsole.exe")
         self.logger.log("[+] Starting memu console at:" + str(console_path))
-        process = subprocess.Popen(console_path, creationflags=subprocess.DETACHED_PROCESS)
+        process = subprocess.Popen(
+            console_path,
+            creationflags=subprocess.DETACHED_PROCESS,  # ty: ignore[unresolved-attribute]
+        )
 
         interruptible_sleep(2)
 

@@ -10,6 +10,7 @@ import pytest
 
 from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.base import EmulatorNotReadyError
+from pyclashbot.utils.logger import Logger
 
 
 class _FakeNotReadyController:
@@ -25,15 +26,23 @@ class _FakeNotReadyController:
         raise EmulatorNotReadyError("fake emulator is not ready")
 
 
-class _RecordingLogger:
+class _RecordingLogger(Logger):
+    """Test double that inherits from Logger but records change_status calls.
+
+    Lightweight to construct (Logger.__init__ only sets instance attrs + locks,
+    doesn't spawn threads), and reuses all real Logger behavior without needing
+    to duplicate its interface.
+    """
+
     def __init__(self):
+        super().__init__(stats=None, timed=False)
         self.statuses: list[str] = []
 
-    def change_status(self, status):
+    def change_status(self, status) -> None:
+        """Override to record calls for assertions."""
         self.statuses.append(status)
-
-    def log(self, *args, **kwargs):
-        pass
+        # Still call parent to maintain contract (calls _update_log)
+        super().change_status(status)
 
 
 def test_attach_emulator_reraises_when_restart_not_ready(monkeypatch):

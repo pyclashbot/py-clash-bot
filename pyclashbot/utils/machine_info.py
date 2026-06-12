@@ -13,7 +13,7 @@ from pyclashbot.utils.subprocess import run
 def safe_get_user32():
     """Safely get user32 dll, return None if failed."""
     try:
-        return ctypes.windll.user32
+        return ctypes.windll.user32  # ty: ignore[unresolved-attribute]  # Windows-only API
     except Exception:
         return None
 
