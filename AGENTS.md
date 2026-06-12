@@ -4,7 +4,7 @@ A Clash Royale automation bot: drives an Android emulator via ADB and acts on th
 
 ## Commands
 
-Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`build-dmg`, all via `uv`); `CONTRIBUTING.md` has dev setup. Non-obvious bits those don't tell you:
+Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`/`type-check`, `build-msi`/`build-dmg`, all via `uv`); `CONTRIBUTING.md` has dev setup. Non-obvious bits those don't tell you:
 - Tests are **pytest**, offline by default (`addopts = -m "not emulator"`). Hardware tests carry `@pytest.mark.emulator`: `make test` runs only offline tests; `make test-emulator` runs the live-emulator suite. `--integration` flips the marker and resolves a backend (`--emulator`/cache/menu, platform-gated); the `emulator` fixture boots the emulator via `restart()`. See `tests/AGENTS.md`.
 - The clash suite is one parametrized test (`tests/clash_royale/test_jobs.py`) over an ordered `SUITE` list — add a job by appending its `run_test` to `SUITE`. Shared emulator + backend resolution live in `tests/conftest.py` + `tests/_emulator_support.py`. Select with `-k`, stop at first failure with `-x`.
 - `tests/clash_royale/` needs a live emulator and **does not run in CI** (CI only builds artifacts + runs pre-commit).
@@ -27,6 +27,7 @@ Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`, `build-msi`/`b
 - Always verify screen state (a `check_if_on_*` / detection call) **before** clicking. Never hardcode a raw click — use named coordinate constants or nav helpers.
 - Persistent user settings go through `USER_SETTINGS_CACHE` (`pyclashbot.utils.caching`), keyed by `UIField.value` strings. Logging/stats go through `pyclashbot.utils.logger`; OS checks through `pyclashbot.utils.platform` (`is_windows()`/`is_macos()`).
 - Version is a `v0.0.0` placeholder in `pyproject.toml`; the real version is injected from the git tag at build time and read at runtime from `pyclashbot/__version__` via `utils/versioning.py`.
+- **Type checking is `ty`** (Astral), configured under `[tool.ty]` in `pyproject.toml` and enforced by pre-commit/CI; run it alone with `make type-check`. Suppress only genuine platform-gated false positives (Windows-only APIs), using `# ty: ignore[rule]` — never bare `# type: ignore`. A scoped override keeps ttkbootstrap's dynamic-kwarg noise in `interface/` at `warn`.
 - Python 3.12 only. Conventional-commit messages.
 
 ## Where new code goes

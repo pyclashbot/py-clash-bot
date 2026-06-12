@@ -8,6 +8,9 @@ dev:
 lint:
 	uvx pre-commit run --all-files
 
+type-check:
+	uv run ty check
+
 # Offline by default (pytest addopts carries -m "not emulator"); safe everywhere.
 test:
 	uv run pytest

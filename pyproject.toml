@@ -23,7 +23,7 @@ dependencies = [
     "psutil>=6.1.0,<8",
     "pypresence>=4.3.0,<5",
     "pillow>=12.2.0,<13.0.0",
-    "ttkbootstrap>=1.12.1,<1.21",
+    "ttkbootstrap>=1.20.0,<1.21",
 ]
 
 [tool.setuptools.packages.find]
@@ -40,7 +40,12 @@ build = [
     "packaging>=24.2",
     "requests>=2.33.0",
 ]
-dev = ["pre-commit>=4.0.1,<5", "ruff>=0.7.4,<0.16", "pytest>=9.0.3,<10"]
+dev = [
+    "pre-commit>=4.0.1,<5",
+    "ruff>=0.7.4,<0.16",
+    "pytest>=9.0.3,<10",
+    "ty>=0.0.49",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -100,5 +105,19 @@ line-length = 120
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "time.sleep".msg = "Use interruptible_sleep() from pyclashbot.utils.cancellation instead for proper thread cancellation support."
 
-[tool.isort]
-profile = "black"
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.analysis]
+# Build-time deps used by scripts/ live in the `build` dependency group
+# (platform-gated), which isn't installed in the default dev venv.
+allowed-unresolved-imports = ["cx_Freeze", "PyInstaller.**", "requests"]
+
+# ttkbootstrap >=1.18 ships stubs covering bootstyle= on its widgets, but calls
+# through tkinter base types (e.g. Misc.configure(foreground=...)) still hit
+# typeshed signatures that don't know ttkbootstrap's restyled kwargs.
+[[tool.ty.overrides]]
+include = ["pyclashbot/interface/**"]
+
+[tool.ty.overrides.rules]
+unknown-argument = "warn"

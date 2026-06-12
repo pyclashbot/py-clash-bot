@@ -117,15 +117,18 @@ Then create a pull request on GitHub with:
 
 The project uses several tools to maintain code quality:
 
-- **ruff** - Code linting and formatting
-- **isort** - Import sorting
+- **ruff** - Code linting and formatting (including import sorting)
+- **ty** - Static type checking
 - **pre-commit** - Automated code quality checks
 
 ### Running Code Quality Checks
 
 ```bash
-# Run all pre-commit checks on all files
+# Run all pre-commit checks on all files (includes ty)
 make lint
+
+# Run only the type checker
+make type-check
 ```
 
 ## Additional Guidelines
