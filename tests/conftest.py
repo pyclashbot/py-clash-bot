@@ -7,7 +7,6 @@ never constructs an emulator or prompts.
 
 from __future__ import annotations
 
-import os
 import sys
 
 import pytest
@@ -97,11 +96,6 @@ def pytest_configure(config: pytest.Config) -> None:
     # Flip the default deselection (read lazily at collection, so setting it here
     # works). Intentionally overwrites any user-supplied `-m` under --integration.
     config.option.markexpr = "emulator"
-
-    # No GUI/human here: fail fast on a not-ready emulator instead of hanging on a
-    # "Retry" prompt. Set for the whole run (dedicated integration run, never unset).
-    # TRANSITIONAL — see is_noninteractive() in pyclashbot/emulators/base.py.
-    os.environ["PYCLASHBOT_NONINTERACTIVE"] = "1"
 
     choices = _emulator_choices()
     # Prior picks persist across runs via pytest's own cache (.pytest_cache/);

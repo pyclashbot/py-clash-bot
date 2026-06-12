@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 
 from pyclashbot.utils.platform import CURRENT_PLATFORM, Platform
@@ -8,26 +6,9 @@ CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
 
 
 class EmulatorNotReadyError(RuntimeError):
-    """The emulator can't be made ready (app missing, signed out, no main menu)
-    and no human is available to fix it — raised instead of waiting forever.
-
-    TRANSITIONAL: part of the is_noninteractive() scaffolding below; see that
-    docstring for the removal plan.
-    """
-
-
-def is_noninteractive() -> bool:
-    """True when no GUI/human can resolve a setup prompt (e.g. the test harness);
-    controllers then raise EmulatorNotReadyError instead of looping on a "Retry"
-    click that never comes. Production never sets it, so its behavior is unchanged.
-
-    TRANSITIONAL SCAFFOLDING — the env var, this function, and every
-    `if is_noninteractive():` guard (tagged `TODO(noninteractive)`) delete
-    themselves once retry/prompt orchestration is lifted out of the adapters into
-    an application-layer port (adapters become "attempt once, return outcome";
-    callers own the retry loop). Do NOT build new permanent behavior on this flag.
-    """
-    return os.environ.get("PYCLASHBOT_NONINTERACTIVE") == "1"
+    """The emulator can't be made ready (app missing, signed out, no main menu) —
+    raised by `restart()` instead of waiting forever. Callers either stop the bot
+    (first boot) or fold it into the bounded mid-run restart net."""
 
 
 class BaseEmulatorController:
@@ -71,9 +52,11 @@ class BaseEmulatorController:
         """
         Full boot -> configure -> launch Clash -> reach main menu.
 
-        Returns True only when Clash Royale is left on a main menu detectable by
-        check_if_on_clash_main_menu(self); subclasses return False to trigger the
-        retry loop.
+        The single boot primitive, called explicitly after construction (and again
+        for mid-run recovery). One attempt: it returns True once Clash Royale is
+        left on a main menu detectable by check_if_on_clash_main_menu(self), and
+        raises EmulatorNotReadyError on any not-ready failure — it never returns
+        False.
         """
         raise NotImplementedError
 
