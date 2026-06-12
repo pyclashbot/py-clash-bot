@@ -143,8 +143,9 @@ def emulator(request: pytest.FixtureRequest, logger):
     serial = request.config.stash[_SERIAL_KEY]
 
     # Hard-abort (pytest.exit, not skip): a missing/not-ready emulator would chain
-    # false negatives across the ordered suite. Controllers boot + launch Clash in
-    # construction, so "not set up" surfaces here rather than as a per-test failure.
+    # false negatives across the ordered suite. attach_emulator constructs the
+    # controller then boots it via restart(), so "not set up" surfaces here rather
+    # than as a per-test failure.
     try:
         emu = attach_emulator(backend, logger, device_serial=serial)
     except EmulatorNotReadyError as e:

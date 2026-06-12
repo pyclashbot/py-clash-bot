@@ -6,7 +6,7 @@
 
 - Subclass `AdbBasedController` if ADB-based — then you only implement `adb(command, binary_output)` and `_check_app_installed(package)`; everything else is inherited (including `is_app_installed`, `start_app`, and the default `is_reachable()`). `start_app` raises `EmulatorNotReadyError` if the app isn't installed — there is no install-wait prompt; the bot fails fast. Otherwise subclass `BaseEmulatorController` and implement all abstract methods, including `is_app_installed(package) -> bool`.
 - `is_reachable() -> (ok, reason)` defaults to "a screenshot decodes to a non-empty array"; override it only if the backend exposes a truer liveness signal (MEmu checks VM running-state).
-- Take `logger` as the first `__init__` arg; set `supported_platforms`. `restart()` must leave Clash Royale on a main menu detectable by `check_if_on_clash_main_menu(self)`, else return `False` to trigger the retry loop.
+- Take `logger` as the first `__init__` arg; set `supported_platforms`. `__init__` does only cheap, side-effect-light discovery/config (paths, serials, config reads, VM/instance discovery+creation) — it does **not** boot. `restart()` is the boot primitive (stop → configure-while-stopped → start → launch Clash → reach main menu); it's called explicitly after construction, must leave Clash Royale on a main menu detectable by `check_if_on_clash_main_menu(self)`, and must `raise EmulatorNotReadyError` (never return `False`) on any not-ready failure.
 
 ## Gotchas
 

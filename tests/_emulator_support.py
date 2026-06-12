@@ -96,9 +96,13 @@ def resolve_serial(cli_opt: str | None, cache: dict) -> tuple[str | None, bool]:
 
 
 def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = None):
-    """Construct the controller for `cli_alias`; return it or None (printing why).
+    """Construct the controller for `cli_alias`, boot it via restart(), and return it
+    (or None, printing why).
 
-    Passes device_serial only when the controller's __init__ accepts it.
+    Construction is cheap discovery/config; restart() does the booting (VM start +
+    Clash launch + main-menu wait). A not-ready emulator raises EmulatorNotReadyError
+    from either step — that re-raises so the fixture can report it. Passes
+    device_serial only when the controller's __init__ accepts it.
     """
     from pyclashbot.emulators import EmulatorType, get_emulator_registry
 
@@ -129,7 +133,9 @@ def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = 
         kwargs["device_serial"] = device_serial
 
     try:
-        return cls(logger, **kwargs)
+        emu = cls(logger, **kwargs)
+        emu.restart()
+        return emu
     except EmulatorNotReadyError:
         raise  # a real "not set up" signal — let the fixture report it, don't mask as None
     except Exception as e:
