@@ -387,7 +387,7 @@ CARD_ATTRIBUTES: dict[str, dict[str, str]] = {
     "skeleton_barrel": {"type": "Spell", "subtype": "Surprise pressure"},
 }
 
-# card color data
+# card color data (initially holds dict[str, int] entries, then transformed to ndarray)
 card_color_data = {
     "archer_queen": [
         {
@@ -11537,8 +11537,17 @@ COLORS_ARRAY = numpy.array(list(COLORS.values()))
 COLORS_KEYS = list(COLORS.keys())
 
 # Pre-compute numpy arrays for each card's corner data
+# Build a fresh dict with the transformed values
+_card_color_data_transformed: dict[str, list[numpy.ndarray[tuple[int, ...], numpy.dtype[numpy.int64]]]] = {}
 for card_name, card_data in card_color_data.items():
-    card_color_data[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
+    if isinstance(card_data[0], dict):
+        _card_color_data_transformed[card_name] = [numpy.array(list(corner.values())) for corner in card_data]
+    else:
+        # Already transformed
+        _card_color_data_transformed[card_name] = card_data
+card_color_data: dict[str, list[numpy.ndarray[tuple[int, ...], numpy.dtype[numpy.int64]]]] = (
+    _card_color_data_transformed
+)
 
 
 def calculate_offset(card_name, card_data, collected_data_array):
@@ -11657,10 +11666,8 @@ card_coords = [
     for topleft in card_toplefts
 ]
 
-global play_side  # noqa: PLW0604
-global battle_iar  # noqa: PLW0604
-
 play_side = "left"
+battle_iar: numpy.ndarray[tuple[int, ...], numpy.dtype[numpy.uint8]] | None = None
 
 
 def is_hero_champion_ability_visible(emulator) -> bool:
@@ -11763,7 +11770,7 @@ def calculate_play_coords(card_grouping: str, side_preference: str, elapsed_time
             return random.choice(group_datum["coords"])
 
 
-bridge_iar = 0
+bridge_iar: numpy.ndarray[tuple[int, ...], numpy.dtype[numpy.uint8]] | None = None
 
 
 def create_default_bridge_iar(emulator):
@@ -11775,6 +11782,8 @@ bridge_pixel = [[100, 200], [275, 200]]
 
 
 def switch_side():
+    assert battle_iar is not None, "battle_iar must be set before calling switch_side()"
+    assert bridge_iar is not None, "bridge_iar must be set before calling switch_side()"
     bridge_color_offset = []
     for i, bridge in enumerate(bridge_pixel):
         all_coords = [(y, x) for x in range(bridge[0], bridge[0] + 40) for y in range(bridge[1], bridge[1] + 175)]

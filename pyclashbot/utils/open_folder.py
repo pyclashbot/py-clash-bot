@@ -15,7 +15,7 @@ def open_folder(folder_path: str) -> None:
 
     try:
         if is_windows():
-            os.startfile(folder_path)  # type: ignore[attr-defined]
+            os.startfile(folder_path)  # ty: ignore[unresolved-attribute]  # Windows-only API
             return
 
         if is_macos():

@@ -31,11 +31,11 @@ class BlueStacksEmulatorController(AdbBasedController):
     # so classmethods (e.g. discover_devices) can route to the right server.
     adb_server_port: int = 5041
 
-    @staticmethod
-    def find_adb() -> str | None:
+    @classmethod
+    def find_adb(cls) -> str | None:
         """Find bundled HD-Adb path, or None if not found."""
         try:
-            install = BlueStacksEmulatorController._find_install_location()
+            install = cls._find_install_location()
             adb = os.path.join(install, "hd-adb" if is_macos() else "HD-Adb.exe")
             return adb if os.path.isfile(adb) else None
         except Exception:
@@ -149,11 +149,11 @@ class BlueStacksEmulatorController(AdbBasedController):
 
         reg_paths = [r"SOFTWARE\BlueStacks_nxt"]
         with suppress(FileNotFoundError, OSError):
-            reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+            reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)  # ty: ignore[unresolved-attribute]
             for subkey in reg_paths:
                 with suppress(FileNotFoundError, OSError):
-                    with winreg.OpenKey(reg, subkey) as k:
-                        val = winreg.QueryValueEx(k, value_name)[0]
+                    with winreg.OpenKey(reg, subkey) as k:  # ty: ignore[unresolved-attribute]
+                        val = winreg.QueryValueEx(k, value_name)[0]  # ty: ignore[unresolved-attribute]
                         if isinstance(val, str) and val.strip():
                             return val
         return None
@@ -322,7 +322,9 @@ class BlueStacksEmulatorController(AdbBasedController):
             subprocess.Popen(["open", "/Applications/BlueStacksMIM.app"])
         else:
             with suppress(Exception):
-                os.startfile(os.path.join(self.base_folder, "HD-MultiInstanceManager.exe"))
+                os.startfile(  # ty: ignore[unresolved-attribute]
+                    os.path.join(self.base_folder, "HD-MultiInstanceManager.exe")
+                )
 
     def _reuse_and_rename_internal(self, internal: str) -> bool:
         conf = self._read_text(self.bs_conf_path)

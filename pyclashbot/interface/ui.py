@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import LEFT, READONLY, YES, X
 from ttkbootstrap.style import Colors
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets import ToolTip
 
 from pyclashbot.emulators import EmulatorType, get_available_emulators
 from pyclashbot.interface.config import (
@@ -157,6 +157,9 @@ class PyClashBotUI(ttk.Window):
         self._traces: list[tuple[tk.Variable, str]] = []
         self._suspend_traces = 0
         self._button_state = "idle"
+        self.deck_var: ttk.StringVar | None = None
+        self.max_deck_var: ttk.StringVar | None = None
+        self.max_account_var: ttk.StringVar | None = None
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)  # Tab area absorbs extra height
@@ -181,13 +184,19 @@ class PyClashBotUI(ttk.Window):
                 stored = not stored
             values[field.value] = stored
 
-        values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(self.deck_var.get(), fallback=2)
+        values[UIField.DECK_NUMBER_SELECTION.value] = self._safe_int(
+            self.deck_var.get() if self.deck_var is not None else "2", fallback=2
+        )
         values[UIField.CYCLE_DECKS_USER_TOGGLE.value] = bool(self.jobs_vars[UIField.CYCLE_DECKS_USER_TOGGLE].get())
-        values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(self.max_deck_var.get(), fallback=2)
+        values[UIField.MAX_DECK_SELECTION.value] = self._safe_int(
+            self.max_deck_var.get() if self.max_deck_var is not None else "2", fallback=2
+        )
         values[UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value] = bool(
             self.jobs_vars[UIField.SWITCH_ACCOUNTS_USER_TOGGLE].get()
         )
-        values[UIField.MAX_ACCOUNT_SELECTION.value] = self._safe_int(self.max_account_var.get(), fallback=2)
+        values[UIField.MAX_ACCOUNT_SELECTION.value] = self._safe_int(
+            self.max_account_var.get() if self.max_account_var is not None else "2", fallback=2
+        )
         emulator_choice = self.emulator_var.get()
         values[UIField.MEMU_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.MEMU
         values[UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value] = emulator_choice == EmulatorType.GOOGLE_PLAY
@@ -225,11 +234,11 @@ class PyClashBotUI(ttk.Window):
                         ui_value = not ui_value
                     var.set(ui_value)
 
-            if UIField.DECK_NUMBER_SELECTION.value in values:
+            if UIField.DECK_NUMBER_SELECTION.value in values and self.deck_var is not None:
                 self.deck_var.set(str(values[UIField.DECK_NUMBER_SELECTION.value]))
-            if UIField.MAX_DECK_SELECTION.value in values:
+            if UIField.MAX_DECK_SELECTION.value in values and self.max_deck_var is not None:
                 self.max_deck_var.set(str(values[UIField.MAX_DECK_SELECTION.value]))
-            if UIField.MAX_ACCOUNT_SELECTION.value in values:
+            if UIField.MAX_ACCOUNT_SELECTION.value in values and self.max_account_var is not None:
                 self.max_account_var.set(str(values[UIField.MAX_ACCOUNT_SELECTION.value]))
             if UIField.THEME_NAME.value in values:
                 theme_value = str(values[UIField.THEME_NAME.value])
@@ -388,7 +397,7 @@ class PyClashBotUI(ttk.Window):
         def as_int(field: StatField) -> int:
             value = stats.get(field.value)
             try:
-                return int(value)
+                return int(str(value))
             except (TypeError, ValueError):
                 return 0
 
@@ -493,13 +502,22 @@ class PyClashBotUI(ttk.Window):
             command = config["command"]
             style = config.get("style")
             bootstyle = config.get("bootstyle")
-            pady = config.get("pady", (0, 0))
-            kwargs: dict[str, object] = {"text": text, "command": command}
-            if style is not None:
-                kwargs["style"] = style
-            if bootstyle is not None:
-                kwargs["bootstyle"] = bootstyle
-            button = ttk.Button(cluster, **kwargs)
+            pady_raw = config.get("pady", (0, 0))
+            if isinstance(pady_raw, int):
+                pady: tuple[int, int] | int = pady_raw
+            elif isinstance(pady_raw, tuple) and len(pady_raw) == 2:
+                a, b = pady_raw
+                pady = (int(str(a)), int(str(b)))
+            else:
+                pady = (0, 0)
+            if style is not None and bootstyle is not None:
+                button = ttk.Button(cluster, text=text, command=command, style=str(style), bootstyle=str(bootstyle))
+            elif style is not None:
+                button = ttk.Button(cluster, text=text, command=command, style=str(style))
+            elif bootstyle is not None:
+                button = ttk.Button(cluster, text=text, command=command, bootstyle=str(bootstyle))
+            else:
+                button = ttk.Button(cluster, text=text, command=command)
             padx = (0, 10) if index < last_index else (0, 0)
             button.pack(side=LEFT, ipadx=12, ipady=1, padx=padx, pady=pady)
             created.append(button)
@@ -530,7 +548,8 @@ class PyClashBotUI(ttk.Window):
             with Image.open(icon_path) as source:
                 resized = source.resize((64, 64), Image.Resampling.LANCZOS)
                 self._window_icon = ImageTk.PhotoImage(resized)
-            self.iconphoto(True, self._window_icon)
+            # PIL ImageTk.PhotoImage is _PhotoImageLike-compatible but not in tkinter stubs.
+            self.iconphoto(True, self._window_icon)  # ty: ignore[invalid-argument-type]
         except (ImportError, OSError, tk.TclError):
             return
 
@@ -600,8 +619,8 @@ class PyClashBotUI(ttk.Window):
             spin_var = ttk.StringVar(value=str(combo_config.default))
             spinbox = ttk.Spinbox(
                 parent,
-                from_=min(combo_config.values),
-                to=max(combo_config.values),
+                from_=int(min(combo_config.values)),
+                to=int(max(combo_config.values)),
                 width=3,
                 textvariable=spin_var,
                 command=self._notify_config_change,
@@ -853,7 +872,7 @@ class PyClashBotUI(ttk.Window):
 
         ttk.Label(device_row, text="Device:").grid(row=0, column=0, padx=(0, 5), sticky="w")
 
-        self.gp_device_serial_var = ttk.StringVar(value=GOOGLE_PLAY_DEVICE_CONFIG.default)
+        self.gp_device_serial_var = ttk.StringVar(value=str(GOOGLE_PLAY_DEVICE_CONFIG.default))
         self.gp_device_serial_combo = self._picker_combobox(
             device_row,
             textvariable=self.gp_device_serial_var,
@@ -903,7 +922,7 @@ class PyClashBotUI(ttk.Window):
 
         ttk.Label(device_row, text="Device:").grid(row=0, column=0, padx=(0, 5), sticky="w")
 
-        self.bs_device_serial_var = ttk.StringVar(value=BLUESTACKS_DEVICE_CONFIG.default)
+        self.bs_device_serial_var = ttk.StringVar(value=str(BLUESTACKS_DEVICE_CONFIG.default))
         self.bs_device_serial_combo = self._picker_combobox(
             device_row,
             textvariable=self.bs_device_serial_var,
@@ -1014,11 +1033,15 @@ class PyClashBotUI(ttk.Window):
         gauge_frame.grid(row=0, column=0, sticky="ew")
         gauge_frame.columnconfigure(0, weight=1)
 
+        _gauge_kw = self._initial_gauge_kwargs()
         self.win_gauge = DualRingGauge(
             gauge_frame,
             diameter=_WIN_GAUGE_DIAMETER,
             thickness=_WIN_GAUGE_THICKNESS,
-            **self._initial_gauge_kwargs(),
+            fg=_gauge_kw["fg"],
+            bg=_gauge_kw["bg"],
+            text_color=_gauge_kw["text_color"],
+            canvas_bg=_gauge_kw["canvas_bg"],
         )
         self.win_gauge.grid(row=0, column=0, pady=(0, 6))
 
@@ -1178,7 +1201,8 @@ class PyClashBotUI(ttk.Window):
             return
         if self._button_state == "idle":
             self._sync_start_button_readiness()
-        self.after_idle(lambda: self._config_callback(self.get_all_values()))
+        callback = self._config_callback
+        self.after_idle(lambda: callback(self.get_all_values()))
 
     def _trace_variable(self, var: tk.Variable) -> None:
         trace_id = var.trace_add("write", self._notify_config_change)
@@ -1450,7 +1474,7 @@ class PyClashBotUI(ttk.Window):
     @staticmethod
     def _safe_int(value: object, fallback: int = 0) -> int:
         try:
-            return int(value)
+            return int(str(value))
         except (TypeError, ValueError):
             return fallback
 

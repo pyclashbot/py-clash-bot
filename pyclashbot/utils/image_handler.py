@@ -1,7 +1,9 @@
 from os.path import exists
+from typing import cast
 
 import cv2
 import numpy as np
+import numpy.typing as npt
 
 
 class InvalidImageError(Exception):
@@ -14,8 +16,8 @@ class InvalidImageError(Exception):
 
 
 def open_from_buffer(
-    image_data: bytes | bytearray | memoryview | np.ndarray[any],
-) -> np.ndarray[np.uint8]:
+    image_data: bytes | bytearray | memoryview | npt.NDArray[np.uint8],
+) -> npt.NDArray[np.uint8]:
     """A method to read an image from a byte array
     :param byte_array: the byte array to read the image from
     :return: the image as a numpy array
@@ -36,10 +38,10 @@ def open_from_buffer(
         raise InvalidImageError(
             "image_data bytes are not a valid image. Image is all white or all black",
         )
-    return img
+    return cast("npt.NDArray[np.uint8]", img)
 
 
-def open_from_path(path: str) -> np.ndarray[np.uint8]:
+def open_from_path(path: str) -> npt.NDArray[np.uint8]:
     """A method to validate and open an image file
     :param path: the path to the image file
     :return: the image as a numpy array

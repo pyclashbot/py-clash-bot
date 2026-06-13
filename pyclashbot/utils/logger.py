@@ -587,7 +587,7 @@ class ProcessLogger(Logger):
         """Override to send stats through queue instead of just updating local dict."""
         super()._update_log()
         # Non-blocking put to queue - if queue is full, skip this update
-        if self._stats_queue is not None:
+        if self._stats_queue is not None and self.stats is not None:
             try:
                 self._stats_queue.put_nowait(self.stats.copy())
             except Exception:

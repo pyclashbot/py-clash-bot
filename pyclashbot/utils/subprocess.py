@@ -15,7 +15,7 @@ if WIN32:
         SW_HIDE,
     )
 
-    ST_INFO = STARTUPINFO()  # pyright: ignore [reportConstantRedefinition]
+    ST_INFO = STARTUPINFO()
     ST_INFO.dwFlags |= STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | REALTIME_PRIORITY_CLASS
     ST_INFO.wShowWindow = SW_HIDE
     CR_FLAGS = CREATE_NO_WINDOW
@@ -28,7 +28,7 @@ else:
     subprocess_flags = {}
 
 
-def _terminate_process(  # pyright: ignore [reportUnusedFunction]
+def _terminate_process(
     process: Popen[str],
 ) -> None:
     """Terminate a process forcefully on Windows."""

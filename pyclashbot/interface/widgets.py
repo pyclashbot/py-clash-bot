@@ -82,7 +82,8 @@ class DualRingGauge(tk.Canvas):
             width=self.thickness,
             outline=outline,
         )
-        self.itemconfig(self._text, text=label, fill=text_colour or self.text_colour)
+        if self._text is not None:
+            self.itemconfig(self._text, text=label, fill=text_colour or self.text_colour)
         self._value = percent
 
     def animate_to(
