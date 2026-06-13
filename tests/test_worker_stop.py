@@ -3,7 +3,7 @@
 The orchestration tests use lightweight fakes to assert the signal → terminate →
 hard-kill escalation and its ordering. The final test spawns a real process running a
 plain ``time.sleep`` to prove the kernel interrupts blocking calls on terminate — the
-premise that lets the cooperative ``interruptible_sleep`` apparatus be removed.
+reason plain ``time.sleep`` is safe to use for waits throughout the bot.
 """
 
 import multiprocessing as mp
@@ -105,7 +105,7 @@ def test_works_without_an_event() -> None:
 
 def _sleeper() -> None:
     """Spawn target: block in a plain sleep so terminate has to interrupt it."""
-    time.sleep(30)  # noqa: TID251 -- proving plain sleep is interruptible by terminate
+    time.sleep(30)  # proving plain sleep is interruptible by terminate
 
 
 def test_terminate_interrupts_plain_sleep() -> None:

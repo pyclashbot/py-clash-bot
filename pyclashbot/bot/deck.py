@@ -23,7 +23,6 @@ from pyclashbot.bot.state_detect import (
     is_single_deck_layout_by_pixel,
 )
 from pyclashbot.detection.image_rec import find_image
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 
@@ -39,16 +38,16 @@ def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -
     deck_is_full_before_randomize = is_deck_full(emulator)
 
     emulator.click(*DECK_OPTIONS_BUTTON_COORDS)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
 
     emulator.click(*RANDOMIZE_DECK_BUTTON_COORDS)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
 
     if deck_is_full_before_randomize:
         emulator.click(*RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS)
-        interruptible_sleep(0.1)
+        time.sleep(0.1)
 
-    interruptible_sleep(1.0)
+    time.sleep(1.0)
     logger.add_card_randomization()
 
     if not is_deck_full(emulator):
@@ -115,7 +114,7 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
             continue
 
         emulator.click(deck_coords[0] + 15, deck_coords[1] + 15)
-        interruptible_sleep(1)
+        time.sleep(1)
 
         if is_deck_full(emulator):
             logger.change_status(f"Found complete deck: #{deck_to_check}.")
@@ -182,7 +181,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
         if not switch_deck_page(emulator, logger):
             logger.error("Failed to switch to the correct deck page.")
             return False, None
-        interruptible_sleep(1)
+        time.sleep(1)
 
     deck_image_folder = f"deck_tabs/deck_{deck_number}"
     deck_coords = find_image(emulator.screenshot(), deck_image_folder, subcrop=DECK_TABS_REGION, tolerance=0.95)
@@ -190,7 +189,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
     if deck_coords is not None:
         logger.change_status(f"Found and selected deck #{deck_number}.")
         emulator.click(deck_coords[0] + 15, deck_coords[1] + 15)
-        interruptible_sleep(1)
+        time.sleep(1)
         return True, deck_number
 
     logger.change_status(f"Could not find deck #{deck_number}. Defaulting to deck #1.")
@@ -210,7 +209,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
         if not switch_deck_page(emulator, logger):
             logger.error("Failed to switch back to page 1 for fallback.")
             return False, None
-        interruptible_sleep(1)
+        time.sleep(1)
 
     deck1_coords = find_image(emulator.screenshot(), "deck_tabs/deck_1", subcrop=DECK_TABS_REGION, tolerance=0.95)
     if deck1_coords is None:
@@ -219,7 +218,7 @@ def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number
 
     logger.change_status("Found and selected fallback deck #1.")
     emulator.click(deck1_coords[0] + 15, deck1_coords[1] + 15)
-    interruptible_sleep(1)
+    time.sleep(1)
     return True, 1
 
 

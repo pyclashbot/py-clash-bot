@@ -7,7 +7,6 @@ from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
 from pyclashbot.emulators.base import EmulatorNotReadyError
 from pyclashbot.interface.enums import UIField
-from pyclashbot.utils.cancellation import CancellationToken
 from pyclashbot.utils.logger import ProcessLogger, attach_worker_file_logging
 from pyclashbot.utils.platform import is_macos
 
@@ -146,10 +145,6 @@ class WorkerProcess(Process):
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
 
-        # Set up cancellation token for interruptible sleeps
-        token = CancellationToken(self.shutdown_event)
-        CancellationToken.set_current(token)
-
         # Create logger that sends stats through queue
         logger = ProcessLogger(self.stats_queue)
 
@@ -163,7 +158,6 @@ class WorkerProcess(Process):
             logger.error(str(err))
             traceback.print_exc()
         finally:
-            CancellationToken.set_current(None)
             logger.change_status("Bot stopped")
 
 

@@ -4,7 +4,7 @@
 
 ## Adding or editing a state / navigation step
 
-- Call a `check_if_on_*` detection (from `state_detect.py`) before acting; loop on `interruptible_sleep()` with an explicit timeout (e.g. `wait_for_clash_main_menu()` waits up to 240s and clears reward popups mid-wait). Handle async popups before proceeding.
+- Call a `check_if_on_*` detection (from `state_detect.py`) before acting; loop on `time.sleep()` with an explicit timeout (e.g. `wait_for_clash_main_menu()` waits up to 240s and clears reward popups mid-wait). Handle async popups before proceeding.
 - Navigation is consolidated in `nav.py`: use `navigate_main_page(emulator, logger, start, end)` and the `NAV_CLICKS` table rather than ad-hoc click sequences. Deck pages use image matching on `DECK_TABS_REGION`.
 - New coordinates go in `coords.py` as named constants — see the resolution warning in the root `AGENTS.md`. `NAV_CLICKS` itself references named constants from `coords.py`; don't inline raw tuples even inside the table.
 - Pure detection helpers (`(emulator) → coords | None`) go in `find.py`. Pixel predicates (`check_if_on_*`, `pixel_indicates_*`) go in `state_detect.py`. `find.py` is leaf-only: it never imports from `pyclashbot.bot.*` except `coords` and `state_detect`.
