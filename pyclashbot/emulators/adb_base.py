@@ -166,7 +166,13 @@ class AdbBasedController(BaseEmulatorController, ABC):
         if is_linux():
             kwargs["preexec_fn"] = os.setsid
 
-        result = subprocess.run(full_command, check=False, **kwargs)
+        try:
+            result = subprocess.run(full_command, check=False, timeout=30, **kwargs)
+        except subprocess.TimeoutExpired:
+            logger.warning("ADB command timed out after 30s: %s", full_command)
+            return subprocess.CompletedProcess(
+                full_command, returncode=1, stdout=b"" if binary_output else "", stderr=b"ADB command timed out"
+            )
 
         if binary_output:
             logger.debug("ADB result: rc=%d, stdout=%d bytes", result.returncode, len(result.stdout or b""))
