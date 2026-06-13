@@ -1,7 +1,7 @@
 import traceback
 from multiprocessing import Process, Queue
 from multiprocessing.synchronize import Event
-from typing import Any
+from typing import Any, Protocol
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
@@ -167,9 +167,29 @@ class WorkerProcess(Process):
             logger.change_status("Bot stopped")
 
 
+class _StoppableProcess(Protocol):
+    """Structural interface for the process-lifecycle methods ``stop_worker_process`` needs.
+
+    Satisfied by ``multiprocessing.Process`` (and ``WorkerProcess``), spawned context
+    processes, and test fakes alike — so the helper depends on the contract, not the
+    concrete class.
+    """
+
+    def is_alive(self) -> bool: ...
+    def terminate(self) -> None: ...
+    def join(self, timeout: float | None = ...) -> None: ...
+    def kill(self) -> None: ...
+
+
+class _Signal(Protocol):
+    """Structural interface for the shutdown event — only ``set()`` is used here."""
+
+    def set(self) -> None: ...
+
+
 def stop_worker_process(
-    process: Process | None,
-    shutdown_event: Any = None,
+    process: _StoppableProcess | None,
+    shutdown_event: _Signal | None = None,
     *,
     graceful_timeout: float = 2.0,
 ) -> None:
