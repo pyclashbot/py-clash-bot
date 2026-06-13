@@ -383,6 +383,12 @@ def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
     return check_if_on_clash_main_menu(emulator)
 
 
+# TODO: _return_to_main exists because we can't reliably know which page we're on
+# after any of the 3 sub-jobs (donate/claim/request) complete. The state machine
+# tracks which *job* ran but not which *page* the bot landed on, so
+# navigate_main_page (which requires a known start page) can't be used directly.
+# If this becomes a reliability problem, split into 3 separate states with known
+# start/end pages instead of this catch-all recovery.
 def _return_to_main(emulator, logger) -> bool:
     if check_if_on_clash_main_menu(emulator):
         return True
