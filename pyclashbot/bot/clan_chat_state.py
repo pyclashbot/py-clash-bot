@@ -34,7 +34,6 @@ from pyclashbot.bot.state_detect import (
     clan_button_pixel_is_active_yellow,
 )
 from pyclashbot.detection.image_rec import find_image
-from pyclashbot.utils.cancellation import interruptible_sleep
 
 REFERENCE_ROOT = abspath(join(dirname(__file__), "..", "detection", "reference_images"))
 
@@ -154,7 +153,7 @@ def _click_active_templates(
             clicks += 1
             on_success()
             logger.change_status(f"{action_label} ({clicks})")
-            interruptible_sleep(1.5)
+            time.sleep(1.5)
             clicked = True
             break
         if not clicked:
@@ -195,7 +194,7 @@ def _donate_visible_pass(emulator, logger, starting_count: int) -> int:
         donations += 1
         logger.add_donate()
         logger.change_status(f"Donating ({donations})")
-        interruptible_sleep(1.5)
+        time.sleep(1.5)
 
     return donations
 
@@ -214,7 +213,7 @@ def _donate_in_clan_chat(emulator, logger) -> int:
         if not check_for_more_clan_chat_card_options(emulator):
             break
         emulator.click(*REVEAL_MORE_CLAN_CHAT_CARD_OPTIONS_BUTTON_COORD)
-        interruptible_sleep(1.5)
+        time.sleep(1.5)
         donations = _donate_visible_pass(emulator, logger, donations)
 
     return donations
@@ -249,7 +248,7 @@ def _open_request_picker(emulator, logger) -> bool:
     fx, fy = footer
     emulator.click(fx + tw // 2, fy + th // 2)
     logger.change_status("Opening card request picker...")
-    interruptible_sleep(2)
+    time.sleep(2)
 
     start = time.time()
     while time.time() - start < PICKER_OPEN_TIMEOUT:
@@ -263,7 +262,7 @@ def _open_request_picker(emulator, logger) -> bool:
             is not None
         ):
             return True
-        interruptible_sleep(0.5)
+        time.sleep(0.5)
 
     logger.change_status("Card request picker did not open")
     return False
@@ -283,7 +282,7 @@ def _request_cards_from_picker(emulator, logger) -> bool:
 
     ax, ay = arrow
     emulator.click(ax + CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET[0], ay + CLAN_CHAT_REQUEST_CARD_CLICK_OFFSET[1])
-    interruptible_sleep(1)
+    time.sleep(1)
 
     image = emulator.screenshot()
     tw, th = _template_size("clan_chat/request_confirm")
@@ -306,7 +305,7 @@ def _request_cards_from_picker(emulator, logger) -> bool:
     emulator.click(cx + tw // 2, cy + th // 2)
     logger.add_request()
     logger.change_status("Requested cards from clan")
-    interruptible_sleep(2)
+    time.sleep(2)
     return True
 
 
@@ -319,7 +318,7 @@ def _ensure_clan_chat(emulator, logger) -> bool:
     if not navigate_main_page(emulator, logger, PAGE_MAIN, PAGE_CLAN_CHAT):
         logger.change_status("Failed to navigate to clan chat")
         return False
-    interruptible_sleep(1)
+    time.sleep(1)
     return check_if_on_clan_chat(emulator)
 
 
@@ -327,7 +326,7 @@ def _tap_battle_tab(emulator, logger) -> None:
     """Center/battle bottom-nav tab — returns to main from Social hub or clan chat."""
     logger.change_status("Tapping battle tab to reach main menu...")
     emulator.click(*BOTTOM_NAV_BATTLE_TAB_COORD)
-    interruptible_sleep(2)
+    time.sleep(2)
 
 
 def _open_clan_chat_via_bottom_nav(emulator, logger) -> bool:
@@ -345,7 +344,7 @@ def _recover_clan_chat_from_social(emulator, logger) -> bool:
     if check_if_on_social(emulator):
         logger.change_status("On Social tab — reopening clan chat...")
         if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_CLAN_CHAT):
-            interruptible_sleep(1)
+            time.sleep(1)
             return check_if_on_clan_chat(emulator)
     return _open_clan_chat_via_bottom_nav(emulator, logger)
 
@@ -359,13 +358,13 @@ def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
 
         if check_if_on_clan_chat(emulator):
             if navigate_main_page(emulator, logger, PAGE_CLAN_CHAT, PAGE_MAIN):
-                interruptible_sleep(1)
+                time.sleep(1)
             continue
 
         if check_if_on_social(emulator):
             if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_MAIN):
                 logger.change_status("On Social tab — returning to main menu...")
-                interruptible_sleep(3)
+                time.sleep(3)
             continue
 
         if (
@@ -374,7 +373,7 @@ def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
             and check_for_trophy_reward_menu(emulator)
         ):
             handle_trophy_reward_menu(emulator, logger)
-            interruptible_sleep(1)
+            time.sleep(1)
             continue
 
         _tap_battle_tab(emulator, logger)
@@ -388,14 +387,14 @@ def _return_to_main(emulator, logger) -> bool:
 
     if check_if_on_clan_chat(emulator):
         if navigate_main_page(emulator, logger, PAGE_CLAN_CHAT, PAGE_MAIN):
-            interruptible_sleep(1)
+            time.sleep(1)
             if check_if_on_clash_main_menu(emulator):
                 return True
 
     if check_if_on_social(emulator):
         logger.change_status("On Social tab — returning to main menu...")
         if navigate_main_page(emulator, logger, PAGE_SOCIAL, PAGE_MAIN):
-            interruptible_sleep(1)
+            time.sleep(1)
             if check_if_on_clash_main_menu(emulator):
                 return True
 

@@ -10,7 +10,6 @@ import psutil
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
 DEBUG = False
@@ -186,7 +185,7 @@ class GooglePlayEmulatorController(AdbBasedController):
             print(f"[CONNECT DEBUG] Connect result: {connect_result.stdout}")
             print(f"[CONNECT DEBUG] Connect return code: {connect_result.returncode}")
 
-        interruptible_sleep(1)
+        time.sleep(1)
 
         if DEBUG:
             print("[CONNECT DEBUG] Checking device list...")
@@ -302,7 +301,7 @@ class GooglePlayEmulatorController(AdbBasedController):
                     if self.device_serial in line and "device" in line:
                         return True
             self._connect()
-            interruptible_sleep(3)
+            time.sleep(3)
         return False
 
     def _is_connected(self):
@@ -357,7 +356,7 @@ class GooglePlayEmulatorController(AdbBasedController):
                 raise EmulatorNotReadyError("Google Play restart() timed out waiting for the emulator to start")
             self.start()
             print("Waiting for google play emulator to start...")
-            interruptible_sleep(0.3)
+            time.sleep(0.3)
 
         # wait for adb readiness (locale-agnostic) once the VM process is up
         self.logger.change_status("Waiting for Google Play emulator to finish starting...")
@@ -366,13 +365,13 @@ class GooglePlayEmulatorController(AdbBasedController):
             raise EmulatorNotReadyError("Google Play restart() timed out waiting for ADB to become ready")
 
         # Allow emulator services/UI to settle before manipulating display or launching the app.
-        interruptible_sleep(5)
+        time.sleep(5)
 
         self.logger.change_status(f"Setting emulator screen size to {self.expected_dims}...")
         for i in range(3):
             print(f"Setting adb screen size to {self.expected_dims}")
             self._set_screen_size(*self.expected_dims)
-            interruptible_sleep(1)
+            time.sleep(1)
 
         # validate image size
         self.logger.change_status("Validating Google Play emulator screen dimensions...")
@@ -386,7 +385,7 @@ class GooglePlayEmulatorController(AdbBasedController):
 
         # boot clash
         self.logger.change_status("Launching Clash Royale application...")
-        interruptible_sleep(10)
+        time.sleep(10)
         clash_royale_name = CLASH_ROYALE_PACKAGE
         start_app_count = 3
         for i in range(start_app_count):
@@ -394,14 +393,14 @@ class GooglePlayEmulatorController(AdbBasedController):
             print(f"Starting clash app (attempt {i + 1}/{start_app_count})...")
             # start_app raises EmulatorNotReadyError if Clash Royale isn't installed
             self.start_app(clash_royale_name)
-            interruptible_sleep(1)
+            time.sleep(1)
 
         # wait for clash main to appear
         self.logger.change_status("Waiting for Clash Royale main menu to load...")
         print("Waiting for CR main menu")
         clash_main_wait_start_time = time.time()
         clash_main_wait_timeout = 240  # s
-        interruptible_sleep(12)
+        time.sleep(12)
         while 1:
             if time.time() - clash_main_wait_start_time > clash_main_wait_timeout:
                 self.logger.change_status("Timeout waiting for Clash Royale main menu")
@@ -427,7 +426,7 @@ class GooglePlayEmulatorController(AdbBasedController):
         Starts the emulator using the Windows shell to open the shortcut.
         """
         os.startfile(self.emulator_executable_path)  # ty: ignore[unresolved-attribute]
-        interruptible_sleep(5)
+        time.sleep(5)
 
     def stop(self):
         """

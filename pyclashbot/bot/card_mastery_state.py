@@ -16,7 +16,6 @@ from pyclashbot.bot.state_detect import (
     check_if_on_card_page,
     check_if_on_clash_main_menu,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 
@@ -42,11 +41,11 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
             "Failed to open card page for Card Mastery rewards",
         )
         return False
-    interruptible_sleep(3)
+    time.sleep(3)
 
     if not card_mastery_rewards_exist_with_delay(emulator):
         logger.change_status("No Card Mastery rewards to collect.")
-        interruptible_sleep(1)
+        time.sleep(1)
 
     else:
         # while card mastery icon exists:
@@ -56,7 +55,7 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
             collect_first_mastery_reward(emulator)
             logger.change_status("Collected a Card Mastery reward!")
             logger.add_card_mastery_reward_collection()
-            interruptible_sleep(2)
+            time.sleep(2)
 
     # get to clash main
     logger.change_status("Returning to main menu")
@@ -75,21 +74,21 @@ def collect_card_mastery_rewards(emulator, logger: Logger) -> bool:
 def collect_first_mastery_reward(emulator):
     # click the card mastery reward icon
     emulator.click(CARD_MASTERY_OPTIONS_COORD[0], CARD_MASTERY_OPTIONS_COORD[1])
-    interruptible_sleep(0.5)
+    time.sleep(0.5)
 
     # click first card
     emulator.click(CARD_MASTERY_TAB_COORD[0], CARD_MASTERY_TAB_COORD[1])
-    interruptible_sleep(0.5)
+    time.sleep(0.5)
 
     # click rewards at specific Y positions
     y_positions = [316, 403, 488]
     for y in y_positions:
         emulator.click(200, y)
-        interruptible_sleep(1)
+        time.sleep(1)
         if check_for_inventory_full_popup(emulator):
             print("Inventory full popup detected!\nClicking it")
             emulator.click(CARD_MASTERY_COLLECT_COORD[0], CARD_MASTERY_COLLECT_COORD[1])
-            interruptible_sleep(1)
+            time.sleep(1)
 
     # click deadspace
     ds = (14, 278)

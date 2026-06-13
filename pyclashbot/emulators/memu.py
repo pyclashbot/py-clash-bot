@@ -20,7 +20,6 @@ from pyclashbot.emulators.base import (
     BaseEmulatorController,
     EmulatorNotReadyError,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
 # Debug configuration flags - set to True to enable verbose logging for specific areas
@@ -128,7 +127,7 @@ class MemuScreenCapture:
                 return self.open_from_b64(image_b64)
 
             except (PyMemucError, FileNotFoundError, InvalidImageError):
-                interruptible_sleep(0.1)
+                time.sleep(0.1)
 
 
 def verify_memu_installation():
@@ -388,7 +387,7 @@ class MemuEmulatorController(BaseEmulatorController):
                     self.logger.log(f"[LANGUAGE] Failed commands so far: {failed_commands}")
                     self.logger.log("[LANGUAGE] Sleeping for 0.33 seconds...")
 
-            interruptible_sleep(0.33)
+            time.sleep(0.33)
 
         language_end = time.time()
         if debug_language:
@@ -763,7 +762,7 @@ class MemuEmulatorController(BaseEmulatorController):
             creationflags=subprocess.DETACHED_PROCESS,  # ty: ignore[unresolved-attribute]
         )
 
-        interruptible_sleep(2)
+        time.sleep(2)
 
         if process.pid is not None:
             self.logger.log("[+] Memu console started successfully.")
@@ -852,7 +851,7 @@ class MemuEmulatorController(BaseEmulatorController):
                         self.logger.log(f"[ADS] Failed keypresses so far: {failed_keypresses}")
                         self.logger.log("[ADS] Sleeping for 1 second...")
 
-                interruptible_sleep(1)
+                time.sleep(1)
 
             ads_end = time.time()
             if debug_ads:
@@ -921,7 +920,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[SCREEN] Keypress duration: {keypress_end - keypress_start:.3f}s")
                 self.logger.log("[SCREEN] Waiting 2 seconds for screen to stabilize...")
 
-            interruptible_sleep(2)  # Wait for screen to stabilize
+            time.sleep(2)  # Wait for screen to stabilize
 
             # Step 2: Take screenshot
             if debug_screen:
@@ -1274,7 +1273,7 @@ class MemuEmulatorController(BaseEmulatorController):
             self.logger.log(f"[RESTART]   wait_end_time: {clash_main_wait_start_time + clash_main_wait_timeout}")
             self.logger.log("[RESTART] Initial 12-second wait before checking main menu...")
 
-        interruptible_sleep(12)  # Initial wait
+        time.sleep(12)  # Initial wait
 
         if debug_clash:
             self.logger.log("[RESTART] Initial wait complete, starting main menu detection loop...")
@@ -1330,7 +1329,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log(f"[RESTART] Deadspace click completed ({click_end - click_start:.3f}s)")
                 self.logger.log("[RESTART] Sleeping for 1 second before next iteration...")
 
-            interruptible_sleep(1)
+            time.sleep(1)
 
         # Timeout waiting for main menu
         final_elapsed_wait = time.time() - clash_main_wait_start_time
@@ -1369,7 +1368,7 @@ class MemuEmulatorController(BaseEmulatorController):
                 return False
 
             self.pmc.stop_vm(vm_index=self.vm_index)
-            interruptible_sleep(3)
+            time.sleep(3)
 
         return True
 
@@ -1385,7 +1384,7 @@ class MemuEmulatorController(BaseEmulatorController):
                     vm_index=self.vm_index,
                     command=f"shell input tap {x_coord} {y_coord}",
                 )
-                interruptible_sleep(interval)
+                time.sleep(interval)
 
     def swipe(
         self,
@@ -1468,4 +1467,4 @@ if __name__ == "__main__":
     memu.restart()  # construction is cheap now; restart() boots the VM + launches Clash
     while 1:
         test_logger.log("Running")
-        interruptible_sleep(10)
+        time.sleep(10)
