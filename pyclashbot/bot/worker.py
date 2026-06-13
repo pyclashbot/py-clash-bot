@@ -165,3 +165,27 @@ class WorkerProcess(Process):
         finally:
             CancellationToken.set_current(None)
             logger.change_status("Bot stopped")
+
+
+def stop_worker_process(
+    process: Process | None,
+    shutdown_event: Any = None,
+    *,
+    graceful_timeout: float = 2.0,
+) -> None:
+    """Stop the worker process via OS-level termination.
+
+    Signals shutdown (belt-and-suspenders), then terminates and hard-kills if the
+    process does not exit within ``graceful_timeout``. The OS interrupts any blocking
+    call in the worker (sleeps, ADB/socket waits), so this does not depend on the
+    worker cooperatively noticing the shutdown event.
+    """
+    if shutdown_event is not None:
+        shutdown_event.set()
+    if process is None or not process.is_alive():
+        return
+    process.terminate()  # SIGTERM / TerminateProcess
+    process.join(timeout=graceful_timeout)
+    if process.is_alive():
+        process.kill()  # SIGKILL
+        process.join(timeout=graceful_timeout)
