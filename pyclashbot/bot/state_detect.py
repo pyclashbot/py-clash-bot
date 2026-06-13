@@ -318,19 +318,12 @@ def check_if_battle_mode_is_selected(emulator, mode: str):
 
     look_folder = mode2folder[mode]
 
-    print(f"[DEBUG] Checking if {mode} is selected...")
-    print(f"[DEBUG] Looking in folder: {look_folder}")
-    print("[DEBUG] Subcrop: (270, 455, 350, 533)")
-
-    # find image on screen
     coord = find_image(
         emulator.screenshot(),
         look_folder,
         tolerance=0.9,
         subcrop=(270, 455, 350, 533),
     )
-
-    print(f"[DEBUG] Found at: {coord}")
 
     return coord is not None
 

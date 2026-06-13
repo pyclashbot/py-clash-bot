@@ -241,9 +241,9 @@ def _open_request_picker(emulator, logger) -> bool:
             subcrop=CLAN_CHAT_FOOTER_SUBCROP,
             tolerance=TEMPLATE_TOLERANCE,
         ):
-            logger.change_status("Request Cards on cooldown")
+            logger.change_status("Request cards on cooldown")
         else:
-            logger.change_status("Request Cards button not found")
+            logger.change_status("Request cards button not found")
         return False
 
     fx, fy = footer
@@ -314,8 +314,9 @@ def _ensure_clan_chat(emulator, logger) -> bool:
     if check_if_on_clan_chat(emulator):
         return True
     if not check_if_on_clash_main_menu(emulator):
-        logger.change_status("Not on main menu — cannot open clan chat")
-        return False
+        if not _return_to_main(emulator, logger):
+            logger.change_status("Not on main menu — cannot open clan chat")
+            return False
     if not navigate_main_page(emulator, logger, PAGE_MAIN, PAGE_CLAN_CHAT):
         logger.change_status("Failed to navigate to clan chat")
         return False
@@ -382,6 +383,12 @@ def _wait_for_main_after_clan(emulator, logger, timeout: float = 25) -> bool:
     return check_if_on_clash_main_menu(emulator)
 
 
+# TODO: _return_to_main exists because we can't reliably know which page we're on
+# after any of the 3 sub-jobs (donate/claim/request) complete. The state machine
+# tracks which *job* ran but not which *page* the bot landed on, so
+# navigate_main_page (which requires a known start page) can't be used directly.
+# If this becomes a reliability problem, split into 3 separate states with known
+# start/end pages instead of this catch-all recovery.
 def _return_to_main(emulator, logger) -> bool:
     if check_if_on_clash_main_menu(emulator):
         return True

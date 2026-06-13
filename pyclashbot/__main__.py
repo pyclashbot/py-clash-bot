@@ -41,7 +41,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
-from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
+from pyclashbot.utils.logger import Logger, begin_session_file_logging, initialize_pylogging, log_dir
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import is_macos
 
@@ -200,14 +200,14 @@ def start_button_event(
             logger.change_status(f"Start cancelled: invalid device serial '{device_serial}'.")
             return None
 
-    logger.log("Start Button Event")
     logger.change_status("Starting the bot!")
     save_current_settings(values)
     logger.log_job_dictionary(job_dictionary)
 
     ui.notebook.select(ui.stats_tab)
 
-    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event, log_name)
+    session_log_path = begin_session_file_logging()
+    process = WorkerProcess(job_dictionary, stats_queue, shutdown_event, session_log_path)
     process.start()
     return process
 

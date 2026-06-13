@@ -87,7 +87,6 @@ def upgrade_card(emulator, upgradable, logger: Logger):
 
             continue  # Skip
 
-        logger.log("On card upgrade menu")
         logger.change_status(status="On card upgrade menu")
 
         emulator.click(FIRST_UPGRADE_BUTTON_COORD[0], FIRST_UPGRADE_BUTTON_COORD[1])
@@ -102,7 +101,6 @@ def upgrade_card(emulator, upgradable, logger: Logger):
             logger.change_status(status="Not enough coins — skipping card")
 
         else:
-            logger.log("Upgraded a card!")
             upgraded_a_card = True
             prev_card_upgrades = logger.get_card_upgrades()
             logger.add_card_upgraded()

@@ -407,6 +407,19 @@ PAGE_SOCIAL = "social"
 PAGE_CLAN_CHAT = "clan-chat"
 PAGE_WAR = "war"
 
+NAV_PAGE_LABELS = {
+    PAGE_MAIN: "main menu",
+    PAGE_CARD: "card page",
+    PAGE_SHOP: "shop",
+    PAGE_SOCIAL: "social tab",
+    PAGE_CLAN_CHAT: "clan chat",
+    PAGE_WAR: "clan war",
+}
+
+
+def _nav_page_label(page: str) -> str:
+    return NAV_PAGE_LABELS.get(page, page)
+
 
 MAIN_PAGE_CHECKS = {
     PAGE_MAIN: check_if_on_clash_main_menu,
@@ -466,7 +479,9 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
     if clicks is None:
         raise ValueError(f"no recorded navigation for {start_page!r} -> {end_page!r}")
 
-    logger.log(f"navigate_main_page: {start_page} -> {end_page} via {len(clicks)} click(s)")
+    logger.change_status(
+        f"Navigating to {_nav_page_label(end_page)} from {_nav_page_label(start_page)}",
+    )
     for x, y in clicks:
         emulator.click(x, y)
         interruptible_sleep(2)
@@ -506,7 +521,6 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
 def get_to_main_after_fight(emulator, logger):
     timeout = 120  # s
     start_time = time.time()
-    clicked_ok_or_exit = False
 
     logger.change_status("Returning to main menu after fight...")
 
@@ -526,13 +540,12 @@ def get_to_main_after_fight(emulator, logger):
             interruptible_sleep(3)
             continue
 
-        if not clicked_ok_or_exit:
-            button_coord = find_post_battle_button(emulator)
-            if button_coord is not None:
-                logger.change_status("Clicking post-battle button")
-                emulator.click(button_coord[0], button_coord[1])
-                clicked_ok_or_exit = True
-                continue
+        button_coord = find_post_battle_button(emulator)
+        if button_coord is not None:
+            logger.change_status("Clicking post-battle button")
+            emulator.click(button_coord[0], button_coord[1])
+            interruptible_sleep(2)
+            continue
 
         interruptible_sleep(1)
         emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])

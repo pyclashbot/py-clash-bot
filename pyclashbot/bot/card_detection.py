@@ -1,5 +1,4 @@
 import random
-import time
 from collections import Counter
 
 import numpy
@@ -11665,26 +11664,23 @@ play_side = "left"
 
 def is_hero_champion_ability_visible(emulator) -> bool:
     iar = emulator.screenshot()
-    pixels = numpy.array([iar[462][324], iar[453][334], iar[462][336]])
-    colors = numpy.array(
-        [
-            [215, 28, 223],
-            [240, 39, 254],
-            [239, 40, 251],
-        ],
+    return check_for_champion_ability(
+        iar[462][324],
+        iar[453][334],
+        iar[462][336],
     )
 
-    for p in pixels:
-        if numpy.any(numpy.all(numpy.abs(colors - p) <= 30, axis=1)):
-            return True
 
-    return False
-
-
-def check_which_cards_are_available(emulator, check_side=False):
+def check_which_cards_are_available(emulator, check_ability=False, check_side=False):
     global battle_iar
     battle_iar = emulator.screenshot()
     card_exists_list = []
+
+    ability_visible = check_ability and check_for_champion_ability(
+        battle_iar[462][324],
+        battle_iar[453][334],
+        battle_iar[462][336],
+    )
 
     if check_side:
         global play_side
@@ -11698,12 +11694,32 @@ def check_which_cards_are_available(emulator, check_side=False):
         if count >= 26:
             card_exists_list.append(i)
 
+    if check_ability:
+        return card_exists_list, ability_visible
+
     return card_exists_list
 
 
 def trigger_hero_champion_ability(emulator, logger) -> None:
     emulator.click(*CHAMPION_ABILITY_DISMISS_COORD)
     logger.change_status("Triggered Hero/Champion ability")
+
+
+def check_for_champion_ability(a, b, c):
+    pixels = numpy.array([a, b, c])
+    colors = numpy.array(
+        [
+            [215, 28, 223],
+            [240, 39, 254],
+            [239, 40, 251],
+        ],
+    )
+
+    for p in pixels:
+        if numpy.any(numpy.all(numpy.abs(colors - p) <= 30, axis=1)):
+            return True
+
+    return False
 
 
 def identify_hand_cards(emulator, card_index):
@@ -11722,11 +11738,7 @@ def get_card_group(card_id) -> str:
 
 
 def get_play_coords_for_card(emulator, logger, card_index, elapsed_time: float = 0):
-    # get the ID of this card(ram_rider, zap, etc)
-    id_cards_start_time = time.time()
     identity = identify_hand_cards(emulator, card_index)
-    time_taken = str(time.time() - id_cards_start_time)[:3]
-    logger.change_status(f"Identified card as {identity} ({time_taken}s)")
 
     # get the grouping of this card (hog, turret, spell, etc)
     group = get_card_group(identity)

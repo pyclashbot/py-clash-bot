@@ -49,6 +49,14 @@ def handle_state_failure(logger: Logger, state_name: str, function_name: str, er
     return "restart"
 
 
+def _log_skip(logger: Logger, reason: str) -> None:
+    """Log a standardized skip reason (sentence case, em dash)."""
+    logger.log(f"{reason} — skipping")
+
+
+_SKIP_NO_FIGHT_MODES = "No fight modes enabled — skipping fight chain"
+
+
 mode_used_in_1v1 = None
 fight_mode_cycle_index = 0
 
@@ -252,12 +260,8 @@ def state_tree(
 ) -> str:
     """Method to handle and loop between the various states of the bot"""
     global mode_used_in_1v1, fight_mode_cycle_index  # noqa: PLW0602
-    logger.log(f'Set the current state to "{state}"')
     logger.set_current_state(state)
     interruptible_sleep(0.1)
-
-    # header in the log file to split the log by state loop iterations
-    logger.log(f"\n\n------------------------------\nTHIS STATE IS: {state} ")
 
     if state is None:
         logger.error("Error! State is None!!")
@@ -279,7 +283,7 @@ def state_tree(
 
     if state == "switch_account":
         if not job_list.get(UIField.SWITCH_ACCOUNTS_USER_TOGGLE.value):
-            logger.log("Account switching isn't toggled. Skipping this state")
+            _log_skip(logger, "Account switching isn't enabled")
             return state_order.next_state(state)
 
         account_count = job_list.get(UIField.MAX_ACCOUNT_SELECTION.value, 2)
@@ -298,7 +302,7 @@ def state_tree(
     if state == "randomize_deck":
         # if randomize deck isn't toggled, return next state
         if not job_list[UIField.RANDOM_DECKS_USER_TOGGLE]:
-            logger.log("deck randomization isn't toggled. skipping this state")
+            _log_skip(logger, "Deck randomization isn't enabled")
             return state_order.next_state(state)
 
         # make sure there's a relevant job toggled, else just skip deck randomization
@@ -308,7 +312,7 @@ def state_tree(
             and not job_list.get(UIField.TROPHY_ROAD_USER_TOGGLE, False)
             and not job_list["upgrade_user_toggle"]
         ):
-            print("No fight jobs, or card jobs are even toggled, so skipping random deck state.")
+            _log_skip(logger, "No fight or card jobs are enabled for deck randomization")
             return state_order.next_state(state)
 
         # Get the selected deck number from job_list, default to 2 if not found
@@ -320,11 +324,11 @@ def state_tree(
 
     if state == "cycle_deck":
         if not job_list[UIField.CYCLE_DECKS_USER_TOGGLE]:
-            logger.log("deck cycling isn't toggled. skipping this state")
+            _log_skip(logger, "Deck cycling isn't enabled")
             return state_order.next_state(state)
 
         if mode_used_in_1v1 is None:
-            logger.log("No battle mode selected, skipping deck cycling.")
+            _log_skip(logger, "No battle mode selected for deck cycling")
             return state_order.next_state(state)
 
         account_index = max(0, int(logger.current_account))
@@ -346,12 +350,12 @@ def state_tree(
     if state == "upgrade":
         # if job not selected, return next state
         if not job_list["upgrade_user_toggle"]:
-            logger.log("Upgrade user toggle is off, skipping this state")
+            _log_skip(logger, "Card upgrades aren't enabled")
             return state_order.next_state(state)
 
         # if job not ready, go next state
         if state_history.state_is_ready(state) is False:
-            logger.log(f"{state} isn't ready. Skipping this state...")
+            _log_skip(logger, f"{state} isn't ready")
             return state_order.next_state(state)
 
         # return output of this state
@@ -363,12 +367,12 @@ def state_tree(
     if state == "card_mastery":
         # if job not selected, return next state
         if not job_list[UIField.CARD_MASTERY_USER_TOGGLE]:
-            logger.log("Card Mastery job isn't toggled. Skipping this state")
+            _log_skip(logger, "Card mastery isn't enabled")
             return state_order.next_state(state)
 
         # if job not ready, go next state
         if state_history.state_is_ready(state) is False:
-            logger.log(f"{state} isn't ready. Skipping this state...")
+            _log_skip(logger, f"{state} isn't ready")
             return state_order.next_state(state)
 
         # return output of this state
@@ -379,7 +383,7 @@ def state_tree(
 
     if state == "shop_daily":
         if not job_list.get(UIField.SHOP_DAILY_OFFER_USER_TOGGLE.value, False):
-            logger.log("Shop daily offer job isn't toggled. Skipping this state")
+            _log_skip(logger, "Shop daily offer isn't enabled")
             return state_order.next_state(state)
 
         if shop_daily_state(emulator, logger) is False:
@@ -392,9 +396,9 @@ def state_tree(
         claim = job_list.get(UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE.value, False)
         request = job_list.get(UIField.CLAN_REQUEST_CARDS_USER_TOGGLE.value, False)
         if not donate and not claim and not request:
-            logger.log("No clan actions selected. Skipping this state")
+            _log_skip(logger, "No clan actions are enabled")
             if not any_fight_mode_enabled(job_list):
-                logger.log("No fight modes enabled, skipping fight chain")
+                logger.log(_SKIP_NO_FIGHT_MODES)
                 return state_order.next_state("end_fight")
             return state_order.next_state(state)
 
@@ -406,7 +410,7 @@ def state_tree(
             request_enabled=request,
         ):
             if not any_fight_mode_enabled(job_list):
-                logger.log("No fight modes enabled, skipping fight chain")
+                logger.log(_SKIP_NO_FIGHT_MODES)
                 return state_order.next_state("end_fight")
             return state_order.next_state(state)
 
@@ -414,15 +418,15 @@ def state_tree(
 
     if state == "war":
         if not job_list.get(UIField.WAR_USER_TOGGLE.value, False):
-            logger.log("War job isn't toggled. Skipping this state")
+            _log_skip(logger, "Clan war isn't enabled")
             if not any_fight_mode_enabled(job_list):
-                logger.log("No fight modes enabled, skipping fight chain")
+                logger.log(_SKIP_NO_FIGHT_MODES)
                 return state_order.next_state("end_fight")
             return state_order.next_state(state)
 
         if war_state(emulator, logger):
             if not any_fight_mode_enabled(job_list):
-                logger.log("No fight modes enabled, skipping fight chain")
+                logger.log(_SKIP_NO_FIGHT_MODES)
                 return state_order.next_state("end_fight")
             return state_order.next_state(state)
         return handle_state_failure(logger, "war", "war_state")
@@ -438,7 +442,7 @@ def state_tree(
             enabled_modes.append("Trophy Road")
 
         if not enabled_modes:
-            logger.log("No fight modes enabled, skipping fight chain")
+            logger.log(_SKIP_NO_FIGHT_MODES)
             return state_order.next_state("end_fight")
 
         # if more than one mode is selected, just cycle through them
@@ -460,13 +464,13 @@ def state_tree(
                         logger, "select_battle_mode", "select_mode", f"Failed to select mode: {selected_mode}"
                     )
             else:
-                logger.change_status(f"{selected_mode} is already selected")
+                logger.change_status(f"{selected_mode} already selected")
 
         return state_order.next_state(state)
 
     if state == "start_fight":
         if mode_used_in_1v1 is None:
-            print("No battle mode selected. Skipping this state")
+            _log_skip(logger, "No battle mode selected")
             return state_order.next_state(state)
 
         # Start fight using the selected mode directly
@@ -479,7 +483,7 @@ def state_tree(
     if state == "1v1_fight":
         # Check if the current mode is a 1v1 type (Classic 1v1 or Trophy Road)
         if mode_used_in_1v1 not in ["Classic 1v1", "Trophy Road"]:
-            print(f"Current mode '{mode_used_in_1v1}' is not a 1v1 type. Skipping this state")
+            _log_skip(logger, f"{mode_used_in_1v1} isn't a 1v1 mode")
             return state_order.next_state(state)
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
@@ -505,7 +509,7 @@ def state_tree(
     if state == "2v2_fight":
         # Check if the current mode is a 2v2 type (Classic 2v2)
         if mode_used_in_1v1 != "Classic 2v2":
-            print(f"Current mode '{mode_used_in_1v1}' is not a 2v2 type. Skipping this state")
+            _log_skip(logger, f"{mode_used_in_1v1} isn't a 2v2 mode")
             return state_order.next_state(state)
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
@@ -528,7 +532,7 @@ def state_tree(
 
     if state == "end_fight":
         if not any_fight_mode_enabled(job_list):
-            logger.log("No fight modes enabled, skipping end_fight")
+            logger.log("No fight modes enabled — skipping end fight")
             return state_order.next_state(state)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)

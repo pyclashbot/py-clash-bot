@@ -46,11 +46,6 @@ def find_image(
     locations, filenames = find_references(search_image, folder, tolerance)
     coord = get_first_location(locations)
     if coord is not None:
-        # Find which file matched
-        for i, location in enumerate(locations):
-            if location is not None:
-                print(f"Match found in file: {filenames[i]}")
-                break
         # Convert from [y, x] to (x, y) and add offset to get coordinates relative to full image
         return (coord[1] + offset_x, coord[0] + offset_y)
     return None

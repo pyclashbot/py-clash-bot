@@ -8,8 +8,8 @@ from typing import Literal
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
+    get_card_group,
     get_play_coords_for_card,
-    is_hero_champion_ability_visible,
     switch_side,
     trigger_hero_champion_ability,
 )
@@ -54,9 +54,6 @@ def do_fight_state(
 ) -> bool:
     """Handle the entirety of a battle state (start fight, do fight, end fight)."""
 
-    logger.change_status("Waiting for battle to start")
-
-    # Wait for battle start
     if wait_for_battle_start(emulator, logger) is False:
         logger.change_status("Timed out waiting for battle to start")
         return False
@@ -65,7 +62,7 @@ def do_fight_state(
     logger.log(f'This is the fight mode: "{fight_mode_chosen}"')
 
     # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag, fight_mode_chosen) is False:
+    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag) is False:
         logger.change_status("Fight loop failed")
         return False
 
@@ -103,20 +100,13 @@ def start_fight(emulator, logger, mode) -> bool:
     Returns:
         bool: True if fight started successfully, False otherwise
     """
-    # Validate mode parameter
-    logger.log(f'Input mode type: "{type(mode)}"')
-    logger.log(f"Input mode value: {mode}")
     valid_modes = ["Classic 1v1", "Classic 2v2", "Trophy Road"]
-    logger.log(f"Valid modes: {valid_modes}")
     if mode not in valid_modes:
-        logger.log(f"The valid modes for start_fight() are: {valid_modes}")
-        logger.log(f"But start_fight() got an invalid mode: '{mode}'")
+        logger.change_status(f"Invalid fight mode: {mode}")
         return False
 
     logger.change_status(f"Starting a {mode} fight")
 
-    # Check if on clash main menu
-    logger.log("Checking if on main menu before starting fight...")
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on main menu — cannot start fight")
         return False
@@ -124,14 +114,12 @@ def start_fight(emulator, logger, mode) -> bool:
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(START_FIGHT_BUTTON_COORD[0], START_FIGHT_BUTTON_COORD[1])
-    logger.log(f"Clicked Start button at {START_FIGHT_BUTTON_COORD}")
 
     # 2v2 needs a second popup after Start
     if mode == "Classic 2v2":
         logger.change_status("Classic 2v2 — clicking Quick Match popup...")
         interruptible_sleep(3)
         emulator.click(QUICKMATCH_POPUP_BUTTON_COORD[0], QUICKMATCH_POPUP_BUTTON_COORD[1])
-        logger.log(f"Clicked Quickmatch button at {QUICKMATCH_POPUP_BUTTON_COORD}")
 
     return True
 
@@ -190,8 +178,8 @@ def wait_for_elixir(
             )
             last_logged_second = elapsed_second
 
-        card_indices = check_which_cards_are_available(emulator)
-        if is_hero_champion_ability_visible(emulator):
+        card_indices, ability_visible = check_which_cards_are_available(emulator, True, False)
+        if ability_visible:
             if ability_available_since is None:
                 ability_available_since = time.time()
                 logger.change_status(
@@ -256,13 +244,10 @@ def end_fight_state(
     """Method to handle the time after a fight and before the next state"""
     # count the crown score on this end-battle screen
 
-    # get to clash main after this fight
-    logger.log("Returning to main menu after fight")
     if get_to_main_after_fight(emulator, logger) is False:
-        logger.log("Failed to return to main menu after fight")
+        logger.change_status("Failed to return to main menu after fight")
         return False
 
-    logger.log("Returned to main menu after fight")
     interruptible_sleep(3)
 
     # check if the prev game was a win
@@ -270,7 +255,6 @@ def end_fight_state(
         win_check_return = check_if_previous_game_was_win(emulator, logger)
 
         if win_check_return == "restart":
-            logger.log("Failed while checking if previous game was a win")
             return False
 
         if win_check_return:
@@ -354,85 +338,42 @@ def select_card_index(card_indices, last_three_cards):
 def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "BattleStrategy") -> bool:
     print("\n")
 
-    # check which cards are available
-    logger.change_status("Looking at which cards are available")
-    available_card_check_start_time = time.time()
-    card_indices = check_which_cards_are_available(emulator, check_side=True)
+    card_indices = check_which_cards_are_available(emulator, False, True)
 
     if not card_indices:
         logger.change_status("No cards ready yet...")
         return False
 
-    available_card_check_time_taken = str(
-        time.time() - available_card_check_start_time,
-    )[:3]
-
-    logger.change_status(
-        f"These cards are available: {card_indices} ({available_card_check_time_taken}s)",
-    )
-
     card_index = select_card_index(card_indices, last_three_cards)
     if card_index not in last_three_cards:
         last_three_cards.append(card_index)
-    logger.change_status(f"Choosing this card index: {card_index}")
 
-    # get a coord based on the selected side
-    play_coord_calculation_start_time = time.time()
     card_id, play_coord = get_play_coords_for_card(emulator, logger, card_index, battle_strategy.get_elapsed_time())
-    play_coord_calculation_time_taken = str(
-        time.time() - play_coord_calculation_start_time,
-    )[:3]
 
-    logger.change_status(
-        f"Calculated play for: {card_id} at {play_coord} ({play_coord_calculation_time_taken}s)",
-    )
-
-    # click the card index
-    click_and_play_card_start_time = time.time()
     if None in [HAND_CARDS_COORDS, card_index]:
         logger.change_status("Non-fatal error: card index is None")
         return False
 
-    emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
-
-    # click the play coord
     if play_coord is None:
         logger.change_status("Non-fatal error: play coordinates are None")
         return False
 
+    emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
     emulator.click(play_coord[0], play_coord[1])
-    click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[:3]
     if recording_flag:
         save_play(play_coord, card_index)
 
-    logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
+    slot = "ABCD"[card_index]
+    slot_labels = ", ".join("ABCD"[i] for i in sorted(card_indices))
+    logger.log(
+        f"Ready slots: {slot_labels} | chose {slot} | group: {get_card_group(card_id)}",
+    )
+    logger.change_status(f"Played {card_id} from slot {slot} at {play_coord}")
     logger.add_card_played()
 
     if random.randint(0, 9) == 1:
         send_emote(emulator, logger)
     return True
-
-
-_PHASE_STRATEGIES = {
-    "early": [0, 0, 0, 0, 0.3, 0.3, 0.4],  # 0-7s: Conservative, wait for more elixir
-    "single": [0.05, 0.05, 0.1, 0.15, 0.15, 0.3, 0.2],  # 7-90s: Balanced distribution
-    "double": [0.05, 0.05, 0.1, 0.15, 0.25, 0.3, 0.1],  # 90-200s: Favor 7-8 elixir
-    "triple": [0.05, 0.05, 0.1, 0.1, 0.3, 0.4, 0],  # 200s+: Heavy favor 7-8, never 9
-}
-
-_PHASE_THRESHOLDS_1V1 = {
-    "early": (6000, 9000),
-    "single": (6000, 9000),
-    "double": (7000, 10000),
-    "triple": (8000, 11000),
-}
-
-_PHASE_THRESHOLDS_2V2 = {
-    "early": (7000, 13000),
-    "single": (7000, 14000),
-    "double": (8000, 15000),
-    "triple": (9000, 16000),
-}
 
 
 class BattleStrategy:
@@ -442,13 +383,57 @@ class BattleStrategy:
     based on battle phase, eliminating the need for global variables.
     """
 
-    def __init__(self, fight_mode: str = "Classic 1v1"):
+    def __init__(self):
         self.start_time = None
         self.elixir_amounts = [3, 4, 5, 6, 7, 8, 9]
 
-        is_2v2 = fight_mode == "Classic 2v2"
-        self.phase_strategies = _PHASE_STRATEGIES
-        self.phase_thresholds = _PHASE_THRESHOLDS_2V2 if is_2v2 else _PHASE_THRESHOLDS_1V1
+        # Strategy weights for each battle phase
+        self.phase_strategies = {
+            "early": [
+                0,
+                0,
+                0,
+                0,
+                0.3,
+                0.3,
+                0.4,
+            ],  # 0-7s: Conservative, wait for more elixir
+            "single": [
+                0.05,
+                0.05,
+                0.1,
+                0.15,
+                0.15,
+                0.3,
+                0.2,
+            ],  # 7-90s: Balanced distribution
+            "double": [
+                0.05,
+                0.05,
+                0.1,
+                0.15,
+                0.25,
+                0.3,
+                0.1,
+            ],  # 90-200s: Favor 7-8 elixir
+            "triple": [
+                0.05,
+                0.05,
+                0.1,
+                0.1,
+                0.3,
+                0.4,
+                0,
+            ],  # 200s+: Heavy favor 7-8, never 9
+        }
+
+        # Wait/play thresholds for each phase
+        self.phase_thresholds = {
+            "early": (6000, 9000),
+            "single": (6000, 9000),
+            "double": (7000, 10000),
+            "triple": (8000, 11000),
+        }
 
     def start_battle(self):
         """Call when battle begins to start timing."""
@@ -482,7 +467,7 @@ class BattleStrategy:
         return self.phase_thresholds[phase]
 
 
-def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str = "Classic 1v1") -> bool:
+def _fight_loop(emulator, logger: Logger, recording_flag: bool) -> bool:
     """Method for handling dynamically timed fight"""
     create_default_bridge_iar(emulator)
     collections.deque(maxlen=3)
@@ -490,7 +475,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
     battle_detection_lost_count = 0
 
     # Initialize battle strategy and start timing
-    battle_strategy = BattleStrategy(fight_mode)
+    battle_strategy = BattleStrategy()
     battle_strategy.start_battle()
 
     while True:
@@ -546,13 +531,8 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
             logger.change_status("Lost battle detection — continuing fight loop")
             continue
 
-        play_start_time = time.time()
         if play_a_card(emulator, logger, recording_flag, battle_strategy) is False:
             logger.change_status("Failed to play a card, retrying...")
-        # play_time_taken = str(time.time() - play_start_time)[:4]
-        logger.change_status(
-            f"Made a play in {str(time.time() - play_start_time)[:4]}s",
-        )
 
     logger.change_status("Fight complete")
     interruptible_sleep(2.13)

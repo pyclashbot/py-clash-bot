@@ -16,8 +16,19 @@ from pyclashbot.utils.versioning import __version__
 LOGS_TO_KEEP = 10
 
 log_dir = get_log_dir("py-clash-bot")
-log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
+log_name = ""
 archive_name: str = join(log_dir, "logs.zip")
+
+
+def session_log_basename() -> str:
+    """Build a session log filename for the current local time."""
+    timestamp = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+    return f"{timestamp}.txt"
+
+
+def session_log_path() -> str:
+    """Return the full path for a new bot-session log file."""
+    return join(log_dir, session_log_basename())
 
 
 def compress_logs() -> None:
@@ -43,7 +54,32 @@ def _normalized_log_path(path: str) -> str:
     return normcase(abspath(path))
 
 
-def _attach_log_file_handler(log_path: str) -> None:
+def _emit_to_session_file(level: int, message: str) -> None:
+    """Write to session log file handlers without echoing to the console."""
+    root_logger = logging.getLogger()
+    record = root_logger.makeRecord(
+        root_logger.name,
+        level,
+        "(pyclashbot)",
+        0,
+        message,
+        (),
+        None,
+    )
+    for handler in root_logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            handler.handle(record)
+
+
+def _detach_log_file_handlers() -> None:
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers[:]:
+        if isinstance(handler, logging.FileHandler):
+            handler.close()
+            root_logger.removeHandler(handler)
+
+
+def _attach_log_file_handler(log_path: str, *, level: int = logging.INFO) -> None:
     """Attach a log-file handler if this process does not already have one for log_path."""
     if not exists(log_dir):
         makedirs(log_dir)
@@ -56,14 +92,49 @@ def _attach_log_file_handler(log_path: str) -> None:
         if isinstance(handler, logging.FileHandler):
             try:
                 if _normalized_log_path(handler.baseFilename) == target_log:
+                    handler.setLevel(level)
                     return
             except Exception:
                 continue
 
     file_handler = logging.FileHandler(log_path, encoding="utf-8")
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(level)
     file_handler.setFormatter(logging.Formatter("%(levelname)s:%(asctime)s %(message)s"))
     root_logger.addHandler(file_handler)
+
+
+def _write_session_log_header() -> None:
+    _emit_to_session_file(logging.INFO, f"Logging initialized for {__version__}")
+    _emit_to_session_file(logging.INFO, f"Log directory: {log_dir}")
+    _emit_to_session_file(logging.INFO, f"Current log file: {log_name}")
+    _emit_to_session_file(
+        logging.INFO,
+        "Session log level: DEBUG",
+    )
+    _emit_to_session_file(
+        logging.INFO,
+        """
+ ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
+(  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
+ )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
+(__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
+""",
+    )
+    _emit_to_session_file(
+        logging.INFO,
+        "Machine Info: \n" + pprint.pformat(_get_machine_info(), sort_dicts=False, indent=4),
+    )
+
+
+def begin_session_file_logging() -> str:
+    """Create a new session log file for a bot run and return its path."""
+    global log_name
+
+    _detach_log_file_handlers()
+    log_name = session_log_path()
+    _attach_log_file_handler(log_name, level=logging.DEBUG)
+    _write_session_log_header()
+    return log_name
 
 
 def attach_worker_file_logging(session_log_path: str) -> None:
@@ -72,29 +143,15 @@ def attach_worker_file_logging(session_log_path: str) -> None:
     macOS/Windows use spawn for multiprocessing, so the worker does not inherit
     the GUI process's logging handlers.
     """
-    _attach_log_file_handler(session_log_path)
+    _attach_log_file_handler(session_log_path, level=logging.DEBUG)
 
 
 def initialize_pylogging() -> None:
-    """Method to be called once to initialize python logging"""
-    _attach_log_file_handler(log_name)
+    """Method to be called once to initialize python logging."""
+    if not exists(log_dir):
+        makedirs(log_dir)
 
-    logging.info("Logging initialized for %s", __version__)
-    logging.info("Log directory: %s", log_dir)
-    logging.info("Current log file: %s", log_name)
-    logging.info(
-        """
- ____  _  _       ___  __      __    ___  _   _     ____  _____  ____
-(  _ \\( \\/ )___  / __)(  )    /__\\  / __)( )_( )___(  _ \\(  _  )(_  _)
- )___/ \\  /(___)( (__  )(__  /(__)\\ \\__ \\ ) _ ((___)) _ < )(_)(   )(
-(__)   (__)      \\___)(____)(__)(__)(___/(_) (_)   (____/(_____) (__)
-""",
-    )
-    logging.info(
-        "Machine Info: \n%s",
-        pprint.pformat(_get_machine_info(), sort_dicts=False, indent=4),
-    )
-
+    logging.getLogger().setLevel(logging.DEBUG)
     compress_logs()
 
 
@@ -192,7 +249,6 @@ class Logger:
 
     def _update_log(self) -> None:
         self._update_stats()
-        logging.info(self.current_status)
 
     def _update_stats(self) -> None:
         """Updates the stats with a dictionary of mutable statistics"""
@@ -247,9 +303,13 @@ class Logger:
     def log(self, message) -> None:
         """Log something to file and print to console with time and stats"""
         log_message = f"[{self.current_state}] {message}"
-        logging.info(log_message)
+        _emit_to_session_file(logging.INFO, log_message)
         time_string = self.calc_time_since_start()
         print(f"[{self.current_state}] [{time_string}] {message}")
+
+    def log_to_file(self, message) -> None:
+        """Log detail to the session file without printing to the console."""
+        _emit_to_session_file(logging.INFO, f"[{self.current_state}] {message}")
 
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
@@ -386,7 +446,8 @@ class Logger:
 
         """
         self.errored = True
-        logging.error(message)
+        _emit_to_session_file(logging.ERROR, message)
+        print(message)
 
     @_updates_gui
     def add_card_mastery_reward_collection(self) -> None:
@@ -551,26 +612,26 @@ class Logger:
             else:
                 user_toggle_keys_and_values.append((key, value))
 
-        self.log("-------------------------------")
-        self.log("------Job Dictionary:----------")
-        self.log("-------------------------------")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("------Job Dictionary:----------")
+        self.log_to_file("-------------------------------")
 
-        self.log("User Toggle Keys and Values:")
+        self.log_to_file("User Toggle Keys and Values:")
         for key, value in user_toggle_keys_and_values:
             while len(key) < 45:
                 key += " "  # noqa: PLW2901
-            self.log(f"     -{key}:           {value}")
+            self.log_to_file(f"     -{key}:           {value}")
 
-        self.log("-------------------------------")
-        self.log("Increment User Input Keys and Values:")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("Increment User Input Keys and Values:")
         for key, value in increment_user_input_keys_and_values:
             while len(key) < 45:
                 key += " "  # noqa: PLW2901
-            self.log(f"     -{key}:              [{value}]")
+            self.log_to_file(f"     -{key}:              [{value}]")
 
-        self.log("-------------------------------")
-        self.log("-------------------------------")
-        self.log("-------------------------------\n\n")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("-------------------------------")
+        self.log_to_file("-------------------------------\n\n")
 
 
 class ProcessLogger(Logger):
