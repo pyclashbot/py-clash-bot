@@ -166,7 +166,13 @@ class AdbBasedController(BaseEmulatorController, ABC):
         if is_linux():
             kwargs["preexec_fn"] = os.setsid
 
-        result = subprocess.run(full_command, check=False, **kwargs)
+        try:
+            result = subprocess.run(full_command, check=False, timeout=30, **kwargs)
+        except subprocess.TimeoutExpired:
+            logger.warning("ADB command timed out after 30s: %s", full_command)
+            return subprocess.CompletedProcess(
+                full_command, returncode=1, stdout=b"" if binary_output else "", stderr=b"ADB command timed out"
+            )
 
         if binary_output:
             logger.debug("ADB result: rc=%d, stdout=%d bytes", result.returncode, len(result.stdout or b""))
@@ -275,8 +281,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         return img
 
     def start_app(self, package_name: str):
-        """
-        Start an app using ADB monkey command.
+        """Start an app on the emulator using ADB monkey command.
 
         Args:
             package_name (str): The package name to start.
@@ -285,11 +290,15 @@ class AdbBasedController(BaseEmulatorController, ABC):
             True if the app was launched.
 
         Raises:
-            EmulatorNotReadyError: If the app is not installed.
+            EmulatorNotReadyError: If the app is not installed or cannot be launched.
         """
         if not self._check_app_installed(package_name):
             raise EmulatorNotReadyError(f"{package_name} is not installed on the emulator")
 
         logger.info("Launching app: %s", package_name)
-        self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
+        result = self.adb(f"shell monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
+        if result.returncode != 0:
+            raise EmulatorNotReadyError(
+                f"Failed to launch {package_name}: monkey returned rc={result.returncode}"
+            )
         return True

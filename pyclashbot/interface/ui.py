@@ -1029,38 +1029,8 @@ class PyClashBotUI(ttk.Window):
         left.grid(row=0, column=0, sticky="new", padx=(0, 5))
         left.columnconfigure(0, weight=1)
 
-        gauge_frame = self._section_labelframe(left, "Win rate")
-        gauge_frame.grid(row=0, column=0, sticky="ew")
-        gauge_frame.columnconfigure(0, weight=1)
-
-        _gauge_kw = self._initial_gauge_kwargs()
-        self.win_gauge = DualRingGauge(
-            gauge_frame,
-            diameter=_WIN_GAUGE_DIAMETER,
-            thickness=_WIN_GAUGE_THICKNESS,
-            fg=_gauge_kw["fg"],
-            bg=_gauge_kw["bg"],
-            text_color=_gauge_kw["text_color"],
-            canvas_bg=_gauge_kw["canvas_bg"],
-        )
-        self.win_gauge.grid(row=0, column=0, pady=(0, 6))
-
-        win_loss_frame = ttk.Frame(gauge_frame)
-        win_loss_frame.grid(row=1, column=0, sticky="ew")
-        win_loss_frame.columnconfigure(1, weight=1)
-        for row, field in enumerate(WIN_RATE_STAT_FIELDS):
-            title = WIN_RATE_STAT_LABELS[field]
-            label = ttk.Label(win_loss_frame, text=f"{title}:")
-            label.grid(row=row, column=0, sticky="w")
-            self._theme_labels.append(label)
-            var = ttk.StringVar(value="0")
-            value_label = ttk.Label(win_loss_frame, textvariable=var, foreground=self._stat_accent_foreground())
-            value_label.grid(row=row, column=1, sticky="e")
-            self._stat_accent_labels.append(value_label)
-            self.stat_labels[field] = var
-
         battle_frame = self._section_labelframe(left, "Battle stats")
-        battle_frame.grid(row=1, column=0, sticky="ew", pady=(6, 0))
+        battle_frame.grid(row=0, column=0, sticky="ew")
         battle_frame.columnconfigure(1, weight=1)
 
         for row, field in enumerate(BATTLE_STAT_FIELDS):
@@ -1097,25 +1067,7 @@ class PyClashBotUI(ttk.Window):
         best_streak_label.grid(row=streak_row + 2, column=1, sticky="e")
         self._stat_accent_labels.append(best_streak_label)
 
-        right = ttk.Frame(content)
-        right.grid(row=0, column=1, sticky="new", padx=(5, 0))
-        right.columnconfigure(0, weight=1)
-
-        collection_frame = self._section_labelframe(right, "Collection stats")
-        collection_frame.grid(row=0, column=0, sticky="ew")
-        collection_frame.columnconfigure(1, weight=1)
-        for row, field in enumerate(COLLECTION_STAT_FIELDS):
-            title = COLLECTION_STAT_LABELS[field]
-            label = ttk.Label(collection_frame, text=title)
-            label.grid(row=row, column=0, sticky="w")
-            self._theme_labels.append(label)
-            var = ttk.StringVar(value="0")
-            value_label = ttk.Label(collection_frame, textvariable=var, foreground=self._stat_accent_foreground())
-            value_label.grid(row=row, column=1, sticky="e")
-            self._stat_accent_labels.append(value_label)
-            self.stat_labels[field] = var
-
-        bot_frame = self._section_labelframe(right, "Bot stats")
+        bot_frame = self._section_labelframe(left, "Bot stats")
         bot_frame.grid(row=1, column=0, sticky="ew", pady=(6, 0))
         bot_frame.columnconfigure(1, weight=1)
         self.bot_labels = {
@@ -1134,6 +1086,54 @@ class PyClashBotUI(ttk.Window):
             )
             value_label.grid(row=row, column=1, sticky="e")
             self._stat_accent_labels.append(value_label)
+
+        right = ttk.Frame(content)
+        right.grid(row=0, column=1, sticky="new", padx=(5, 0))
+        right.columnconfigure(0, weight=1)
+
+        gauge_frame = self._section_labelframe(right, "Win rate")
+        gauge_frame.grid(row=0, column=0, sticky="ew")
+        gauge_frame.columnconfigure(0, weight=1)
+
+        _gauge_kw = self._initial_gauge_kwargs()
+        self.win_gauge = DualRingGauge(
+            gauge_frame,
+            diameter=_WIN_GAUGE_DIAMETER,
+            thickness=_WIN_GAUGE_THICKNESS,
+            fg=_gauge_kw["fg"],
+            bg=_gauge_kw["bg"],
+            text_color=_gauge_kw["text_color"],
+            canvas_bg=_gauge_kw["canvas_bg"],
+        )
+        self.win_gauge.grid(row=0, column=0, pady=(0, 6))
+
+        win_loss_frame = ttk.Frame(gauge_frame)
+        win_loss_frame.grid(row=1, column=0, sticky="ew")
+        win_loss_frame.columnconfigure(1, weight=1)
+        for row, field in enumerate(WIN_RATE_STAT_FIELDS):
+            title = WIN_RATE_STAT_LABELS[field]
+            label = ttk.Label(win_loss_frame, text=f"{title}:")
+            label.grid(row=row, column=0, sticky="w")
+            self._theme_labels.append(label)
+            var = ttk.StringVar(value="0")
+            value_label = ttk.Label(win_loss_frame, textvariable=var, foreground=self._stat_accent_foreground())
+            value_label.grid(row=row, column=1, sticky="e")
+            self._stat_accent_labels.append(value_label)
+            self.stat_labels[field] = var
+
+        collection_frame = self._section_labelframe(right, "Collection stats")
+        collection_frame.grid(row=1, column=0, sticky="ew", pady=(6, 0))
+        collection_frame.columnconfigure(1, weight=1)
+        for row, field in enumerate(COLLECTION_STAT_FIELDS):
+            title = COLLECTION_STAT_LABELS[field]
+            label = ttk.Label(collection_frame, text=title)
+            label.grid(row=row, column=0, sticky="w")
+            self._theme_labels.append(label)
+            var = ttk.StringVar(value="0")
+            value_label = ttk.Label(collection_frame, textvariable=var, foreground=self._stat_accent_foreground())
+            value_label.grid(row=row, column=1, sticky="e")
+            self._stat_accent_labels.append(value_label)
+            self.stat_labels[field] = var
 
     def _create_misc_tab(self) -> None:
         content = self._prepare_tab_page(self.misc_tab)

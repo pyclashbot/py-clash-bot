@@ -12,6 +12,7 @@ class StatField(StrEnum):
     TROPHY_ROAD_1V1_FIGHTS = "trophy_road_1v1_fights"
     CARD_RANDOMIZATIONS = "card_randomizations"
     CARD_CYCLES = "card_cycles"
+    WAR_FIGHTS = "war_fights"
     CARD_MASTERY_REWARD_COLLECTIONS = "card_mastery_reward_collections"
     UPGRADES = "upgrades"
     WAR_CHEST_COLLECTS = "war_chest_collects"
@@ -90,6 +91,7 @@ BATTLE_STAT_LABELS: dict[StatField, str] = {
     StatField.TROPHY_ROAD_1V1_FIGHTS: "Trophy Road",
     StatField.CARD_RANDOMIZATIONS: "Decks randomized",
     StatField.CARD_CYCLES: "Decks cycled",
+    StatField.WAR_FIGHTS: "War battles",
 }
 
 BATTLE_STAT_FIELDS: tuple[StatField, ...] = tuple(BATTLE_STAT_LABELS.keys())

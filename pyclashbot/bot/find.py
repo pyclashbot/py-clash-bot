@@ -17,7 +17,7 @@ def find_war_battle_icon(emulator):
     Returns (x, y) of the icon, or None if not found.
     """
     image = emulator.screenshot()
-    return find_image(image, "war_battle_icon", tolerance=0.9, show_image=False)
+    return find_image(image, "war_battle_icon", tolerance=0.8, show_image=False)
 
 
 def find_fight_mode_icon(emulator, mode: str):

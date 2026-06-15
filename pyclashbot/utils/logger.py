@@ -209,6 +209,7 @@ class Logger:
                 "best_win_streak": self.best_win_streak,
                 "card_randomizations": self.card_randomizations,
                 "card_cycles": self.card_cycles,
+                "war_fights": self.war_fights,
                 # collection stats
                 "war_chest_collects": self.war_chest_collects,
                 "card_mastery_reward_collections": self.card_mastery_reward_collections,
