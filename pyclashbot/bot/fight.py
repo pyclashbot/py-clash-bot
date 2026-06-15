@@ -34,6 +34,7 @@ from pyclashbot.bot.recorder import (
     is_recording,
     log_play,
     start_fight_recording,
+    stop_fight_capture,
 )
 from pyclashbot.bot.state_detect import (
     check_if_battle_has_ended,
@@ -83,6 +84,10 @@ def do_fight_state(
     if random_fight_mode and _random_fight_loop(emulator, logger) is False:
         logger.change_status("Fight loop failed")
         return False
+
+    # The fight is over: freeze capture here so the pack excludes post-fight
+    # navigation frames (manifest + outcome are written later in end_fight_state).
+    stop_fight_capture()
 
     # Only log the fight if not called from the start
     if not called_from_launching:

@@ -37,6 +37,22 @@ def _drive_one_fight(recorder: FightPackRecorder, *, fps: float = 20.0) -> str:
     return os.path.join(rec.get_recordings_dir(), slug)
 
 
+def test_stop_capture_freezes_frames(tmp_path, monkeypatch):
+    monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+
+    recorder = FightPackRecorder()
+    recorder.start(_FakeEmu(), "1v1_classic", "vTEST", fps=20.0)
+    time.sleep(0.4)
+    recorder.stop_capture()
+    frozen = recorder._frame_count
+    time.sleep(0.4)  # capture is stopped: the frame count must not grow
+    assert recorder._frame_count == frozen
+    recorder.finish("win")
+
+    manifest = _read_manifest(os.path.join(rec.get_recordings_dir(), recorder.slug))
+    assert manifest["n_frames"] == frozen
+
+
 def test_pack_is_spec_valid(tmp_path, monkeypatch):
     monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
 

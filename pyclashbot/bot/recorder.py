@@ -65,6 +65,7 @@ class FightPackRecorder:
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self._started_wall: float = 0.0
+        self._capture_stopped: float = 0.0
 
     # ---- lifecycle ------------------------------------------------------
 
@@ -104,21 +105,30 @@ class FightPackRecorder:
         with self._lock:
             self._plays.append(entry)
 
-    def finish(self, outcome: str | None) -> str | None:
-        """Stop capture, finalize the video/frames, and write the metadata."""
-        if self.dir is None:
-            return None
+    def stop_capture(self) -> None:
+        """Halt frame capture at the battle boundary, before post-fight navigation.
 
+        Idempotent: called from the battle-end hook so the pack holds only in-fight
+        frames, and again (as a no-op) from finish().
+        """
+        if self.dir is None or self._stop.is_set():
+            return
         self._stop.set()
         if self._thread is not None:
             self._thread.join(timeout=10)
         if self._writer is not None:
             self._writer.release()
             self._writer = None
+        self._capture_stopped = time.time()
 
-        ended_wall = time.time()
+    def finish(self, outcome: str | None) -> str | None:
+        """Finalize the pack: stop capture (if still running) and write metadata."""
+        if self.dir is None:
+            return None
+
+        self.stop_capture()
         self._write_plays()
-        self._write_manifest(outcome, ended_wall)
+        self._write_manifest(outcome)
         self._log(f"Finished fight recording {self.slug}: {self._frame_count} frames, {len(self._plays)} plays")
         return self.slug
 
@@ -199,21 +209,26 @@ class FightPackRecorder:
             for entry in self._plays:
                 f.write(json.dumps(entry) + "\n")
 
-    def _write_manifest(self, outcome: str | None, ended_wall: float) -> None:
+    def _write_manifest(self, outcome: str | None) -> None:
         assert self.dir is not None
+        # Report the achieved frame rate. Screenshot latency / ADB contention can
+        # hold the effective cadence below the target fps; the home-side pipeline is
+        # per-frame and reads the game clock from pixels, so this is informational.
+        duration = max(self._capture_stopped - self._started_wall, 1e-6)
+        achieved_fps = round(self._frame_count / duration, 3) if self._frame_count else self.fps
         manifest = {
             "schema": SCHEMA,
             "slug": self.slug,
             "outcome": outcome,
             "fight_mode": self.fight_mode,
-            "fps": self.fps,
+            "fps": achieved_fps,
             "resolution": [FRAME_W, FRAME_H],
             "frames_source": self.frames_source,
             "n_frames": self._frame_count,
             "n_plays": len(self._plays),
             "pcb_version": self.version,
             "started_wall": self._started_wall,
-            "ended_wall": ended_wall,
+            "ended_wall": self._capture_stopped,
         }
         with open(os.path.join(self.dir, "manifest.json"), "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2)
@@ -251,6 +266,12 @@ def start_fight_recording(emulator, fight_mode: str, version: str, logger=None, 
 def log_play(slot: int, x: int, y: int, card_id: str, elapsed_s: float) -> None:
     if _active is not None:
         _active.log_play(slot, x, y, card_id, elapsed_s)
+
+
+def stop_fight_capture() -> None:
+    """Freeze frame capture at the battle boundary (manifest is written by finish)."""
+    if _active is not None:
+        _active.stop_capture()
 
 
 def finish_fight_recording(outcome: str | None) -> None:

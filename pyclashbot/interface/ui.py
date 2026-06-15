@@ -1176,7 +1176,7 @@ class PyClashBotUI(ttk.Window):
 
         record_fights_checkbox = ttk.Checkbutton(
             data_frame,
-            text="Record my 1v1 fights as training data (saved locally to share with the developer)",
+            text="Record my 1v1 fights as training data",
             variable=self.record_fights_var,
             bootstyle="round-toggle",
             command=self._notify_config_change,
