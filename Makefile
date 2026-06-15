@@ -1,5 +1,8 @@
 setup:
 	uv sync
+	# pre-commit refuses to install while core.hooksPath is set; clear the stray
+	# (often worktree-set) value so hooks land in .git/hooks. `|| true` keeps it idempotent.
+	git config --unset-all core.hooksPath 2>/dev/null || true
 	uvx pre-commit install
 
 dev:
