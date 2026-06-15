@@ -9,6 +9,7 @@ grandchild running (the regression behind the PR review comment).
 import os
 import sys
 import time
+from contextlib import suppress
 
 import psutil
 
@@ -52,9 +53,8 @@ def test_timeout_reaps_child_tree(tmp_path):
 
     grandchild_pid = int(pidfile.read_text())
     # Allow a brief moment for the SIGTERM/SIGKILL ladder to take effect.
-    deadline = time.monotonic() + 5
-    while psutil.pid_exists(grandchild_pid) and time.monotonic() < deadline:
-        time.sleep(0.1)
+    with suppress(psutil.NoSuchProcess):
+        psutil.Process(grandchild_pid).wait(timeout=5)
     assert not psutil.pid_exists(grandchild_pid), "grandchild was orphaned after timeout"
 
 
