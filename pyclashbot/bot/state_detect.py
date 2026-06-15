@@ -263,6 +263,38 @@ def check_if_on_clash_main_menu(emulator) -> bool:
     return False
 
 
+# ===== Clan voyage =====================================================
+
+# (x, y) screen coord -> expected RGB color for the clan voyage screen.
+CLAN_VOYAGE_PIXELS: list[tuple[tuple[int, int], list[int]]] = [
+    ((49, 603), [73, 87, 108]),
+    ((175, 603), [78, 175, 255]),
+    ((239, 605), [78, 175, 255]),
+    ((30, 120), [20, 102, 223]),
+    ((339, 121), [20, 102, 221]),
+    ((240, 592), [102, 185, 251]),
+    ((15, 608), [73, 87, 108]),
+]
+
+
+def check_if_on_clan_voyage(emulator) -> bool:
+    """Checks if the user is on the clan voyage screen.
+
+    Returns True if the expected clan-voyage UI pixels are present, else False.
+    """
+    iar_bgr = emulator.screenshot()
+    if iar_bgr is None:
+        return False
+
+    # Flip to RGB so the expected colors read in natural (r, g, b) order.
+    iar = iar_bgr[..., ::-1]
+
+    pixels = [iar[y][x].tolist() for (x, y), _ in CLAN_VOYAGE_PIXELS]
+    colors = [expected for _, expected in CLAN_VOYAGE_PIXELS]
+
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
 def check_if_on_clash_main_burger_button_options_menu(emulator) -> bool:
     iar = emulator.screenshot()
     pixels = [

@@ -14,7 +14,8 @@ import numpy as np
 import psutil
 from pymemuc import PyMemuc, PyMemucError, VMInfo
 
-from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
+from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
+from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.base import (
     CLASH_ROYALE_PACKAGE,
     BaseEmulatorController,
@@ -801,13 +802,17 @@ class MemuEmulatorController(BaseEmulatorController):
         """
         debug_ads = DEBUG_CONFIGURATION.get("ads", False)
 
+        # Dwell on the MEmu home page long enough that late-appearing ads get
+        # dismissed (each attempt presses home then waits 1s) before Clash launches.
+        ad_skip_attempts = 10
+
         if debug_ads:
             self.logger.log("[ADS] =======================================================")
             self.logger.log("[ADS] SKIPPING MEMU ADS")
             self.logger.log("[ADS] =======================================================")
             self.logger.log(f"[ADS] Target VM index: {self.vm_index}")
             self.logger.log("[ADS] Method: Send 'home' keystrokes to dismiss ads")
-            self.logger.log("[ADS] Total attempts: 4")
+            self.logger.log(f"[ADS] Total attempts: {ad_skip_attempts}")
             self.logger.log("[ADS] Sleep between attempts: 1 second")
 
         ads_start = time.time()
@@ -818,11 +823,11 @@ class MemuEmulatorController(BaseEmulatorController):
             if debug_ads:
                 self.logger.log("[ADS] About to start home button press sequence...")
 
-            for i in range(4):
+            for i in range(ad_skip_attempts):
                 attempt_num = i + 1
                 if debug_ads:
                     self.logger.log("[ADS] -------------------------------------------------------")
-                    self.logger.log(f"[ADS] AD SKIP ATTEMPT {attempt_num}/4")
+                    self.logger.log(f"[ADS] AD SKIP ATTEMPT {attempt_num}/{ad_skip_attempts}")
                     self.logger.log("[ADS] -------------------------------------------------------")
                     self.logger.log(f"[ADS] About to call: pmc.trigger_keystroke_vm('home', vm_index={self.vm_index})")
 
@@ -858,10 +863,10 @@ class MemuEmulatorController(BaseEmulatorController):
                 self.logger.log("[ADS] =======================================================")
                 self.logger.log("[ADS] AD SKIP SUMMARY")
                 self.logger.log("[ADS] =======================================================")
-                self.logger.log("[ADS] Total attempts: 4")
+                self.logger.log(f"[ADS] Total attempts: {ad_skip_attempts}")
                 self.logger.log(f"[ADS] Successful keypresses: {successful_keypresses}")
                 self.logger.log(f"[ADS] Failed keypresses: {failed_keypresses}")
-                self.logger.log(f"[ADS] Success rate: {(successful_keypresses / 4 * 100):.1f}%")
+                self.logger.log(f"[ADS] Success rate: {(successful_keypresses / ad_skip_attempts * 100):.1f}%")
                 self.logger.log(f"[ADS] Total ad skip duration: {ads_end - ads_start:.3f}s")
                 self.logger.log("[ADS] ✓ ALL AD SKIP ATTEMPTS COMPLETED SUCCESSFULLY")
 
@@ -1319,6 +1324,13 @@ class MemuEmulatorController(BaseEmulatorController):
                     f"[RESTART] Main menu not detected (check took {menu_check_end - menu_check_start:.3f}s)"
                 )
                 self.logger.log("[RESTART] Clicking deadspace at (5, 350) to handle popups...")
+
+            # handle the clan voyage popup that can block the main menu at launch
+            if check_if_on_clan_voyage(self):
+                self.logger.log("[RESTART] Clan voyage page detected — closing it")
+                self.click(*CLAN_VOYAGE_CLOSE_BUTTON_COORDS)
+                time.sleep(2)
+                continue
 
             # Click deadspace to handle any popups
             click_start = time.time()

@@ -2,7 +2,8 @@ import re
 import subprocess
 import time
 
-from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
+from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
+from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform
@@ -325,6 +326,13 @@ class AdbController(AdbBasedController):
                 dur = f"{time.time() - start_ts:.1f}s"
                 self.logger.log(f"App restart completed in {dur}")
                 return True
+
+            # handle the clan voyage popup that can block the main menu at launch
+            if check_if_on_clan_voyage(self):
+                self.logger.change_status("Closing clan voyage page")
+                self.click(*CLAN_VOYAGE_CLOSE_BUTTON_COORDS)
+                time.sleep(2)
+                continue
 
             # Click in a safe area to dismiss potential pop-ups
             self.click(35, 405)

@@ -22,6 +22,7 @@ from pyclashbot.bot.coords import (
     CARD_PAGE_ICON_FROM_CLASH_MAIN,
     CLAN_CHAT_EXIT_DEADSPACE_COORD,
     CLAN_CHAT_TO_SOCIAL_COORD,
+    CLAN_VOYAGE_CLOSE_BUTTON_COORDS,
     CLASH_MAIN_OPTIONS_BURGER_BUTTON,
     DECK_TABS_REGION,
     DECKS_PAGE_BUTTON_COORDS,
@@ -37,6 +38,7 @@ from pyclashbot.bot.state_detect import (
     check_if_on_battle_log_page,
     check_if_on_card_page,
     check_if_on_clan_chat,
+    check_if_on_clan_voyage,
     check_if_on_clash_main_burger_button_options_menu,
     check_if_on_clash_main_menu,
     check_if_on_shop,
@@ -128,6 +130,11 @@ def handle_trophy_reward_menu(
     return "good"
 
 
+def handle_clan_voyage_page(emulator) -> None:
+    """Dismiss the clan voyage popup by clicking its close button."""
+    emulator.click(*CLAN_VOYAGE_CLOSE_BUTTON_COORDS)
+
+
 def wait_for_clash_main_menu(
     emulator,
     logger: Logger,
@@ -149,6 +156,13 @@ def wait_for_clash_main_menu(
         if check_for_trophy_reward_menu(emulator):
             print("Handling trophy reward menu")
             handle_trophy_reward_menu(emulator, logger)
+            time.sleep(2)
+            continue
+
+        # handle the clan voyage popup blocking the main menu
+        if check_if_on_clan_voyage(emulator):
+            logger.change_status("Closing clan voyage page")
+            handle_clan_voyage_page(emulator)
             time.sleep(2)
             continue
 
