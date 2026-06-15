@@ -1,5 +1,4 @@
 import re
-import subprocess
 import time
 
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
@@ -7,6 +6,7 @@ from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_se
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
+from pyclashbot.utils.subprocess import run as run_command
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -144,26 +144,16 @@ class AdbController(AdbBasedController):
             logger.change_status(f"Device {device_address} is already connected.")
             return True
 
-        command = f"adb connect {device_address}"
         try:
-            process = subprocess.run(
-                command,
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            output = process.stdout.strip()
+            process = run_command(["adb", "connect", device_address], timeout=15)
+            output = (process.stdout or "").strip()
             logger.change_status(output)
             if "connected" in output or "already connected" in output:
                 return True
-            logger.change_status(f"Failed to connect: {process.stderr.strip()}")
+            logger.change_status(f"Failed to connect: {(process.stderr or '').strip()}")
             return False
         except FileNotFoundError:
             logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")
-            return False
-        except subprocess.CalledProcessError as e:
-            logger.change_status(f"Error connecting to {device_address}: {e.stderr.strip()}")
             return False
 
     def _discover_device(self):
@@ -193,38 +183,23 @@ class AdbController(AdbBasedController):
         logger.change_status("Restarting ADB server...")
         try:
             # Kill the server
-            kill_result = subprocess.run(
-                "adb kill-server",
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
+            kill_result = run_command(["adb", "kill-server"], timeout=15)
             if kill_result.returncode == 0:
                 logger.log("ADB server killed successfully.")
             else:
-                logger.log(f"Failed to kill ADB server: {kill_result.stderr.strip()}")
+                logger.log(f"Failed to kill ADB server: {(kill_result.stderr or '').strip()}")
 
             interruptible_sleep(1)
 
             # Start the server
-            start_result = subprocess.run(
-                "adb start-server",
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
+            start_result = run_command(["adb", "start-server"], timeout=15)
             if start_result.returncode == 0:
                 logger.change_status("ADB server started successfully.")
                 return True
-            logger.change_status(f"Failed to start ADB server: {start_result.stderr.strip()}")
+            logger.change_status(f"Failed to start ADB server: {(start_result.stderr or '').strip()}")
             return False
         except FileNotFoundError:
             logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")
-            return False
-        except subprocess.CalledProcessError as e:
-            logger.change_status(f"Error restarting ADB server: {e.stderr.strip()}")
             return False
 
     def set_screen_size(self, width: int, height: int):

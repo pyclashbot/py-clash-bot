@@ -1,5 +1,4 @@
 import os
-import subprocess
 import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
@@ -12,6 +11,7 @@ from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
+from pyclashbot.utils.subprocess import run as run_command
 
 DEBUG = False
 
@@ -444,13 +444,11 @@ class GooglePlayEmulatorController(AdbBasedController):
         ]
 
         for proc in process_names:
-            result = subprocess.run(
-                f'taskkill /f /im "{proc}"', shell=True, capture_output=True, text=True, check=False
-            )
+            result = run_command(["taskkill", "/f", "/im", proc], timeout=10)
 
             if result.returncode == 0:
                 print(f"[OK] {proc} terminated.")
-            elif "not found" not in result.stderr.lower():
+            elif "not found" not in (result.stderr or "").lower():
                 print(f"[!] Failed to terminate {proc}")
 
     def install_apk(self, apk_path: str):
