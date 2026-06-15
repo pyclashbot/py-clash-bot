@@ -2,6 +2,7 @@ import random
 import time
 from typing import Literal
 
+from pyclashbot.bot.constants import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
 from pyclashbot.bot.constants import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
 from pyclashbot.detection.image_rec import (
     all_pixels_are_equal,
@@ -211,6 +212,41 @@ def handle_trophy_reward_menu(
     return "good"
 
 
+# (x, y) screen coord -> expected RGB color for the clan voyage screen.
+CLAN_VOYAGE_PIXELS: list[tuple[tuple[int, int], list[int]]] = [
+    ((49, 603), [73, 87, 108]),
+    ((175, 603), [78, 175, 255]),
+    ((239, 605), [78, 175, 255]),
+    ((30, 120), [20, 102, 223]),
+    ((339, 121), [20, 102, 221]),
+    ((240, 592), [102, 185, 251]),
+    ((15, 608), [73, 87, 108]),
+]
+
+
+def check_if_on_clan_voyage(emulator) -> bool:
+    """Checks if the user is on the clan voyage screen.
+
+    Returns True if the expected clan-voyage UI pixels are present, else False.
+    """
+    iar_bgr = emulator.screenshot()
+    if iar_bgr is None:
+        return False
+
+    # Flip to RGB so the expected colors read in natural (r, g, b) order.
+    iar = iar_bgr[..., ::-1]
+
+    pixels = [iar[y][x].tolist() for (x, y), _ in CLAN_VOYAGE_PIXELS]
+    colors = [expected for _, expected in CLAN_VOYAGE_PIXELS]
+
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
+def handle_clan_voyage_page(emulator) -> None:
+    """Dismiss the clan voyage popup by clicking its close button."""
+    emulator.click(*CLAN_VOYAGE_CLOSE_BUTTON_COORDS)
+
+
 def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> bool:
     """Waits for the user to be on the clash main menu.
     Returns True if on main menu, prints the pixels if False then return False
@@ -226,6 +262,13 @@ def wait_for_clash_main_menu(emulator, logger: Logger, deadspace_click=True) -> 
         if check_for_trophy_reward_menu(emulator):
             print("Handling trophy reward menu")
             handle_trophy_reward_menu(emulator, logger)
+            interruptible_sleep(2)
+            continue
+
+        # handle the clan voyage popup blocking the main menu
+        if check_if_on_clan_voyage(emulator):
+            logger.change_status("Closing clan voyage page")
+            handle_clan_voyage_page(emulator)
             interruptible_sleep(2)
             continue
 
