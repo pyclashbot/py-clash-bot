@@ -791,7 +791,7 @@ class MemuEmulatorController(BaseEmulatorController):
                     if proc.name() in name_list:
                         proc.kill()
                 except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                    self.logger.log("[!] Non-fatal error: Failed to kill process:", proc.name())
+                    self.logger.log(f"[!] Non-fatal error: Failed to kill process: {proc.name()}")
 
     def _skip_ads(self):
         """Skip ads in the emulator.
