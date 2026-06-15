@@ -42,6 +42,11 @@ def get_log_dir(app_name: str) -> str:
     return os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), app_name, "logs")
 
 
+def get_recordings_dir(app_name: str = "py-clash-bot") -> str:
+    """Return the single source-of-truth directory for recorded fight packs."""
+    return os.path.join(get_app_data_dir(app_name), "recordings")
+
+
 def is_windows() -> bool:
     """Check if running on Windows."""
     return get_platform() == Platform.WINDOWS

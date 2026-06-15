@@ -7,7 +7,6 @@ import logging
 import multiprocessing as mp
 import subprocess
 from multiprocessing import Queue
-from os.path import expandvars, join
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -52,7 +51,7 @@ from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
 from pyclashbot.utils.open_folder import open_folder
-from pyclashbot.utils.platform import is_macos
+from pyclashbot.utils.platform import get_recordings_dir, is_macos
 
 initialize_pylogging()
 
@@ -261,8 +260,7 @@ def handle_process_finished(
 
 
 def open_recordings_folder() -> None:
-    folder_path = join(expandvars("%localappdata%"), "programs", "py-clash-bot", "recordings")
-    open_folder(folder_path)
+    open_folder(get_recordings_dir())
 
 
 def open_logs_folder() -> None:
@@ -278,6 +276,7 @@ class BotApplication:
         self.ui.main_btn.configure(command=self._on_main_button)
         self.ui.register_config_callback(self._on_config_change)
         self.ui.register_open_logs_callback(self._on_open_logs_clicked)
+        self.ui.register_open_recordings_callback(self._on_open_recordings_clicked)
         self.ui.protocol("WM_DELETE_WINDOW", self._on_close)
         self.ui.adb_refresh_btn.configure(command=self._on_adb_refresh)
         self.ui.adb_connect_btn.configure(command=self._on_adb_connect)
@@ -424,6 +423,9 @@ class BotApplication:
 
     def _on_open_logs_clicked(self) -> None:
         open_logs_folder()
+
+    def _on_open_recordings_clicked(self) -> None:
+        open_recordings_folder()
 
     def _on_close(self) -> None:
         self._closing = True

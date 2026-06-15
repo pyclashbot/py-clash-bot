@@ -29,7 +29,12 @@ from pyclashbot.bot.nav import (
     wait_for_battle_start,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.recorder import save_play, save_win_loss
+from pyclashbot.bot.recorder import (
+    finish_fight_recording,
+    is_recording,
+    log_play,
+    start_fight_recording,
+)
 from pyclashbot.bot.state_detect import (
     check_if_battle_has_ended,
     check_if_in_battle,
@@ -38,6 +43,7 @@ from pyclashbot.bot.state_detect import (
     count_elixir,
 )
 from pyclashbot.utils.logger import Logger
+from pyclashbot.utils.versioning import __version__
 
 ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
 ABILITY_TRIGGER_DELAY_S = 3
@@ -59,6 +65,11 @@ def do_fight_state(
     if wait_for_battle_start(emulator, logger) is False:
         logger.change_status("Timed out waiting for battle to start")
         return False
+
+    # Opt-in training-data capture: 1v1-type fights only (Trophy Road / Classic 1v1), never 2v2.
+    if recording_flag and fight_mode_chosen in ["Classic 1v1", "Trophy Road"]:
+        pack_mode = "1v1_trophy" if fight_mode_chosen == "Trophy Road" else "1v1_classic"
+        start_fight_recording(emulator, pack_mode, __version__, logger=logger)
 
     logger.change_status("Starting fight loop")
     logger.log(f'This is the fight mode: "{fight_mode_chosen}"')
@@ -259,31 +270,35 @@ def end_fight_state(
     logger.log("Returning to main menu after fight")
     if get_to_main_after_fight(emulator, logger) is False:
         logger.log("Failed to return to main menu after fight")
+        finish_fight_recording(None)
         return False
 
     logger.log("Returned to main menu after fight")
     time.sleep(3)
 
-    # check if the prev game was a win
-    if not disable_win_tracker_toggle:
+    # Determine the outcome. Force the win check when a recording is active so the
+    # pack gets a real win/loss; otherwise honor the user's win-tracker toggle.
+    if is_recording() or not disable_win_tracker_toggle:
         win_check_return = check_if_previous_game_was_win(emulator, logger)
 
         if win_check_return == "restart":
             logger.log("Failed while checking if previous game was a win")
+            finish_fight_recording(None)
             return False
 
-        if win_check_return:
-            logger.add_win()
+        outcome = "win" if win_check_return else "loss"
 
-            if recording_flag:
-                save_win_loss("win")
-            return True
+        # Only touch the user's win/loss stats when their tracker is enabled.
+        if not disable_win_tracker_toggle:
+            if win_check_return:
+                logger.add_win()
+            else:
+                logger.add_loss()
 
-        logger.add_loss()
-        if recording_flag:
-            save_win_loss("loss")
+        finish_fight_recording(outcome)
     else:
         logger.log("Not checking win/loss because check is disabled")
+        finish_fight_recording(None)
 
     return True
 
@@ -402,7 +417,7 @@ def play_a_card(emulator, logger, recording_flag: bool, battle_strategy: "Battle
     emulator.click(play_coord[0], play_coord[1])
     click_and_play_card_time_taken = str(time.time() - click_and_play_card_start_time)[:3]
     if recording_flag:
-        save_play(play_coord, card_index)
+        log_play(card_index, play_coord[0], play_coord[1], card_id, battle_strategy.get_elapsed_time())
 
     logger.change_status(f"Made the play {click_and_play_card_time_taken}s")
     logger.add_card_played()
