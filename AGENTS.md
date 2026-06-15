@@ -28,6 +28,7 @@ Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`/`type-check`, `
 - Persistent user settings go through `USER_SETTINGS_CACHE` (`pyclashbot.utils.caching`), keyed by `UIField.value` strings. Logging/stats go through `pyclashbot.utils.logger`; OS checks through `pyclashbot.utils.platform` (`is_windows()`/`is_macos()`).
 - Version is a `v0.0.0` placeholder in `pyproject.toml`; the real version is injected from the git tag at build time and read at runtime from `pyclashbot/__version__` via `utils/versioning.py`.
 - **Type checking is `ty`** (Astral), configured under `[tool.ty]` in `pyproject.toml` and enforced by pre-commit/CI; run it alone with `make type-check`. Suppress only genuine platform-gated false positives (Windows-only APIs), using `# ty: ignore[rule]` — never bare `# type: ignore`. A scoped override keeps ttkbootstrap's dynamic-kwarg noise in `interface/` at `warn`.
+- **Before committing, run `make lint`; never `git commit --no-verify`.** Pre-commit hooks aren't installed by default, so commits (especially from agents in fresh worktrees) silently skip the checks CI enforces. Run `make setup` once to install them — hooks live in the shared `.git/hooks`, so it covers every worktree.
 - Python 3.12 only. Conventional-commit messages.
 
 ## Where new code goes
