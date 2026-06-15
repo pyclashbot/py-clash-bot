@@ -7,7 +7,8 @@ from os.path import normpath
 
 import psutil
 
-from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
+from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
+from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform
@@ -412,6 +413,13 @@ class GooglePlayEmulatorController(AdbBasedController):
                 self.logger.change_status("Clash Royale main menu detected successfully!")
                 self.logger.log("Clash Royale main menu detected")
                 break
+
+            # handle the clan voyage popup that can block the main menu at launch
+            if check_if_on_clan_voyage(self) is True:
+                self.logger.change_status("Closing clan voyage page")
+                self.click(*CLAN_VOYAGE_CLOSE_BUTTON_COORDS)
+                time.sleep(2)
+                continue
 
             # click deadspace
             self.click(35, 405)

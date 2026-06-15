@@ -99,6 +99,10 @@ BOTTOM_NAV_SOCIAL_TAB_COORD = (310, 600)  # consolidated from 309/310/315 — se
 CLAN_CHAT_EXIT_DEADSPACE_COORD = (200, 600)
 CLAN_CHAT_TO_SOCIAL_COORD = (219, 605)
 
+# --- Clan voyage ---
+# Close button on the clan voyage popup that can block the main menu.
+CLAN_VOYAGE_CLOSE_BUTTON_COORDS = [210, 600]
+
 # --- War page ---
 # War sits as a tab inside the Social hub (top row, x=210 y=105).
 WAR_TAB_FROM_SOCIAL_COORD = (210, 105)
