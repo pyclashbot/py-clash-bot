@@ -16,7 +16,7 @@ Targets live in the `Makefile` (`make setup`/`dev`/`lint`/`test`/`type-check`, `
 
 ## Cross-cutting rules
 
-- **Never call `time.sleep()`** — it is lint-banned. Use `interruptible_sleep()` from `pyclashbot.utils.cancellation` so shutdown is responsive. The active `CancellationToken` is thread-local; worker threads must `CancellationToken.set_current(token)`.
+- **Plain `time.sleep()` is fine for waits.** Stop is OS-level: the GUI calls `stop_worker_process()` (`bot/worker.py`), which `terminate()`s the worker process — the kernel interrupts any in-flight blocking call (sleeps, ADB/socket waits), so cooperative cancellation is unnecessary. The worker loop still exits cleanly on `shutdown_event` between iterations.
 - **All screen coordinates are absolute to a fixed emulator resolution (~419×633).** There is no scaling — every click/pixel-check constant breaks if the resolution changes.
 - **All screen coordinates live in `pyclashbot/bot/coords.py`** as named constants. Never inline a raw `emulator.click(150, 320)` — promote to a `NAMED_COORD = (150, 320)` and click via `emulator.click(*NAMED_COORD)`. The only documented exception is `PLAY_COORDS` in `card_detection.py` (large card-name → coords dict, kept with card detection).
 - **Pure detection helpers live in `pyclashbot/bot/find.py`.** Anything shaped like `(emulator) → coords | None` belongs there. `find.py` is a **leaf module** — it imports only from `pyclashbot.detection.*`, `pyclashbot.utils.*`, `pyclashbot.bot.coords`, and `pyclashbot.bot.state_detect`. Never from other `pyclashbot.bot.*` modules.

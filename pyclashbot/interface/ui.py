@@ -315,17 +315,15 @@ class PyClashBotUI(ttk.Window):
         self._show_current_emulator_settings()
 
     def set_button_state(self, state: str) -> None:
-        """Set the main button state: 'idle', 'running', or 'stopping'."""
+        """Set the main button state: 'idle' or 'running'."""
         self._button_state = state
         if state == "idle":
             self._sync_start_button_readiness()
         elif state == "running":
             self.main_btn.configure(text="Stop", bootstyle="danger", state=tk.NORMAL)
-        elif state == "stopping":
-            self.main_btn.configure(text="Force stop", bootstyle="warning", state=tk.NORMAL)
 
         # Disable/enable config widgets based on running state
-        running = state in ("running", "stopping")
+        running = state == "running"
         for key, widget in self._config_widgets.items():
             if key == "main_btn":
                 continue
@@ -373,7 +371,7 @@ class PyClashBotUI(ttk.Window):
             self._sync_all_job_toggle_appearances()
 
     def get_button_state(self) -> str:
-        """Get the current button state: 'idle', 'running', or 'stopping'."""
+        """Get the current button state: 'idle' or 'running'."""
         return self._button_state
 
     def append_log(self, message: str) -> None:
@@ -757,7 +755,7 @@ class PyClashBotUI(ttk.Window):
         self._notify_config_change()
 
     def _sync_job_extra_spinboxes(self) -> None:
-        bot_running = self._button_state in ("running", "stopping")
+        bot_running = self._button_state == "running"
         for job_key, spinbox in self._job_extra_spinboxes.items():
             job_on = bool(self.jobs_vars[job_key].get())
             if bot_running or not job_on:

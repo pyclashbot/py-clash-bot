@@ -22,7 +22,6 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.detection.image_rec import pixel_is_equal
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 
@@ -59,7 +58,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         end_y = 400
         x = 10
         emulator.swipe(x, start_y, x, end_y)
-        interruptible_sleep(3)
+        time.sleep(3)
 
         x, y = UPGRADE_POINTS[card_index - 1]
 
@@ -67,12 +66,12 @@ def upgrade_card(emulator, upgradable, logger: Logger):
 
         # First click (card upgrade emoji)
         emulator.click(x, y)
-        interruptible_sleep(2)
+        time.sleep(2)
 
         # Click again(click the green upgrade emoji to open the upgrade bar)
         emulator.click(x + 15, y - 15)
         logger.change_status(status="Clicking the upgrade button for this card")
-        interruptible_sleep(2)
+        time.sleep(2)
 
         img = emulator.screenshot()
         pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
@@ -83,7 +82,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
             # just reduced iteration count
             for i in range(3):
                 emulator.click(DEADSPACE_COORD[0], DEADSPACE_COORD[1])
-                interruptible_sleep(1)
+                time.sleep(1)
 
             continue  # Skip
 
@@ -92,7 +91,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
 
         emulator.click(FIRST_UPGRADE_BUTTON_COORD[0], FIRST_UPGRADE_BUTTON_COORD[1])
         logger.change_status(status="Clicking the first upgrade button for this card")
-        interruptible_sleep(2)
+        time.sleep(2)
 
         # COIN check
         img = emulator.screenshot()
@@ -111,11 +110,11 @@ def upgrade_card(emulator, upgradable, logger: Logger):
                 f"Incremented cards upgraded from {prev_card_upgrades} to {card_upgrades}",
             )
 
-        interruptible_sleep(2)
+        time.sleep(2)
 
         emulator.click(SECOND_UPGRADE_BUTTON_COORD[0], SECOND_UPGRADE_BUTTON_COORD[1])
         logger.change_status(status="Clicking the second upgrade button for this card")
-        interruptible_sleep(2)
+        time.sleep(2)
         logger.change_status(status="Upgraded a card!")
 
         # Check for card upgrade menu close button
@@ -123,14 +122,14 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
         if pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, UPGRADE_PIXEL_TOLERANCE):
             emulator.click(CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
-            interruptible_sleep(2)
+            time.sleep(2)
 
         # Deadspace Clicks
         # just reduced iteration count
         for i in range(3):
             emulator.click(DEADSPACE_COORD[0], DEADSPACE_COORD[1])
             logger.change_status(status="Clicking deadspace after attempting to upgrade this card")
-            interruptible_sleep(1)
+            time.sleep(1)
 
     return upgraded_a_card
 
@@ -169,9 +168,9 @@ def upgrade_cards_state(emulator, logger: Logger):
     logger.change_status(status="Done upgrading cards")
 
     emulator.click(UPGRADE_RETURN_TO_MAIN_COORD_1[0], UPGRADE_RETURN_TO_MAIN_COORD_1[1])
-    interruptible_sleep(1)
+    time.sleep(1)
     emulator.click(UPGRADE_RETURN_TO_MAIN_COORD_2[0], UPGRADE_RETURN_TO_MAIN_COORD_2[1])
-    interruptible_sleep(2)
+    time.sleep(2)
 
     if not wait_for_clash_main_menu(emulator, logger, deadspace_click=False):
         logger.change_status("Timed out waiting for main menu after upgrading cards")

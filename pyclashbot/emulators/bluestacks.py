@@ -11,7 +11,6 @@ from os.path import normpath
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform, is_macos
 
 DEBUG = False
@@ -498,7 +497,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         """Connect to the configured device, refreshing the instance port on failure."""
         self._reset_adb_server()
         self.adb(f"disconnect {self.device_serial}")
-        interruptible_sleep(0.2)
+        time.sleep(0.2)
         self.adb(f"connect {self.device_serial}")
         state = self.adb("get-state")
         ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
@@ -507,7 +506,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             # bluestacks.conf and retry (honors a user-pinned device_serial).
             self._refresh_instance_port()
             self.adb(f"disconnect {self.device_serial}")
-            interruptible_sleep(0.2)
+            time.sleep(0.2)
             self.adb(f"connect {self.device_serial}")
             state = self.adb("get-state")
             ok = (state.returncode == 0) and (state.stdout and "device" in state.stdout)
@@ -571,7 +570,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 args = ["--instance", self.internal_name]
             cmd = '"' + self.emulator_executable_path + '"' + (" " + " ".join(args) if args else "")
             subprocess.Popen(cmd, shell=True)
-        interruptible_sleep(5)
+        time.sleep(5)
 
     def stop(self, display_name: str | None = None):
         """Stop only this instance."""
@@ -605,7 +604,7 @@ class BlueStacksEmulatorController(AdbBasedController):
                 self.logger.change_status("Timeout waiting for the pyclashbot instance to stop")
                 raise EmulatorNotReadyError("BlueStacks 5 restart() timed out waiting for the instance to stop")
             self.stop()
-            interruptible_sleep(1)
+            time.sleep(1)
 
         # Reset our private adb server before launching
         self._reset_adb_server()
@@ -620,7 +619,7 @@ class BlueStacksEmulatorController(AdbBasedController):
             if time.time() - t0 > boot_timeout:
                 self.logger.change_status("Timeout waiting for the pyclashbot instance to start")
                 raise EmulatorNotReadyError("BlueStacks 5 restart() timed out waiting for the instance to start")
-            interruptible_sleep(0.5)
+            time.sleep(0.5)
 
         # Refresh port after boot
         self._refresh_instance_port()
@@ -635,14 +634,14 @@ class BlueStacksEmulatorController(AdbBasedController):
             if time.time() - t1 > 60:
                 self.logger.change_status("Failed to connect ADB to BlueStacks 5")
                 raise EmulatorNotReadyError("BlueStacks 5 restart() could not connect ADB to the instance")
-            interruptible_sleep(1)
+            time.sleep(1)
 
         # Launch Clash Royale (start_app raises EmulatorNotReadyError if it isn't installed)
         clash_pkg = CLASH_ROYALE_PACKAGE
         self.logger.change_status("Launching Clash Royale...")
         self.start_app(clash_pkg)
 
-        interruptible_sleep(5)
+        time.sleep(5)
 
         # Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")

@@ -1,13 +1,12 @@
 import traceback
 from multiprocessing import Process, Queue
 from multiprocessing.synchronize import Event
-from typing import Any
+from typing import Any, Protocol
 
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
 from pyclashbot.emulators.base import EmulatorNotReadyError
 from pyclashbot.interface.enums import UIField
-from pyclashbot.utils.cancellation import CancellationToken
 from pyclashbot.utils.logger import ProcessLogger, attach_worker_file_logging
 from pyclashbot.utils.platform import is_macos
 
@@ -146,10 +145,6 @@ class WorkerProcess(Process):
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
 
-        # Set up cancellation token for interruptible sleeps
-        token = CancellationToken(self.shutdown_event)
-        CancellationToken.set_current(token)
-
         # Create logger that sends stats through queue
         logger = ProcessLogger(self.stats_queue)
 
@@ -163,5 +158,48 @@ class WorkerProcess(Process):
             logger.error(str(err))
             traceback.print_exc()
         finally:
-            CancellationToken.set_current(None)
             logger.change_status("Bot stopped")
+
+
+class _StoppableProcess(Protocol):
+    """Structural interface for the process-lifecycle methods ``stop_worker_process`` needs.
+
+    Satisfied by ``multiprocessing.Process`` (and ``WorkerProcess``), spawned context
+    processes, and test fakes alike — so the helper depends on the contract, not the
+    concrete class.
+    """
+
+    def is_alive(self) -> bool: ...
+    def terminate(self) -> None: ...
+    def join(self, timeout: float | None = ...) -> None: ...
+    def kill(self) -> None: ...
+
+
+class _Signal(Protocol):
+    """Structural interface for the shutdown event — only ``set()`` is used here."""
+
+    def set(self) -> None: ...
+
+
+def stop_worker_process(
+    process: _StoppableProcess | None,
+    shutdown_event: _Signal | None = None,
+    *,
+    graceful_timeout: float = 2.0,
+) -> None:
+    """Stop the worker process via OS-level termination.
+
+    Signals shutdown (belt-and-suspenders), then terminates and hard-kills if the
+    process does not exit within ``graceful_timeout``. The OS interrupts any blocking
+    call in the worker (sleeps, ADB/socket waits), so this does not depend on the
+    worker cooperatively noticing the shutdown event.
+    """
+    if shutdown_event is not None:
+        shutdown_event.set()
+    if process is None or not process.is_alive():
+        return
+    process.terminate()  # SIGTERM / TerminateProcess
+    process.join(timeout=graceful_timeout)
+    if process.is_alive():
+        process.kill()  # SIGKILL
+        process.join(timeout=graceful_timeout)

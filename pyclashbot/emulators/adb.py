@@ -5,7 +5,6 @@ import time
 from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import Platform
 
 # Set to True for verbose ADB command logging
@@ -205,7 +204,7 @@ class AdbController(AdbBasedController):
             else:
                 logger.log(f"Failed to kill ADB server: {kill_result.stderr.strip()}")
 
-            interruptible_sleep(1)
+            time.sleep(1)
 
             # Start the server
             start_result = subprocess.run(
@@ -308,14 +307,14 @@ class AdbController(AdbBasedController):
         # 1. Force stop the app
         self.logger.change_status(f"Force-stopping {clash_pkg}...")
         self.adb(f"shell am force-stop {clash_pkg}")
-        interruptible_sleep(3)
+        time.sleep(3)
 
         # 2. Start the app using the inherited method
         # start_app raises EmulatorNotReadyError if Clash Royale isn't installed.
         self.logger.change_status("Launching Clash Royale...")
         self.start_app(clash_pkg)
 
-        interruptible_sleep(5)  # Give the app some time to load initially
+        time.sleep(5)  # Give the app some time to load initially
 
         # 3. Wait for main menu
         self.logger.change_status("Waiting for Clash Royale main menu...")
@@ -329,7 +328,7 @@ class AdbController(AdbBasedController):
 
             # Click in a safe area to dismiss potential pop-ups
             self.click(35, 405)
-            interruptible_sleep(2)
+            time.sleep(2)
 
         self.logger.change_status("Timeout waiting for Clash Royale main menu. Please check the device.")
         raise EmulatorNotReadyError("ADB device restart() timed out waiting for the Clash Royale main menu")

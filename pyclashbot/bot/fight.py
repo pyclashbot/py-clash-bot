@@ -37,7 +37,6 @@ from pyclashbot.bot.state_detect import (
     check_pixels_for_win_in_battle_log,
     count_elixir,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
@@ -88,7 +87,7 @@ def do_fight_state(
         elif fight_mode_chosen == "Classic 2v2":
             logger.increment_classic_2v2_fights()
 
-    interruptible_sleep(10)
+    time.sleep(10)
     return True
 
 
@@ -129,7 +128,7 @@ def start_fight(emulator, logger, mode) -> bool:
     # 2v2 needs a second popup after Start
     if mode == "Classic 2v2":
         logger.change_status("Classic 2v2 — clicking Quick Match popup...")
-        interruptible_sleep(3)
+        time.sleep(3)
         emulator.click(QUICKMATCH_POPUP_BUTTON_COORD[0], QUICKMATCH_POPUP_BUTTON_COORD[1])
         logger.log(f"Clicked Quickmatch button at {QUICKMATCH_POPUP_BUTTON_COORD}")
 
@@ -142,7 +141,7 @@ def send_emote(emulator, logger: Logger):
 
     # click emote button
     emulator.click(EMOTE_BUTTON_COORD[0], EMOTE_BUTTON_COORD[1])
-    interruptible_sleep(0.33)
+    time.sleep(0.33)
 
     emote_coord = random.choice(EMOTE_ICON_COORDS)
     emulator.click(emote_coord[0], emote_coord[1])
@@ -159,10 +158,10 @@ def mag_dump(emulator, logger):
         # record play here
 
         emulator.click(card_coord[0], card_coord[1])
-        interruptible_sleep(0.1)
+        time.sleep(0.1)
 
         emulator.click(play_coord[0], play_coord[1])
-        interruptible_sleep(0.1)
+        time.sleep(0.1)
 
 
 def wait_for_elixir(
@@ -235,7 +234,7 @@ def wait_for_elixir(
                 )
                 return "no battle"
 
-            interruptible_sleep(0.5)
+            time.sleep(0.5)
             continue
 
         battle_detection_lost_count = 0
@@ -263,7 +262,7 @@ def end_fight_state(
         return False
 
     logger.log("Returned to main menu after fight")
-    interruptible_sleep(3)
+    time.sleep(3)
 
     # check if the prev game was a win
     if not disable_win_tracker_toggle:
@@ -318,7 +317,7 @@ def check_if_previous_game_was_win(
     if wait_for_clash_main_menu(emulator, logger) is False:
         logger.change_status(status="Timed out returning to main menu after battle log")
         return "restart"
-    interruptible_sleep(2)
+    time.sleep(2)
 
     return is_a_win
 
@@ -511,7 +510,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
                 )
                 break
 
-            interruptible_sleep(1)
+            time.sleep(1)
             continue
 
         battle_detection_lost_count = 0
@@ -555,7 +554,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
         )
 
     logger.change_status("Fight complete")
-    interruptible_sleep(2.13)
+    time.sleep(2.13)
     cards_played = logger.get_cards_played()
     logger.change_status(f"Played ~{cards_played - prev_cards_played} cards this fight")
 
@@ -586,7 +585,7 @@ def _random_fight_loop(emulator, logger) -> bool:
                 )
                 break
 
-            interruptible_sleep(1)
+            time.sleep(1)
             continue
 
         battle_detection_lost_count = 0
@@ -598,7 +597,7 @@ def _random_fight_loop(emulator, logger) -> bool:
         for _ in range(random.randint(1, 3)):
             logger.add_card_played()
 
-        interruptible_sleep(8)
+        time.sleep(8)
 
     logger.change_status("Random-plays fight complete")
     return True
