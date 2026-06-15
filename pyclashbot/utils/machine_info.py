@@ -3,7 +3,6 @@
 import ctypes
 import logging
 import platform
-import subprocess
 
 import psutil
 
@@ -32,16 +31,17 @@ def safe_get_screen_metrics(user32_dll, metric_index: int) -> int:
 def check_hyper_v_enabled() -> bool:
     """Check if Hyper-V is enabled on the system."""
     try:
-        _, result = run(
+        result = run(
             [
                 "powershell",
                 '"Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V"',
             ],
+            timeout=15,
         )
 
         # Check if Hyper-V is enabled based on the output
-        return "State : Enabled" in result
-    except (subprocess.CalledProcessError, Exception):
+        return "State : Enabled" in (result.stdout or "")
+    except Exception:
         return False
 
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import locale
 import logging
 import multiprocessing as mp
-import subprocess
+import shlex
 from multiprocessing import Queue
 from typing import TYPE_CHECKING, Any
 
@@ -53,6 +53,7 @@ from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, drain_stats_queue, initialize_pylogging, log_dir, log_name
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import get_recordings_dir
+from pyclashbot.utils.subprocess import run as run_command
 
 initialize_pylogging()
 
@@ -355,23 +356,14 @@ class BotApplication:
             self.logger.change_status(f"Invalid device serial format: {serial}")
             return
 
-        full_command = f"adb -s {serial} {command}"
-        self.logger.change_status(f"Running ADB command: {full_command}")
+        argv = ["adb", "-s", serial, *shlex.split(command)]
+        self.logger.change_status(f"Running ADB command: {' '.join(argv)}")
         try:
-            result = subprocess.run(
-                full_command,
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=10,
-            )
+            result = run_command(argv, timeout=10)
             if result.returncode == 0:
                 self.logger.change_status(f"Success: {result.stdout.strip() if result.stdout else '(No output)'}")
             else:
                 self.logger.change_status(f"Error: {result.stderr.strip() if result.stderr else '(No error message)'}")
-        except subprocess.TimeoutExpired:
-            self.logger.change_status(f"ADB command timed out: {full_command}")
         except FileNotFoundError:
             self.logger.change_status("ADB command not found. Is ADB installed and in your PATH?")
         except Exception as e:
