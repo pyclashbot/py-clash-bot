@@ -73,7 +73,6 @@ select = [
     "N",
     "RUF",
     "TCH",
-    "TID251",
 ]
 
 ignore = [
@@ -101,9 +100,6 @@ ignore = [
 
 [tool.ruff]
 line-length = 120
-
-[tool.ruff.lint.flake8-tidy-imports.banned-api]
-"time.sleep".msg = "Use interruptible_sleep() from pyclashbot.utils.cancellation instead for proper thread cancellation support."
 
 [tool.ty.environment]
 python-version = "3.12"

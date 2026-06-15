@@ -44,7 +44,6 @@ from pyclashbot.bot.state_detect import (
     check_if_on_war,
 )
 from pyclashbot.detection.image_rec import find_image
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
@@ -107,7 +106,7 @@ def check_for_in_battle_with_delay(emulator) -> bool:
         battle_result = check_if_in_battle(emulator)
         if battle_result:  # True for any battle type ("1v1", "2v2")
             return True
-        interruptible_sleep(0.1)
+        time.sleep(0.1)
     return False
 
 
@@ -124,7 +123,7 @@ def handle_trophy_reward_menu(
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[0],
         OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE[1],
     )
-    interruptible_sleep(1)
+    time.sleep(1)
 
     return "good"
 
@@ -150,7 +149,7 @@ def wait_for_clash_main_menu(
         if check_for_trophy_reward_menu(emulator):
             print("Handling trophy reward menu")
             handle_trophy_reward_menu(emulator, logger)
-            interruptible_sleep(2)
+            time.sleep(2)
             continue
 
         # click deadspace
@@ -159,9 +158,9 @@ def wait_for_clash_main_menu(
                 CLASH_MAIN_MENU_DEADSPACE_COORD[0],
                 CLASH_MAIN_MENU_DEADSPACE_COORD[1],
             )
-        interruptible_sleep(1)
+        time.sleep(1)
 
-    interruptible_sleep(1)
+    time.sleep(1)
     if check_if_on_clash_main_menu(emulator) is not True:
         print("Failed to get to clash main! Saw these pixels before restarting:")
         return False
@@ -182,7 +181,7 @@ def get_to_card_page_from_clash_main(
         CARD_PAGE_ICON_FROM_CLASH_MAIN[0],
         CARD_PAGE_ICON_FROM_CLASH_MAIN[1],
     )
-    interruptible_sleep(2.5)
+    time.sleep(2.5)
 
     # while not on the card page, cycle the card page
     while not check_if_on_card_page(emulator):
@@ -194,7 +193,7 @@ def get_to_card_page_from_clash_main(
             CARD_PAGE_ICON_FROM_CARD_PAGE[0],
             CARD_PAGE_ICON_FROM_CARD_PAGE[1],
         )
-        interruptible_sleep(3)
+        time.sleep(3)
 
     logger.change_status(status="Made it to card page")
 
@@ -205,7 +204,7 @@ def return_to_clash_main_from_card_page(emulator, logger: Logger) -> bool:
     """Click the card page exit button and verify the bot is on the main menu."""
     logger.change_status("Returning to main menu...")
     emulator.click(*CARD_PAGE_EXIT_BUTTON_COORDS)
-    interruptible_sleep(1)
+    time.sleep(1)
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Failed to return to main menu from card page")
         return False
@@ -356,14 +355,14 @@ def select_mode(emulator, mode: str, logger: Logger | None = None):
 
     # click select mode button
     emulator.click(game_mode_coord[0], game_mode_coord[1])
-    interruptible_sleep(2)
+    time.sleep(2)
 
     def scroll_down_in_fight_mode_panel(emulator):
         start_y = 400
         end_y = 350
         x = 400
         emulator.swipe(x, start_y, x, end_y)
-        interruptible_sleep(1)
+        time.sleep(1)
 
     # scroll and search, until we find the mode in question
     search_timeout = 15  # s
@@ -375,7 +374,7 @@ def select_mode(emulator, mode: str, logger: Logger | None = None):
         coord = find_fight_mode_icon(emulator, mode)
         if coord is not None:
             emulator.click(*coord)
-            interruptible_sleep(3)
+            time.sleep(3)
 
             # After choosing a mode, the mode panel may remain open on some
             # devices/emulators. Click a safe deadspace coord to ensure the
@@ -469,7 +468,7 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
     logger.log(f"navigate_main_page: {start_page} -> {end_page} via {len(clicks)} click(s)")
     for x, y in clicks:
         emulator.click(x, y)
-        interruptible_sleep(2)
+        time.sleep(2)
 
     return MAIN_PAGE_CHECKS[end_page](emulator)
 
@@ -483,7 +482,7 @@ def _navigate_to_deck_selection(emulator, logger: Logger) -> bool:
         logger.change_status("Failed to get to card page from main.")
         return False
     emulator.click(*DECKS_PAGE_BUTTON_COORDS)
-    interruptible_sleep(0.1)
+    time.sleep(0.1)
     return True
 
 
@@ -494,7 +493,7 @@ def switch_deck_page(emulator, logger: Logger) -> bool:
     )
     if switch_button_coord is not None:
         emulator.click(*switch_button_coord)
-        interruptible_sleep(1)
+        time.sleep(1)
         return True
     logger.change_status("Could not find switch deck page button.")
     return False
@@ -512,18 +511,18 @@ def get_to_main_after_fight(emulator, logger):
 
     while time.time() - start_time < timeout:
         if check_if_on_clash_main_menu(emulator) is True:
-            interruptible_sleep(3)
+            time.sleep(3)
 
             if check_for_trophy_reward_menu(emulator):
                 handle_trophy_reward_menu(emulator, logger, printmode=True)
-                interruptible_sleep(2)
+                time.sleep(2)
 
             logger.change_status("Returned to main menu after fight")
             return True
 
         if check_for_trophy_reward_menu(emulator):
             handle_trophy_reward_menu(emulator, logger, printmode=True)
-            interruptible_sleep(3)
+            time.sleep(3)
             continue
 
         if not clicked_ok_or_exit:
@@ -534,7 +533,7 @@ def get_to_main_after_fight(emulator, logger):
                 clicked_ok_or_exit = True
                 continue
 
-        interruptible_sleep(1)
+        time.sleep(1)
         emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
 
     return False

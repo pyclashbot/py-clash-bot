@@ -39,7 +39,7 @@ except locale.Error:
     # If even the C locale is unavailable, continue with the default to avoid crashing on import.
     pass
 
-from pyclashbot.bot.worker import WorkerProcess
+from pyclashbot.bot.worker import WorkerProcess, stop_worker_process
 from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.adb_base import validate_device_serial
@@ -221,12 +221,6 @@ def start_button_event(
     return process
 
 
-def stop_button_event(logger: Logger, shutdown_event: Event) -> None:
-    """Signal the worker process to stop gracefully."""
-    logger.change_status("Stopping")
-    shutdown_event.set()
-
-
 def update_layout(
     ui: PyClashBotUI,
     logger: Logger,
@@ -249,13 +243,7 @@ def update_layout(
 
 def exit_button_event(process: WorkerProcess | None, shutdown_event: Event | None) -> None:
     """Force stop the worker process on application exit."""
-    if shutdown_event is not None:
-        shutdown_event.set()
-    if process is not None and process.is_alive():
-        process.terminate()
-        process.join(timeout=1)
-        if process.is_alive():
-            process.kill()
+    stop_worker_process(process, shutdown_event)
 
 
 def handle_process_finished(
@@ -323,14 +311,12 @@ class BotApplication:
         self._poll()
 
     def _on_main_button(self) -> None:
-        """Handle the unified Start/Stop/Force Stop button."""
+        """Handle the unified Start/Stop button."""
         state = self.ui.get_button_state()
         if state == "idle":
             self._on_start()
         elif state == "running":
             self._on_stop()
-        elif state == "stopping":
-            self._on_force_stop()
 
     def _on_start(self) -> None:
         if self.process is not None and self.process.is_alive():
@@ -355,23 +341,13 @@ class BotApplication:
             self.ui.set_button_state("idle")
 
     def _on_stop(self) -> None:
-        if self.shutdown_event is not None:
-            stop_button_event(self.logger, self.shutdown_event)
-            # Change to Force Stop button in case graceful shutdown takes too long
-            self.ui.set_button_state("stopping")
-
-    def _on_force_stop(self) -> None:
-        """Force kill the worker process using SIGTERM/SIGKILL."""
-        if self.process is not None and self.process.is_alive():
-            self.logger.change_status("Force stopping bot...")
-            self.process.terminate()  # SIGTERM
-            self.process.join(timeout=1)
-            if self.process.is_alive():
-                self.process.kill()  # SIGKILL
-            self._snapshot_session_stats()
-            self.process = None
-            self.logger.change_status("Idle")
-            self.ui.set_button_state("idle")
+        """Stop the worker via OS-level termination (single press)."""
+        self.logger.change_status("Stopping")
+        stop_worker_process(self.process, self.shutdown_event)
+        self._snapshot_session_stats()
+        self.process = None
+        self.logger.change_status("Idle")
+        self.ui.set_button_state("idle")
 
     def _on_config_change(self, values: dict[str, Any]) -> None:
         changed = {key for key, value in values.items() if self.current_values.get(key) != value}

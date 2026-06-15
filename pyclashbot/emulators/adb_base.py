@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import subprocess
+import time
 from abc import ABC
 
 import cv2
@@ -11,7 +12,6 @@ from pyclashbot.emulators.base import (
     BaseEmulatorController,
     EmulatorNotReadyError,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.platform import is_linux
 
 logger = logging.getLogger(__name__)
@@ -239,7 +239,7 @@ class AdbBasedController(BaseEmulatorController, ABC):
         for _ in range(max(1, clicks)):
             self.adb(f"shell input tap {x_coord} {y_coord}")
             if clicks > 1:
-                interruptible_sleep(max(0.0, interval))
+                time.sleep(max(0.0, interval))
 
     def swipe(self, x_coord1: int, y_coord1: int, x_coord2: int, y_coord2: int):
         """Swipe on the screen using ADB input swipe."""

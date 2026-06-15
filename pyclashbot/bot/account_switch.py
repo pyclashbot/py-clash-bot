@@ -12,7 +12,6 @@ from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_burger_button_options_menu,
     check_if_on_clash_main_menu,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 from pyclashbot.utils.logger import Logger
 
 ACCOUNT_SWITCH_MAIN_WAIT_TIMEOUT = 180
@@ -34,7 +33,7 @@ def _settle_main_menu_if_first_switch(logger: Logger) -> None:
     if not _first_switch_this_process:
         return
     logger.change_status("Waiting for main menu to settle...")
-    interruptible_sleep(MAIN_MENU_SETTLE_BEFORE_FIRST_SWITCH)
+    time.sleep(MAIN_MENU_SETTLE_BEFORE_FIRST_SWITCH)
     _first_switch_this_process = False
 
 
@@ -51,7 +50,7 @@ def _open_burger_menu_with_retry(emulator, logger: Logger) -> bool:
         while time.time() < deadline:
             if check_if_on_clash_main_burger_button_options_menu(emulator):
                 return True
-            interruptible_sleep(0.5)
+            time.sleep(0.5)
     logger.change_status("Burger menu did not open")
     return False
 
@@ -60,7 +59,7 @@ def _click_switch_account_with_retry(emulator, logger: Logger) -> bool:
     for attempt in range(1, SWITCH_ACCOUNT_ATTEMPTS + 1):
         logger.change_status(f"Opening Switch Account (try {attempt}/{SWITCH_ACCOUNT_ATTEMPTS})...")
         emulator.click(*SWITCH_ACCOUNT_BUTTON_COORD)
-        interruptible_sleep(SWITCH_ACCOUNT_LOAD_SLEEP)
+        time.sleep(SWITCH_ACCOUNT_LOAD_SLEEP)
         if not check_if_on_clash_main_burger_button_options_menu(emulator):
             return True
         if attempt < SWITCH_ACCOUNT_ATTEMPTS:
@@ -83,7 +82,7 @@ def _wait_for_account_picker(emulator, logger: Logger) -> bool:
 
         elapsed = int(time.time() - start)
         logger.change_status(f"Waiting for account list ({elapsed}s)...")
-        interruptible_sleep(1)
+        time.sleep(1)
 
     if check_if_on_clash_main_burger_button_options_menu(emulator):
         logger.change_status("Still on burger menu — Switch Account tap may be wrong")
@@ -98,7 +97,7 @@ def _click_account_slot(emulator, logger: Logger, slot: int) -> bool:
         logger.change_status(f"No click coordinates for account slot {slot}")
         return False
     emulator.click(*ACCOUNT_SLOT_CLICK_COORDS[slot])
-    interruptible_sleep(2)
+    time.sleep(2)
     return True
 
 
@@ -124,7 +123,7 @@ def switch_account_state(emulator, logger: Logger, account_slot: int) -> bool:
     if not _click_account_slot(emulator, logger, account_slot):
         return False
 
-    interruptible_sleep(2)
+    time.sleep(2)
     logger.change_status("Waiting for main menu after account switch...")
     if not wait_for_clash_main_menu(
         emulator,

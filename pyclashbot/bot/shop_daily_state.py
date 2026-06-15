@@ -6,6 +6,7 @@ confirm the collect, dismiss, then return to main.
 
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING
 
 from pyclashbot.bot.coords import (
@@ -23,7 +24,6 @@ from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_menu,
     check_if_on_shop,
 )
-from pyclashbot.utils.cancellation import interruptible_sleep
 
 if TYPE_CHECKING:
     from pyclashbot.utils.logger import Logger
@@ -33,7 +33,7 @@ MAX_PAGINATE_ITERATIONS = 8
 
 def _paginate_shop(emulator) -> None:
     emulator.click(*PAGINATE_SHOP_PAGE_BUTTON)
-    interruptible_sleep(1)
+    time.sleep(1)
 
 
 def shop_daily_state(emulator, logger: Logger) -> bool:
@@ -65,12 +65,12 @@ def shop_daily_state(emulator, logger: Logger) -> bool:
 
     logger.change_status(f"Found daily free offer at {found}, claiming...")
     emulator.click(*found)
-    interruptible_sleep(2)
+    time.sleep(2)
 
     emulator.click(*CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS)
-    interruptible_sleep(2)
+    time.sleep(2)
 
     emulator.click(*SHOP_PAGE_DEADSPACE_COORD)
-    interruptible_sleep(1)
+    time.sleep(1)
 
     return navigate_main_page(emulator, logger, PAGE_SHOP, PAGE_MAIN)
