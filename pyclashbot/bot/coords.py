@@ -132,6 +132,9 @@ START_WAR_BATTLE_BUTTON_COORDS = (280, 415)
 OK_AFTER_WAR_BATTLE_COMPLETE_BUTTON_COORD = (205, 570)
 # Playfield drop region during a war battle (LTRB → (left, top, right, bottom))
 WAR_BATTLE_PLAYFIELD_LTRB = (55, 256, 360, 470)
+# Full-board drop region for random/clean plays (LTRB), measured from a fight frame.
+# Sits inside the rl-bot PLAY_REGION normalization rect, so it does not affect coord norm.
+PLAYABLE_PLAY_REGION_LTRB = (59, 67, 355, 467)
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
 WAR_DEADSPACE_COORD = (20, 330)
 

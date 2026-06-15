@@ -18,7 +18,7 @@ from pyclashbot.bot.coords import (
     EMOTE_BUTTON_COORD,
     EMOTE_ICON_COORDS,
     HAND_CARDS_COORDS,
-    MAG_DUMP_CARD_COORDS,
+    PLAYABLE_PLAY_REGION_LTRB,
     QUICKMATCH_POPUP_BUTTON_COORD,
     START_FIGHT_BUTTON_COORD,
 )
@@ -81,7 +81,7 @@ def do_fight_state(
         return False
 
     # Run random fight loop if random mode toggled
-    if random_fight_mode and _random_fight_loop(emulator, logger) is False:
+    if random_fight_mode and _random_fight_loop(emulator, logger, recording_flag) is False:
         logger.change_status("Fight loop failed")
         return False
 
@@ -163,21 +163,36 @@ def send_emote(emulator, logger: Logger):
     emulator.click(emote_coord[0], emote_coord[1])
 
 
-def mag_dump(emulator, logger):
-    logger.log("Mag dumping...")
-    for index in range(3):
-        logger.change_status(f"Mag dump play {index}")
-        card_index = random.randint(0, 3)
-        card_coord = MAG_DUMP_CARD_COORDS[card_index]
-        play_coord = (random.randint(101, 440), random.randint(50, 526))
+RANDOM_PLAY_ELIXIR_MIN = 3
+RANDOM_PLAY_ELIXIR_MAX = 9
 
-        # record play here
 
-        emulator.click(card_coord[0], card_coord[1])
-        time.sleep(0.1)
+def play_random_available_card(emulator, logger, recording_flag: bool, elapsed_s: float) -> bool:
+    """Play one card that is actually available, at a random friendly-half coord.
 
-        emulator.click(play_coord[0], play_coord[1])
-        time.sleep(0.1)
+    Mirrors the rl-bot RandomPlayer so recorded plays are never polluted with cards
+    that didn't deploy: read the available hand slots (affordable, non-empty) and, if
+    any, play a random one; if none are available, do nothing. Returns True if a card
+    was played. The caller gates this behind a random elixir wait.
+    """
+    card_indices = check_which_cards_are_available(emulator, check_side=True)
+    if not card_indices:
+        return False  # nothing playable -> no play, nothing recorded (caller re-rolls)
+
+    card_index = random.choice(card_indices)
+    left, top, right, bottom = PLAYABLE_PLAY_REGION_LTRB
+    play_coord = (random.randint(left, right), random.randint(top, bottom))
+
+    emulator.click(HAND_CARDS_COORDS[card_index][0], HAND_CARDS_COORDS[card_index][1])
+    time.sleep(0.1)
+    emulator.click(play_coord[0], play_coord[1])
+    time.sleep(0.1)
+
+    if recording_flag:
+        # Card identity isn't computed for random plays; home re-derives it from pixels.
+        log_play(card_index, play_coord[0], play_coord[1], "UNKNOWN", elapsed_s)
+    logger.add_card_played()
+    return True
 
 
 def wait_for_elixir(
@@ -581,7 +596,7 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
     return True
 
 
-def _random_fight_loop(emulator, logger) -> bool:
+def _random_fight_loop(emulator, logger, recording_flag: bool = False) -> bool:
     """Method for handling dynamically timed fight with random plays"""
     logger.change_status(status="Starting battle with random plays")
     fight_timeout = 5 * 60  # 5 minutes
@@ -613,11 +628,15 @@ def _random_fight_loop(emulator, logger) -> bool:
             logger.change_status("Random fight loop timed out after 5 minutes")
             return False
 
-        mag_dump(emulator, logger)
-        for _ in range(random.randint(1, 3)):
-            logger.add_card_played()
-
-        time.sleep(8)
+        # Clean random-play flow (mirrors rl-bot RandomPlayer): wait for a random
+        # elixir gate, then play only if a card is actually available.
+        target = random.randint(RANDOM_PLAY_ELIXIR_MIN, RANDOM_PLAY_ELIXIR_MAX)
+        elixir_result = wait_for_elixir(emulator, logger, target, recording_flag=recording_flag)
+        if elixir_result == "no battle":
+            break
+        if elixir_result == "restart":
+            return False
+        play_random_available_card(emulator, logger, recording_flag, time.time() - start_time)
 
     logger.change_status("Random-plays fight complete")
     return True
