@@ -30,6 +30,7 @@ import os
 import secrets
 import threading
 import time
+import uuid
 from typing import Any
 
 import cv2
@@ -59,6 +60,7 @@ class FightPackRecorder:
     def __init__(self, logger=None) -> None:
         self.logger = logger
         self.slug: str | None = None
+        self.uuid: str = ""
         self.dir: str | None = None
         self.fps: float = DEFAULT_FPS
         self.fight_mode: str = ""
@@ -81,6 +83,9 @@ class FightPackRecorder:
     def start(self, emulator, fight_mode: str, version: str, fps: float = DEFAULT_FPS) -> bool:
         """Begin capturing. Returns True on success (a frame thread is running)."""
         self.slug = _new_slug()
+        # Stable dedup key for the importer: generated once here and persisted
+        # immediately (see below), so a re-exported/re-sent pack keeps the same uuid.
+        self.uuid = uuid.uuid4().hex
         self.dir = os.path.join(get_recordings_dir(), self.slug)
         self.fps = fps
         self.fight_mode = fight_mode
@@ -93,6 +98,9 @@ class FightPackRecorder:
 
         os.makedirs(self.dir, exist_ok=True)
         self.frames_source = self._open_encoder()
+        # Persist a stub manifest now so the uuid survives even if the fight crashes
+        # before finish(); finish() overwrites it with the same uuid plus the outcome.
+        self._write_manifest(None)
 
         self._thread = threading.Thread(target=self._capture_loop, name="fight-capture", daemon=True)
         self._thread.start()
@@ -260,6 +268,7 @@ class FightPackRecorder:
         manifest = {
             "schema": SCHEMA,
             "slug": self.slug,
+            "uuid": self.uuid,
             "outcome": outcome,
             "fight_mode": self.fight_mode,
             "fps": achieved_fps,

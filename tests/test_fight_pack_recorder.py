@@ -37,6 +37,23 @@ def _drive_one_fight(recorder: FightPackRecorder, *, fps: float = 20.0) -> str:
     return os.path.join(rec.get_recordings_dir(), slug)
 
 
+def test_uuid_persisted_at_start_and_stable(tmp_path, monkeypatch):
+    monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+
+    recorder = FightPackRecorder()
+    recorder.start(_FakeEmu(), "1v1_classic", "vTEST", fps=20.0)
+    pack_dir = os.path.join(rec.get_recordings_dir(), recorder.slug)
+
+    # uuid is written to the manifest immediately at start (before finish).
+    started = _read_manifest(pack_dir)
+    assert started["uuid"] == recorder.uuid and len(recorder.uuid) == 32
+
+    recorder.finish("win")
+    finished = _read_manifest(pack_dir)
+    # Same uuid survives finish() -- a re-exported pack carries the original.
+    assert finished["uuid"] == started["uuid"]
+
+
 def test_stop_capture_freezes_frames(tmp_path, monkeypatch):
     monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
 
@@ -61,6 +78,9 @@ def test_pack_is_spec_valid(tmp_path, monkeypatch):
 
     manifest = _read_manifest(pack_dir)
     assert manifest["schema"] == "pcb-pack/v1"
+    # uuid is the importer's dedup key: 32-char lowercase hex, stable across re-exports.
+    assert isinstance(manifest["uuid"], str) and len(manifest["uuid"]) == 32
+    assert int(manifest["uuid"], 16) >= 0  # valid hex
     assert manifest["resolution"] == [419, 633]
     assert manifest["fight_mode"] == "1v1_trophy"
     assert manifest["outcome"] == "win"
