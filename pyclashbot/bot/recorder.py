@@ -7,7 +7,7 @@ royalestrat ``user_data`` importer):
       capture.mkv            # lossless FFV1 video, 419x633, BGR, 3 fps  (primary)
        --- or, when FFV1 is unavailable on the user's machine: ---
       frames/000000.png ...  # lossless PNG, 419x633, BGR, 3 fps         (fallback)
-      plays.jsonl            # one JSON line per actual card deploy
+      plays.jsonl            # one JSON line per deploy: {frame_index, card_index (hand slot 0-3), x, y, elapsed_s}
       manifest.json
 
 Channel order is load-bearing: ``emulator.screenshot()`` is BGR and we keep it
@@ -90,16 +90,19 @@ class FightPackRecorder:
         self._log(f"Started fight recording {self.slug} (source={self.frames_source}, fps={fps})")
         return True
 
-    def log_play(self, slot: int, x: int, y: int, card_id: str, elapsed_s: float) -> None:
-        """Record one card deploy, pairing it to the current frame index."""
+    def log_play(self, card_index: int, x: int, y: int, elapsed_s: float) -> None:
+        """Record one card deploy, pairing it to the current frame index.
+
+        Logs the hand slot (0-3) the card was played from, not the card identity:
+        a vision model labels the hand from the frames and maps index -> card later.
+        """
         if self.dir is None:
             return
         entry = {
             "frame_index": self._frame_count,  # atomic int read under the GIL
-            "slot": int(slot),
+            "card_index": int(card_index),
             "x": int(x),
             "y": int(y),
-            "card_id": str(card_id) if card_id else "UNKNOWN",
             "elapsed_s": round(float(elapsed_s), 2),
         }
         with self._lock:
@@ -263,9 +266,9 @@ def start_fight_recording(emulator, fight_mode: str, version: str, logger=None, 
         _active = None
 
 
-def log_play(slot: int, x: int, y: int, card_id: str, elapsed_s: float) -> None:
+def log_play(card_index: int, x: int, y: int, elapsed_s: float) -> None:
     if _active is not None:
-        _active.log_play(slot, x, y, card_id, elapsed_s)
+        _active.log_play(card_index, x, y, elapsed_s)
 
 
 def stop_fight_capture() -> None:

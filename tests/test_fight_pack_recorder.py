@@ -30,7 +30,7 @@ def _read_manifest(pack_dir: str) -> dict:
 
 def _drive_one_fight(recorder: FightPackRecorder, *, fps: float = 20.0) -> str:
     recorder.start(_FakeEmu(), "1v1_trophy", "vTEST", fps=fps)
-    recorder.log_play(2, 215, 360, "hog_rider", 47.3)
+    recorder.log_play(2, 215, 360, 47.3)
     time.sleep(0.5)  # let the capture thread grab several frames
     slug = recorder.finish("win")
     assert slug is not None
@@ -74,8 +74,7 @@ def test_pack_is_spec_valid(tmp_path, monkeypatch):
         plays = [json.loads(line) for line in f if line.strip()]
     assert len(plays) == 1
     play = plays[0]
-    assert play["slot"] == 2 and play["x"] == 215 and play["y"] == 360
-    assert play["card_id"] == "hog_rider"
+    assert play["card_index"] == 2 and play["x"] == 215 and play["y"] == 360
     assert 0 <= play["frame_index"] <= manifest["n_frames"]
 
 
@@ -102,7 +101,7 @@ def test_module_singleton_helpers(tmp_path, monkeypatch):
     assert rec.is_recording() is False
     rec.start_fight_recording(_FakeEmu(), "1v1_classic", "vTEST")
     assert rec.is_recording() is True
-    rec.log_play(0, 100, 200, "UNKNOWN", 1.0)
+    rec.log_play(0, 100, 200, 1.0)
     time.sleep(0.3)
     rec.finish_fight_recording("loss")
     assert rec.is_recording() is False
