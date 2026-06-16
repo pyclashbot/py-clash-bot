@@ -6,8 +6,11 @@ Consolidates the former deck_utils.py, deck_cycle.py, and deck_randomization.py.
 import time
 
 from pyclashbot.bot.coords import (
+    ACCEPT_RANDOMIZE_DECK_BUTTON_COORD,
     DECK_OPTIONS_BUTTON_COORDS,
+    DECK_PAGE_OPTIONS_BUTTON_COORDS,
     DECK_TABS_REGION,
+    RANDOMIZE_DECK_BUTTON_COORD,
     RANDOMIZE_DECK_BUTTON_COORDS,
     RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS,
 )
@@ -19,6 +22,9 @@ from pyclashbot.bot.nav import (
 )
 from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_menu,
+    check_if_on_classic_1v1_deck_page,
+    check_if_on_classic_2v2_deck_page,
+    check_if_on_trophy_road_deck_page,
     is_deck_full,
     is_single_deck_layout_by_pixel,
 )
@@ -163,83 +169,31 @@ def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
     return True
 
 
-def find_and_select_deck_for_randomization(emulator, logger: Logger, deck_number: int) -> tuple[bool, int | None]:
-    if is_single_deck_layout_by_pixel(emulator):
-        logger.change_status("Single deck layout detected. Selecting it for randomization.")
-        return True, 1
+def randomize_deck(emulator, logger: Logger, deck_number: int = 2) -> bool:
+    """Navigate to the deck page, randomize the deck, and return to main.
 
-    logger.change_status(f"Searching for deck #{deck_number} to randomize.")
-
-    page_to_be_on = 1 if 1 <= deck_number <= 5 else 2
-
-    ss = emulator.screenshot()
-    on_page_1 = find_image(ss, "deck_tabs/deck_1", subcrop=DECK_TABS_REGION, tolerance=0.95) is not None
-    current_page = 1 if on_page_1 else 2
-
-    if current_page != page_to_be_on:
-        logger.change_status(f"Target is on page {page_to_be_on}, but bot is on page {current_page}. Switching.")
-        if not switch_deck_page(emulator, logger):
-            logger.error("Failed to switch to the correct deck page.")
-            return False, None
-        time.sleep(1)
-
-    deck_image_folder = f"deck_tabs/deck_{deck_number}"
-    deck_coords = find_image(emulator.screenshot(), deck_image_folder, subcrop=DECK_TABS_REGION, tolerance=0.95)
-
-    if deck_coords is not None:
-        logger.change_status(f"Found and selected deck #{deck_number}.")
-        emulator.click(deck_coords[0] + 15, deck_coords[1] + 15)
-        time.sleep(1)
-        return True, deck_number
-
-    logger.change_status(f"Could not find deck #{deck_number}. Defaulting to deck #1.")
-
-    on_page_1_after_fail = (
-        find_image(
-            emulator.screenshot(),
-            "deck_tabs/deck_1",
-            subcrop=DECK_TABS_REGION,
-            tolerance=0.95,
-        )
-        is not None
-    )
-
-    if not on_page_1_after_fail:
-        logger.change_status("Currently on page 2. Switching back to page 1 for fallback deck.")
-        if not switch_deck_page(emulator, logger):
-            logger.error("Failed to switch back to page 1 for fallback.")
-            return False, None
-        time.sleep(1)
-
-    deck1_coords = find_image(emulator.screenshot(), "deck_tabs/deck_1", subcrop=DECK_TABS_REGION, tolerance=0.95)
-    if deck1_coords is None:
-        logger.error("Critical error: Could not find deck #1 even after attempting to switch to page 1.")
-        return False, None
-
-    logger.change_status("Found and selected fallback deck #1.")
-    emulator.click(deck1_coords[0] + 15, deck1_coords[1] + 15)
-    time.sleep(1)
-    return True, 1
-
-
-def randomize_deck(emulator, logger: Logger, deck_number: int) -> bool:
-    """Orchestrates the entire deck randomization process including navigation."""
-    start_time = time.time()
-
+    Trophy Road, Classic 1v1, and Classic 2v2 all share the identical randomize-button
+    flow, so we just confirm we're on one of those deck pages and run it. `deck_number`
+    is accepted for the caller's signature but unused by this flow.
+    """
     if not get_to_card_page_from_clash_main(emulator, logger):
         return False
 
-    success, selected_deck = find_and_select_deck_for_randomization(emulator, logger, deck_number)
-    if not success or selected_deck is None:
-        return False
+    on_known_deck_page = (
+        check_if_on_trophy_road_deck_page(emulator)
+        or check_if_on_classic_2v2_deck_page(emulator)
+        or check_if_on_classic_1v1_deck_page(emulator)
+    )
+    if on_known_deck_page:
+        logger.change_status("Randomizing deck...")
+        emulator.click(*DECK_PAGE_OPTIONS_BUTTON_COORDS)
+        time.sleep(0.5)
+        emulator.click(*RANDOMIZE_DECK_BUTTON_COORD)
+        time.sleep(0.5)
+        emulator.click(*ACCEPT_RANDOMIZE_DECK_BUTTON_COORD)
+        time.sleep(0.5)
+        logger.add_card_randomization()
+    else:
+        logger.change_status("Undetected screen type. Not classic 1v1, nor 2v2, nor trophy road deck page!")
 
-    if not randomize_and_check_deck(emulator, logger, selected_deck):
-        logger.error(f"Failed to randomize and verify deck #{selected_deck}.")
-        return_to_clash_main_from_card_page(emulator, logger)
-        return False
-
-    if not return_to_clash_main_from_card_page(emulator, logger):
-        return False
-
-    logger.change_status(f"Successfully randomized deck #{selected_deck} in {str(time.time() - start_time)[:4]}s")
-    return True
+    return return_to_clash_main_from_card_page(emulator, logger)
