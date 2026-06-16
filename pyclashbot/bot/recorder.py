@@ -28,6 +28,7 @@ from __future__ import annotations
 import json
 import os
 import secrets
+import shutil
 import threading
 import time
 import uuid
@@ -42,6 +43,11 @@ from pyclashbot.utils.platform import get_recordings_dir
 # screenshots are (h, w, c) == (633, 419, 3).
 FRAME_W, FRAME_H = 419, 633
 DEFAULT_FPS = 3.0
+# Skip starting a new recording once the recordings drive is over 90% full
+# (free space below this fraction of total). Never deletes anything -- it just
+# stops adding to a nearly-full disk. Manual cleanup is the "Clear recordings"
+# button in the interface.
+MIN_FREE_DISK_FRACTION = 0.10
 SCHEMA = "pcb-pack/v1"
 # Max per-channel deviation tolerated on the FFV1 round-trip probe. Lossless RGB
 # (gbrp) round-trips bit-exact; yuv444p adds a few counts of matrix rounding;
@@ -298,9 +304,25 @@ class FightPackRecorder:
 _active: FightPackRecorder | None = None
 
 
+def _enough_disk_for_recording() -> bool:
+    """True if the recordings drive has at least MIN_FREE_DISK_FRACTION free."""
+    path = get_recordings_dir()
+    os.makedirs(path, exist_ok=True)
+    usage = shutil.disk_usage(path)
+    return usage.free / usage.total >= MIN_FREE_DISK_FRACTION
+
+
 def start_fight_recording(emulator, fight_mode: str, version: str, logger=None, fps: float = DEFAULT_FPS) -> None:
     global _active
     finish_fight_recording(None)  # defensively close any stale recorder
+    if not _enough_disk_for_recording():
+        msg = "Recordings drive over 90% full -- skipping fight recording"
+        if logger is not None:
+            logger.log(msg)
+        else:
+            print(msg)
+        _active = None
+        return
     recorder = FightPackRecorder(logger=logger)
     try:
         recorder.start(emulator, fight_mode, version, fps=fps)

@@ -9,11 +9,13 @@ from __future__ import annotations
 import json
 import os
 import time
+from types import SimpleNamespace
 
 import numpy as np
 
 from pyclashbot.bot import recorder as rec
 from pyclashbot.bot.recorder import FightPackRecorder
+from pyclashbot.utils import platform as pf
 
 
 class _FakeEmu:
@@ -35,6 +37,47 @@ def _drive_one_fight(recorder: FightPackRecorder, *, fps: float = 20.0) -> str:
     slug = recorder.finish("win")
     assert slug is not None
     return os.path.join(rec.get_recordings_dir(), slug)
+
+
+def test_low_disk_space_skips_recording(tmp_path, monkeypatch):
+    """At >90% used (free < 10%), start_fight_recording records nothing."""
+    monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+    # 95% used: 5 free of 100 total -> below the 10% floor.
+    monkeypatch.setattr(rec.shutil, "disk_usage", lambda _p: SimpleNamespace(total=100, used=95, free=5))
+
+    rec.start_fight_recording(_FakeEmu(), "1v1_classic", "vTEST", logger=None)
+
+    assert rec.is_recording() is False
+    assert not any(p.is_dir() for p in tmp_path.iterdir())
+
+
+def test_sufficient_disk_allows_recording(tmp_path, monkeypatch):
+    """With plenty of free space, recording starts normally."""
+    monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+    monkeypatch.setattr(rec.shutil, "disk_usage", lambda _p: SimpleNamespace(total=100, used=10, free=90))
+    monkeypatch.setattr(FightPackRecorder, "_ffv1_available", lambda self: False)
+
+    rec.start_fight_recording(_FakeEmu(), "1v1_classic", "vTEST", logger=None)
+    try:
+        assert rec.is_recording() is True
+    finally:
+        rec.finish_fight_recording("win")
+    assert rec.is_recording() is False
+
+
+def test_clear_recordings_removes_all_packs(tmp_path, monkeypatch):
+    """clear_recordings() deletes every pack folder and reports freed bytes."""
+    monkeypatch.setattr(pf, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+    for slug in ("packA", "packB"):
+        frames = tmp_path / slug / "frames"
+        frames.mkdir(parents=True)
+        (frames / "0.png").write_bytes(b"x" * 1000)
+
+    removed, freed = pf.clear_recordings()
+
+    assert removed == 2
+    assert freed >= 2000
+    assert list(tmp_path.iterdir()) == []
 
 
 def test_uuid_persisted_at_start_and_stable(tmp_path, monkeypatch):

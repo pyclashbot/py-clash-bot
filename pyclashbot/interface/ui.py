@@ -40,7 +40,7 @@ from pyclashbot.interface.enums import (
     has_start_ready_job,
 )
 from pyclashbot.interface.widgets import DualRingGauge
-from pyclashbot.utils.platform import is_windows
+from pyclashbot.utils.platform import clear_recordings, is_windows
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -1199,6 +1199,16 @@ class PyClashBotUI(ttk.Window):
             },
         )
 
+        (self.clear_recordings_btn,) = self._compact_action_button_row(
+            data_frame,
+            {
+                "text": "Clear recordings",
+                "bootstyle": "danger",
+                "command": self._on_clear_recordings_clicked,
+                "pady": (6, 0),
+            },
+        )
+
         links_frame = self._section_labelframe(content, "Links")
         links_frame.pack(fill=X)
 
@@ -1474,6 +1484,18 @@ class PyClashBotUI(ttk.Window):
     def _on_open_recordings_clicked(self) -> None:
         if self._open_recordings_callback:
             self._open_recordings_callback()
+
+    def _on_clear_recordings_clicked(self) -> None:
+        if not messagebox.askyesno(
+            "Clear recordings",
+            "Delete ALL recorded fight packs? This cannot be undone.",
+        ):
+            return
+        removed, freed = clear_recordings()
+        messagebox.showinfo(
+            "Recordings cleared",
+            f"Deleted {removed} recording(s), freed {freed / (1024**3):.2f} GB.",
+        )
 
     def _update_advanced_settings_visibility(self, emulator_choice: str) -> None:
         show_advanced = bool(self.advanced_settings_var.get())
