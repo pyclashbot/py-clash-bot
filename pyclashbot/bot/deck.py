@@ -6,7 +6,7 @@ Consolidates the former deck_utils.py, deck_cycle.py, and deck_randomization.py.
 import time
 
 from pyclashbot.bot.coords import (
-    ACCEPT_RANDOMIZE_DECK_BUTTON_COORD,
+    CONFIRM_RANDOMIZE_DECK_BUTTON_COORD,
     DECK_OPTIONS_BUTTON_COORDS,
     DECK_PAGE_OPTIONS_BUTTON_COORDS,
     DECK_TABS_REGION,
@@ -24,6 +24,7 @@ from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_menu,
     check_if_on_classic_1v1_deck_page,
     check_if_on_classic_2v2_deck_page,
+    check_if_on_confirm_randomize_deck_page,
     check_if_on_trophy_road_deck_page,
     is_deck_full,
     is_single_deck_layout_by_pixel,
@@ -173,8 +174,9 @@ def randomize_deck(emulator, logger: Logger, deck_number: int = 2) -> bool:
     """Navigate to the deck page, randomize the deck, and return to main.
 
     Trophy Road, Classic 1v1, and Classic 2v2 all share the identical randomize-button
-    flow, so we just confirm we're on one of those deck pages and run it. `deck_number`
-    is accepted for the caller's signature but unused by this flow.
+    flow, so we just confirm we're on one of those deck pages and run it. There is no
+    confirm dialog: deck-options -> randomize -> back to main. `deck_number` is accepted
+    for the caller's signature but unused by this flow.
     """
     if not get_to_card_page_from_clash_main(emulator, logger):
         return False
@@ -190,8 +192,11 @@ def randomize_deck(emulator, logger: Logger, deck_number: int = 2) -> bool:
         time.sleep(0.5)
         emulator.click(*RANDOMIZE_DECK_BUTTON_COORD)
         time.sleep(0.5)
-        emulator.click(*ACCEPT_RANDOMIZE_DECK_BUTTON_COORD)
-        time.sleep(0.5)
+        # Randomizing a full deck pops a "replace deck?" confirm dialog; accept it
+        # when present. A partial deck randomizes instantly with no dialog.
+        if check_if_on_confirm_randomize_deck_page(emulator):
+            emulator.click(*CONFIRM_RANDOMIZE_DECK_BUTTON_COORD)
+            time.sleep(0.5)
         logger.add_card_randomization()
     else:
         logger.change_status("Undetected screen type. Not classic 1v1, nor 2v2, nor trophy road deck page!")

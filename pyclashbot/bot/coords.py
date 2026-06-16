@@ -39,9 +39,10 @@ RANDOMIZE_DECK_BUTTON_COORDS = (125, 188)
 RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS = (280, 390)
 
 # Unified deck-randomization flow (same buttons for Trophy Road / Classic 1v1 / 2v2).
+# Randomizing a full deck pops a "replace deck?" confirm dialog; a partial deck does not.
 DECK_PAGE_OPTIONS_BUTTON_COORDS = (57, 104)
 RANDOMIZE_DECK_BUTTON_COORD = (117, 186)
-ACCEPT_RANDOMIZE_DECK_BUTTON_COORD = (270, 388)
+CONFIRM_RANDOMIZE_DECK_BUTTON_COORD = (252, 388)
 
 # --- Upgrade ---
 UPGRADE_POINTS = [
@@ -132,6 +133,9 @@ START_WAR_BATTLE_BUTTON_COORDS = (280, 415)
 OK_AFTER_WAR_BATTLE_COMPLETE_BUTTON_COORD = (205, 570)
 # Playfield drop region during a war battle (LTRB → (left, top, right, bottom))
 WAR_BATTLE_PLAYFIELD_LTRB = (55, 256, 360, 470)
+# Full-board drop region for random/clean plays (LTRB), measured from a fight frame.
+# Sits inside the rl-bot PLAY_REGION normalization rect, so it does not affect coord norm.
+PLAYABLE_PLAY_REGION_LTRB = (59, 67, 355, 467)
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
 WAR_DEADSPACE_COORD = (20, 330)
 

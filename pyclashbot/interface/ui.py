@@ -144,9 +144,11 @@ class PyClashBotUI(ttk.Window):
             current_theme = self.DEFAULT_THEME
         self.theme_var = ttk.StringVar(value=current_theme)
         self.discord_rpc_var = ttk.BooleanVar(value=False)
+        self.record_fights_var = ttk.BooleanVar(value=False)
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
+        self._open_recordings_callback: Callable[[], None] | None = None
         self._config_widgets: dict[str, tk.Widget] = {}
         self._job_toggle_checkbuttons: dict[UIField, ttk.Checkbutton] = {}
         self._job_row_extras: dict[UIField, list[tk.Widget]] = {}
@@ -175,6 +177,9 @@ class PyClashBotUI(ttk.Window):
 
     def register_open_logs_callback(self, callback: Callable[[], None]) -> None:
         self._open_logs_callback = callback
+
+    def register_open_recordings_callback(self, callback: Callable[[], None]) -> None:
+        self._open_recordings_callback = callback
 
     def get_all_values(self) -> dict[str, object]:
         values: dict[str, object] = {}
@@ -221,6 +226,7 @@ class PyClashBotUI(ttk.Window):
 
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
+        values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_fights_var.get())
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -311,6 +317,9 @@ class PyClashBotUI(ttk.Window):
 
         if UIField.DISCORD_RPC_TOGGLE.value in values:
             self.discord_rpc_var.set(bool(values[UIField.DISCORD_RPC_TOGGLE.value]))
+
+        if UIField.RECORD_FIGHTS_TOGGLE.value in values:
+            self.record_fights_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
 
         self._show_current_emulator_settings()
 
@@ -1165,12 +1174,28 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.discord_rpc_var)
         self._register_config_widget(UIField.DISCORD_RPC_TOGGLE.value, discord_checkbox)
 
-        (self.open_logs_btn,) = self._compact_action_button_row(
+        record_fights_checkbox = ttk.Checkbutton(
+            data_frame,
+            text="Record my 1v1 fights as training data",
+            variable=self.record_fights_var,
+            bootstyle="round-toggle",
+            command=self._notify_config_change,
+        )
+        record_fights_checkbox.pack(anchor="w", pady=(0, 6))
+        self._trace_variable(self.record_fights_var)
+        self._register_config_widget(UIField.RECORD_FIGHTS_TOGGLE.value, record_fights_checkbox)
+
+        self.open_logs_btn, self.open_recordings_btn = self._compact_action_button_row(
             data_frame,
             {
                 "text": "Open logs folder",
                 "bootstyle": "secondary",
                 "command": self._on_open_logs_clicked,
+            },
+            {
+                "text": "Browse recorded games",
+                "bootstyle": "secondary",
+                "command": self._on_open_recordings_clicked,
             },
         )
 
@@ -1445,6 +1470,10 @@ class PyClashBotUI(ttk.Window):
     def _on_open_logs_clicked(self) -> None:
         if self._open_logs_callback:
             self._open_logs_callback()
+
+    def _on_open_recordings_clicked(self) -> None:
+        if self._open_recordings_callback:
+            self._open_recordings_callback()
 
     def _update_advanced_settings_visibility(self, emulator_choice: str) -> None:
         show_advanced = bool(self.advanced_settings_var.get())
