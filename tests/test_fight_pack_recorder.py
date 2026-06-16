@@ -42,6 +42,7 @@ def test_uuid_persisted_at_start_and_stable(tmp_path, monkeypatch):
 
     recorder = FightPackRecorder()
     recorder.start(_FakeEmu(), "1v1_classic", "vTEST", fps=20.0)
+    assert recorder.slug is not None  # set by start(); narrows str | None for os.path.join
     pack_dir = os.path.join(rec.get_recordings_dir(), recorder.slug)
 
     # uuid is written to the manifest immediately at start (before finish).
@@ -66,6 +67,7 @@ def test_stop_capture_freezes_frames(tmp_path, monkeypatch):
     assert recorder._frame_count == frozen
     recorder.finish("win")
 
+    assert recorder.slug is not None  # set by start(); narrows str | None for os.path.join
     manifest = _read_manifest(os.path.join(rec.get_recordings_dir(), recorder.slug))
     assert manifest["n_frames"] == frozen
 
