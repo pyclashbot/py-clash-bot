@@ -334,6 +334,26 @@ def check_if_on_classic_2v2_deck_page(emulator) -> bool:
     return all_pixels_are_equal(pixels, colors, 25)
 
 
+def check_if_on_confirm_randomize_deck_page(emulator) -> bool:
+    """True if the "replace deck?" confirm dialog is up after randomizing a full deck."""
+    image = emulator.screenshot()
+    pixels = [
+        image[379][105],
+        image[388][252],
+        image[344][247],
+        image[261][101],
+        image[416][80],
+    ]
+    colors = [
+        [98, 95, 252],
+        [255, 187, 104],
+        [243, 238, 227],
+        [243, 238, 227],
+        [243, 238, 227],
+    ]
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
 # ===== Clan voyage =====================================================
 
 # (x, y) screen coord -> expected RGB color for the clan voyage screen.

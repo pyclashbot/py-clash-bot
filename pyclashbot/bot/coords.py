@@ -39,9 +39,10 @@ RANDOMIZE_DECK_BUTTON_COORDS = (125, 188)
 RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS = (280, 390)
 
 # Unified deck-randomization flow (same buttons for Trophy Road / Classic 1v1 / 2v2).
+# Randomizing a full deck pops a "replace deck?" confirm dialog; a partial deck does not.
 DECK_PAGE_OPTIONS_BUTTON_COORDS = (57, 104)
 RANDOMIZE_DECK_BUTTON_COORD = (117, 186)
-ACCEPT_RANDOMIZE_DECK_BUTTON_COORD = (270, 388)
+CONFIRM_RANDOMIZE_DECK_BUTTON_COORD = (252, 388)
 
 # --- Upgrade ---
 UPGRADE_POINTS = [
