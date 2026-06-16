@@ -4,11 +4,16 @@ Writes one self-contained folder per fight (the "pack" format consumed by the
 royalestrat ``user_data`` importer):
 
     recordings/<slug>/
-      capture.mkv            # lossless FFV1 video, 419x633, BGR, 3 fps  (primary)
-       --- or, when FFV1 is unavailable on the user's machine: ---
+      capture.mkv            # lossless FFV1 video, 419x633, BGR, 3 fps  (only if dimension/color-exact)
+       --- or, when cv2's FFV1 crops odd dims / subsamples chroma (the common case): ---
       frames/000000.png ...  # lossless PNG, 419x633, BGR, 3 fps         (fallback)
       plays.jsonl            # one JSON line per deploy: {frame_index, card_index (hand slot 0-3), x, y, elapsed_s}
       manifest.json
+
+The frame size 419x633 is odd on both axes; cv2.VideoWriter's FFV1 defaults to a
+yuv420p pixel format that needs even dims and subsamples chroma, so it would crop
+to 418x632 and corrupt color. _ffv1_available() probes for this and falls back to
+PNG (lossless, exact dims, exact BGR) whenever FFV1 is not pixel-faithful.
 
 Channel order is load-bearing: ``emulator.screenshot()`` is BGR and we keep it
 BGR end to end via cv2 (no PIL RGB flip). A fixed-cadence background thread grabs
@@ -37,6 +42,10 @@ from pyclashbot.utils.platform import get_recordings_dir
 FRAME_W, FRAME_H = 419, 633
 DEFAULT_FPS = 3.0
 SCHEMA = "pcb-pack/v1"
+# Max per-channel deviation tolerated on the FFV1 round-trip probe. Lossless RGB
+# (gbrp) round-trips bit-exact; yuv444p adds a few counts of matrix rounding;
+# yuv420p chroma subsampling blows past this on the red/blue probe pattern.
+FFV1_COLOR_TOLERANCE = 4
 
 
 def _new_slug() -> str:
@@ -157,20 +166,49 @@ class FightPackRecorder:
         return "png"
 
     def _ffv1_available(self) -> bool:
-        """One-time codec probe: write a throwaway FFV1 frame and read it back."""
+        """One-time codec probe: accept FFV1 only if it is dimension- and color-exact.
+
+        cv2.VideoWriter's FFV1 defaults to a yuv420p pixel format, which requires
+        even dimensions (it silently crops our odd 419x633 to 418x632) and subsamples
+        chroma (corrupting the exact BGR that side detection relies on). A naive
+        "can I decode a frame" probe misses both. So we round-trip a red/blue striped
+        frame and reject FFV1 unless the readback is the right shape AND color-faithful;
+        the caller then falls back to lossless PNG frames, which have neither constraint.
+        """
         assert self.dir is not None
         probe = os.path.join(self.dir, "_probe.mkv")
+        # Chroma-stress pattern: saturated red/blue alternating columns. Subsampling
+        # averages neighbouring columns and fails the comparison; a crop changes shape.
+        test = np.empty((FRAME_H, FRAME_W, 3), dtype=np.uint8)
+        test[:, 0::2] = (0, 0, 255)  # BGR red on even columns
+        test[:, 1::2] = (255, 0, 0)  # BGR blue on odd columns
         try:
             writer = cv2.VideoWriter(probe, cv2.VideoWriter.fourcc(*"FFV1"), self.fps, (FRAME_W, FRAME_H))
             if not writer.isOpened():
                 writer.release()
                 return False
-            writer.write(np.zeros((FRAME_H, FRAME_W, 3), dtype=np.uint8))
+            writer.write(test)
             writer.release()
             cap = cv2.VideoCapture(probe)
-            ok, _ = cap.read()
+            ok, frame = cap.read()
             cap.release()
-            return bool(ok)
+            if not ok or frame is None:
+                return False
+            if frame.shape != (FRAME_H, FRAME_W, 3):
+                got_w, got_h = frame.shape[1], frame.shape[0]
+                self._log(
+                    f"FFV1 rejected: decoded {got_w}x{got_h}, expected {FRAME_W}x{FRAME_H} "
+                    "(odd-dimension crop) -- using lossless PNG frames",
+                )
+                return False
+            max_dev = int(np.abs(frame.astype(np.int16) - test.astype(np.int16)).max())
+            if max_dev > FFV1_COLOR_TOLERANCE:
+                self._log(
+                    f"FFV1 rejected: color round-trip off by {max_dev} (chroma subsampling) "
+                    "-- using lossless PNG frames",
+                )
+                return False
+            return True
         except Exception as e:
             self._log(f"FFV1 probe failed, falling back to PNG frames: {e}")
             return False
