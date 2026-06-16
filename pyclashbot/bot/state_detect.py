@@ -263,6 +263,77 @@ def check_if_on_clash_main_menu(emulator) -> bool:
     return False
 
 
+# ===== Deck page game types ============================================
+# The card/deck page looks different per game type (Trophy Road, Classic 1v1,
+# Classic 2v2). These sample the mode banner so randomize_deck can route.
+# emulator.screenshot() is BGR, so colors below are stored [B, G, R] (the
+# captured values were r,g,b) and sampled image[y][x].
+
+
+def check_if_on_trophy_road_deck_page(emulator) -> bool:
+    """True if the card/deck page is showing the Trophy Road game type."""
+    image = emulator.screenshot()
+    pixels = [
+        image[102][48],
+        image[97][63],
+        image[128][71],
+        image[116][58],
+        image[109][50],
+    ]
+    colors = [
+        [255, 255, 255],
+        [155, 63, 4],
+        [237, 99, 0],
+        [255, 255, 255],
+        [255, 255, 255],
+    ]
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
+def check_if_on_classic_1v1_deck_page(emulator) -> bool:
+    """True if the card/deck page is showing the Classic 1v1 game type."""
+    image = emulator.screenshot()
+    pixels = [
+        image[101][23],
+        image[107][92],
+        image[101][49],
+        image[109][51],
+        image[116][51],
+    ]
+    colors = [
+        [195, 45, 44],
+        [190, 44, 41],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+    ]
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
+def check_if_on_classic_2v2_deck_page(emulator) -> bool:
+    """True if the card/deck page is showing the Classic 2v2 game type."""
+    image = emulator.screenshot()
+    pixels = [
+        image[99][22],
+        image[102][85],
+        image[99][333],
+        image[103][391],
+        image[101][50],
+        image[108][54],
+        image[115][50],
+    ]
+    colors = [
+        [197, 45, 45],
+        [194, 45, 43],
+        [197, 45, 45],
+        [194, 45, 43],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+    ]
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
 # ===== Clan voyage =====================================================
 
 # (x, y) screen coord -> expected RGB color for the clan voyage screen.
