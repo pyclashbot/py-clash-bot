@@ -19,6 +19,32 @@ log_dir = get_log_dir("py-clash-bot")
 log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
 archive_name: str = join(log_dir, "logs.zip")
 
+# Per-state terminal output gate.
+# Maps the logger's current_state -> whether that state's lines print to the terminal.
+# Every line is ALWAYS written to the log file regardless of this dict; it only gates
+# the console print() in Logger.log(). Flip a value to False to silence that state's
+# terminal spam (e.g. the verbose [CONFIG]/[SCREEN] dumps that run under "No state"
+# and "restart") while keeping the full detail in the log file. States missing from
+# this dict default to printing (see Logger.log).
+STATE_PRINT_ENABLED: dict[str, bool] = {
+    "No state": False,
+    "start": True,
+    "switch_account": True,
+    "upgrade": True,
+    "card_mastery": True,
+    "shop_daily": True,
+    "clan_chat": True,
+    "war": True,
+    "select_battle_mode": True,
+    "randomize_deck": True,
+    "cycle_deck": True,
+    "start_fight": True,
+    "1v1_fight": True,
+    "2v2_fight": True,
+    "end_fight": True,
+    "restart": False,
+}
+
 
 def compress_logs() -> None:
     """Archive will contain a large text file, all old logs appended together
@@ -245,11 +271,17 @@ class Logger:
         return wrapper
 
     def log(self, message) -> None:
-        """Log something to file and print to console with time and stats"""
+        """Log something to file and print to console with time and stats.
+
+        The file write always happens; the console print is gated by
+        STATE_PRINT_ENABLED so noisy states can be silenced in the terminal
+        without losing them from the log file. Unknown states default to True.
+        """
         log_message = f"[{self.current_state}] {message}"
         logging.info(log_message)
-        time_string = self.calc_time_since_start()
-        print(f"[{self.current_state}] [{time_string}] {message}")
+        if STATE_PRINT_ENABLED.get(self.current_state, True):
+            time_string = self.calc_time_since_start()
+            print(f"[{self.current_state}] [{time_string}] {message}")
 
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
@@ -287,12 +319,11 @@ class Logger:
 
             return int(random_lowest_key)
 
-        def print_account_history_dict(index2count):
-            print("\nAccount history dict:")
-            print("{:^6} : {}".format("Acct #", "count"))
+        def log_account_history_dict(index2count):
+            self.log("Account history dict:")
+            self.log("{:^6} : {}".format("Acct #", "count"))
             for index, count in index2count.items():
-                print(f"{index:^6} : {count}")
-            print("\n")
+                self.log(f"{index:^6} : {count}")
 
         # make a dict that represents index2count for each index in range(total_count)
         index2count = dict.fromkeys(range(total_count), 0)
@@ -302,7 +333,7 @@ class Logger:
             index2count[i] += 1
 
         # print the dict
-        print_account_history_dict(index2count)
+        log_account_history_dict(index2count)
 
         # get the index with the lowest count
         next_account = get_lowest_value_in_dict(index2count)
