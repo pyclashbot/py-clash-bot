@@ -1,6 +1,7 @@
 """Platform detection and OS-specific directory helpers."""
 
 import os
+import shutil
 import sys
 from enum import StrEnum, auto
 
@@ -45,6 +46,39 @@ def get_log_dir(app_name: str) -> str:
 def get_recordings_dir(app_name: str = "py-clash-bot") -> str:
     """Return the single source-of-truth directory for recorded fight packs."""
     return os.path.join(get_app_data_dir(app_name), "recordings")
+
+
+def _dir_size(path: str) -> int:
+    """Best-effort total size in bytes of every file under path."""
+    total = 0
+    for root, _dirs, files in os.walk(path):
+        for name in files:
+            try:
+                total += os.path.getsize(os.path.join(root, name))
+            except OSError:
+                continue
+    return total
+
+
+def clear_recordings(app_name: str = "py-clash-bot") -> tuple[int, int]:
+    """Delete every recorded fight pack. Returns (packs_removed, bytes_freed).
+
+    Manual only: nothing in the bot calls this automatically. Wired to the
+    "Clear recordings" button in the interface.
+    """
+    rec_dir = get_recordings_dir(app_name)
+    if not os.path.isdir(rec_dir):
+        return (0, 0)
+    removed = 0
+    freed = 0
+    for name in os.listdir(rec_dir):
+        pack = os.path.join(rec_dir, name)
+        if not os.path.isdir(pack):
+            continue
+        freed += _dir_size(pack)
+        shutil.rmtree(pack, ignore_errors=True)
+        removed += 1
+    return (removed, freed)
 
 
 def is_windows() -> bool:

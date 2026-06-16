@@ -62,6 +62,9 @@ jobs:
             ./dist/py-clash-bot*.dmg
 
   notify:
+    # Skippable for silent re-tags/hotswaps: set the repo variable
+    # ANNOUNCE_DISCORD to 'false' to suppress the release ping, then restore it.
+    if: ${{ vars.ANNOUNCE_DISCORD != 'false' }}
     name: Send Discord notification
     needs: [build-windows, build-macos]
     runs-on: ubuntu-latest
