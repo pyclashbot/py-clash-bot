@@ -241,6 +241,13 @@ class StateOrder:
         return self.states[this_index + 1]
 
 
+# States whose lines are kept out of the terminal (still written to the log
+# file). These are the noisy emulator-boot / restart dumps; the logger is told
+# console=False for them via set_current_state, so it never needs to know any
+# state names itself.
+QUIET_CONSOLE_STATES = {"No state", "restart"}
+
+
 def state_tree(
     emulator,
     logger: Logger,
@@ -252,7 +259,7 @@ def state_tree(
     """Method to handle and loop between the various states of the bot"""
     global mode_used_in_1v1, fight_mode_cycle_index  # noqa: PLW0602
     logger.log(f'Set the current state to "{state}"')
-    logger.set_current_state(state)
+    logger.set_current_state(state, console=state not in QUIET_CONSOLE_STATES)
     time.sleep(0.1)
 
     # header in the log file to split the log by state loop iterations

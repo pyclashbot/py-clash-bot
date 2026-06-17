@@ -19,32 +19,6 @@ log_dir = get_log_dir("py-clash-bot")
 log_name = join(log_dir, time.strftime("%Y-%m-%d_%H-%M", time.localtime()) + ".txt")
 archive_name: str = join(log_dir, "logs.zip")
 
-# Per-state terminal output gate.
-# Maps the logger's current_state -> whether that state's lines print to the terminal.
-# Every line is ALWAYS written to the log file regardless of this dict; it only gates
-# the console print() in Logger.log(). Flip a value to False to silence that state's
-# terminal spam (e.g. the verbose [CONFIG]/[SCREEN] dumps that run under "No state"
-# and "restart") while keeping the full detail in the log file. States missing from
-# this dict default to printing (see Logger.log).
-STATE_PRINT_ENABLED: dict[str, bool] = {
-    "No state": False,
-    "start": True,
-    "switch_account": True,
-    "upgrade": True,
-    "card_mastery": True,
-    "shop_daily": True,
-    "clan_chat": True,
-    "war": True,
-    "select_battle_mode": True,
-    "randomize_deck": True,
-    "cycle_deck": True,
-    "start_fight": True,
-    "1v1_fight": True,
-    "2v2_fight": True,
-    "end_fight": True,
-    "restart": False,
-}
-
 
 def compress_logs() -> None:
     """Archive will contain a large text file, all old logs appended together
@@ -206,6 +180,13 @@ class Logger:
 
         # bot stats
         self.current_state = "No state"
+        # Whether the current state's lines print to the terminal. The state
+        # machine sets this via set_current_state(state, console=...); the
+        # logger itself knows nothing about which states are noisy. Defaults to
+        # False so the pre-loop emulator boot (which runs before the first
+        # set_current_state call) stays quiet on the console. Every line is
+        # still written to the log file regardless.
+        self._console_enabled = False
         self.current_status = "Idle"
         self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
@@ -274,12 +255,13 @@ class Logger:
         """Log something to file and print to console with time and stats.
 
         The file write always happens; the console print is gated by
-        STATE_PRINT_ENABLED so noisy states can be silenced in the terminal
-        without losing them from the log file. Unknown states default to True.
+        self._console_enabled, which the state machine sets per state via
+        set_current_state(state, console=...). Noisy states can be silenced in
+        the terminal without losing them from the log file.
         """
         log_message = f"[{self.current_state}] {message}"
         logging.info(log_message)
-        if STATE_PRINT_ENABLED.get(self.current_state, True):
+        if self._console_enabled:
             time_string = self.calc_time_since_start()
             print(f"[{self.current_state}] [{time_string}] {message}")
 
@@ -393,9 +375,15 @@ class Logger:
         return f"{win_percentage}%"
 
     @_updates_gui
-    def set_current_state(self, state_to_set):
-        """Set logger's current_state to state_to_set"""
+    def set_current_state(self, state_to_set, console: bool = True):
+        """Set logger's current_state, and whether its lines print to the console.
+
+        The caller (the state machine) owns the policy of which states are noisy
+        and passes console=False for those; the logger stays ignorant of state
+        names. The log file always receives every line regardless of console.
+        """
         self.current_state = state_to_set
+        self._console_enabled = console
 
     @_updates_gui
     def increment_battlepass_collects(self):
