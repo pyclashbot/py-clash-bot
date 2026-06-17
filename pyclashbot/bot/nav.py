@@ -27,6 +27,7 @@ from pyclashbot.bot.coords import (
     DECK_TABS_REGION,
     DECKS_PAGE_BUTTON_COORDS,
     OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE,
+    WAR_BOOT_REWARD_COORD,
     WAR_EXIT_DEADSPACE_COORD,
     WAR_TAB_FROM_SOCIAL_COORD,
 )
@@ -44,6 +45,7 @@ from pyclashbot.bot.state_detect import (
     check_if_on_shop,
     check_if_on_social,
     check_if_on_war,
+    check_if_on_war_boot,
 )
 from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.logger import Logger
@@ -484,7 +486,39 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
         emulator.click(x, y)
         time.sleep(2)
 
+    # The war page flashes up before the clan-war results popup ("war boot") lands
+    # on top of it, so let it settle before checking — otherwise we'd test during
+    # the flash, see the war page (popup not up yet), miss it, and get stuck behind
+    # the popup. Then click through it before the destination check.
+    if end_page == PAGE_WAR:
+        time.sleep(5)
+        if check_if_on_war_boot(emulator):
+            logger.change_status("War boot popup detected, handling it")
+            handle_war_boot(emulator, logger)
+
     return MAIN_PAGE_CHECKS[end_page](emulator)
+
+
+_WAR_BOOT_HANDLE_TIMEOUT_S = 30.0
+
+
+def handle_war_boot(emulator, logger: Logger) -> bool:
+    """Clear the clan-war results popup ("war boot") by clicking its reward until
+    the war page is reached.
+
+    Mirrors the requested "while 1: click reward; break if on war page" flow but is
+    timeout-bounded — bot/AGENTS forbids unbounded retry loops.
+    """
+    logger.change_status("Handling war boot popup...")
+    start_time = time.time()
+    while time.time() - start_time < _WAR_BOOT_HANDLE_TIMEOUT_S:
+        emulator.click(*WAR_BOOT_REWARD_COORD)
+        time.sleep(2)
+        if check_if_on_war(emulator):
+            logger.change_status("Cleared war boot popup, now on war page")
+            return True
+    logger.change_status("Timed out handling war boot popup")
+    return check_if_on_war(emulator)
 
 
 # ===== Card-page / deck-page navigation primitives ===================

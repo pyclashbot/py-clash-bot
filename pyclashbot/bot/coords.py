@@ -139,6 +139,11 @@ PLAYABLE_PLAY_REGION_LTRB = (59, 67, 355, 467)
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
 WAR_DEADSPACE_COORD = (20, 330)
 
+# War boot: the clan-war results popup ("Your Clan didn't finish!" / reward chest)
+# that can cover the main menu and intercept navigation to the war page.
+WAR_BOOT_REWARD_COORD = (221, 382)  # the reward-chest "OPEN" button
+SKIP_WAR_BOOT_BUTTON_COORDS = (208, 601)  # the bottom OK / skip button
+
 # --- Shop / daily free offer ---
 CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS = (210, 440)
 SHOP_PAGE_DEADSPACE_COORD = (10, 280)
