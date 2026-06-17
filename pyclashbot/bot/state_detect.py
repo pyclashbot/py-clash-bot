@@ -580,8 +580,11 @@ def check_if_on_social(emulator) -> bool:
     return True
 
 
-def check_if_on_war(emulator) -> bool:
-    iar = emulator.screenshot()
+def _matches_war_original(iar) -> bool:
+    """Original war-page fingerprint (pink river-race banner + bottom-of-page nav).
+
+    Pixels compared in raw screenshot/BGR order.
+    """
     pixels = [
         iar[18][146],
         iar[598][177],
@@ -608,6 +611,84 @@ def check_if_on_war(emulator) -> bool:
     ]
     for i, p in enumerate(pixels):
         if not pixel_is_equal(p, colors[i], tol=25):
+            return False
+    return True
+
+
+# Alternate war-page fingerprint, sampled with the click picker on the green
+# "Training Day" river-race variant that the original pink-banner palette misses.
+# (x, y, r, g, b) in RGB; each sampled pixel is flipped from BGR before comparing.
+_WAR_PAGE_ALT_PIXELS: tuple[tuple[int, int, int, int, int], ...] = (
+    (357, 53, 152, 117, 254),
+    (379, 57, 154, 119, 253),
+    (396, 41, 162, 129, 255),
+    (380, 30, 129, 161, 177),
+    (21, 606, 74, 88, 110),
+    (68, 606, 74, 88, 110),
+    (113, 608, 74, 88, 109),
+    (156, 604, 75, 89, 110),
+    (186, 604, 104, 187, 255),
+    (225, 607, 78, 175, 255),
+    (258, 608, 74, 88, 109),
+    (315, 613, 73, 87, 108),
+    (367, 612, 73, 87, 109),
+    (399, 612, 73, 87, 109),
+    (202, 604, 255, 255, 255),
+)
+
+
+def _matches_war_alt(iar) -> bool:
+    """Alternate war-page fingerprint (see _WAR_PAGE_ALT_PIXELS)."""
+    for x, y, r, g, b in _WAR_PAGE_ALT_PIXELS:
+        bgr = iar[y][x]
+        actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+        if not pixel_is_equal(actual, [r, g, b], tol=25):
+            return False
+    return True
+
+
+def check_if_on_war(emulator) -> bool:
+    """True when on the clan-war / river-race page.
+
+    Two independent pixel fingerprints are OR'd: either one matching confirms the
+    war page, both must fail to rule it out. The river-race banner color varies by
+    day, so add new palettes here rather than tightening existing ones.
+    """
+    iar = emulator.screenshot()
+    return _matches_war_original(iar) or _matches_war_alt(iar)
+
+
+# (x, y, r, g, b) sampled from the clan-war results popup ("war boot") — e.g. the
+# "Your Clan didn't finish!" screen with a reward chest. This modal covers the main
+# menu and intercepts navigation to the war page, so it is detected after the nav
+# clicks and then clicked through (see nav.handle_war_boot).
+_WAR_BOOT_PIXELS: tuple[tuple[int, int, int, int, int], ...] = (
+    (23, 601, 75, 89, 111),
+    (60, 599, 75, 89, 111),
+    (123, 608, 74, 88, 109),
+    (277, 608, 74, 88, 109),
+    (333, 609, 74, 88, 109),
+    (407, 613, 73, 87, 108),
+    (180, 608, 78, 175, 255),
+    (206, 606, 111, 134, 153),
+    (232, 606, 78, 175, 255),
+    (148, 390, 255, 190, 43),
+    (217, 390, 255, 190, 43),
+    (225, 371, 255, 196, 54),
+)
+
+
+def check_if_on_war_boot(emulator) -> bool:
+    """True when the clan-war results popup ("war boot") is covering the screen.
+
+    Screenshots are BGR; each sampled pixel is flipped to RGB before comparing
+    against the (x, y, r, g, b) fingerprint above.
+    """
+    iar = emulator.screenshot()
+    for x, y, r, g, b in _WAR_BOOT_PIXELS:
+        bgr = iar[y][x]
+        actual = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+        if not pixel_is_equal(actual, [r, g, b], tol=25):
             return False
     return True
 
