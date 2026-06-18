@@ -180,6 +180,13 @@ class Logger:
 
         # bot stats
         self.current_state = "No state"
+        # Whether the current state's lines print to the terminal. The state
+        # machine sets this via set_current_state(state, console=...); the
+        # logger itself knows nothing about which states are noisy. Defaults to
+        # False so the pre-loop emulator boot (which runs before the first
+        # set_current_state call) stays quiet on the console. Every line is
+        # still written to the log file regardless.
+        self._console_enabled = False
         self.current_status = "Idle"
         self.time_of_last_card_upgrade = 0
         self.time_of_last_free_offer_collection = 0
@@ -245,11 +252,18 @@ class Logger:
         return wrapper
 
     def log(self, message) -> None:
-        """Log something to file and print to console with time and stats"""
+        """Log something to file and print to console with time and stats.
+
+        The file write always happens; the console print is gated by
+        self._console_enabled, which the state machine sets per state via
+        set_current_state(state, console=...). Noisy states can be silenced in
+        the terminal without losing them from the log file.
+        """
         log_message = f"[{self.current_state}] {message}"
         logging.info(log_message)
-        time_string = self.calc_time_since_start()
-        print(f"[{self.current_state}] [{time_string}] {message}")
+        if self._console_enabled:
+            time_string = self.calc_time_since_start()
+            print(f"[{self.current_state}] [{time_string}] {message}")
 
     def calc_time_since_start(self) -> str:
         """Calculate time since start of bot using logger's
@@ -287,12 +301,11 @@ class Logger:
 
             return int(random_lowest_key)
 
-        def print_account_history_dict(index2count):
-            print("\nAccount history dict:")
-            print("{:^6} : {}".format("Acct #", "count"))
+        def log_account_history_dict(index2count):
+            self.log("Account history dict:")
+            self.log("{:^6} : {}".format("Acct #", "count"))
             for index, count in index2count.items():
-                print(f"{index:^6} : {count}")
-            print("\n")
+                self.log(f"{index:^6} : {count}")
 
         # make a dict that represents index2count for each index in range(total_count)
         index2count = dict.fromkeys(range(total_count), 0)
@@ -302,7 +315,7 @@ class Logger:
             index2count[i] += 1
 
         # print the dict
-        print_account_history_dict(index2count)
+        log_account_history_dict(index2count)
 
         # get the index with the lowest count
         next_account = get_lowest_value_in_dict(index2count)
@@ -362,9 +375,15 @@ class Logger:
         return f"{win_percentage}%"
 
     @_updates_gui
-    def set_current_state(self, state_to_set):
-        """Set logger's current_state to state_to_set"""
+    def set_current_state(self, state_to_set, console: bool = True):
+        """Set logger's current_state, and whether its lines print to the console.
+
+        The caller (the state machine) owns the policy of which states are noisy
+        and passes console=False for those; the logger stays ignorant of state
+        names. The log file always receives every line regardless of console.
+        """
         self.current_state = state_to_set
+        self._console_enabled = console
 
     @_updates_gui
     def increment_battlepass_collects(self):
