@@ -491,6 +491,7 @@ def state_tree(
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
+        custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
         if (
             do_fight_state(
                 emulator,
@@ -498,7 +499,8 @@ def state_tree(
                 random_plays_flag,
                 mode_used_in_1v1,
                 False,
-                recording_flag,
+                recording_flag=recording_flag,
+                custom_path=custom_path,
             )
             is False
         ):
@@ -516,6 +518,7 @@ def state_tree(
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
+        custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
         # 2v2 fights are never recorded (training data is 1v1-only: Trophy Road + Classic 1v1).
         if (
             do_fight_state(
@@ -525,6 +528,7 @@ def state_tree(
                 "Classic 2v2",
                 called_from_launching=False,
                 recording_flag=False,
+                custom_path=custom_path,
             )
             is False
         ):

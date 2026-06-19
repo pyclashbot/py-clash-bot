@@ -50,11 +50,13 @@ ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
 ABILITY_TRIGGER_DELAY_S = 3
 
 
-def _maybe_start_fight_recording(emulator, logger, recording_flag: bool, fight_mode_chosen: str) -> None:
+def _maybe_start_fight_recording(
+    emulator, logger, recording_flag: bool, fight_mode_chosen: str, custom_path: str | None = None
+) -> None:
     """Begin opt-in training-data capture for 1v1-type fights only (Trophy Road / Classic 1v1, never 2v2)."""
     if recording_flag and fight_mode_chosen in ["Classic 1v1", "Trophy Road"]:
         pack_mode = "1v1_trophy" if fight_mode_chosen == "Trophy Road" else "1v1_classic"
-        start_fight_recording(emulator, pack_mode, __version__, logger=logger)
+        start_fight_recording(emulator, pack_mode, __version__, logger=logger, custom_path=custom_path)
 
 
 def do_fight_state(
@@ -64,6 +66,7 @@ def do_fight_state(
     fight_mode_chosen,
     called_from_launching=False,
     recording_flag: bool = False,
+    custom_path: str | None = None,
 ) -> bool:
     """Handle the entirety of a battle state (start fight, do fight, end fight)."""
 
@@ -80,12 +83,15 @@ def do_fight_state(
     # Recording is started/stopped inside the fight loops themselves so each pack
     # brackets exactly the in-battle play loop (no pre-battle wait or post-fight nav).
     # Run regular fight loop if random mode not toggled
-    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag, fight_mode_chosen) is False:
+    if not random_fight_mode and _fight_loop(emulator, logger, recording_flag, fight_mode_chosen, custom_path) is False:
         logger.change_status("Fight loop failed")
         return False
 
     # Run random fight loop if random mode toggled
-    if random_fight_mode and _random_fight_loop(emulator, logger, recording_flag, fight_mode_chosen) is False:
+    if (
+        random_fight_mode
+        and _random_fight_loop(emulator, logger, recording_flag, fight_mode_chosen, custom_path) is False
+    ):
         logger.change_status("Fight loop failed")
         return False
 
@@ -516,10 +522,12 @@ class BattleStrategy:
         return self.phase_thresholds[phase]
 
 
-def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str = "Classic 1v1") -> bool:
+def _fight_loop(
+    emulator, logger: Logger, recording_flag: bool, fight_mode: str = "Classic 1v1", custom_path: str | None = None
+) -> bool:
     """Method for handling dynamically timed fight"""
     create_default_bridge_iar(emulator)
-    _maybe_start_fight_recording(emulator, logger, recording_flag, fight_mode)
+    _maybe_start_fight_recording(emulator, logger, recording_flag, fight_mode, custom_path)
     collections.deque(maxlen=3)
     prev_cards_played = logger.get_cards_played()
     battle_detection_lost_count = 0
@@ -599,10 +607,16 @@ def _fight_loop(emulator, logger: Logger, recording_flag: bool, fight_mode: str 
     return True
 
 
-def _random_fight_loop(emulator, logger, recording_flag: bool = False, fight_mode_chosen: str = "Trophy Road") -> bool:
+def _random_fight_loop(
+    emulator,
+    logger,
+    recording_flag: bool = False,
+    fight_mode_chosen: str = "Trophy Road",
+    custom_path: str | None = None,
+) -> bool:
     """Method for handling dynamically timed fight with random plays"""
     logger.change_status(status="Starting battle with random plays")
-    _maybe_start_fight_recording(emulator, logger, recording_flag, fight_mode_chosen)
+    _maybe_start_fight_recording(emulator, logger, recording_flag, fight_mode_chosen, custom_path)
     create_default_bridge_iar(emulator)
     fight_timeout = 5 * 60  # 5 minutes
     start_time = time.time()

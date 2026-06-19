@@ -68,7 +68,7 @@ def test_sufficient_disk_allows_recording(tmp_path, monkeypatch):
 def test_clear_recordings_removes_all_packs(tmp_path, monkeypatch):
     """clear_recordings() deletes every pack folder and reports freed bytes."""
     monkeypatch.setattr(pf, "get_recordings_dir", lambda *a, **k: str(tmp_path))
-    for slug in ("packA", "packB"):
+    for slug in ("20240101-120000-abc123", "20240102-130000-def456"):
         frames = tmp_path / slug / "frames"
         frames.mkdir(parents=True)
         (frames / "0.png").write_bytes(b"x" * 1000)
@@ -78,6 +78,29 @@ def test_clear_recordings_removes_all_packs(tmp_path, monkeypatch):
     assert removed == 2
     assert freed >= 2000
     assert list(tmp_path.iterdir()) == []
+
+
+def test_clear_recordings_preserves_unrelated_dirs(tmp_path, monkeypatch):
+    """A custom recordings folder may hold unrelated content -- only slug-named
+    pack folders are deleted, everything else is left untouched."""
+    monkeypatch.setattr(pf, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+
+    pack = tmp_path / "20240101-120000-abc123" / "frames"
+    pack.mkdir(parents=True)
+    (pack / "0.png").write_bytes(b"x" * 1000)
+
+    unrelated_dir = tmp_path / "My Important Documents"
+    unrelated_dir.mkdir()
+    (unrelated_dir / "keep.txt").write_bytes(b"keep me")
+    loose_file = tmp_path / "notes.txt"
+    loose_file.write_bytes(b"keep me too")
+
+    removed, _ = pf.clear_recordings()
+
+    assert removed == 1
+    assert unrelated_dir.is_dir()
+    assert (unrelated_dir / "keep.txt").exists()
+    assert loose_file.exists()
 
 
 def test_uuid_persisted_at_start_and_stable(tmp_path, monkeypatch):

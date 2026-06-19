@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import sys
+import threading
 import tkinter as tk
+import tkinter.filedialog
 import webbrowser
 from collections.abc import Callable
 from pathlib import Path
@@ -40,7 +42,15 @@ from pyclashbot.interface.enums import (
     has_start_ready_job,
 )
 from pyclashbot.interface.widgets import DualRingGauge
-from pyclashbot.utils.platform import clear_recordings, is_windows
+from pyclashbot.utils.platform import (
+    LOW_DISK_SPACE_BYTES,
+    clear_recordings,
+    get_recordings_dir,
+    is_windows,
+    recordings_drive_free_bytes,
+    recordings_total_bytes_all_locations,
+    validate_recordings_path,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -113,6 +123,9 @@ _WIN_GAUGE_THICKNESS = 8
 _APP_ICON_NAME = "pixel-pycb.ico"
 _DISCORD_INVITE_URL = "https://pyclashbot.app/discord/invite"
 _GITHUB_PROJECT_URL = "https://github.com/pyclashbot/py-clash-bot"
+_UPLOAD_RECORDINGS_URL = "https://www.royaletrainer.com/upload"
+# How often the "recordings using N GB" note recomputes folder size (ms).
+_RECORDINGS_SIZE_REFRESH_MS = 3 * 60 * 1000  # 3 minutes
 _DISCORD_BRAND = "#5865F2"
 _GITHUB_BRAND = "#238636"
 _DISCORD_BUTTON_STYLE = "App.Discord.TButton"
@@ -145,6 +158,8 @@ class PyClashBotUI(ttk.Window):
         self.theme_var = ttk.StringVar(value=current_theme)
         self.discord_rpc_var = ttk.BooleanVar(value=False)
         self.record_fights_var = ttk.BooleanVar(value=False)
+        # Show the resolved default location in the box until the user picks a custom one.
+        self.recording_folder_path_var = ttk.StringVar(value=get_recordings_dir())
         self.advanced_settings_var = ttk.BooleanVar(value=False)
         self._config_callback: Callable[[dict[str, object]], None] | None = None
         self._open_logs_callback: Callable[[], None] | None = None
@@ -227,6 +242,7 @@ class PyClashBotUI(ttk.Window):
         values[UIField.THEME_NAME.value] = self.theme_var.get() or self.DEFAULT_THEME
         values[UIField.DISCORD_RPC_TOGGLE.value] = bool(self.discord_rpc_var.get())
         values[UIField.RECORD_FIGHTS_TOGGLE.value] = bool(self.record_fights_var.get())
+        values[UIField.RECORDING_FOLDER_PATH.value] = self.recording_folder_path_var.get() or ""
         return values
 
     def set_all_values(self, values: dict[str, object]) -> None:
@@ -320,6 +336,11 @@ class PyClashBotUI(ttk.Window):
 
         if UIField.RECORD_FIGHTS_TOGGLE.value in values:
             self.record_fights_var.set(bool(values[UIField.RECORD_FIGHTS_TOGGLE.value]))
+
+        if UIField.RECORDING_FOLDER_PATH.value in values:
+            saved_path = str(values[UIField.RECORDING_FOLDER_PATH.value])
+            # An empty saved value means "default" -- show the resolved default path.
+            self.recording_folder_path_var.set(saved_path or get_recordings_dir())
 
         self._show_current_emulator_settings()
 
@@ -1185,21 +1206,60 @@ class PyClashBotUI(ttk.Window):
         self._trace_variable(self.record_fights_var)
         self._register_config_widget(UIField.RECORD_FIGHTS_TOGGLE.value, record_fights_checkbox)
 
+        # Recording folder path picker
+        recording_folder_frame = ttk.Frame(data_frame)
+        recording_folder_frame.pack(fill=X, pady=(0, 2))
+
+        ttk.Label(
+            recording_folder_frame,
+            text="Recording folder:",
+            font=("TkDefaultFont", 9),
+        ).pack(side=LEFT, padx=(0, 5))
+
+        recording_folder_entry = ttk.Entry(
+            recording_folder_frame,
+            textvariable=self.recording_folder_path_var,
+            width=40,
+        )
+        recording_folder_entry.pack(side=LEFT, fill=X, expand=True, padx=(0, 5))
+
+        browse_folder_btn = ttk.Button(
+            recording_folder_frame,
+            text="Browse...",
+            width=10,
+            command=self._on_browse_recording_folder,
+        )
+        browse_folder_btn.pack(side=LEFT)
+        self._trace_variable(self.recording_folder_path_var)
+        self._register_config_widget(UIField.RECORDING_FOLDER_PATH.value, recording_folder_entry)
+
+        # Live validation feedback for the recording folder path.
+        self.recording_folder_feedback = ttk.Label(
+            data_frame,
+            text="",
+            font=("TkDefaultFont", 8),
+            bootstyle="secondary",
+        )
+        self.recording_folder_feedback.pack(anchor="w", pady=(0, 0))
+        feedback_trace = self.recording_folder_path_var.trace_add("write", self._update_recording_folder_feedback)
+        self._traces.append((self.recording_folder_path_var, feedback_trace))
+        self._update_recording_folder_feedback()
+
         self.open_logs_btn, self.open_recordings_btn = self._compact_action_button_row(
             data_frame,
             {
-                "text": "Open logs folder",
+                "text": "View Logs",
                 "bootstyle": "secondary",
                 "command": self._on_open_logs_clicked,
             },
             {
-                "text": "Browse recorded games",
+                "text": "View Recordings",
                 "bootstyle": "secondary",
                 "command": self._on_open_recordings_clicked,
             },
         )
 
-        (self.clear_recordings_btn,) = self._compact_action_button_row(
+        self.clear_recordings_btn, self.upload_recordings_btn = self._compact_action_button_row(
             data_frame,
             {
                 "text": "Clear recordings",
@@ -1207,7 +1267,23 @@ class PyClashBotUI(ttk.Window):
                 "command": self._on_clear_recordings_clicked,
                 "pady": (6, 0),
             },
+            {
+                "text": "Upload Recordings",
+                "bootstyle": "info",
+                "command": lambda: webbrowser.open(_UPLOAD_RECORDINGS_URL),
+                "pady": (6, 0),
+            },
         )
+
+        # Small auto-updating note showing total disk used by recordings.
+        self.recordings_size_label = ttk.Label(
+            data_frame,
+            text="Recordings: calculating...",
+            font=("TkDefaultFont", 8),
+            bootstyle="secondary",
+        )
+        self.recordings_size_label.pack(anchor="center", pady=(6, 0))
+        self._schedule_recordings_size_refresh()
 
         links_frame = self._section_labelframe(content, "Links")
         links_frame.pack(fill=X)
@@ -1485,13 +1561,73 @@ class PyClashBotUI(ttk.Window):
         if self._open_recordings_callback:
             self._open_recordings_callback()
 
+    def _on_browse_recording_folder(self) -> None:
+        folder = tkinter.filedialog.askdirectory(
+            title="Select Recording Folder",
+            initialdir=self.recording_folder_path_var.get() or None,
+        )
+        if folder:
+            self.recording_folder_path_var.set(folder)
+
+    def _schedule_recordings_size_refresh(self) -> None:
+        """Refresh the recordings-size note now and re-arm the next refresh."""
+        self._refresh_recordings_size()
+        self.after(_RECORDINGS_SIZE_REFRESH_MS, self._schedule_recordings_size_refresh)
+
+    def _refresh_recordings_size(self) -> None:
+        """Compute total recordings size off the UI thread, then update the note."""
+        # Read the tk variable on the main thread; it isn't thread-safe.
+        custom_path = self.recording_folder_path_var.get() or None
+
+        def worker() -> None:
+            try:
+                total = recordings_total_bytes_all_locations(custom_path=custom_path)
+            except OSError:
+                return
+            gb = total / (1024**3)
+            self.after(0, lambda: self._set_recordings_size_text(gb))
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _set_recordings_size_text(self, gb: float) -> None:
+        label = getattr(self, "recordings_size_label", None)
+        if label is None:
+            return
+        try:
+            label.configure(text=f"Recordings using {gb:.2f} GB")
+        except tk.TclError:
+            pass  # window was closed before this callback ran
+
+    def _update_recording_folder_feedback(self, *_: object) -> None:
+        """Show path-validity and low-disk-space feedback under the folder field."""
+        label = getattr(self, "recording_folder_feedback", None)
+        if label is None:
+            return
+        custom_path = self.recording_folder_path_var.get() or None
+
+        ok, message = validate_recordings_path(custom_path)
+        if not ok:
+            label.configure(text=message, bootstyle="danger")
+            return
+
+        free = recordings_drive_free_bytes(custom_path)
+        if free is not None and free <= LOW_DISK_SPACE_BYTES:
+            label.configure(
+                text="Warning: low drive space. Clean up or export some recordings.",
+                bootstyle="danger",
+            )
+            return
+
+        # No note when the path is valid -- only surface problems.
+        label.configure(text="")
+
     def _on_clear_recordings_clicked(self) -> None:
         if not messagebox.askyesno(
             "Clear recordings",
             "Delete ALL recorded fight packs? This cannot be undone.",
         ):
             return
-        removed, freed = clear_recordings()
+        removed, freed = clear_recordings(custom_path=self.recording_folder_path_var.get() or None)
         messagebox.showinfo(
             "Recordings cleared",
             f"Deleted {removed} recording(s), freed {freed / (1024**3):.2f} GB.",
