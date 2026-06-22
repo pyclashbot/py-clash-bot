@@ -562,6 +562,41 @@ def check_if_on_shop(emulator) -> bool:
     return True
 
 
+def check_for_free_offer_confirmation_condition_1(emulator) -> bool:
+    """True if the free-offer confirmation popup is open (e.g. "Get Gems? FREE!").
+
+    Fingerprints the green FREE button, the red close X, and the popup's light
+    border. emulator.screenshot() is BGR, so colors are stored [B, G, R] (the
+    captured values were r,g,b).
+    """
+    iar = emulator.screenshot()
+    pixels = [
+        iar[390][178],
+        iar[387][203],
+        iar[391][241],
+        iar[401][179],
+        iar[407][238],
+        iar[213][343],
+        iar[207][348],
+        iar[253][78],
+        iar[394][316],
+        iar[283][340],
+    ]
+    colors = [
+        [119, 235, 107],
+        [119, 235, 107],
+        [119, 235, 107],
+        [73, 228, 58],
+        [73, 228, 58],
+        [49, 53, 254],
+        [249, 249, 249],
+        [243, 238, 227],
+        [243, 238, 227],
+        [243, 238, 227],
+    ]
+    return all_pixels_are_equal(pixels, colors, 25)
+
+
 def check_if_on_social(emulator) -> bool:
     iar = emulator.screenshot()
     pixels = [

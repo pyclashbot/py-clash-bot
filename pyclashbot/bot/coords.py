@@ -144,6 +144,7 @@ SKIP_WAR_BOOT_BUTTON_COORDS = (208, 601)  # the bottom OK / skip button
 
 # --- Shop / daily free offer ---
 CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS = (210, 440)
+CONFIRM_FREE_REWARD_PURCHASE_1 = (207, 396)  # green FREE! button on the confirmation popup
 SHOP_PAGE_DEADSPACE_COORD = (10, 280)
 PAGINATE_SHOP_PAGE_BUTTON = (65, 600)
 
