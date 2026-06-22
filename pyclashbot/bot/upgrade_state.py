@@ -1,8 +1,6 @@
 import time
 
 from pyclashbot.bot.coords import (
-    CARD_UPGRADE_MENU_BGR,
-    CARD_UPGRADE_MENU_COORD,
     CLOSE_CARD_PAGE_COORD,
     COIN_INSUFFICIENT_BGR,
     COIN_INSUFFICIENT_COORD,
@@ -20,7 +18,10 @@ from pyclashbot.bot.nav import (
     select_mode,
     wait_for_clash_main_menu,
 )
-from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
+from pyclashbot.bot.state_detect import (
+    check_if_on_card_upgrade_menu,
+    check_if_on_clash_main_menu,
+)
 from pyclashbot.detection.image_rec import pixel_is_equal
 from pyclashbot.utils.logger import Logger
 
@@ -73,9 +74,7 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         logger.change_status(status="Clicking the upgrade button for this card")
         time.sleep(2)
 
-        img = emulator.screenshot()
-        pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
-        if not pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, UPGRADE_PIXEL_TOLERANCE):
+        if not check_if_on_card_upgrade_menu(emulator):
             logger.log("Card upgrade menu did not open, skipping to next card")
             logger.change_status(status="Clicking deadspace after attempting to upgrade this card")
 
@@ -117,10 +116,8 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         time.sleep(2)
         logger.change_status(status="Upgraded a card!")
 
-        # Check for card upgrade menu close button
-        img = emulator.screenshot()
-        pixel = img[CARD_UPGRADE_MENU_COORD[1]][CARD_UPGRADE_MENU_COORD[0]]
-        if pixel_is_equal(pixel, CARD_UPGRADE_MENU_BGR, UPGRADE_PIXEL_TOLERANCE):
+        # Close the upgrade menu if it is still open
+        if check_if_on_card_upgrade_menu(emulator):
             emulator.click(CLOSE_CARD_PAGE_COORD[0], CLOSE_CARD_PAGE_COORD[1])
             time.sleep(2)
 
