@@ -13,6 +13,7 @@ from pyclashbot.bot.fight import (
     start_fight,
 )
 from pyclashbot.bot.nav import select_mode
+from pyclashbot.bot.recording_archiver import maybe_archive_recordings
 from pyclashbot.bot.shop_daily_state import shop_daily_state
 from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
@@ -552,6 +553,12 @@ def state_tree(
             is False
         ):
             return handle_state_failure(logger, "end_fight", "end_fight_state", "Failed to end fight properly")
+
+        # When recording, periodically bundle ~5 GB of the oldest packs into a zip
+        # so the loose recordings folder doesn't grow without bound.
+        if recording_flag:
+            custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
+            maybe_archive_recordings(logger=logger, custom_path=custom_path)
 
         return state_order.next_state(state)
 

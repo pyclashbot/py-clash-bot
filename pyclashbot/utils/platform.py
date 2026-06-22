@@ -65,6 +65,18 @@ def get_recordings_dir(app_name: str = "py-clash-bot", custom_path: str | None =
     return os.path.join(get_app_data_dir(app_name), "recordings")
 
 
+def get_recording_zips_dir(app_name: str = "py-clash-bot", custom_path: str | None = None) -> str:
+    """Return the directory that holds archived (zipped) recording packs.
+
+    A ``zips`` subfolder *inside* the recordings folder, so archives stay under
+    the same (already-validated, user-chosen or default) directory as the loose
+    packs -- the default layout is ``<app-data>/recordings/zips``. The ``zips``
+    name never matches the pack slug pattern, so pack scans and the "Clear
+    recordings" pack loop ignore it.
+    """
+    return os.path.join(get_recordings_dir(app_name, custom_path), "zips")
+
+
 def validate_recordings_path(custom_path: str | None) -> tuple[bool, str]:
     """Validate a user-supplied recordings folder. Returns (is_ok, message).
 
@@ -153,20 +165,40 @@ def recordings_total_bytes(app_name: str = "py-clash-bot", custom_path: str | No
     return total
 
 
-def recordings_total_bytes_all_locations(app_name: str = "py-clash-bot", custom_path: str | None = None) -> int:
-    """Total recording bytes across the default folder and the custom one.
+def recording_zips_total_bytes(app_name: str = "py-clash-bot", custom_path: str | None = None) -> int:
+    """Total bytes used by archived (``.zip``) recording packs in the zips folder.
 
-    Always counts the default app-data recordings folder; when a custom folder
-    is set and resolves to a different directory, its packs are added too. The
-    two are de-duplicated by normalized path so a custom path equal to the
-    default isn't counted twice.
+    Counts only ``.zip`` files (the archives produced by recording_archiver), so
+    unrelated content in the folder is ignored. Returns 0 if it doesn't exist yet.
+    """
+    zips_dir = get_recording_zips_dir(app_name, custom_path)
+    if not os.path.isdir(zips_dir):
+        return 0
+    total = 0
+    for name in os.listdir(zips_dir):
+        path = os.path.join(zips_dir, name)
+        if os.path.isfile(path) and name.lower().endswith(".zip"):
+            try:
+                total += os.path.getsize(path)
+            except OSError:
+                continue
+    return total
+
+
+def recordings_total_bytes_all_locations(app_name: str = "py-clash-bot", custom_path: str | None = None) -> int:
+    """Total recording bytes (loose packs + zip archives) across all locations.
+
+    Always counts the default app-data recordings folder and its zips folder;
+    when a custom folder is set and resolves to a different directory, its packs
+    and zips are added too. Locations are de-duplicated by normalized path so a
+    custom path equal to the default isn't counted twice.
     """
     default_dir = os.path.normcase(os.path.abspath(get_recordings_dir(app_name)))
-    total = recordings_total_bytes(app_name)
+    total = recordings_total_bytes(app_name) + recording_zips_total_bytes(app_name)
     if custom_path and custom_path.strip():
         custom_dir = os.path.normcase(os.path.abspath(get_recordings_dir(app_name, custom_path)))
         if custom_dir != default_dir:
-            total += recordings_total_bytes(app_name, custom_path)
+            total += recordings_total_bytes(app_name, custom_path) + recording_zips_total_bytes(app_name, custom_path)
     return total
 
 
@@ -196,6 +228,13 @@ def clear_recordings(app_name: str = "py-clash-bot", custom_path: str | None = N
         freed += _dir_size(pack)
         shutil.rmtree(pack, ignore_errors=True)
         removed += 1
+    # Also drop archived zip bundles (recording_archiver output) so the button
+    # reclaims all recording space, not just loose packs. Their bytes count toward
+    # bytes_freed; packs_removed stays a count of loose pack folders.
+    zips_dir = get_recording_zips_dir(app_name, custom_path)
+    if os.path.isdir(zips_dir):
+        freed += _dir_size(zips_dir)
+        shutil.rmtree(zips_dir, ignore_errors=True)
     return (removed, freed)
 
 

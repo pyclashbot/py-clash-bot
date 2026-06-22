@@ -103,6 +103,27 @@ def test_clear_recordings_preserves_unrelated_dirs(tmp_path, monkeypatch):
     assert loose_file.exists()
 
 
+def test_clear_recordings_removes_zip_archives(tmp_path, monkeypatch):
+    """clear_recordings() also drops archived zip bundles so the button reclaims
+    all recording space, and counts their bytes in bytes_freed."""
+    monkeypatch.setattr(pf, "get_recordings_dir", lambda *a, **k: str(tmp_path))
+
+    pack = tmp_path / "20240101-120000-abc123" / "frames"
+    pack.mkdir(parents=True)
+    (pack / "0.png").write_bytes(b"x" * 1000)
+
+    zips_dir = tmp_path / "zips"
+    zips_dir.mkdir()
+    (zips_dir / "packs-a__b.zip").write_bytes(b"z" * 2000)
+
+    removed, freed = pf.clear_recordings()
+
+    assert removed == 1  # only loose packs counted as packs_removed
+    assert freed >= 3000  # 1000 (pack) + 2000 (zip)
+    assert not zips_dir.exists()
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_uuid_persisted_at_start_and_stable(tmp_path, monkeypatch):
     monkeypatch.setattr(rec, "get_recordings_dir", lambda *a, **k: str(tmp_path))
 
