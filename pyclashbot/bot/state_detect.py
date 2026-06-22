@@ -905,3 +905,53 @@ def is_single_deck_layout_by_pixel(emulator) -> bool:
 def pixel_indicates_upgradable(bgr):
     b, g, r = bgr
     return g >= 240 and b <= 120 and r <= 40
+
+
+def check_if_on_card_upgrade_menu(emulator) -> bool:
+    """True if the card-upgrade popup is open.
+
+    Multi-point fingerprint of the popup's chrome -- the red X close button
+    (top-right) and the blue cost/level rail down each side -- sampled off live
+    open menus. A previous single-pixel check sat on the white X glyph in the
+    middle of the close button and read black, so it never detected the open
+    menu; sampling several stable points avoids that.
+    """
+    iar = emulator.screenshot()
+
+    pixels = [
+        iar[177][345],
+        iar[183][345],
+        iar[186][354],
+        iar[180][354],
+        iar[177][358],
+        iar[188][350],
+        iar[526][366],
+        iar[483][367],
+        iar[412][369],
+        iar[344][369],
+        iar[261][370],
+        iar[210][369],
+        iar[539][50],
+        iar[506][49],
+        iar[467][51],
+    ]
+
+    colors = [
+        [135, 133, 253],
+        [70, 67, 252],
+        [4, 4, 4],
+        [213, 213, 213],
+        [135, 133, 253],
+        [38, 40, 240],
+        [110, 53, 19],
+        [112, 54, 19],
+        [116, 58, 20],
+        [116, 58, 20],
+        [120, 59, 21],
+        [117, 58, 20],
+        [123, 61, 22],
+        [126, 64, 22],
+        [120, 59, 21],
+    ]
+
+    return all_pixels_are_equal(pixels, colors, tol=30)
