@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 from pyclashbot.bot.coords import (
     CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS,
+    CONFIRM_FREE_REWARD_PURCHASE_1,
     PAGINATE_SHOP_PAGE_BUTTON,
     SHOP_PAGE_DEADSPACE_COORD,
 )
@@ -21,6 +22,7 @@ from pyclashbot.bot.nav import (
     navigate_main_page,
 )
 from pyclashbot.bot.state_detect import (
+    check_for_free_offer_confirmation_condition_1,
     check_if_on_clash_main_menu,
     check_if_on_shop,
 )
@@ -67,7 +69,13 @@ def shop_daily_state(emulator, logger: Logger) -> bool:
     emulator.click(*found)
     time.sleep(2)
 
-    emulator.click(*CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS)
+    # The offer click usually opens a confirmation popup ("Get Gems? FREE!").
+    # When it does, click its FREE! button; otherwise fall back to the default coord.
+    if check_for_free_offer_confirmation_condition_1(emulator):
+        logger.change_status("Free reward confirmation popup detected, confirming...")
+        emulator.click(*CONFIRM_FREE_REWARD_PURCHASE_1)
+    else:
+        emulator.click(*CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS)
     time.sleep(2)
 
     emulator.click(*SHOP_PAGE_DEADSPACE_COORD)
