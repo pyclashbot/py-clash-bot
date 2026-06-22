@@ -86,13 +86,15 @@ class FightPackRecorder:
 
     # ---- lifecycle ------------------------------------------------------
 
-    def start(self, emulator, fight_mode: str, version: str, fps: float = DEFAULT_FPS) -> bool:
+    def start(
+        self, emulator, fight_mode: str, version: str, fps: float = DEFAULT_FPS, custom_path: str | None = None
+    ) -> bool:
         """Begin capturing. Returns True on success (a frame thread is running)."""
         self.slug = _new_slug()
         # Stable dedup key for the importer: generated once here and persisted
         # immediately (see below), so a re-exported/re-sent pack keeps the same uuid.
         self.uuid = uuid.uuid4().hex
-        self.dir = os.path.join(get_recordings_dir(), self.slug)
+        self.dir = os.path.join(get_recordings_dir(custom_path=custom_path), self.slug)
         self.fps = fps
         self.fight_mode = fight_mode
         self.version = version
@@ -304,18 +306,27 @@ class FightPackRecorder:
 _active: FightPackRecorder | None = None
 
 
-def _enough_disk_for_recording() -> bool:
-    """True if the recordings drive has at least MIN_FREE_DISK_FRACTION free."""
-    path = get_recordings_dir()
-    os.makedirs(path, exist_ok=True)
-    usage = shutil.disk_usage(path)
+def _enough_disk_for_recording(custom_path: str | None = None) -> bool:
+    """True if the recordings drive has at least MIN_FREE_DISK_FRACTION free.
+
+    Returns False (skip recording) if the recordings folder can't be created or
+    queried -- a user-supplied custom path may be invalid or unwritable.
+    """
+    path = get_recordings_dir(custom_path=custom_path)
+    try:
+        os.makedirs(path, exist_ok=True)
+        usage = shutil.disk_usage(path)
+    except OSError:
+        return False
     return usage.free / usage.total >= MIN_FREE_DISK_FRACTION
 
 
-def start_fight_recording(emulator, fight_mode: str, version: str, logger=None, fps: float = DEFAULT_FPS) -> None:
+def start_fight_recording(
+    emulator, fight_mode: str, version: str, logger=None, fps: float = DEFAULT_FPS, custom_path: str | None = None
+) -> None:
     global _active
     finish_fight_recording(None)  # defensively close any stale recorder
-    if not _enough_disk_for_recording():
+    if not _enough_disk_for_recording(custom_path):
         msg = "Recordings drive over 90% full -- skipping fight recording"
         if logger is not None:
             logger.log(msg)
@@ -325,7 +336,7 @@ def start_fight_recording(emulator, fight_mode: str, version: str, logger=None, 
         return
     recorder = FightPackRecorder(logger=logger)
     try:
-        recorder.start(emulator, fight_mode, version, fps=fps)
+        recorder.start(emulator, fight_mode, version, fps=fps, custom_path=custom_path)
         _active = recorder
     except Exception as e:
         if logger is not None:

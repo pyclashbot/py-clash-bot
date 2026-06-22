@@ -13,6 +13,7 @@ from pyclashbot.bot.fight import (
     start_fight,
 )
 from pyclashbot.bot.nav import select_mode
+from pyclashbot.bot.recording_archiver import maybe_archive_recordings
 from pyclashbot.bot.shop_daily_state import shop_daily_state
 from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
@@ -491,6 +492,7 @@ def state_tree(
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
+        custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
         if (
             do_fight_state(
                 emulator,
@@ -498,7 +500,8 @@ def state_tree(
                 random_plays_flag,
                 mode_used_in_1v1,
                 False,
-                recording_flag,
+                recording_flag=recording_flag,
+                custom_path=custom_path,
             )
             is False
         ):
@@ -516,6 +519,7 @@ def state_tree(
 
         random_plays_flag = job_list.get(UIField.RANDOM_PLAYS_USER_TOGGLE, False)
 
+        custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
         # 2v2 fights are never recorded (training data is 1v1-only: Trophy Road + Classic 1v1).
         if (
             do_fight_state(
@@ -525,6 +529,7 @@ def state_tree(
                 "Classic 2v2",
                 called_from_launching=False,
                 recording_flag=False,
+                custom_path=custom_path,
             )
             is False
         ):
@@ -548,6 +553,12 @@ def state_tree(
             is False
         ):
             return handle_state_failure(logger, "end_fight", "end_fight_state", "Failed to end fight properly")
+
+        # When recording, periodically bundle ~5 GB of the oldest packs into a zip
+        # so the loose recordings folder doesn't grow without bound.
+        if recording_flag:
+            custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
+            maybe_archive_recordings(logger=logger, custom_path=custom_path)
 
         return state_order.next_state(state)
 

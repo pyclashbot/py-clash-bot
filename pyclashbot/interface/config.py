@@ -259,7 +259,11 @@ USER_CONFIG_KEYS = (
     _job_setting_keys()
     + [radio.key.value for radio in MEMU_SETTINGS + BLUESTACKS_SETTINGS + EMULATOR_CHOICE]
     + [combo.key.value for combo in GOOGLE_PLAY_SETTINGS]
-    + [UIField.THEME_NAME.value, UIField.RECORD_FIGHTS_TOGGLE.value]  # Data settings
+    + [
+        UIField.THEME_NAME.value,
+        UIField.RECORD_FIGHTS_TOGGLE.value,
+        UIField.RECORDING_FOLDER_PATH.value,
+    ]  # Data settings
     + [UIField.GP_DEVICE_SERIAL.value, UIField.BS_DEVICE_SERIAL.value]  # Device serial settings
 )
 

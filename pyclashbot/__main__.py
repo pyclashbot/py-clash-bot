@@ -88,6 +88,9 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         except (TypeError, ValueError):
             return default
 
+    def as_str(field: UIField, default: str = "") -> str:
+        return str(values.get(field.value, default) or default)
+
     job_dictionary: dict[str, Any] = {
         UIField.CARD_MASTERY_USER_TOGGLE.value: as_bool(UIField.CARD_MASTERY_USER_TOGGLE),
         UIField.SHOP_DAILY_OFFER_USER_TOGGLE.value: as_bool(UIField.SHOP_DAILY_OFFER_USER_TOGGLE),
@@ -108,6 +111,7 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.RANDOM_PLAYS_USER_TOGGLE.value: as_bool(UIField.RANDOM_PLAYS_USER_TOGGLE),
         UIField.DISABLE_WIN_TRACK_TOGGLE.value: as_bool(UIField.DISABLE_WIN_TRACK_TOGGLE),
         UIField.RECORD_FIGHTS_TOGGLE.value: as_bool(UIField.RECORD_FIGHTS_TOGGLE),
+        UIField.RECORDING_FOLDER_PATH.value: as_str(UIField.RECORDING_FOLDER_PATH),
     }
 
     job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
@@ -260,7 +264,11 @@ def handle_process_finished(
 
 
 def open_recordings_folder() -> None:
-    open_folder(get_recordings_dir())
+    custom_path = None
+    if USER_SETTINGS_CACHE.exists():
+        settings = USER_SETTINGS_CACHE.load_data()
+        custom_path = settings.get(UIField.RECORDING_FOLDER_PATH.value) or None
+    open_folder(get_recordings_dir(custom_path=custom_path))
 
 
 def open_logs_folder() -> None:
