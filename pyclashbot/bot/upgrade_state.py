@@ -1,6 +1,8 @@
 import time
 
 from pyclashbot.bot.coords import (
+    CARD_PAGE_OK_BUTTON_COORDS,
+    CHAMPION_UPGRADE_BUTTON_COORD,
     CLOSE_CARD_PAGE_COORD,
     COIN_INSUFFICIENT_BGR,
     COIN_INSUFFICIENT_COORD,
@@ -10,7 +12,6 @@ from pyclashbot.bot.coords import (
     UPGRADE_PIXEL_TOLERANCE,
     UPGRADE_POINTS,
     UPGRADE_RETURN_TO_MAIN_COORD_1,
-    UPGRADE_RETURN_TO_MAIN_COORD_2,
 )
 from pyclashbot.bot.find import detect_upgradable_cards
 from pyclashbot.bot.nav import (
@@ -19,6 +20,8 @@ from pyclashbot.bot.nav import (
     wait_for_clash_main_menu,
 )
 from pyclashbot.bot.state_detect import (
+    check_for_card_page_ok_button,
+    check_for_champion_card_upgrade_position,
     check_if_on_card_upgrade_menu,
     check_if_on_clash_main_menu,
 )
@@ -69,9 +72,14 @@ def upgrade_card(emulator, upgradable, logger: Logger):
         emulator.click(x, y)
         time.sleep(2)
 
-        # Click again(click the green upgrade emoji to open the upgrade bar)
-        emulator.click(x + 15, y - 15)
-        logger.change_status(status="Clicking the upgrade button for this card")
+        # Click again(click the green upgrade emoji to open the upgrade bar).
+        # Champion cards put that button in a different spot — detect and adjust.
+        if check_for_champion_card_upgrade_position(emulator):
+            logger.change_status(status="Champion card detected — clicking champion upgrade button")
+            emulator.click(*CHAMPION_UPGRADE_BUTTON_COORD)
+        else:
+            logger.change_status(status="Clicking the upgrade button for this card")
+            emulator.click(x + 15, y - 15)
         time.sleep(2)
 
         if not check_if_on_card_upgrade_menu(emulator):
@@ -164,10 +172,15 @@ def upgrade_cards_state(emulator, logger: Logger):
     # Return main menu
     logger.change_status(status="Done upgrading cards")
 
+    if check_for_card_page_ok_button(emulator):
+        logger.change_status("Card-page OK button present — dismissing it")
+        emulator.click(*CARD_PAGE_OK_BUTTON_COORDS)
+        time.sleep(1)
+
+    time.sleep(5)
+
     emulator.click(UPGRADE_RETURN_TO_MAIN_COORD_1[0], UPGRADE_RETURN_TO_MAIN_COORD_1[1])
     time.sleep(1)
-    emulator.click(UPGRADE_RETURN_TO_MAIN_COORD_2[0], UPGRADE_RETURN_TO_MAIN_COORD_2[1])
-    time.sleep(2)
 
     if not wait_for_clash_main_menu(emulator, logger, deadspace_click=False):
         logger.change_status("Timed out waiting for main menu after upgrading cards")

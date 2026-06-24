@@ -497,13 +497,85 @@ def check_if_on_card_page(emulator) -> bool:
         [185, 52, 41],
     ]
 
+    # Same 8 landmarks as colors1, but on some app/emulator layouts pixel [116][59]
+    # is the orange banner (BGR ~[222,85,0]) instead of white. Sampled off a live
+    # card page that colors1/colors2 missed on that one pixel.
+    colors3 = [
+        [222, 0, 235],
+        [222, 85, 0],
+        [203, 137, 44],
+        [195, 126, 34],
+        [255, 255, 255],
+        [255, 255, 255],
+        [177, 103, 15],
+        [178, 104, 15],
+    ]
+
     if all_pixels_are_equal(pixels, colors1, tol=25):
         return True
 
     if all_pixels_are_equal(pixels, colors2, tol=25):
         return True
 
+    if all_pixels_are_equal(pixels, colors3, tol=25):
+        return True
+
     return False
+
+
+def check_for_card_page_ok_button(emulator) -> bool:
+    """True when the card-page 'OK' button is on screen (orange button, white text).
+
+    BGR pixels sampled off a live card page (values are reversed from the RGB the
+    /show-emulator-image skill reports).
+    """
+    iar = emulator.screenshot()
+
+    pixels = [
+        iar[606][171],
+        iar[607][188],
+        iar[609][212],
+        iar[613][231],
+        iar[613][243],
+    ]
+
+    colors = [
+        [255, 175, 78],
+        [255, 175, 78],
+        [255, 255, 254],
+        [255, 175, 78],
+        [255, 175, 78],
+    ]
+
+    return all_pixels_are_equal(pixels, colors, tol=25)
+
+
+def check_for_champion_card_upgrade_position(emulator) -> bool:
+    """True when the card being upgraded is a champion (its upgrade button sits in a
+    different position than normal cards).
+
+    BGR pixels sampled off a live champion card (values reversed from the RGB the
+    /show-emulator-image skill reports) — the green champion upgrade button.
+    """
+    iar = emulator.screenshot()
+
+    pixels = [
+        iar[530][203],
+        iar[532][273],
+        iar[565][212],
+        iar[565][250],
+        iar[565][274],
+    ]
+
+    colors = [
+        [119, 235, 107],
+        [119, 235, 107],
+        [41, 149, 21],
+        [41, 149, 21],
+        [41, 149, 21],
+    ]
+
+    return all_pixels_are_equal(pixels, colors, tol=25)
 
 
 def check_if_on_battle_log_page(emulator) -> bool:
@@ -989,4 +1061,31 @@ def check_if_on_card_upgrade_menu(emulator) -> bool:
         [120, 59, 21],
     ]
 
-    return all_pixels_are_equal(pixels, colors, tol=30)
+    if all_pixels_are_equal(pixels, colors, tol=30):
+        return True
+
+    # Alternate layout (e.g. champion cards): red X close button (top-right) plus
+    # the dark-blue bottom rail and its gold accent. BGR, sampled off a live menu.
+    pixels2 = [
+        iar[36][344],
+        iar[36][353],
+        iar[30][349],
+        iar[30][357],
+        iar[596][61],
+        iar[601][206],
+        iar[608][356],
+        iar[604][258],
+    ]
+
+    colors2 = [
+        [32, 34, 225],
+        [38, 37, 225],
+        [251, 250, 251],
+        [67, 66, 245],
+        [76, 24, 21],
+        [76, 24, 21],
+        [76, 24, 21],
+        [0, 108, 207],
+    ]
+
+    return all_pixels_are_equal(pixels2, colors2, tol=30)
