@@ -16,6 +16,7 @@ from pyclashbot.bot.nav import select_mode
 from pyclashbot.bot.recording_archiver import maybe_archive_recordings
 from pyclashbot.bot.shop_daily_state import shop_daily_state
 from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
+from pyclashbot.bot.upgrade_princess_state import upgrade_princess_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war import war_state
 from pyclashbot.interface.enums import UIField
@@ -97,6 +98,7 @@ class StateHistory:
 
         self.state2time_increment = {
             "upgrade": 0.0,
+            "upgrade_princess": 0.0,
             "card_mastery": 0.0,
         }
         self.randomize_state2time_increment()
@@ -211,6 +213,7 @@ class StateOrder:
         self.states = [
             "switch_account",
             "upgrade",
+            "upgrade_princess",
             "card_mastery",
             "shop_daily",
             "clan_chat",
@@ -364,6 +367,23 @@ def state_tree(
         # return output of this state
         if upgrade_cards_state(emulator, logger) is False:
             return handle_state_failure(logger, "upgrade", "upgrade_cards_state")
+
+        return state_order.next_state(state)
+
+    if state == "upgrade_princess":
+        # if job not selected, return next state
+        if not job_list[UIField.UPGRADE_PRINCESS_USER_TOGGLE]:
+            logger.log("Upgrade Princess Towers job isn't toggled. Skipping this state")
+            return state_order.next_state(state)
+
+        # if job not ready, go next state
+        if state_history.state_is_ready(state) is False:
+            logger.log(f"{state} isn't ready. Skipping this state...")
+            return state_order.next_state(state)
+
+        # return output of this state
+        if upgrade_princess_state(emulator, logger) is False:
+            return handle_state_failure(logger, "upgrade_princess", "upgrade_princess_state")
 
         return state_order.next_state(state)
 

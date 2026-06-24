@@ -39,6 +39,7 @@ class UIField(StrEnum):
     CLASSIC_2V2_USER_TOGGLE = "classic_2v2_user_toggle"
     TROPHY_ROAD_USER_TOGGLE = "trophy_road_user_toggle"
     CARD_UPGRADE_USER_TOGGLE = "card_upgrade_user_toggle"
+    UPGRADE_PRINCESS_USER_TOGGLE = "upgrade_princess_user_toggle"
     RANDOM_DECKS_USER_TOGGLE = "random_decks_user_toggle"
     DECK_NUMBER_SELECTION = "deck_number_selection"
     CYCLE_DECKS_USER_TOGGLE = "cycle_decks_user_toggle"
@@ -130,6 +131,7 @@ START_JOB_GROUPS: tuple[tuple[UIField, ...], ...] = (
     ),
     (
         UIField.CARD_UPGRADE_USER_TOGGLE,
+        UIField.UPGRADE_PRINCESS_USER_TOGGLE,
         UIField.CARD_MASTERY_USER_TOGGLE,
         UIField.SHOP_DAILY_OFFER_USER_TOGGLE,
     ),

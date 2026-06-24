@@ -100,6 +100,12 @@ JOBS = [
         tooltip="Upgrade cards in your collection when enough gold is available.",
     ),
     JobConfig(
+        UIField.UPGRADE_PRINCESS_USER_TOGGLE,
+        "👑 Upgrade Princess Towers",
+        default=False,
+        tooltip="Upgrade your Princess Towers from the card menu when enough gold is available.",
+    ),
+    JobConfig(
         UIField.CARD_MASTERY_USER_TOGGLE,
         "🎯 Card mastery rewards",
         default=False,
