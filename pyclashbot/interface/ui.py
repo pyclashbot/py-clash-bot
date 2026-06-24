@@ -72,6 +72,7 @@ _JOB_TAB_COLUMNS: tuple[tuple[tuple[str, tuple[UIField, ...]], ...], ...] = (
             "Collection",
             (
                 UIField.CARD_UPGRADE_USER_TOGGLE,
+                UIField.UPGRADE_PRINCESS_USER_TOGGLE,
                 UIField.CARD_MASTERY_USER_TOGGLE,
                 UIField.SHOP_DAILY_OFFER_USER_TOGGLE,
             ),

@@ -115,6 +115,9 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     }
 
     job_dictionary["upgrade_user_toggle"] = as_bool(UIField.CARD_UPGRADE_USER_TOGGLE)
+    job_dictionary[UIField.UPGRADE_PRINCESS_USER_TOGGLE.value] = as_bool(
+        UIField.UPGRADE_PRINCESS_USER_TOGGLE,
+    )
 
     # MEmu render mode
     if values.get(UIField.DIRECTX_TOGGLE.value):

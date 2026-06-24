@@ -578,6 +578,69 @@ def check_for_champion_card_upgrade_position(emulator) -> bool:
     return all_pixels_are_equal(pixels, colors, tol=25)
 
 
+# Princess card overlay fingerprints. Coords are (y, x) to match iar[y][x];
+# colors are BGR (reversed from the RGB the /show-emulator-image skill reports).
+# Exposed as data so debug tooling can report which pixel failed and why.
+PRINCESS_FINGERPRINT_TOL = 25
+PRINCESS_FINGERPRINTS: dict[str, tuple[list[tuple[int, int]], list[list[int]]]] = {
+    "info location #1": (
+        [(512, 306), (515, 340), (515, 369), (523, 343), (523, 329), (523, 363)],
+        [[255, 187, 105], [255, 187, 105], [255, 187, 105], [255, 255, 255], [255, 254, 254], [255, 175, 78]],
+    ),
+    "info location #2": (
+        [(320, 308), (332, 307), (333, 311), (330, 364), (318, 369), (318, 371)],
+        [[255, 187, 105], [255, 175, 78], [255, 175, 78], [255, 175, 78], [255, 187, 105], [255, 187, 105]],
+    ),
+    # Blue info button at the top position (same spot upgrade location #1 occupies
+    # when the card is upgradable); includes a white-text pixel for distinctiveness.
+    "info location #3": (
+        [(296, 310), (308, 307), (311, 372), (303, 367), (297, 342), (305, 330)],
+        [[255, 187, 105], [255, 175, 78], [255, 175, 78], [255, 187, 105], [255, 187, 105], [255, 255, 255]],
+    ),
+    "upgrade location #1": (
+        [(296, 311), (296, 330), (298, 374), (296, 358), (297, 367)],
+        [[119, 235, 107], [98, 194, 89], [119, 235, 107], [250, 254, 250], [201, 226, 198]],
+    ),
+    "upgrade location #2": (
+        [(510, 308), (513, 371), (513, 378), (513, 320), (518, 351), (513, 362)],
+        [[119, 235, 107], [119, 235, 107], [119, 235, 107], [254, 255, 254], [255, 255, 255], [248, 253, 248]],
+    ),
+}
+
+
+def _princess_fingerprint_matches(emulator, name: str) -> bool:
+    """True when every sampled pixel of the named princess fingerprint matches."""
+    coords, colors = PRINCESS_FINGERPRINTS[name]
+    iar = emulator.screenshot()
+    pixels = [iar[y][x] for y, x in coords]
+    return all_pixels_are_equal(pixels, colors, tol=PRINCESS_FINGERPRINT_TOL)
+
+
+def check_for_princess_card_info_button_location_1(emulator) -> bool:
+    """True when the princess card's info button is on screen (blue button, white text)."""
+    return _princess_fingerprint_matches(emulator, "info location #1")
+
+
+def check_for_princess_card_info_button_location_2(emulator) -> bool:
+    """True when the princess card's info button is in its alternate (upper) position."""
+    return _princess_fingerprint_matches(emulator, "info location #2")
+
+
+def check_for_princess_card_info_button_location_3(emulator) -> bool:
+    """True when the princess card's info button is at the top position (blue button)."""
+    return _princess_fingerprint_matches(emulator, "info location #3")
+
+
+def check_for_princess_upgrade_location_1(emulator) -> bool:
+    """True when the princess card's upgrade button is in its first position."""
+    return _princess_fingerprint_matches(emulator, "upgrade location #1")
+
+
+def check_for_princess_upgrade_location_2(emulator) -> bool:
+    """True when the princess card's upgrade button is in its second (lower) position."""
+    return _princess_fingerprint_matches(emulator, "upgrade location #2")
+
+
 def check_if_on_battle_log_page(emulator) -> bool:
     iar = emulator.screenshot()
 
