@@ -60,10 +60,13 @@ def make_war_deck(emulator, logger, deck_index: int) -> bool:
         return False
 
     logger.change_status(f"Making war deck #{deck_index}...")
+    logger.log(f"Clicking war deck slot #{deck_index} at {_MAKE_WAR_DECK_COORDS[deck_index]}")
     emulator.click(*_MAKE_WAR_DECK_COORDS[deck_index])
     time.sleep(2)
+    logger.log("Clicking randomize war deck button")
     emulator.click(*MAKE_RANDOM_WAR_DECK_BUTTON)
     time.sleep(1)
+    logger.log("Clicking exit war deck page")
     emulator.click(*EXIT_MAKE_WAR_DECK_PAGE)
     time.sleep(1)
     return True
@@ -77,7 +80,9 @@ def war_battle_loop(emulator, logger) -> bool:
     battle_detection_lost_count = 0
 
     while True:
+        logger.log("Checking if still in war battle")
         if not check_for_in_battle_with_delay(emulator):
+            logger.log("Not detected in battle — checking if battle has ended")
             if check_if_battle_has_ended(emulator):
                 break
 
@@ -98,8 +103,10 @@ def war_battle_loop(emulator, logger) -> bool:
             return False
 
         card = random.choice(HAND_CARDS_COORDS)
+        play_x, play_y = random.randint(left, right), random.randint(top, bottom)
+        logger.log(f"Selecting card at {card} and playing it at ({play_x}, {play_y})")
         emulator.click(card[0], card[1])
-        emulator.click(random.randint(left, right), random.randint(top, bottom))
+        emulator.click(play_x, play_y)
         time.sleep(_WAR_BATTLE_LOOP_STEP_SLEEP_S)
 
     logger.change_status("War battle complete")
@@ -111,6 +118,7 @@ def _dismiss_war_post_battle(emulator, logger, timeout: float) -> bool:
     start = time.time()
     clicked_ok = False
     while time.time() - start < timeout:
+        logger.log("Checking if back on war page after battle")
         if check_if_on_war(emulator):
             return True
 
@@ -136,9 +144,12 @@ def _dismiss_war_post_battle(emulator, logger, timeout: float) -> bool:
 
 
 def _ensure_all_war_decks(emulator, logger) -> None:
+    logger.log("Checking which war decks already exist")
     decks = which_war_decks_exist(emulator)
+    logger.log(f"War decks present: {decks}")
     for di in (1, 2, 3, 4):
         if not decks.get(f"deck{di}", False):
+            logger.log(f"War deck #{di} missing — making it")
             make_war_deck(emulator, logger, di)
 
 
@@ -154,7 +165,9 @@ def _scroll_war_page(emulator, direction: str) -> None:
 def _find_and_click_war_battle_icon(emulator, logger) -> bool:
     for i in range(_FIND_BATTLE_MAX_LOOPS):
         direction = "up" if i % 2 == 0 else "down"
+        logger.log(f"Scrolling war page {direction} (scroll {i + 1}/{_FIND_BATTLE_MAX_LOOPS})")
         _scroll_war_page(emulator, direction)
+        logger.log("Looking for a war battle icon")
         coord = find_war_battle_icon(emulator)
         if coord is not None:
             x, y = coord
@@ -178,52 +191,68 @@ def war_state(emulator, logger) -> bool:
     """Full war flow: main → war → fill decks → find+start battle → play → exit → main."""
     logger.change_status("Running war state...")
 
+    logger.log("Checking if on clash main menu")
     if not check_if_on_clash_main_menu(emulator):
         logger.change_status("Not on main menu — cannot run war state")
         return False
 
+    logger.log("Navigating from main page to war page")
     if not navigate_main_page(emulator, logger, PAGE_MAIN, PAGE_WAR):
         logger.change_status("Failed to navigate to war page")
         return False
     time.sleep(1)
+    logger.log("Verifying war page is visible")
     if not check_if_on_war(emulator):
         logger.change_status("Did not land on war page")
         return False
 
     _ensure_all_war_decks(emulator, logger)
 
+    logger.log("Searching for a war battle icon to click")
     if not _find_and_click_war_battle_icon(emulator, logger):
+        logger.log("No war battle icon found — returning to main page")
         return navigate_main_page(emulator, logger, PAGE_WAR, PAGE_MAIN)
 
     time.sleep(2)
 
+    logger.log("Checking if a war battle can be started")
     if not check_if_can_war_battle(emulator):
         logger.change_status("No more war battles available — exiting cleanly")
+        logger.log("Clicking war deadspace to dismiss the battle dialog")
         emulator.click(*WAR_DEADSPACE_COORD)
         time.sleep(1)
+        logger.log("Navigating from war page back to main page")
         if not navigate_main_page(emulator, logger, PAGE_WAR, PAGE_MAIN):
             logger.change_status("Failed to return to main menu from war")
             return False
         time.sleep(1)
+        logger.log("Verifying back on main menu")
         return check_if_on_clash_main_menu(emulator)
 
+    logger.log("Clicking start war battle button")
     emulator.click(*START_WAR_BATTLE_BUTTON_COORDS)
     time.sleep(2)
 
+    logger.log("Waiting for the war battle to start")
     if not wait_for_battle_start(emulator, logger, timeout=_WAR_BATTLE_START_TIMEOUT_S):
         logger.change_status("War battle never started")
         return False
 
+    logger.log("Entering war battle play loop")
     if war_battle_loop(emulator, logger) is False:
         return False
 
+    logger.log("Dismissing post-battle screens")
     if not _dismiss_war_post_battle(emulator, logger, _WAR_POST_BATTLE_DISMISS_TIMEOUT_S):
+        logger.log("Post-battle dismiss timed out — waiting for war page")
         if not _wait_for_war_page(emulator, _WAIT_FOR_WAR_AFTER_BATTLE_S):
             logger.change_status("Did not return to war page within 30s")
             return False
 
+    logger.log("Navigating from war page back to main page")
     if not navigate_main_page(emulator, logger, PAGE_WAR, PAGE_MAIN):
         logger.change_status("Failed to return to main menu from war")
         return False
     time.sleep(1)
+    logger.log("Verifying back on main menu")
     return check_if_on_clash_main_menu(emulator)
