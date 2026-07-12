@@ -45,6 +45,10 @@ build_exe_options = {
 bdist_msi_options = {
     "upgrade_code": UPGRADE_CODE,
     "add_to_path": False,
+    # cx-freeze 8.4+ removed bdist_msi's target_version, so without these the
+    # filename/ProductVersion fall back to pyproject's v0.0.0 placeholder.
+    "product_version": VERSION,
+    "output_name": f"pyclashbot-{VERSION}-win64.msi",
     "initial_target_dir": f"[ProgramFilesFolder]\\{PROJECT_NAME}",
     "summary_data": {
         "author": AUTHOR,
