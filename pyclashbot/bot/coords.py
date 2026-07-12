@@ -150,6 +150,7 @@ WAR_DEADSPACE_COORD = (20, 330)
 # that can cover the main menu and intercept navigation to the war page.
 WAR_BOOT_REWARD_COORD = (221, 382)  # the reward-chest "OPEN" button
 SKIP_WAR_BOOT_BUTTON_COORDS = (208, 601)  # the bottom OK / skip button
+CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON = (210, 526)  # OK button on the clan-war final-results popup
 
 # --- Shop / daily free offer ---
 CONFIRM_COLLECT_DAILY_FREE_OFFER_BUTTON_COORDS = (210, 440)
