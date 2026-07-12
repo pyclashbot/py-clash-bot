@@ -23,6 +23,7 @@ from pyclashbot.bot.coords import (
     CLAN_CHAT_EXIT_DEADSPACE_COORD,
     CLAN_CHAT_TO_SOCIAL_COORD,
     CLAN_VOYAGE_CLOSE_BUTTON_COORDS,
+    CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON,
     CLASH_MAIN_OPTIONS_BURGER_BUTTON,
     DECK_TABS_REGION,
     DECKS_PAGE_BUTTON_COORDS,
@@ -34,6 +35,8 @@ from pyclashbot.bot.coords import (
 from pyclashbot.bot.coords import CLASH_MAIN_DEADSPACE_COORD as CLASH_MAIN_MENU_DEADSPACE_COORD
 from pyclashbot.bot.find import find_fight_mode_icon, find_post_battle_button
 from pyclashbot.bot.state_detect import (
+    check_for_battle_days_started_popup,
+    check_for_final_results_page,
     check_for_trophy_reward_menu,
     check_if_in_battle,
     check_if_on_battle_log_page,
@@ -482,7 +485,8 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
         raise ValueError(f"no recorded navigation for {start_page!r} -> {end_page!r}")
 
     logger.log(f"navigate_main_page: {start_page} -> {end_page} via {len(clicks)} click(s)")
-    for x, y in clicks:
+    for i, (x, y) in enumerate(clicks, 1):
+        logger.log(f"  step {i}/{len(clicks)}: clicking ({x}, {y})")
         emulator.click(x, y)
         time.sleep(2)
 
@@ -491,12 +495,35 @@ def navigate_main_page(emulator, logger: Logger, start_page: str, end_page: str)
     # the flash, see the war page (popup not up yet), miss it, and get stuck behind
     # the popup. Then click through it before the destination check.
     if end_page == PAGE_WAR:
+        logger.log("  war page: waiting 5s for the popup to settle")
         time.sleep(5)
+        # Battle-days-started popup FIRST: it fronts the war page before the
+        # final-results / war-boot popups when a new battle day begins.
+        logger.log("  checking for battle-days-started popup...")
+        if check_for_battle_days_started_popup(emulator):
+            logger.change_status("Battle-days-started popup detected, handling it")
+            handle_battle_days_started_popup(emulator, logger)
+        else:
+            logger.log("  no battle-days-started popup")
+        # Final-results check next: it's the more specific fingerprint (magenta title
+        # band), whereas the war-boot check shares the bottom button bar and would
+        # false-positive on the final-results page. Handle the specific one, then war boot.
+        logger.log("  checking for final-results page...")
+        if check_for_final_results_page(emulator):
+            logger.change_status("War final-results page detected, handling it")
+            handle_final_results_page(emulator, logger)
+        else:
+            logger.log("  no final-results page")
+        logger.log("  checking for war-boot popup...")
         if check_if_on_war_boot(emulator):
             logger.change_status("War boot popup detected, handling it")
             handle_war_boot(emulator, logger)
+        else:
+            logger.log("  no war-boot popup")
 
-    return MAIN_PAGE_CHECKS[end_page](emulator)
+    arrived = MAIN_PAGE_CHECKS[end_page](emulator)
+    logger.log(f"  arrival check: on {end_page}? {arrived}")
+    return arrived
 
 
 _WAR_BOOT_HANDLE_TIMEOUT_S = 30.0
@@ -512,6 +539,7 @@ def handle_war_boot(emulator, logger: Logger) -> bool:
     logger.change_status("Handling war boot popup...")
     start_time = time.time()
     while time.time() - start_time < _WAR_BOOT_HANDLE_TIMEOUT_S:
+        logger.log(f"  war-boot: clicking reward at {WAR_BOOT_REWARD_COORD}")
         emulator.click(*WAR_BOOT_REWARD_COORD)
         time.sleep(2)
         if check_if_on_war(emulator):
@@ -519,6 +547,34 @@ def handle_war_boot(emulator, logger: Logger) -> bool:
             return True
     logger.change_status("Timed out handling war boot popup")
     return check_if_on_war(emulator)
+
+
+def handle_final_results_page(emulator, logger: Logger) -> bool:
+    """Clear the clan-war final-results page by clicking its OK button twice.
+
+    Detected by state_detect.check_for_final_results_page after the war boot popup.
+    Two OK clicks (3s apart) dismiss the results popup and any follow-up it raises.
+    """
+    logger.change_status("Handling war final-results page...")
+    for i in range(2):
+        logger.log(f"  final-results: click {i + 1}/2 OK at {CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON}")
+        emulator.click(*CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON)
+        time.sleep(3)
+    return True
+
+
+def handle_battle_days_started_popup(emulator, logger: Logger) -> bool:
+    """Clear the clan-war "battle days started" popup with a single OK click.
+
+    Detected by state_detect.check_for_battle_days_started_popup before the
+    final-results / war-boot checks. Clicks the same button the final-results handler
+    uses (CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON), once.
+    """
+    logger.change_status("Handling battle-days-started popup...")
+    logger.log(f"  battle-days-started: clicking OK at {CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON}")
+    emulator.click(*CLAN_WAR_FINAL_RESULTS_POPUP_OK_BUTTON)
+    time.sleep(3)
+    return True
 
 
 # ===== Card-page / deck-page navigation primitives ===================

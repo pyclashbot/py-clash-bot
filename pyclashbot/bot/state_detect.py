@@ -520,6 +520,70 @@ def check_if_on_card_page(emulator) -> bool:
     if all_pixels_are_equal(pixels, colors3, tol=25):
         return True
 
+    # colors4: an extra card-page fingerprint sampled off VM 2 (a banner layout that
+    # colors1-3 missed) via /show-emulator-image. Clicks are RGB; reversed to BGR here
+    # to match the raw BGR screenshot, same convention as colors1-3.
+    # ponytail: 26 strict-AND landmarks (incl. some anti-alias edges) is brittle — trim
+    # to the stable banner/gray samples if it stops matching a real card page.
+    pixels4 = [
+        iar[58][78],
+        iar[59][93],
+        iar[60][118],
+        iar[60][132],
+        iar[60][141],
+        iar[63][158],
+        iar[65][174],
+        iar[64][186],
+        iar[67][75],
+        iar[67][83],
+        iar[67][92],
+        iar[67][102],
+        iar[72][160],
+        iar[72][172],
+        iar[71][181],
+        iar[72][191],
+        iar[583][97],
+        iar[587][100],
+        iar[594][100],
+        iar[607][98],
+        iar[600][175],
+        iar[596][175],
+        iar[591][177],
+        iar[589][179],
+        iar[587][184],
+        iar[585][191],
+    ]
+    colors4 = [
+        [27, 112, 237],
+        [29, 110, 234],
+        [18, 53, 110],
+        [28, 108, 230],
+        [26, 94, 198],
+        [91, 112, 131],
+        [59, 146, 255],
+        [62, 156, 255],
+        [31, 90, 203],
+        [31, 89, 203],
+        [32, 90, 204],
+        [32, 90, 203],
+        [255, 255, 255],
+        [53, 111, 255],
+        [68, 143, 255],
+        [60, 123, 255],
+        [138, 105, 71],
+        [139, 106, 73],
+        [142, 109, 73],
+        [148, 115, 77],
+        [146, 111, 75],
+        [143, 110, 74],
+        [142, 107, 73],
+        [140, 107, 73],
+        [139, 106, 73],
+        [139, 106, 73],
+    ]
+    if all_pixels_are_equal(pixels4, colors4, tol=25):
+        return True
+
     return False
 
 
@@ -913,6 +977,120 @@ def check_if_on_war_boot(emulator) -> bool:
     """
     iar = emulator.screenshot()
     return _war_boot_pixels_match(iar, _WAR_BOOT_PIXELS) or _war_boot_pixels_match(iar, _WAR_BOOT_PIXELS_ALT)
+
+
+# (x, y, r, g, b) sampled from the clan-war "final results" page that shows up after
+# the war boot popup, during navigation to the war page. Stored RGB just like
+# _WAR_BOOT_PIXELS: _war_boot_pixels_match flips the BGR screenshot to RGB before
+# comparing, and /show-emulator-image clicks are RGB too, so clicked values drop in
+# as-is. Top cluster (y~152) is the magenta title band; bottom cluster (y~600) is the
+# button bar. ponytail: 38 strict-AND pixels with a few anti-alias edges is brittle —
+# trim to the stable title-band samples if it starts false-negativing.
+_FINAL_RESULTS_PAGE_PIXELS: tuple[tuple[int, int, int, int, int], ...] = (
+    (26, 148, 142, 82, 255),
+    (58, 154, 142, 82, 255),
+    (74, 154, 142, 82, 255),
+    (99, 152, 142, 82, 255),
+    (118, 152, 142, 82, 255),
+    (136, 152, 142, 82, 255),
+    (152, 152, 245, 240, 253),
+    (171, 153, 199, 186, 225),
+    (182, 154, 255, 255, 255),
+    (193, 154, 142, 82, 255),
+    (207, 154, 255, 255, 255),
+    (230, 154, 245, 240, 253),
+    (238, 154, 11, 7, 19),
+    (251, 155, 155, 141, 184),
+    (271, 159, 216, 205, 238),
+    (281, 159, 142, 82, 255),
+    (301, 157, 142, 82, 255),
+    (328, 155, 142, 82, 255),
+    (350, 153, 142, 82, 255),
+    (378, 153, 142, 82, 255),
+    (394, 153, 142, 82, 255),
+    (25, 601, 75, 89, 111),
+    (44, 598, 75, 89, 111),
+    (73, 598, 75, 89, 111),
+    (91, 598, 75, 89, 111),
+    (117, 601, 75, 89, 111),
+    (134, 604, 75, 89, 110),
+    (156, 605, 74, 88, 110),
+    (177, 606, 78, 175, 255),
+    (202, 609, 255, 255, 255),
+    (218, 611, 255, 255, 255),
+    (244, 612, 78, 175, 255),
+    (269, 612, 73, 87, 109),
+    (292, 609, 74, 88, 109),
+    (321, 606, 74, 88, 110),
+    (347, 602, 75, 89, 110),
+    (372, 599, 75, 89, 111),
+    (386, 600, 75, 89, 111),
+)
+
+
+def check_for_final_results_page(emulator) -> bool:
+    """True when the clan-war final-results page is covering the screen.
+
+    Checked right after the war boot popup during war-page navigation (see
+    nav.navigate_main_page); cleared by nav.handle_final_results_page.
+    """
+    if not _FINAL_RESULTS_PAGE_PIXELS:
+        return False  # an empty fingerprint would vacuously match every screen
+    iar = emulator.screenshot()
+    return _war_boot_pixels_match(iar, _FINAL_RESULTS_PAGE_PIXELS)
+
+
+# (x, y, r, g, b) sampled from the clan-war "battle days started" popup (shown when a
+# new war battle-day begins), which intercepts navigation to the war page ahead of the
+# final-results / war-boot popups. Stored RGB like _FINAL_RESULTS_PAGE_PIXELS: the
+# matcher flips the BGR screenshot to RGB and /show-emulator-image clicks are RGB, so
+# clicked values drop in as-is.
+_BATTLE_DAYS_STARTED_POPUP_PIXELS: tuple[tuple[int, int, int, int, int], ...] = (
+    (53, 310, 142, 82, 255),
+    (74, 312, 142, 82, 255),
+    (83, 312, 142, 82, 255),
+    (110, 313, 2, 1, 2),
+    (132, 313, 245, 241, 253),
+    (151, 313, 3, 3, 4),
+    (175, 315, 60, 35, 108),
+    (199, 318, 255, 255, 255),
+    (226, 318, 142, 82, 255),
+    (244, 319, 255, 255, 255),
+    (273, 319, 116, 67, 208),
+    (295, 319, 4, 2, 7),
+    (315, 319, 142, 82, 255),
+    (338, 319, 142, 82, 255),
+    (365, 317, 142, 82, 255),
+    (382, 316, 142, 82, 255),
+    (46, 604, 75, 89, 110),
+    (61, 604, 75, 89, 110),
+    (83, 601, 75, 89, 111),
+    (105, 602, 75, 89, 110),
+    (119, 604, 75, 89, 110),
+    (140, 604, 75, 89, 110),
+    (159, 605, 74, 88, 110),
+    (185, 604, 104, 187, 255),
+    (209, 604, 255, 255, 255),
+    (225, 604, 104, 187, 255),
+    (253, 605, 74, 88, 110),
+    (276, 606, 74, 88, 110),
+    (296, 607, 74, 88, 110),
+    (321, 608, 74, 88, 109),
+    (349, 607, 74, 88, 110),
+    (373, 605, 74, 88, 110),
+)
+
+
+def check_for_battle_days_started_popup(emulator) -> bool:
+    """True when the clan-war "battle days started" popup is covering the screen.
+
+    Checked before the final-results and war-boot popups during war-page navigation
+    (see nav.navigate_main_page); cleared by nav.handle_battle_days_started_popup.
+    """
+    if not _BATTLE_DAYS_STARTED_POPUP_PIXELS:
+        return False  # an empty fingerprint would vacuously match every screen
+    iar = emulator.screenshot()
+    return _war_boot_pixels_match(iar, _BATTLE_DAYS_STARTED_POPUP_PIXELS)
 
 
 _WAR_DECK_INDICATOR_TOL = 15
