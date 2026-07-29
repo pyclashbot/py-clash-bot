@@ -137,6 +137,46 @@ def check_for_trophy_reward_menu(emulator) -> bool:
     return True
 
 
+def check_for_reward_choice_screen(emulator) -> bool:
+    """Detect the post-battle 'Choose your reward' screen by its banner text."""
+    iar = emulator.screenshot()
+
+    pixels = [
+        iar[193][90],
+        iar[196][103],
+        iar[194][117],
+        iar[194][144],
+        iar[196][166],
+        iar[196][194],
+        iar[194][210],
+        iar[194][234],
+        iar[194][267],
+        iar[196][297],
+        iar[197][312],
+        iar[200][327],
+    ]
+    colors = [
+        [255, 73, 173],
+        [202, 57, 136],
+        [239, 128, 224],
+        [198, 98, 176],
+        [184, 89, 162],
+        [238, 128, 222],
+        [254, 146, 248],
+        [156, 44, 105],
+        [171, 83, 151],
+        [255, 153, 255],
+        [255, 153, 255],
+        [255, 153, 255],
+    ]
+
+    for i, pixel in enumerate(pixels):
+        if not pixel_is_equal(pixel, colors[i], tol=30):
+            return False
+
+    return True
+
+
 # ===== Fight in-progress / battle log ==================================
 
 ELIXIR_COORDS = [
