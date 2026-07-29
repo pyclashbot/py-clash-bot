@@ -528,7 +528,7 @@ def _fight_loop(
     """Method for handling dynamically timed fight"""
     create_default_bridge_iar(emulator)
     _maybe_start_fight_recording(emulator, logger, recording_flag, fight_mode, custom_path)
-    collections.deque(maxlen=3)
+    last_three_cards.clear()
     prev_cards_played = logger.get_cards_played()
     battle_detection_lost_count = 0
 
