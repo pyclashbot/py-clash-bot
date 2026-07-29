@@ -28,6 +28,8 @@ from pyclashbot.bot.coords import (
     DECK_TABS_REGION,
     DECKS_PAGE_BUTTON_COORDS,
     OK_BUTTON_COORDS_IN_TROPHY_REWARD_PAGE,
+    REWARD_LEFT_CHOICE_COORD,
+    REWARD_RIGHT_CHOICE_COORD,
     WAR_BOOT_REWARD_COORD,
     WAR_EXIT_DEADSPACE_COORD,
     WAR_TAB_FROM_SOCIAL_COORD,
@@ -37,6 +39,7 @@ from pyclashbot.bot.find import find_fight_mode_icon, find_post_battle_button
 from pyclashbot.bot.state_detect import (
     check_for_battle_days_started_popup,
     check_for_final_results_page,
+    check_for_reward_choice_screen,
     check_for_trophy_reward_menu,
     check_if_in_battle,
     check_if_on_battle_log_page,
@@ -133,6 +136,15 @@ def handle_trophy_reward_menu(
     time.sleep(1)
 
     return "good"
+
+
+def handle_reward_choice(emulator, logger: Logger) -> None:
+    """Pick a reward on the post-battle 'Choose your reward' screen."""
+    logger.change_status(status="Handling reward choice screen")
+    emulator.click(*REWARD_LEFT_CHOICE_COORD)
+    time.sleep(0.5)
+    emulator.click(*REWARD_RIGHT_CHOICE_COORD)
+    time.sleep(0.5)
 
 
 def handle_clan_voyage_page(emulator) -> None:
@@ -617,18 +629,32 @@ def get_to_main_after_fight(emulator, logger):
         if check_if_on_clash_main_menu(emulator) is True:
             time.sleep(3)
 
+            # Race condition: main can flash for a moment before the
+            # trophy reward popup appears on top of it.
             if check_for_trophy_reward_menu(emulator):
                 handle_trophy_reward_menu(emulator, logger, printmode=True)
                 time.sleep(2)
 
+            # success condition
             logger.change_status("Returned to main menu after fight")
             return True
 
+        # Trophy reward popup, triggered by clicking the main menu nav
+        # button a second time while already on main.
         if check_for_trophy_reward_menu(emulator):
             handle_trophy_reward_menu(emulator, logger, printmode=True)
             time.sleep(3)
             continue
 
+        # Reward selection popup shown when leaving a battle. Added to the
+        # game in June 2026; not thoroughly tested as of July 2026.
+        if check_for_reward_choice_screen(emulator):
+            handle_reward_choice(emulator, logger)
+            time.sleep(3)
+            continue
+
+        # The final post-battle screen needs its EXIT or OK button clicked
+        # to proceed to main. Only ever click it once.
         if not clicked_ok_or_exit:
             button_coord = find_post_battle_button(emulator)
             if button_coord is not None:
