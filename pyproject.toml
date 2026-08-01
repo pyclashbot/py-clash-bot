@@ -23,7 +23,7 @@ dependencies = [
     "psutil>=6.1.0,<8",
     "pypresence>=4.3.0,<5",
     "pillow>=12.2.0,<13.0.0",
-    "ttkbootstrap>=1.20.0,<1.21",
+    "ttkbootstrap>=1.20.0,<2.1",
 ]
 
 [tool.setuptools.packages.find]
