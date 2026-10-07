@@ -7,8 +7,12 @@ The helper is monkeypatched to capture the argv and return a canned result.
 
 import subprocess
 
+import pytest
+
 from pyclashbot.emulators import adb_base
 from pyclashbot.emulators.adb_base import AdbBasedController
+from pyclashbot.emulators.base import EmulatorNotReadyError
+from pyclashbot.utils.subprocess import TIMEOUT_RETURNCODE
 
 
 class _FakeAdb(AdbBasedController):
@@ -76,3 +80,27 @@ def test_discover_devices_builds_argv_and_parses(monkeypatch):
     assert devices == ["127.0.0.1:5555", "emulator-5554"]
     assert seen["argv"][-1] == "devices"
     assert seen["argv"][0] == "adb"
+
+
+def test_adb_raises_not_ready_on_timeout(monkeypatch):
+    """A timed-out adb() result must raise at the boundary, not read as empty stdout."""
+
+    def spy(argv, **kwargs):
+        return subprocess.CompletedProcess(argv, TIMEOUT_RETURNCODE, "", "command timed out")
+
+    monkeypatch.setattr(adb_base, "run_command", spy)
+
+    with pytest.raises(EmulatorNotReadyError, match="timed out"):
+        _make_controller().adb("shell pm list packages")
+
+
+def test_discover_devices_raises_on_timeout(monkeypatch):
+    """A timed-out discovery must raise, not read as 'no devices'."""
+
+    def spy(argv, **kwargs):
+        return subprocess.CompletedProcess(argv, TIMEOUT_RETURNCODE, "", "command timed out")
+
+    monkeypatch.setattr(adb_base, "run_command", spy)
+
+    with pytest.raises(EmulatorNotReadyError, match="adb devices"):
+        AdbBasedController.discover_devices()
