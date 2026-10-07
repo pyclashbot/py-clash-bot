@@ -5,6 +5,7 @@ from __future__ import annotations
 import locale
 import logging
 import multiprocessing as mp
+import shlex
 import subprocess
 from multiprocessing import Queue
 from typing import TYPE_CHECKING, Any
@@ -42,6 +43,7 @@ from pyclashbot.bot.worker import WorkerProcess, stop_worker_process
 from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.adb_base import validate_device_serial
+from pyclashbot.emulators.base import EmulatorNotReadyError
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.interface.enums import UIField, has_start_ready_job
@@ -52,6 +54,7 @@ from pyclashbot.utils.discord_rpc import DiscordRPCManager
 from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import get_recordings_dir, is_macos
+from pyclashbot.utils.subprocess import run as run_command
 
 initialize_pylogging()
 
@@ -197,7 +200,12 @@ def start_button_event(
     # ADB - serial required
     if job_dictionary.get("emulator") == EmulatorType.ADB:
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
-        if not device_serial or not AdbController.is_device_connected(device_serial):
+        try:
+            device_connected = AdbController.is_device_connected(device_serial)
+        except EmulatorNotReadyError as e:
+            logger.change_status(f"Start cancelled: {e}")
+            return None
+        if not device_serial or not device_connected:
             logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
             return None
 
@@ -454,23 +462,16 @@ class BotApplication:
             self.logger.change_status(f"Invalid device serial format: {serial}")
             return
 
-        full_command = f"adb -s {serial} {command}"
-        self.logger.change_status(f"Running ADB command: {full_command}")
+        argv = ["adb", "-s", serial, *shlex.split(command)]
+        self.logger.change_status(f"Running ADB command: {' '.join(argv)}")
         try:
-            result = subprocess.run(
-                full_command,
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=10,
-            )
+            result = run_command(argv, timeout=10)
             if result.returncode == 0:
                 self.logger.change_status(f"Success: {result.stdout.strip() if result.stdout else '(No output)'}")
             else:
                 self.logger.change_status(f"Error: {result.stderr.strip() if result.stderr else '(No error message)'}")
         except subprocess.TimeoutExpired:
-            self.logger.change_status(f"ADB command timed out: {full_command}")
+            self.logger.change_status(f"ADB command timed out: {' '.join(argv)}")
         except FileNotFoundError:
             self.logger.change_status("ADB command not found. Is ADB installed and in your PATH?")
         except Exception as e:

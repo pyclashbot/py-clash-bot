@@ -1,63 +1,61 @@
-from os import name
-from subprocess import PIPE, Popen, TimeoutExpired
+"""Run external commands with a timeout; kills them if they overrun."""
 
-# check if running on windows
+import logging
+from contextlib import suppress
+from os import name
+from subprocess import PIPE, CompletedProcess, Popen, TimeoutExpired
+
+logger = logging.getLogger(__name__)
+
 WIN32 = name == "nt"
-ST_INFO = None
+
 if WIN32:
-    import ctypes
-    from subprocess import (
+    from subprocess import (  # Windows-only flags
         CREATE_NO_WINDOW,
-        REALTIME_PRIORITY_CLASS,
         STARTF_USESHOWWINDOW,
         STARTF_USESTDHANDLES,
         STARTUPINFO,
         SW_HIDE,
     )
 
-    ST_INFO = STARTUPINFO()
-    ST_INFO.dwFlags |= STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | REALTIME_PRIORITY_CLASS
-    ST_INFO.wShowWindow = SW_HIDE
-    CR_FLAGS = CREATE_NO_WINDOW
-    subprocess_flags = {
-        "startupinfo": ST_INFO,
-        "creationflags": CR_FLAGS,
-        "start_new_session": True,
-    }
+    _startupinfo = STARTUPINFO()
+    _startupinfo.dwFlags |= STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES
+    _startupinfo.wShowWindow = SW_HIDE
+    _PLATFORM_FLAGS: dict = {"startupinfo": _startupinfo, "creationflags": CREATE_NO_WINDOW}
 else:
-    subprocess_flags = {}
-
-
-def _terminate_process(
-    process: Popen[str],
-) -> None:
-    """Terminate a process forcefully on Windows."""
-    handle = ctypes.windll.kernel32.OpenProcess(1, False, process.pid)
-    ctypes.windll.kernel32.TerminateProcess(handle, -1)
-    ctypes.windll.kernel32.CloseHandle(handle)
+    _PLATFORM_FLAGS = {}
 
 
 def run(
     args: list[str],
-) -> tuple[int, str]:
-    with Popen(
+    *,
+    timeout: float,
+    text: bool = True,
+    env: dict | None = None,
+) -> CompletedProcess:
+    """Run argv (no shell) with a timeout; raises TimeoutExpired after killing."""
+    proc = Popen(
         args,
         shell=False,
-        bufsize=-1,
         stdout=PIPE,
         stderr=PIPE,
-        close_fds=True,
-        universal_newlines=True,
-        **subprocess_flags,
-    ) as process:
+        text=text,
+        env=env,
+        **_PLATFORM_FLAGS,
+    )
+    try:
+        stdout, stderr = proc.communicate(timeout=timeout)
+    except TimeoutExpired:
+        with suppress(OSError):
+            proc.kill()
         try:
-            result, _ = process.communicate(timeout=5)
+            stdout, stderr = proc.communicate(timeout=5)  # reaps; 5s-bounded
         except TimeoutExpired:
-            if WIN32:
-                # pylint: disable=protected-access
-                _terminate_process(process)
-            process.kill()
-            result, _ = process.communicate()
-            raise
-
-        return (process.returncode, result)
+            logger.error("Command %s survived the kill; giving up on its pipes", args)
+            for stream in (proc.stdout, proc.stderr):
+                if stream is not None:
+                    with suppress(OSError):
+                        stream.close()
+            raise  # the drain's timeout still means: it didn't finish in time
+        raise  # bounded drain done -- surface the timeout to the caller
+    return CompletedProcess(args, proc.returncode, stdout, stderr)

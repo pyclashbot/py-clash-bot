@@ -12,6 +12,7 @@ from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_cla
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform
+from pyclashbot.utils.subprocess import run as run_command
 
 DEBUG = False
 
@@ -296,7 +297,14 @@ class GooglePlayEmulatorController(AdbBasedController):
         start = time.time()
         while time.time() - start < timeout:
             # Query adb devices directly to avoid relying on intermediate state.
-            result = self.adb("devices")
+            try:
+                result = self.adb("devices")
+            except EmulatorNotReadyError:
+                # adb() raises on a wedged adb; while the emulator is still
+                # booting that is expected, not fatal -- keep the 120s budget
+                # doing its job.
+                time.sleep(3)
+                continue
             if result.stdout:
                 for line in result.stdout.strip().splitlines():
                     if self.device_serial in line and "device" in line:
@@ -451,14 +459,15 @@ class GooglePlayEmulatorController(AdbBasedController):
         ]
 
         for proc in process_names:
-            result = subprocess.run(
-                f'taskkill /f /im "{proc}"', shell=True, capture_output=True, text=True, check=False
-            )
+            try:
+                result = run_command(["taskkill", "/f", "/im", proc], timeout=10)
 
-            if result.returncode == 0:
-                print(f"[OK] {proc} terminated.")
-            elif "not found" not in result.stderr.lower():
-                print(f"[!] Failed to terminate {proc}")
+                if result.returncode == 0:
+                    print(f"[OK] {proc} terminated.")
+                elif "not found" not in (result.stderr or "").lower():
+                    print(f"[!] Failed to terminate {proc}")
+            except subprocess.TimeoutExpired:
+                print(f"[?] {proc} termination timed out; state unknown.")
 
     def install_apk(self, apk_path: str):
         """

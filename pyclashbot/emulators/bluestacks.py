@@ -7,12 +7,14 @@ import subprocess
 import time
 from contextlib import suppress
 from os.path import normpath
+from subprocess import TimeoutExpired
 
 from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
 from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform, is_macos
+from pyclashbot.utils.subprocess import run as run_command
 
 DEBUG = False
 
@@ -312,9 +314,8 @@ class BlueStacksEmulatorController(AdbBasedController):
         if is_macos():
             subprocess.run(["pkill", "-f", "BlueStacksMIM"], check=False)
         else:
-            subprocess.run(
-                'taskkill /IM "HD-MultiInstanceManager.exe" /F', shell=True, capture_output=True, text=True, check=False
-            )
+            with suppress(TimeoutExpired):
+                run_command(["taskkill", "/IM", "HD-MultiInstanceManager.exe", "/F"], timeout=10)
 
     def _open_multi_instance_manager(self) -> None:
         """Open BlueStacks Multi-Instance Manager."""
@@ -517,26 +518,26 @@ class BlueStacksEmulatorController(AdbBasedController):
         if is_macos():
             # Check for BlueStacks process with instance argument
             try:
-                res = subprocess.run(
-                    ["pgrep", "-fl", "BlueStacks"],
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                # Parse output for our instance
+                res = run_command(["pgrep", "-fl", "BlueStacks"], timeout=10)
                 return self.internal_name is not None and self.internal_name in (res.stdout or "")
+            except EmulatorNotReadyError:
+                # Must precede the blanket handler below: EmulatorNotReadyError is a
+                # RuntimeError, so `except Exception` would swallow it and turn an
+                # unknown-liveness timeout back into a misleading "stopped".
+                raise
+            except TimeoutExpired:
+                # Liveness unknown — not the same as "stopped".
+                self.logger.change_status("[Bluestacks 5] pgrep timed out checking for a running instance")
+                raise EmulatorNotReadyError("BlueStacks 5 could not determine whether the instance is running")
             except Exception:
                 return False
 
         # Windows: tasklist CSV parsing
         title = self.instance_name
         try:
-            res = subprocess.run(
-                'tasklist /v /fi "IMAGENAME eq HD-Player.exe" /fo csv',
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
+            res = run_command(
+                ["tasklist", "/v", "/fi", "IMAGENAME eq HD-Player.exe", "/fo", "csv"],
+                timeout=15,
             )
             if res.returncode != 0 or not res.stdout:
                 return False
@@ -549,6 +550,13 @@ class BlueStacksEmulatorController(AdbBasedController):
                 window_title = (row[-1] if len(row) > 0 else "").strip()
                 if image == "hd-player.exe" and window_title == title:
                     return True  # yes, I parsed CSV from tasklist. no, I'm not proud of it
+        except EmulatorNotReadyError:
+            # Must precede the blanket handler below -- see the macOS branch above.
+            raise
+        except TimeoutExpired:
+            # Liveness unknown — not the same as "stopped".
+            self.logger.change_status(f"[Bluestacks 5] tasklist timed out checking for '{title}'")
+            raise EmulatorNotReadyError(f"BlueStacks 5 could not determine whether '{title}' is running")
         except Exception:
             return False
         return False
@@ -584,13 +592,14 @@ class BlueStacksEmulatorController(AdbBasedController):
         else:
             # Windows: Stop using window title match
             title = display_name or self.instance_name
-            subprocess.run(
-                f'taskkill /fi "WINDOWTITLE eq {title}" /IM "HD-Player.exe" /F',
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
+            try:
+                run_command(
+                    ["taskkill", "/fi", f"WINDOWTITLE eq {title}", "/IM", "HD-Player.exe", "/F"],
+                    timeout=15,
+                )
+            except TimeoutExpired:
+                # The kill didn't complete in time; callers re-check liveness on a deadline.
+                self.logger.log(f"[Bluestacks 5] taskkill timed out for '{title}'")
 
     def restart(self) -> bool:
         start_ts = time.time()
