@@ -58,6 +58,26 @@ def test_timeout_reaps_child_tree(tmp_path):
     assert not psutil.pid_exists(grandchild_pid), "grandchild was orphaned after timeout"
 
 
+def test_unkillable_process_does_not_hang(monkeypatch):
+    """A process that survives the kill must still return within a bounded time.
+
+    ``Popen.__exit__`` calls ``wait()`` with no timeout, so returning from inside
+    a ``with Popen(...)`` block after a failed kill blocks forever. Disabling the
+    kill simulates the real case this guards: an ``adb`` we lack rights to kill
+    (AccessDenied) or one that ignores the signal.
+    """
+    monkeypatch.setattr(sp, "_kill_process_tree", lambda pid, **kwargs: None)
+
+    start = time.monotonic()
+    result = sp.run([sys.executable, "-c", "import time; time.sleep(30)"], timeout=1)
+    elapsed = time.monotonic() - start
+
+    assert sp.timed_out(result), "an unkilled process must still report the timeout sentinel"
+    # The kill ladder plus the pipe-drain budget, with generous slack for a loaded
+    # CI box. The bug under test blocked indefinitely, so any finite bound catches it.
+    assert elapsed < 30, f"run() took {elapsed:.1f}s -- it blocked instead of returning"
+
+
 def test_always_runs_without_a_shell(monkeypatch):
     seen: dict = {}
     real_popen = sp.Popen
