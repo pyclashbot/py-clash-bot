@@ -6,6 +6,7 @@ import locale
 import logging
 import multiprocessing as mp
 import shlex
+import subprocess
 from multiprocessing import Queue
 from typing import TYPE_CHECKING, Any
 
@@ -54,7 +55,6 @@ from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_n
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import get_recordings_dir, is_macos
 from pyclashbot.utils.subprocess import run as run_command
-from pyclashbot.utils.subprocess import timed_out
 
 initialize_pylogging()
 
@@ -466,13 +466,12 @@ class BotApplication:
         self.logger.change_status(f"Running ADB command: {' '.join(argv)}")
         try:
             result = run_command(argv, timeout=10)
-            if timed_out(result):
-                self.logger.change_status(f"ADB command timed out: {' '.join(argv)}")
-                return
             if result.returncode == 0:
                 self.logger.change_status(f"Success: {result.stdout.strip() if result.stdout else '(No output)'}")
             else:
                 self.logger.change_status(f"Error: {result.stderr.strip() if result.stderr else '(No error message)'}")
+        except subprocess.TimeoutExpired:
+            self.logger.change_status(f"ADB command timed out: {' '.join(argv)}")
         except FileNotFoundError:
             self.logger.change_status("ADB command not found. Is ADB installed and in your PATH?")
         except Exception as e:

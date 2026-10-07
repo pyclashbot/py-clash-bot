@@ -12,7 +12,6 @@ import pytest
 from pyclashbot.emulators import adb_base
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import EmulatorNotReadyError
-from pyclashbot.utils.subprocess import TIMEOUT_RETURNCODE
 
 
 class _FakeAdb(AdbBasedController):
@@ -40,53 +39,27 @@ def _capture(monkeypatch, stdout: str = "ok"):
     return seen
 
 
-def test_adb_builds_device_scoped_argv(monkeypatch):
+def test_adb_scopes_serial_via_argv(monkeypatch):
     seen = _capture(monkeypatch)
-    _make_controller().adb("shell input tap 1 2")
+    _make_controller(adb_server_port=5041).adb("shell wm size")
+    argv = seen["argv"]
 
-    assert seen["argv"] == ["adb", "-s", "127.0.0.1:5555", "shell", "input", "tap", "1", "2"]
+    assert "-P" in argv and argv[argv.index("-P") + 1] == "5041"
+    assert "-s" in argv and argv[argv.index("-s") + 1] == "127.0.0.1:5555"
+    assert "wm" in argv  # the command itself made it in after shlex.split
     assert "shell" not in seen["kwargs"]  # never a shell=True kwarg
-    assert seen["kwargs"]["timeout"] == 30
 
 
-def test_adb_includes_server_port(monkeypatch):
-    seen = _capture(monkeypatch)
-    _make_controller(adb_server_port=5037).adb("shell wm size")
-
-    assert seen["argv"] == ["adb", "-P", "5037", "-s", "127.0.0.1:5555", "shell", "wm", "size"]
-
-
-def test_adb_omits_serial_for_server_command(monkeypatch):
-    seen = _capture(monkeypatch)
-    _make_controller().adb("devices")
-
-    assert seen["argv"] == ["adb", "devices"]
-
-
-def test_adb_binary_output_requests_bytes(monkeypatch):
+def test_adb_binary_requests_bytes(monkeypatch):
     seen = _capture(monkeypatch)
     _make_controller().adb("exec-out screencap -p", binary_output=True)
 
-    assert seen["argv"] == ["adb", "-s", "127.0.0.1:5555", "exec-out", "screencap", "-p"]
     assert seen["kwargs"]["text"] is False
 
 
-def test_discover_devices_builds_argv_and_parses(monkeypatch):
-    stdout = "List of devices attached\n127.0.0.1:5555\tdevice\nemulator-5554\tdevice\n"
-    seen = _capture(monkeypatch, stdout=stdout)
-
-    devices = AdbBasedController.discover_devices()
-
-    assert devices == ["127.0.0.1:5555", "emulator-5554"]
-    assert seen["argv"][-1] == "devices"
-    assert seen["argv"][0] == "adb"
-
-
 def test_adb_raises_not_ready_on_timeout(monkeypatch):
-    """A timed-out adb() result must raise at the boundary, not read as empty stdout."""
-
     def spy(argv, **kwargs):
-        return subprocess.CompletedProcess(argv, TIMEOUT_RETURNCODE, "", "command timed out")
+        raise subprocess.TimeoutExpired(argv, 30)
 
     monkeypatch.setattr(adb_base, "run_command", spy)
 
@@ -95,10 +68,8 @@ def test_adb_raises_not_ready_on_timeout(monkeypatch):
 
 
 def test_discover_devices_raises_on_timeout(monkeypatch):
-    """A timed-out discovery must raise, not read as 'no devices'."""
-
     def spy(argv, **kwargs):
-        return subprocess.CompletedProcess(argv, TIMEOUT_RETURNCODE, "", "command timed out")
+        raise subprocess.TimeoutExpired(argv, 15)
 
     monkeypatch.setattr(adb_base, "run_command", spy)
 

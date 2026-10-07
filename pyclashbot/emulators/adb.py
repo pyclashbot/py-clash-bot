@@ -1,4 +1,5 @@
 import re
+import subprocess
 import time
 
 from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
@@ -7,7 +8,6 @@ from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_se
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform
 from pyclashbot.utils.subprocess import run as run_command
-from pyclashbot.utils.subprocess import timed_out
 
 # Set to True for verbose ADB command logging
 DEBUG = False
@@ -148,13 +148,13 @@ class AdbController(AdbBasedController):
         try:
             process = run_command(["adb", "connect", device_address], timeout=15)
             output = (process.stdout or "").strip()
-            if timed_out(process):
-                logger.change_status(f"adb connect timed out after 15s for {device_address}")
-                return False
             logger.change_status(output)
             if "connected" in output or "already connected" in output:
                 return True
             logger.change_status(f"Failed to connect: {(process.stderr or '').strip()}")
+            return False
+        except subprocess.TimeoutExpired:
+            logger.change_status(f"adb connect timed out after 15s for {device_address}")
             return False
         except FileNotFoundError:
             logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")
@@ -188,24 +188,25 @@ class AdbController(AdbBasedController):
         try:
             # Kill the server
             kill_result = run_command(["adb", "kill-server"], timeout=15)
-            if timed_out(kill_result):
-                logger.log("adb kill-server timed out after 15s.")
-            elif kill_result.returncode == 0:
+            if kill_result.returncode == 0:
                 logger.log("ADB server killed successfully.")
             else:
                 logger.log(f"Failed to kill ADB server: {(kill_result.stderr or '').strip()}")
+        except subprocess.TimeoutExpired:
+            logger.log("adb kill-server timed out after 15s.")
 
-            time.sleep(1)
+        time.sleep(1)
 
+        try:
             # Start the server
             start_result = run_command(["adb", "start-server"], timeout=15)
-            if timed_out(start_result):
-                logger.change_status("adb start-server timed out after 15s.")
-                return False
             if start_result.returncode == 0:
                 logger.change_status("ADB server started successfully.")
                 return True
             logger.change_status(f"Failed to start ADB server: {(start_result.stderr or '').strip()}")
+            return False
+        except subprocess.TimeoutExpired:
+            logger.change_status("adb start-server timed out after 15s.")
             return False
         except FileNotFoundError:
             logger.change_status("ADB command not found. Make sure ADB is installed and in your PATH.")

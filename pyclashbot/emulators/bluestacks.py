@@ -7,6 +7,7 @@ import subprocess
 import time
 from contextlib import suppress
 from os.path import normpath
+from subprocess import TimeoutExpired
 
 from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
 from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
@@ -14,7 +15,6 @@ from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform, is_macos
 from pyclashbot.utils.subprocess import run as run_command
-from pyclashbot.utils.subprocess import timed_out
 
 DEBUG = False
 
@@ -314,7 +314,8 @@ class BlueStacksEmulatorController(AdbBasedController):
         if is_macos():
             subprocess.run(["pkill", "-f", "BlueStacksMIM"], check=False)
         else:
-            run_command(["taskkill", "/IM", "HD-MultiInstanceManager.exe", "/F"], timeout=10)
+            with suppress(TimeoutExpired):
+                run_command(["taskkill", "/IM", "HD-MultiInstanceManager.exe", "/F"], timeout=10)
 
     def _open_multi_instance_manager(self) -> None:
         """Open BlueStacks Multi-Instance Manager."""
@@ -518,20 +519,16 @@ class BlueStacksEmulatorController(AdbBasedController):
             # Check for BlueStacks process with instance argument
             try:
                 res = run_command(["pgrep", "-fl", "BlueStacks"], timeout=10)
-                if timed_out(res):
-                    # run() signals a timeout via timed_out() instead of raising.
-                    # Liveness is *unknown*, which is not the same as "stopped":
-                    # restart()'s stop-wait loop reads False as stopped and would
-                    # launch a second instance on top of a still-running one.
-                    self.logger.change_status("[Bluestacks 5] pgrep timed out checking for a running instance")
-                    raise EmulatorNotReadyError("BlueStacks 5 could not determine whether the instance is running")
-                # Parse output for our instance
                 return self.internal_name is not None and self.internal_name in (res.stdout or "")
             except EmulatorNotReadyError:
                 # Must precede the blanket handler below: EmulatorNotReadyError is a
                 # RuntimeError, so `except Exception` would swallow it and turn an
                 # unknown-liveness timeout back into a misleading "stopped".
                 raise
+            except TimeoutExpired:
+                # Liveness unknown — not the same as "stopped".
+                self.logger.change_status("[Bluestacks 5] pgrep timed out checking for a running instance")
+                raise EmulatorNotReadyError("BlueStacks 5 could not determine whether the instance is running")
             except Exception:
                 return False
 
@@ -542,11 +539,6 @@ class BlueStacksEmulatorController(AdbBasedController):
                 ["tasklist", "/v", "/fi", "IMAGENAME eq HD-Player.exe", "/fo", "csv"],
                 timeout=15,
             )
-            if timed_out(res):
-                # run() signals a timeout via timed_out() instead of raising.
-                # Liveness is *unknown*, not "stopped" -- see the pgrep branch above.
-                self.logger.change_status(f"[Bluestacks 5] tasklist timed out checking for '{title}'")
-                raise EmulatorNotReadyError(f"BlueStacks 5 could not determine whether '{title}' is running")
             if res.returncode != 0 or not res.stdout:
                 return False
             reader = csv.reader(io.StringIO(res.stdout))
@@ -561,6 +553,10 @@ class BlueStacksEmulatorController(AdbBasedController):
         except EmulatorNotReadyError:
             # Must precede the blanket handler below -- see the macOS branch above.
             raise
+        except TimeoutExpired:
+            # Liveness unknown — not the same as "stopped".
+            self.logger.change_status(f"[Bluestacks 5] tasklist timed out checking for '{title}'")
+            raise EmulatorNotReadyError(f"BlueStacks 5 could not determine whether '{title}' is running")
         except Exception:
             return False
         return False
@@ -596,16 +592,13 @@ class BlueStacksEmulatorController(AdbBasedController):
         else:
             # Windows: Stop using window title match
             title = display_name or self.instance_name
-            res = run_command(
-                ["taskkill", "/fi", f"WINDOWTITLE eq {title}", "/IM", "HD-Player.exe", "/F"],
-                timeout=15,
-            )
-            if timed_out(res):
-                # The kill didn't complete in time, not that the instance
-                # stopped. Bounded log-and-return -- callers either re-check
-                # liveness on a deadline (restart()) or have no loop at all
-                # (BaseEmulatorController.__del__), where returning is the only
-                # move.
+            try:
+                run_command(
+                    ["taskkill", "/fi", f"WINDOWTITLE eq {title}", "/IM", "HD-Player.exe", "/F"],
+                    timeout=15,
+                )
+            except TimeoutExpired:
+                # The kill didn't complete in time; callers re-check liveness on a deadline.
                 self.logger.log(f"[Bluestacks 5] taskkill timed out for '{title}'")
 
     def restart(self) -> bool:
