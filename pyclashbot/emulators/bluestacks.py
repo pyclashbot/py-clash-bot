@@ -13,6 +13,7 @@ from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_cla
 from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform, is_macos
+from pyclashbot.utils.subprocess import run as run_command
 
 DEBUG = False
 
@@ -312,9 +313,7 @@ class BlueStacksEmulatorController(AdbBasedController):
         if is_macos():
             subprocess.run(["pkill", "-f", "BlueStacksMIM"], check=False)
         else:
-            subprocess.run(
-                'taskkill /IM "HD-MultiInstanceManager.exe" /F', shell=True, capture_output=True, text=True, check=False
-            )
+            run_command(["taskkill", "/IM", "HD-MultiInstanceManager.exe", "/F"], timeout=10)
 
     def _open_multi_instance_manager(self) -> None:
         """Open BlueStacks Multi-Instance Manager."""
@@ -517,12 +516,11 @@ class BlueStacksEmulatorController(AdbBasedController):
         if is_macos():
             # Check for BlueStacks process with instance argument
             try:
-                res = subprocess.run(
-                    ["pgrep", "-fl", "BlueStacks"],
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
+                res = run_command(["pgrep", "-fl", "BlueStacks"], timeout=10)
+                if res.returncode == -1:
+                    # run() signals a timeout with returncode -1 instead of raising.
+                    self.logger.log("[Bluestacks 5] pgrep timed out checking for a running instance")
+                    return False
                 # Parse output for our instance
                 return self.internal_name is not None and self.internal_name in (res.stdout or "")
             except Exception:
@@ -531,13 +529,16 @@ class BlueStacksEmulatorController(AdbBasedController):
         # Windows: tasklist CSV parsing
         title = self.instance_name
         try:
-            res = subprocess.run(
-                'tasklist /v /fi "IMAGENAME eq HD-Player.exe" /fo csv',
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
+            res = run_command(
+                ["tasklist", "/v", "/fi", "IMAGENAME eq HD-Player.exe", "/fo", "csv"],
+                timeout=15,
             )
+            if res.returncode == -1:
+                # run() signals a timeout with returncode -1 instead of raising.
+                # Liveness is then unknown, not "stopped", so log it rather than
+                # letting restart()'s stop-wait loop fall through silently.
+                self.logger.log(f"[Bluestacks 5] tasklist timed out checking for '{title}'")
+                return False
             if res.returncode != 0 or not res.stdout:
                 return False
             reader = csv.reader(io.StringIO(res.stdout))
@@ -584,13 +585,13 @@ class BlueStacksEmulatorController(AdbBasedController):
         else:
             # Windows: Stop using window title match
             title = display_name or self.instance_name
-            subprocess.run(
-                f'taskkill /fi "WINDOWTITLE eq {title}" /IM "HD-Player.exe" /F',
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
+            res = run_command(
+                ["taskkill", "/fi", f"WINDOWTITLE eq {title}", "/IM", "HD-Player.exe", "/F"],
+                timeout=15,
             )
+            if res.returncode == -1:
+                # Liveness is unknown; restart()'s stop-wait loop re-checks anyway.
+                self.logger.log(f"[Bluestacks 5] taskkill timed out for '{title}'")
 
     def restart(self) -> bool:
         start_ts = time.time()
