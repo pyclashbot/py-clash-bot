@@ -54,6 +54,7 @@ from pyclashbot.bot.state_detect import (
     check_if_on_war_boot,
 )
 from pyclashbot.detection.image_rec import find_image
+from pyclashbot.emulators.base import EmulatorNotReadyError
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
@@ -413,6 +414,10 @@ def select_mode(emulator, mode: str, logger: Logger | None = None):
             # subsequent actions (like pressing Start) work reliably.
             try:
                 emulator.click(CLASH_MAIN_MENU_DEADSPACE_COORD[0], CLASH_MAIN_MENU_DEADSPACE_COORD[1])
+            except EmulatorNotReadyError:
+                # A wedged adb is not a click that missed -- let it escalate to the
+                # worker's restart net instead of pretending the click landed.
+                raise
             except Exception:
                 # Don't fail if the click doesn't work; best-effort only.
                 pass

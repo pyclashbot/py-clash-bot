@@ -14,6 +14,7 @@ from pyclashbot.emulators.adb_base import AdbBasedController
 from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
 from pyclashbot.utils.platform import Platform, is_macos
 from pyclashbot.utils.subprocess import run as run_command
+from pyclashbot.utils.subprocess import timed_out
 
 DEBUG = False
 
@@ -517,8 +518,8 @@ class BlueStacksEmulatorController(AdbBasedController):
             # Check for BlueStacks process with instance argument
             try:
                 res = run_command(["pgrep", "-fl", "BlueStacks"], timeout=10)
-                if res.returncode == -1:
-                    # run() signals a timeout with returncode -1 instead of raising.
+                if timed_out(res):
+                    # run() signals a timeout via timed_out() instead of raising.
                     # Liveness is *unknown*, which is not the same as "stopped":
                     # restart()'s stop-wait loop reads False as stopped and would
                     # launch a second instance on top of a still-running one.
@@ -541,8 +542,8 @@ class BlueStacksEmulatorController(AdbBasedController):
                 ["tasklist", "/v", "/fi", "IMAGENAME eq HD-Player.exe", "/fo", "csv"],
                 timeout=15,
             )
-            if res.returncode == -1:
-                # run() signals a timeout with returncode -1 instead of raising.
+            if timed_out(res):
+                # run() signals a timeout via timed_out() instead of raising.
                 # Liveness is *unknown*, not "stopped" -- see the pgrep branch above.
                 self.logger.change_status(f"[Bluestacks 5] tasklist timed out checking for '{title}'")
                 raise EmulatorNotReadyError(f"BlueStacks 5 could not determine whether '{title}' is running")
@@ -599,10 +600,12 @@ class BlueStacksEmulatorController(AdbBasedController):
                 ["taskkill", "/fi", f"WINDOWTITLE eq {title}", "/IM", "HD-Player.exe", "/F"],
                 timeout=15,
             )
-            if res.returncode == -1:
-                # The kill didn't complete in time, not that the instance stopped.
-                # Safe to log and return: restart()'s stop-wait loop re-checks
-                # liveness and raises via stop_deadline if it is still up.
+            if timed_out(res):
+                # The kill didn't complete in time, not that the instance
+                # stopped. Bounded log-and-return -- callers either re-check
+                # liveness on a deadline (restart()) or have no loop at all
+                # (BaseEmulatorController.__del__), where returning is the only
+                # move.
                 self.logger.log(f"[Bluestacks 5] taskkill timed out for '{title}'")
 
     def restart(self) -> bool:

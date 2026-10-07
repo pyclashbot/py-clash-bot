@@ -13,6 +13,7 @@ from pyclashbot.emulators.base import (
     EmulatorNotReadyError,
 )
 from pyclashbot.utils.subprocess import run as run_command
+from pyclashbot.utils.subprocess import timed_out
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,8 @@ class AdbBasedController(BaseEmulatorController, ABC):
             result = run_command(argv, timeout=15)
         except OSError:
             return []  # ADB not available
+        if timed_out(result):
+            raise EmulatorNotReadyError("adb devices command timed out after 15s")
         if result.returncode != 0:
             return []
         devices = []
@@ -147,6 +150,14 @@ class AdbBasedController(BaseEmulatorController, ABC):
         logger.debug("Executing ADB: %s", argv)
 
         result = run_command(argv, timeout=30, text=not binary_output, env=self.adb_env)
+
+        if timed_out(result):
+            # A wedged adb is an unreachable emulator, not merely a failed
+            # command. Raise here so callers misread neither empty stdout
+            # ("app not installed") nor a missing device ("no ADB devices").
+            # run() has already killed and reaped the command, so nothing
+            # leaks either way.
+            raise EmulatorNotReadyError(f"adb command timed out after 30s: {command}")
 
         if binary_output:
             logger.debug("ADB result: rc=%d, stdout=%d bytes", result.returncode, len(result.stdout or b""))

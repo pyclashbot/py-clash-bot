@@ -42,6 +42,7 @@ from pyclashbot.bot.worker import WorkerProcess, stop_worker_process
 from pyclashbot.emulators import EmulatorType
 from pyclashbot.emulators.adb import AdbController
 from pyclashbot.emulators.adb_base import validate_device_serial
+from pyclashbot.emulators.base import EmulatorNotReadyError
 from pyclashbot.emulators.bluestacks import BlueStacksEmulatorController
 from pyclashbot.emulators.google_play import GooglePlayEmulatorController
 from pyclashbot.interface.enums import UIField, has_start_ready_job
@@ -53,6 +54,7 @@ from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_n
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import get_recordings_dir, is_macos
 from pyclashbot.utils.subprocess import run as run_command
+from pyclashbot.utils.subprocess import timed_out
 
 initialize_pylogging()
 
@@ -198,7 +200,12 @@ def start_button_event(
     # ADB - serial required
     if job_dictionary.get("emulator") == EmulatorType.ADB:
         device_serial = job_dictionary.get(UIField.ADB_SERIAL.value)
-        if not device_serial or not AdbController.is_device_connected(device_serial):
+        try:
+            device_connected = AdbController.is_device_connected(device_serial)
+        except EmulatorNotReadyError as e:
+            logger.change_status(f"Start cancelled: {e}")
+            return None
+        if not device_serial or not device_connected:
             logger.change_status(f"Start cancelled: ADB device '{device_serial}' not connected.")
             return None
 
@@ -459,6 +466,9 @@ class BotApplication:
         self.logger.change_status(f"Running ADB command: {' '.join(argv)}")
         try:
             result = run_command(argv, timeout=10)
+            if timed_out(result):
+                self.logger.change_status(f"ADB command timed out: {' '.join(argv)}")
+                return
             if result.returncode == 0:
                 self.logger.change_status(f"Success: {result.stdout.strip() if result.stdout else '(No output)'}")
             else:
