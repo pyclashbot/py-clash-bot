@@ -15,7 +15,7 @@ from pyclashbot.bot.fight import (
 from pyclashbot.bot.nav import select_mode
 from pyclashbot.bot.recording_archiver import maybe_archive_recordings
 from pyclashbot.bot.shop_daily_state import shop_daily_state
-from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected
+from pyclashbot.bot.state_detect import check_if_battle_mode_is_selected, check_if_on_clash_main_menu
 from pyclashbot.bot.upgrade_princess_state import upgrade_princess_state
 from pyclashbot.bot.upgrade_state import upgrade_cards_state
 from pyclashbot.bot.war import war_state
@@ -284,7 +284,7 @@ def state_tree(
     if state == "restart":
         logger.change_status("Restarting emulator...")
         logger.add_restart_after_failure()
-        emulator.restart()
+        emulator.restart(ready=check_if_on_clash_main_menu)
         return state_order.next_state(state)
 
     if state == "switch_account":

@@ -16,6 +16,7 @@ class EmulatorType(StrEnum):
     GOOGLE_PLAY = "Google Play Games"
     BLUESTACKS = "BlueStacks 5"
     ADB = "ADB Device"
+    EMUCTL = "emuctl"
 
 
 def get_emulator_registry() -> dict[EmulatorType, type["BaseEmulatorController"]]:
@@ -42,6 +43,13 @@ def get_emulator_registry() -> dict[EmulatorType, type["BaseEmulatorController"]
 
         registry[EmulatorType.GOOGLE_PLAY] = GooglePlayEmulatorController
         registry[EmulatorType.MEMU] = MemuEmulatorController
+
+    # emuctl is an optional backend (lazy-imported by the adapter); registered
+    # last to preserve the existing default order. Its platform gate is env-based
+    # until the UI grows a proper UIField round-trip — see emuctl.py.
+    from pyclashbot.emulators.emuctl import EmuctlController
+
+    registry[EmulatorType.EMUCTL] = EmuctlController
 
     return registry
 

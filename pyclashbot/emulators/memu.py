@@ -20,6 +20,7 @@ from pyclashbot.emulators.base import (
     CLASH_ROYALE_PACKAGE,
     BaseEmulatorController,
     EmulatorNotReadyError,
+    ReadyCheck,
 )
 from pyclashbot.utils.platform import Platform
 
@@ -1025,11 +1026,13 @@ class MemuEmulatorController(BaseEmulatorController):
 
         return True
 
-    def restart(self) -> bool:
+    def restart(self, *, ready: ReadyCheck | None = None) -> bool:
         """Restart the emulator with full configuration and app startup sequence.
 
         Returns True once Clash Royale is on the main menu; raises
         EmulatorNotReadyError on any not-ready failure (never returns False).
+        The optional ``ready`` predicate is ignored here: this backend owns its
+        full VM boot + menu wait.
         """
         debug_restart = DEBUG_CONFIGURATION.get("restart", False)
         debug_vm_ops = DEBUG_CONFIGURATION.get("vm_operations", False)
