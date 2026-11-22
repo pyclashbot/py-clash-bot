@@ -27,8 +27,8 @@ class _FakeEmulator:
     def screenshot(self) -> np.ndarray:
         return self.image
 
-    def click(self, x: int, y: int) -> None:
-        self.clicks.append((x, y))
+    def click(self, x_coord: int, y_coord: int) -> None:
+        self.clicks.append((x_coord, y_coord))
 
 
 def test_popup_matcher_uses_reference_image(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -66,6 +66,21 @@ def test_wait_for_battle_start_raises_on_delayed_refusal(monkeypatch: pytest.Mon
 
     with pytest.raises(BattleDeckIncompleteError):
         nav.wait_for_battle_start(_FakeEmulator(), Logger(stats=None, timed=False), timeout=1)
+
+
+def test_wait_for_battle_start_throttles_popup_checks(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The popup matcher is capped at ~1 Hz; the battle check still polls normally."""
+    checks: list[int] = []
+
+    def _no_popup(_emulator: object) -> bool:
+        checks.append(1)
+        return False
+
+    monkeypatch.setattr(nav, "check_for_incomplete_deck_popup", _no_popup)
+    monkeypatch.setattr(nav, "check_if_in_battle", lambda _emulator: False)
+
+    assert nav.wait_for_battle_start(_FakeEmulator(), Logger(stats=None, timed=False), timeout=0.2) is False
+    assert len(checks) == 1  # immediate check only; interval is 1 s
 
 
 def test_start_fight_raises_on_deck_refusal(monkeypatch: pytest.MonkeyPatch) -> None:

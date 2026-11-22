@@ -59,9 +59,10 @@ from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
+INCOMPLETE_DECK_POPUP_CHECK_INTERVAL_S = 1.0
 
 
-def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
+def wait_for_battle_start(emulator, logger, timeout: float = 120) -> bool:
     """Waits for any battle to start (1v1 or 2v2).
 
     Args:
@@ -80,6 +81,7 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
     """
     start_time = time.time()
     last_logged_second = -1
+    next_popup_check = time.monotonic()  # check immediately, then ~1 Hz
     while time.time() - start_time < timeout:
         elapsed_second = int(time.time() - start_time)
         if elapsed_second != last_logged_second:
@@ -93,10 +95,16 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         # use the recorder helpers directly in a temporary script or
         # enable a local-only change — do not commit such changes.
 
-        if check_for_incomplete_deck_popup(emulator):
-            logger.change_status("Battle Deck incomplete — fill 8/8")
-            logger.log("The game refused the match: the Battle Deck needs 8 cards.")
-            raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
+        # check_if_in_battle already takes a screenshot each poll. The popup
+        # matcher costs another screenshot + template search, so cap it at ~1 Hz
+        # across the matchmaking wait instead of running it at full loop rate.
+        now_monotonic = time.monotonic()
+        if now_monotonic >= next_popup_check:
+            next_popup_check = now_monotonic + INCOMPLETE_DECK_POPUP_CHECK_INTERVAL_S
+            if check_for_incomplete_deck_popup(emulator):
+                logger.change_status("Battle Deck incomplete — fill 8/8")
+                logger.log("The game refused the match: the Battle Deck needs 8 cards.")
+                raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
 
         battle_result = check_if_in_battle(emulator)
 
