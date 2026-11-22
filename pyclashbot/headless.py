@@ -160,9 +160,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[headless] signal {signum} received again, hard exit", flush=True)
         os._exit(130)
 
-    signal.signal(signal.SIGINT, _request_shutdown)
-    signal.signal(signal.SIGTERM, _request_shutdown)
-
     stop_drain = threading.Event()
     drain = threading.Thread(target=_drain_stats, args=(stats, stop_drain), daemon=True)
     drain.start()
@@ -171,7 +168,11 @@ def main(argv: list[str] | None = None) -> int:
         f"[headless] emulator={jobs['emulator']} serial={args.adb_serial} log={args.log_path}",
         flush=True,
     )
+    # Start before installing the parent handlers: a forked child inherits them
+    # otherwise, and only the parent should terminate/join the worker.
     worker.start()
+    signal.signal(signal.SIGINT, _request_shutdown)
+    signal.signal(signal.SIGTERM, _request_shutdown)
     try:
         while worker.is_alive():
             worker.join(timeout=0.5)

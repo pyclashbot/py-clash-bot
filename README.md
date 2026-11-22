@@ -78,6 +78,10 @@ python -m pyclashbot.headless --emulator emuctl --adb-serial <ip:port> --adb-pat
 `--adb-server-port` (or `$ADB_SERVER_PORT`) for a non-default server. The
 emuctl extra is optional: Windows and macOS GUI installs do not need it.
 
+The bot starts from an installed, signed-in game that is already past onboarding
+(age gate, tutorial) and sitting on the main menu with a deck. There is no
+onboarding handling: otherwise startup times out (~240s) and exits non-zero.
+
 ## Demo
 
 <img src="assets/demo-game.gif" width="49%" alt="Game Demo"/><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>

@@ -1,3 +1,4 @@
+import signal
 import traceback
 from multiprocessing import Process, Queue
 from multiprocessing.synchronize import Event
@@ -44,7 +45,7 @@ class WorkerProcess(Process):
 
         controller_class = registry[emulator_selection]
 
-        emu = None
+        emu: Any = None
         try:
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
@@ -171,23 +172,35 @@ class WorkerProcess(Process):
 
         return True
 
+    @staticmethod
+    def _exit_on_signal(signum: int, _frame: object) -> None:
+        """Turn SIGINT/SIGTERM into a clean SystemExit so ``finally`` can restore state."""
+        raise SystemExit(128 + signum)
+
     def run(self) -> None:
         """Main worker process execution.
 
         Exits non-zero when setup fails or the loop stops on ``fail`` / five
         consecutive restarts, so a supervisor (the headless entry point) can
-        report a failed run.
+        report a failed run. Always stops the emulator on the way out so
+        adapters can restore device state (e.g. ``wm`` overrides).
         """
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
 
         # Create logger that sends stats through queue
         logger = ProcessLogger(self.stats_queue)
+        emulator = None
 
         try:
             emulator = self._setup_emulator(self.jobs, logger)
             if emulator is None:
                 raise SystemExit(1)
+
+            # The parent installs its handlers after start(), so the child gets
+            # its own; a group signal then still runs the cleanup below.
+            signal.signal(signal.SIGINT, self._exit_on_signal)
+            signal.signal(signal.SIGTERM, self._exit_on_signal)
 
             if not self._run_bot_loop(emulator, self.jobs, logger):
                 raise SystemExit(1)
@@ -198,6 +211,12 @@ class WorkerProcess(Process):
             traceback.print_exc()
             raise SystemExit(1) from err
         finally:
+            if emulator is not None:
+                try:
+                    emulator.stop()
+                except Exception:
+                    logger.error("Failed to stop the emulator cleanly")
+                    traceback.print_exc()
             logger.change_status("Bot stopped")
 
 
@@ -238,7 +257,11 @@ def stop_worker_process(
         shutdown_event.set()
     if process is None or not process.is_alive():
         return
-    process.terminate()  # SIGTERM / TerminateProcess
+    try:
+        process.terminate()  # SIGTERM / TerminateProcess
+    except (AttributeError, OSError):
+        # Not started (no popen) or already gone; nothing left to stop.
+        return
     process.join(timeout=graceful_timeout)
     if process.is_alive():
         process.kill()  # SIGKILL

@@ -192,19 +192,37 @@ def test_run_bot_loop_reports_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_worker_run_exits_nonzero_when_loop_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """run() raises SystemExit(1) so the parent process reports a failed run."""
+    """run() exits non-zero and still stops the emulator (restores device state)."""
     from multiprocessing import Event, Queue
 
     from pyclashbot.bot import worker as worker_module
 
+    class _FakeEmulator:
+        stopped = False
+
+        def stop(self) -> None:
+            type(self).stopped = True
+
+    fake = _FakeEmulator()
     worker = worker_module.WorkerProcess({}, Queue(), Event(), str(tmp_path / "worker.log"))
-    monkeypatch.setattr(worker, "_setup_emulator", lambda *args: object())
+    monkeypatch.setattr(worker, "_setup_emulator", lambda *args: fake)
     monkeypatch.setattr(worker, "_run_bot_loop", lambda *args: False)
 
     with pytest.raises(SystemExit) as excinfo:
         worker.run()
 
     assert excinfo.value.code == 1
+    assert fake.stopped
+
+
+def test_worker_signal_handler_exits_with_signal_code() -> None:
+    """SIGTERM becomes SystemExit so run()'s finally can stop the emulator."""
+    from pyclashbot.bot import worker as worker_module
+
+    with pytest.raises(SystemExit) as excinfo:
+        worker_module.WorkerProcess._exit_on_signal(15, None)
+
+    assert excinfo.value.code == 143
 
 
 def test_build_jobs_rejects_unknown_override(tmp_path: Path) -> None:
