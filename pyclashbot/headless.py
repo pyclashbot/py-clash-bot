@@ -2,7 +2,7 @@
 
 Usage::
 
-    python -m pyclashbot.headless --adb-serial 127.0.0.1:5555
+    python -m pyclashbot.headless --adb-serial 127.0.0.1:5555 --adb-path /opt/platform-tools/adb
 
 This exists so the bot can run on a headless Linux host: the GUI entry point imports
 ``tkinter``/``ttkbootstrap`` and needs an X display, while the bot core does not. The
@@ -32,6 +32,14 @@ from pyclashbot.emulators import EmulatorType
 from pyclashbot.interface.enums import UIField
 
 
+def _env_int(name: str) -> int | None:
+    """Read an optional integer environment variable."""
+    value = os.environ.get(name)
+    if value is None or not value.strip():
+        return None
+    return int(value)
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -48,6 +56,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--adb-serial",
         default=os.environ.get("ADB_SERIAL"),
         help="ADB serial, e.g. 127.0.0.1:5555 (default: $ADB_SERIAL).",
+    )
+    parser.add_argument(
+        "--adb-path",
+        default=os.environ.get("ADB_PATH"),
+        help="Path to the adb executable (default: $ADB_PATH, else emuctl's discovery).",
+    )
+    parser.add_argument(
+        "--adb-server-port",
+        type=int,
+        default=_env_int("ADB_SERVER_PORT"),
+        help="ADB server port for --adb-path (default: $ADB_SERVER_PORT, else adb's 5037).",
     )
     parser.add_argument(
         "--jobs",
@@ -80,6 +99,8 @@ def build_jobs(args: argparse.Namespace) -> dict[str, Any]:
     jobs: dict[str, Any] = {
         "emulator": emulator,
         UIField.ADB_SERIAL.value: args.adb_serial,
+        "adb_path": args.adb_path,
+        "adb_server_port": args.adb_server_port,
         UIField.CLASSIC_1V1_USER_TOGGLE.value: args.classic_1v1,
         UIField.RECORD_FIGHTS_TOGGLE.value: args.record_fights,
     }

@@ -23,6 +23,19 @@ wheels = [
 ]
 
 [[package]]
+name = "anyio"
+version = "4.16.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "idna" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a1/98/7e457a3b014976887a050561955c0b76e1e7e2d6e27b78ecef2ef80518f2/anyio-4.16.0.tar.gz", hash = "sha256:59bb03251907983d1603d27c3087ddb1e93299ea2163adcdba37899a4fb12ffb", size = 310971, upload-time = "2026-11-01T11:20:07.282Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a9/16/7757fb84c819accc7d7e9af5291b261e4abb8627ee040f99e7d35ef2457a/anyio-4.16.0-py3-none-any.whl", hash = "sha256:c66ae634e0b8228396b801741beb3294326d4b6102f7bba4041c0dfb58c29026", size = 134521, upload-time = "2026-11-01T11:20:05.59Z" },
+]
+
+[[package]]
 name = "cabarchive"
 version = "0.2.4"
 source = { registry = "https://pypi.org/simple" }
@@ -105,6 +118,14 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/0d/dd/1bec4c5ddb504ca60fc29472f3d27e8d4da1257a854e1d96742f15c1d02d/distlib-0.3.9.tar.gz", hash = "sha256:a60f20dea646b8a33f3e7772f74dc0b2d0772d2837ee1342a00645c81edf9403", size = 613923, upload-time = "2024-10-09T18:35:47.551Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/91/a1/cf2472db20f7ce4a6be1253a81cfdf85ad9c7885ffbed7047fb72c24cf87/distlib-0.3.9-py2.py3-none-any.whl", hash = "sha256:47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87", size = 468973, upload-time = "2024-10-09T18:35:44.272Z" },
+]
+
+[[package]]
+name = "emuctl"
+version = "0.1.0"
+source = { git = "https://github.com/pyclashbot/emuctl?rev=0f728d8c056f57a29b5826977ab15a79e835e017#0f728d8c056f57a29b5826977ab15a79e835e017" }
+dependencies = [
+    { name = "anyio" },
 ]
 
 [[package]]
@@ -316,6 +337,11 @@ dependencies = [
     { name = "ttkbootstrap" },
 ]
 
+[package.optional-dependencies]
+headless = [
+    { name = "emuctl" },
+]
+
 [package.dev-dependencies]
 build = [
     { name = "cx-freeze", marker = "sys_platform == 'win32'" },
@@ -332,6 +358,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "emuctl", marker = "extra == 'headless'", git = "https://github.com/pyclashbot/emuctl?rev=0f728d8c056f57a29b5826977ab15a79e835e017" },
     { name = "numpy", specifier = ">=2.2.1,<3" },
     { name = "opencv-python", specifier = ">=4.9.0,<5" },
     { name = "pillow", specifier = ">=12.2.0,<13.0.0" },
@@ -340,6 +367,7 @@ requires-dist = [
     { name = "pypresence", specifier = ">=4.3.0,<5" },
     { name = "ttkbootstrap", specifier = ">=1.20.0,<1.21" },
 ]
+provides-extras = ["headless"]
 
 [package.metadata.requires-dev]
 build = [
@@ -537,6 +565,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/98/0f/a2d6a5fc9d0786cbeb3c200786da4e18c203589be3984bb5def83ca92320/ty-0.0.49-py3-none-win32.whl", hash = "sha256:7186af5ca9829d1f5d8916bcf767b8e819bfbf61b1b8ec843bb3fc699cb502e1", size = 11100789, upload-time = "2026-06-12T03:07:59.092Z" },
     { url = "https://files.pythonhosted.org/packages/d0/9d/473ac8bc57b5a2d121da893bf9dd74a118efb19a01d711df1a6e397f05cc/ty-0.0.49-py3-none-win_amd64.whl", hash = "sha256:ae2142fc126a01effcca0c222908b0e6654b5ba1266d4e4d406e4866aef8e1d1", size = 12204644, upload-time = "2026-06-12T03:08:04.327Z" },
     { url = "https://files.pythonhosted.org/packages/ef/a2/8959249da951ba3977fee20e688d28678b8a1d30a9ed4464228a85d45853/ty-0.0.49-py3-none-win_arm64.whl", hash = "sha256:75d5e2e7649765f31f4bed6c8adb149a75b18edd3fa6336dac4d0efc1a66466f", size = 11558965, upload-time = "2026-06-12T03:08:23.012Z" },
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.16.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/cc/6253133b5bb138fc3306cebfbda2c520f545d36b5be2c7255cc528bb45d6/typing_extensions-4.16.0.tar.gz", hash = "sha256:dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5", size = 113555, upload-time = "2026-07-02T08:40:05.92Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl", hash = "sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8", size = 45571, upload-time = "2026-07-02T08:40:04.659Z" },
 ]
 
 [[package]]

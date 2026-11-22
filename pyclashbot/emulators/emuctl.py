@@ -91,27 +91,41 @@ class _Facade(Protocol):
     def close(self) -> None: ...
 
 
-def _connect_default(target: str) -> tuple[_Facade, bool]:
+def _connect_default(
+    target: str,
+    *,
+    adb_path: str | None = None,
+    adb_server_port: int | None = None,
+) -> tuple[_Facade, bool]:
     """Connect through emuctl's sync facade, asking for display geometry.
 
     Returns ``(facade, display_configured)``. ``adb`` does not declare
-    ``CONFIGURE``, so the expected path is a typed ``FeatureNotSupportedError``
-    from ``connect_sync(config=...)``; we reconnect plain and let the quarantined
-    ``wm`` fallback install the frame. Any other typed emuctl error propagates to
-    the worker's existing handler.
+    ``CONFIGURE`` (the amendment is pending), so the expected failure is a typed
+    ``FeatureNotSupportedError`` from ``connect_sync(config=...)``; we reconnect
+    plain and let the quarantined ``wm`` fallback install the frame. Any other
+    typed emuctl error propagates to the worker's existing handler.
     """
     from emuctl import (  # optional dependency, lazy by design
+        AdbConfig,
         DisplayConfig,
         EmuctlConfig,
         FeatureNotSupportedError,
         connect_sync,
     )
 
-    config = EmuctlConfig(display=DisplayConfig(width=REQUIRED_WIDTH, height=REQUIRED_HEIGHT, dpi=REQUIRED_DENSITY))
+    adb_config = AdbConfig(
+        path=adb_path,
+        port=adb_server_port if adb_server_port is not None else 5037,
+    )
+    config = EmuctlConfig(
+        adb=adb_config,
+        display=DisplayConfig(width=REQUIRED_WIDTH, height=REQUIRED_HEIGHT, dpi=REQUIRED_DENSITY),
+    )
     try:
         facade = connect_sync(target, config=config)
     except FeatureNotSupportedError:
-        return connect_sync(target), False
+        # Keep the caller's adb path/port; only the display request is refused.
+        return connect_sync(target, config=EmuctlConfig(adb=adb_config)), False
     facade.configure()  # apply the non-None display section bound at connect
     return facade, True
 
@@ -139,14 +153,16 @@ class _WmGeometry:
     on the headless POC (compare a reference frame).
     """
 
-    def __init__(self, adb_path: str, serial: str) -> None:
+    def __init__(self, adb_path: str, serial: str, adb_server_port: int | None = None) -> None:
         self._adb_path = adb_path
         self._serial = serial
+        self._adb_server_port = adb_server_port
         self._original_size: str | None = None
         self._original_density: str | None = None
 
     def _adb(self, *args: str) -> subprocess.CompletedProcess[str]:
-        return _run_adb(self._adb_path, "-s", self._serial, *args)
+        prefix = ("-P", str(self._adb_server_port)) if self._adb_server_port is not None else ()
+        return _run_adb(self._adb_path, *prefix, "-s", self._serial, *args)
 
     def _current_size(self) -> str | None:
         result = self._adb("shell", "wm", "size")
@@ -204,7 +220,8 @@ class EmuctlController(BaseEmulatorController):
         device_serial: str | None = None,
         *,
         facade: _Facade | None = None,
-        adb_path: str = "adb",
+        adb_path: str | None = None,
+        adb_server_port: int | None = None,
         ready_timeout: float = DEFAULT_READY_TIMEOUT_SECONDS,
     ) -> None:
         self.logger = logger
@@ -218,7 +235,11 @@ class EmuctlController(BaseEmulatorController):
 
         self.logger.change_status(f"Connecting to emuctl target {self.target}...")
         if facade is None:
-            self._facade, display_configured = _connect_default(self.target)
+            self._facade, display_configured = _connect_default(
+                self.target,
+                adb_path=adb_path,
+                adb_server_port=adb_server_port,
+            )
         else:
             self._facade = facade
             display_configured = False
@@ -226,7 +247,7 @@ class EmuctlController(BaseEmulatorController):
 
         # 419x633 is the only supported frame; there is no consumer-side scaling.
         serial = self.target.split(":", 1)[1]
-        self._wm = _WmGeometry(adb_path, serial)
+        self._wm = _WmGeometry(adb_path or "adb", serial, adb_server_port)
         if display_configured:
             self.logger.log("Display geometry configured through emuctl.")
         elif _declares_configure(self._facade):
@@ -260,16 +281,11 @@ class EmuctlController(BaseEmulatorController):
     def restart(self, *, ready: ReadyCheck | None = None) -> bool:
         """Launch Clash and wait for readiness (never emuctl's BOOT-gated restart).
 
-        One attempt: ``start_app`` plus a bounded predicate. The bot passes its
-        main-menu detector via ``ready``; without one, fall back to a cheap
-        transport-liveness probe so the adapter has no bot-state dependency.
-        Raises the *bot's* ``EmulatorNotReadyError`` on timeout, never returns
-        False.
-
-        Gap to document for the POC: emuctl's adb ``start_app`` runs ``monkey``
-        directly and does not force-stop the package first (verified against the
-        emuctl sync-facade build). We do not reach for vendor commands; add the
-        force-stop there or accept relaunch semantics.
+        One attempt: ``start_app`` plus a bounded caller-supplied predicate. The
+        bot passes its main-menu detector via ``ready``; without one, fall back to
+        a cheap transport-liveness probe so the adapter has no bot-state
+        dependency. Raises the *bot's* ``EmulatorNotReadyError`` on timeout, never
+        returns False.
         """
         start = time.monotonic()
         self.logger.change_status("Launching Clash Royale via emuctl...")

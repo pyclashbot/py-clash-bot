@@ -46,6 +46,54 @@ def test_build_jobs_can_select_builtin_adb() -> None:
     assert jobs["emulator"] is EmulatorType.ADB
 
 
+def test_parse_args_reads_adb_path_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """$ADB_PATH and $ADB_SERVER_PORT supply the adb binary defaults."""
+    monkeypatch.setenv("ADB_PATH", "/opt/platform-tools/adb")
+    monkeypatch.setenv("ADB_SERVER_PORT", "5038")
+    args = parse_args(["--adb-serial", "127.0.0.1:5555"])
+    assert args.adb_path == "/opt/platform-tools/adb"
+    assert args.adb_server_port == 5038
+    assert parse_args(["--adb-serial", "x:1", "--adb-path", "/tmp/adb"]).adb_path == "/tmp/adb"
+
+
+def test_build_jobs_carries_adb_path_and_port() -> None:
+    """The adb binary settings travel in the worker jobs dict."""
+    jobs = build_jobs(
+        parse_args(["--adb-serial", "127.0.0.1:5555", "--adb-path", "/tmp/adb", "--adb-server-port", "5038"])
+    )
+    assert jobs["adb_path"] == "/tmp/adb"
+    assert jobs["adb_server_port"] == 5038
+
+
+def test_worker_passes_adb_path_to_emuctl(monkeypatch: pytest.MonkeyPatch) -> None:
+    """WorkerProcess forwards the adb settings when constructing EmuctlController."""
+    from pyclashbot.bot import worker as worker_module
+
+    captured: dict[str, object] = {}
+
+    class _FakeController:
+        def __init__(self, **kwargs: object) -> None:
+            captured.update(kwargs)
+
+        def restart(self) -> bool:
+            return True
+
+    monkeypatch.setattr(worker_module, "get_emulator_registry", lambda: {EmulatorType.EMUCTL: _FakeController})
+    jobs = build_jobs(
+        parse_args(["--adb-serial", "127.0.0.1:5555", "--adb-path", "/tmp/adb", "--adb-server-port", "5038"])
+    )
+    worker = worker_module.WorkerProcess(jobs, None, None, "unused.log")  # ty: ignore[invalid-argument-type]
+    logger = object()
+
+    assert worker._setup_emulator(jobs, logger) is not None  # ty: ignore[invalid-argument-type]
+    assert captured.pop("logger") is logger
+    assert captured == {
+        "device_serial": "127.0.0.1:5555",
+        "adb_path": "/tmp/adb",
+        "adb_server_port": 5038,
+    }
+
+
 def test_build_jobs_applies_overrides(tmp_path: Path) -> None:
     """A --jobs file overrides individual toggles."""
     overrides = tmp_path / "jobs.json"

@@ -78,7 +78,12 @@ class WorkerProcess(Process):
             elif emulator_selection == EmulatorType.EMUCTL:
                 print("Creating emuctl controller")
                 emuctl_serial = jobs.get(UIField.ADB_SERIAL.value) or None
-                emu = controller_class(logger=logger, device_serial=emuctl_serial)
+                emu = controller_class(
+                    logger=logger,
+                    device_serial=emuctl_serial,
+                    adb_path=jobs.get("adb_path"),
+                    adb_server_port=jobs.get("adb_server_port"),
+                )
 
             else:
                 return None

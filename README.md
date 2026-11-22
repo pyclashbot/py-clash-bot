@@ -62,6 +62,21 @@ Choose one:
 
 Default settings work for most users. Only enable "Show advanced settings" to change render mode if troubleshooting.
 
+### Headless Linux
+
+The bot core runs without a GUI or X display. Install the optional emuctl
+backend from a checkout, point it at an already-running `adb` device, and run
+the headless entry point:
+
+```bash
+pip install -e .[headless]
+python -m pyclashbot.headless --emulator emuctl --adb-serial <ip:port> --adb-path <adb>
+```
+
+`--adb-path` (or `$ADB_PATH`) selects a specific adb binary, with
+`--adb-server-port` (or `$ADB_SERVER_PORT`) for a non-default server. The
+emuctl extra is optional: Windows and macOS GUI installs do not need it.
+
 ## Demo
 
 <img src="assets/demo-game.gif" width="49%" alt="Game Demo"/><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>
