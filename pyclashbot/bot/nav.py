@@ -2,6 +2,7 @@ import random
 import time
 from typing import Literal
 
+from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
 from pyclashbot.bot.coords import (
     BATTLE_LOG_BUTTON,
     BATTLE_WAIT_DEADSPACE_COORD,
@@ -39,6 +40,7 @@ from pyclashbot.bot.find import find_fight_mode_icon, find_post_battle_button
 from pyclashbot.bot.state_detect import (
     check_for_battle_days_started_popup,
     check_for_final_results_page,
+    check_for_incomplete_deck_popup,
     check_for_reward_choice_screen,
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -71,6 +73,10 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
     Returns:
     -------
         bool: True if battle started, False if timed out.
+
+    Raises:
+        BattleDeckIncompleteError: If the game refuses the match because the
+            Battle Deck does not have 8 cards.
     """
     start_time = time.time()
     last_logged_second = -1
@@ -86,6 +92,11 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         # the production flow. If you need screenshots for debugging,
         # use the recorder helpers directly in a temporary script or
         # enable a local-only change — do not commit such changes.
+
+        if check_for_incomplete_deck_popup(emulator):
+            logger.change_status("Battle Deck incomplete — fill 8/8")
+            logger.log("The game refused the match: the Battle Deck needs 8 cards.")
+            raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
 
         battle_result = check_if_in_battle(emulator)
 

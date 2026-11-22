@@ -146,6 +146,12 @@ class WorkerProcess(Process):
                 else:
                     consecutive_restarts = 0  # Reset counter on successful state
 
+                # A configuration refusal (e.g. incomplete battle deck) is a clean
+                # stop, not a battle failure that should count toward restarts.
+                if new_state == "stop":
+                    logger.log("State machine requested a config stop; exiting non-zero.")
+                    return False
+
                 # Check for error states that should stop execution
                 if new_state in ["fail", None]:
                     logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")

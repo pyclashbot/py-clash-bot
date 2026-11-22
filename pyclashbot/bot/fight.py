@@ -5,6 +5,7 @@ import random
 import time
 from typing import Literal
 
+from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
@@ -37,6 +38,7 @@ from pyclashbot.bot.recorder import (
     stop_fight_capture,
 )
 from pyclashbot.bot.state_detect import (
+    check_for_incomplete_deck_popup,
     check_if_battle_has_ended,
     check_if_in_battle,
     check_if_on_clash_main_menu,
@@ -48,6 +50,7 @@ from pyclashbot.utils.versioning import __version__
 
 ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
 ABILITY_TRIGGER_DELAY_S = 3
+INCOMPLETE_DECK_POPUP_DELAY_S = 0.5
 
 
 def _maybe_start_fight_recording(
@@ -122,7 +125,11 @@ def start_fight(emulator, logger, mode) -> bool:
         mode: Fight mode - must be one of "Classic 1v1", "Classic 2v2", or "Trophy Road"
 
     Returns:
-        bool: True if fight started successfully, False otherwise
+        bool: True if fight started successfully, False otherwise.
+
+    Raises:
+        BattleDeckIncompleteError: If the game refuses the match because the
+            Battle Deck does not have 8 cards.
     """
     # Validate mode parameter
     logger.log(f'Input mode type: "{type(mode)}"')
@@ -153,6 +160,15 @@ def start_fight(emulator, logger, mode) -> bool:
         time.sleep(3)
         emulator.click(QUICKMATCH_POPUP_BUTTON_COORD[0], QUICKMATCH_POPUP_BUTTON_COORD[1])
         logger.log(f"Clicked Quickmatch button at {QUICKMATCH_POPUP_BUTTON_COORD}")
+
+    # The game can refuse the match ("You need to have 8 cards in your Battle
+    # Deck!") while staying on the main menu. Treat it as a configuration stop,
+    # not a battle failure that triggers emulator restarts.
+    time.sleep(INCOMPLETE_DECK_POPUP_DELAY_S)
+    if check_for_incomplete_deck_popup(emulator):
+        logger.change_status("Battle Deck incomplete — fill 8/8")
+        logger.log("The game refused the match: the Battle Deck needs 8 cards.")
+        raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
 
     return True
 
