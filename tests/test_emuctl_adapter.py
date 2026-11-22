@@ -448,26 +448,29 @@ def test_real_facade_against_fake_adb_shim(tmp_path: Path, monkeypatch: pytest.M
         ready_timeout=5.0,
     )
 
-    image = controller.screenshot()
-    assert image.shape == (FRAME_HEIGHT, FRAME_WIDTH, 3)
-    assert image[0, 0].tolist() == [10, 20, 30]  # BGR preserved through emuctl
+    try:
+        image = controller.screenshot()
+        assert image.shape == (FRAME_HEIGHT, FRAME_WIDTH, 3)
+        assert image[0, 0].tolist() == [10, 20, 30]  # BGR preserved through emuctl
 
-    menu_checks: list[str] = []
+        menu_checks: list[str] = []
 
-    def fake_main_menu(_emulator: object) -> bool:
-        menu_checks.append("menu")
-        return True
+        def fake_main_menu(_emulator: object) -> bool:
+            menu_checks.append("menu")
+            return True
 
-    monkeypatch.setattr(emuctl_adapter, "check_if_on_clash_main_menu", fake_main_menu)
-    assert controller.restart() is True
-    assert menu_checks == ["menu"]
+        monkeypatch.setattr(emuctl_adapter, "check_if_on_clash_main_menu", fake_main_menu)
+        assert controller.restart() is True
+        assert menu_checks == ["menu"]
 
-    lines = adb_log.read_text(encoding="utf-8").splitlines()
-    assert "shell wm size 419x633" in lines
-    assert "shell wm density 160" in lines
-    force_stop = lines.index(f"shell am force-stop {CLASH_ROYALE_PACKAGE}")
-    launch = next(index for index, line in enumerate(lines) if line.startswith("shell monkey -p "))
-    assert force_stop < launch
-    assert time.monotonic() - started < 5.0
-
-    controller.stop()
+        lines = adb_log.read_text(encoding="utf-8").splitlines()
+        assert "shell wm size 419x633" in lines
+        assert "shell wm density 160" in lines
+        force_stop = lines.index(f"shell am force-stop {CLASH_ROYALE_PACKAGE}")
+        launch = next(index for index, line in enumerate(lines) if line.startswith("shell monkey -p "))
+        assert force_stop < launch
+        assert time.monotonic() - started < 5.0
+    finally:
+        # Always release the facade's anyio portal; a failed assertion must not
+        # leave a non-daemon thread that makes pytest hang instead of failing.
+        controller.stop()
