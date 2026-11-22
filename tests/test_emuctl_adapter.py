@@ -92,7 +92,7 @@ class _FakeFacade:
     def has_feature(self, flag: object) -> bool:
         return self._declares_configure and getattr(flag, "value", flag) == "configure"
 
-    def configure(self, spec: Mapping[str, object] | None = None) -> None:
+    def configure(self, spec: Mapping[str, str | int | float | None] | None = None) -> None:
         self.calls.append(("configure", spec))
 
     def screenshot(self) -> bytes:
@@ -274,7 +274,7 @@ def test_configure_refusal_reconnects_plain_then_falls_back(monkeypatch: pytest.
     class FakeFeatureNotSupportedError(Exception):
         pass
 
-    def fake_connect_sync(target: str, *, config: object = None) -> _FakeFacade:
+    def fake_connect_sync(target: str, *, config: tuple[str, dict[str, object]] | None = None) -> _FakeFacade:
         wants_display = bool(config) and "display" in config[1]
         attempts.append("config" if wants_display else "plain")
         if wants_display:
@@ -389,7 +389,7 @@ LOG = {log!r}
 
 def device_argv(argv):
     index = 0
-    while index < len(argv) and argv[index] in ("-P", "-s"):
+    while index < len(argv) and argv[index] in ("-H", "-P", "-s"):
         index += 2
     return argv[index:]
 
@@ -412,8 +412,8 @@ elif args[:3] == ["shell", "wm", "density"]:
     pass
 elif args == ["exec-out", "screencap", "-p"]:
     sys.stdout.buffer.write(PNG)
-elif args[:3] == ["shell", "pm", "path"]:
-    print("package:/data/app/com.supercell.clashroyale/base.apk")
+elif args[:3] == ["shell", "pm", "list"]:
+    print("package:" + args[4])
 elif args[:3] == ["shell", "am", "force-stop"]:
     pass
 elif args[:2] in (["shell", "pidof"], ["shell", "monkey"]):

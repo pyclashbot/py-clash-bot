@@ -23,7 +23,7 @@ from __future__ import annotations
 import re
 import subprocess
 import time
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 import cv2
 import numpy as np
@@ -66,9 +66,9 @@ class _Facade(Protocol):
     @property
     def features(self) -> Iterable[object]: ...
 
-    def has_feature(self, flag: object) -> bool: ...
+    def has_feature(self, flag: Any) -> bool: ...
 
-    def configure(self, spec: Mapping[str, object] | None = None) -> None: ...
+    def configure(self, spec: Mapping[str, str | int | float | None] | None = None) -> None: ...
 
     def screenshot(self) -> bytes: ...
 

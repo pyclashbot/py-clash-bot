@@ -27,8 +27,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Optional headless backend. emuctl is not on PyPI yet, so pin the pushed
-# sync-facade branch commit; switch to a version range once it is published.
+# Temporary: emuctl is not on PyPI yet, so pin the pushed sync-facade commit.
+# Replace with a version range (`emuctl>=x,<y`) once it is published.
 headless = [
     "emuctl @ git+https://github.com/pyclashbot/emuctl@0f728d8c056f57a29b5826977ab15a79e835e017",
 ]

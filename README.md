@@ -64,16 +64,17 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 ### Headless Linux
 
-The bot core runs without a GUI or X display. Install the optional emuctl
-backend from a checkout, point it at an already-running `adb` device, and run
-the headless entry point:
+The bot core runs without a GUI or X display. The optional `headless` extra
+pulls the emuctl backend (not on PyPI yet, so it is pinned to a commit), points
+at an already-running `adb` device, and runs the headless entry point:
 
 ```bash
 pip install -e .[headless]
 python -m pyclashbot.headless --emulator emuctl --adb-serial <ip:port> --adb-path <adb>
 ```
 
-`--adb-path` (or `$ADB_PATH`) selects a specific adb binary, with
+`--emulator adb` uses this repo's built-in ADB controller instead. `--adb-path`
+(or `$ADB_PATH`) selects a specific adb binary for either backend, with
 `--adb-server-port` (or `$ADB_SERVER_PORT`) for a non-default server. The
 emuctl extra is optional: Windows and macOS GUI installs do not need it.
 

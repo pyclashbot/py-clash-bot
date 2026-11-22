@@ -73,7 +73,12 @@ class WorkerProcess(Process):
             elif emulator_selection == EmulatorType.ADB:
                 print("Creating ADB Device controller")
                 adb_serial = jobs.get(UIField.ADB_SERIAL.value) or None
-                emu = controller_class(logger=logger, device_serial=adb_serial)
+                emu = controller_class(
+                    logger=logger,
+                    device_serial=adb_serial,
+                    adb_path=jobs.get("adb_path"),
+                    adb_server_port=jobs.get("adb_server_port"),
+                )
 
             elif emulator_selection == EmulatorType.EMUCTL:
                 print("Creating emuctl controller")
@@ -114,8 +119,8 @@ class WorkerProcess(Process):
         except Exception:
             logger.error("Failed to clean up the emulator after a setup failure")
 
-    def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
-        """Run the main bot state loop."""
+    def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> bool:
+        """Run the main bot state loop; return False if it stopped on a failure."""
         state = "start"
         state_history = StateHistory(logger)
         state_order = StateOrder()
@@ -133,7 +138,7 @@ class WorkerProcess(Process):
                         logger.error(
                             f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop"
                         )
-                        break
+                        return False
                     logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
                 else:
                     consecutive_restarts = 0  # Reset counter on successful state
@@ -143,7 +148,7 @@ class WorkerProcess(Process):
                     logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
                     if new_state == "fail":
                         logger.add_restart_after_failure()
-                    break
+                    return False
 
                 state = new_state
 
@@ -159,13 +164,20 @@ class WorkerProcess(Process):
                 consecutive_restarts += 1
                 if consecutive_restarts >= max_consecutive_restarts:
                     logger.error("Too many consecutive exceptions - stopping bot")
-                    break
+                    return False
 
             # Note: Pause functionality removed in multiprocessing version
             # If pause is needed, use a separate mp.Event
 
+        return True
+
     def run(self) -> None:
-        """Main worker process execution."""
+        """Main worker process execution.
+
+        Exits non-zero when setup fails or the loop stops on ``fail`` / five
+        consecutive restarts, so a supervisor (the headless entry point) can
+        report a failed run.
+        """
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
 
@@ -175,12 +187,16 @@ class WorkerProcess(Process):
         try:
             emulator = self._setup_emulator(self.jobs, logger)
             if emulator is None:
-                return
+                raise SystemExit(1)
 
-            self._run_bot_loop(emulator, self.jobs, logger)
+            if not self._run_bot_loop(emulator, self.jobs, logger):
+                raise SystemExit(1)
+        except SystemExit:
+            raise
         except Exception as err:
             logger.error(str(err))
             traceback.print_exc()
+            raise SystemExit(1) from err
         finally:
             logger.change_status("Bot stopped")
 

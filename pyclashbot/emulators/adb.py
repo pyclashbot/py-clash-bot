@@ -23,7 +23,14 @@ class AdbController(AdbBasedController):
 
     supported_platforms = [Platform.WINDOWS, Platform.MACOS, Platform.LINUX]
 
-    def __init__(self, logger, device_serial: str | None = None):
+    def __init__(
+        self,
+        logger,
+        device_serial: str | None = None,
+        *,
+        adb_path: str | None = None,
+        adb_server_port: int | None = None,
+    ):
         """
         Initializes the controller and connects to the adb device.
         Args:
@@ -31,10 +38,18 @@ class AdbController(AdbBasedController):
             device_serial (str, optional): The specific serial number of the device
                                            to connect to. If None, it will try to
                                            find a single connected device.
+            adb_path (str, optional): adb executable to use (headless --adb-path).
+            adb_server_port (int, optional): adb server port (headless --adb-server-port).
         """
         self.logger = logger
         self.device_serial: str | None = device_serial
         self._auto_stop_on_del = False  # No process to stop
+
+        # Instance-level overrides for the base class's class attributes.
+        if adb_path:
+            self.adb_path = adb_path
+        if adb_server_port is not None:
+            self.adb_server_port = adb_server_port
 
         # For storing original screen settings
         self.original_size = None

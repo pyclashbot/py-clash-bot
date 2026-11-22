@@ -22,14 +22,15 @@ import os
 import queue
 import signal
 import sys
-import tempfile
 import threading
 from multiprocessing import Event, Queue
 from typing import Any
 
-from pyclashbot.bot.worker import WorkerProcess
+from pyclashbot.bot.jobs import make_job_dictionary
+from pyclashbot.bot.worker import WorkerProcess, stop_worker_process
 from pyclashbot.emulators import EmulatorType
 from pyclashbot.interface.enums import UIField
+from pyclashbot.utils.logger import log_name
 
 
 def _env_int(name: str) -> int | None:
@@ -87,20 +88,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--log-path",
-        default=os.path.join(tempfile.gettempdir(), "pyclashbot-headless.log"),
+        default=log_name,
         help="Worker log file (default: %(default)s).",
     )
     return parser.parse_args(argv)
 
 
 def build_jobs(args: argparse.Namespace) -> dict[str, Any]:
-    """Build the job dictionary the worker loop expects."""
-    emulator = EmulatorType.EMUCTL if args.emulator == "emuctl" else EmulatorType.ADB
-    jobs: dict[str, Any] = {
-        "emulator": emulator,
-        UIField.ADB_SERIAL.value: args.adb_serial,
-        "adb_path": args.adb_path,
-        "adb_server_port": args.adb_server_port,
+    """Build the complete worker job dictionary without importing the GUI.
+
+    The shared ``make_job_dictionary`` supplies every key the state machine reads;
+    this function only seeds headless defaults and overrides backend/serial details
+    afterwards.
+    """
+    values: dict[str, Any] = {
         UIField.CLASSIC_1V1_USER_TOGGLE.value: args.classic_1v1,
         UIField.RECORD_FIGHTS_TOGGLE.value: args.record_fights,
     }
@@ -109,7 +110,17 @@ def build_jobs(args: argparse.Namespace) -> dict[str, Any]:
             overrides = json.load(handle)
         if not isinstance(overrides, dict):
             raise ValueError(f"{args.jobs}: expected a JSON object of job overrides")
-        jobs.update(overrides)
+        known = {field.value for field in UIField}
+        unknown = sorted(set(overrides) - known)
+        if unknown:
+            raise ValueError(f"{args.jobs}: unknown job key(s): {', '.join(unknown)}")
+        values.update(overrides)
+
+    jobs = make_job_dictionary(values)
+    jobs["emulator"] = EmulatorType.EMUCTL if args.emulator == "emuctl" else EmulatorType.ADB
+    jobs[UIField.ADB_SERIAL.value] = args.adb_serial
+    jobs["adb_path"] = args.adb_path
+    jobs["adb_server_port"] = args.adb_server_port
     return jobs
 
 
@@ -126,7 +137,7 @@ def _drain_stats(stats: Queue, stop: threading.Event) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the bot loop in this process."""
+    """Run the bot in a worker child process until it stops or a signal arrives."""
     args = parse_args(argv)
     if not args.adb_serial:
         print("error: --adb-serial (or $ADB_SERIAL) is required", file=sys.stderr)
@@ -137,9 +148,17 @@ def main(argv: list[str] | None = None) -> int:
     shutdown = Event()
     worker = WorkerProcess(jobs, stats, shutdown, args.log_path)
 
+    signal_count = 0
+
     def _request_shutdown(signum: int, _frame: object) -> None:
-        print(f"[headless] signal {signum} received, stopping...", flush=True)
-        shutdown.set()
+        nonlocal signal_count
+        signal_count += 1
+        if signal_count == 1:
+            print(f"[headless] signal {signum} received, stopping...", flush=True)
+            stop_worker_process(worker, shutdown)
+            return
+        print(f"[headless] signal {signum} received again, hard exit", flush=True)
+        os._exit(130)
 
     signal.signal(signal.SIGINT, _request_shutdown)
     signal.signal(signal.SIGTERM, _request_shutdown)
@@ -152,13 +171,22 @@ def main(argv: list[str] | None = None) -> int:
         f"[headless] emulator={jobs['emulator']} serial={args.adb_serial} log={args.log_path}",
         flush=True,
     )
+    worker.start()
     try:
-        worker.run()
+        while worker.is_alive():
+            worker.join(timeout=0.5)
     finally:
-        shutdown.set()
         stop_drain.set()
-    print("[headless] stopped", flush=True)
-    return 0
+        if worker.is_alive():
+            stop_worker_process(worker, shutdown)
+
+    if signal_count:
+        print("[headless] stopped", flush=True)
+        return 0
+
+    exit_code = worker.exitcode
+    print(f"[headless] stopped (exit {exit_code})", flush=True)
+    return 0 if exit_code in (0, None) else 1
 
 
 if __name__ == "__main__":

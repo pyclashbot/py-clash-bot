@@ -94,6 +94,135 @@ def test_worker_passes_adb_path_to_emuctl(monkeypatch: pytest.MonkeyPatch) -> No
     }
 
 
+def test_worker_passes_adb_path_to_builtin_adb(monkeypatch: pytest.MonkeyPatch) -> None:
+    """--adb-path/--adb-server-port also reach the built-in ADB controller."""
+    from pyclashbot.bot import worker as worker_module
+
+    captured: dict[str, object] = {}
+
+    class _FakeController:
+        def __init__(self, **kwargs: object) -> None:
+            captured.update(kwargs)
+
+        def restart(self) -> bool:
+            return True
+
+    monkeypatch.setattr(worker_module, "get_emulator_registry", lambda: {EmulatorType.ADB: _FakeController})
+    jobs = build_jobs(
+        parse_args(
+            [
+                "--emulator",
+                "adb",
+                "--adb-serial",
+                "emulator-5554",
+                "--adb-path",
+                "/tmp/adb",
+                "--adb-server-port",
+                "5038",
+            ]
+        )
+    )
+    worker = worker_module.WorkerProcess(jobs, None, None, "unused.log")  # ty: ignore[invalid-argument-type]
+    logger = object()
+
+    assert worker._setup_emulator(jobs, logger) is not None  # ty: ignore[invalid-argument-type]
+    assert captured.pop("logger") is logger
+    assert captured == {
+        "device_serial": "emulator-5554",
+        "adb_path": "/tmp/adb",
+        "adb_server_port": 5038,
+    }
+
+
+def test_default_jobs_survive_a_full_state_loop(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Default build_jobs() contains every direct key the state machine indexes."""
+    from pyclashbot.bot import states
+    from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
+    from pyclashbot.utils.logger import Logger
+
+    jobs = build_jobs(parse_args(["--adb-serial", "127.0.0.1:5555"]))
+    required = {
+        "upgrade_user_toggle",
+        "random_decks_user_toggle",
+        "cycle_decks_user_toggle",
+        "upgrade_princess_user_toggle",
+        "card_mastery_user_toggle",
+        "disable_win_track_toggle",
+    }
+    assert required <= jobs.keys()
+
+    logger = Logger(stats=None, timed=False)
+    history = StateHistory(logger)
+    order = StateOrder()
+
+    monkeypatch.setattr(states.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(states, "mode_used_in_1v1", None)
+    # end_fight indexes disable_win_track_toggle before doing any screen I/O.
+    monkeypatch.setattr(states, "end_fight_state", lambda *args, **kwargs: True)
+
+    class _UntouchableEmulator:
+        def __getattr__(self, name: str) -> object:
+            raise AssertionError(f"default jobs unexpectedly touched emulator.{name}")
+
+    # States that direct-index job keys all short-circuit with the defaults.
+    for state in [
+        "start",
+        "switch_account",
+        "upgrade",
+        "upgrade_princess",
+        "card_mastery",
+        "randomize_deck",
+        "cycle_deck",
+    ]:
+        state_tree(_UntouchableEmulator(), logger, state, jobs, history, order)
+    state_tree(_UntouchableEmulator(), logger, "end_fight", jobs, history, order)
+
+
+def test_run_bot_loop_reports_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A 'fail' state makes the loop return False (worker exits non-zero)."""
+    from multiprocessing import Event
+
+    from pyclashbot.bot import worker as worker_module
+    from pyclashbot.utils.logger import ProcessLogger
+
+    worker = worker_module.WorkerProcess({}, None, Event(), "unused.log")  # ty: ignore[invalid-argument-type]
+    monkeypatch.setattr(worker_module, "state_tree", lambda *args: "fail")
+
+    assert worker._run_bot_loop(object(), {}, ProcessLogger(None)) is False
+
+
+def test_worker_run_exits_nonzero_when_loop_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """run() raises SystemExit(1) so the parent process reports a failed run."""
+    from multiprocessing import Event, Queue
+
+    from pyclashbot.bot import worker as worker_module
+
+    worker = worker_module.WorkerProcess({}, Queue(), Event(), str(tmp_path / "worker.log"))
+    monkeypatch.setattr(worker, "_setup_emulator", lambda *args: object())
+    monkeypatch.setattr(worker, "_run_bot_loop", lambda *args: False)
+
+    with pytest.raises(SystemExit) as excinfo:
+        worker.run()
+
+    assert excinfo.value.code == 1
+
+
+def test_build_jobs_rejects_unknown_override(tmp_path: Path) -> None:
+    """--jobs keys must be real UIField values, not arbitrary worker keys."""
+    overrides = tmp_path / "jobs.json"
+    overrides.write_text(json.dumps({"not_a_ui_field": True}), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="unknown job key"):
+        build_jobs(parse_args(["--adb-serial", "127.0.0.1:5555", "--jobs", str(overrides)]))
+
+
+def test_parse_args_defaults_log_path_to_session_log() -> None:
+    """The default log file uses the timestamped session log path."""
+    from pyclashbot.utils.logger import log_name
+
+    assert parse_args(["--adb-serial", "127.0.0.1:5555"]).log_path == log_name
+
+
 def test_build_jobs_applies_overrides(tmp_path: Path) -> None:
     """A --jobs file overrides individual toggles."""
     overrides = tmp_path / "jobs.json"
