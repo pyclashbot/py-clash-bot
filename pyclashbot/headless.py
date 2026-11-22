@@ -146,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
     jobs = build_jobs(args)
     stats: Queue = Queue()
     shutdown = Event()
-    worker = WorkerProcess(jobs, stats, shutdown, args.log_path)
+    worker = WorkerProcess(jobs, stats, shutdown, args.log_path, cleanup_on_exit=True)
 
     signal_count = 0
 

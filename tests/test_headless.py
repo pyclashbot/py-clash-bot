@@ -192,7 +192,31 @@ def test_run_bot_loop_reports_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_worker_run_exits_nonzero_when_loop_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """run() exits non-zero and still stops the emulator (restores device state)."""
+    """Headless run exits non-zero and still stops the emulator (restores device state)."""
+    from multiprocessing import Event, Queue
+
+    from pyclashbot.bot import worker as worker_module
+
+    class _FakeEmulator:
+        stopped = False
+
+        def stop(self) -> None:
+            type(self).stopped = True
+
+    fake = _FakeEmulator()
+    worker = worker_module.WorkerProcess({}, Queue(), Event(), str(tmp_path / "worker.log"), cleanup_on_exit=True)
+    monkeypatch.setattr(worker, "_setup_emulator", lambda *args: fake)
+    monkeypatch.setattr(worker, "_run_bot_loop", lambda *args: False)
+
+    with pytest.raises(SystemExit) as excinfo:
+        worker.run()
+
+    assert excinfo.value.code == 1
+    assert fake.stopped
+
+
+def test_worker_run_leaves_gui_backends_alone(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The default (GUI) worker must not stop MEmu/BlueStacks/Google Play on exit."""
     from multiprocessing import Event, Queue
 
     from pyclashbot.bot import worker as worker_module
@@ -208,11 +232,10 @@ def test_worker_run_exits_nonzero_when_loop_fails(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr(worker, "_setup_emulator", lambda *args: fake)
     monkeypatch.setattr(worker, "_run_bot_loop", lambda *args: False)
 
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(SystemExit):
         worker.run()
 
-    assert excinfo.value.code == 1
-    assert fake.stopped
+    assert not fake.stopped
 
 
 def test_worker_signal_handler_exits_with_signal_code() -> None:

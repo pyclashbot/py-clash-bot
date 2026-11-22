@@ -26,12 +26,17 @@ class WorkerProcess(Process):
         stats_queue: Queue,
         shutdown_event: Event,
         session_log_path: str,
+        *,
+        cleanup_on_exit: bool = False,
     ) -> None:
         super().__init__(daemon=True)
         self.jobs = jobs
         self.stats_queue = stats_queue
         self.shutdown_event = shutdown_event
         self.session_log_path = session_log_path
+        # Headless opts in: the GUI owns its emulator lifecycle and must not have
+        # a worker exit shut down MEmu/BlueStacks/Google Play.
+        self.cleanup_on_exit = cleanup_on_exit
 
     def _setup_emulator(self, jobs: dict[str, Any], logger: ProcessLogger):
         """Set up the appropriate emulator based on job configuration."""
@@ -182,8 +187,9 @@ class WorkerProcess(Process):
 
         Exits non-zero when setup fails or the loop stops on ``fail`` / five
         consecutive restarts, so a supervisor (the headless entry point) can
-        report a failed run. Always stops the emulator on the way out so
-        adapters can restore device state (e.g. ``wm`` overrides).
+        report a failed run. With ``cleanup_on_exit`` (headless), signal exits
+        also stop the emulator so adapters can restore device state; the GUI
+        leaves backend lifecycle to its own stop path.
         """
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
@@ -199,8 +205,9 @@ class WorkerProcess(Process):
 
             # The parent installs its handlers after start(), so the child gets
             # its own; a group signal then still runs the cleanup below.
-            signal.signal(signal.SIGINT, self._exit_on_signal)
-            signal.signal(signal.SIGTERM, self._exit_on_signal)
+            if self.cleanup_on_exit:
+                signal.signal(signal.SIGINT, self._exit_on_signal)
+                signal.signal(signal.SIGTERM, self._exit_on_signal)
 
             if not self._run_bot_loop(emulator, self.jobs, logger):
                 raise SystemExit(1)
@@ -211,7 +218,7 @@ class WorkerProcess(Process):
             traceback.print_exc()
             raise SystemExit(1) from err
         finally:
-            if emulator is not None:
+            if self.cleanup_on_exit and emulator is not None:
                 try:
                     emulator.stop()
                 except Exception:
