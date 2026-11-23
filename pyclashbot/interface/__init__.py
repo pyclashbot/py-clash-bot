@@ -1,10 +1,4 @@
-"""GUI package.
-
-The re-exports below are lazy (PEP 562). Importing a tkinter-free submodule — the bot
-core imports ``pyclashbot.interface.enums`` for ``UIField`` — must not pull
-``tkinter``/``ttkbootstrap`` into the process, otherwise the bot cannot run on a
-headless Linux host (no ``$DISPLAY``).
-"""
+"""GUI package with lazy re-exports."""
 
 from __future__ import annotations
 

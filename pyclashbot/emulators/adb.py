@@ -45,7 +45,6 @@ class AdbController(AdbBasedController):
         self.device_serial: str | None = device_serial
         self._auto_stop_on_del = False  # No process to stop
 
-        # Instance-level overrides for the base class's class attributes.
         if adb_path:
             self.adb_path = adb_path
         if adb_server_port is not None:

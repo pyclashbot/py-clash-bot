@@ -1,22 +1,4 @@
-"""Run py-clash-bot without a GUI.
-
-Usage::
-
-    python -m pyclashbot.headless --adb-serial 127.0.0.1:5555 --adb-path /opt/platform-tools/adb
-
-This exists so the bot can run on a headless Linux host: the GUI entry point imports
-``tkinter``/``ttkbootstrap`` and needs an X display, while the bot core does not. The
-worker loop, logging and state machine are reused unchanged — only job construction and
-the emulator selection are supplied here.
-
-The emulator defaults to the ``emuctl`` backend, which drives any ``adb:<serial>``
-target through the emuctl library. ``--emulator adb`` selects this repo's built-in ADB
-controller instead.
-
-Neither backend boots the device. Start the emulator/device yourself and leave Clash
-Royale on the main menu with a full Battle Deck before starting this process.
-Onboarding (age gate, tutorial, login) and deck filling are not handled here.
-"""
+"""Run py-clash-bot without a GUI."""
 
 from __future__ import annotations
 
@@ -37,16 +19,10 @@ from pyclashbot.interface.enums import UIField
 from pyclashbot.utils.logger import log_name
 
 
-def _env_int(name: str) -> int | None:
-    """Read an optional integer environment variable."""
-    value = os.environ.get(name)
-    if value is None or not value.strip():
-        return None
-    return int(value)
-
-
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    """Parse command line arguments."""
+    adb_server_port = os.environ.get("ADB_SERVER_PORT")
+    if adb_server_port is not None and not adb_server_port.strip():
+        adb_server_port = None
     parser = argparse.ArgumentParser(
         prog="pyclashbot.headless",
         description="Run py-clash-bot without a GUI (headless Linux).",
@@ -70,7 +46,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--adb-server-port",
         type=int,
-        default=_env_int("ADB_SERVER_PORT"),
+        default=int(adb_server_port) if adb_server_port is not None else None,
         help="ADB server port for --adb-path (default: $ADB_SERVER_PORT, else adb's 5037).",
     )
     parser.add_argument(
@@ -99,12 +75,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def build_jobs(args: argparse.Namespace) -> dict[str, Any]:
-    """Build the complete worker job dictionary without importing the GUI.
-
-    The shared ``make_job_dictionary`` supplies every key the state machine reads;
-    this function only seeds headless defaults and overrides backend/serial details
-    afterwards.
-    """
     values: dict[str, Any] = {
         UIField.CLASSIC_1V1_USER_TOGGLE.value: args.classic_1v1,
         UIField.RECORD_FIGHTS_TOGGLE.value: args.record_fights,
@@ -129,7 +99,6 @@ def build_jobs(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def _drain_stats(stats: Queue, stop: threading.Event) -> None:
-    """Print worker stats as they arrive so the run is observable without a GUI."""
     while not stop.is_set():
         try:
             item = stats.get(timeout=0.5)
@@ -141,7 +110,6 @@ def _drain_stats(stats: Queue, stop: threading.Event) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the bot in a worker child process until it stops or a signal arrives."""
     args = parse_args(argv)
     if not args.adb_serial:
         print("error: --adb-serial (or $ADB_SERIAL) is required", file=sys.stderr)
@@ -172,8 +140,6 @@ def main(argv: list[str] | None = None) -> int:
         f"[headless] emulator={jobs['emulator']} serial={args.adb_serial} log={args.log_path}",
         flush=True,
     )
-    # Start before installing the parent handlers: a forked child inherits them
-    # otherwise, and only the parent should terminate/join the worker.
     worker.start()
     signal.signal(signal.SIGINT, _request_shutdown)
     signal.signal(signal.SIGTERM, _request_shutdown)

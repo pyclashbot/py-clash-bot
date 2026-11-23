@@ -34,8 +34,6 @@ class WorkerProcess(Process):
         self.stats_queue = stats_queue
         self.shutdown_event = shutdown_event
         self.session_log_path = session_log_path
-        # Headless opts in: the GUI owns its emulator lifecycle and must not have
-        # a worker exit shut down MEmu/BlueStacks/Google Play.
         self.cleanup_on_exit = cleanup_on_exit
 
     def _setup_emulator(self, jobs: dict[str, Any], logger: ProcessLogger):
@@ -126,7 +124,6 @@ class WorkerProcess(Process):
             logger.error("Failed to clean up the emulator after a setup failure")
 
     def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> bool:
-        """Run the main bot state loop; return False if it stopped on a failure."""
         state = "start"
         state_history = StateHistory(logger)
         state_order = StateOrder()
@@ -179,18 +176,9 @@ class WorkerProcess(Process):
 
     @staticmethod
     def _exit_on_signal(signum: int, _frame: object) -> None:
-        """Turn SIGINT/SIGTERM into a clean SystemExit so ``finally`` can restore state."""
         raise SystemExit(128 + signum)
 
     def run(self) -> None:
-        """Main worker process execution.
-
-        Exits non-zero when setup fails or the loop stops on ``fail`` / five
-        consecutive restarts, so a supervisor (the headless entry point) can
-        report a failed run. With ``cleanup_on_exit`` (headless), signal exits
-        also stop the emulator so adapters can restore device state; the GUI
-        leaves backend lifecycle to its own stop path.
-        """
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
 
@@ -203,8 +191,6 @@ class WorkerProcess(Process):
             if emulator is None:
                 raise SystemExit(1)
 
-            # The parent installs its handlers after start(), so the child gets
-            # its own; a group signal then still runs the cleanup below.
             if self.cleanup_on_exit:
                 signal.signal(signal.SIGINT, self._exit_on_signal)
                 signal.signal(signal.SIGTERM, self._exit_on_signal)
@@ -267,7 +253,6 @@ def stop_worker_process(
     try:
         process.terminate()  # SIGTERM / TerminateProcess
     except (AttributeError, OSError):
-        # Not started (no popen) or already gone; nothing left to stop.
         return
     process.join(timeout=graceful_timeout)
     if process.is_alive():

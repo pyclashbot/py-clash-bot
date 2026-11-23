@@ -97,14 +97,7 @@ def _connect_default(
     adb_path: str | None = None,
     adb_server_port: int | None = None,
 ) -> tuple[_Facade, bool]:
-    """Connect through emuctl's sync facade, asking for display geometry.
-
-    Returns ``(facade, display_configured)``. ``adb`` does not declare
-    ``CONFIGURE`` (the amendment is pending), so the expected failure is a typed
-    ``FeatureNotSupportedError`` from ``connect_sync(config=...)``; we reconnect
-    plain and let the quarantined ``wm`` fallback install the frame. Any other
-    typed emuctl error propagates to the worker's existing handler.
-    """
+    """Connect through emuctl's sync facade."""
     from emuctl import (  # optional dependency, lazy by design
         AdbConfig,
         DisplayConfig,
@@ -124,9 +117,8 @@ def _connect_default(
     try:
         facade = connect_sync(target, config=config)
     except FeatureNotSupportedError:
-        # Keep the caller's adb path/port; only the display request is refused.
         return connect_sync(target, config=EmuctlConfig(adb=adb_config)), False
-    facade.configure()  # apply the non-None display section bound at connect
+    facade.configure()
     return facade, True
 
 
@@ -279,14 +271,7 @@ class EmuctlController(BaseEmulatorController):
         self.logger.log("Start is not supported by the emuctl adb backend; manage the device externally.")
 
     def restart(self, *, ready: ReadyCheck | None = None) -> bool:
-        """Launch Clash and wait for readiness (never emuctl's BOOT-gated restart).
-
-        One attempt: ``start_app`` plus a bounded caller-supplied predicate. The
-        bot passes its main-menu detector via ``ready``; without one, fall back to
-        a cheap transport-liveness probe so the adapter has no bot-state
-        dependency. Raises the *bot's* ``EmulatorNotReadyError`` on timeout, never
-        returns False.
-        """
+        """Launch Clash and wait for readiness."""
         start = time.monotonic()
         self.logger.change_status("Launching Clash Royale via emuctl...")
         self.start_app(CLASH_ROYALE_PACKAGE)

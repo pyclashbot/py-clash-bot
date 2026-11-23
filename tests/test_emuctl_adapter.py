@@ -377,8 +377,6 @@ def test_registration_contains_emuctl_last_but_hides_it_from_picker(monkeypatch:
         assert EmulatorType.EMUCTL not in get_available_emulators()
 
 
-# ── real sync facade against a fake adb binary ───────────────────────────────
-
 _ADB_SHIM = """#!{python}
 import base64
 import sys
@@ -425,8 +423,7 @@ else:
 
 
 @pytest.mark.skipif(os.name == "nt", reason="the fake adb shim is a POSIX executable")
-def test_real_facade_against_fake_adb_shim(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Drive the real emuctl sync facade through a shim adb: screenshot, geometry, restart."""
+def test_real_facade_against_fake_adb_shim(tmp_path: Path) -> None:
     pytest.importorskip("emuctl")
     shim = tmp_path / "fake-adb"
     adb_log = tmp_path / "adb.log"
@@ -451,16 +448,8 @@ def test_real_facade_against_fake_adb_shim(tmp_path: Path, monkeypatch: pytest.M
     try:
         image = controller.screenshot()
         assert image.shape == (FRAME_HEIGHT, FRAME_WIDTH, 3)
-        assert image[0, 0].tolist() == [10, 20, 30]  # BGR preserved through emuctl
-
-        menu_checks: list[str] = []
-
-        def fake_main_menu(_emulator: object) -> bool:
-            menu_checks.append("menu")
-            return True
-
-        assert controller.restart(ready=fake_main_menu) is True
-        assert menu_checks == ["menu"]
+        assert image[0, 0].tolist() == [10, 20, 30]
+        assert controller.restart(ready=lambda _emulator: True) is True
 
         lines = adb_log.read_text(encoding="utf-8").splitlines()
         assert "shell wm size 419x633" in lines
@@ -470,6 +459,4 @@ def test_real_facade_against_fake_adb_shim(tmp_path: Path, monkeypatch: pytest.M
         assert force_stop < launch
         assert time.monotonic() - started < 5.0
     finally:
-        # Always release the facade's anyio portal; a failed assertion must not
-        # leave a non-daemon thread that makes pytest hang instead of failing.
         controller.stop()

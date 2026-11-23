@@ -86,7 +86,6 @@ def test_skips_terminate_when_already_dead() -> None:
 
 
 def test_unstarted_process_terminate_is_a_no_op() -> None:
-    """A forked/never-started Process has no popen; terminate must not raise."""
     log: list[str] = []
     event = _FakeEvent(log)
 
@@ -99,7 +98,7 @@ def test_unstarted_process_terminate_is_a_no_op() -> None:
     stop_worker_process(process, event)
 
     assert event.is_set_flag
-    assert "join" not in log  # nothing left to wait for
+    assert "join" not in log
 
 
 def test_handles_none_process() -> None:

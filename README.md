@@ -64,23 +64,18 @@ Default settings work for most users. Only enable "Show advanced settings" to ch
 
 ### Headless Linux
 
-The bot core runs without a GUI or X display. The optional `headless` extra
-pulls the emuctl backend (not on PyPI yet, so it is pinned to a commit), points
-at an already-running `adb` device, and runs the headless entry point:
+The bot core runs without a GUI or X display. Install the optional backend and
+point it at an already-running device:
 
 ```bash
 pip install -e .[headless]
-python -m pyclashbot.headless --emulator emuctl --adb-serial <ip:port> --adb-path <adb>
+python -m pyclashbot.headless --adb-serial <ip:port> --adb-path <adb>
 ```
 
-`--emulator adb` uses this repo's built-in ADB controller instead. `--adb-path`
-(or `$ADB_PATH`) selects a specific adb binary for either backend, with
-`--adb-server-port` (or `$ADB_SERVER_PORT`) for a non-default server. The
-emuctl extra is optional: Windows and macOS GUI installs do not need it.
-
-The bot starts from an installed, signed-in game that is already past onboarding
-(age gate, tutorial) and sitting on the main menu with a deck. There is no
-onboarding handling: otherwise startup times out (~240s) and exits non-zero.
+`--emulator adb` selects the built-in ADB controller. `--adb-path` /
+`--adb-server-port` (or `$ADB_PATH` / `$ADB_SERVER_PORT`) select the adb
+binary/server. The game must be installed, signed in, past onboarding, and on
+the main menu with a full deck.
 
 ## Demo
 

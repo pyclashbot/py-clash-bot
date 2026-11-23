@@ -1,9 +1,4 @@
-"""Tkinter-free job-dictionary construction shared by the GUI and headless entry points.
-
-``make_job_dictionary`` is the single mapping from UI-shaped values to the worker's
-job dict, so both entry points produce the same keys. Keep this module free of
-``tkinter``/``ttkbootstrap`` imports: headless Linux hosts have no display.
-"""
+"""Tkinter-free job-dictionary construction."""
 
 from __future__ import annotations
 
@@ -15,7 +10,6 @@ from pyclashbot.utils.platform import is_macos
 
 
 def migrate_clan_job_settings(values: dict[str, Any]) -> None:
-    """Map legacy clan settings to per-action toggles."""
     clan_actions = (
         UIField.CLAN_DONATE_USER_TOGGLE,
         UIField.CLAN_CLAIM_GIFTS_USER_TOGGLE,
@@ -34,7 +28,6 @@ _CLAN_ACTION_TOGGLES = (
 
 
 def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
-    """Create a dictionary of job toggles and increments based on UI values."""
     migrate_clan_job_settings(values)
 
     def as_bool(field: UIField) -> bool:
@@ -77,13 +70,11 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
         UIField.UPGRADE_PRINCESS_USER_TOGGLE,
     )
 
-    # MEmu render mode
     if values.get(UIField.DIRECTX_TOGGLE.value):
         job_dictionary["memu_render_mode"] = "directx"
     else:
         job_dictionary["memu_render_mode"] = "opengl"
 
-    # BlueStacks render mode selection
     if values.get(UIField.BS_RENDERER_DX.value):
         job_dictionary["bluestacks_render_mode"] = "dx"
     elif values.get(UIField.BS_RENDERER_VK.value):
@@ -91,10 +82,8 @@ def make_job_dictionary(values: dict[str, Any]) -> dict[str, Any]:
     elif values.get(UIField.BS_RENDERER_GL.value):
         job_dictionary["bluestacks_render_mode"] = "gl"
     else:
-        # Default: Vulkan on macOS, OpenGL on Windows
         job_dictionary["bluestacks_render_mode"] = "vlcn" if is_macos() else "gl"
 
-    # Emulator selection
     if values.get(UIField.GOOGLE_PLAY_EMULATOR_TOGGLE.value):
         job_dictionary["emulator"] = EmulatorType.GOOGLE_PLAY
     elif values.get(UIField.BLUESTACKS_EMULATOR_TOGGLE.value):
