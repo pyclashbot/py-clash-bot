@@ -169,15 +169,20 @@ def norm_to_px(
     )
 
 
-def clamp_to_playable(px: tuple[int, int]) -> tuple[int, int]:
-    """Clamp pixels to the clickable region.
+def clamp_to_playable(px: tuple[int, int], frame_size: tuple[int, int] = REFERENCE_FRAME_SIZE) -> tuple[int, int]:
+    """Clamp pixels to the frame-scaled clickable region.
 
     The arena rect is larger than the clickable region, so clamping shrinks the
     effective model range below [0,1]: norm (0,0) clamps to (59,67) and (1,1)
-    clamps to (355,467).
+    clamps to (355,467) at the reference frame.
     """
     left, top, right, bottom = PLAYABLE_PLAY_REGION_LTRB
-    return (min(max(px[0], left), right), min(max(px[1], top), bottom))
+    sx = frame_size[0] / REFERENCE_FRAME_SIZE[0]
+    sy = frame_size[1] / REFERENCE_FRAME_SIZE[1]
+    return (
+        min(max(px[0], round(left * sx)), round(right * sx)),
+        min(max(px[1], round(top * sy)), round(bottom * sy)),
+    )
 
 
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
