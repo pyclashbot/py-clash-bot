@@ -43,23 +43,6 @@ jobs:
         with:
           enable-cache: true
 
-      # The headless extra pins the unpublished emuctl build. The source repo is
-      # private today, so authorize the fetch with a read-only token when one is
-      # configured; if the repo becomes public, the token step is unnecessary.
-      - name: Authorize the emuctl pin
-        env:
-          EMUCTL_TOKEN: ${{ secrets.EMUCTL_TOKEN }}
-        run: |
-          if GIT_TERMINAL_PROMPT=0 git ls-remote https://github.com/pyclashbot/emuctl HEAD >/dev/null 2>&1; then
-            echo "emuctl is reachable without a token"
-            exit 0
-          fi
-          if [ -z "$EMUCTL_TOKEN" ]; then
-            echo "::error::emuctl is private; add an EMUCTL_TOKEN secret with read access to pyclashbot/emuctl, or publish the repo."
-            exit 1
-          fi
-          git config --global url."https://x-access-token:${EMUCTL_TOKEN}@github.com/".insteadOf "https://github.com/"
-
       # Installing the extra here keeps the real-facade test from being skipped
       # by its importorskip.
       - name: Sync with the optional headless backend
