@@ -12,6 +12,10 @@ the emulator selection are supplied here.
 The emulator defaults to the ``emuctl`` backend, which drives any ``adb:<serial>``
 target through the emuctl library. ``--emulator adb`` selects this repo's built-in ADB
 controller instead.
+
+Neither backend boots the device. Start the emulator/device yourself and leave Clash
+Royale on the main menu with a full Battle Deck before starting this process.
+Onboarding (age gate, tutorial, login) and deck filling are not handled here.
 """
 
 from __future__ import annotations

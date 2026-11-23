@@ -459,8 +459,7 @@ def test_real_facade_against_fake_adb_shim(tmp_path: Path, monkeypatch: pytest.M
             menu_checks.append("menu")
             return True
 
-        monkeypatch.setattr(emuctl_adapter, "check_if_on_clash_main_menu", fake_main_menu)
-        assert controller.restart() is True
+        assert controller.restart(ready=fake_main_menu) is True
         assert menu_checks == ["menu"]
 
         lines = adb_log.read_text(encoding="utf-8").splitlines()

@@ -75,7 +75,7 @@ def test_worker_passes_adb_path_to_emuctl(monkeypatch: pytest.MonkeyPatch) -> No
         def __init__(self, **kwargs: object) -> None:
             captured.update(kwargs)
 
-        def restart(self) -> bool:
+        def restart(self, *, ready=None) -> bool:
             return True
 
     monkeypatch.setattr(worker_module, "get_emulator_registry", lambda: {EmulatorType.EMUCTL: _FakeController})
@@ -104,7 +104,7 @@ def test_worker_passes_adb_path_to_builtin_adb(monkeypatch: pytest.MonkeyPatch) 
         def __init__(self, **kwargs: object) -> None:
             captured.update(kwargs)
 
-        def restart(self) -> bool:
+        def restart(self, *, ready=None) -> bool:
             return True
 
     monkeypatch.setattr(worker_module, "get_emulator_registry", lambda: {EmulatorType.ADB: _FakeController})
