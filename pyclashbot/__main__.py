@@ -50,7 +50,7 @@ from pyclashbot.interface.ui import PyClashBotUI, no_jobs_popup
 from pyclashbot.utils.caching import USER_SETTINGS_CACHE
 from pyclashbot.utils.cli_config import arg_parser
 from pyclashbot.utils.discord_rpc import DiscordRPCManager
-from pyclashbot.utils.logger import Logger, initialize_pylogging, log_dir, log_name
+from pyclashbot.utils.logger import Logger, drain_stats_queue, initialize_pylogging, log_dir, log_name
 from pyclashbot.utils.open_folder import open_folder
 from pyclashbot.utils.platform import get_recordings_dir
 
@@ -253,6 +253,7 @@ class BotApplication:
         """Stop the worker via OS-level termination (single press)."""
         self.logger.change_status("Stopping")
         stop_worker_process(self.process, self.shutdown_event)
+        self.last_stats = drain_stats_queue(self.stats_queue, self.last_stats)
         self._snapshot_session_stats()
         self.process = None
         self.logger.change_status("Idle")
@@ -340,6 +341,7 @@ class BotApplication:
     def _on_close(self) -> None:
         self._closing = True
         exit_button_event(self.process, self.shutdown_event)
+        self.last_stats = drain_stats_queue(self.stats_queue, self.last_stats)
         self.discord_rpc.disable()
         self.ui.destroy()
 
