@@ -45,6 +45,16 @@ class _FakeEmulator:
         self.clicks.append((x_coord, y_coord))
 
 
+class _RecordingLogger(Logger):
+    def __init__(self) -> None:
+        super().__init__(stats=None, timed=False)
+        self.statuses: list[str] = []
+
+    def change_status(self, status: str) -> None:
+        self.statuses.append(status)
+        super().change_status(status)
+
+
 REFUSAL_POSITIVES = [
     "deck_refusal.png",
     "deck_refusal_live.png",
@@ -106,15 +116,6 @@ def test_filled_deck_frame_is_not_empty(name: str) -> None:
 
 
 def test_start_fight_raises_on_empty_deck(monkeypatch: pytest.MonkeyPatch) -> None:
-    class _RecordingLogger(Logger):
-        def __init__(self) -> None:
-            super().__init__(stats=None, timed=False)
-            self.statuses: list[str] = []
-
-        def change_status(self, status: str) -> None:
-            self.statuses.append(status)
-            super().change_status(status)
-
     emulator = _FakeEmulator()
     logger = _RecordingLogger()
     monkeypatch.setattr(fight, "check_if_on_clash_main_menu", lambda _emulator: True)
@@ -124,7 +125,7 @@ def test_start_fight_raises_on_empty_deck(monkeypatch: pytest.MonkeyPatch) -> No
         start_fight(emulator, logger, "Classic 1v1")
 
     assert emulator.clicks == []
-    assert "Battle Deck empty — fill 8/8" in logger.statuses
+    assert logger.statuses[-1] == "Battle Deck incomplete — fill 8/8"
 
 
 def test_wait_for_battle_start_raises_on_delayed_refusal(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -152,14 +153,17 @@ def test_wait_for_battle_start_throttles_popup_checks(monkeypatch: pytest.Monkey
 
 def test_start_fight_raises_on_deck_refusal(monkeypatch: pytest.MonkeyPatch) -> None:
     emulator = _FakeEmulator()
+    logger = _RecordingLogger()
     monkeypatch.setattr(fight, "check_if_on_clash_main_menu", lambda _emulator: True)
+    monkeypatch.setattr(fight, "check_for_empty_battle_deck", lambda _emulator: False)
     monkeypatch.setattr(fight, "check_for_incomplete_deck_popup", lambda _emulator: True)
     monkeypatch.setattr(fight.time, "sleep", lambda _seconds: None)
 
     with pytest.raises(BattleDeckIncompleteError):
-        start_fight(emulator, Logger(stats=None, timed=False), "Classic 1v1")
+        start_fight(emulator, logger, "Classic 1v1")
 
     assert emulator.clicks == [START_FIGHT_BUTTON_COORD]
+    assert logger.statuses[-1] == "Battle Deck incomplete — fill 8/8"
 
 
 def test_start_fight_continues_when_deck_is_ready(monkeypatch: pytest.MonkeyPatch) -> None:

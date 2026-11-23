@@ -23,6 +23,6 @@ def raise_deck_incomplete(logger: Logger) -> NoReturn:
 
 
 def raise_empty_deck(logger: Logger) -> NoReturn:
-    logger.change_status("Battle Deck empty — fill 8/8")
+    logger.change_status("Battle Deck incomplete — fill 8/8")
     logger.log("The Battle Deck has no cards.")
-    raise BattleDeckIncompleteError("Battle Deck empty — fill 8/8")
+    raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
