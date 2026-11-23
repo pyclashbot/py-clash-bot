@@ -1,0 +1,50 @@
+name: Headless
+
+on:
+  pull_request:
+    paths:
+      - "pyclashbot/headless.py"
+      - "pyclashbot/bot/jobs.py"
+      - "pyclashbot/bot/worker.py"
+      - "pyclashbot/emulators/emuctl.py"
+      - "pyclashbot/emulators/base.py"
+      - "pyclashbot/emulators/adb_base.py"
+      - "pyclashbot/interface/enums.py"
+      - "tests/test_headless.py"
+      - "tests/test_emuctl_adapter.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/headless.yml"
+  push:
+    branches: [master]
+    paths:
+      - "pyclashbot/headless.py"
+      - "pyclashbot/bot/jobs.py"
+      - "pyclashbot/bot/worker.py"
+      - "pyclashbot/emulators/emuctl.py"
+      - "pyclashbot/emulators/base.py"
+      - "pyclashbot/emulators/adb_base.py"
+      - "pyclashbot/interface/enums.py"
+      - "tests/test_headless.py"
+      - "tests/test_emuctl_adapter.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/headless.yml"
+
+jobs:
+  real-facade:
+    name: Real emuctl facade (pinned)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync with the optional headless backend
+        run: uv sync --extra headless
+
+      - name: Run the real-facade shim test
+        run: uv run pytest tests/test_emuctl_adapter.py -k real_facade -q

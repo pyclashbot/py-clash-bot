@@ -26,6 +26,13 @@ dependencies = [
     "ttkbootstrap>=1.20.0,<1.21",
 ]
 
+[project.optional-dependencies]
+# Temporary: emuctl is not on PyPI yet, so pin the pushed sync-facade commit.
+# Replace with a version range (`emuctl>=x,<y`) once it is published.
+headless = [
+    "emuctl @ git+https://github.com/pyclashbot/emuctl@4352465f1302ac2ec2a63f5e11bd61c304d2c474",
+]
+
 [tool.setuptools.packages.find]
 include = ["pyclashbot*"]
 exclude = ["assets*", "scripts*"]

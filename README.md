@@ -62,6 +62,21 @@ Choose one:
 
 Default settings work for most users. Only enable "Show advanced settings" to change render mode if troubleshooting.
 
+### Headless Linux
+
+The bot core runs without a GUI or X display. Install the optional backend and
+point it at an already-running device:
+
+```bash
+pip install -e .[headless]
+python -m pyclashbot.headless --adb-serial <ip:port> --adb-path <adb>
+```
+
+`--emulator adb` selects the built-in ADB controller. `--adb-path` /
+`--adb-server-port` (or `$ADB_PATH` / `$ADB_SERVER_PORT`) select the adb
+binary/server. The game must be installed, signed in, past onboarding, and on
+the main menu with a full deck.
+
 ## Demo
 
 <img src="assets/demo-game.gif" width="49%" alt="Game Demo"/><img src="assets/demo-gui.png" width="49%" alt="GUI Demo"/>

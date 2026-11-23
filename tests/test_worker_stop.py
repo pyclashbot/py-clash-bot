@@ -85,6 +85,22 @@ def test_skips_terminate_when_already_dead() -> None:
     assert "terminate" not in log
 
 
+def test_unstarted_process_terminate_is_a_no_op() -> None:
+    log: list[str] = []
+    event = _FakeEvent(log)
+
+    class _UnstartedProcess(_FakeProcess):
+        def terminate(self) -> None:
+            raise AttributeError("'NoneType' object has no attribute 'terminate'")
+
+    process = _UnstartedProcess(log, [True])
+
+    stop_worker_process(process, event)
+
+    assert event.is_set_flag
+    assert "join" not in log
+
+
 def test_handles_none_process() -> None:
     log: list[str] = []
     event = _FakeEvent(log)

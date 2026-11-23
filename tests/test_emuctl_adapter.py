@@ -6,8 +6,11 @@ injects a fake facade so the suite runs on a bare checkout.
 
 from __future__ import annotations
 
+import base64
+import os
 import subprocess
 import sys
+import time
 import types
 from typing import TYPE_CHECKING
 
@@ -21,6 +24,7 @@ from pyclashbot.utils.logger import Logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from pathlib import Path
 
 FRAME_WIDTH = 419
 FRAME_HEIGHT = 633
@@ -88,7 +92,7 @@ class _FakeFacade:
     def has_feature(self, flag: object) -> bool:
         return self._declares_configure and getattr(flag, "value", flag) == "configure"
 
-    def configure(self, spec: Mapping[str, object] | None = None) -> None:
+    def configure(self, spec: Mapping[str, str | int | float | None] | None = None) -> None:
         self.calls.append(("configure", spec))
 
     def screenshot(self) -> bytes:
@@ -270,13 +274,15 @@ def test_configure_refusal_reconnects_plain_then_falls_back(monkeypatch: pytest.
     class FakeFeatureNotSupportedError(Exception):
         pass
 
-    def fake_connect_sync(target: str, *, config: object = None) -> _FakeFacade:
-        attempts.append("config" if config is not None else "plain")
-        if config is not None:
+    def fake_connect_sync(target: str, *, config: tuple[str, dict[str, object]] | None = None) -> _FakeFacade:
+        wants_display = bool(config) and "display" in config[1]
+        attempts.append("config" if wants_display else "plain")
+        if wants_display:
             raise FakeFeatureNotSupportedError
         return facade
 
     fake_module = types.SimpleNamespace(
+        AdbConfig=lambda **kwargs: ("adb", kwargs),
         DisplayConfig=lambda **kwargs: ("display", kwargs),
         EmuctlConfig=lambda **kwargs: ("config", kwargs),
         FeatureNotSupportedError=FakeFeatureNotSupportedError,
@@ -369,3 +375,88 @@ def test_registration_contains_emuctl_last_but_hides_it_from_picker(monkeypatch:
         else:
             monkeypatch.setenv("PYCLASHBOT_EMUCTL", env_value)
         assert EmulatorType.EMUCTL not in get_available_emulators()
+
+
+_ADB_SHIM = """#!{python}
+import base64
+import sys
+
+PNG = base64.b64decode("{png}")
+LOG = {log!r}
+
+
+def device_argv(argv):
+    index = 0
+    while index < len(argv) and argv[index] in ("-H", "-P", "-s"):
+        index += 2
+    return argv[index:]
+
+
+args = device_argv(sys.argv[1:])
+with open(LOG, "a", encoding="utf-8") as handle:
+    handle.write(" ".join(args) + "\\n")
+
+if args[:1] == ["connect"]:
+    print("connected")
+elif args == ["get-state"]:
+    print("device")
+elif args == ["shell", "wm", "size"]:
+    print("Physical size: 1080x2400")
+elif args == ["shell", "wm", "density"]:
+    print("Physical density: 420")
+elif args[:3] == ["shell", "wm", "size"]:
+    pass
+elif args[:3] == ["shell", "wm", "density"]:
+    pass
+elif args == ["exec-out", "screencap", "-p"]:
+    sys.stdout.buffer.write(PNG)
+elif args[:3] == ["shell", "pm", "list"]:
+    print("package:" + args[4])
+elif args[:3] == ["shell", "am", "force-stop"]:
+    pass
+elif args[:2] in (["shell", "pidof"], ["shell", "monkey"]):
+    print("1234" if args[1] == "pidof" else "Events injected: 1")
+else:
+    sys.stderr.write("unexpected adb args: " + " ".join(args) + "\\n")
+    raise SystemExit(3)
+"""
+
+
+@pytest.mark.skipif(os.name == "nt", reason="the fake adb shim is a POSIX executable")
+def test_real_facade_against_fake_adb_shim(tmp_path: Path) -> None:
+    pytest.importorskip("emuctl")
+    shim = tmp_path / "fake-adb"
+    adb_log = tmp_path / "adb.log"
+    shim.write_text(
+        _ADB_SHIM.format(
+            python=sys.executable,
+            png=base64.b64encode(_png((10, 20, 30))).decode("ascii"),
+            log=str(adb_log),
+        ),
+        encoding="utf-8",
+    )
+    shim.chmod(0o755)
+
+    started = time.monotonic()
+    controller = emuctl_adapter.EmuctlController(
+        _RecordingLogger(),
+        device_serial="127.0.0.1:5555",
+        adb_path=str(shim),
+        ready_timeout=5.0,
+    )
+
+    try:
+        image = controller.screenshot()
+        assert image.shape == (FRAME_HEIGHT, FRAME_WIDTH, 3)
+        assert image[0, 0].tolist() == [10, 20, 30]
+        assert controller.restart(ready=lambda _emulator: True) is True
+
+        lines = adb_log.read_text(encoding="utf-8").splitlines()
+        assert "shell wm size 419x633" in lines
+        assert "shell wm density 160" in lines
+        force_stop = lines.index(f"shell am force-stop {CLASH_ROYALE_PACKAGE}")
+        launch = next(index for index, line in enumerate(lines) if line.startswith("shell monkey -p "))
+        assert force_stop < launch
+        assert time.monotonic() - started < 5.0
+    finally:
+        controller.stop()

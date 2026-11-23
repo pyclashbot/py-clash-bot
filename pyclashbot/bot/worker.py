@@ -1,3 +1,4 @@
+import signal
 import traceback
 from multiprocessing import Process, Queue
 from multiprocessing.synchronize import Event
@@ -25,12 +26,15 @@ class WorkerProcess(Process):
         stats_queue: Queue,
         shutdown_event: Event,
         session_log_path: str,
+        *,
+        cleanup_on_exit: bool = False,
     ) -> None:
         super().__init__(daemon=True)
         self.jobs = jobs
         self.stats_queue = stats_queue
         self.shutdown_event = shutdown_event
         self.session_log_path = session_log_path
+        self.cleanup_on_exit = cleanup_on_exit
 
     def _setup_emulator(self, jobs: dict[str, Any], logger: ProcessLogger):
         """Set up the appropriate emulator based on job configuration."""
@@ -44,7 +48,7 @@ class WorkerProcess(Process):
 
         controller_class = registry[emulator_selection]
 
-        emu = None
+        emu: Any = None
         try:
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
@@ -73,12 +77,22 @@ class WorkerProcess(Process):
             elif emulator_selection == EmulatorType.ADB:
                 print("Creating ADB Device controller")
                 adb_serial = jobs.get(UIField.ADB_SERIAL.value) or None
-                emu = controller_class(logger=logger, device_serial=adb_serial)
+                emu = controller_class(
+                    logger=logger,
+                    device_serial=adb_serial,
+                    adb_path=jobs.get("adb_path"),
+                    adb_server_port=jobs.get("adb_server_port"),
+                )
 
             elif emulator_selection == EmulatorType.EMUCTL:
                 print("Creating emuctl controller")
                 emuctl_serial = jobs.get(UIField.ADB_SERIAL.value) or None
-                emu = controller_class(logger=logger, device_serial=emuctl_serial)
+                emu = controller_class(
+                    logger=logger,
+                    device_serial=emuctl_serial,
+                    adb_path=jobs.get("adb_path"),
+                    adb_server_port=jobs.get("adb_server_port"),
+                )
 
             else:
                 return None
@@ -109,8 +123,7 @@ class WorkerProcess(Process):
         except Exception:
             logger.error("Failed to clean up the emulator after a setup failure")
 
-    def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
-        """Run the main bot state loop."""
+    def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> bool:
         state = "start"
         state_history = StateHistory(logger)
         state_order = StateOrder()
@@ -128,7 +141,7 @@ class WorkerProcess(Process):
                         logger.error(
                             f"Too many consecutive restarts ({consecutive_restarts}) - stopping bot to prevent infinite loop"
                         )
-                        break
+                        return False
                     logger.log(f"Restart #{consecutive_restarts} - attempting to recover")
                 else:
                     consecutive_restarts = 0  # Reset counter on successful state
@@ -138,7 +151,7 @@ class WorkerProcess(Process):
                     logger.error(f"Critical error: state_tree returned '{new_state}' - stopping bot")
                     if new_state == "fail":
                         logger.add_restart_after_failure()
-                    break
+                    return False
 
                 state = new_state
 
@@ -154,29 +167,49 @@ class WorkerProcess(Process):
                 consecutive_restarts += 1
                 if consecutive_restarts >= max_consecutive_restarts:
                     logger.error("Too many consecutive exceptions - stopping bot")
-                    break
+                    return False
 
             # Note: Pause functionality removed in multiprocessing version
             # If pause is needed, use a separate mp.Event
 
+        return True
+
+    @staticmethod
+    def _exit_on_signal(signum: int, _frame: object) -> None:
+        raise SystemExit(128 + signum)
+
     def run(self) -> None:
-        """Main worker process execution."""
         print("WorkerProcess run()...")
         attach_worker_file_logging(self.session_log_path)
 
         # Create logger that sends stats through queue
         logger = ProcessLogger(self.stats_queue)
+        emulator = None
 
         try:
             emulator = self._setup_emulator(self.jobs, logger)
             if emulator is None:
-                return
+                raise SystemExit(1)
 
-            self._run_bot_loop(emulator, self.jobs, logger)
+            if self.cleanup_on_exit:
+                signal.signal(signal.SIGINT, self._exit_on_signal)
+                signal.signal(signal.SIGTERM, self._exit_on_signal)
+
+            if not self._run_bot_loop(emulator, self.jobs, logger):
+                raise SystemExit(1)
+        except SystemExit:
+            raise
         except Exception as err:
             logger.error(str(err))
             traceback.print_exc()
+            raise SystemExit(1) from err
         finally:
+            if self.cleanup_on_exit and emulator is not None:
+                try:
+                    emulator.stop()
+                except Exception:
+                    logger.error("Failed to stop the emulator cleanly")
+                    traceback.print_exc()
             logger.change_status("Bot stopped")
 
 
@@ -217,7 +250,10 @@ def stop_worker_process(
         shutdown_event.set()
     if process is None or not process.is_alive():
         return
-    process.terminate()  # SIGTERM / TerminateProcess
+    try:
+        process.terminate()  # SIGTERM / TerminateProcess
+    except (AttributeError, OSError):
+        return
     process.join(timeout=graceful_timeout)
     if process.is_alive():
         process.kill()  # SIGKILL

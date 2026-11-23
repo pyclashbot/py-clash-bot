@@ -2,6 +2,8 @@
 
 `base.py` defines `BaseEmulatorController` (lifecycle: create → configure → start/restart/stop, plus click/swipe/screenshot/install_apk/start_app). `adb_base.py`'s `AdbBasedController` implements the interaction primitives over ADB shell and is shared by MEmu, BlueStacks, and Google Play; `adb.py` is the plain-device controller. `EmulatorType` in `__init__.py` gates support via each class's `supported_platforms`.
 
+`emuctl.py`'s `EmuctlController` drives an `adb:<serial>` target through the optional [emuctl](https://github.com/pyclashbot/emuctl) sync facade instead of this repo's ADB layer. It subclasses `BaseEmulatorController` directly, imports emuctl lazily (never at module import, and never when a facade is injected for tests), converts emuctl's PNG screenshot to the same BGR array, and keeps a quarantined raw-`wm` fallback for emuctl builds whose adb backend does not declare `CONFIGURE`. It is selected programmatically by the headless entry point (`python -m pyclashbot.headless`) and stays hidden from the GUI picker until the `UIField` round-trip exists.
+
 ## Adding an emulator
 
 - **Adapters are ports — keep bot policy out.** Retry counts, human prompts, give-up and mid-run-recovery decisions live in the caller (`bot/worker.py`, the test fixture), never in an adapter — so the contract stays drivable by integration tests with no GUI or env-var scaffolding.
