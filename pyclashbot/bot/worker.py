@@ -217,6 +217,7 @@ class WorkerProcess(Process):
                     logger.error("Failed to stop the emulator cleanly")
                     traceback.print_exc()
             logger.change_status("Bot stopped")
+            logger.flush()
 
 
 class _StoppableProcess(Protocol):

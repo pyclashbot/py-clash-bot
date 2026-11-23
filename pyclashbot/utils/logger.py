@@ -601,16 +601,39 @@ class ProcessLogger(Logger):
     def __init__(self, stats_queue, timed: bool = True) -> None:
         super().__init__(timed=timed)
         self._stats_queue = stats_queue
+        self._last_snapshot: dict | None = None
+
+    def _publish(self) -> None:
+        if self._stats_queue is None or self.stats is None:
+            return
+        snapshot = self.stats.copy()
+        if snapshot == self._last_snapshot:
+            return
+        try:
+            self._stats_queue.put_nowait(snapshot)
+            self._last_snapshot = snapshot
+        except Exception:
+            pass  # Queue full or closed, retry on the next flush
 
     def _update_log(self) -> None:
         """Override to send stats through queue instead of just updating local dict."""
         super()._update_log()
-        # Non-blocking put to queue - if queue is full, skip this update
-        if self._stats_queue is not None and self.stats is not None:
-            try:
-                self._stats_queue.put_nowait(self.stats.copy())
-            except Exception:
-                pass  # Queue full or closed, skip this update
+        self._publish()
+
+    def flush(self) -> None:
+        """Publish the current snapshot, including a pending shutdown status."""
+        self._update_log()
+
+
+def drain_stats_queue(stats_queue, latest=None):
+    """Consume pending stats snapshots and return the most recent one."""
+    if stats_queue is None:
+        return latest
+    while True:
+        try:
+            latest = stats_queue.get_nowait()
+        except Exception:
+            return latest
 
 
 if __name__ == "__main__":
