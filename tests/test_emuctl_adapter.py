@@ -47,11 +47,6 @@ class _RecordingLogger(Logger):
         super().log(message)
 
 
-class _FakeFeature:
-    def __init__(self, value: str) -> None:
-        self.value = value
-
-
 class _FakeProbe:
     def __init__(self, ok: bool, reason: str) -> None:
         self.ok = ok
@@ -75,22 +70,20 @@ class _FakeFacade:
         *,
         png: bytes | None = None,
         reachable: bool = True,
-        declares_configure: bool = False,
         app_installed: bool = True,
     ) -> None:
         self._png = png if png is not None else _png()
         self._reachable = reachable
-        self._declares_configure = declares_configure
         self._app_installed = app_installed
         self.calls: list[tuple] = []
         self.close_calls = 0
 
     @property
     def features(self) -> frozenset[object]:
-        return frozenset({_FakeFeature("configure")}) if self._declares_configure else frozenset()
+        return frozenset()
 
     def has_feature(self, flag: object) -> bool:
-        return self._declares_configure and getattr(flag, "value", flag) == "configure"
+        return False
 
     def configure(self, spec: Mapping[str, str | int | float | None] | None = None) -> None:
         self.calls.append(("configure", spec))
@@ -129,41 +122,15 @@ class _FakeFacade:
         self.calls.append(("close",))
 
 
-def _install_fake_adb(
-    monkeypatch: pytest.MonkeyPatch,
-    *,
-    initial_size: str = "Physical size: 1080x2400\n",
-    initial_density: str = "Physical density: 420\n",
-) -> list[tuple[str, ...]]:
-    """Replace the quarantined wm runner; report the configured originals on reads."""
-    calls: list[tuple[str, ...]] = []
-
-    def fake_run(adb_path: str, *args: str) -> subprocess.CompletedProcess[str]:
-        calls.append((adb_path, *args))
-        device_args = args[2:]  # strip "-s", serial
-        stdout = ""
-        if device_args == ("shell", "wm", "size"):
-            stdout = initial_size
-        elif device_args == ("shell", "wm", "density"):
-            stdout = initial_density
-        return subprocess.CompletedProcess([adb_path, *args], 0, stdout=stdout, stderr="")
-
-    monkeypatch.setattr(emuctl_adapter, "_run_adb", fake_run)
-    return calls
-
-
 def _controller(
     monkeypatch: pytest.MonkeyPatch,
     facade: _FakeFacade | None = None,
     *,
     ready_timeout: float = emuctl_adapter.DEFAULT_READY_TIMEOUT_SECONDS,
-    initial_size: str = "Physical size: 1080x2400\n",
-    initial_density: str = "Physical density: 420\n",
-) -> tuple[emuctl_adapter.EmuctlController, _FakeFacade, list[tuple[str, ...]]]:
+) -> tuple[emuctl_adapter.EmuctlController, _FakeFacade]:
     fake = facade if facade is not None else _FakeFacade()
-    calls = _install_fake_adb(monkeypatch, initial_size=initial_size, initial_density=initial_density)
     controller = emuctl_adapter.EmuctlController(_RecordingLogger(), facade=fake, ready_timeout=ready_timeout)
-    return controller, fake, calls
+    return controller, fake
 
 
 # ── lazy import ───────────────────────────────────────────────────────────────
@@ -179,7 +146,7 @@ def test_facade_injection_never_imports_emuctl(monkeypatch: pytest.MonkeyPatch) 
 
 
 def test_screenshot_decodes_png_to_bgr(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch, _FakeFacade(png=_png((10, 20, 30))))
+    controller, facade = _controller(monkeypatch, _FakeFacade(png=_png((10, 20, 30))))
 
     image = controller.screenshot()
 
@@ -189,7 +156,7 @@ def test_screenshot_decodes_png_to_bgr(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_wrong_frame_size_warns_once(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, _, _ = _controller(monkeypatch, _FakeFacade(png=_png(size=(100, 100))))
+    controller, _ = _controller(monkeypatch, _FakeFacade(png=_png(size=(100, 100))))
     logger = controller.logger
     assert isinstance(logger, _RecordingLogger)
 
@@ -205,7 +172,7 @@ def test_wrong_frame_size_warns_once(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_click_maps_clicks_and_keyword_coordinates(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch)
+    controller, facade = _controller(monkeypatch)
 
     controller.click(x_coord=12, y_coord=34, clicks=3, interval=0.25)
     controller.click(1, 2)
@@ -215,7 +182,7 @@ def test_click_maps_clicks_and_keyword_coordinates(monkeypatch: pytest.MonkeyPat
 
 
 def test_swipe_key_text_and_install_map(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch)
+    controller, facade = _controller(monkeypatch)
 
     controller.swipe(1, 2, 3, 4)
     controller.key("KEYCODE_BACK")
@@ -232,21 +199,21 @@ def test_swipe_key_text_and_install_map(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_restart_launches_clash_and_returns_on_main_menu(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch)
+    controller, facade = _controller(monkeypatch)
 
     assert controller.restart(ready=lambda _emulator: True) is True
     assert ("start_app", CLASH_ROYALE_PACKAGE) in facade.calls
 
 
 def test_restart_without_ready_falls_back_to_transport_liveness(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch)
+    controller, facade = _controller(monkeypatch)
 
     assert controller.restart() is True
     assert ("start_app", CLASH_ROYALE_PACKAGE) in facade.calls
 
 
 def test_restart_timeout_raises_bot_not_ready(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch, ready_timeout=0)
+    controller, facade = _controller(monkeypatch, ready_timeout=0)
 
     with pytest.raises(EmulatorNotReadyError) as excinfo:
         controller.restart(ready=lambda _emulator: False)
@@ -256,7 +223,7 @@ def test_restart_timeout_raises_bot_not_ready(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_start_app_missing_raises_bot_not_ready(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, _ = _controller(monkeypatch, _FakeFacade(app_installed=False))
+    controller, facade = _controller(monkeypatch, _FakeFacade(app_installed=False))
 
     with pytest.raises(EmulatorNotReadyError):
         controller.start_app(CLASH_ROYALE_PACKAGE)
@@ -264,97 +231,68 @@ def test_start_app_missing_raises_bot_not_ready(monkeypatch: pytest.MonkeyPatch)
     assert ("start_app", CLASH_ROYALE_PACKAGE) not in facade.calls
 
 
-# ── display geometry fallback ─────────────────────────────────────────────────
+# ── display geometry ─────────────────────────────────────────────────────────
 
 
-def test_configure_refusal_reconnects_plain_then_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_connect_default_passes_display_config(monkeypatch: pytest.MonkeyPatch) -> None:
     facade = _FakeFacade()
-    attempts: list[str] = []
+    captured: dict[str, object] = {}
 
-    class FakeFeatureNotSupportedError(Exception):
-        pass
-
-    def fake_connect_sync(target: str, *, config: tuple[str, dict[str, object]] | None = None) -> _FakeFacade:
-        wants_display = bool(config) and "display" in config[1]
-        attempts.append("config" if wants_display else "plain")
-        if wants_display:
-            raise FakeFeatureNotSupportedError
+    def fake_connect_sync(target: str, *, config: object = None) -> _FakeFacade:
+        captured["target"] = target
+        captured["config"] = config
         return facade
 
     fake_module = types.SimpleNamespace(
         AdbConfig=lambda **kwargs: ("adb", kwargs),
         DisplayConfig=lambda **kwargs: ("display", kwargs),
         EmuctlConfig=lambda **kwargs: ("config", kwargs),
-        FeatureNotSupportedError=FakeFeatureNotSupportedError,
         connect_sync=fake_connect_sync,
     )
     monkeypatch.setitem(sys.modules, "emuctl", fake_module)
-    adb_calls = _install_fake_adb(monkeypatch)
 
-    connected, display_configured = emuctl_adapter._connect_default("adb:127.0.0.1:5555")
+    connected = emuctl_adapter._connect_default("adb:127.0.0.1:5555")
 
     assert connected is facade
-    assert display_configured is False
-    assert attempts == ["config", "plain"]
-
-    # Constructor-level check: the refused-connect facade path uses raw wm.
-    controller = emuctl_adapter.EmuctlController(_RecordingLogger(), facade=facade)
-    assert controller.target == "adb:127.0.0.1:5555"
-    assert ("adb", "-s", "127.0.0.1:5555", "shell", "wm", "size", "419x633") in adb_calls
-    assert ("adb", "-s", "127.0.0.1:5555", "shell", "wm", "density", "160") in adb_calls
-
-
-def test_declared_configure_skips_the_wm_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, adb_calls = _controller(monkeypatch, _FakeFacade(declares_configure=True))
-
-    assert controller.target == "adb:127.0.0.1:5555"
+    assert captured["config"] == (
+        "config",
+        {
+            "adb": ("adb", {"path": None, "port": 5037}),
+            "display": ("display", {"width": 419, "height": 633, "dpi": 160}),
+        },
+    )
     assert ("configure", None) in facade.calls
-    assert adb_calls == []
 
 
-def test_stop_restores_originals_then_closes(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, adb_calls = _controller(monkeypatch)
+def test_stop_closes_facade_without_adb(monkeypatch: pytest.MonkeyPatch) -> None:
+    controller, facade = _controller(monkeypatch)
 
+    def _fail(*args: object, **kwargs: object) -> object:
+        raise AssertionError("stop must not shell out to adb")
+
+    monkeypatch.setattr(subprocess, "run", _fail)
     controller.stop()
-    controller.stop()  # idempotent
+    controller.stop()
 
-    assert ("adb", "-s", "127.0.0.1:5555", "shell", "wm", "size", "1080x2400") in adb_calls
-    assert ("adb", "-s", "127.0.0.1:5555", "shell", "wm", "density", "420") in adb_calls
     assert facade.close_calls == 1
+    assert not hasattr(emuctl_adapter, "_WmGeometry")
+    assert not hasattr(emuctl_adapter, "_run_adb")
 
 
 def test_abort_delegates_to_stop(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, facade, adb_calls = _controller(monkeypatch)
+    controller, facade = _controller(monkeypatch)
 
     controller.abort()
 
-    assert ("adb", "-s", "127.0.0.1:5555", "shell", "wm", "size", "1080x2400") in adb_calls
     assert facade.close_calls == 1
-
-
-def test_stop_restores_only_changed_properties(monkeypatch: pytest.MonkeyPatch) -> None:
-    controller, _, adb_calls = _controller(
-        monkeypatch,
-        initial_size="Physical size: 419x633\n",
-        initial_density="Physical density: 420\n",
-    )
-    device = ("adb", "-s", "127.0.0.1:5555", "shell", "wm")
-
-    assert (*device, "size", "419x633") not in adb_calls  # already correct, never set
-    assert (*device, "density", "160") in adb_calls
-
-    controller.stop()
-
-    assert (*device, "size", "419x633") not in adb_calls  # nothing to restore
-    assert (*device, "density", "420") in adb_calls
 
 
 # ── health / registration ─────────────────────────────────────────────────────
 
 
 def test_is_reachable_maps_probe_result(monkeypatch: pytest.MonkeyPatch) -> None:
-    reachable, _, _ = _controller(monkeypatch, _FakeFacade(reachable=True))
-    unreachable, _, _ = _controller(monkeypatch, _FakeFacade(reachable=False))
+    reachable, _ = _controller(monkeypatch, _FakeFacade(reachable=True))
+    unreachable, _ = _controller(monkeypatch, _FakeFacade(reachable=False))
 
     assert reachable.is_reachable() == (True, "")
     assert unreachable.is_reachable() == (False, "no-adb")
@@ -452,11 +390,13 @@ def test_real_facade_against_fake_adb_shim(tmp_path: Path) -> None:
         assert controller.restart(ready=lambda _emulator: True) is True
 
         lines = adb_log.read_text(encoding="utf-8").splitlines()
-        assert "shell wm size 419x633" in lines
-        assert "shell wm density 160" in lines
         force_stop = lines.index(f"shell am force-stop {CLASH_ROYALE_PACKAGE}")
         launch = next(index for index, line in enumerate(lines) if line.startswith("shell monkey -p "))
         assert force_stop < launch
         assert time.monotonic() - started < 5.0
+
+        before_stop = len(lines)
+        controller.stop()
+        assert len(adb_log.read_text(encoding="utf-8").splitlines()) == before_stop
     finally:
         controller.stop()
