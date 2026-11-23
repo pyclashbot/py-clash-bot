@@ -1,6 +1,8 @@
 from collections.abc import Sequence
 
 # --- Clash main / global ---
+POST_BATTLE_TOP_CROWNS_REGION = (70, 80, 350, 170)
+POST_BATTLE_BOTTOM_CROWNS_REGION = (70, 250, 350, 340)
 CLASH_MAIN_DEADSPACE_COORD = (35, 500)
 
 # --- Nav ---
