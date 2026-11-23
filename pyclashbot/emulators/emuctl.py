@@ -20,8 +20,6 @@ transport liveness).
 
 from __future__ import annotations
 
-import re
-import subprocess
 import time
 from typing import TYPE_CHECKING, Any, Protocol
 
@@ -47,7 +45,6 @@ DEFAULT_READY_TIMEOUT_SECONDS = 240.0
 REQUIRED_WIDTH = 419
 REQUIRED_HEIGHT = 633
 REQUIRED_DENSITY = 160
-_REQUIRED_SIZE = f"{REQUIRED_WIDTH}x{REQUIRED_HEIGHT}"
 
 
 class _Probe(Protocol):
@@ -96,94 +93,17 @@ def _connect_default(
     *,
     adb_path: str | None = None,
     adb_server_port: int | None = None,
-) -> tuple[_Facade, bool]:
-    """Connect through emuctl's sync facade."""
-    from emuctl import (  # optional dependency, lazy by design
-        AdbConfig,
-        DisplayConfig,
-        EmuctlConfig,
-        FeatureNotSupportedError,
-        connect_sync,
-    )
+) -> _Facade:
+    """Connect through emuctl's sync facade and apply the required display geometry."""
+    from emuctl import AdbConfig, DisplayConfig, EmuctlConfig, connect_sync
 
-    adb_config = AdbConfig(
-        path=adb_path,
-        port=adb_server_port if adb_server_port is not None else 5037,
-    )
     config = EmuctlConfig(
-        adb=adb_config,
+        adb=AdbConfig(path=adb_path, port=adb_server_port if adb_server_port is not None else 5037),
         display=DisplayConfig(width=REQUIRED_WIDTH, height=REQUIRED_HEIGHT, dpi=REQUIRED_DENSITY),
     )
-    try:
-        facade = connect_sync(target, config=config)
-    except FeatureNotSupportedError:
-        return connect_sync(target, config=EmuctlConfig(adb=adb_config)), False
+    facade = connect_sync(target, config=config)
     facade.configure()
-    return facade, True
-
-
-def _declares_configure(facade: _Facade) -> bool:
-    return any(getattr(feature, "value", feature) == "configure" for feature in facade.features)
-
-
-def _run_adb(adb_path: str, *args: str) -> subprocess.CompletedProcess[str]:
-    """Run one raw ADB command (list argv, never a shell) for the wm fallback."""
-    return subprocess.run([adb_path, *args], capture_output=True, text=True, check=False)
-
-
-class _WmGeometry:
-    """TODO(CONFIGURE): quarantined raw-ADB size/density fallback.
-
-    emuctl's adb backend does not declare CONFIGURE yet (amendment pending), so
-    until it does we install the bot's fixed frame with two ``wm`` commands and
-    restore the device's originals on ``stop()``. Delete this class once the
-    amendment lands; nothing else in the adapter should shell out to ADB.
-
-    Verification: the achieved size is checked from the first screenshot with
-    emuctl's ``png_dimensions`` (never by parsing ``wm size`` output). Density is
-    not observable through emuctl's public surface — verifying it stays blocked
-    on the headless POC (compare a reference frame).
-    """
-
-    def __init__(self, adb_path: str, serial: str, adb_server_port: int | None = None) -> None:
-        self._adb_path = adb_path
-        self._serial = serial
-        self._adb_server_port = adb_server_port
-        self._original_size: str | None = None
-        self._original_density: str | None = None
-
-    def _adb(self, *args: str) -> subprocess.CompletedProcess[str]:
-        prefix = ("-P", str(self._adb_server_port)) if self._adb_server_port is not None else ()
-        return _run_adb(self._adb_path, *prefix, "-s", self._serial, *args)
-
-    def _current_size(self) -> str | None:
-        result = self._adb("shell", "wm", "size")
-        matches = re.findall(r"(?:Physical|Override) size: (\d+x\d+)", result.stdout or "")
-        return matches[-1] if matches else None
-
-    def _current_density(self) -> str | None:
-        result = self._adb("shell", "wm", "density")
-        match = re.search(r"(?:Physical|Override) density: (\d+)", result.stdout or "")
-        return match.group(1) if match else None
-
-    def force_frame(self) -> None:
-        size = self._current_size()
-        if size != _REQUIRED_SIZE:
-            self._original_size = size
-            self._adb("shell", "wm", "size", _REQUIRED_SIZE)
-
-        density = self._current_density()
-        if density != str(REQUIRED_DENSITY):
-            self._original_density = density
-            self._adb("shell", "wm", "density", str(REQUIRED_DENSITY))
-
-    def restore(self) -> None:
-        if self._original_size is not None:
-            self._adb("shell", "wm", "size", self._original_size)
-            self._original_size = None
-        if self._original_density is not None:
-            self._adb("shell", "wm", "density", self._original_density)
-            self._original_density = None
+    return facade
 
 
 class EmuctlController(BaseEmulatorController):
@@ -226,28 +146,16 @@ class EmuctlController(BaseEmulatorController):
         self._connected_via_emuctl = facade is None
 
         self.logger.change_status(f"Connecting to emuctl target {self.target}...")
-        if facade is None:
-            self._facade, display_configured = _connect_default(
+        self._facade = (
+            _connect_default(
                 self.target,
                 adb_path=adb_path,
                 adb_server_port=adb_server_port,
             )
-        else:
-            self._facade = facade
-            display_configured = False
+            if facade is None
+            else facade
+        )
         self.logger.log(f"Connected to emuctl target {self.target}.")
-
-        # 419x633 is the only supported frame; there is no consumer-side scaling.
-        serial = self.target.split(":", 1)[1]
-        self._wm = _WmGeometry(adb_path or "adb", serial, adb_server_port)
-        if display_configured:
-            self.logger.log("Display geometry configured through emuctl.")
-        elif _declares_configure(self._facade):
-            self._facade.configure()
-            self.logger.log("Display geometry configured through emuctl.")
-        else:
-            self._wm.force_frame()
-            self.logger.log(f"Display forced to {_REQUIRED_SIZE} @ {REQUIRED_DENSITY}dpi via adb wm.")
 
     @staticmethod
     def _resolve_target(device_serial: str | None) -> str:
@@ -263,7 +171,7 @@ class EmuctlController(BaseEmulatorController):
         self.logger.log("Create is not supported by the emuctl adb backend.")
 
     def configure(self) -> None:
-        """Display geometry is handled in construction; backend config is emuctl's."""
+        """Display geometry is applied through emuctl CONFIGURE at construction."""
         self.logger.log("Configure is not supported by the emuctl adb backend.")
 
     def start(self) -> None:
@@ -292,15 +200,14 @@ class EmuctlController(BaseEmulatorController):
         return self.is_reachable()[0]
 
     def abort(self) -> None:
-        """Restore wm geometry and release the facade after a failed setup."""
+        """Release the facade after a failed setup."""
         self.stop()
 
     def stop(self) -> None:
-        """Restore any wm overrides, then release the facade (idempotent)."""
+        """Close the facade; dedicated guests keep 419x633 at density 160 (idempotent)."""
         if self._stopped:
             return
         self._stopped = True
-        self._wm.restore()
         self._facade.close()
 
     # ── screen ──
