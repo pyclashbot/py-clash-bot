@@ -45,6 +45,7 @@ from pyclashbot.bot.state_detect import (
     check_if_on_clash_main_menu,
     check_pixels_for_win_in_battle_log,
     count_elixir,
+    read_post_battle_crown_score,
 )
 from pyclashbot.utils.logger import Logger
 from pyclashbot.utils.versioning import __version__
@@ -52,6 +53,59 @@ from pyclashbot.utils.versioning import __version__
 ELIXIR_WAIT_TIMEOUT = 40  # too high but someone got errors with that so idk
 ABILITY_TRIGGER_DELAY_S = 3
 INCOMPLETE_DECK_POPUP_DELAY_S = 0.5
+_battle_result_recorded = False
+_battle_result_won: bool | None = None
+
+
+def reset_battle_result_latch() -> None:
+    global _battle_result_recorded, _battle_result_won
+    _battle_result_recorded = False
+    _battle_result_won = None
+
+
+def battle_result_recorded() -> bool:
+    return _battle_result_recorded
+
+
+def battle_result_outcome() -> str | None:
+    if not _battle_result_recorded or _battle_result_won is None:
+        return None
+    return "win" if _battle_result_won else "loss"
+
+
+def record_battle_result(logger: Logger, won: bool, *, track: bool = True) -> bool:
+    """Record the fight result once; return False when the latch already fired."""
+    global _battle_result_recorded, _battle_result_won
+    if _battle_result_recorded:
+        return False
+    _battle_result_recorded = True
+    _battle_result_won = won
+    if track:
+        if won:
+            logger.add_win()
+        else:
+            logger.add_loss()
+    logger.log(f"Recorded battle result: {'win' if won else 'loss'}")
+    return True
+
+
+def _record_post_battle_result(emulator, logger: Logger, *, track: bool) -> str | None:
+    if _battle_result_recorded:
+        return battle_result_outcome()
+    score = read_post_battle_crown_score(emulator)
+    if score is None:
+        logger.log("Post-battle crown score not detected; deferring")
+        return None
+    player, opponent = score
+    if player == opponent:
+        logger.log(f"Post-battle crown score {player}-{opponent} has no winner; deferring")
+        return None
+    won = player > opponent
+    record_battle_result(logger, won, track=track)
+    outcome = "win" if won else "loss"
+    finish_fight_recording(outcome)
+    logger.log(f"Post-battle result: {outcome} ({player}-{opponent})")
+    return outcome
 
 
 def _maybe_start_fight_recording(
@@ -74,6 +128,7 @@ def do_fight_state(
 ) -> bool:
     """Handle the entirety of a battle state (start fight, do fight, end fight)."""
 
+    reset_battle_result_latch()
     logger.change_status("Waiting for battle to start")
 
     # Wait for battle start
@@ -307,39 +362,37 @@ def end_fight_state(
     recording_flag,
     disable_win_tracker_toggle=True,
 ):
-    """Method to handle the time after a fight and before the next state"""
-    # count the crown score on this end-battle screen
+    """Record the result at the post-battle banner, then navigate back to main."""
+    track_result = is_recording() or not disable_win_tracker_toggle
+    if track_result:
+        _record_post_battle_result(emulator, logger, track=not disable_win_tracker_toggle)
 
-    # get to clash main after this fight
     logger.log("Returning to main menu after fight")
     if get_to_main_after_fight(emulator, logger) is False:
         logger.log("Failed to return to main menu after fight")
-        finish_fight_recording(None)
+        if not battle_result_recorded():
+            finish_fight_recording(None)
         return False
 
     logger.log("Returned to main menu after fight")
     time.sleep(3)
 
-    # Determine the outcome. Force the win check when a recording is active so the
-    # pack gets a real win/loss; otherwise honor the user's win-tracker toggle.
-    if is_recording() or not disable_win_tracker_toggle:
-        win_check_return = check_if_previous_game_was_win(emulator, logger)
+    if track_result:
+        win_check_return = check_if_previous_game_was_win(emulator, logger, track=not disable_win_tracker_toggle)
 
         if win_check_return == "restart":
             logger.log("Failed while checking if previous game was a win")
-            finish_fight_recording(None)
+            if not battle_result_recorded():
+                finish_fight_recording(None)
             return False
 
-        outcome = "win" if win_check_return else "loss"
-
-        # Only touch the user's win/loss stats when their tracker is enabled.
-        if not disable_win_tracker_toggle:
-            if win_check_return:
-                logger.add_win()
-            else:
-                logger.add_loss()
-
-        finish_fight_recording(outcome)
+        outcome = battle_result_outcome()
+        if outcome is None:
+            finish_fight_recording("win" if win_check_return else "loss")
+        else:
+            observed = "win" if win_check_return else "loss"
+            if outcome != observed:
+                logger.log(f"Battle-log result {observed} disagrees with recorded {outcome}; keeping recorded")
     else:
         logger.log("Not checking win/loss because check is disabled")
         finish_fight_recording(None)
@@ -350,8 +403,10 @@ def end_fight_state(
 def check_if_previous_game_was_win(
     emulator,
     logger: Logger,
+    *,
+    track: bool = True,
 ) -> bool | Literal["restart"]:
-    """Method to handle the checking if the previous game was a win or loss"""
+    """Verify the previous game in the battle log; record it if no early result landed."""
     logger.change_status(status="Checking last game result")
 
     # Use wait_for_clash_main_menu to ensure we are on the main menu.
@@ -369,6 +424,14 @@ def check_if_previous_game_was_win(
     is_a_win = check_pixels_for_win_in_battle_log(emulator)
     result = "win" if is_a_win else "loss"
     logger.change_status(status=f"Last game result: {result}")
+
+    if battle_result_recorded():
+        recorded = battle_result_outcome()
+        if recorded != result:
+            logger.log(f"Battle-log result {result} disagrees with recorded {recorded}; keeping recorded")
+    else:
+        record_battle_result(logger, is_a_win, track=track)
+        finish_fight_recording(result)
 
     # close battle log
     logger.change_status(status="Returning to main menu")

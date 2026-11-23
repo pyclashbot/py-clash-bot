@@ -8,9 +8,15 @@ This module is a leaf: the only pyclashbot.bot module it imports from is
 `coords` (itself a leaf — pure data, no imports). No nav, fight, deck, etc.
 """
 
+import cv2
 import numpy
 
-from pyclashbot.bot.coords import BATTLE_DECK_WIDGET_REGION, MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP
+from pyclashbot.bot.coords import (
+    BATTLE_DECK_WIDGET_REGION,
+    MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP,
+    POST_BATTLE_BOTTOM_CROWNS_REGION,
+    POST_BATTLE_TOP_CROWNS_REGION,
+)
 from pyclashbot.detection.image_rec import (
     all_pixels_are_equal,
     check_line_for_color,
@@ -111,6 +117,32 @@ def check_if_battle_has_ended(emulator) -> bool:
         return True
 
     return False
+
+
+def _count_gold_crowns(hsv: numpy.ndarray, region: tuple[int, int, int, int]) -> int:
+    x1, y1, x2, y2 = region
+    mask = cv2.inRange(hsv[y1:y2, x1:x2], numpy.array([10, 120, 120]), numpy.array([40, 255, 255]))
+    count, _, stats, _ = cv2.connectedComponentsWithStats(mask)
+    return sum(
+        1
+        for index in range(1, count)
+        if stats[index, cv2.CC_STAT_AREA] >= 500
+        and stats[index, cv2.CC_STAT_WIDTH] >= 50
+        and stats[index, cv2.CC_STAT_HEIGHT] >= 25
+    )
+
+
+def read_post_battle_crown_score(emulator) -> tuple[int, int] | None:
+    """Return (player, opponent) crowns from the post-battle banner, or None."""
+    image = emulator.screenshot()
+    if image is None:
+        return None
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    player = _count_gold_crowns(hsv, POST_BATTLE_BOTTOM_CROWNS_REGION)
+    opponent = _count_gold_crowns(hsv, POST_BATTLE_TOP_CROWNS_REGION)
+    if player + opponent == 0 or player > 3 or opponent > 3:
+        return None
+    return player, opponent
 
 
 def check_for_post_battle_button(emulator) -> bool:
