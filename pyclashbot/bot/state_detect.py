@@ -76,22 +76,11 @@ def check_if_in_battle(emulator):
 
 
 def check_for_incomplete_deck_popup(emulator) -> bool:
-    """Detect the game's "You need to have 8 cards in your Battle Deck!" refusal.
-
-    The reference image is pending (Onboarding-Runner capture); until it lands the
-    matcher returns False. The fight flow and unit tests are already wired so
-    adding ``detection/reference_images/battle_deck_incomplete/`` turns it on.
-    """
+    """True when the game refuses the match because the Battle Deck is not full."""
     image = emulator.screenshot()
     if image is None:
         return False
-    try:
-        return find_image(image, "battle_deck_incomplete") is not None
-    except (FileNotFoundError, ValueError):
-        # No reference folder yet (or an empty one, which trips the zero-worker
-        # pool). Both are safe no-ops until a captured frame lands.
-        # TODO(onboarding): remove once the refusal frame is committed.
-        return False
+    return find_image(image, "battle_deck_incomplete") is not None
 
 
 def check_if_battle_has_ended(emulator) -> bool:

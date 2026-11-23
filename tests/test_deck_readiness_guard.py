@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from multiprocessing import Event, Queue
-from typing import TYPE_CHECKING
+from pathlib import Path
 
+import cv2
 import numpy as np
 import pytest
+from PIL import Image
 
 from pyclashbot.bot import fight, nav, state_detect, states
 from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
@@ -15,8 +17,20 @@ from pyclashbot.bot.fight import start_fight
 from pyclashbot.bot.state_detect import check_for_incomplete_deck_popup
 from pyclashbot.utils.logger import Logger, ProcessLogger
 
-if TYPE_CHECKING:
-    from pathlib import Path
+FIXTURES = Path(__file__).resolve().parents[1] / "tests" / "fixtures"
+
+
+def _load_bgr(name: str) -> np.ndarray:
+    rgb = np.array(Image.open(FIXTURES / name).convert("RGB"))
+    return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+
+
+class _FrameEmulator:
+    def __init__(self, image: np.ndarray) -> None:
+        self.image = image
+
+    def screenshot(self) -> np.ndarray:
+        return self.image
 
 
 class _FakeEmulator:
@@ -31,33 +45,15 @@ class _FakeEmulator:
         self.clicks.append((x_coord, y_coord))
 
 
-def test_popup_matcher_uses_reference_image(monkeypatch: pytest.MonkeyPatch) -> None:
-    emulator = _FakeEmulator()
-    monkeypatch.setattr(state_detect, "find_image", lambda *args, **kwargs: (10, 20))
+def test_deck_refusal_frame_is_detected() -> None:
+    emulator = _FrameEmulator(_load_bgr("deck_refusal.png"))
     assert check_for_incomplete_deck_popup(emulator) is True
+    assert state_detect.find_image(emulator.image, "battle_deck_incomplete") == (55, 286)
 
-    monkeypatch.setattr(state_detect, "find_image", lambda *args, **kwargs: None)
+
+def test_main_menu_is_not_a_deck_refusal() -> None:
+    emulator = _FrameEmulator(_load_bgr("fresh_main_menu.png"))
     assert check_for_incomplete_deck_popup(emulator) is False
-
-
-def test_popup_matcher_tolerates_missing_reference(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The reference frame is pending; a missing folder must be a no-op, not a crash."""
-
-    def _missing(*args: object, **kwargs: object) -> object:
-        raise FileNotFoundError("battle_deck_incomplete")
-
-    monkeypatch.setattr(state_detect, "find_image", _missing)
-    assert check_for_incomplete_deck_popup(_FakeEmulator()) is False
-
-
-def test_popup_matcher_tolerates_empty_reference(monkeypatch: pytest.MonkeyPatch) -> None:
-    """An empty folder trips find_image's zero-worker pool; treat it as no-op."""
-
-    def _empty(*args: object, **kwargs: object) -> object:
-        raise ValueError("max_workers must be greater than 0")
-
-    monkeypatch.setattr(state_detect, "find_image", _empty)
-    assert check_for_incomplete_deck_popup(_FakeEmulator()) is False
 
 
 def test_wait_for_battle_start_raises_on_delayed_refusal(monkeypatch: pytest.MonkeyPatch) -> None:
