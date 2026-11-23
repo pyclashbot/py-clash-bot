@@ -67,10 +67,10 @@ def check_if_in_battle(emulator):
     coords_1v1 = [(528, 49), (532, 77), (546, 52), (546, 77), (618, 115)]
     coords_2v2 = [(534, 53), (533, 80), (548, 52), (548, 76), (615, 114)]
 
-    if check_mode(coords_1v1):
-        return True
-    if check_mode(coords_2v2):
-        return True
+    if check_mode(coords_1v1) or check_mode(coords_2v2):
+        # A fresh main menu can satisfy the gold/bright battle pixels (Pass Royale
+        # button); the main-menu check disambiguates the two screens.
+        return not check_if_on_clash_main_menu(emulator)
 
     return False
 
