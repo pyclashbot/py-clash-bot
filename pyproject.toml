@@ -107,7 +107,7 @@ python-version = "3.12"
 [tool.ty.analysis]
 # Build-time deps used by scripts/ live in the `build` dependency group
 # (platform-gated), which isn't installed in the default dev venv.
-allowed-unresolved-imports = ["cx_Freeze", "PyInstaller.**", "requests"]
+allowed-unresolved-imports = ["cx_Freeze", "PyInstaller.**", "requests", "emuctl"]
 
 # ttkbootstrap >=1.18 ships stubs covering bootstyle= on its widgets, but calls
 # through tkinter base types (e.g. Misc.configure(foreground=...)) still hit

@@ -11,7 +11,7 @@ from os.path import normpath
 from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
 from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
-from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, ReadyCheck
 from pyclashbot.utils.platform import Platform, is_macos
 
 DEBUG = False
@@ -592,7 +592,8 @@ class BlueStacksEmulatorController(AdbBasedController):
                 check=False,
             )
 
-    def restart(self) -> bool:
+    def restart(self, *, ready: ReadyCheck | None = None) -> bool:
+        # ready is accepted for the base contract; this backend owns its VM/menu wait.
         start_ts = time.time()
         self.logger.change_status("Starting BlueStacks 5 emulator restart process...")
 

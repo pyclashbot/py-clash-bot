@@ -10,7 +10,7 @@ import psutil
 from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
 from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController
-from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, ReadyCheck
 from pyclashbot.utils.platform import Platform
 
 DEBUG = False
@@ -332,7 +332,8 @@ class GooglePlayEmulatorController(AdbBasedController):
     def _set_screen_size(self, width, height):
         self.adb(f"shell wm size {width}x{height}")
 
-    def restart(self):
+    def restart(self, *, ready: ReadyCheck | None = None) -> bool:
+        # ready is accepted for the base contract; this backend owns its VM/menu wait.
         restart_start_time = time.time()
 
         self.logger.change_status("Starting Google Play emulator restart process...")

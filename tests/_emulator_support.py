@@ -104,6 +104,7 @@ def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = 
     from either step — that re-raises so the fixture can report it. Passes
     device_serial only when the controller's __init__ accepts it.
     """
+    from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
     from pyclashbot.emulators import EmulatorType, get_emulator_registry
 
     registry = get_emulator_registry()
@@ -134,7 +135,7 @@ def attach_emulator(cli_alias: str, logger: Logger, device_serial: str | None = 
 
     try:
         emu = cls(logger, **kwargs)
-        emu.restart()
+        emu.restart(ready=check_if_on_clash_main_menu)
         return emu
     except EmulatorNotReadyError:
         raise  # a real "not set up" signal — let the fixture report it, don't mask as None

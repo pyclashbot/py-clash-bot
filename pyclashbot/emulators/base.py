@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -10,6 +11,10 @@ if TYPE_CHECKING:
     from pyclashbot.utils.logger import Logger
 
 CLASH_ROYALE_PACKAGE = "com.supercell.clashroyale"
+
+# Optional caller-supplied readiness predicate. The bot passes its main-menu
+# detector; adapters may use it in place of their built-in readiness check.
+ReadyCheck = Callable[["BaseEmulatorController"], bool]
 
 
 class EmulatorNotReadyError(RuntimeError):
@@ -69,7 +74,7 @@ class BaseEmulatorController:
         """
         raise NotImplementedError
 
-    def restart(self) -> bool:
+    def restart(self, *, ready: ReadyCheck | None = None) -> bool:
         """
         Full boot -> configure -> launch Clash -> reach main menu.
 
@@ -78,8 +83,22 @@ class BaseEmulatorController:
         left on a main menu detectable by check_if_on_clash_main_menu(self), and
         raises EmulatorNotReadyError on any not-ready failure — it never returns
         False.
+
+        Args:
+            ready: Optional caller-supplied readiness predicate (the bot passes
+                ``check_if_on_clash_main_menu``). Adapters should prefer it over
+                their built-in check when provided.
         """
         raise NotImplementedError
+
+    def abort(self) -> None:
+        """Best-effort cleanup after a setup/restart failure.
+
+        Default no-op: adapters that may leave device or vendor state behind
+        (wm overrides, transport handles, partial VMs) override this. It must be
+        safe after a partial setup and must not raise — the caller is already
+        handling the original failure.
+        """
 
     def is_reachable(self) -> tuple[bool, str]:
         """Return (ok, reason). Default: a screenshot decodes to a non-empty array."""

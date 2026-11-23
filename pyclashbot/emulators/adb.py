@@ -5,7 +5,7 @@ import time
 from pyclashbot.bot.coords import CLAN_VOYAGE_CLOSE_BUTTON_COORDS
 from pyclashbot.bot.state_detect import check_if_on_clan_voyage, check_if_on_clash_main_menu
 from pyclashbot.emulators.adb_base import AdbBasedController, validate_device_serial
-from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError
+from pyclashbot.emulators.base import CLASH_ROYALE_PACKAGE, EmulatorNotReadyError, ReadyCheck
 from pyclashbot.utils.platform import Platform
 
 # Set to True for verbose ADB command logging
@@ -288,9 +288,13 @@ class AdbController(AdbBasedController):
         self.restore_original_screen_props()
         pass
 
+    def abort(self) -> None:
+        """Restore screen overrides after a failed setup/restart."""
+        self.stop()
+
     ## Implemented Methods ##
 
-    def restart(self) -> bool:
+    def restart(self, *, ready: ReadyCheck | None = None) -> bool:
         """
         Restarts the Clash Royale app to ensure a clean state.
         This method will:
@@ -299,11 +303,16 @@ class AdbController(AdbBasedController):
         3. Wait for the main menu to appear.
         Returns True once the main menu is reached; raises EmulatorNotReadyError
         if Clash isn't installed or the main menu never appears.
+
+        Args:
+            ready: Optional caller-supplied readiness predicate; defaults to the
+                built-in main-menu detector.
         """
         start_ts = time.time()
         self.logger.change_status("Restarting Clash Royale on device...")
 
         clash_pkg = CLASH_ROYALE_PACKAGE
+        is_ready = ready if ready is not None else check_if_on_clash_main_menu
 
         # 1. Force stop the app
         self.logger.change_status(f"Force-stopping {clash_pkg}...")
@@ -321,7 +330,7 @@ class AdbController(AdbBasedController):
         self.logger.change_status("Waiting for Clash Royale main menu...")
         deadline = time.time() + 240  # 4-minute timeout
         while time.time() < deadline:
-            if check_if_on_clash_main_menu(self):
+            if is_ready(self):
                 self.logger.change_status("Clash Royale main menu detected.")
                 dur = f"{time.time() - start_ts:.1f}s"
                 self.logger.log(f"App restart completed in {dur}")

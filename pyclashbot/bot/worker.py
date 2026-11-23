@@ -3,6 +3,7 @@ from multiprocessing import Process, Queue
 from multiprocessing.synchronize import Event
 from typing import Any, Protocol
 
+from pyclashbot.bot.state_detect import check_if_on_clash_main_menu
 from pyclashbot.bot.states import StateHistory, StateOrder, state_tree
 from pyclashbot.emulators import EmulatorType, get_emulator_registry
 from pyclashbot.emulators.base import EmulatorNotReadyError
@@ -43,6 +44,7 @@ class WorkerProcess(Process):
 
         controller_class = registry[emulator_selection]
 
+        emu = None
         try:
             if emulator_selection == EmulatorType.GOOGLE_PLAY:
                 print("Creating Google Play emulator")
@@ -73,22 +75,39 @@ class WorkerProcess(Process):
                 adb_serial = jobs.get(UIField.ADB_SERIAL.value) or None
                 emu = controller_class(logger=logger, device_serial=adb_serial)
 
+            elif emulator_selection == EmulatorType.EMUCTL:
+                print("Creating emuctl controller")
+                emuctl_serial = jobs.get(UIField.ADB_SERIAL.value) or None
+                emu = controller_class(logger=logger, device_serial=emuctl_serial)
+
             else:
                 return None
 
             # Construction is cheap; restart() boots the emulator and launches Clash.
             # First-boot failure stops the bot — there is no setup retry.
-            emu.restart()
+            emu.restart(ready=check_if_on_clash_main_menu)
             return emu
 
         except EmulatorNotReadyError as e:
             print(f"{emulator_selection} emulator is not ready: {e}")
             logger.change_status(f"{emulator_selection} is not ready — fix it and start the bot again.")
+            self._abort_failed_setup(emu, logger)
             return None
         except Exception as e:
             print(f"Failed to create {emulator_selection} emulator: {e}")
             logger.change_status(f"Failed to start {emulator_selection}. Verify its installation!")
+            self._abort_failed_setup(emu, logger)
             return None
+
+    @staticmethod
+    def _abort_failed_setup(emulator, logger: ProcessLogger) -> None:
+        """Best-effort backend cleanup after a failed setup; never masks the original error."""
+        if emulator is None:
+            return
+        try:
+            emulator.abort()
+        except Exception:
+            logger.error("Failed to clean up the emulator after a setup failure")
 
     def _run_bot_loop(self, emulator, jobs: dict[str, Any], logger: ProcessLogger) -> None:
         """Run the main bot state loop."""
