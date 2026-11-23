@@ -14,7 +14,7 @@ from pyclashbot.bot import fight, nav, state_detect, states
 from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
 from pyclashbot.bot.coords import START_FIGHT_BUTTON_COORD
 from pyclashbot.bot.fight import start_fight
-from pyclashbot.bot.state_detect import check_for_incomplete_deck_popup
+from pyclashbot.bot.state_detect import check_for_empty_battle_deck, check_for_incomplete_deck_popup
 from pyclashbot.utils.logger import Logger, ProcessLogger
 
 FIXTURES = Path(__file__).resolve().parents[1] / "tests" / "fixtures"
@@ -45,15 +45,86 @@ class _FakeEmulator:
         self.clicks.append((x_coord, y_coord))
 
 
-def test_deck_refusal_frame_is_detected() -> None:
+REFUSAL_POSITIVES = [
+    "deck_refusal.png",
+    "deck_refusal_live.png",
+    "deck_refusal_t03.png",
+    "deck_refusal_t06.png",
+]
+REFUSAL_NEGATIVES = [
+    "fresh_main_menu.png",
+    "real_battle.png",
+    "main_menu_live.png",
+    "main_menu_live2.png",
+    "deck_silent_0.png",
+    "deck_silent_10.png",
+    "deck_silent_15.png",
+    "deck_silent_25.png",
+    "deck_silent_40.png",
+]
+EMPTY_DECK_POSITIVES = [
+    "fresh_main_menu.png",
+    "deck_refusal_t03.png",
+    "deck_refusal_t06.png",
+    "deck_silent_0.png",
+    "deck_silent_10.png",
+    "deck_silent_15.png",
+    "deck_silent_25.png",
+    "deck_silent_40.png",
+]
+EMPTY_DECK_NEGATIVES = [
+    "real_battle.png",
+    "main_menu_live.png",
+    "main_menu_live2.png",
+    "deck_refusal_live.png",
+]
+
+
+def test_reference_frame_matches_at_expected_location() -> None:
     emulator = _FrameEmulator(_load_bgr("deck_refusal.png"))
-    assert check_for_incomplete_deck_popup(emulator) is True
-    assert state_detect.find_image(emulator.image, "battle_deck_incomplete") == (55, 286)
+    assert state_detect.find_image(emulator.image, "battle_deck_incomplete", tolerance=0.85) == (57, 291)
 
 
-def test_main_menu_is_not_a_deck_refusal() -> None:
-    emulator = _FrameEmulator(_load_bgr("fresh_main_menu.png"))
-    assert check_for_incomplete_deck_popup(emulator) is False
+@pytest.mark.parametrize("name", REFUSAL_POSITIVES)
+def test_deck_refusal_frame_is_detected(name: str) -> None:
+    assert check_for_incomplete_deck_popup(_FrameEmulator(_load_bgr(name))) is True
+
+
+@pytest.mark.parametrize("name", REFUSAL_NEGATIVES)
+def test_non_refusal_frame_is_rejected(name: str) -> None:
+    assert check_for_incomplete_deck_popup(_FrameEmulator(_load_bgr(name))) is False
+
+
+@pytest.mark.parametrize("name", EMPTY_DECK_POSITIVES)
+def test_empty_deck_frame_is_detected(name: str) -> None:
+    assert check_for_empty_battle_deck(_FrameEmulator(_load_bgr(name))) is True
+
+
+@pytest.mark.parametrize("name", EMPTY_DECK_NEGATIVES)
+def test_filled_deck_frame_is_not_empty(name: str) -> None:
+    assert check_for_empty_battle_deck(_FrameEmulator(_load_bgr(name))) is False
+
+
+def test_start_fight_raises_on_empty_deck(monkeypatch: pytest.MonkeyPatch) -> None:
+    class _RecordingLogger(Logger):
+        def __init__(self) -> None:
+            super().__init__(stats=None, timed=False)
+            self.statuses: list[str] = []
+
+        def change_status(self, status: str) -> None:
+            self.statuses.append(status)
+            super().change_status(status)
+
+    emulator = _FakeEmulator()
+    logger = _RecordingLogger()
+    monkeypatch.setattr(fight, "check_if_on_clash_main_menu", lambda _emulator: True)
+    monkeypatch.setattr(fight, "check_for_empty_battle_deck", lambda _emulator: True)
+
+    with pytest.raises(BattleDeckIncompleteError):
+        start_fight(emulator, logger, "Classic 1v1")
+
+    assert emulator.clicks == []
+    assert "Battle Deck empty — fill 8/8" in logger.statuses
 
 
 def test_wait_for_battle_start_raises_on_delayed_refusal(monkeypatch: pytest.MonkeyPatch) -> None:

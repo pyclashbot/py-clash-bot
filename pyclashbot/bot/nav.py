@@ -2,7 +2,7 @@ import random
 import time
 from typing import Literal
 
-from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
+from pyclashbot.bot.battle_errors import raise_deck_incomplete
 from pyclashbot.bot.coords import (
     BATTLE_LOG_BUTTON,
     BATTLE_WAIT_DEADSPACE_COORD,
@@ -95,16 +95,13 @@ def wait_for_battle_start(emulator, logger, timeout: float = 120) -> bool:
         # use the recorder helpers directly in a temporary script or
         # enable a local-only change — do not commit such changes.
 
-        # check_if_in_battle already takes a screenshot each poll. The popup
-        # matcher costs another screenshot + template search, so cap it at ~1 Hz
-        # across the matchmaking wait instead of running it at full loop rate.
+        # check_if_in_battle already screenshots each poll; cap the extra deck
+        # checks at ~1 Hz across the matchmaking wait.
         now_monotonic = time.monotonic()
         if now_monotonic >= next_popup_check:
             next_popup_check = now_monotonic + INCOMPLETE_DECK_POPUP_CHECK_INTERVAL_S
             if check_for_incomplete_deck_popup(emulator):
-                logger.change_status("Battle Deck incomplete — fill 8/8")
-                logger.log("The game refused the match: the Battle Deck needs 8 cards.")
-                raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
+                raise_deck_incomplete(logger)
 
         battle_result = check_if_in_battle(emulator)
 

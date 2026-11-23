@@ -10,7 +10,7 @@ This module is a leaf: the only pyclashbot.bot module it imports from is
 
 import numpy
 
-from pyclashbot.bot.coords import MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP
+from pyclashbot.bot.coords import BATTLE_DECK_WIDGET_REGION, MORE_CLAN_CHAT_CARD_OPTIONS_SUBCROP
 from pyclashbot.detection.image_rec import (
     all_pixels_are_equal,
     check_line_for_color,
@@ -80,7 +80,23 @@ def check_for_incomplete_deck_popup(emulator) -> bool:
     image = emulator.screenshot()
     if image is None:
         return False
-    return find_image(image, "battle_deck_incomplete") is not None
+    return find_image(image, "battle_deck_incomplete", tolerance=0.85) is not None
+
+
+def check_for_empty_battle_deck(emulator) -> bool:
+    """True when the Battle Deck widget shows an empty slot."""
+    image = emulator.screenshot()
+    if image is None:
+        return False
+    return (
+        find_image(
+            image,
+            "battle_deck_empty",
+            tolerance=0.90,
+            subcrop=BATTLE_DECK_WIDGET_REGION,
+        )
+        is not None
+    )
 
 
 def check_if_battle_has_ended(emulator) -> bool:

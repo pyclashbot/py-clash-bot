@@ -5,7 +5,7 @@ import random
 import time
 from typing import Literal
 
-from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
+from pyclashbot.bot.battle_errors import raise_deck_incomplete, raise_empty_deck
 from pyclashbot.bot.card_detection import (
     check_which_cards_are_available,
     create_default_bridge_iar,
@@ -38,6 +38,7 @@ from pyclashbot.bot.recorder import (
     stop_fight_capture,
 )
 from pyclashbot.bot.state_detect import (
+    check_for_empty_battle_deck,
     check_for_incomplete_deck_popup,
     check_if_battle_has_ended,
     check_if_in_battle,
@@ -149,6 +150,9 @@ def start_fight(emulator, logger, mode) -> bool:
         logger.change_status("Not on main menu — cannot start fight")
         return False
 
+    if check_for_empty_battle_deck(emulator):
+        raise_empty_deck(logger)
+
     # For all modes (1v1 and 2v2), use the same start button
     # Mode is already set by select_mode() in states.py, just click start button
     emulator.click(START_FIGHT_BUTTON_COORD[0], START_FIGHT_BUTTON_COORD[1])
@@ -166,9 +170,7 @@ def start_fight(emulator, logger, mode) -> bool:
     # not a battle failure that triggers emulator restarts.
     time.sleep(INCOMPLETE_DECK_POPUP_DELAY_S)
     if check_for_incomplete_deck_popup(emulator):
-        logger.change_status("Battle Deck incomplete — fill 8/8")
-        logger.log("The game refused the match: the Battle Deck needs 8 cards.")
-        raise BattleDeckIncompleteError("Battle Deck incomplete — fill 8/8")
+        raise_deck_incomplete(logger)
 
     return True
 
