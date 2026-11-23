@@ -151,19 +151,31 @@ PLAYABLE_PLAY_REGION_LTRB = (59, 67, 355, 467)
 # Arena normalization rect from the CNP arena (LTRB). Sampling/clicks stay inside
 # PLAYABLE_PLAY_REGION_LTRB; this rect only anchors normalized coordinates.
 ARENA_PLAY_REGION_LTRB = (50, 57, 367, 477)
+REFERENCE_FRAME_SIZE = (419, 633)
 
 
-def norm_to_px(xy_norm: Sequence[float], rect: Sequence[int] = ARENA_PLAY_REGION_LTRB) -> tuple[int, int]:
-    """Map normalized arena coordinates to absolute image pixels (no clamping)."""
+def norm_to_px(
+    xy_norm: Sequence[float],
+    rect: Sequence[int] = ARENA_PLAY_REGION_LTRB,
+    frame_size: tuple[int, int] = REFERENCE_FRAME_SIZE,
+) -> tuple[int, int]:
+    """Map normalized arena coordinates to frame pixels, scaling the arena rect."""
     left, top, right, bottom = rect
+    sx = frame_size[0] / REFERENCE_FRAME_SIZE[0]
+    sy = frame_size[1] / REFERENCE_FRAME_SIZE[1]
     return (
-        round(left + xy_norm[0] * (right - left)),
-        round(top + xy_norm[1] * (bottom - top)),
+        round(left * sx + xy_norm[0] * (right - left) * sx),
+        round(top * sy + xy_norm[1] * (bottom - top) * sy),
     )
 
 
 def clamp_to_playable(px: tuple[int, int]) -> tuple[int, int]:
-    """Clamp absolute pixels to the clickable play region."""
+    """Clamp pixels to the clickable region.
+
+    The arena rect is larger than the clickable region, so clamping shrinks the
+    effective model range below [0,1]: norm (0,0) clamps to (59,67) and (1,1)
+    clamps to (355,467).
+    """
     left, top, right, bottom = PLAYABLE_PLAY_REGION_LTRB
     return (min(max(px[0], left), right), min(max(px[1], top), bottom))
 
