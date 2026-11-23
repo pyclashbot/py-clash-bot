@@ -4,6 +4,7 @@ import random
 import time
 
 from pyclashbot.bot.account_switch import switch_account_state
+from pyclashbot.bot.battle_errors import BattleDeckIncompleteError
 from pyclashbot.bot.card_mastery_state import card_mastery_state
 from pyclashbot.bot.clan_chat_state import clan_chat_state
 from pyclashbot.bot.deck import randomize_deck_state, select_deck_state
@@ -447,7 +448,13 @@ def state_tree(
                 return state_order.next_state("end_fight")
             return state_order.next_state(state)
 
-        if war_state(emulator, logger):
+        try:
+            war_ok = war_state(emulator, logger)
+        except BattleDeckIncompleteError as exc:
+            logger.log(f"Stopping the fight chain: {exc}")
+            return "stop"
+
+        if war_ok:
             if not any_fight_mode_enabled(job_list):
                 logger.log("No fight modes enabled, skipping fight chain")
                 return state_order.next_state("end_fight")
@@ -497,7 +504,15 @@ def state_tree(
             return state_order.next_state(state)
 
         # Start fight using the selected mode directly
-        if start_fight(emulator, logger, mode_used_in_1v1) is False:
+        try:
+            started = start_fight(emulator, logger, mode_used_in_1v1)
+        except BattleDeckIncompleteError as exc:
+            # A configuration problem, not a battle failure: stop cleanly instead
+            # of bouncing through the emulator-restart net.
+            logger.log(f"Stopping the fight chain: {exc}")
+            return "stop"
+
+        if started is False:
             return handle_state_failure(logger, "start_fight", "start_fight", "Failed while starting fight")
 
         # go to next state
@@ -513,8 +528,8 @@ def state_tree(
 
         recording_flag = job_list.get(UIField.RECORD_FIGHTS_TOGGLE, False)
         custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
-        if (
-            do_fight_state(
+        try:
+            fight_started = do_fight_state(
                 emulator,
                 logger,
                 random_plays_flag,
@@ -523,8 +538,11 @@ def state_tree(
                 recording_flag=recording_flag,
                 custom_path=custom_path,
             )
-            is False
-        ):
+        except BattleDeckIncompleteError as exc:
+            logger.log(f"Stopping the fight chain: {exc}")
+            return "stop"
+
+        if fight_started is False:
             return handle_state_failure(
                 logger, "1v1_fight", "do_fight_state", f"1v1 fight failed in mode: {mode_used_in_1v1}"
             )
@@ -541,8 +559,8 @@ def state_tree(
 
         custom_path = job_list.get(UIField.RECORDING_FOLDER_PATH, None)
         # 2v2 fights are never recorded (training data is 1v1-only: Trophy Road + Classic 1v1).
-        if (
-            do_fight_state(
+        try:
+            fight_started = do_fight_state(
                 emulator,
                 logger,
                 random_plays_flag,
@@ -551,8 +569,11 @@ def state_tree(
                 recording_flag=False,
                 custom_path=custom_path,
             )
-            is False
-        ):
+        except BattleDeckIncompleteError as exc:
+            logger.log(f"Stopping the fight chain: {exc}")
+            return "stop"
+
+        if fight_started is False:
             return handle_state_failure(logger, "2v2_fight", "do_fight_state", "2v2 fight failed")
 
         return state_order.next_state(state)

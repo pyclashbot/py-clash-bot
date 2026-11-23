@@ -2,6 +2,7 @@ import random
 import time
 from typing import Literal
 
+from pyclashbot.bot.battle_errors import raise_deck_incomplete
 from pyclashbot.bot.coords import (
     BATTLE_LOG_BUTTON,
     BATTLE_WAIT_DEADSPACE_COORD,
@@ -39,6 +40,7 @@ from pyclashbot.bot.find import find_fight_mode_icon, find_post_battle_button
 from pyclashbot.bot.state_detect import (
     check_for_battle_days_started_popup,
     check_for_final_results_page,
+    check_for_incomplete_deck_popup,
     check_for_reward_choice_screen,
     check_for_trophy_reward_menu,
     check_if_in_battle,
@@ -57,9 +59,10 @@ from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.logger import Logger
 
 CLASH_MAIN_WAIT_TIMEOUT = 240  # s
+INCOMPLETE_DECK_POPUP_CHECK_INTERVAL_S = 1.0
 
 
-def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
+def wait_for_battle_start(emulator, logger, timeout: float = 120) -> bool:
     """Waits for any battle to start (1v1 or 2v2).
 
     Args:
@@ -71,9 +74,14 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
     Returns:
     -------
         bool: True if battle started, False if timed out.
+
+    Raises:
+        BattleDeckIncompleteError: If the game refuses the match because the
+            Battle Deck does not have 8 cards.
     """
     start_time = time.time()
     last_logged_second = -1
+    next_popup_check = time.monotonic()  # check immediately, then ~1 Hz
     while time.time() - start_time < timeout:
         elapsed_second = int(time.time() - start_time)
         if elapsed_second != last_logged_second:
@@ -86,6 +94,14 @@ def wait_for_battle_start(emulator, logger, timeout: int = 120) -> bool:
         # the production flow. If you need screenshots for debugging,
         # use the recorder helpers directly in a temporary script or
         # enable a local-only change — do not commit such changes.
+
+        # check_if_in_battle already screenshots each poll; cap the extra deck
+        # checks at ~1 Hz across the matchmaking wait.
+        now_monotonic = time.monotonic()
+        if now_monotonic >= next_popup_check:
+            next_popup_check = now_monotonic + INCOMPLETE_DECK_POPUP_CHECK_INTERVAL_S
+            if check_for_incomplete_deck_popup(emulator):
+                raise_deck_incomplete(logger)
 
         battle_result = check_if_in_battle(emulator)
 
