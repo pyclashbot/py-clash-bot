@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 # --- Clash main / global ---
 CLASH_MAIN_DEADSPACE_COORD = (35, 500)
 
@@ -146,6 +148,43 @@ WAR_BATTLE_PLAYFIELD_LTRB = (55, 256, 360, 470)
 # Full-board drop region for random/clean plays (LTRB), measured from a fight frame.
 # Sits inside the rl-bot PLAY_REGION normalization rect, so it does not affect coord norm.
 PLAYABLE_PLAY_REGION_LTRB = (59, 67, 355, 467)
+# Arena normalization rect from the CNP arena (LTRB). Sampling/clicks stay inside
+# PLAYABLE_PLAY_REGION_LTRB; this rect only anchors normalized coordinates.
+ARENA_PLAY_REGION_LTRB = (50, 57, 367, 477)
+REFERENCE_FRAME_SIZE = (419, 633)
+
+
+def norm_to_px(
+    xy_norm: Sequence[float],
+    rect: Sequence[int] = ARENA_PLAY_REGION_LTRB,
+    frame_size: tuple[int, int] = REFERENCE_FRAME_SIZE,
+) -> tuple[int, int]:
+    """Map normalized arena coordinates to frame pixels, scaling the arena rect."""
+    left, top, right, bottom = rect
+    sx = frame_size[0] / REFERENCE_FRAME_SIZE[0]
+    sy = frame_size[1] / REFERENCE_FRAME_SIZE[1]
+    return (
+        round(left * sx + xy_norm[0] * (right - left) * sx),
+        round(top * sy + xy_norm[1] * (bottom - top) * sy),
+    )
+
+
+def clamp_to_playable(px: tuple[int, int], frame_size: tuple[int, int] = REFERENCE_FRAME_SIZE) -> tuple[int, int]:
+    """Clamp pixels to the frame-scaled clickable region.
+
+    The arena rect is larger than the clickable region, so clamping shrinks the
+    effective model range below [0,1]: norm (0,0) clamps to (59,67) and (1,1)
+    clamps to (355,467) at the reference frame.
+    """
+    left, top, right, bottom = PLAYABLE_PLAY_REGION_LTRB
+    sx = frame_size[0] / REFERENCE_FRAME_SIZE[0]
+    sy = frame_size[1] / REFERENCE_FRAME_SIZE[1]
+    return (
+        min(max(px[0], round(left * sx)), round(right * sx)),
+        min(max(px[1], round(top * sy)), round(bottom * sy)),
+    )
+
+
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
 WAR_DEADSPACE_COORD = (20, 330)
 
