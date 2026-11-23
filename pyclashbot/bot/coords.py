@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 # --- Clash main / global ---
 CLASH_MAIN_DEADSPACE_COORD = (35, 500)
 
@@ -146,6 +148,26 @@ WAR_BATTLE_PLAYFIELD_LTRB = (55, 256, 360, 470)
 # Full-board drop region for random/clean plays (LTRB), measured from a fight frame.
 # Sits inside the rl-bot PLAY_REGION normalization rect, so it does not affect coord norm.
 PLAYABLE_PLAY_REGION_LTRB = (59, 67, 355, 467)
+# Arena normalization rect from the CNP arena (LTRB). Sampling/clicks stay inside
+# PLAYABLE_PLAY_REGION_LTRB; this rect only anchors normalized coordinates.
+ARENA_PLAY_REGION_LTRB = (50, 57, 367, 477)
+
+
+def norm_to_px(xy_norm: Sequence[float], rect: Sequence[int] = ARENA_PLAY_REGION_LTRB) -> tuple[int, int]:
+    """Map normalized arena coordinates to absolute image pixels (no clamping)."""
+    left, top, right, bottom = rect
+    return (
+        round(left + xy_norm[0] * (right - left)),
+        round(top + xy_norm[1] * (bottom - top)),
+    )
+
+
+def clamp_to_playable(px: tuple[int, int]) -> tuple[int, int]:
+    """Clamp absolute pixels to the clickable play region."""
+    left, top, right, bottom = PLAYABLE_PLAY_REGION_LTRB
+    return (min(max(px[0], left), right), min(max(px[1], top), bottom))
+
+
 # Safe deadspace tap on the war page (used to dismiss the battle-confirm overlay).
 WAR_DEADSPACE_COORD = (20, 330)
 
