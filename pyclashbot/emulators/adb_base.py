@@ -1,9 +1,10 @@
 import logging
-import os
 import re
+import shlex
 import subprocess
 import time
 from abc import ABC
+from subprocess import TimeoutExpired
 
 import cv2
 import numpy as np
@@ -12,7 +13,7 @@ from pyclashbot.emulators.base import (
     BaseEmulatorController,
     EmulatorNotReadyError,
 )
-from pyclashbot.utils.platform import is_linux
+from pyclashbot.utils.subprocess import run as run_command
 
 logger = logging.getLogger(__name__)
 
@@ -70,21 +71,16 @@ class AdbBasedController(BaseEmulatorController, ABC):
     def discover_devices(cls) -> list[str]:
         """List connected ADB device serials using this controller's ADB."""
         adb_path = cls.find_adb() or "adb"
-        parts = [f'"{adb_path}"']
+        argv = [adb_path]
         if cls.adb_server_port:
-            parts.append(f"-P {cls.adb_server_port}")
-        parts.append("devices")
-        full_command = " ".join(parts)
+            argv += ["-P", str(cls.adb_server_port)]
+        argv.append("devices")
         try:
-            result = subprocess.run(
-                full_command,
-                shell=True,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
+            result = run_command(argv, timeout=15)
         except OSError:
             return []  # ADB not available
+        except TimeoutExpired as e:
+            raise EmulatorNotReadyError("adb devices timed out after 15s") from e
         if result.returncode != 0:
             return []
         devices = []
@@ -141,32 +137,23 @@ class AdbBasedController(BaseEmulatorController, ABC):
         if self.device_serial and not validate_device_serial(self.device_serial):
             raise ValueError(f"Invalid device serial format: {self.device_serial}")
 
-        parts = [f'"{self.adb_path}"']
+        argv = [self.adb_path]
 
         if self.adb_server_port:
-            parts.append(f"-P {self.adb_server_port}")
+            argv += ["-P", str(self.adb_server_port)]
 
         if not self._is_server_command(command) and self.device_serial:
-            parts.append(f"-s {self.device_serial}")
+            argv += ["-s", self.device_serial]
 
-        parts.append(command)
-        full_command = " ".join(parts)
+        argv += shlex.split(command)
 
-        logger.debug("Executing ADB: %s", full_command)
+        logger.debug("Executing ADB: %s", argv)
 
-        kwargs: dict = {
-            "shell": True,
-            "capture_output": True,
-            "text": not binary_output,
-        }
-
-        if self.adb_env:
-            kwargs["env"] = self.adb_env
-
-        if is_linux():
-            kwargs["preexec_fn"] = os.setsid
-
-        result = subprocess.run(full_command, check=False, **kwargs)
+        try:
+            result = run_command(argv, timeout=30, text=not binary_output, env=self.adb_env)
+        except TimeoutExpired as e:
+            # A wedged adb is an unreachable emulator, not merely a failed command.
+            raise EmulatorNotReadyError(f"adb command timed out after 30s: {command}") from e
 
         if binary_output:
             logger.debug("ADB result: rc=%d, stdout=%d bytes", result.returncode, len(result.stdout or b""))
