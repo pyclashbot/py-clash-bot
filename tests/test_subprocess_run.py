@@ -42,14 +42,41 @@ def test_timeout_reaps_child(tmp_path):
     assert not psutil.pid_exists(pid), "timed-out command was orphaned"
 
 
+def _wait_gone(pid: int, timeout: float = 5.0) -> bool:
+    """Wait for pid to be reaped; a zombie is dead, just not yet collected."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        try:
+            if psutil.Process(pid).status() == psutil.STATUS_ZOMBIE:
+                return True
+        except psutil.NoSuchProcess:
+            return True
+        time.sleep(0.05)
+    return False
+
+
+def test_timeout_kills_grandchild(tmp_path):
+    tag = tmp_path / "pids"
+    # The grandchild ignores SIGTERM so only a real tree kill (SIGKILL to the
+    # group, or taskkill /F /T) can remove it.
+    grandchild = "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(60)"
+    child = (
+        "import os, signal, subprocess, sys, time;"
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN);"
+        f"g = subprocess.Popen([sys.executable, '-c', {grandchild!r}]);"
+        f"open({str(tag)!r}, 'w').write(f'{{os.getpid()}} {{g.pid}}');"
+        "time.sleep(60)"
+    )
+    with pytest.raises(subprocess.TimeoutExpired):
+        sp.run([sys.executable, "-c", child], timeout=3)
+    child_pid, grandchild_pid = (int(pid) for pid in tag.read_text().split())
+    assert _wait_gone(child_pid), "timed-out child was left running"
+    assert _wait_gone(grandchild_pid), "timed-out grandchild was orphaned"
+
+
 def test_surviving_kill_still_bounded(monkeypatch):
-    real = sp.Popen
-
-    class Unkillable(real):
-        def kill(self):
-            pass  # simulate a child that ignores the kill
-
-    monkeypatch.setattr(sp, "Popen", Unkillable)
+    # Simulate a tree kill that does not work: the drain must still be bounded.
+    monkeypatch.setattr(sp, "_kill_tree", lambda proc: None)
     start = time.monotonic()
     with pytest.raises(subprocess.TimeoutExpired):
         sp.run([sys.executable, "-c", "import time; time.sleep(8)"], timeout=1)
