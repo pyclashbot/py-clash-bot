@@ -18,6 +18,7 @@ from pyclashbot.bot.nav import (
     switch_deck_page,
 )
 from pyclashbot.bot.state_detect import (
+    check_if_on_card_page,
     check_if_on_clash_main_menu,
     check_if_on_classic_1v1_deck_page,
     check_if_on_classic_2v2_deck_page,
@@ -54,6 +55,18 @@ def _on_known_deck_page(emulator) -> bool:
     )
 
 
+def _on_battle_deck_page(emulator) -> bool:
+    """Mode-bannered deck pages, plus the generic 8/8 Battle Deck page.
+
+    The collection/deck tab opens the generic page on some accounts; it uses the
+    same options/randomize/confirm flow and has no mode banner. A full deck is
+    the positive signal there.
+    """
+    if _on_known_deck_page(emulator):
+        return True
+    return check_if_on_card_page(emulator) and is_deck_full(emulator)
+
+
 def _wait_until(predicate, *, timeout: float) -> bool:
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -77,6 +90,9 @@ def _select_deck_tab(emulator, logger: Logger, deck_number: int) -> bool:
             return False
         coords = find_image(emulator.screenshot(), folder, subcrop=DECK_TABS_REGION, tolerance=0.98)
     if coords is None:
+        if is_deck_full(emulator):
+            logger.change_status(f"Deck #{deck_number} tab is not visible; using the active full deck")
+            return True
         logger.change_status(f"Deck #{deck_number} tab not found; cannot randomize")
         return False
     emulator.click(coords[0] + 15, coords[1] + 15)
@@ -202,8 +218,8 @@ def randomize_deck(emulator, logger: Logger, deck_number: int = 2) -> bool:
         logger.change_status("Failed to reach the card page; not randomizing")
         return False
 
-    if not _on_known_deck_page(emulator):
-        logger.change_status("Undetected screen type. Not classic 1v1, nor 2v2, nor trophy road deck page!")
+    if not _on_battle_deck_page(emulator):
+        logger.change_status("Undetected screen type. Not a deck page on main/card screen!")
         return False
 
     if not _select_deck_tab(emulator, logger, deck_number):
@@ -228,7 +244,7 @@ def randomize_deck(emulator, logger: Logger, deck_number: int = 2) -> bool:
     if confirm_seen:
         emulator.click(*CONFIRM_RANDOMIZE_DECK_BUTTON_COORD)
 
-    if not _wait_until(lambda: _on_known_deck_page(emulator), timeout=DECK_PAGE_TIMEOUT_S):
+    if not _wait_until(lambda: _on_battle_deck_page(emulator), timeout=DECK_PAGE_TIMEOUT_S):
         logger.change_status("Did not return to the deck page after randomizing")
         return_to_clash_main_from_card_page(emulator, logger)
         return False

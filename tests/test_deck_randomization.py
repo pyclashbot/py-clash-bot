@@ -132,6 +132,25 @@ def test_full_deck_randomizes_once_with_one_confirm(monkeypatch: pytest.MonkeyPa
     assert not any(click in OLD_CLICKS for click in emulator.clicks)
 
 
+def test_generic_full_deck_page_uses_the_active_deck(monkeypatch: pytest.MonkeyPatch) -> None:
+    emulator = _FakeEmulator()
+    logger = _RecordingLogger()
+    _patch_common(
+        monkeypatch,
+        is_full=_Sequence(True, True),
+        signature=_Sequence(((1, 2, 3),) * 8, ((4, 5, 6),) * 8),
+        confirm=True,
+        known_page=False,
+    )
+    monkeypatch.setattr(deck, "check_if_on_card_page", lambda *args: True)
+    monkeypatch.setattr(deck, "find_image", lambda *args, **kwargs: None)
+
+    assert deck.randomize_deck(emulator, logger, 2) is True
+    assert DECK_PAGE_OPTIONS_BUTTON_COORDS in emulator.clicks
+    assert RANDOMIZE_DECK_BUTTON_COORD in emulator.clicks
+    assert any("active full deck" in status for status in logger.statuses)
+
+
 def test_partial_deck_is_never_randomized(monkeypatch: pytest.MonkeyPatch) -> None:
     emulator = _FakeEmulator()
     logger = _RecordingLogger()
