@@ -1360,18 +1360,44 @@ def check_for_inventory_full_popup(emulator):
 # ===== Deck ============================================================
 
 
+# Border samples used by is_deck_full (all eight slots must show the full-deck frame).
+DECK_CARD_SAMPLE_POINTS: tuple[tuple[int, int], ...] = (
+    (43, 172),
+    (130, 172),
+    (216, 172),
+    (302, 172),
+    (43, 310),
+    (130, 311),
+    (216, 309),
+    (302, 309),
+)
+
+# Card-art centers; unlike the border samples these change when the order changes.
+DECK_CARD_ORDER_POINTS: tuple[tuple[int, int], ...] = (
+    (75, 190),
+    (162, 190),
+    (248, 190),
+    (334, 190),
+    (75, 330),
+    (162, 330),
+    (248, 330),
+    (334, 330),
+)
+
+
+def deck_card_signature(emulator) -> tuple[tuple[int, int, int], ...]:
+    """Order-sensitive fingerprint of the eight card-art centres."""
+    iar = numpy.asarray(emulator.screenshot())
+    signature: list[tuple[int, int, int]] = []
+    for x, y in DECK_CARD_ORDER_POINTS:
+        patch = iar[y - 4 : y + 5, x - 4 : x + 5, :3].reshape(-1, 3).mean(axis=0)
+        signature.append((round(float(patch[0])), round(float(patch[1])), round(float(patch[2]))))
+    return tuple(signature)
+
+
 def is_deck_full(emulator) -> bool:
     iar = numpy.asarray(emulator.screenshot())
-    pixels = [
-        iar[172][43],
-        iar[172][130],
-        iar[172][216],
-        iar[172][302],
-        iar[310][43],
-        iar[311][130],
-        iar[309][216],
-        iar[309][302],
-    ]
+    pixels = [iar[y][x] for x, y in DECK_CARD_SAMPLE_POINTS]
     valid_colors = [
         [175, 5, 179],
         [178, 5, 182],

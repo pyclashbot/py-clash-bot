@@ -7,12 +7,9 @@ import time
 
 from pyclashbot.bot.coords import (
     CONFIRM_RANDOMIZE_DECK_BUTTON_COORD,
-    DECK_OPTIONS_BUTTON_COORDS,
     DECK_PAGE_OPTIONS_BUTTON_COORDS,
     DECK_TABS_REGION,
     RANDOMIZE_DECK_BUTTON_COORD,
-    RANDOMIZE_DECK_BUTTON_COORDS,
-    RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS,
 )
 from pyclashbot.bot.nav import (
     _navigate_to_deck_selection,
@@ -21,47 +18,85 @@ from pyclashbot.bot.nav import (
     switch_deck_page,
 )
 from pyclashbot.bot.state_detect import (
+    check_if_on_card_page,
     check_if_on_clash_main_menu,
     check_if_on_classic_1v1_deck_page,
     check_if_on_classic_2v2_deck_page,
     check_if_on_confirm_randomize_deck_page,
     check_if_on_trophy_road_deck_page,
+    deck_card_signature,
     is_deck_full,
     is_single_deck_layout_by_pixel,
 )
 from pyclashbot.detection.image_rec import find_image
 from pyclashbot.utils.logger import Logger
 
+CONFIRM_PAGE_TIMEOUT_S = 5.0
+DECK_PAGE_TIMEOUT_S = 5.0
+POLL_INTERVAL_S = 0.25
+OPTIONS_SETTLE_S = 0.5
+TAB_SETTLE_S = 1.0
+DECK_SETTLE_S = 0.5
 
-def randomize_and_check_deck(emulator, logger: Logger, deck_to_randomize: int) -> bool:
+# One successful randomization per (account, deck) avoids shuffling again on every
+# state-machine loop. Tests call reset_randomize_latch().
+_RANDOMIZED_DECKS: set[tuple[int, int]] = set()
+
+
+def reset_randomize_latch() -> None:
+    _RANDOMIZED_DECKS.clear()
+
+
+def _on_known_deck_page(emulator) -> bool:
+    return (
+        check_if_on_trophy_road_deck_page(emulator)
+        or check_if_on_classic_2v2_deck_page(emulator)
+        or check_if_on_classic_1v1_deck_page(emulator)
+    )
+
+
+def _on_battle_deck_page(emulator) -> bool:
+    """Mode-bannered deck pages, plus the generic 8/8 Battle Deck page.
+
+    The collection/deck tab opens the generic page on some accounts; it uses the
+    same options/randomize/confirm flow and has no mode banner. A full deck is
+    the positive signal there.
     """
-    Randomizes the selected deck and verifies that it becomes full.
+    if _on_known_deck_page(emulator):
+        return True
+    return check_if_on_card_page(emulator) and is_deck_full(emulator)
 
-    This function intelligently handles whether the deck is full or partial
-    before randomizing, applying the correct click sequence for each case.
-    """
-    logger.change_status(f"Randomizing deck #{deck_to_randomize}...")
 
-    deck_is_full_before_randomize = is_deck_full(emulator)
+def _wait_until(predicate, *, timeout: float) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if predicate():
+            return True
+        time.sleep(POLL_INTERVAL_S)
+    return predicate()
 
-    emulator.click(*DECK_OPTIONS_BUTTON_COORDS)
-    time.sleep(0.1)
 
-    emulator.click(*RANDOMIZE_DECK_BUTTON_COORDS)
-    time.sleep(0.1)
-
-    if deck_is_full_before_randomize:
-        emulator.click(*RANDOMIZE_DECK_CONFIRM_BUTTON_COORDS)
-        time.sleep(0.1)
-
-    time.sleep(1.0)
-    logger.add_card_randomization()
-
-    if not is_deck_full(emulator):
-        logger.change_status(f"Deck {deck_to_randomize} still not full after randomizing.")
+def _select_deck_tab(emulator, logger: Logger, deck_number: int) -> bool:
+    """Click the target deck tab; single-deck layouts use the only deck."""
+    if is_single_deck_layout_by_pixel(emulator):
+        return True
+    if not 1 <= deck_number <= 10:
+        logger.change_status(f"Invalid deck number #{deck_number}; cannot randomize")
         return False
-
-    logger.change_status(f"Deck #{deck_to_randomize} successfully randomized.")
+    folder = f"deck_tabs/deck_{deck_number}"
+    coords = find_image(emulator.screenshot(), folder, subcrop=DECK_TABS_REGION, tolerance=0.98)
+    if coords is None and deck_number > 5:
+        if not switch_deck_page(emulator, logger):
+            return False
+        coords = find_image(emulator.screenshot(), folder, subcrop=DECK_TABS_REGION, tolerance=0.98)
+    if coords is None:
+        if is_deck_full(emulator):
+            logger.change_status(f"Deck #{deck_number} tab is not visible; using the active full deck")
+            return True
+        logger.change_status(f"Deck #{deck_number} tab not found; cannot randomize")
+        return False
+    emulator.click(coords[0] + 15, coords[1] + 15)
+    time.sleep(TAB_SETTLE_S)
     return True
 
 
@@ -78,18 +113,15 @@ def select_deck_state(emulator, logger: Logger, deck_number, deck_count) -> tupl
 
 
 def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: int) -> tuple[bool, int | None]:
+    """Select an already-full deck; never randomize a partial/fresh deck here."""
     if is_single_deck_layout_by_pixel(emulator):
         logger.change_status("Pixel check confirmed single-deck layout.")
         if is_deck_full(emulator):
             logger.change_status("Single deck is complete. Using it.")
             return True, 1
-        else:
-            logger.change_status("Single deck is not complete. Randomizing it.")
-            if randomize_and_check_deck(emulator, logger, 1):
-                return True, 1
-            else:
-                logger.error("Failed to randomize the single deck.")
-                return False, None
+        logger.change_status("No full deck found — single deck is partial/fresh; not randomizing.")
+        logger.error("No full deck found.")
+        return False, None
 
     logger.change_status("Pixel check failed. Assuming multi-deck layout.")
     ss = emulator.screenshot()
@@ -126,15 +158,12 @@ def find_and_click_deck(emulator, logger: Logger, deck_number: int, deck_count: 
         if is_deck_full(emulator):
             logger.change_status(f"Found complete deck: #{deck_to_check}.")
             return True, deck_to_check
-        else:
-            logger.change_status(f"Found partial deck #{deck_to_check}. Randomizing it now.")
-            if randomize_and_check_deck(emulator, logger, deck_to_check):
-                return True, deck_to_check
-            else:
-                logger.change_status(f"Failed to randomize deck #{deck_to_check}. Continuing...")
-                continue
 
-    logger.error("Could not find any usable decks after checking all available pages.")
+        logger.change_status(f"Deck #{deck_to_check} is not full (partial/fresh); skipping.")
+        logger.error(f"Deck #{deck_to_check} is not full — not randomizing.")
+
+    logger.change_status("No full deck found — not randomizing.")
+    logger.error("No full deck found.")
     return False, None
 
 
@@ -162,43 +191,76 @@ def randomize_deck_state(emulator, logger: Logger, deck_number: int = 2):
         logger.change_status("Not on main menu — cannot randomize deck")
         return False
 
+    account = int(getattr(logger, "current_account", 0) or 0)
+    key = (account, deck_number)
+    if key in _RANDOMIZED_DECKS:
+        logger.change_status(f"Deck #{deck_number} already randomized for this account; skipping")
+        return True
+
     logger.change_status(f"Starting deck randomization state for deck #{deck_number}")
     if not randomize_deck(emulator, logger, deck_number):
         logger.change_status("Deck randomization failed")
         return False
 
+    _RANDOMIZED_DECKS.add(key)
     return True
 
 
 def randomize_deck(emulator, logger: Logger, deck_number: int = 2) -> bool:
-    """Navigate to the deck page, randomize the deck, and return to main.
+    """Randomize one full deck exactly once, with a bounded confirm-page wait.
 
-    Trophy Road, Classic 1v1, and Classic 2v2 all share the identical randomize-button
-    flow, so we just confirm we're on one of those deck pages and run it. There is no
-    confirm dialog: deck-options -> randomize -> back to main. `deck_number` is accepted
-    for the caller's signature but unused by this flow.
+    Trophy Road, Classic 1v1, and Classic 2v2 share the same deck page and
+    options/randomize/confirm sequence. We deliberately refuse a partial/fresh
+    deck: the confirm dialog exists only for a full deck, and shuffling a
+    partial deck is the bug this path replaces.
     """
-    if not get_to_card_page_from_clash_main(emulator, logger):
+    if get_to_card_page_from_clash_main(emulator, logger) != "good":
+        logger.change_status("Failed to reach the card page; not randomizing")
         return False
 
-    on_known_deck_page = (
-        check_if_on_trophy_road_deck_page(emulator)
-        or check_if_on_classic_2v2_deck_page(emulator)
-        or check_if_on_classic_1v1_deck_page(emulator)
-    )
-    if on_known_deck_page:
-        logger.change_status("Randomizing deck...")
-        emulator.click(*DECK_PAGE_OPTIONS_BUTTON_COORDS)
-        time.sleep(0.5)
-        emulator.click(*RANDOMIZE_DECK_BUTTON_COORD)
-        time.sleep(0.5)
-        # Randomizing a full deck pops a "replace deck?" confirm dialog; accept it
-        # when present. A partial deck randomizes instantly with no dialog.
-        if check_if_on_confirm_randomize_deck_page(emulator):
-            emulator.click(*CONFIRM_RANDOMIZE_DECK_BUTTON_COORD)
-            time.sleep(0.5)
-        logger.add_card_randomization()
-    else:
-        logger.change_status("Undetected screen type. Not classic 1v1, nor 2v2, nor trophy road deck page!")
+    if not _on_battle_deck_page(emulator):
+        logger.change_status("Undetected screen type. Not a deck page on main/card screen!")
+        return False
 
+    if not _select_deck_tab(emulator, logger, deck_number):
+        return_to_clash_main_from_card_page(emulator, logger)
+        return False
+
+    if not is_deck_full(emulator):
+        logger.change_status(f"Deck #{deck_number} is not full (partial/fresh); not randomizing")
+        return_to_clash_main_from_card_page(emulator, logger)
+        return False
+
+    before = deck_card_signature(emulator)
+    logger.change_status(f"Randomizing deck #{deck_number}...")
+    emulator.click(*DECK_PAGE_OPTIONS_BUTTON_COORDS)
+    time.sleep(OPTIONS_SETTLE_S)
+    emulator.click(*RANDOMIZE_DECK_BUTTON_COORD)
+
+    confirm_seen = _wait_until(
+        lambda: check_if_on_confirm_randomize_deck_page(emulator),
+        timeout=CONFIRM_PAGE_TIMEOUT_S,
+    )
+    if confirm_seen:
+        emulator.click(*CONFIRM_RANDOMIZE_DECK_BUTTON_COORD)
+
+    if not _wait_until(lambda: _on_battle_deck_page(emulator), timeout=DECK_PAGE_TIMEOUT_S):
+        logger.change_status("Did not return to the deck page after randomizing")
+        return_to_clash_main_from_card_page(emulator, logger)
+        return False
+
+    if not is_deck_full(emulator):
+        logger.change_status(f"Deck #{deck_number} is not full after randomizing")
+        return_to_clash_main_from_card_page(emulator, logger)
+        return False
+
+    time.sleep(DECK_SETTLE_S)
+    if deck_card_signature(emulator) == before:
+        logger.change_status(f"Deck #{deck_number} card order did not change; not counting randomization")
+        return_to_clash_main_from_card_page(emulator, logger)
+        return False
+
+    logger.add_card_randomization()
+    suffix = " after confirm" if confirm_seen else " (no confirm dialog detected)"
+    logger.change_status(f"Deck #{deck_number} randomized{suffix}")
     return return_to_clash_main_from_card_page(emulator, logger)
